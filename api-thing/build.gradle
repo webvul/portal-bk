@@ -1,0 +1,7 @@
+dependencies {
+
+	compile project (":store-service")
+
+	compile group:'org.springframework',name:'spring-webmvc',version:"${springVersion}"
+
+}

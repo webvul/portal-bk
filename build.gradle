@@ -1,0 +1,43 @@
+ext {
+	springVersion = "4.2.0.RELEASE"
+	aspectjVersion="1.8.1"
+	jacksonVersion="2.6.1"
+}
+
+allprojects {
+	group 'com.kii.beehive'
+	version '1.0-SNAPSHOT'
+
+	apply plugin: 'java'
+
+
+	repositories {
+		mavenLocal()
+		mavenCentral()
+		jcenter()
+	}
+
+
+	dependencies {
+
+		compile group:"org.springframework",name:"spring-beans",version:"${springVersion}"
+		compile group:"org.springframework",name:"spring-context",version:"${springVersion}"
+
+		compile group:"org.springframework",name:"spring-context-support",version:"${springVersion}"
+
+
+		compile group:'com.fasterxml.jackson.core',name:'jackson-core',version:"${jacksonVersion}"
+		compile group:'com.fasterxml.jackson.core',name:'jackson-annotations',version:"${jacksonVersion}"
+		compile group:'com.fasterxml.jackson.core',name:'jackson-databind',version:"${jacksonVersion}"
+
+		runtime group:"javax.servlet",name:"servlet-api",version:"3.+"
+		runtime "org.apache.logging.log4j:log4j-core:2.3"
+
+		testCompile group:"org.springframework",name:"spring-test",version:"${springVersion}"
+
+		testCompile 'junit:junit:4.12'
+
+	}
+}
+
+
