@@ -1,4 +1,4 @@
-package com.kii.extension.common;
+package com.kii.extension.sdk.service;
 
 
 import org.springframework.context.annotation.Bean;

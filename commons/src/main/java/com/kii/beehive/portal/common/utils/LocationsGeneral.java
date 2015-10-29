@@ -1,4 +1,4 @@
-package com.kii.beehive.portal.commons;
+package com.kii.beehive.portal.common.utils;
 
 import org.springframework.util.StringUtils;
 

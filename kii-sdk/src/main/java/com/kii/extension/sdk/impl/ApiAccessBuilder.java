@@ -15,9 +15,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.extension.sdk.entity.AppInfo;
-import com.kii.extension.sdk.entity.AppInfoEntity;
-import com.kii.extension.sdk.entity.QueryParam;
 import com.kii.extension.sdk.entity.ScopeType;
+import com.kii.extension.sdk.query.QueryParam;
 
 
 public class ApiAccessBuilder {
