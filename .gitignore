@@ -1,0 +1,25 @@
+git # Created by .ignore support plugin (hsz.mobi)
+.svn
+.classpath
+.project
+.gradle
+ObjectStore/
+.settings/
+bin/
+build/
+target/
+.DS_Store
+tmp/
+.removed
+.springBeans
+.idea/
+*.iml
+env.properties
+local.properties
+git.*.properties
+*.swp
+*.log
+/Servers/
+/.metadata/
+dump.rdb
+jssecacerts
