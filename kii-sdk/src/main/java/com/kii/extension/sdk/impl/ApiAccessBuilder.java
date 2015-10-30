@@ -3,6 +3,7 @@ package com.kii.extension.sdk.impl;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -15,6 +16,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.extension.sdk.entity.AppInfo;
+import com.kii.extension.sdk.entity.BucketInfo;
 import com.kii.extension.sdk.entity.ScopeType;
 import com.kii.extension.sdk.query.QueryParam;
 
@@ -25,6 +27,8 @@ public class ApiAccessBuilder {
 	private final AppInfo appInfo;
 
 	public ApiAccessBuilder(AppInfo info){
+
+		setContentType("application/json");
 		this.appInfo=info;
 	}
 
@@ -40,19 +44,35 @@ public class ApiAccessBuilder {
 
 	private String scopeSubUrl;
 
+	private Map<String,String> optionalHeader=new HashMap<>();
+
+	private Object ctxObj=null;
+
+	private String bucketUrl;
+
+	private HttpUriRequest request;
+
+
+
+	private void setContentType(String value){
+		optionalHeader.put("Content-Type",value);
+	}
+
+
+	public ApiAccessBuilder bindBucketInfo(BucketInfo bucketInfo){
+		return this.bindBucket(bucketInfo.getBucketName()).bindScope(bucketInfo.getScopeType(),bucketInfo.getScopeName());
+	}
+
 	public ApiAccessBuilder bindScope(ScopeType scope,String scopeVal){
 		this.scopeSubUrl=scope.getSubUrl(scopeVal);
 		return this;
 	}
 
 
-	private String bucketUrl;
 	public ApiAccessBuilder  bindBucket(String bucketName){
 		this.bucketUrl="/buckets/"+bucketName;
 		return this;
 	}
-
-	private Map<String,String> optionalHeader=new HashMap<>();
 
 	public ApiAccessBuilder create(Object entity){
 
@@ -80,7 +100,6 @@ public class ApiAccessBuilder {
 		return this;
 	}
 
-	private HttpUriRequest request;
 
 	public ApiAccessBuilder query(QueryParam query){
 
@@ -91,21 +110,67 @@ public class ApiAccessBuilder {
 		return this;
 	}
 
+
+
 	public ApiAccessBuilder delete(String id){
+
+		request=new HttpDelete(appInfo.getAppSubUrl()+scopeSubUrl+bucketUrl+"/"+id);
+
 		return this;
 	}
 
-	public ApiAccessBuilder updateAll(String id,String content){
+	public ApiAccessBuilder delete(String id,String version){
+
+		delete(id);
+
+		this.optionalHeader.put("If-Match",version);
+
 		return this;
 	}
 
-	public ApiAccessBuilder update(String id,String content){
+	public ApiAccessBuilder updateAll(String id,Object entity){
+
+
+		request=new HttpPut(appInfo.getAppSubUrl()+scopeSubUrl+bucketUrl+"/"+id);
+
+		this.setContentType("application/vnd."+appInfo.getAppID()+".mydata+json");
+
+		ctxObj=entity;
+
 		return this;
 	}
 
-	private Object ctxObj=null;
+	public ApiAccessBuilder updateAllWithVersion(String id,Object entity,String version){
 
-	private String subUrl;
+		updateAll(id, entity);
+
+		this.optionalHeader.put("If-Match",version);
+
+		return this;
+	}
+
+	public ApiAccessBuilder update(String id,Object entity){
+		request=new HttpPost(appInfo.getAppSubUrl()+scopeSubUrl+bucketUrl+"/"+id);
+
+		this.setContentType("application/vnd."+appInfo.getAppID()+".mydata+json");
+
+		this.optionalHeader.put("X-HTTP-Method-Override", "PATCH");
+
+		ctxObj=entity;
+
+		return this;
+	}
+
+	public ApiAccessBuilder updateWithVersion(String id,Object entity,String version){
+		update(id,entity);
+
+		this.optionalHeader.put("If-Match",version);
+
+		return this;
+	}
+
+
+
 	public ApiAccessBuilder login(String user,String pwd){
 		request=new HttpPost(appInfo.getSite().getSiteUrl()+("/api/oauth2/token"));
 
@@ -114,8 +179,6 @@ public class ApiAccessBuilder {
 		map.put("password",pwd);
 
 		ctxObj=map;
-
-		subUrl="/oauth";
 
 		return this;
 	}
@@ -128,8 +191,6 @@ public class ApiAccessBuilder {
 		map.put("client_secret",pwd);
 
 		ctxObj=map;
-
-		subUrl="/oauth";
 
 		return this;
 	}
