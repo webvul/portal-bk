@@ -1,0 +1,7 @@
+
+dependencies {
+	compile project(":commons")
+	compile project(":kii-sdk")
+	compile project(":store-service")
+
+}
