@@ -10,8 +10,8 @@ import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 
-@Configuration
-@EnableMongoRepositories("com.kii.beehive.portal.store.repositories")
+//@Configuration
+//@EnableMongoRepositories("com.kii.beehive.portal.store.repositories")
 public class StoreSpringConfig extends AbstractMongoConfiguration {
 
 	@Value("${portal.mongo.port}")

@@ -4,8 +4,8 @@ import java.util.Set;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document
-public class TagThingIndex {
+
+public class TagThingIndex extends KiiEntity{
 
 
 
@@ -16,5 +16,29 @@ public class TagThingIndex {
 
 	private Set<String> appIDs;
 
+	@Override
+	public String getId() {
+		return tagName;
+	}
 
+	@Override
+	public void setId(String tagName) {
+		this.tagName = tagName;
+	}
+
+	public Set<String> getGlobalThings() {
+		return globalThings;
+	}
+
+	public void setGlobalThings(Set<String> globalThings) {
+		this.globalThings = globalThings;
+	}
+
+	public Set<String> getAppIDs() {
+		return appIDs;
+	}
+
+	public void setAppIDs(Set<String> appIDs) {
+		this.appIDs = appIDs;
+	}
 }

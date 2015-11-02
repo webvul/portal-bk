@@ -23,6 +23,9 @@ import org.springframework.util.FileCopyUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.kii.extension.sdk.commons.HttpUtils;
+import com.kii.extension.sdk.exception.ExceptionFactory;
+
 
 @Component
 public class KiiCloudClient {
@@ -30,6 +33,8 @@ public class KiiCloudClient {
 
 	HttpClient httpClient=HttpClients.createDefault();
 
+	@Autowired
+	private ExceptionFactory factory;
 
 	@Autowired
 	private ObjectMapper mapper;
@@ -64,6 +69,9 @@ public class KiiCloudClient {
 				response = httpClient.execute(request, context);
 			}
 
+
+			factory.checkResponse(response);
+
 			return response;
 		} catch (IOException e) {
 			throw new IllegalArgumentException(e);
@@ -72,41 +80,33 @@ public class KiiCloudClient {
 
 	public HttpResponse doRequest(HttpUriRequest request){
 
-		return doRequest(request,null);
+		return doRequest(request, null);
 
 	}
 
 
 	public String executeRequest(HttpUriRequest request){
-		return executeRequest(request,null);
+		return executeRequest(request, null);
 	}
 
 
-	public String executeRequest(HttpUriRequest request,HttpClientContext context){
+	private String executeRequest(HttpUriRequest request,HttpClientContext context){
 
-		try{
-			HttpResponse response=doRequest(request,context);
+
+			HttpResponse response=doRequest(request, context);
 
 
 			if(request.getMethod().equals("DELETE")){
 				return "";
 			}
 
-			HttpEntity entity=response.getEntity();
-			if(entity!=null) {
+			return HttpUtils.getResponseBody(response);
 
-				String result = new String(FileCopyUtils.copyToByteArray(response.getEntity().getContent()), "UTF-8");
 
-				return result;
-			}else{
-				return "";
-			}
-
-		} catch (IOException e) {
-			throw new IllegalArgumentException(e);
-		}
 
 	}
+
+
 
 
 

@@ -1,6 +1,8 @@
 package com.kii.beehive.portal.store.entity;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.CreatedDate;
@@ -10,7 +12,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
-public class GlobalThingInfo {
+public class GlobalThingInfo extends KiiEntity{
 
 	@Id
 	private String globalThingID;
@@ -19,7 +21,7 @@ public class GlobalThingInfo {
 	private String vendorThingID;
 
 	@Indexed
-	private String[]  tags;
+	private Set<String> tags;
 
 	private String appID;
 
@@ -35,21 +37,22 @@ public class GlobalThingInfo {
 
 
 
-
-	public String getGlobalThingID() {
+	@Override
+	public String getId() {
 		return globalThingID;
 	}
 
-	public void setGlobalThingID(String globalThingID) {
+	@Override
+	public void setId(String globalThingID) {
 		this.globalThingID = globalThingID;
 	}
 
 
-	public String[] getTags() {
+	public Set<String> getTags() {
 		return tags;
 	}
 
-	public void setTags(String[] tags) {
+	public void setTags(Set<String> tags) {
 		this.tags = tags;
 	}
 

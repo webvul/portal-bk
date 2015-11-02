@@ -20,7 +20,7 @@ public class QueryBuilder {
 	
 	//==========================
 
-	public QueryBuilder(Condition  condition){
+	public  QueryBuilder(Condition  condition){
 
 		clause.setClause(condition);
 		queryParam.setBucketQuery(clause);
