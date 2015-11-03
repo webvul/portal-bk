@@ -134,7 +134,7 @@ public abstract class AbstractDataAccess<T> {
 			List<T>  list=service.query(queryParam, typeCls, bucketInfo);
 			result.addAll(list);
 
-		}while(queryParam.getPaginationKey()==null);
+		}while(queryParam.getPaginationKey()!=null);
 
 		return result;
 

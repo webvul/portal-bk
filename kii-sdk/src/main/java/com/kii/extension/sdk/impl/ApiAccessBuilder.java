@@ -95,7 +95,7 @@ public class ApiAccessBuilder {
 
 	public ApiAccessBuilder  getObjectByID(String id){
 
-		request=new HttpGet(appInfo.getSite().getSiteUrl()+scopeSubUrl+bucketUrl+"/objects/"+id);
+		request=new HttpGet(appInfo.getAppSubUrl()+scopeSubUrl+bucketUrl+"/objects/"+id);
 
 		return this;
 	}
@@ -104,6 +104,8 @@ public class ApiAccessBuilder {
 	public ApiAccessBuilder query(QueryParam query){
 
 		request=new HttpPost(appInfo.getAppSubUrl()+scopeSubUrl+bucketUrl+"/query");
+
+		this.setContentType("application/vnd.kii.QueryRequest+json");
 
 		ctxObj=query;
 

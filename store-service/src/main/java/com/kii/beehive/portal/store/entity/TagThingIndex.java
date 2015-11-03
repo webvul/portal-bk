@@ -1,5 +1,6 @@
 package com.kii.beehive.portal.store.entity;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -14,9 +15,9 @@ public class TagThingIndex extends KiiEntity {
 	private String tagName;
 
 
-	private Set<String> globalThings;
+	private Set<String> globalThings=new HashSet<>();
 
-	private Set<String> appIDs;
+	private Set<String> appIDs=new HashSet<>();
 
 	@Override
 	public String getId() {

@@ -1,6 +1,7 @@
 package com.kii.beehive.portal.store.entity;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -23,7 +24,7 @@ public class GlobalThingInfo extends KiiEntity {
 	private String vendorThingID;
 
 	@Indexed
-	private Set<String> tags;
+	private Set<String> tags=new HashSet<>();
 
 	private String appID;
 

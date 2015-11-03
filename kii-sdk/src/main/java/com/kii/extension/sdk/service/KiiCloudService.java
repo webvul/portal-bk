@@ -43,18 +43,6 @@ public class KiiCloudService {
 		return new ApiAccessBuilder(info).bindToken(tool.getToken());
 	}
 
-//	public LoginInfo login(String user,String pwd){
-//
-//		HttpUriRequest  request=getBuilder().login(user, pwd).generRequest(mapper);
-//
-//
-//		return null;
-////		return client.executeRequestWithCls(request,LoginInfo.class);
-//
-//
-//	}
-
-
 
 	public <T> List<T> query(QueryParam query,Class<T>  cls,BucketInfo bucketInfo){
 
