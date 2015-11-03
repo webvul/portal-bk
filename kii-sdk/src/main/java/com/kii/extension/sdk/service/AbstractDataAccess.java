@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.kii.extension.sdk.entity.BucketInfo;
 import com.kii.extension.sdk.entity.CreateResponse;
+import com.kii.extension.sdk.entity.KiiEntity;
 import com.kii.extension.sdk.entity.UpdateResponse;
 import com.kii.extension.sdk.query.ConditionBuilder;
 import com.kii.extension.sdk.query.QueryParam;
@@ -33,11 +34,37 @@ public abstract class AbstractDataAccess<T> {
 		return service.getObjectByID(id,bucketInfo,typeCls);
 	}
 
-	public CreateResponse addEntity(T entity){
+	public UpdateResponse addEntity(T  entity,String id){
+		return  service.fullUpdateObject(id, entity, bucketInfo);
+	}
 
 
-		return service.createObject(entity, bucketInfo);
+	public CreateResponse addEntity(T  entity){
+		return  service.createObject(entity, bucketInfo);
+	}
 
+	public <E extends KiiEntity> String addKiiEntity(E  entity){
+
+		if(entity.getId()==null){
+			CreateResponse resp=service.createObject(entity, bucketInfo);
+
+			return resp.getObjectID();
+
+		}else {
+
+			UpdateResponse resp= service.fullUpdateObject(entity.getId(), entity, bucketInfo);
+			return entity.getId();
+		}
+	}
+
+
+	public void removeEntity(String id){
+		service.removeObject(id,bucketInfo);
+	}
+
+
+	public void removeEntityWithVersion(String id,int version){
+		service.removeObjectWithVersion(id, String.valueOf(version), bucketInfo);
 	}
 
 	public UpdateResponse updateEntityAll(T entity,String id){
@@ -47,9 +74,22 @@ public abstract class AbstractDataAccess<T> {
 	}
 
 
-	public <T> UpdateResponse updateEntityAllWithVersion(T entity,String id,int version){
+	public UpdateResponse updateEntityAllWithVersion(T entity,String id,int version){
 
 		return service.fullUpdateObjectWithVersion(id, entity, bucketInfo, String.valueOf(version));
+
+	}
+
+	public <E extends KiiEntity> UpdateResponse updateEntityAll(E entity){
+
+		return service.fullUpdateObject(entity.getId(), entity, bucketInfo);
+
+	}
+
+
+	public <E extends KiiEntity> UpdateResponse updateEntityAllWithVersion(E entity,int version){
+
+		return service.fullUpdateObjectWithVersion(entity.getId(), entity, bucketInfo, String.valueOf(version));
 
 	}
 
@@ -58,8 +98,6 @@ public abstract class AbstractDataAccess<T> {
 		return service.updateObject(id, entity, bucketInfo);
 
 	}
-
-
 
 
 	public String updateEntityWithVersion(Map<String,Object>  entity,String id,int version){
@@ -73,8 +111,6 @@ public abstract class AbstractDataAccess<T> {
 		return service.updateObjectWithEntity(id, entity, bucketInfo);
 
 	}
-
-
 
 
 	public <T> String updateEntityWithVersion(T  entity,String id,int version){

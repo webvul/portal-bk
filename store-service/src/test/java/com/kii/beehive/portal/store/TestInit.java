@@ -16,14 +16,14 @@ import com.kii.beehive.portal.store.repositories.TokenRepository;
 public class TestInit {
 
 
-	@Autowired
-	private LandLordRepository  landLordRep;
-
-	@Autowired
-	private TokenRepository tokenRep;
-
-	@Autowired
-	private ThingInfoRepository thingRep;
+//	@Autowired
+//	private LandLordRepository  landLordRep;
+//
+//	@Autowired
+//	private TokenRepository tokenRep;
+//
+//	@Autowired
+//	private ThingInfoRepository thingRep;
 
 
 	@Test

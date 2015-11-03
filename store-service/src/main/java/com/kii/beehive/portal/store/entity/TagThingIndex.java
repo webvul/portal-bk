@@ -4,8 +4,10 @@ import java.util.Set;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.kii.extension.sdk.entity.KiiEntity;
 
-public class TagThingIndex extends KiiEntity{
+
+public class TagThingIndex extends KiiEntity {
 
 
 

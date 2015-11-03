@@ -31,12 +31,6 @@ public class TestOAuth extends TestTemplate{
 
 
 
-			LoginInfo info=service.adminLogin();
-
-			assertNotNull(info.getToken());
-
-
-
 
 
 	}

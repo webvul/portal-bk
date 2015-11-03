@@ -17,7 +17,10 @@
 
     <bean:annotation-config />
 
-    <context:component-scan base-package="com.kii.beehive.portal.store" />
+    <context:component-scan base-package="com.kii.beehive.portal" />
 
+    <bean class="com.kii.extension.sdk.factory.LocalKiiCloudFactory" />
+
+    <bean class="com.kii.extension.sdk.service.AdminTokenBindTool" />
 
 </beans>

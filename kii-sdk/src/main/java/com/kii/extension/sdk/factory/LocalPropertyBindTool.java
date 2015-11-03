@@ -21,7 +21,7 @@ public class LocalPropertyBindTool implements AppBindTool {
 	@Value("${kiicloud.master-app.secret}")
 	private String secret;
 
-	@Value("${kiicloud.master-app.site")
+	@Value("${kiicloud.master-app.site}")
 	private String site;
 
 

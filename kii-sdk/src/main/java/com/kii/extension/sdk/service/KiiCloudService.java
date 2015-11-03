@@ -40,29 +40,21 @@ public class KiiCloudService {
 	private ApiAccessBuilder getBuilder(){
 		AppInfo info= bindTool.getAppInfo();
 
-		return new ApiAccessBuilder(info);
+		return new ApiAccessBuilder(info).bindToken(tool.getToken());
 	}
 
-	public LoginInfo login(String user,String pwd){
-
-		HttpUriRequest  request=getBuilder().login(user, pwd).generRequest(mapper);
-
-
-		return null;
-//		return client.executeRequestWithCls(request,LoginInfo.class);
-
-
-	}
-
-	public LoginInfo adminLogin(){
+//	public LoginInfo login(String user,String pwd){
+//
+//		HttpUriRequest  request=getBuilder().login(user, pwd).generRequest(mapper);
+//
+//
+//		return null;
+////		return client.executeRequestWithCls(request,LoginInfo.class);
+//
+//
+//	}
 
 
-		HttpUriRequest  request=getBuilder().adminLogin(bindTool.getAppInfo().getAppID(), bindTool.getAppInfo().getClientSecret()).generRequest(mapper);
-
-
-		return client.executeRequestWithCls(request,LoginInfo.class);
-
-	}
 
 	public <T> List<T> query(QueryParam query,Class<T>  cls,BucketInfo bucketInfo){
 
@@ -113,6 +105,25 @@ public class KiiCloudService {
 			e.printStackTrace();
 			throw new IllegalArgumentException(e);
 		}
+
+	}
+
+	public void removeObject(String id,BucketInfo bucket){
+
+		HttpUriRequest  request=getBuilder().bindBucketInfo(bucket).delete(id).generRequest(mapper);
+
+		client.executeRequest(request);
+
+
+	}
+
+
+	public void removeObjectWithVersion(String id,String version,BucketInfo bucket){
+
+		HttpUriRequest  request=getBuilder().bindBucketInfo(bucket).delete(id,version).generRequest(mapper);
+
+		client.executeRequest(request);
+
 
 	}
 

@@ -83,6 +83,6 @@ public class AppInfo {
 
 	public String getAppSubUrl() {
 
-		return  site.getSiteUrl()+"/api/apps";
+		return  site.getSiteUrl()+"/api/apps/"+appID;
 	}
 }

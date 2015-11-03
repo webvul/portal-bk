@@ -93,7 +93,7 @@ public class KiiCloudDevPortalService {
 
 		HttpUriRequest request=getBuilder().buildLogin(user,pwd).generRequest();
 
-		client.executeRequest(request, context);
+		client.doRequest(request, context);
 
 	}
 

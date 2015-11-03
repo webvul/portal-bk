@@ -64,6 +64,7 @@ public class ConditionBuilder {
 		InCollect q = new InCollect();
 		q.setField(field);
 
+
 		q.setValues(Arrays.asList(objArray));
 
 		fill(q);

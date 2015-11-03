@@ -114,7 +114,7 @@ public class ApiAccessBuilder {
 
 	public ApiAccessBuilder delete(String id){
 
-		request=new HttpDelete(appInfo.getAppSubUrl()+scopeSubUrl+bucketUrl+"/"+id);
+		request=new HttpDelete(appInfo.getAppSubUrl()+scopeSubUrl+bucketUrl+"/objects/"+id);
 
 		return this;
 	}
@@ -131,7 +131,7 @@ public class ApiAccessBuilder {
 	public ApiAccessBuilder updateAll(String id,Object entity){
 
 
-		request=new HttpPut(appInfo.getAppSubUrl()+scopeSubUrl+bucketUrl+"/"+id);
+		request=new HttpPut(appInfo.getAppSubUrl()+scopeSubUrl+bucketUrl+"/objects/"+id);
 
 		this.setContentType("application/vnd."+appInfo.getAppID()+".mydata+json");
 
@@ -150,7 +150,7 @@ public class ApiAccessBuilder {
 	}
 
 	public ApiAccessBuilder update(String id,Object entity){
-		request=new HttpPost(appInfo.getAppSubUrl()+scopeSubUrl+bucketUrl+"/"+id);
+		request=new HttpPost(appInfo.getAppSubUrl()+scopeSubUrl+bucketUrl+"/objects/"+id);
 
 		this.setContentType("application/vnd."+appInfo.getAppID()+".mydata+json");
 
