@@ -3,8 +3,12 @@ dependencies {
 	compile project(":kii-sdk")
 	compile "org.mongodb:mongo-java-driver:3.1.0"
 	compile 'org.springframework.data:spring-data-mongodb:1.8.0.RELEASE'
-	compile 'org.apache.commons:commons-dbcp2:2.1.1'
-	compile 'mysql:mysql-connector-java:5.1.37'
-	compile group:'org.springframework',name:'spring-jdbc',version:"${springVersion}"
+
+	compile group:'org.springframework',name:'spring-aop',version:"${springVersion}"
+
+//	compile 'org.apache.commons:commons-dbcp2:2.1.1'
+//	compile 'mysql:mysql-connector-java:5.1.37'
+//	compile group:'org.springframework',name:'spring-jdbc',version:"${springVersion}"
+
 
 }

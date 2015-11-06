@@ -30,6 +30,8 @@ public class ThingController {
 	public Map<String,String> createThing(@RequestBody ThingInput input){
 
 
+		return null;
+
 
 	}
 

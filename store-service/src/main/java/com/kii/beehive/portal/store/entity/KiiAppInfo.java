@@ -12,9 +12,11 @@ public class KiiAppInfo {
 
 	private String appName;
 
-	private Set<String> thingIDs=new HashSet<String>();
+	private Set<String> relThingIDs =new HashSet<String>();
 
 	private String thingIDPrefix;
+
+	private boolean isDefaultApp;
 
 	public AppInfo getAppInfo() {
 		return appInfo;
@@ -32,12 +34,12 @@ public class KiiAppInfo {
 		this.appName = appName;
 	}
 
-	public Set<String> getThingIDs() {
-		return thingIDs;
+	public Set<String> getRelThingIDs() {
+		return relThingIDs;
 	}
 
-	public void setThingIDs(Set<String> thingIDs) {
-		this.thingIDs = thingIDs;
+	public void setRelThingIDs(Set<String> relThingIDs) {
+		this.relThingIDs = relThingIDs;
 	}
 
 	public String getThingIDPrefix() {
@@ -46,5 +48,13 @@ public class KiiAppInfo {
 
 	public void setThingIDPrefix(String thingIDPrefix) {
 		this.thingIDPrefix = thingIDPrefix;
+	}
+
+	public boolean isDefaultApp() {
+		return isDefaultApp;
+	}
+
+	public void setIsDefaultApp(boolean isDefaultApp) {
+		this.isDefaultApp = isDefaultApp;
 	}
 }

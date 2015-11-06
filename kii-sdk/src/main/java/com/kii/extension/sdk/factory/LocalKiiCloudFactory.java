@@ -8,8 +8,6 @@ import com.kii.extension.sdk.service.AdminTokenBindTool;
 import com.kii.extension.sdk.service.AppBindTool;
 import com.kii.extension.sdk.service.TokenBindTool;
 
-@Configuration
-@ComponentScan("com.kii.extension.sdk")
 public class LocalKiiCloudFactory {
 
 	@Bean
