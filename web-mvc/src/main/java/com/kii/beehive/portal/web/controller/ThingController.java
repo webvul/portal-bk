@@ -18,7 +18,7 @@ import com.kii.beehive.portal.store.entity.GlobalThingInfo;
 import com.kii.beehive.portal.store.repositories.ThingInfoRepository;
 import com.kii.beehive.portal.web.entity.ThingInput;
 
-@RestController
+//@RestController
 @RequestMapping(path="/things",consumes = {"application/json"}, produces = {"application/json"})
 public class ThingController {
 

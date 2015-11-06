@@ -1,4 +1,4 @@
-package com.kii.extension.sdk.factory;
+package com.kii.extension.factory;
 
 
 import org.springframework.context.annotation.ComponentScan;

@@ -8,7 +8,7 @@ import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.extension.sdk.entity.AppInfo;
 import com.kii.extension.sdk.service.AppBindTool;
 
-@Component
+//@Component
 public class DynamicAppInfoBindTool implements AppBindTool {
 
 	@Autowired
