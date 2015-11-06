@@ -13,6 +13,9 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.http.HttpException;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.protocol.HttpClientContext;
@@ -27,6 +30,7 @@ import org.apache.http.nio.client.HttpAsyncClient;
 import org.apache.http.nio.conn.NHttpClientConnectionManager;
 import org.apache.http.nio.reactor.ConnectingIOReactor;
 import org.apache.http.nio.reactor.IOReactorException;
+import org.apache.http.protocol.HttpContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -74,7 +78,9 @@ public class KiiCloudClient {
 	@PostConstruct
 	public void init() throws IOReactorException {
 
-		ConnectingIOReactor ioReactor= new DefaultConnectingIOReactor(IOReactorConfig.DEFAULT);
+		ConnectingIOReactor ioReactor= new DefaultConnectingIOReactor(IOReactorConfig.custom()
+				.setIoThreadCount(50)
+				.build());
 
 		final PoolingNHttpClientConnectionManager connManager = new PoolingNHttpClientConnectionManager(
 				ioReactor);
@@ -85,10 +91,14 @@ public class KiiCloudClient {
 		}, 0, 30, TimeUnit.SECONDS);
 
 
-		HttpAsyncClientBuilder httpClientBuilder = HttpAsyncClients.custom()
-				.setConnectionManager(connManager);
+		httpClient = HttpAsyncClients.custom()
+				.addInterceptorFirst(new HttpRequestInterceptor() {
+					@Override
+					public void process(HttpRequest httpRequest, HttpContext httpContext) throws HttpException, IOException {
 
-		httpClient= httpClientBuilder.build();
+					}
+				})
+				.setConnectionManager(connManager).build();
 
 		httpClient.start();
 
@@ -165,9 +175,6 @@ public class KiiCloudClient {
 			}
 
 			return HttpUtils.getResponseBody(response);
-
-
-
 	}
 
 

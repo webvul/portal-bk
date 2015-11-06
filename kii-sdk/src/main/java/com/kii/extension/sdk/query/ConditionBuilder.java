@@ -103,12 +103,12 @@ public class ConditionBuilder {
 		return this;
 	}
 
-//	public ConditionBuilder addSubClause(ConditionBuilder...  logic) {
-//		for(ConditionBuilder b:logic){
-//			fill(b.condition);
-//		}
-//		return this;
-//	}
+	public ConditionBuilder addSubClause(ConditionBuilder...  logic) {
+		for(ConditionBuilder b:logic){
+			fill(b.condition);
+		}
+		return this;
+	}
 
 	public <T> ConditionBuilder Less(String field, T value) {
 		return range(field, null, null, value, null);
@@ -175,7 +175,9 @@ public class ConditionBuilder {
 	}
 
 
-	public static Condition getAll() {
-		return new All();
+	public static ConditionBuilder getAll() {
+		ConditionBuilder cb=new ConditionBuilder();
+		cb.condition=new All();
+		return cb;
 	}
 }

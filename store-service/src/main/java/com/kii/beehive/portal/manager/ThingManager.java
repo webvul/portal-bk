@@ -7,10 +7,12 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.service.TagIndexDao;
 import com.kii.beehive.portal.service.GlobalThingDao;
 import com.kii.beehive.portal.store.entity.GlobalThingInfo;
 import com.kii.beehive.portal.store.entity.TagThingIndex;
+import com.kii.extension.sdk.entity.AppInfo;
 
 @Component
 public class ThingManager {
@@ -18,9 +20,22 @@ public class ThingManager {
 	@Autowired
 	private GlobalThingDao globalThingDao;
 
+	@Autowired
+	private AppInfoDao appInfoDao;
 
 	@Autowired
 	private TagIndexDao tagIndexDao;
+
+
+	public void createThing(GlobalThingInfo thingInfo){
+
+		if(thingInfo.getAppID()==null){
+			AppInfo appInfo=appInfoDao.getMatchAppInfoByThing(thingInfo.getVendorThingID());
+			thingInfo.setAppID(appInfo.getAppID());
+		}
+
+
+	}
 
 	public void bindTagToThing(String tagID,String thingID) {
 
