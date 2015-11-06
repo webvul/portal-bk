@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.portal.store.entity.GlobalThingInfo;
-import com.kii.beehive.portal.store.entity.TagThingIndex;
+import com.kii.beehive.portal.store.entity.TagIndex;
 import com.kii.beehive.portal.web.entity.ThingInput;
 
 @RestController
@@ -20,7 +20,7 @@ public class TagController {
 
 
 	@RequestMapping(path="/",method={RequestMethod.POST})
-	public Map<String,String> createTag(@RequestBody TagThingIndex input){
+	public Map<String,String> createTag(@RequestBody TagIndex input){
 
 		return null;
 
