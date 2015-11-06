@@ -9,7 +9,7 @@ import com.kii.beehive.portal.manager.ThingManager;
 import com.kii.beehive.portal.service.GlobalThingDao;
 import com.kii.beehive.portal.service.TagIndexDao;
 import com.kii.beehive.portal.store.entity.GlobalThingInfo;
-import com.kii.beehive.portal.store.entity.TagThingIndex;
+import com.kii.beehive.portal.store.entity.TagIndex;
 
 public class TestGlobalThingDao extends TestInit {
 
@@ -40,7 +40,7 @@ public class TestGlobalThingDao extends TestInit {
 		thingDao.addKiiEntity(thing);
 
 
-		TagThingIndex tag=new TagThingIndex();
+		TagIndex tag=new TagIndex();
 
 		tag.setId("sys-demo");
 

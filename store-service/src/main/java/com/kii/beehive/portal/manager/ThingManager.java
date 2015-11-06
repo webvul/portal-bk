@@ -11,7 +11,7 @@ import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.service.TagIndexDao;
 import com.kii.beehive.portal.service.GlobalThingDao;
 import com.kii.beehive.portal.store.entity.GlobalThingInfo;
-import com.kii.beehive.portal.store.entity.TagThingIndex;
+import com.kii.beehive.portal.store.entity.TagIndex;
 import com.kii.extension.sdk.entity.AppInfo;
 
 @Component
@@ -43,7 +43,7 @@ public class ThingManager {
 
 		globalThingDao.bindTagsToThing(new String[]{tagID}, thing);
 
-		TagThingIndex tag = tagIndexDao.getObjectByID(tagID);
+		TagIndex tag = tagIndexDao.getObjectByID(tagID);
 
 		tagIndexDao.addThingToTag(tag, Arrays.asList(thing));
 	}
@@ -69,14 +69,14 @@ public class ThingManager {
 		}
 
 		if(tagIDs.length==1) {
-			TagThingIndex tag = tagIndexDao.getObjectByID(tagIDs[0]);
+			TagIndex tag = tagIndexDao.getObjectByID(tagIDs[0]);
 
 			tagIndexDao.addThingToTag(tag, things);
 
 		}else{
-			List<TagThingIndex> tags = tagIndexDao.getEntitys(tagIDs);
+			List<TagIndex> tags = tagIndexDao.getEntitys(tagIDs);
 
-			for (TagThingIndex tag : tags) {
+			for (TagIndex tag : tags) {
 				tagIndexDao.addThingToTag(tag, things);
 			}
 		}
