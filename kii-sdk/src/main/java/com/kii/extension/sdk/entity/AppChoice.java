@@ -2,6 +2,8 @@ package com.kii.extension.sdk.entity;
 
 import java.io.Serializable;
 
+import org.springframework.util.StringUtils;
+
 public class AppChoice implements Serializable{
 
 	private String bindName;
@@ -24,7 +26,9 @@ public class AppChoice implements Serializable{
 	}
 
 	public void setAppName(String appName) {
-		this.appName = appName;
+		if(!StringUtils.isEmpty(appName)) {
+			this.appName = appName;
+		}
 	}
 
 	public boolean isSupportDefault() {

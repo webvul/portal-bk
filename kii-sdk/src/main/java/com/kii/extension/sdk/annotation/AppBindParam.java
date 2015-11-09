@@ -9,8 +9,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface AppBindParam {
 
-	String appName();
+	String  appBindSource() default "";
 
-	AppBindSource  appBindSource() default AppBindSource.PropFile;
+	public boolean usingDefault() default true;
 
 }

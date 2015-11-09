@@ -50,12 +50,15 @@ public class TestGlobalThingDao extends TestInit {
 
 		tagDao.addKiiEntity(tag);
 
+
 	}
 
 	@Test
 	public void addTag(){
 
 		mang.bindTagToThing("sys-demo","001");
+
+
 
 	}
 

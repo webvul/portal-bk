@@ -1,4 +1,5 @@
 dependencies {
 
+	compile group:'org.springframework',name:'spring-core',version:"${springVersion}"
 
 }
