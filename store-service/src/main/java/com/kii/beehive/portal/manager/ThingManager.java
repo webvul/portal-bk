@@ -51,7 +51,7 @@ public class ThingManager {
 
 	public void bindTagToThing(String[] tagIDs,String[] thingIDs) {
 
-
+		// save to globalThing
 		List<GlobalThingInfo> things=new ArrayList<>();
 		if (thingIDs.length == 1) {
 
@@ -67,7 +67,8 @@ public class ThingManager {
 				globalThingDao.bindTagsToThing(tagIDs, thing);
 			}
 		}
-
+		
+		// save to tagIndex
 		if(tagIDs.length==1) {
 			TagIndex tag = tagIndexDao.getObjectByID(tagIDs[0]);
 

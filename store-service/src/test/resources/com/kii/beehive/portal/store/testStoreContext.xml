@@ -20,7 +20,7 @@
     <context:component-scan base-package="com.kii.beehive.portal" />
 
     <bean class="com.kii.extension.factory.LocalPropertyBindTool" >
-        <property name="propFileName" value="classpath:com/kii/beehive/portal/store/kiiCloudAppConfig.properties" />
+        <property name="propFileName" value="classpath:com/kii/beehive/portal/store/testKiiCloudAppConfig.properties" />
     </bean>
 
     <bean class="com.kii.extension.factory.KiiCloudSDKConfig" />
