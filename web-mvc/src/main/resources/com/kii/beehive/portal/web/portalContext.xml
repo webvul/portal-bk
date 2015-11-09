@@ -12,14 +12,15 @@
     <context:component-scan base-package="com.kii.beehive.portal" />
 
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="locations" value="classpath:com/kii/beehive/portal/web/testConfig.properties"/>
+        <property name="locations" value="classpath:com/kii/beehive/portal/web/config.properties"/>
     </bean>
 
 
-    <bean class="com.kii.extension.factory.LocalPropertyBindTool" />
+    <bean class="com.kii.extension.factory.LocalPropertyBindTool" >
+        <property name="propFileName" value="classpath:com/kii/beehive/portal/store/kiiCloudAppConfig.properties" />
+    </bean>
 
     <bean class="com.kii.extension.factory.KiiCloudSDKConfig" />
-
 
     <bean class="com.kii.extension.sdk.service.AdminTokenBindTool" />
 

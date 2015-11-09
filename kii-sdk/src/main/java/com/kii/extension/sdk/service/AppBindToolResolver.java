@@ -29,14 +29,19 @@ public class AppBindToolResolver {
 		if(bindNames.length==0){
 			throw new IllegalArgumentException("not found app bind service");
 		}
-
-
-		setAppName(null);
 	}
 
-	private ThreadLocal<AppChoice>  appChoiceLocal=new ThreadLocal<>();
+	private ThreadLocal<AppChoice>  appChoiceLocal=ThreadLocal.withInitial(()->{
+		AppChoice choice=new AppChoice();
+
+		choice.setAppName(null);
+		choice.setBindName(bindNames[0]);
+		choice.setSupportDefault(true);
+		return choice;
+	});
 
 	public void setAppChoice(AppChoice choice){
+
 		this.appChoiceLocal.set(choice);
 	}
 

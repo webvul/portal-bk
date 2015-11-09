@@ -3,5 +3,4 @@ include 'store-service'
 include 'web-mvc'
 include 'kii-sdk'
 include 'commons'
-include 'appinfo-manager'
 

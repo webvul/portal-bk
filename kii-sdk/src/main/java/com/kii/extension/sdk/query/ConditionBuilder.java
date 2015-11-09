@@ -1,6 +1,8 @@
 package com.kii.extension.sdk.query;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import com.kii.extension.sdk.query.condition.All;
@@ -60,10 +62,9 @@ public class ConditionBuilder {
 		return this;
 	}
 
-	public ConditionBuilder In(String field, String[] objArray) {
+	public ConditionBuilder In(String field, Object[] objArray) {
 		InCollect q = new InCollect();
 		q.setField(field);
-
 
 		q.setValues(Arrays.asList(objArray));
 
