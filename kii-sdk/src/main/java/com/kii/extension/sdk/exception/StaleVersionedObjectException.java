@@ -9,6 +9,11 @@ public class StaleVersionedObjectException extends KiiCloudException {
 
 	private String objectID;
 
+	@Override
+	public int getStatusCode(){
+		return 409;
+	}
+
 	public ObjectScope getScope() {
 		return scope;
 	}

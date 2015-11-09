@@ -6,6 +6,11 @@ public class InvalidBucketException extends KiiCloudException {
 
 	private String bucketID;
 
+	@Override
+	public int getStatusCode(){
+		return 400;
+	}
+
 
 	public ObjectScope getScope() {
 		return scope;
