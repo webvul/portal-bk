@@ -2,13 +2,9 @@ package com.kii.beehive.portal.store.entity;
 
 import java.util.Date;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document
 public class TokenStore {
 
-	@Id
 	private String token;
 
 	private Date validPeriod;

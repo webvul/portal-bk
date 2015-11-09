@@ -14,12 +14,13 @@ public class DynamicAppInfoBindTool implements AppBindTool {
 	@Autowired
 	private AppInfoDao appInfoDao;
 
-	@Autowired
-	private AppChoice appChoice;
+	@Override
+	public AppInfo getAppInfo(String appName) {
+		return null;
+	}
 
 	@Override
-	public AppInfo getAppInfo() {
-
-		return appInfoDao.getAppInfo(appChoice.getCurrAppID());
+	public AppInfo getDefaultAppInfo() {
+		return null;
 	}
 }

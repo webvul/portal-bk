@@ -1,4 +1,4 @@
-package com.kii.beehive.portal.common.exception;
+package com.kii.beehive.portal.web.help;
 
 import org.springframework.http.HttpStatus;
 

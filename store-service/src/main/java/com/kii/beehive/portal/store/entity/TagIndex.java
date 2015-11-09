@@ -3,7 +3,6 @@ package com.kii.beehive.portal.store.entity;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.kii.extension.sdk.entity.KiiEntity;
 

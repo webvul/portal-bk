@@ -1,6 +1,8 @@
 package com.kii.extension.sdk.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class AppInfo {
 
 	private String name;
@@ -9,11 +11,13 @@ public class AppInfo {
 
 	private String appKey;
 
-	private SiteType site;
+	private String  siteUrl;
 
 	private String clientID;
 
 	private String clientSecret;
+
+	private SiteType site;
 
 
 	public AppInfo(){
@@ -26,6 +30,7 @@ public class AppInfo {
 		this.appKey=appInfo.getAppKey();
 		this.clientID=appInfo.getClientID();
 		this.clientSecret=appInfo.getClientSecret();
+		this.siteUrl=appInfo.siteUrl;
 		this.site=appInfo.site;
 	}
 
@@ -50,7 +55,11 @@ public class AppInfo {
 	}
 
 	public void setSite(SiteType site) {
+
 		this.site = site;
+		if(siteUrl==null) {
+			this.siteUrl = site.getSiteUrl();
+		}
 	}
 
 	public String getClientID() {
@@ -70,7 +79,7 @@ public class AppInfo {
 	}
 
 	public String getSiteUrl(String subUrl) {
-		return site.getSiteUrl()+"/api/apps/"+appID+"/"+subUrl;
+		return siteUrl+"/api/apps/"+appID+"/"+subUrl;
 	}
 
 	public String getAppKey() {
@@ -83,6 +92,10 @@ public class AppInfo {
 
 	public String getAppSubUrl() {
 
-		return  site.getSiteUrl()+"/api/apps/"+appID;
+		return  siteUrl+"/api/apps/"+appID;
+	}
+
+	public void setSiteUrl(String siteUrl) {
+		this.siteUrl = siteUrl;
 	}
 }

@@ -5,25 +5,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.bson.types.ObjectId;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.kii.extension.sdk.entity.KiiEntity;
 
-@Document
 public class GlobalThingInfo extends KiiEntity {
 
-	@Id
 	private String globalThingID;
 
-	@Indexed
 	private String vendorThingID;
 
-	@Indexed
 	private Set<String> tags=new HashSet<>();
 
 	private String appID;
@@ -32,10 +22,8 @@ public class GlobalThingInfo extends KiiEntity {
 
 	private String type;
 
-	@LastModifiedDate
 	private Date modifyDate;
 
-	@CreatedDate
 	private Date createDate;
 
 

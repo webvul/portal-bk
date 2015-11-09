@@ -30,10 +30,15 @@ public class MockAppBindTool implements AppBindTool {
 		appInfo.setSite(SiteType.JP);
 
 	}
+
+
 	@Override
-	public AppInfo getAppInfo() {
+	public AppInfo getAppInfo(String appName) {
 		return appInfo;
 	}
 
-
+	@Override
+	public AppInfo getDefaultAppInfo() {
+		return null;
+	}
 }

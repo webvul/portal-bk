@@ -7,7 +7,6 @@ dependencies {
 
 	runtime group:'org.springframework',name:'spring-context',version:"${springVersion}"
 
-	compile group:'org.springframework',name:'spring-aop',version:"${springVersion}"
-
+	runtime group:'org.springframework',name:'spring-aop',version:"${springVersion}"
 
 }

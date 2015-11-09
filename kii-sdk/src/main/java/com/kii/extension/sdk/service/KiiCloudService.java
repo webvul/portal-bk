@@ -32,13 +32,17 @@ public class KiiCloudService {
 	private KiiCloudClient client;
 
 	@Autowired
-	private AppBindTool bindTool;
+	private AppBindToolResolver bindToolResolver;
+
+	private AppInfo getAppInfo(){
+		return bindToolResolver.getAppInfo();
+	}
 
 	@Autowired
 	private TokenBindTool  tool;
 
 	private ApiAccessBuilder getBuilder(){
-		AppInfo info= bindTool.getAppInfo();
+		AppInfo info= getAppInfo();
 
 		return new ApiAccessBuilder(info).bindToken(tool.getToken());
 	}

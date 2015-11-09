@@ -2,45 +2,104 @@ package com.kii.extension.factory;
 
 import javax.annotation.PostConstruct;
 
-import org.springframework.beans.factory.annotation.Value;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ResourceLoader;
 
 import com.kii.extension.sdk.entity.AppInfo;
 import com.kii.extension.sdk.entity.SiteType;
 import com.kii.extension.sdk.service.AppBindTool;
 
 public class LocalPropertyBindTool implements AppBindTool {
-	@Value("${kiicloud.master-app.appID}")
-	private String appID;
-
-	@Value("${kiicloud.master-app.appKey}")
-	private String appKey;
-
-	@Value("${kiicloud.master-app.clientID}")
-	private String clientID;
-
-	@Value("${kiicloud.master-app.secret}")
-	private String secret;
-
-	@Value("${kiicloud.master-app.site}")
-	private String site;
 
 
-	private AppInfo appInfo;
+	@Autowired
+	private ResourceLoader loader;
+
+
+	private Map<String,AppInfo> appInfoMap;
+
+
+	private String propName;
+
+	public void setPropFileName(String propName){
+		this.propName=propName;
+	}
+
+
+	private String defaultApp;
 
 	@PostConstruct
-	public void init(){
+	public void initAppInfo() {
 
-		appInfo=new AppInfo();
-		appInfo.setClientSecret(secret);
-		appInfo.setAppID(appID);
-		appInfo.setAppKey(appKey);
-		appInfo.setClientID(clientID);
+		Properties prop = new Properties();
 
-		appInfo.setSite(SiteType.valueOf(site));
+		try {
+			prop.load(loader.getResource(propName).getInputStream());
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new IllegalArgumentException(e);
+		}
+
+		Map<String,AppInfo> map=new HashMap<>();
+
+		prop.stringPropertyNames().stream().forEach(key -> {
+
+			if(!key.startsWith("kiicloud.")){
+				return;
+			}
+
+			int idx = key.indexOf(".");
+
+			int idx2= key.indexOf(".",idx+1);
+
+			String appName = key.substring(idx+1, idx2).trim().toLowerCase();
+			String type = key.substring(idx2 + 1).trim().toLowerCase();
+
+			AppInfo info = map.getOrDefault(appName, new AppInfo());
+
+			String val = prop.getProperty(key).trim().toLowerCase();
+			if (type.equals("appkey")) {
+
+				info.setAppKey(val);
+
+			} else if (type.equals("appid")) {
+				info.setAppID(val);
+			} else if (type.equals("clientid")) {
+				info.setClientID(val);
+			} else if (type.equals("clientsecret")) {
+				info.setClientSecret(val);
+			} else if (type.equals("site")) {
+				info.setSite(SiteType.valueOf(val.toUpperCase()));
+			} else if (type.equals("siteurl")) {
+				info.setSiteUrl(val);
+			}
+
+			map.put(appName, info);
+		});
+
+		appInfoMap= Collections.unmodifiableMap(map);
+
+		defaultApp = prop.getProperty("Kiicloud.default.app");
+
+		if(defaultApp==null&&appInfoMap.size()==1){
+			defaultApp=appInfoMap.keySet().iterator().next();
+		}
+	}
+
+
+	@Override
+	public AppInfo getAppInfo(String appName) {
+		return appInfoMap.get(appName);
 	}
 
 	@Override
-	public AppInfo getAppInfo() {
-		return appInfo;
+	public AppInfo getDefaultAppInfo() {
+		return appInfoMap.get(defaultApp) ;
 	}
 }

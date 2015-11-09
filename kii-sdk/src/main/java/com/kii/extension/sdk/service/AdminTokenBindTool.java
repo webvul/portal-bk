@@ -19,13 +19,14 @@ public class AdminTokenBindTool implements TokenBindTool {
 	private KiiCloudClient client;
 
 	@Autowired
-	private AppBindTool bindTool;
+	private AppBindToolResolver bindToolResolver;
+
 
 	@Autowired
 	private ObjectMapper mapper;
 
 	private ApiAccessBuilder getBuilder(){
-		AppInfo info= bindTool.getAppInfo();
+		AppInfo info= bindToolResolver.getAppInfo();
 
 		return new ApiAccessBuilder(info);
 	}
@@ -36,7 +37,7 @@ public class AdminTokenBindTool implements TokenBindTool {
 	public void  adminLogin(){
 
 
-		HttpUriRequest request=getBuilder().adminLogin(bindTool.getAppInfo().getClientID(), bindTool.getAppInfo().getClientSecret()).generRequest(mapper);
+		HttpUriRequest request=getBuilder().adminLogin(bindToolResolver.getAppInfo().getClientID(), bindToolResolver.getAppInfo().getClientSecret()).generRequest(mapper);
 
 
 		info= client.executeRequestWithCls(request, LoginInfo.class);

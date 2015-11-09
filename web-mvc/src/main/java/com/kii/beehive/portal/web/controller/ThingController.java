@@ -15,7 +15,6 @@ import org.springframework.web.servlet.ModelAndView;
 import com.kii.beehive.portal.common.utils.LocationsGeneral;
 import com.kii.beehive.portal.manager.ThingManager;
 import com.kii.beehive.portal.store.entity.GlobalThingInfo;
-import com.kii.beehive.portal.store.repositories.ThingInfoRepository;
 import com.kii.beehive.portal.web.entity.ThingInput;
 
 //@RestController

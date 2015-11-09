@@ -4,17 +4,10 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
-import org.bson.types.ObjectId;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document
 public class LandLord {
 
 
-	@Id
 	private String id;
 
 	private String landLordName;
@@ -22,10 +15,8 @@ public class LandLord {
 	private String password;
 
 
-	@LastModifiedDate
 	private Date modifyDate;
 
-	@CreatedDate
 	private Date createDate;
 
 
