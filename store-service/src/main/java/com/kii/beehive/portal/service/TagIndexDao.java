@@ -1,10 +1,6 @@
 package com.kii.beehive.portal.service;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -13,8 +9,6 @@ import org.springframework.stereotype.Component;
 import com.kii.beehive.portal.store.entity.GlobalThingInfo;
 import com.kii.beehive.portal.store.entity.TagIndex;
 import com.kii.extension.sdk.entity.BucketInfo;
-import com.kii.extension.sdk.query.ConditionBuilder;
-import com.kii.extension.sdk.query.QueryParam;
 import com.kii.extension.sdk.service.AbstractDataAccess;
 
 @Component
@@ -44,15 +38,19 @@ public class TagIndexDao extends AbstractDataAccess<TagIndex> {
 
 	}
 
-	public void removeThingFromTag(String tagID,List<String> thingIDs){
+	public void removeThingFromTag(String tagID,List<String> thingIDs,List<String> appIDs){
 
 		TagIndex  tagIdx=super.getObjectByID(tagID);
 
 
 		Set<String> currThings=tagIdx.getGlobalThings();
 		currThings.removeAll(thingIDs);
+		
+		Set<String> curraAppIDs=tagIdx.getAppIDs();
+		curraAppIDs.removeAll(appIDs);
 
 		TagIndex update=new TagIndex();
+		update.setAppIDs(curraAppIDs);
 		update.setGlobalThings(currThings);
 
 		super.updateEntityWithVersion(update,tagID,tagIdx.getVersion());

@@ -7,13 +7,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kii.beehive.portal.manager.ThingManager;
 import com.kii.beehive.portal.service.GlobalThingDao;
 import com.kii.beehive.portal.service.TagIndexDao;
 import com.kii.beehive.portal.store.entity.GlobalThingInfo;
 import com.kii.beehive.portal.store.entity.TagIndex;
+import com.kii.beehive.portal.store.entity.TagType;
 
 public class TestGlobalThingDao extends TestInit {
 	
@@ -51,30 +51,26 @@ public class TestGlobalThingDao extends TestInit {
 
 
 		TagIndex tag=new TagIndex();
-
-		tag.setId("sys-demo");
-
+		tag.setTagType(TagType.System.toString());
+		tag.setDisplayName("demo1");
 		tagIndexDao.addKiiEntity(tag);
 
-		tag.setId("sys-hello");
-
+		tag.setTagType(TagType.System.toString());
+		tag.setDisplayName("demo2");
 		tagIndexDao.addKiiEntity(tag);
-
-
 	}
-
 
 	@Test
 	public void addTag() throws Exception{
-		TagIndex tag = tagIndexDao.getObjectByID("sys-demo");
-		String json1=mapper.writeValueAsString(tag);
-		System.out.println(json1);
+		TagIndex tag=new TagIndex();
+		tag.setTagType(TagType.System.toString());
+		tag.setDisplayName("demo1");
 		
-		thingManager.bindTagToThing("sys-demo","001");
+		thingManager.bindTagToThing(tag.getId(),"001");
 		
-		tag = tagIndexDao.getObjectByID("sys-demo");
-		String json=mapper.writeValueAsString(tag);
-		System.out.println(json);
+		//tag = tagIndexDao.getObjectByID(tag.getId());
+		//String json=mapper.writeValueAsString(tag);
+		//System.out.println(json);
 		
 		assertEquals(1,tag.getGlobalThings().size());
 		assertEquals(1,tag.getAppIDs().size());
@@ -83,16 +79,26 @@ public class TestGlobalThingDao extends TestInit {
 
 	@Test
 	public void addTags() throws Exception{
-
-		thingManager.bindTagToThing(new String[]{"sys-demo","sys-hello"},new String[]{"001","002","003"});
+		TagIndex tag1=new TagIndex();
+		tag1.setTagType(TagType.System.toString());
+		tag1.setDisplayName("demo1");
 		
-		TagIndex tag = tagIndexDao.getObjectByID("sys-hello");
-		assertEquals(2,tag.getGlobalThings().size());
+		TagIndex tag2=new TagIndex();
+		tag2.setTagType(TagType.System.toString());
+		tag2.setDisplayName("demo2");
 		
-		tag = tagIndexDao.getObjectByID("sys-hello");
+		thingManager.bindTagToThing(new String[]{tag1.getId(),tag2.getId()},new String[]{"001","002"});
+		
+		TagIndex tag = tagIndexDao.getObjectByID(tag1.getId());
 		assertEquals(2,tag.getGlobalThings().size());
-		String json=mapper.writeValueAsString(tag);
-		System.out.println(json);
+		assertEquals(2,tag.getAppIDs().size());
+		
+		tag = tagIndexDao.getObjectByID(tag2.getId());
+		assertEquals(2,tag.getGlobalThings().size());
+		assertEquals(2,tag.getAppIDs().size());
+		
+		//String json=mapper.writeValueAsString(tag);
+		//System.out.println(json);
 	}
 
 

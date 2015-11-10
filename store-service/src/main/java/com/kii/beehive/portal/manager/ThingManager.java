@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.service.AppInfoDao;
-import com.kii.beehive.portal.service.TagIndexDao;
 import com.kii.beehive.portal.service.GlobalThingDao;
+import com.kii.beehive.portal.service.TagIndexDao;
 import com.kii.beehive.portal.store.entity.GlobalThingInfo;
 import com.kii.beehive.portal.store.entity.TagIndex;
 import com.kii.extension.sdk.entity.AppInfo;
@@ -28,13 +28,18 @@ public class ThingManager {
 
 
 	public void createThing(GlobalThingInfo thingInfo){
-
 		if(thingInfo.getAppID()==null){
 			AppInfo appInfo=appInfoDao.getMatchAppInfoByThing(thingInfo.getVendorThingID());
 			thingInfo.setAppID(appInfo.getAppID());
 		}
-
-
+	}
+	
+	public void createTag(TagIndex tag){
+		tagIndexDao.addKiiEntity(tag);
+	}
+	
+	public TagIndex findTagIndexByTagName(String tagName){
+		return tagIndexDao.getObjectByID(tagName);
 	}
 
 	public void bindTagToThing(String tagID,String thingID) {

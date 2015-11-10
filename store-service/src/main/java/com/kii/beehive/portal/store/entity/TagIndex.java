@@ -9,10 +9,11 @@ import com.kii.extension.sdk.entity.KiiEntity;
 
 public class TagIndex extends KiiEntity {
 
-
-
-	private String tagName;
-
+	private String tagType;
+	
+	private String displayName;
+	
+	private String description;
 
 	private Set<String> globalThings=new HashSet<>();
 
@@ -20,12 +21,7 @@ public class TagIndex extends KiiEntity {
 
 	@Override
 	public String getId() {
-		return tagName;
-	}
-
-	@Override
-	public void setId(String tagName) {
-		this.tagName = tagName;
+		return tagType +"-" + displayName;
 	}
 
 	public Set<String> getGlobalThings() {
@@ -43,4 +39,29 @@ public class TagIndex extends KiiEntity {
 	public void setAppIDs(Set<String> appIDs) {
 		this.appIDs = appIDs;
 	}
+
+	public String getTagType() {
+		return tagType;
+	}
+
+	public void setTagType(String tagType) {
+		this.tagType = tagType;
+	}
+
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	
 }
