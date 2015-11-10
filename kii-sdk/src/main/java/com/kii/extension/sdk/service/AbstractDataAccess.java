@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.kii.extension.sdk.entity.AppInfo;
 import com.kii.extension.sdk.entity.BucketInfo;
 import com.kii.extension.sdk.entity.CreateResponse;
 import com.kii.extension.sdk.entity.KiiEntity;

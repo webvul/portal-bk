@@ -7,7 +7,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kii.beehive.portal.manager.ThingManager;
 import com.kii.beehive.portal.service.GlobalThingDao;
 import com.kii.beehive.portal.service.TagIndexDao;
@@ -17,8 +16,6 @@ import com.kii.beehive.portal.store.entity.TagType;
 
 public class TestGlobalThingDao extends TestInit {
 	
-	@Autowired
-	private ObjectMapper mapper;
 	
 	@Autowired
 	private GlobalThingDao thingDao;
@@ -35,17 +32,17 @@ public class TestGlobalThingDao extends TestInit {
 
 		GlobalThingInfo thing=new GlobalThingInfo();
 		thing.setId("001");
-		thing.setAppID("a");
+		thing.setKiiAppID("a");
 
 		thingDao.addKiiEntity(thing);
 
 		thing.setId("002");
-		thing.setAppID("b");
+		thing.setKiiAppID("b");
 
 		thingDao.addKiiEntity(thing);
 		
 		thing.setId("003");
-		thing.setAppID("c");
+		thing.setKiiAppID("c");
 
 		thingDao.addKiiEntity(thing);
 
@@ -59,7 +56,7 @@ public class TestGlobalThingDao extends TestInit {
 		tag.setDisplayName("demo2");
 		tagIndexDao.addKiiEntity(tag);
 	}
-
+	
 	@Test
 	public void addTag() throws Exception{
 		TagIndex tag=new TagIndex();
@@ -69,11 +66,10 @@ public class TestGlobalThingDao extends TestInit {
 		thingManager.bindTagToThing(tag.getId(),"001");
 		
 		//tag = tagIndexDao.getObjectByID(tag.getId());
-		//String json=mapper.writeValueAsString(tag);
-		//System.out.println(json);
+		//System.out.println(tag.toString());
 		
 		assertEquals(1,tag.getGlobalThings().size());
-		assertEquals(1,tag.getAppIDs().size());
+		assertEquals(1,tag.getKiiAppIDs().size());
 		
 	}
 
@@ -91,11 +87,11 @@ public class TestGlobalThingDao extends TestInit {
 		
 		TagIndex tag = tagIndexDao.getObjectByID(tag1.getId());
 		assertEquals(2,tag.getGlobalThings().size());
-		assertEquals(2,tag.getAppIDs().size());
+		assertEquals(2,tag.getKiiAppIDs().size());
 		
 		tag = tagIndexDao.getObjectByID(tag2.getId());
 		assertEquals(2,tag.getGlobalThings().size());
-		assertEquals(2,tag.getAppIDs().size());
+		assertEquals(2,tag.getKiiAppIDs().size());
 		
 		//String json=mapper.writeValueAsString(tag);
 		//System.out.println(json);

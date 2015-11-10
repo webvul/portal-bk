@@ -2,9 +2,10 @@ package com.kii.beehive.portal.web.controller;
 
 
 import java.util.List;
-import java.util.Map;
 
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,23 +17,37 @@ import com.kii.beehive.portal.store.entity.GlobalThingInfo;
 import com.kii.beehive.portal.store.entity.TagIndex;
 
 @RestController
-@RequestMapping(path = "/tags",  consumes = {"application/json"}, produces = {"application/json"})
+@RequestMapping(path = "/tags",  consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
 public class TagController {
 	
 	@Autowired
-	private ThingManager thingManger;
+	private ThingManager thingManager;
 
 	@RequestMapping(path="/",method={RequestMethod.POST})
-	public Map<String,String> createTag(@RequestBody TagIndex input){
-		thingManger.createTag(input);
-		return null;
-
+	public void createTag(@RequestBody TagIndex input){
+		if(input == null){
+			//no body
+		}
+		
+		if(Strings.isEmpty(input.getTagType())){
+			//paramter missing
+		}
+		
+		if(Strings.isEmpty(input.getDisplayName())){
+			//paramter missing
+		}
+		
+		thingManager.createTag(input);
 	}
 
 
 	@RequestMapping(path = "/tag/{tagName}", method = {RequestMethod.GET})
 	public TagIndex getThingsByTag(@PathVariable("tagName") String tagName) {
-		TagIndex tagIndex = thingManger.findTagIndexByTagName(tagName);
+		if(Strings.isEmpty(tagName)){
+			//paramter missing
+		}
+		
+		TagIndex tagIndex = thingManager.findTagIndexByTagName(tagName);
 		return tagIndex;
 
 	}

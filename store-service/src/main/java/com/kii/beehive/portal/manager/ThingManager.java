@@ -2,6 +2,7 @@ package com.kii.beehive.portal.manager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import com.kii.beehive.portal.service.TagIndexDao;
 import com.kii.beehive.portal.store.entity.GlobalThingInfo;
 import com.kii.beehive.portal.store.entity.TagIndex;
 import com.kii.extension.sdk.entity.AppInfo;
+import com.kii.extension.sdk.query.QueryParam;
 
 @Component
 public class ThingManager {
@@ -28,14 +30,20 @@ public class ThingManager {
 
 
 	public void createThing(GlobalThingInfo thingInfo){
-		if(thingInfo.getAppID()==null){
+		if(thingInfo.getKiiAppID()==null){
 			AppInfo appInfo=appInfoDao.getMatchAppInfoByThing(thingInfo.getVendorThingID());
-			thingInfo.setAppID(appInfo.getAppID());
+			thingInfo.setKiiAppID(appInfo.getAppID());
 		}
+		thingInfo.setStatusUpdatetime(new Date());
+		globalThingDao.addEntity(thingInfo);
 	}
 	
 	public void createTag(TagIndex tag){
 		tagIndexDao.addKiiEntity(tag);
+	}
+	
+	public List<GlobalThingInfo> findGlobalThing(){
+		return globalThingDao.query(QueryParam.generAllCondition());
 	}
 	
 	public TagIndex findTagIndexByTagName(String tagName){
@@ -43,14 +51,10 @@ public class ThingManager {
 	}
 
 	public void bindTagToThing(String tagID,String thingID) {
-
-
-
 		GlobalThingInfo thing=globalThingDao.getObjectByID(thingID);
+		TagIndex tag = tagIndexDao.getObjectByID(tagID);
 
 		globalThingDao.bindTagsToThing(new String[]{tagID}, thing);
-
-		TagIndex tag = tagIndexDao.getObjectByID(tagID);
 
 		tagIndexDao.addThingToTag(tag, Arrays.asList(thing));
 	}
