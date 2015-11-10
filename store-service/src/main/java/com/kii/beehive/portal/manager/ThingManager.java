@@ -39,6 +39,8 @@ public class ThingManager {
 
 	public void bindTagToThing(String tagID,String thingID) {
 
+
+
 		GlobalThingInfo thing=globalThingDao.getObjectByID(thingID);
 
 		globalThingDao.bindTagsToThing(new String[]{tagID}, thing);
