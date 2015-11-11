@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.portal.manager.ThingManager;
 import com.kii.beehive.portal.store.entity.GlobalThingInfo;
+import com.kii.beehive.portal.store.entity.TagIndex;
 
 @RestController
 @RequestMapping(path="/things",consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -20,15 +21,19 @@ public class ThingController {
 
 
 	@Autowired
-	private ThingManager thingManger;
+	private ThingManager thingManager;
 	
-	@RequestMapping(path="/",method={RequestMethod.GET})
+	@RequestMapping(path="/all",method={RequestMethod.GET})
 	public List<GlobalThingInfo> getThing(){
-		return thingManger.findGlobalThing();
+		return thingManager.findGlobalThing();
 	}
 
 	@RequestMapping(path="/",method={RequestMethod.POST})
 	public void createThing(@RequestBody GlobalThingInfo input){
+		if(input == null){
+			//no body
+		}
+		
 		if(Strings.isEmpty(input.getVendorThingID())){
 			//paramter missing
 		}
@@ -36,18 +41,56 @@ public class ThingController {
 		if(Strings.isEmpty(input.getGlobalThingID())){
 			//paramter missing
 		}
-		thingManger.createThing(input);
+		
+		
+		thingManager.createThing(input);
 	}
+	
+	@RequestMapping(path="/{thingID}",method={RequestMethod.DELETE})
+	public void removeThing(@PathVariable("thingID") String thingID){
+		
+		if(Strings.isEmpty(thingID)){
+			//paramter missing
+		}
+		
+		GlobalThingInfo orig =  thingManager.findGlobalThingById(thingID);
+		
+		if(orig == null){
+			//not found object
+		}
+		
+		thingManager.deleteThing(orig);
+	}
+	
 
 
 	@RequestMapping(path="/{thingID}/tags/{tagName}",method={RequestMethod.PUT})
 	public void addThingTag(@PathVariable("thingID") String thingID,@PathVariable("tagName") String tagName){
-		thingManger.bindTagToThing(tagName,thingID);
+		thingManager.bindTagToThing(tagName,thingID);
 	}
 
 	@RequestMapping(path="/{thingID}/tag/{tagName}/",method={RequestMethod.DELETE})
 	public void removeThingTag(@PathVariable("thingID") String thingID,@PathVariable("tagName") String tagName){
-		thingManger.unbindTagToThing(tagName,thingID);
+		thingManager.unbindTagToThing(tagName,thingID);
+	}
+	
+	@RequestMapping(path = "/tag/{tagName}", method = {RequestMethod.GET})
+	public List<GlobalThingInfo> getThingsByTag(@PathVariable("tagName") String tagName) {
+		if(Strings.isEmpty(tagName)){
+			//paramter missing
+		}
+		
+		TagIndex tagIndex = thingManager.findTagIndexByTagName(tagName);
+		
+		if(tagIndex == null){
+			// not found object
+		}
+		
+		if(tagIndex.getGlobalThings().size() == 0){
+			// no GlobalThings
+		}
+		List<GlobalThingInfo> list = thingManager.findGlobalThingByIds(tagIndex.getGlobalThings().toArray(new String[tagIndex.getGlobalThings().size()]));
+		return list;
 
 	}
 }

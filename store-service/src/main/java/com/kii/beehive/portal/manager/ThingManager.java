@@ -14,7 +14,9 @@ import com.kii.beehive.portal.service.TagIndexDao;
 import com.kii.beehive.portal.store.entity.GlobalThingInfo;
 import com.kii.beehive.portal.store.entity.TagIndex;
 import com.kii.extension.sdk.entity.AppInfo;
+import com.kii.extension.sdk.query.ConditionBuilder;
 import com.kii.extension.sdk.query.QueryParam;
+import com.kii.extension.sdk.query.condition.AndLogic;
 
 @Component
 public class ThingManager {
@@ -42,8 +44,39 @@ public class ThingManager {
 		tagIndexDao.addKiiEntity(tag);
 	}
 	
+	public void deleteThing(GlobalThingInfo thingInfo){
+		globalThingDao.removeEntity(thingInfo.getId());
+	}
+	
+	public void deleteTag(TagIndex tag){
+		tagIndexDao.removeEntity(tag.getId());
+	}
+	
+	public GlobalThingInfo findGlobalThingById(String thingID){
+		return globalThingDao.getObjectByID(thingID);
+	}
+	
+	public List<GlobalThingInfo> findGlobalThingByIds(String[] thingIDs){
+		return globalThingDao.getEntitys(thingIDs);
+	}
+	
+	
+	public TagIndex findTagById(String tagID){
+		return tagIndexDao.getObjectByID(tagID);
+	}
+	
 	public List<GlobalThingInfo> findGlobalThing(){
 		return globalThingDao.query(QueryParam.generAllCondition());
+	}
+	
+	public List<TagIndex> findTagIndex(){
+		return tagIndexDao.query(QueryParam.generAllCondition());
+	}
+	
+	public List<TagIndex> findTagIndexByQuery(String[] tagNameArray){
+		QueryParam query = ConditionBuilder.orCondition().In("_id", tagNameArray).getFinalCondition().build();
+		List<TagIndex> tagIndexList = tagIndexDao.query(query);
+		return tagIndexList;
 	}
 	
 	public TagIndex findTagIndexByTagName(String tagName){

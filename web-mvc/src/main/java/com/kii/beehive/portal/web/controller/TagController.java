@@ -22,7 +22,12 @@ public class TagController {
 	
 	@Autowired
 	private ThingManager thingManager;
-
+	
+	@RequestMapping(path="/all",method={RequestMethod.GET})
+	public List<TagIndex> getThing(){
+		return thingManager.findTagIndex();
+	}
+	
 	@RequestMapping(path="/",method={RequestMethod.POST})
 	public void createTag(@RequestBody TagIndex input){
 		if(input == null){
@@ -39,6 +44,22 @@ public class TagController {
 		
 		thingManager.createTag(input);
 	}
+	
+	@RequestMapping(path="/{tagID}",method={RequestMethod.DELETE})
+	public void removeThing(@PathVariable("tagID") String tagID){
+		
+		if(Strings.isEmpty(tagID)){
+			//paramter missing
+		}
+		
+		TagIndex orig =  thingManager.findTagById(tagID);
+		
+		if(orig == null){
+			//not found object
+		}
+		
+		thingManager.deleteTag(orig);
+	}
 
 
 	@RequestMapping(path = "/tag/{tagName}", method = {RequestMethod.GET})
@@ -52,7 +73,16 @@ public class TagController {
 
 	}
 
+	@RequestMapping(path = "/tags/{tagName}", method = {RequestMethod.GET})
+	public List<TagIndex> getThingsByTagArray(@PathVariable("tagName") String tagName) {
+		if(Strings.isEmpty(tagName)){
+			//paramter missing
+		}
+		
+		List<TagIndex> list = thingManager.findTagIndexByQuery(tagName.split(","));
+		return list;
 
+	}
 
 	@RequestMapping(path = "/express/{tagExpress}", method = {RequestMethod.GET})
 	public List<GlobalThingInfo> getThingByTagExpress(@PathVariable("tagName") String tagName){
