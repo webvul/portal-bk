@@ -16,7 +16,6 @@ import com.kii.beehive.portal.store.entity.TagIndex;
 import com.kii.extension.sdk.entity.AppInfo;
 import com.kii.extension.sdk.query.ConditionBuilder;
 import com.kii.extension.sdk.query.QueryParam;
-import com.kii.extension.sdk.query.condition.AndLogic;
 
 @Component
 public class ThingManager {
@@ -45,24 +44,24 @@ public class ThingManager {
 	}
 	
 	public void deleteThing(GlobalThingInfo thingInfo){
-		globalThingDao.removeEntity(thingInfo.getId());
+		globalThingDao.removeGlobalThingByID(thingInfo.getId());
 	}
 	
 	public void deleteTag(TagIndex tag){
-		tagIndexDao.removeEntity(tag.getId());
+		tagIndexDao.removeTagByID(tag.getId());
 	}
 	
 	public GlobalThingInfo findGlobalThingById(String thingID){
-		return globalThingDao.getObjectByID(thingID);
+		return globalThingDao.getThingInfoByID(thingID);
 	}
 	
 	public List<GlobalThingInfo> findGlobalThingByIds(String[] thingIDs){
-		return globalThingDao.getEntitys(thingIDs);
+		return globalThingDao.getThingsByIDs(thingIDs);
 	}
 	
 	
 	public TagIndex findTagById(String tagID){
-		return tagIndexDao.getObjectByID(tagID);
+		return tagIndexDao.getTagIndexByID(tagID);
 	}
 	
 	public List<GlobalThingInfo> findGlobalThing(){

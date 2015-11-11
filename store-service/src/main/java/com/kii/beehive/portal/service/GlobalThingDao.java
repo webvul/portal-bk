@@ -12,6 +12,7 @@ import com.kii.beehive.portal.store.entity.GlobalThingInfo;
 import com.kii.beehive.portal.annotation.BindAppByName;
 import com.kii.extension.sdk.entity.BucketInfo;
 import com.kii.extension.sdk.query.ConditionBuilder;
+import com.kii.extension.sdk.query.QueryParam;
 import com.kii.extension.sdk.service.AbstractDataAccess;
 
 @BindAppByName(appName="portal")
@@ -41,9 +42,12 @@ public class GlobalThingDao extends AbstractDataAccess<GlobalThingInfo>{
 		valMap.put(TAGS,currTags);
 
 		super.updateEntityWithVersion(valMap, thing.getId(), thing.getVersion());
-
 	}
 
+	public void removeGlobalThingByID(String id){
+		super.removeEntity(id);
+	}
+	
 	public GlobalThingInfo getThingInfoByID(String id){
 		return super.getObjectByID(id);
 	}
@@ -58,6 +62,10 @@ public class GlobalThingDao extends AbstractDataAccess<GlobalThingInfo>{
 
 	public List<GlobalThingInfo> getAllThing() {
 		return super.query(ConditionBuilder.getAll().getFinalCondition().build());
+	}
+	
+	public List<GlobalThingInfo> query(QueryParam queryParam) {
+		return super.query(queryParam);
 	}
 
 	@Override

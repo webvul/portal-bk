@@ -6,20 +6,30 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
+import com.kii.beehive.portal.annotation.BindAppByName;
 import com.kii.beehive.portal.store.entity.GlobalThingInfo;
 import com.kii.beehive.portal.store.entity.TagIndex;
-import com.kii.beehive.portal.annotation.BindAppByName;
 import com.kii.extension.sdk.entity.BucketInfo;
+import com.kii.extension.sdk.query.ConditionBuilder;
+import com.kii.extension.sdk.query.QueryParam;
 import com.kii.extension.sdk.service.AbstractDataAccess;
 
 @BindAppByName(appName="portal")
 @Component
 public class TagIndexDao extends AbstractDataAccess<TagIndex> {
-
-
-
-
-
+	
+	public List<TagIndex> getAllThing() {
+		return super.query(ConditionBuilder.getAll().getFinalCondition().build());
+	}
+	
+	public List<TagIndex> query(QueryParam queryParam) {
+		return super.query(queryParam);
+	}
+	
+	public void removeTagByID(String id){
+		super.removeEntity(id);
+	}
+	
 	public void addThingToTag(TagIndex tagIdx,List<GlobalThingInfo> things){
 
 		Set<String> newThings=things.stream().map(GlobalThingInfo::getId).collect(Collectors.toSet());
