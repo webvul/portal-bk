@@ -3,24 +3,21 @@ package com.kii.extension.sdk.test;
 import static junit.framework.TestCase.assertEquals;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.List;
 
-import org.apache.http.client.utils.URLEncodedUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.kii.extension.sdk.entity.AppDetail;
 import com.kii.extension.sdk.entity.AppInfoEntity;
-import com.kii.extension.sdk.service.KiiCloudDevPortalService;
+import com.kii.extension.sdk.service.DevPortalService;
 
 public class TestDevPortal extends TestTemplate {
 
 
 	@Autowired
-	private KiiCloudDevPortalService service;
+	private DevPortalService service;
 
-	private String cookie="u8xAN0y1gMGoGPHEqRNYew00";
 
 	@Test
 	public void testLogin() throws UnsupportedEncodingException {

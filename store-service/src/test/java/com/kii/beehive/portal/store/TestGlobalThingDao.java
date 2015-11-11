@@ -34,27 +34,28 @@ public class TestGlobalThingDao extends TestInit {
 		thing.setId("001");
 		thing.setKiiAppID("a");
 
-		thingDao.addKiiEntity(thing);
+
+		thingDao.addThingInfo(thing);
 
 		thing.setId("002");
 		thing.setKiiAppID("b");
 
-		thingDao.addKiiEntity(thing);
+		thingDao.addThingInfo(thing);
 		
 		thing.setId("003");
 		thing.setKiiAppID("c");
 
-		thingDao.addKiiEntity(thing);
+		thingDao.addThingInfo(thing);
 
 
 		TagIndex tag=new TagIndex();
 		tag.setTagType(TagType.System.toString());
 		tag.setDisplayName("demo1");
-		tagIndexDao.addKiiEntity(tag);
+		tagIndexDao.addTagIndex(tag);
 
 		tag.setTagType(TagType.System.toString());
 		tag.setDisplayName("demo2");
-		tagIndexDao.addKiiEntity(tag);
+		tagIndexDao.addTagIndex(tag);
 	}
 	
 	@Test
@@ -65,7 +66,7 @@ public class TestGlobalThingDao extends TestInit {
 		
 		thingManager.bindTagToThing(tag.getId(),"001");
 		
-		tag = tagIndexDao.getObjectByID(tag.getId());
+		tag = tagIndexDao.getTagIndexByID(tag.getId());
 		//System.out.println(tag.getGlobalThings());
 		//System.out.println(tag.getKiiAppIDs());
 		
@@ -85,11 +86,11 @@ public class TestGlobalThingDao extends TestInit {
 		
 		thingManager.bindTagToThing(new String[]{tag1.getId(),tag2.getId()},new String[]{"001","002"});
 		
-		TagIndex tag = tagIndexDao.getObjectByID(tag1.getId());
+		TagIndex tag = tagIndexDao.getTagIndexByID(tag1.getId());
 		assertEquals(2,tag.getGlobalThings().size());
 		assertEquals(2,tag.getKiiAppIDs().size());
 		
-		tag = tagIndexDao.getObjectByID(tag2.getId());
+		tag = tagIndexDao.getTagIndexByID(tag2.getId());
 		assertEquals(2,tag.getGlobalThings().size());
 		assertEquals(2,tag.getKiiAppIDs().size());
 		
@@ -110,7 +111,7 @@ public class TestGlobalThingDao extends TestInit {
 		//System.out.println(tag.getKiiAppIDs());
 		
 		thingManager.unbindTagToThing(tag.getId(), "001");
-		tag = tagIndexDao.getObjectByID(tag.getId());
+		tag = tagIndexDao.getTagIndexByID(tag.getId());
 		//System.out.println(tag.getGlobalThings());
 		//System.out.println(tag.getKiiAppIDs());
 		

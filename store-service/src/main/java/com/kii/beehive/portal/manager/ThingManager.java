@@ -37,11 +37,11 @@ public class ThingManager {
 			thingInfo.setKiiAppID(appInfo.getAppID());
 		}
 		thingInfo.setStatusUpdatetime(new Date());
-		globalThingDao.addEntity(thingInfo);
+		globalThingDao.addThingInfo(thingInfo);
 	}
 	
 	public void createTag(TagIndex tag){
-		tagIndexDao.addKiiEntity(tag);
+		tagIndexDao.addTagIndex(tag);
 	}
 	
 	public void deleteThing(GlobalThingInfo thingInfo){
@@ -66,7 +66,7 @@ public class ThingManager {
 	}
 	
 	public List<GlobalThingInfo> findGlobalThing(){
-		return globalThingDao.query(QueryParam.generAllCondition());
+		return globalThingDao.getAllThing();
 	}
 	
 	public List<TagIndex> findTagIndex(){
@@ -80,15 +80,15 @@ public class ThingManager {
 	}
 	
 	public TagIndex findTagIndexByTagName(String tagName){
-		return tagIndexDao.getObjectByID(tagName);
+		return tagIndexDao.getTagIndexByID(tagName);
 	}
 
 	public void bindTagToThing(String tagID,String thingID) {
-		GlobalThingInfo thing=globalThingDao.getObjectByID(thingID);
-		TagIndex tag = tagIndexDao.getObjectByID(tagID);
+
+		GlobalThingInfo thing=globalThingDao.getThingInfoByID(thingID);
+		TagIndex tag = tagIndexDao.getTagIndexByID(tagID);
 
 		globalThingDao.bindTagsToThing(new String[]{tagID}, thing);
-
 		tagIndexDao.addThingToTag(tag, Arrays.asList(thing));
 	}
 
@@ -99,13 +99,13 @@ public class ThingManager {
 		List<GlobalThingInfo> things=new ArrayList<>();
 		if (thingIDs.length == 1) {
 
-			GlobalThingInfo thing=globalThingDao.getObjectByID(thingIDs[0]);
+			GlobalThingInfo thing=globalThingDao.getThingInfoByID(thingIDs[0]);
 
 			globalThingDao.bindTagsToThing(tagIDs, thing);
 			things.add(thing);
 
 		} else{
-			things = globalThingDao.getEntitys(thingIDs);
+			things = globalThingDao.getThingsByIDs(thingIDs);
 
 			for (GlobalThingInfo thing : things) {
 				globalThingDao.bindTagsToThing(tagIDs, thing);
@@ -114,12 +114,12 @@ public class ThingManager {
 		
 		// save to tagIndex
 		if(tagIDs.length==1) {
-			TagIndex tag = tagIndexDao.getObjectByID(tagIDs[0]);
+			TagIndex tag = tagIndexDao.getTagIndexByID(tagIDs[0]);
 
 			tagIndexDao.addThingToTag(tag, things);
 
 		}else{
-			List<TagIndex> tags = tagIndexDao.getEntitys(tagIDs);
+			List<TagIndex> tags = tagIndexDao.getTagsByIDs(tagIDs);
 
 			for (TagIndex tag : tags) {
 				tagIndexDao.addThingToTag(tag, things);
@@ -128,8 +128,8 @@ public class ThingManager {
 	}
 	
 	public void unbindTagToThing(String tagID,String thingID) {
-		GlobalThingInfo thing=globalThingDao.getObjectByID(thingID);
-		TagIndex tag = tagIndexDao.getObjectByID(tagID);
+		GlobalThingInfo thing=globalThingDao.getThingInfoByID(thingID);
+		TagIndex tag = tagIndexDao.getTagIndexByID(tagID);
 
 		globalThingDao.unbindTagsToThing(new String[]{tagID}, thing);
 

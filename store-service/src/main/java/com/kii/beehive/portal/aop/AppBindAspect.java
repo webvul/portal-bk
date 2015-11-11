@@ -1,4 +1,4 @@
-package com.kii.extension.sdk.aop;
+package com.kii.beehive.portal.aop;
 
 
 import java.lang.annotation.Annotation;
@@ -9,11 +9,12 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 
-import com.kii.extension.sdk.annotation.AppBindParam;
-import com.kii.extension.sdk.annotation.BindAppByName;
+import com.kii.beehive.portal.annotation.AppBindParam;
+import com.kii.beehive.portal.annotation.BindAppByName;
 import com.kii.extension.sdk.entity.AppChoice;
-import com.kii.extension.sdk.service.AppBindToolResolver;
+import com.kii.extension.sdk.context.AppBindToolResolver;
 
 
 @Aspect
@@ -23,12 +24,15 @@ public class AppBindAspect {
 	@Autowired
 	private AppBindToolResolver  bindTool;
 
-	@Before("execution com.kii.beehive.portal.service..*.*(..)  && @annotation(com.kii.extension.sdk.annotation.BindAppByName) ")
-	public void beforeCallBindDao(BindAppByName appByName){
+	@Before("within (@com.kii.beehive.portal.annotation.BindAppByName  com.kii.beehive.portal.service..* ) ")
+	public void beforeCallBindDao(JoinPoint joinPoint){
 
+		BindAppByName  appByName=joinPoint.getTarget().getClass().getAnnotation(BindAppByName.class);
 
 		AppChoice choice=new AppChoice();
-		choice.setBindName(appByName.appBindSource());
+		if(!StringUtils.isEmpty(appByName.appBindSource())) {
+			choice.setBindName(appByName.appBindSource());
+		}
 		choice.setAppName(appByName.appName());
 		choice.setSupportDefault(appByName.usingDefault());
 
@@ -36,7 +40,9 @@ public class AppBindAspect {
 
 	}
 
-	@Before("execution com.kii.beehive.portal.service..*.*(@com.kii.extension.sdk.annotation.AppBindParam(*)) ")
+
+
+	@Before("execution (*  com.kii.beehive.portal.service..*(@com.kii.beehive.portal.annotation.AppBindParam (*) , .. ))")
 	public void  beforeCallBindFunction(JoinPoint joinPoint ){
 		MethodSignature signature = (MethodSignature) joinPoint.getSignature();
 		Method method = signature.getMethod();
@@ -70,9 +76,9 @@ public class AppBindAspect {
 
 		AppChoice choice=new AppChoice();
 		choice.setAppName(param);
-		choice.setBindName(annotation.appBindSource());
-		choice.setSupportDefault(annotation.usingDefault());
-
+		if(!StringUtils.isEmpty(annotation.appBindSource())){
+			choice.setBindName(annotation.appBindSource());
+		}
 		bindTool.setAppChoice(choice);
 
 	}

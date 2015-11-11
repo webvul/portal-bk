@@ -1,12 +1,9 @@
-package com.kii.extension.sdk.service;
+package com.kii.extension.sdk.context;
 
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
 import com.kii.extension.sdk.entity.AppChoice;
@@ -19,26 +16,27 @@ public class AppBindToolResolver {
 	private ApplicationContext context;
 
 
-	String[] bindNames;
+	private ThreadLocal<AppChoice>  appChoiceLocal;
+
+	private String[] getBeanNameArray(){
+
+		return context.getBeanNamesForType(AppBindTool.class);
+	}
 
 	@PostConstruct
 	public void initBindList(){
+		appChoiceLocal=ThreadLocal.withInitial(()->{
 
-		bindNames=context.getBeanNamesForType(AppBindTool.class);
 
-		if(bindNames.length==0){
-			throw new IllegalArgumentException("not found app bind service");
-		}
+			AppChoice choice=new AppChoice();
+
+			choice.setAppName(null);
+			choice.setBindName(getBeanNameArray()[0]);
+			choice.setSupportDefault(true);
+			return choice;
+		});
+
 	}
-
-	private ThreadLocal<AppChoice>  appChoiceLocal=ThreadLocal.withInitial(()->{
-		AppChoice choice=new AppChoice();
-
-		choice.setAppName(null);
-		choice.setBindName(bindNames[0]);
-		choice.setSupportDefault(true);
-		return choice;
-	});
 
 	public void setAppChoice(AppChoice choice){
 
@@ -46,16 +44,34 @@ public class AppBindToolResolver {
 	}
 
 	public void setAppName(String appName){
+		this.setAppName(appName, true);
+	}
+
+	public void setAppName(String appName,boolean usingDefault){
 		AppChoice choice=new AppChoice();
 
 		choice.setAppName(appName);
-		choice.setBindName(bindNames[0]);
-		choice.setSupportDefault(true);
+		choice.setSupportDefault(usingDefault);
 
 		appChoiceLocal.set(choice);
 
 	}
 
+	public AppInfo getAppInfoByName(String appName){
+
+		for (String bean : getBeanNameArray()) {
+			AppBindTool bindTool = context.getBean(bean, AppBindTool.class);
+
+			AppInfo info = bindTool.getAppInfo(appName);
+
+			if(info!=null){
+				return info;
+			}
+
+		}
+		return null;
+
+	}
 
 	public AppInfo getAppInfo(){
 
@@ -69,7 +85,7 @@ public class AppBindToolResolver {
 
 		}
 
-		for (String name : bindNames) {
+		for (String name : getBeanNameArray()) {
 			AppBindTool bindTool = context.getBean(name, AppBindTool.class);
 
 			AppInfo info=searchAppInfo(bindTool,choice);

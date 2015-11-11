@@ -8,11 +8,14 @@ import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.store.entity.GlobalThingInfo;
 import com.kii.beehive.portal.store.entity.TagIndex;
+import com.kii.beehive.portal.annotation.BindAppByName;
 import com.kii.extension.sdk.entity.BucketInfo;
 import com.kii.extension.sdk.service.AbstractDataAccess;
 
+@BindAppByName(appName="portal")
 @Component
 public class TagIndexDao extends AbstractDataAccess<TagIndex> {
+
 
 
 
@@ -58,6 +61,19 @@ public class TagIndexDao extends AbstractDataAccess<TagIndex> {
 
 	}
 
+	public TagIndex getTagIndexByID(String id){
+		return super.getObjectByID(id);
+	}
+
+	public void addTagIndex(TagIndex tag) {
+
+		super.addKiiEntity(tag);
+	}
+
+	public List<TagIndex> getTagsByIDs(String[] ids){
+		return super.getEntitys(ids);
+	}
+
 	@Override
 	protected Class<TagIndex> getTypeCls() {
 		return TagIndex.class;
@@ -67,4 +83,7 @@ public class TagIndexDao extends AbstractDataAccess<TagIndex> {
 	protected BucketInfo getBucketInfo() {
 		return new BucketInfo("TagThingInfo");
 	}
+
+
+
 }

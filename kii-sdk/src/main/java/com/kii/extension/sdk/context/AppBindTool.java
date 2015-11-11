@@ -1,4 +1,4 @@
-package com.kii.extension.sdk.service;
+package com.kii.extension.sdk.context;
 
 import com.kii.extension.sdk.entity.AppInfo;
 import com.kii.extension.sdk.entity.AppInfoEntity;

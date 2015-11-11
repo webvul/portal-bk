@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.extension.sdk.entity.AppInfo;
 import com.kii.extension.sdk.entity.BucketInfo;
+import com.kii.extension.sdk.entity.KiiUser;
 import com.kii.extension.sdk.entity.ScopeType;
 import com.kii.extension.sdk.query.QueryParam;
 
@@ -54,9 +55,50 @@ public class ApiAccessBuilder {
 
 
 
-	private void setContentType(String value){
+	public  ApiAccessBuilder setContentType(String value){
 		optionalHeader.put("Content-Type",value);
+		return this;
 	}
+
+	private String subUrl;
+
+	public  void setConsumeHeader(String name,String value){
+		optionalHeader.put(name,value);
+	}
+
+
+	public ApiAccessBuilder  addSubUrl(String url){
+
+		this.subUrl=url;
+
+		return this;
+	}
+
+	public ApiAccessBuilder buildCustomCall(String type,Object obj){
+
+		this.ctxObj=obj;
+		switch(type.toLowerCase()){
+			case "post":
+				request=new HttpPost(appInfo.getAppSubUrl()+subUrl);
+				break;
+			case "get":
+				request=new HttpGet(appInfo.getAppSubUrl()+subUrl);
+				break;
+			case "put":
+				request=new HttpPut(appInfo.getAppSubUrl()+subUrl);
+				break;
+			case "delete":
+				request=new HttpDelete(appInfo.getAppSubUrl()+subUrl);
+				break;
+
+		}
+
+
+
+		return this;
+	}
+
+
 
 
 	public ApiAccessBuilder bindBucketInfo(BucketInfo bucketInfo){
@@ -135,7 +177,7 @@ public class ApiAccessBuilder {
 
 		request=new HttpPut(appInfo.getAppSubUrl()+scopeSubUrl+bucketUrl+"/objects/"+id);
 
-		this.setContentType("application/vnd."+appInfo.getAppID()+".mydata+json");
+		this.setContentType("application/vnd." + appInfo.getAppID() + ".mydata+json");
 
 		ctxObj=entity;
 
@@ -164,21 +206,35 @@ public class ApiAccessBuilder {
 	}
 
 	public ApiAccessBuilder updateWithVersion(String id,Object entity,String version){
-		update(id,entity);
+		update(id, entity);
 
 		this.optionalHeader.put("If-Match",version);
 
 		return this;
 	}
 
+	//=================
+	//user relation
+	//=================
 
+
+	public ApiAccessBuilder createUser(KiiUser user) {
+
+
+		request=new HttpPost(appInfo.getAppSubUrl()+"/users");
+
+		this.setContentType("application/vnd.kii.RegistrationRequest+json");
+		ctxObj=user;
+
+		return this;
+	}
 
 	public ApiAccessBuilder login(String user,String pwd){
-		request=new HttpPost(appInfo.getSite().getSiteUrl()+("/api/oauth2/token"));
+		request=new HttpPost(appInfo.getSiteUrl()+("/api/oauth2/token"));
 
 		Map<String,String> map=new HashMap<>();
 		map.put("username",user);
-		map.put("password",pwd);
+		map.put("password", pwd);
 
 		ctxObj=map;
 
@@ -186,10 +242,10 @@ public class ApiAccessBuilder {
 	}
 
 	public ApiAccessBuilder adminLogin(String user,String pwd){
-		request=new HttpPost(appInfo.getSite().getSiteUrl()+("/api/oauth2/token"));
+		request=new HttpPost(appInfo.getSiteUrl()+("/api/oauth2/token"));
 
 		Map<String,String> map=new HashMap<>();
-		map.put("client_id",user);
+		map.put("client_id", user);
 		map.put("client_secret",pwd);
 
 		ctxObj=map;
@@ -199,10 +255,11 @@ public class ApiAccessBuilder {
 
 
 
+
 	public HttpUriRequest generRequest(ObjectMapper mapper){
 
 		request.setHeader("X-Kii-AppID",appInfo.getAppID());
-		request.setHeader("X-Kii-AppKey",appInfo.getAppKey());
+		request.setHeader("X-Kii-AppKey", appInfo.getAppKey());
 		if(token!=null){
 			request.setHeader("Authorization","Bearer "+token);
 		}
@@ -211,9 +268,14 @@ public class ApiAccessBuilder {
 		}
 
 		try {
-			if(request instanceof HttpEntityEnclosingRequestBase  &&  ctxObj!=null) {
-				String context = mapper.writeValueAsString(ctxObj);
-				((HttpEntityEnclosingRequestBase)request).setEntity(new StringEntity(context,ContentType.APPLICATION_JSON));
+			if(request instanceof HttpEntityEnclosingRequestBase  && ctxObj!= null){
+
+			 	if(ctxObj instanceof String ) {
+					((HttpEntityEnclosingRequestBase)request).setEntity(new StringEntity((String)ctxObj,ContentType.TEXT_PLAIN));
+				}else{
+					String context = mapper.writeValueAsString(ctxObj);
+					((HttpEntityEnclosingRequestBase)request).setEntity(new StringEntity(context,ContentType.APPLICATION_JSON));
+				}
 			}
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();

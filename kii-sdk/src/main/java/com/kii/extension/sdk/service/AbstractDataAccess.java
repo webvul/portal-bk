@@ -26,24 +26,24 @@ public abstract class AbstractDataAccess<T> {
 
 
 	@Autowired
-	private KiiCloudService  service;
+	private DataService service;
 
 
-	public  T  getObjectByID(String id){
+	protected  T  getObjectByID(String id){
 
 		return service.getObjectByID(id,bucketInfo,typeCls);
 	}
 
-	public UpdateResponse addEntity(T  entity,String id){
+	protected UpdateResponse addEntity(T  entity,String id){
 		return  service.fullUpdateObject(id, entity, bucketInfo);
 	}
 
 
-	public CreateResponse addEntity(T  entity){
+	protected CreateResponse addEntity(T  entity){
 		return  service.createObject(entity, bucketInfo);
 	}
 
-	public <E extends KiiEntity> String addKiiEntity(E  entity){
+	protected <E extends KiiEntity> String addKiiEntity(E  entity){
 
 		if(entity.getId()==null){
 			CreateResponse resp=service.createObject(entity, bucketInfo);
@@ -58,74 +58,74 @@ public abstract class AbstractDataAccess<T> {
 	}
 
 
-	public void removeEntity(String id){
+	protected void removeEntity(String id){
 		service.removeObject(id,bucketInfo);
 	}
 
 
-	public void removeEntityWithVersion(String id,int version){
+	protected void removeEntityWithVersion(String id,int version){
 		service.removeObjectWithVersion(id, String.valueOf(version), bucketInfo);
 	}
 
-	public UpdateResponse updateEntityAll(T entity,String id){
+	protected UpdateResponse updateEntityAll(T entity,String id){
 
 		return service.fullUpdateObject(id, entity, bucketInfo);
 
 	}
 
 
-	public UpdateResponse updateEntityAllWithVersion(T entity,String id,int version){
+	protected UpdateResponse updateEntityAllWithVersion(T entity,String id,int version){
 
 		return service.fullUpdateObjectWithVersion(id, entity, bucketInfo, String.valueOf(version));
 
 	}
 
-	public <E extends KiiEntity> UpdateResponse updateEntityAll(E entity){
+	protected <E extends KiiEntity> UpdateResponse updateEntityAll(E entity){
 
 		return service.fullUpdateObject(entity.getId(), entity, bucketInfo);
 
 	}
 
 
-	public <E extends KiiEntity> UpdateResponse updateEntityAllWithVersion(E entity,int version){
+	protected <E extends KiiEntity> UpdateResponse updateEntityAllWithVersion(E entity,int version){
 
 		return service.fullUpdateObjectWithVersion(entity.getId(), entity, bucketInfo, String.valueOf(version));
 
 	}
 
-	public String updateEntity(Map<String,Object> entity,String id){
+	protected String updateEntity(Map<String,Object> entity,String id){
 
 		return service.updateObject(id, entity, bucketInfo);
 
 	}
 
 
-	public String updateEntityWithVersion(Map<String,Object>  entity,String id,int version){
+	protected String updateEntityWithVersion(Map<String,Object>  entity,String id,int version){
 
 		return service.updateObjectWithVersion(id, entity, bucketInfo, String.valueOf(version));
 
 	}
 
-	public <T> String updateEntity(T entity,String id){
+	protected <T> String updateEntity(T entity,String id){
 
 		return service.updateObjectWithEntity(id, entity, bucketInfo);
 
 	}
 
 
-	public <T> String updateEntityWithVersion(T  entity,String id,int version){
+	protected <T> String updateEntityWithVersion(T  entity,String id,int version){
 
 		return service.updateObjectWithVersionWithEntity(id, entity, bucketInfo, String.valueOf(version));
 
 	}
 
-	public List<T> query(QueryParam queryParam){
+	protected List<T> query(QueryParam queryParam){
 
 		return service.query(queryParam, typeCls, bucketInfo);
 
 	}
 
-	public List<T> fullQuery(QueryParam queryParam){
+	protected List<T> fullQuery(QueryParam queryParam){
 
 		List<T>  result=new ArrayList<T>();
 
@@ -140,7 +140,7 @@ public abstract class AbstractDataAccess<T> {
 
 	}
 
-	public List<T> getEntitys(String[] ids){
+	protected List<T> getEntitys(String[] ids){
 
 		QueryParam query= ConditionBuilder.newCondition().In("_id",ids).getFinalCondition().build();
 

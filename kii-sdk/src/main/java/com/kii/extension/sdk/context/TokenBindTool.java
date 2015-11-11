@@ -1,4 +1,4 @@
-package com.kii.extension.sdk.service;
+package com.kii.extension.sdk.context;
 
 public interface TokenBindTool {
 

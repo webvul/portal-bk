@@ -13,7 +13,7 @@ import org.springframework.core.io.ResourceLoader;
 
 import com.kii.extension.sdk.entity.AppInfo;
 import com.kii.extension.sdk.entity.SiteType;
-import com.kii.extension.sdk.service.AppBindTool;
+import com.kii.extension.sdk.context.AppBindTool;
 
 public class LocalPropertyBindTool implements AppBindTool {
 
@@ -33,6 +33,10 @@ public class LocalPropertyBindTool implements AppBindTool {
 
 
 	private String defaultApp;
+
+	public void setDefaultApp(String defaultApp){
+		this.defaultApp=defaultApp;
+	}
 
 	@PostConstruct
 	public void initAppInfo() {
@@ -85,11 +89,6 @@ public class LocalPropertyBindTool implements AppBindTool {
 
 		appInfoMap= Collections.unmodifiableMap(map);
 
-		defaultApp = prop.getProperty("Kiicloud.default.app");
-
-		if(defaultApp==null&&appInfoMap.size()==1){
-			defaultApp=appInfoMap.keySet().iterator().next();
-		}
 	}
 
 
@@ -100,6 +99,10 @@ public class LocalPropertyBindTool implements AppBindTool {
 
 	@Override
 	public AppInfo getDefaultAppInfo() {
-		return appInfoMap.get(defaultApp) ;
+		if(defaultApp!=null) {
+			return appInfoMap.get(defaultApp);
+		}else{
+			return null;
+		}
 	}
 }

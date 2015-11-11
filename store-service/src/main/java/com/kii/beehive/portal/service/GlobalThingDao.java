@@ -2,15 +2,19 @@ package com.kii.beehive.portal.service;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.store.entity.GlobalThingInfo;
+import com.kii.beehive.portal.annotation.BindAppByName;
 import com.kii.extension.sdk.entity.BucketInfo;
+import com.kii.extension.sdk.query.ConditionBuilder;
 import com.kii.extension.sdk.service.AbstractDataAccess;
 
+@BindAppByName(appName="portal")
 @Component
 public class GlobalThingDao extends AbstractDataAccess<GlobalThingInfo>{
 
@@ -40,6 +44,22 @@ public class GlobalThingDao extends AbstractDataAccess<GlobalThingInfo>{
 
 	}
 
+	public GlobalThingInfo getThingInfoByID(String id){
+		return super.getObjectByID(id);
+	}
+
+	public List<GlobalThingInfo> getThingsByIDs(String[] ids){
+		return super.getEntitys(ids);
+	}
+
+	public void addThingInfo(GlobalThingInfo thing){
+		super.addKiiEntity(thing);
+	}
+
+	public List<GlobalThingInfo> getAllThing() {
+		return super.query(ConditionBuilder.getAll().getFinalCondition().build());
+	}
+
 	@Override
 	protected Class<GlobalThingInfo> getTypeCls() {
 		return GlobalThingInfo.class;
@@ -51,4 +71,6 @@ public class GlobalThingDao extends AbstractDataAccess<GlobalThingInfo>{
 	protected BucketInfo getBucketInfo() {
 		return new BucketInfo(BUCKET_INFO);
 	}
+
+
 }

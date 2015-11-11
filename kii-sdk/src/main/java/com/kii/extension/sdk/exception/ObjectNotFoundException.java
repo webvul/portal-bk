@@ -9,6 +9,10 @@ public class ObjectNotFoundException extends KiiCloudException {
 
 	private String objectID;
 
+	public ObjectNotFoundException() {
+		super();
+	}
+
 	@Override
 	public int getStatusCode(){
 		return 404;
