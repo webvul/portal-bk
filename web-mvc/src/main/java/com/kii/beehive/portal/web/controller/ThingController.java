@@ -12,8 +12,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.portal.manager.ThingManager;
+import com.kii.beehive.portal.service.GlobalThingDao;
+import com.kii.beehive.portal.service.TagIndexDao;
 import com.kii.beehive.portal.store.entity.GlobalThingInfo;
 import com.kii.beehive.portal.store.entity.TagIndex;
+import com.kii.beehive.portal.web.help.PortalException;
 
 @RestController
 @RequestMapping(path="/things",consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -23,23 +26,29 @@ public class ThingController {
 	@Autowired
 	private ThingManager thingManager;
 	
+	@Autowired
+	private TagIndexDao tagIndexDao;
+	
+	@Autowired
+	private GlobalThingDao globalThingDao;
+	
 	@RequestMapping(path="/all",method={RequestMethod.GET})
 	public List<GlobalThingInfo> getThing(){
-		return thingManager.findGlobalThing();
+		return globalThingDao.getAllThing();
 	}
 
 	@RequestMapping(path="/",method={RequestMethod.POST})
 	public void createThing(@RequestBody GlobalThingInfo input){
 		if(input == null){
-			//no body
+			throw new PortalException();//no body
 		}
 		
 		if(Strings.isEmpty(input.getVendorThingID())){
-			//paramter missing
+			throw new PortalException();//paramter missing
 		}
 		
 		if(Strings.isEmpty(input.getGlobalThingID())){
-			//paramter missing
+			throw new PortalException();//paramter missing
 		}
 		
 		
@@ -50,16 +59,16 @@ public class ThingController {
 	public void removeThing(@PathVariable("thingID") String thingID){
 		
 		if(Strings.isEmpty(thingID)){
-			//paramter missing
+			throw new PortalException();//paramter missing
 		}
 		
-		GlobalThingInfo orig =  thingManager.findGlobalThingById(thingID);
+		GlobalThingInfo orig =  globalThingDao.getThingInfoByID(thingID);
 		
 		if(orig == null){
-			//not found object
+			throw new PortalException();//not found object
 		}
 		
-		thingManager.deleteThing(orig);
+		globalThingDao.removeGlobalThingByID(orig.getId());
 	}
 	
 
@@ -77,19 +86,19 @@ public class ThingController {
 	@RequestMapping(path = "/tag/{tagName}", method = {RequestMethod.GET})
 	public List<GlobalThingInfo> getThingsByTag(@PathVariable("tagName") String tagName) {
 		if(Strings.isEmpty(tagName)){
-			//paramter missing
+			throw new PortalException();//paramter missing
 		}
 		
-		TagIndex tagIndex = thingManager.findTagIndexByTagName(tagName);
+		TagIndex tagIndex = tagIndexDao.getTagIndexByID(tagName);
 		
 		if(tagIndex == null){
-			// not found object
+			throw new PortalException();// not found object
 		}
 		
 		if(tagIndex.getGlobalThings().size() == 0){
-			// no GlobalThings
+			throw new PortalException();// no GlobalThings
 		}
-		List<GlobalThingInfo> list = thingManager.findGlobalThingByIds(tagIndex.getGlobalThings().toArray(new String[tagIndex.getGlobalThings().size()]));
+		List<GlobalThingInfo> list = globalThingDao.getThingsByIDs(tagIndex.getGlobalThings().toArray(new String[tagIndex.getGlobalThings().size()]));
 		return list;
 
 	}

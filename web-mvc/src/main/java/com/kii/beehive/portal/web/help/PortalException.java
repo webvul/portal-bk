@@ -4,6 +4,8 @@ import org.springframework.http.HttpStatus;
 
 public class PortalException extends RuntimeException {
 
+	private static final long serialVersionUID = -2799530582371715829L;
+
 	public String getErrorCode(){
 		return null;
 	}

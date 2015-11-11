@@ -39,38 +39,6 @@ public class ThingManager {
 		globalThingDao.addThingInfo(thingInfo);
 	}
 	
-	public void createTag(TagIndex tag){
-		tagIndexDao.addTagIndex(tag);
-	}
-	
-	public void deleteThing(GlobalThingInfo thingInfo){
-		globalThingDao.removeGlobalThingByID(thingInfo.getId());
-	}
-	
-	public void deleteTag(TagIndex tag){
-		tagIndexDao.removeTagByID(tag.getId());
-	}
-	
-	public GlobalThingInfo findGlobalThingById(String thingID){
-		return globalThingDao.getThingInfoByID(thingID);
-	}
-	
-	public List<GlobalThingInfo> findGlobalThingByIds(String[] thingIDs){
-		return globalThingDao.getThingsByIDs(thingIDs);
-	}
-	
-	
-	public TagIndex findTagById(String tagID){
-		return tagIndexDao.getTagIndexByID(tagID);
-	}
-	
-	public List<GlobalThingInfo> findGlobalThing(){
-		return globalThingDao.getAllThing();
-	}
-	
-	public List<TagIndex> findTagIndex(){
-		return tagIndexDao.getAllThing();
-	}
 	
 	public List<TagIndex> findTagIndexByQuery(String[] tagNameArray){
 		QueryParam query = ConditionBuilder.orCondition().In("_id", tagNameArray).getFinalCondition().build();
@@ -78,10 +46,6 @@ public class ThingManager {
 		return tagIndexList;
 	}
 	
-	public TagIndex findTagIndexByTagName(String tagName){
-		return tagIndexDao.getTagIndexByID(tagName);
-	}
-
 	public void bindTagToThing(String tagID,String thingID) {
 		GlobalThingInfo thing=globalThingDao.getThingInfoByID(thingID);
 		TagIndex tag = tagIndexDao.getTagIndexByID(tagID);

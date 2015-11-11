@@ -18,6 +18,8 @@ import com.kii.extension.sdk.service.AbstractDataAccess;
 @Component
 public class TagIndexDao extends AbstractDataAccess<TagIndex> {
 	
+	private final String BUCKET_INFO = "TagThingInfo";
+	
 	public List<TagIndex> getAllThing() {
 		return super.query(ConditionBuilder.getAll().getFinalCondition().build());
 	}
@@ -91,7 +93,7 @@ public class TagIndexDao extends AbstractDataAccess<TagIndex> {
 
 	@Override
 	protected BucketInfo getBucketInfo() {
-		return new BucketInfo("TagThingInfo");
+		return new BucketInfo(BUCKET_INFO);
 	}
 
 
