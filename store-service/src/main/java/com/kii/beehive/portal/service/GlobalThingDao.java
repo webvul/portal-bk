@@ -11,22 +11,23 @@ import org.springframework.stereotype.Component;
 import com.kii.beehive.portal.store.entity.GlobalThingInfo;
 import com.kii.beehive.portal.annotation.BindAppByName;
 import com.kii.extension.sdk.entity.BucketInfo;
+import com.kii.extension.sdk.query.ConditionBuilder;
 import com.kii.extension.sdk.service.AbstractDataAccess;
 
 @BindAppByName(appName="portal")
 @Component
 public class GlobalThingDao extends AbstractDataAccess<GlobalThingInfo>{
 
-
+	private final String TAGS = "tags";
+	private final String BUCKET_INFO = "GlobalThingInfo";
 
 	public void bindTagsToThing(String[] tags,GlobalThingInfo thing){
 
 		Set<String> currTags=thing.getTags();
-
 		currTags.addAll(Arrays.asList(tags));
 
 		Map<String,Object> valMap=new HashMap<>();
-		valMap.put("tag",currTags);
+		valMap.put(TAGS,currTags);
 
 		super.updateEntityWithVersion(valMap, thing.getId(), thing.getVersion());
 
@@ -35,11 +36,9 @@ public class GlobalThingDao extends AbstractDataAccess<GlobalThingInfo>{
 	public void unbindTagsToThing(String[] tags,GlobalThingInfo thing){
 
 		Set<String> currTags=thing.getTags();
-
 		currTags.removeAll(Arrays.asList(tags));
-
 		Map<String,Object> valMap=new HashMap<>();
-		valMap.put("tag",currTags);
+		valMap.put(TAGS,currTags);
 
 		super.updateEntityWithVersion(valMap, thing.getId(), thing.getVersion());
 
@@ -57,6 +56,10 @@ public class GlobalThingDao extends AbstractDataAccess<GlobalThingInfo>{
 		super.addKiiEntity(thing);
 	}
 
+	public List<GlobalThingInfo> getAllThing() {
+		return super.query(ConditionBuilder.getAll().getFinalCondition().build());
+	}
+
 	@Override
 	protected Class<GlobalThingInfo> getTypeCls() {
 		return GlobalThingInfo.class;
@@ -66,7 +69,8 @@ public class GlobalThingDao extends AbstractDataAccess<GlobalThingInfo>{
 
 	@Override
 	protected BucketInfo getBucketInfo() {
-
-		return new BucketInfo("GlobalThingInfo");
+		return new BucketInfo(BUCKET_INFO);
 	}
+
+
 }

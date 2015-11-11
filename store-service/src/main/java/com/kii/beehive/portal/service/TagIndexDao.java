@@ -22,41 +22,42 @@ public class TagIndexDao extends AbstractDataAccess<TagIndex> {
 
 	public void addThingToTag(TagIndex tagIdx,List<GlobalThingInfo> things){
 
-
 		Set<String> newThings=things.stream().map(GlobalThingInfo::getId).collect(Collectors.toSet());
 
-		Set<String> newApps=things.stream().map(GlobalThingInfo::getAppID).collect(Collectors.toSet());
+		Set<String> newApps=things.stream().map(GlobalThingInfo::getKiiAppID).collect(Collectors.toSet());
 
 		Set<String> thingIDs=tagIdx.getGlobalThings();
 		thingIDs.addAll(newThings);
 
-		Set<String> appIDs=tagIdx.getAppIDs();
+		Set<String> appIDs=tagIdx.getKiiAppIDs();
 		appIDs.addAll(newApps);
 
 		TagIndex update=new TagIndex();
-		update.setAppIDs(appIDs);
+		update.setKiiAppIDs(appIDs);
 		update.setGlobalThings(thingIDs);
 
 		super.updateEntityWithVersion(update,tagIdx.getId(),tagIdx.getVersion());
 
 	}
 
-	public void removeThingFromTag(String tagID,List<String> thingIDs,List<String> appIDs){
+	public void removeThingFromTag(TagIndex tagIdx,List<GlobalThingInfo> things){
+		
+		Set<String> removeThings=things.stream().map(GlobalThingInfo::getId).collect(Collectors.toSet());
 
-		TagIndex  tagIdx=super.getObjectByID(tagID);
+		Set<String> removeApps=things.stream().map(GlobalThingInfo::getKiiAppID).collect(Collectors.toSet());
 
 
 		Set<String> currThings=tagIdx.getGlobalThings();
-		currThings.removeAll(thingIDs);
+		currThings.removeAll(removeThings);
 		
-		Set<String> curraAppIDs=tagIdx.getAppIDs();
-		curraAppIDs.removeAll(appIDs);
+		Set<String> curraAppIDs=tagIdx.getKiiAppIDs();
+		curraAppIDs.removeAll(removeApps);
 
 		TagIndex update=new TagIndex();
-		update.setAppIDs(curraAppIDs);
+		update.setKiiAppIDs(curraAppIDs);
 		update.setGlobalThings(currThings);
 
-		super.updateEntityWithVersion(update,tagID,tagIdx.getVersion());
+		super.updateEntityWithVersion(update,tagIdx.getId(),tagIdx.getVersion());
 
 	}
 

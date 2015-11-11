@@ -1,5 +1,7 @@
 package com.kii.beehive.portal.web.entity;
 
+import java.util.Arrays;
+
 public class ThingInput {
 
 	private String thingID;
@@ -8,7 +10,7 @@ public class ThingInput {
 
 	private String[] tags;
 
-	private String location;
+	private String locationID;
 
 
 	public String getThingID() {
@@ -35,11 +37,26 @@ public class ThingInput {
 		this.tags = tags;
 	}
 
-	public String getLocation() {
-		return location;
+	public String getLocationID() {
+		return locationID;
 	}
 
-	public void setLocation(String location) {
-		this.location = location;
+	public void setLocationID(String locationID) {
+		this.locationID = locationID;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("ThingInput [thingID=");
+		builder.append(thingID);
+		builder.append(", vendorThingID=");
+		builder.append(vendorThingID);
+		builder.append(", tags=");
+		builder.append(Arrays.toString(tags));
+		builder.append(", locationID=");
+		builder.append(locationID);
+		builder.append("]");
+		return builder.toString();
 	}
 }

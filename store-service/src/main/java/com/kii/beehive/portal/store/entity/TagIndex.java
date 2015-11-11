@@ -17,7 +17,7 @@ public class TagIndex extends KiiEntity {
 
 	private Set<String> globalThings=new HashSet<>();
 
-	private Set<String> appIDs=new HashSet<>();
+	private Set<String> kiiAppIDs=new HashSet<>();
 
 	@Override
 	public String getId() {
@@ -32,12 +32,12 @@ public class TagIndex extends KiiEntity {
 		this.globalThings = globalThings;
 	}
 
-	public Set<String> getAppIDs() {
-		return appIDs;
+	public Set<String> getKiiAppIDs() {
+		return kiiAppIDs;
 	}
 
-	public void setAppIDs(Set<String> appIDs) {
-		this.appIDs = appIDs;
+	public void setKiiAppIDs(Set<String> kiiAppIDs) {
+		this.kiiAppIDs = kiiAppIDs;
 	}
 
 	public String getTagType() {

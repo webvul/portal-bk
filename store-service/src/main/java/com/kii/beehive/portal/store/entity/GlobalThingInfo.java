@@ -2,9 +2,7 @@ package com.kii.beehive.portal.store.entity;
 
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-
 
 import com.kii.extension.sdk.entity.KiiEntity;
 
@@ -16,17 +14,17 @@ public class GlobalThingInfo extends KiiEntity {
 
 	private Set<String> tags=new HashSet<>();
 
-	private String appID;
+	private String kiiAppID;
 
 	private String locationID;
 
 	private String type;
 
-	private Date modifyDate;
+	private String appName;
+	
+	private String status;
 
-	private Date createDate;
-
-
+	private Date statusUpdatetime;
 
 	@Override
 	public String getId() {
@@ -47,12 +45,12 @@ public class GlobalThingInfo extends KiiEntity {
 		this.tags = tags;
 	}
 
-	public String getAppID() {
-		return appID;
+	public String getKiiAppID() {
+		return kiiAppID;
 	}
 
-	public void setAppID(String appID) {
-		this.appID = appID;
+	public void setKiiAppID(String kiiAppID) {
+		this.kiiAppID = kiiAppID;
 	}
 
 	public String getLocationID() {
@@ -78,4 +76,63 @@ public class GlobalThingInfo extends KiiEntity {
 	public void setVendorThingID(String vendorThingID) {
 		this.vendorThingID = vendorThingID;
 	}
+
+	public String getGlobalThingID() {
+		return globalThingID;
+	}
+
+	public void setGlobalThingID(String globalThingID) {
+		this.globalThingID = globalThingID;
+	}
+
+	public String getAppName() {
+		return appName;
+	}
+
+	public void setAppName(String appName) {
+		this.appName = appName;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public Date getStatusUpdatetime() {
+		return statusUpdatetime;
+	}
+
+	public void setStatusUpdatetime(Date statusUpdatetime) {
+		this.statusUpdatetime = statusUpdatetime;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("GlobalThingInfo [globalThingID=");
+		builder.append(globalThingID);
+		builder.append(", vendorThingID=");
+		builder.append(vendorThingID);
+		builder.append(", tags=");
+		builder.append(tags);
+		builder.append(", kiiAppID=");
+		builder.append(kiiAppID);
+		builder.append(", locationID=");
+		builder.append(locationID);
+		builder.append(", type=");
+		builder.append(type);
+		builder.append(", appName=");
+		builder.append(appName);
+		builder.append(", status=");
+		builder.append(status);
+		builder.append(", statusUpdatetime=");
+		builder.append(statusUpdatetime);
+		builder.append("]");
+		return builder.toString();
+	}
+	
+	
 }

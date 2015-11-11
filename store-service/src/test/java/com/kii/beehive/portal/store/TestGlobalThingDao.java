@@ -7,7 +7,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kii.beehive.portal.manager.ThingManager;
 import com.kii.beehive.portal.service.GlobalThingDao;
 import com.kii.beehive.portal.service.TagIndexDao;
@@ -17,8 +16,6 @@ import com.kii.beehive.portal.store.entity.TagType;
 
 public class TestGlobalThingDao extends TestInit {
 	
-	@Autowired
-	private ObjectMapper mapper;
 	
 	@Autowired
 	private GlobalThingDao thingDao;
@@ -35,18 +32,18 @@ public class TestGlobalThingDao extends TestInit {
 
 		GlobalThingInfo thing=new GlobalThingInfo();
 		thing.setId("001");
-		thing.setAppID("a");
+		thing.setKiiAppID("a");
 
 
 		thingDao.addThingInfo(thing);
 
 		thing.setId("002");
-		thing.setAppID("b");
+		thing.setKiiAppID("b");
 
 		thingDao.addThingInfo(thing);
 		
 		thing.setId("003");
-		thing.setAppID("c");
+		thing.setKiiAppID("c");
 
 		thingDao.addThingInfo(thing);
 
@@ -60,7 +57,7 @@ public class TestGlobalThingDao extends TestInit {
 		tag.setDisplayName("demo2");
 		tagIndexDao.addTagIndex(tag);
 	}
-
+	
 	@Test
 	public void addTag() throws Exception{
 		TagIndex tag=new TagIndex();
@@ -69,13 +66,12 @@ public class TestGlobalThingDao extends TestInit {
 		
 		thingManager.bindTagToThing(tag.getId(),"001");
 		
-		//tag = tagIndexDao.getObjectByID(tag.getId());
-		//String json=mapper.writeValueAsString(tag);
-		//System.out.println(json);
+		tag = tagIndexDao.getTagIndexByID(tag.getId());
+		//System.out.println(tag.getGlobalThings());
+		//System.out.println(tag.getKiiAppIDs());
 		
 		assertEquals(1,tag.getGlobalThings().size());
-		assertEquals(1,tag.getAppIDs().size());
-		
+		assertEquals(1,tag.getKiiAppIDs().size());
 	}
 
 	@Test
@@ -92,14 +88,35 @@ public class TestGlobalThingDao extends TestInit {
 		
 		TagIndex tag = tagIndexDao.getTagIndexByID(tag1.getId());
 		assertEquals(2,tag.getGlobalThings().size());
-		assertEquals(2,tag.getAppIDs().size());
+		assertEquals(2,tag.getKiiAppIDs().size());
 		
 		tag = tagIndexDao.getTagIndexByID(tag2.getId());
 		assertEquals(2,tag.getGlobalThings().size());
-		assertEquals(2,tag.getAppIDs().size());
+		assertEquals(2,tag.getKiiAppIDs().size());
 		
 		//String json=mapper.writeValueAsString(tag);
 		//System.out.println(json);
+	}
+	
+	@Test
+	public void removeTag() throws Exception{
+		TagIndex tag=new TagIndex();
+		tag.setTagType(TagType.System.toString());
+		tag.setDisplayName("demo1");
+		
+		thingManager.bindTagToThing(tag.getId(),"001");
+		
+		//tag = tagIndexDao.getObjectByID(tag.getId());
+		//System.out.println(tag.getGlobalThings());
+		//System.out.println(tag.getKiiAppIDs());
+		
+		thingManager.unbindTagToThing(tag.getId(), "001");
+		tag = tagIndexDao.getTagIndexByID(tag.getId());
+		//System.out.println(tag.getGlobalThings());
+		//System.out.println(tag.getKiiAppIDs());
+		
+		assertEquals(0,tag.getGlobalThings().size());
+		assertEquals(0,tag.getKiiAppIDs().size());
 	}
 
 
