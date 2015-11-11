@@ -69,7 +69,7 @@ public class ThingManager {
 	}
 	
 	public List<TagIndex> findTagIndex(){
-		return tagIndexDao.query(QueryParam.generAllCondition());
+		return tagIndexDao.getAllThing();
 	}
 	
 	public List<TagIndex> findTagIndexByQuery(String[] tagNameArray){
@@ -83,7 +83,6 @@ public class ThingManager {
 	}
 
 	public void bindTagToThing(String tagID,String thingID) {
-
 		GlobalThingInfo thing=globalThingDao.getThingInfoByID(thingID);
 		TagIndex tag = tagIndexDao.getTagIndexByID(tagID);
 
