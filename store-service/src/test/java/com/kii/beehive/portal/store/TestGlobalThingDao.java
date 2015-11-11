@@ -37,27 +37,28 @@ public class TestGlobalThingDao extends TestInit {
 		thing.setId("001");
 		thing.setAppID("a");
 
-		thingDao.addKiiEntity(thing);
+
+		thingDao.addThingInfo(thing);
 
 		thing.setId("002");
 		thing.setAppID("b");
 
-		thingDao.addKiiEntity(thing);
+		thingDao.addThingInfo(thing);
 		
 		thing.setId("003");
 		thing.setAppID("c");
 
-		thingDao.addKiiEntity(thing);
+		thingDao.addThingInfo(thing);
 
 
 		TagIndex tag=new TagIndex();
 		tag.setTagType(TagType.System.toString());
 		tag.setDisplayName("demo1");
-		tagIndexDao.addKiiEntity(tag);
+		tagIndexDao.addTagIndex(tag);
 
 		tag.setTagType(TagType.System.toString());
 		tag.setDisplayName("demo2");
-		tagIndexDao.addKiiEntity(tag);
+		tagIndexDao.addTagIndex(tag);
 	}
 
 	@Test
@@ -89,11 +90,11 @@ public class TestGlobalThingDao extends TestInit {
 		
 		thingManager.bindTagToThing(new String[]{tag1.getId(),tag2.getId()},new String[]{"001","002"});
 		
-		TagIndex tag = tagIndexDao.getObjectByID(tag1.getId());
+		TagIndex tag = tagIndexDao.getTagIndexByID(tag1.getId());
 		assertEquals(2,tag.getGlobalThings().size());
 		assertEquals(2,tag.getAppIDs().size());
 		
-		tag = tagIndexDao.getObjectByID(tag2.getId());
+		tag = tagIndexDao.getTagIndexByID(tag2.getId());
 		assertEquals(2,tag.getGlobalThings().size());
 		assertEquals(2,tag.getAppIDs().size());
 		

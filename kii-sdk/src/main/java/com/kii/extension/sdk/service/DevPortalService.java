@@ -30,8 +30,7 @@ import com.kii.extension.sdk.entity.AppInfoEntity;
 import com.kii.extension.sdk.impl.KiiCloudClient;
 import com.kii.extension.sdk.impl.PortalApiAccessBuilder;
 
-@Component
-public class KiiCloudDevPortalService {
+public class DevPortalService {
 
 
 	@Autowired
@@ -41,8 +40,15 @@ public class KiiCloudDevPortalService {
 	@Autowired
 	private ObjectMapper mapper;
 
-	@Value("${portal.master.dev-portal.url}")
 	private String devPortalUrl;
+
+
+
+	public void setDevPortalUrl(String portalUrl){
+
+		this.devPortalUrl=portalUrl;
+
+	}
 
 	HttpClientContext context;
 
@@ -86,7 +92,7 @@ public class KiiCloudDevPortalService {
 
 
 		try {
-			user= URLEncoder.encode("steven.jiang@kii.com", "UTF-8");
+			user= URLEncoder.encode(user, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			throw new IllegalArgumentException(e);
 		}

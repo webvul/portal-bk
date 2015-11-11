@@ -13,17 +13,18 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.extension.sdk.commons.HttpUtils;
+import com.kii.extension.sdk.context.AppBindToolResolver;
+import com.kii.extension.sdk.context.TokenBindToolResolver;
 import com.kii.extension.sdk.entity.AppInfo;
 import com.kii.extension.sdk.entity.BucketInfo;
 import com.kii.extension.sdk.entity.CreateResponse;
-import com.kii.extension.sdk.entity.LoginInfo;
 import com.kii.extension.sdk.entity.UpdateResponse;
 import com.kii.extension.sdk.impl.ApiAccessBuilder;
 import com.kii.extension.sdk.impl.KiiCloudClient;
 import com.kii.extension.sdk.query.QueryParam;
 
 @Component
-public class KiiCloudService {
+public class DataService {
 
 	@Autowired
 	private ObjectMapper mapper;
@@ -34,15 +35,12 @@ public class KiiCloudService {
 	@Autowired
 	private AppBindToolResolver bindToolResolver;
 
-	private AppInfo getAppInfo(){
-		return bindToolResolver.getAppInfo();
-	}
 
 	@Autowired
-	private TokenBindTool  tool;
+	private TokenBindToolResolver tool;
 
 	private ApiAccessBuilder getBuilder(){
-		AppInfo info= getAppInfo();
+		AppInfo info= bindToolResolver.getAppInfo();
 
 		return new ApiAccessBuilder(info).bindToken(tool.getToken());
 	}

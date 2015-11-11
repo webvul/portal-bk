@@ -1,12 +1,12 @@
 package com.kii.extension.sdk.exception;
 
 
+import org.apache.http.HttpResponse;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class KiiCloudException extends RuntimeException {
-
-
 
 
 	public KiiCloudException(){
@@ -14,6 +14,19 @@ public class KiiCloudException extends RuntimeException {
 
 
 	}
+
+
+	public KiiCloudException(HttpResponse response){
+		this.statusCode=response.getStatusLine().getStatusCode();
+
+		this.message=null;
+
+		this.errorCode=null;
+
+
+	}
+
+
 
 	private String errorCode;
 

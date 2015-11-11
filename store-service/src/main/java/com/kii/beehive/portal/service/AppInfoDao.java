@@ -10,17 +10,20 @@ import java.util.TreeMap;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
+import com.kii.beehive.portal.annotation.BindAppByName;
 import com.kii.extension.sdk.entity.AppInfo;
 import com.kii.extension.sdk.entity.BucketInfo;
 import com.kii.extension.sdk.query.ConditionBuilder;
 import com.kii.extension.sdk.service.AbstractDataAccess;
 
+@BindAppByName(appName="portal")
 @Component
 public class AppInfoDao extends AbstractDataAccess<KiiAppInfo> {
 
 
 	public static final String ZERO_FILL = "000000000000000000";
 	public static final String FF_FILL = "FFFFFFFFFFFFFFFFFF";
+
 	TreeMap<String,String> prefixMap=new TreeMap<>();
 
 	Map<String,AppInfo> appMap=new HashMap<>();
@@ -30,8 +33,7 @@ public class AppInfoDao extends AbstractDataAccess<KiiAppInfo> {
 	AppInfo defaultApp;
 
 
-	@PostConstruct
-	public void init(){
+	public  void init(){
 
 
 		List<KiiAppInfo>  appList=super.fullQuery(ConditionBuilder.getAll().getFinalCondition().build());

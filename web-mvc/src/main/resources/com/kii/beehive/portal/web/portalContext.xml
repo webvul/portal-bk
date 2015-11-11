@@ -22,7 +22,7 @@
 
     <bean class="com.kii.extension.factory.KiiCloudSDKConfig" />
 
-    <bean class="com.kii.extension.sdk.service.AdminTokenBindTool" />
+    <bean class="com.kii.extension.sdk.context.AdminTokenBindTool" />
 
 
 </beans>

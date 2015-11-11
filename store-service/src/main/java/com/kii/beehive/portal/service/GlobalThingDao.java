@@ -9,12 +9,11 @@ import java.util.Set;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.store.entity.GlobalThingInfo;
+import com.kii.beehive.portal.annotation.BindAppByName;
 import com.kii.extension.sdk.entity.BucketInfo;
-import com.kii.extension.sdk.query.ConditionBuilder;
-import com.kii.extension.sdk.query.QueryBuilder;
-import com.kii.extension.sdk.query.QueryParam;
 import com.kii.extension.sdk.service.AbstractDataAccess;
 
+@BindAppByName(appName="portal")
 @Component
 public class GlobalThingDao extends AbstractDataAccess<GlobalThingInfo>{
 
@@ -44,6 +43,18 @@ public class GlobalThingDao extends AbstractDataAccess<GlobalThingInfo>{
 
 		super.updateEntityWithVersion(valMap, thing.getId(), thing.getVersion());
 
+	}
+
+	public GlobalThingInfo getThingInfoByID(String id){
+		return super.getObjectByID(id);
+	}
+
+	public List<GlobalThingInfo> getThingsByIDs(String[] ids){
+		return super.getEntitys(ids);
+	}
+
+	public void addThingInfo(GlobalThingInfo thing){
+		super.addKiiEntity(thing);
 	}
 
 	@Override

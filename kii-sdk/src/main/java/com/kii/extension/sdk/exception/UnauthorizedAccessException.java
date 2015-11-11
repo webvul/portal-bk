@@ -8,6 +8,10 @@ public class UnauthorizedAccessException extends KiiCloudException {
 
 	private String authenticatedPrincipalID;
 
+	public UnauthorizedAccessException() {
+		super();
+	}
+
 	@Override
 	public int getStatusCode(){
 		return 401;

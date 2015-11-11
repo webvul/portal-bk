@@ -1,9 +1,8 @@
 package com.kii.extension.sdk.test;
 
 import com.kii.extension.sdk.entity.AppInfo;
-import com.kii.extension.sdk.entity.AppInfoEntity;
 import com.kii.extension.sdk.entity.SiteType;
-import com.kii.extension.sdk.service.AppBindTool;
+import com.kii.extension.sdk.context.AppBindTool;
 
 //@Component
 public class MockAppBindTool implements AppBindTool {

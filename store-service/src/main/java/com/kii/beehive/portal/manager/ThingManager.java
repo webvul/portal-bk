@@ -35,22 +35,22 @@ public class ThingManager {
 	}
 	
 	public void createTag(TagIndex tag){
-		tagIndexDao.addKiiEntity(tag);
+		tagIndexDao.addTagIndex(tag);
 	}
 	
 	public TagIndex findTagIndexByTagName(String tagName){
-		return tagIndexDao.getObjectByID(tagName);
+		return tagIndexDao.getTagIndexByID(tagName);
 	}
 
 	public void bindTagToThing(String tagID,String thingID) {
 
 
 
-		GlobalThingInfo thing=globalThingDao.getObjectByID(thingID);
+		GlobalThingInfo thing=globalThingDao.getThingInfoByID(thingID);
 
 		globalThingDao.bindTagsToThing(new String[]{tagID}, thing);
 
-		TagIndex tag = tagIndexDao.getObjectByID(tagID);
+		TagIndex tag = tagIndexDao.getTagIndexByID(tagID);
 
 		tagIndexDao.addThingToTag(tag, Arrays.asList(thing));
 	}
@@ -62,13 +62,13 @@ public class ThingManager {
 		List<GlobalThingInfo> things=new ArrayList<>();
 		if (thingIDs.length == 1) {
 
-			GlobalThingInfo thing=globalThingDao.getObjectByID(thingIDs[0]);
+			GlobalThingInfo thing=globalThingDao.getThingInfoByID(thingIDs[0]);
 
 			globalThingDao.bindTagsToThing(tagIDs, thing);
 			things.add(thing);
 
 		} else{
-			things = globalThingDao.getEntitys(thingIDs);
+			things = globalThingDao.getThingsByIDs(thingIDs);
 
 			for (GlobalThingInfo thing : things) {
 				globalThingDao.bindTagsToThing(tagIDs, thing);
@@ -77,12 +77,12 @@ public class ThingManager {
 		
 		// save to tagIndex
 		if(tagIDs.length==1) {
-			TagIndex tag = tagIndexDao.getObjectByID(tagIDs[0]);
+			TagIndex tag = tagIndexDao.getTagIndexByID(tagIDs[0]);
 
 			tagIndexDao.addThingToTag(tag, things);
 
 		}else{
-			List<TagIndex> tags = tagIndexDao.getEntitys(tagIDs);
+			List<TagIndex> tags = tagIndexDao.getTagsByIDs(tagIDs);
 
 			for (TagIndex tag : tags) {
 				tagIndexDao.addThingToTag(tag, things);

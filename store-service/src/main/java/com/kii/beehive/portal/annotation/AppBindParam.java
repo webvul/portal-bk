@@ -1,12 +1,14 @@
-package com.kii.extension.sdk.annotation;
-
+package com.kii.beehive.portal.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target({ElementType.TYPE,ElementType.METHOD})
+@Target({ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface BindApp {
+public @interface AppBindParam {
+
+	String  appBindSource() default "";
+
 }

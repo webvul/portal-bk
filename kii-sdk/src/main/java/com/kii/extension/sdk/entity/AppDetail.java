@@ -91,6 +91,7 @@ public class AppDetail {
 		info.setClientID(clientID);
 		info.setClientSecret(clientSecret);
 		info.setName(name);
+		info.setSite(site);
 
 		return info;
 	}

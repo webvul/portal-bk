@@ -1,7 +1,6 @@
 package com.kii.extension.sdk.entity;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class AppInfo {
 
@@ -24,14 +23,17 @@ public class AppInfo {
 
 	}
 
+
+
 	public AppInfo(AppInfo appInfo) {
 		this.name=appInfo.getName();
 		this.appID=appInfo.getAppID();
 		this.appKey=appInfo.getAppKey();
 		this.clientID=appInfo.getClientID();
 		this.clientSecret=appInfo.getClientSecret();
-		this.siteUrl=appInfo.siteUrl;
 		this.site=appInfo.site;
+		this.siteUrl=appInfo.siteUrl;
+
 	}
 
 	public String getName() {
@@ -50,9 +52,9 @@ public class AppInfo {
 		this.appID = appID;
 	}
 
-	public SiteType getSite() {
-		return site;
-	}
+//	public SiteType getSite() {
+//		return site;
+//	}
 
 	public void setSite(SiteType site) {
 
@@ -94,7 +96,13 @@ public class AppInfo {
 
 		return  siteUrl+"/api/apps/"+appID;
 	}
+	public String getSiteUrl(){
+		return siteUrl;
+	}
 
+	public SiteType getSiteType(){
+		return site;
+	}
 	public void setSiteUrl(String siteUrl) {
 		this.siteUrl = siteUrl;
 	}
