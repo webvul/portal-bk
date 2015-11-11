@@ -92,7 +92,15 @@ public class ThingManager {
 				tagIndexDao.addThingToTag(tag, things);
 			}
 		}
+	}
+	
+	public void unbindTagToThing(String tagID,String thingID) {
+		GlobalThingInfo thing=globalThingDao.getObjectByID(thingID);
+		TagIndex tag = tagIndexDao.getObjectByID(tagID);
 
+		globalThingDao.unbindTagsToThing(new String[]{tagID}, thing);
+
+		tagIndexDao.removeThingFromTag(tag, Arrays.asList(thing));
 	}
 
 }

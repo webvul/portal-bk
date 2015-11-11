@@ -32,9 +32,7 @@ public class GlobalThingDao extends AbstractDataAccess<GlobalThingInfo>{
 	public void unbindTagsToThing(String[] tags,GlobalThingInfo thing){
 
 		Set<String> currTags=thing.getTags();
-
 		currTags.removeAll(Arrays.asList(tags));
-
 		Map<String,Object> valMap=new HashMap<>();
 		valMap.put(TAGS,currTags);
 

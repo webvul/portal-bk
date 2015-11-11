@@ -42,14 +42,12 @@ public class ThingController {
 
 	@RequestMapping(path="/{thingID}/tags/{tagName}",method={RequestMethod.PUT})
 	public void addThingTag(@PathVariable("thingID") String thingID,@PathVariable("tagName") String tagName){
-
 		thingManger.bindTagToThing(tagName,thingID);
-
 	}
 
 	@RequestMapping(path="/{thingID}/tag/{tagName}/",method={RequestMethod.DELETE})
 	public void removeThingTag(@PathVariable("thingID") String thingID,@PathVariable("tagName") String tagName){
-
+		thingManger.unbindTagToThing(tagName,thingID);
 
 	}
 }

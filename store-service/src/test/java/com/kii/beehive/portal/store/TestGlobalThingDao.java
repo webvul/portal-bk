@@ -65,12 +65,12 @@ public class TestGlobalThingDao extends TestInit {
 		
 		thingManager.bindTagToThing(tag.getId(),"001");
 		
-		//tag = tagIndexDao.getObjectByID(tag.getId());
-		//System.out.println(tag.toString());
+		tag = tagIndexDao.getObjectByID(tag.getId());
+		//System.out.println(tag.getGlobalThings());
+		//System.out.println(tag.getKiiAppIDs());
 		
 		assertEquals(1,tag.getGlobalThings().size());
 		assertEquals(1,tag.getKiiAppIDs().size());
-		
 	}
 
 	@Test
@@ -95,6 +95,27 @@ public class TestGlobalThingDao extends TestInit {
 		
 		//String json=mapper.writeValueAsString(tag);
 		//System.out.println(json);
+	}
+	
+	@Test
+	public void removeTag() throws Exception{
+		TagIndex tag=new TagIndex();
+		tag.setTagType(TagType.System.toString());
+		tag.setDisplayName("demo1");
+		
+		thingManager.bindTagToThing(tag.getId(),"001");
+		
+		//tag = tagIndexDao.getObjectByID(tag.getId());
+		//System.out.println(tag.getGlobalThings());
+		//System.out.println(tag.getKiiAppIDs());
+		
+		thingManager.unbindTagToThing(tag.getId(), "001");
+		tag = tagIndexDao.getObjectByID(tag.getId());
+		//System.out.println(tag.getGlobalThings());
+		//System.out.println(tag.getKiiAppIDs());
+		
+		assertEquals(0,tag.getGlobalThings().size());
+		assertEquals(0,tag.getKiiAppIDs().size());
 	}
 
 
