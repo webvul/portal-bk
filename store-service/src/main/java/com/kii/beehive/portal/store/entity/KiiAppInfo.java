@@ -3,12 +3,14 @@ package com.kii.beehive.portal.store.entity;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.kii.extension.sdk.entity.AppInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class KiiAppInfo {
+import com.kii.extension.sdk.entity.AppInfo;
+import com.kii.extension.sdk.entity.KiiEntity;
+
+public class KiiAppInfo extends KiiEntity{
 
 	private AppInfo appInfo;
-
 
 	private String appName;
 
@@ -16,7 +18,16 @@ public class KiiAppInfo {
 
 	private String thingIDPrefix;
 
-	private boolean isDefaultApp;
+
+	private boolean isMasterApp=false;
+
+	public boolean isMasterApp() {
+		return isMasterApp;
+	}
+
+	public void setIsMasterApp(boolean isMasterApp) {
+		this.isMasterApp = isMasterApp;
+	}
 
 	public AppInfo getAppInfo() {
 		return appInfo;
@@ -50,11 +61,4 @@ public class KiiAppInfo {
 		this.thingIDPrefix = thingIDPrefix;
 	}
 
-	public boolean isDefaultApp() {
-		return isDefaultApp;
-	}
-
-	public void setIsDefaultApp(boolean isDefaultApp) {
-		this.isDefaultApp = isDefaultApp;
-	}
 }

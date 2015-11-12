@@ -34,26 +34,8 @@ public class AppMasterSalveService {
 	private AdminTokenBindTool tool;
 
 
-//	private ApiAccessBuilder getBuilder(){
-//
-//	}
 
-
-	public void linkMasterSalve(String masterName,String[] salveArray){
-
-
-		this.setMaster(masterName);
-
-		for(String salve:salveArray){
-
-			ClientInfo info=this.addSalveApp(masterName, salve);
-			this.registInSalve(info,masterName,salve);
-		}
-
-
-	}
-
-	public boolean isMaster(String appName){
+	public boolean isMaster(AppInfo info){
 
 
 		/*
@@ -64,7 +46,7 @@ X-Kii-AppID: <appID>
 X-Kii-AppKey: <appKey>
 		 */
 
-		ApiAccessBuilder builder = getBuilder(appName);
+		ApiAccessBuilder builder = getBuilder(info);
 
 		HttpUriRequest request=builder.addSubUrl("/configuration/parameters/isMasterApp").buildCustomCall("GET",null).generRequest(mapper);
 
@@ -73,7 +55,7 @@ X-Kii-AppKey: <appKey>
 		return Boolean.parseBoolean(result);
 	}
 
-	public String checkMaster(String salveApp){
+	public String checkMaster(AppInfo info){
 		/*
 
 GET /apps/<slaveAppID>/configuration/parameters/kii.master_app_id
@@ -81,7 +63,7 @@ Authorization: Bearer xxxyyyzzz (app-admin / sys-admin)
 X-Kii-AppID: <slaveAppID>
 X-Kii-AppKey: <slaveAppKey>
 		 */
-		HttpUriRequest  request=getBuilder(salveApp).bindToken(tool.getToken())
+		HttpUriRequest  request=getBuilder(info).bindToken(tool.getToken())
 				.addSubUrl("/configuration/parameters/kii.master_app_id")
 				.buildCustomCall("GET",null).generRequest(mapper);
 
@@ -90,15 +72,14 @@ X-Kii-AppKey: <slaveAppKey>
 
 	}
 
-	private ApiAccessBuilder getBuilder(String appName) {
-		bindToolResolver.setAppName(appName,false);
-		AppInfo info= bindToolResolver.getAppInfo();
+	private ApiAccessBuilder getBuilder(AppInfo info) {
+		bindToolResolver.setAppInfoDrectly(info);
 
 		return new ApiAccessBuilder(info).bindToken(tool.getToken());
 	}
 
 
-	public void setMaster(String appName){
+	public void setMaster(AppInfo info){
 
 		/*
 		PUT /apps/<masterAppID>/configuration/parameters/isMasterApp
@@ -107,7 +88,7 @@ Authorization: Bearer xxxyyyzzz (app-admin / sys-admin)
 X-Kii-AppID: <masterAppID>
 X-Kii-AppKey: <masterAppKey>
 		 */
-		ApiAccessBuilder builder = getBuilder(appName);
+		ApiAccessBuilder builder = getBuilder(info);
 
 		HttpUriRequest request=builder.addSubUrl("/configuration/parameters/isMasterApp").setContentType("text/plain").buildCustomCall("PUT","true").generRequest(mapper);
 
@@ -119,9 +100,18 @@ X-Kii-AppKey: <masterAppKey>
 
 	}
 
-	static String url="https://$(0).$(1).kii.com/api/apps/$(0)/integration/webauth/callback";
 
-	public ClientInfo addSalveApp(String masterApp,String salveApp){
+	public void addSalveAppToMaster(AppInfo  masterApp,AppInfo  salveAppInfo){
+
+		ClientInfo info=addSalveApp(masterApp,salveAppInfo);
+
+		registInSalve(info,masterApp,salveAppInfo);
+
+	}
+
+	static String url="http://$(0).$(1).kiiapps.com/api/apps/$(0)/integration/webauth/callback";
+
+	private  ClientInfo addSalveApp(AppInfo  masterApp,AppInfo  salveAppInfo){
 		/*
 		POST /apps/<masterAppId>/oauth2/clients
 content-type: application/vnd.kii.Oauth2ClientCreationRequest+json
@@ -134,13 +124,12 @@ Authorization: Bearer xxxyyyzzz (app-admin / sys-admin)
 
 		ApiAccessBuilder builder = getBuilder(masterApp);
 
-		AppInfo salveAppInfo=bindToolResolver.getAppInfoByName(salveApp);
 
 		String registUrl=StrTemplate.generUrl(url, salveAppInfo.getAppID(),salveAppInfo.getSiteType().getSite());
 
 
 		Map<String,String> map=new HashMap<>();
-		map.put("externalID", salveApp);
+		map.put("externalID", salveAppInfo.getAppID());
 		map.put("redirectURI", registUrl);
 
 		HttpUriRequest request=builder.addSubUrl("/oauth2/clients")
@@ -150,9 +139,9 @@ Authorization: Bearer xxxyyyzzz (app-admin / sys-admin)
 		return client.executeRequestWithCls(request,ClientInfo.class);
 	}
 
-	static String api="https://$(0).$(1).kii.com/api/";
+	static String api="http://$(0).$(1).kiiapps.com/api/";
 
-	public void registInSalve(ClientInfo clientInfo,String masterApp,String salveApp){
+	private void registInSalve(ClientInfo clientInfo,AppInfo masterApp,AppInfo salveApp){
 
 		/*
 
@@ -174,9 +163,9 @@ http://api-development-jp.internal.kii.com/api/apps/<slaveAppId> -d \
 
 		Map<String,String> map=new HashMap<>();
 
-		String masterAppID=bindToolResolver.getAppInfoByName(masterApp).getAppID();
+		String masterAppID=masterApp.getAppID();
 
-		String site=bindToolResolver.getAppInfoByName(masterApp).getSiteType().getSite();
+		String site=masterApp.getSiteType().getSite();
 
 		map.put("kii.consumer_key",clientInfo.clientID);
 		map.put("kii.consumer_secret",clientInfo.clientSecret);
@@ -192,7 +181,7 @@ http://api-development-jp.internal.kii.com/api/apps/<slaveAppId> -d \
 
 	}
 
-	public void delete(String masterApp,String salveApp,ClientInfo clientInfo){
+	public void delete(AppInfo masterApp,AppInfo salveApp,ClientInfo clientInfo){
 
 		/*
 		DELETE /apps/<masterAppID>/oauth2/clients/<clientID>

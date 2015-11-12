@@ -12,9 +12,6 @@ public class AppDetail {
 
 	private String appKey;
 
-	private String clientID;
-
-	private String clientSecret;
 
 	private SiteType site;
 
@@ -56,23 +53,7 @@ public class AppDetail {
 		this.appKey = appKey;
 	}
 
-	public String getClientID() {
-		return clientID;
-	}
 
-	@JsonProperty("client_id")
-	public void setClientID(String clientID) {
-		this.clientID = clientID;
-	}
-
-	public String getClientSecret() {
-		return clientSecret;
-	}
-
-	@JsonProperty("client_secret")
-	public void setClientSecret(String clientSecret) {
-		this.clientSecret = clientSecret;
-	}
 
 	public SiteType getSite() {
 		return site;
@@ -88,10 +69,8 @@ public class AppDetail {
 		AppInfo info=new AppInfo();
 		info.setAppID(appID);
 		info.setAppKey(appKey);
-		info.setClientID(clientID);
-		info.setClientSecret(clientSecret);
 		info.setName(name);
-		info.setSite(site);
+		info.setSiteType(site);
 
 		return info;
 	}

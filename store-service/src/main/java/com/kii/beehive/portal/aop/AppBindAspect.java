@@ -34,16 +34,30 @@ public class AppBindAspect {
 			choice.setBindName(appByName.appBindSource());
 		}
 		choice.setAppName(appByName.appName());
-		choice.setSupportDefault(appByName.usingDefault());
 
 		bindTool.setAppChoice(choice);
 
 	}
 
 
+//	@Before("within (@com.kii.beehive.portal.annotation.BindAppByName  com.kii.beehive.portal.service..* ) ")
+//	public void beforeCallBindFunction(JoinPoint joinPoint){
+//
+//		BindAppByName  appByName=joinPoint.getTarget().getClass().getAnnotation(BindAppByName.class);
+//
+//		AppChoice choice=new AppChoice();
+//		if(!StringUtils.isEmpty(appByName.appBindSource())) {
+//			choice.setBindName(appByName.appBindSource());
+//		}
+//		choice.setAppName(appByName.appName());
+//
+//		bindTool.setAppChoice(choice);
+//
+//	}
+
 
 	@Before("execution (*  com.kii.beehive.portal.service..*(@com.kii.beehive.portal.annotation.AppBindParam (*) , .. ))")
-	public void  beforeCallBindFunction(JoinPoint joinPoint ){
+	public void  beforeCallBindParam(JoinPoint joinPoint ){
 		MethodSignature signature = (MethodSignature) joinPoint.getSignature();
 		Method method = signature.getMethod();
 		Annotation[][] methodAnnotations = method.getParameterAnnotations();

@@ -79,7 +79,7 @@ public class LocalPropertyBindTool implements AppBindTool {
 			} else if (type.equals("clientsecret")) {
 				info.setClientSecret(val);
 			} else if (type.equals("site")) {
-				info.setSite(SiteType.valueOf(val.toUpperCase()));
+				info.setSiteType(SiteType.valueOf(val.toUpperCase()));
 			} else if (type.equals("siteurl")) {
 				info.setSiteUrl(val);
 			}

@@ -10,9 +10,6 @@ public class AppChoice implements Serializable{
 
 	private String appName;
 
-	private boolean supportDefault=false;
-
-
 	public String getBindName() {
 		return bindName;
 	}
@@ -29,13 +26,5 @@ public class AppChoice implements Serializable{
 		if(!StringUtils.isEmpty(appName)) {
 			this.appName = appName;
 		}
-	}
-
-	public boolean isSupportDefault() {
-		return supportDefault;
-	}
-
-	public void setSupportDefault(boolean supportDefault) {
-		this.supportDefault = supportDefault;
 	}
 }

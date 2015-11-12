@@ -22,11 +22,11 @@ public class TestPortal extends TestTemplate{
 	@Test
 	public void checkMaster(){
 
-		assertFalse(appTool.isMaster(salves[0]));
-
-		String value=appTool.checkMaster(salves[0]);
-
-		System.out.println(value);
+//		assertFalse(appTool.isMaster(salves[0]));
+//
+//		String value=appTool.checkMaster(salves[0]);
+//
+//		System.out.println(value);
 	}
 
 	@Test
@@ -37,11 +37,11 @@ public class TestPortal extends TestTemplate{
 //		assertTrue(appTool.isMaster(master));
 
 
-		AppMasterSalveService.ClientInfo info=appTool.addSalveApp(master,salves[0]);
-
-//		assertNotNull(info.getClientID());
-
-		appTool.registInSalve(info,master,salves[0]);
+//		AppMasterSalveService.ClientInfo info=appTool.addSalveApp(master,salves[0]);
+//
+////		assertNotNull(info.getClientID());
+//
+//		appTool.registInSalve(info,master,salves[0]);
 
 	}
 

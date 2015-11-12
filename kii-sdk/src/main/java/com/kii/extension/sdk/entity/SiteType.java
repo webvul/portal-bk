@@ -2,7 +2,7 @@ package com.kii.extension.sdk.entity;
 
 public enum SiteType {
 
-	US("api"),SG("api-sg"),JP("api-jp"),CN3("api-cn3"),CN("api-cn2"),BH01A("api-development-beehivecn3.internal");
+	US(""),SG("sg"),JP("jp"),CN3("cn3"),CN("cn2"),BH01A("development-beehivecn3.internal");
 
 	private String url;
 
@@ -11,7 +11,12 @@ public enum SiteType {
 	SiteType(String site){
 
 		this.site=site;
-		url="https://"+site+".kii.com";
+		if(site.equals("")){
+			url="https://api.kii.com";
+		}else {
+			url = "https://api-" + site + ".kii.com";
+		}
+		return;
 	}
 
 	public String getSiteUrl(){

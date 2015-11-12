@@ -26,7 +26,7 @@ public class MockAppBindTool implements AppBindTool {
 		appInfo.setAppKey(appKey);
 		appInfo.setClientID(client);
 		appInfo.setClientSecret(secret);
-		appInfo.setSite(SiteType.JP);
+		appInfo.setSiteType(SiteType.JP);
 
 	}
 

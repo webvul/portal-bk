@@ -14,8 +14,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kii.extension.sdk.entity.BucketInfo;
 import com.kii.extension.sdk.context.AppBindTool;
 import com.kii.extension.sdk.context.AppBindToolResolver;
+import com.kii.extension.sdk.entity.KiiUser;
 import com.kii.extension.sdk.service.DataService;
 import com.kii.extension.sdk.context.TokenBindToolResolver;
+import com.kii.extension.sdk.service.FederatedAuthService;
 import com.kii.extension.sdk.service.UserService;
 import com.kii.extension.sdk.context.UserTokenBindTool;
 
@@ -46,18 +48,29 @@ public class TestOAuth extends TestTemplate{
 	private String[] salves={"test-slave-1","test-slave-2"};
 
 
+	@Autowired
+	private FederatedAuthService fedAuthService;
+
+	@Test
+	public void testLogin(){
+
+		fedAuthService.getAuthUrl(salves[0]);
+
+
+	}
+
 	@Test
 	public void testOAuth(){
 
 
 		appResolver.setAppName(master);
 
-//		KiiUser user=new KiiUser();
-//		user.setDisplayName("demo");
-//		user.setEmailAddress("demo@foo.com");
-//		user.setPassword("qwerty");
-//
-//		String userID=service.createUser(user);
+		KiiUser user=new KiiUser();
+		user.setDisplayName("demo1");
+		user.setEmailAddress("demo1@foo.com");
+		user.setPassword("qwerty");
+
+		String userID=service.createUser(user);
 
 		tokenResolver.bindUser();
 

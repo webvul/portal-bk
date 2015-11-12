@@ -19,6 +19,7 @@ public class AppInfo {
 	private SiteType site;
 
 
+
 	public AppInfo(){
 
 	}
@@ -56,7 +57,7 @@ public class AppInfo {
 //		return site;
 //	}
 
-	public void setSite(SiteType site) {
+	public void setSiteType(SiteType site) {
 
 		this.site = site;
 		if(siteUrl==null) {
@@ -103,6 +104,7 @@ public class AppInfo {
 	public SiteType getSiteType(){
 		return site;
 	}
+
 	public void setSiteUrl(String siteUrl) {
 		this.siteUrl = siteUrl;
 	}

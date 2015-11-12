@@ -24,7 +24,7 @@ public class ThingManager {
 	private GlobalThingDao globalThingDao;
 
 	@Autowired
-	private AppInfoDao appInfoDao;
+	private AppInfoManager appInfoDao;
 
 	@Autowired
 	private TagIndexDao tagIndexDao;

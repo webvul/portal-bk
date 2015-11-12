@@ -149,4 +149,13 @@ public abstract class AbstractDataAccess<T> {
 
 	}
 
+	protected List<T> getAll(){
+
+		QueryParam query= ConditionBuilder.getAll().getFinalCondition().build();
+
+
+		return fullQuery(query);
+
+	}
+
 }

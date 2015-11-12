@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.kii.beehive.portal.manager.AppInfoManager;
 import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.service.DemoCrossAppDao;
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
@@ -14,7 +15,7 @@ import com.kii.extension.sdk.entity.AppInfo;
 public class TestAppInfo extends TestInit {
 
 	@Autowired
-	private AppInfoDao appDao;
+	private AppInfoManager appDao;
 
 	@Autowired
 	private DemoCrossAppDao crossDao;
@@ -26,34 +27,21 @@ public class TestAppInfo extends TestInit {
 	}
 
 	@Test
-	public void testAppInfo(){
+	public void testFillAppInfo(){
 
-		appDao.init();
 
-		AppInfo appInfo=appDao.getAppInfo("app1");
-
-//		KiiAppInfo info=new KiiAppInfo();
-//		info.setAppName("foo");
-//		appDao.addEntity(info);
-
+		appDao.initDataWithDevPortal("steven.jiang@kii.com","1qaz2wsx");
 	}
 
 	@Test
-	public void testDynamicApp(){
+	public void createRelation(){
 
-		DemoCrossAppDao.FooEntity foo=new DemoCrossAppDao.FooEntity();
-		foo.setName("hello");
+		appDao.setMasterSalve("master-test","portal");
+	}
 
-		String appName1="test-slave-1";
-		String appName2="test-slave-2";
+	@Test
+	public void testOAuth(){
 
-		String id1=crossDao.addData(appName1,foo);
-
-		String id2=crossDao.addData(appName2,foo);
-
-		DemoCrossAppDao.FooEntity newFoo=crossDao.getData(appName1,id1);
-
-		assertEquals(newFoo.getName(),"hello");
 
 
 	}

@@ -59,6 +59,13 @@ public class PortalApiAccessBuilder {
 		return this;
 	}
 
+	public PortalApiAccessBuilder buildAppSecret(String appID){
+
+		request=new HttpGet(baseUrl+"/v2api/apps/"+appID+"/secret");
+
+		return this;
+	}
+
 	public HttpUriRequest generRequest(){
 
 		return request;

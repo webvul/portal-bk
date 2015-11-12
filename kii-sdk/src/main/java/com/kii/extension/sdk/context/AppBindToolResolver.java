@@ -18,6 +18,8 @@ public class AppBindToolResolver {
 
 	private ThreadLocal<AppChoice>  appChoiceLocal;
 
+	private ThreadLocal<AppInfo>  directAppInfoLocal=new ThreadLocal<>();
+
 	private String[] getBeanNameArray(){
 
 		return context.getBeanNamesForType(AppBindTool.class);
@@ -31,12 +33,16 @@ public class AppBindToolResolver {
 			AppChoice choice=new AppChoice();
 
 			choice.setAppName(null);
-			choice.setBindName(getBeanNameArray()[0]);
-			choice.setSupportDefault(true);
 			return choice;
 		});
 
 	}
+
+
+	public void setAppInfoDrectly(AppInfo appInfo){
+		directAppInfoLocal.set(appInfo);
+	}
+
 
 	public void setAppChoice(AppChoice choice){
 
@@ -51,29 +57,34 @@ public class AppBindToolResolver {
 		AppChoice choice=new AppChoice();
 
 		choice.setAppName(appName);
-		choice.setSupportDefault(usingDefault);
 
 		appChoiceLocal.set(choice);
 
 	}
 
-	public AppInfo getAppInfoByName(String appName){
-
-		for (String bean : getBeanNameArray()) {
-			AppBindTool bindTool = context.getBean(bean, AppBindTool.class);
-
-			AppInfo info = bindTool.getAppInfo(appName);
-
-			if(info!=null){
-				return info;
-			}
-
-		}
-		return null;
-
-	}
+//	public AppInfo getAppInfoByName(String appName){
+//
+//		for (String bean : getBeanNameArray()) {
+//			AppBindTool bindTool = context.getBean(bean, AppBindTool.class);
+//
+//			AppInfo info = bindTool.getAppInfo(appName);
+//
+//			if(info!=null){
+//				return info;
+//			}
+//
+//		}
+//		return null;
+//
+//	}
 
 	public AppInfo getAppInfo(){
+
+		AppInfo directInfo=directAppInfoLocal.get();
+
+		if(directInfo!=null){
+			return directInfo;
+		}
 
 		AppChoice choice=appChoiceLocal.get();
 
@@ -106,9 +117,6 @@ public class AppBindToolResolver {
 
 		if(choice.getAppName()!=null) {
 			info = bindTool.getAppInfo(choice.getAppName());
-		}
-		if (info == null && choice.isSupportDefault()) {
-			info = bindTool.getDefaultAppInfo();
 		}
 
 		return info;

@@ -27,6 +27,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kii.extension.sdk.entity.AppDetail;
 import com.kii.extension.sdk.entity.AppInfo;
 import com.kii.extension.sdk.entity.AppInfoEntity;
+import com.kii.extension.sdk.entity.AppSecret;
 import com.kii.extension.sdk.impl.KiiCloudClient;
 import com.kii.extension.sdk.impl.PortalApiAccessBuilder;
 
@@ -125,6 +126,25 @@ public class DevPortalService {
 	}
 
 
+	public AppSecret getAppInfoSecret(String appInfoID){
+
+		HttpUriRequest request= getBuilder().buildAppSecret(appInfoID).generRequest();
+
+		bindCookies(request);
+
+		String result= client.executeRequest(request);
+
+
+		try {
+			return  mapper.readValue(result,AppSecret.class);
+		} catch (IOException e) {
+			throw new IllegalArgumentException(e);
+		}
+
+
+	}
+
+
 	public List<AppInfo>  getAppInfoList(){
 
 		List<AppInfoEntity> list=getAppList();
@@ -133,7 +153,14 @@ public class DevPortalService {
 		for(AppInfoEntity  entity:list){
 
 			AppDetail detail=getAppInfoDetail(entity.getId());
-			infoList.add(detail.getAppInfo());
+
+			AppInfo info=detail.getAppInfo();
+
+			AppSecret secret=getAppInfoSecret(entity.getId());
+
+			secret.fillAppInfo(info);
+
+			infoList.add(info);
 		}
 
 		return infoList;
