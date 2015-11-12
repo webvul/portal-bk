@@ -1,10 +1,6 @@
 package com.kii.beehive.portal.common.utils;
 
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.springframework.beans.BeanUtils;
 
 public class StrTemplate {
 

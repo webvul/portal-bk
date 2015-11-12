@@ -1,5 +1,6 @@
 package com.kii.beehive.portal.web.controller;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.logging.log4j.util.Strings;
@@ -13,9 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.portal.manager.ThingManager;
 import com.kii.beehive.portal.service.GlobalThingDao;
-import com.kii.beehive.portal.service.TagIndexDao;
 import com.kii.beehive.portal.store.entity.GlobalThingInfo;
-import com.kii.beehive.portal.store.entity.TagIndex;
+import com.kii.beehive.portal.web.entity.ThingInput;
 import com.kii.beehive.portal.web.help.PortalException;
 
 @RestController
@@ -27,9 +27,6 @@ public class ThingController {
 	private ThingManager thingManager;
 	
 	@Autowired
-	private TagIndexDao tagIndexDao;
-	
-	@Autowired
 	private GlobalThingDao globalThingDao;
 	
 	@RequestMapping(path="/all",method={RequestMethod.GET})
@@ -38,27 +35,33 @@ public class ThingController {
 	}
 
 	@RequestMapping(path="/",method={RequestMethod.POST})
-	public void createThing(@RequestBody GlobalThingInfo input){
+	public void createThing(@RequestBody ThingInput input){
 		if(input == null){
 			throw new PortalException();//no body
 		}
 		
-		if(Strings.isEmpty(input.getVendorThingID())){
+		if(Strings.isBlank(input.getVendorThingID())){
 			throw new PortalException();//paramter missing
 		}
 		
-		if(Strings.isEmpty(input.getGlobalThingID())){
+		if(Strings.isBlank(input.getGlobalThingID())){
 			throw new PortalException();//paramter missing
 		}
 		
+		GlobalThingInfo thingInfo = new GlobalThingInfo();
+		thingInfo.setVendorThingID(input.getVendorThingID());
+		thingInfo.setGlobalThingID(input.getGlobalThingID());
+		thingInfo.setType(input.getType());
+		thingInfo.setStatus(input.getStatus());
+		thingInfo.setStatusUpdatetime(new Date());
 		
-		thingManager.createThing(input);
+		thingManager.createThing(thingInfo,input.getTags());
 	}
 	
 	@RequestMapping(path="/{thingID}",method={RequestMethod.DELETE})
 	public void removeThing(@PathVariable("thingID") String thingID){
 		
-		if(Strings.isEmpty(thingID)){
+		if(Strings.isBlank(thingID)){
 			throw new PortalException();//paramter missing
 		}
 		
@@ -70,11 +73,10 @@ public class ThingController {
 		
 		globalThingDao.removeGlobalThingByID(orig.getId());
 	}
-	
-
 
 	@RequestMapping(path="/{thingID}/tags/{tagName}",method={RequestMethod.PUT})
 	public void addThingTag(@PathVariable("thingID") String thingID,@PathVariable("tagName") String tagName){
+		//TODO
 		thingManager.bindTagToThing(tagName,thingID);
 	}
 
@@ -83,23 +85,17 @@ public class ThingController {
 		thingManager.unbindTagToThing(tagName,thingID);
 	}
 	
-	@RequestMapping(path = "/tag/{tagName}", method = {RequestMethod.GET})
-	public List<GlobalThingInfo> getThingsByTag(@PathVariable("tagName") String tagName) {
-		if(Strings.isEmpty(tagName)){
+	@RequestMapping(path = "/tag/{tagName}/{operation}", method = {RequestMethod.GET})
+	public List<GlobalThingInfo> getThingsByTag(@PathVariable("tagName") String tagName, @PathVariable("operation") String operation) {
+		if(Strings.isBlank(tagName)){
 			throw new PortalException();//paramter missing
 		}
 		
-		TagIndex tagIndex = tagIndexDao.getTagIndexByID(tagName);
-		
-		if(tagIndex == null){
-			throw new PortalException();// not found object
+		if(Strings.isBlank(operation)){
+			throw new PortalException();//paramter missing
 		}
+		List<GlobalThingInfo> list = this.thingManager.findThingByTagName(tagName.split(","), operation);
 		
-		if(tagIndex.getGlobalThings().size() == 0){
-			throw new PortalException();// no GlobalThings
-		}
-		List<GlobalThingInfo> list = globalThingDao.getThingsByIDs(tagIndex.getGlobalThings().toArray(new String[tagIndex.getGlobalThings().size()]));
 		return list;
-
 	}
 }

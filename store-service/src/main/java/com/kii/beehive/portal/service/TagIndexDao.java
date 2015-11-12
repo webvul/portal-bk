@@ -20,12 +20,14 @@ public class TagIndexDao extends AbstractDataAccess<TagIndex> {
 	
 	private final String BUCKET_INFO = "TagThingInfo";
 	
-	public List<TagIndex> getAllThing() {
+	public List<TagIndex> getAllTag() {
 		return super.query(ConditionBuilder.getAll().getFinalCondition().build());
 	}
 	
-	public List<TagIndex> query(QueryParam queryParam) {
-		return super.query(queryParam);
+	public List<TagIndex> findTagIndexByTagNameArray(String[] tagNameArray){
+		QueryParam query = ConditionBuilder.orCondition().In("_id", tagNameArray).getFinalCondition().build();
+		List<TagIndex> tagIndexList = super.query(query);
+		return tagIndexList;
 	}
 	
 	public void removeTagByID(String id){

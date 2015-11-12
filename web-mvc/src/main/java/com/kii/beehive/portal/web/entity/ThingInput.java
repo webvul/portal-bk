@@ -1,24 +1,31 @@
 package com.kii.beehive.portal.web.entity;
 
-import java.util.Arrays;
+import java.util.List;
+
+import com.kii.beehive.portal.store.entity.TagIndex;
 
 public class ThingInput {
 
-	private String thingID;
+	private String globalThingID;
 
 	private String vendorThingID;
 
-	private String[] tags;
+	private List<TagIndex> tags;
 
-	private String locationID;
+	private String type;
 
+	private String status;
 
-	public String getThingID() {
-		return thingID;
+	public String getGlobalThingID() {
+		return globalThingID;
 	}
 
-	public void setThingID(String thingID) {
-		this.thingID = thingID;
+	public void setGlobalThingID(String globalThingID) {
+		this.globalThingID = globalThingID;
+	}
+
+	public List<TagIndex> getTags() {
+		return tags;
 	}
 
 	public String getVendorThingID() {
@@ -29,33 +36,39 @@ public class ThingInput {
 		this.vendorThingID = vendorThingID;
 	}
 
-	public String[] getTags() {
-		return tags;
+	public String getType() {
+		return type;
 	}
 
-	public void setTags(String[] tags) {
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	
+	public void setTags(List<TagIndex> tags) {
 		this.tags = tags;
-	}
-
-	public String getLocationID() {
-		return locationID;
-	}
-
-	public void setLocationID(String locationID) {
-		this.locationID = locationID;
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("ThingInput [thingID=");
-		builder.append(thingID);
+		builder.append("ThingInput [globalThingID=");
+		builder.append(globalThingID);
 		builder.append(", vendorThingID=");
 		builder.append(vendorThingID);
 		builder.append(", tags=");
-		builder.append(Arrays.toString(tags));
-		builder.append(", locationID=");
-		builder.append(locationID);
+		builder.append(tags);
+		builder.append(", type=");
+		builder.append(type);
+		builder.append(", status=");
+		builder.append(status);
 		builder.append("]");
 		return builder.toString();
 	}
