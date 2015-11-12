@@ -1,5 +1,6 @@
 package com.kii.beehive.portal.web.controller;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.logging.log4j.util.Strings;
@@ -12,8 +13,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.portal.manager.ThingManager;
+import com.kii.beehive.portal.service.GlobalThingDao;
 import com.kii.beehive.portal.store.entity.GlobalThingInfo;
-import com.kii.beehive.portal.store.entity.TagIndex;
+import com.kii.beehive.portal.web.entity.ThingInput;
+import com.kii.beehive.portal.web.help.PortalException;
 
 @RestController
 @RequestMapping(path="/things",consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -23,49 +26,57 @@ public class ThingController {
 	@Autowired
 	private ThingManager thingManager;
 	
+	@Autowired
+	private GlobalThingDao globalThingDao;
+	
 	@RequestMapping(path="/all",method={RequestMethod.GET})
 	public List<GlobalThingInfo> getThing(){
-		return thingManager.findGlobalThing();
+		return globalThingDao.getAllThing();
 	}
 
 	@RequestMapping(path="/",method={RequestMethod.POST})
-	public void createThing(@RequestBody GlobalThingInfo input){
+	public void createThing(@RequestBody ThingInput input){
 		if(input == null){
-			//no body
+			throw new PortalException();//no body
 		}
 		
-		if(Strings.isEmpty(input.getVendorThingID())){
-			//paramter missing
+		if(Strings.isBlank(input.getVendorThingID())){
+			throw new PortalException();//paramter missing
 		}
 		
-		if(Strings.isEmpty(input.getGlobalThingID())){
-			//paramter missing
+		if(Strings.isBlank(input.getGlobalThingID())){
+			throw new PortalException();//paramter missing
 		}
 		
+		GlobalThingInfo thingInfo = new GlobalThingInfo();
+		thingInfo.setVendorThingID(input.getVendorThingID());
+		thingInfo.setGlobalThingID(input.getGlobalThingID());
+		thingInfo.setType(input.getType());
+		thingInfo.setStatus(input.getStatus());
+		thingInfo.setStatusUpdatetime(new Date());
 		
-		thingManager.createThing(input);
+		thingManager.createThing(thingInfo,input.getTags());
 	}
 	
 	@RequestMapping(path="/{thingID}",method={RequestMethod.DELETE})
 	public void removeThing(@PathVariable("thingID") String thingID){
 		
-		if(Strings.isEmpty(thingID)){
-			//paramter missing
+		if(Strings.isBlank(thingID)){
+			throw new PortalException();//paramter missing
 		}
 		
-		GlobalThingInfo orig =  thingManager.findGlobalThingById(thingID);
+		GlobalThingInfo orig =  globalThingDao.getThingInfoByID(thingID);
 		
 		if(orig == null){
-			//not found object
+			throw new PortalException();//not found object
 		}
 		
-		thingManager.deleteThing(orig);
+		globalThingDao.removeGlobalThingByID(orig.getId());
 	}
-	
-
 
 	@RequestMapping(path="/{thingID}/tags/{tagName}",method={RequestMethod.PUT})
 	public void addThingTag(@PathVariable("thingID") String thingID,@PathVariable("tagName") String tagName){
+		//TODO
 		thingManager.bindTagToThing(tagName,thingID);
 	}
 
@@ -74,23 +85,17 @@ public class ThingController {
 		thingManager.unbindTagToThing(tagName,thingID);
 	}
 	
-	@RequestMapping(path = "/tag/{tagName}", method = {RequestMethod.GET})
-	public List<GlobalThingInfo> getThingsByTag(@PathVariable("tagName") String tagName) {
-		if(Strings.isEmpty(tagName)){
-			//paramter missing
+	@RequestMapping(path = "/tag/{tagName}/{operation}", method = {RequestMethod.GET})
+	public List<GlobalThingInfo> getThingsByTag(@PathVariable("tagName") String tagName, @PathVariable("operation") String operation) {
+		if(Strings.isBlank(tagName)){
+			throw new PortalException();//paramter missing
 		}
 		
-		TagIndex tagIndex = thingManager.findTagIndexByTagName(tagName);
-		
-		if(tagIndex == null){
-			// not found object
+		if(Strings.isBlank(operation)){
+			throw new PortalException();//paramter missing
 		}
+		List<GlobalThingInfo> list = this.thingManager.findThingByTagName(tagName.split(","), operation);
 		
-		if(tagIndex.getGlobalThings().size() == 0){
-			// no GlobalThings
-		}
-		List<GlobalThingInfo> list = thingManager.findGlobalThingByIds(tagIndex.getGlobalThings().toArray(new String[tagIndex.getGlobalThings().size()]));
 		return list;
-
 	}
 }

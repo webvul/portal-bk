@@ -12,17 +12,13 @@ public class GlobalThingInfo extends KiiEntity {
 
 	private String vendorThingID;
 
+	private String type;
+
+	private String status;
+	
 	private Set<String> tags=new HashSet<>();
 
 	private String kiiAppID;
-
-	private String locationID;
-
-	private String type;
-
-	private String appName;
-	
-	private String status;
 
 	private Date statusUpdatetime;
 
@@ -53,14 +49,6 @@ public class GlobalThingInfo extends KiiEntity {
 		this.kiiAppID = kiiAppID;
 	}
 
-	public String getLocationID() {
-		return locationID;
-	}
-
-	public void setLocationID(String locationID) {
-		this.locationID = locationID;
-	}
-
 	public String getType() {
 		return type;
 	}
@@ -83,14 +71,6 @@ public class GlobalThingInfo extends KiiEntity {
 
 	public void setGlobalThingID(String globalThingID) {
 		this.globalThingID = globalThingID;
-	}
-
-	public String getAppName() {
-		return appName;
-	}
-
-	public void setAppName(String appName) {
-		this.appName = appName;
 	}
 
 	public String getStatus() {
@@ -120,12 +100,8 @@ public class GlobalThingInfo extends KiiEntity {
 		builder.append(tags);
 		builder.append(", kiiAppID=");
 		builder.append(kiiAppID);
-		builder.append(", locationID=");
-		builder.append(locationID);
 		builder.append(", type=");
 		builder.append(type);
-		builder.append(", appName=");
-		builder.append(appName);
 		builder.append(", status=");
 		builder.append(status);
 		builder.append(", statusUpdatetime=");

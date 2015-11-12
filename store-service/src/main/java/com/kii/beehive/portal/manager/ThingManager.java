@@ -2,9 +2,11 @@ package com.kii.beehive.portal.manager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -14,8 +16,6 @@ import com.kii.beehive.portal.service.TagIndexDao;
 import com.kii.beehive.portal.store.entity.GlobalThingInfo;
 import com.kii.beehive.portal.store.entity.TagIndex;
 import com.kii.extension.sdk.entity.AppInfo;
-import com.kii.extension.sdk.query.ConditionBuilder;
-import com.kii.extension.sdk.query.QueryParam;
 
 @Component
 public class ThingManager {
@@ -30,64 +30,31 @@ public class ThingManager {
 	private TagIndexDao tagIndexDao;
 
 
-	public void createThing(GlobalThingInfo thingInfo){
+	public void createThing(GlobalThingInfo thingInfo, List<TagIndex> tagList){
 		if(thingInfo.getKiiAppID()==null){
 			AppInfo appInfo=appInfoDao.getMatchAppInfoByThing(thingInfo.getVendorThingID());
 			thingInfo.setKiiAppID(appInfo.getAppID());
 		}
-		thingInfo.setStatusUpdatetime(new Date());
 		globalThingDao.addThingInfo(thingInfo);
-	}
-	
-	public void createTag(TagIndex tag){
-		tagIndexDao.addTagIndex(tag);
-	}
-	
-	public void deleteThing(GlobalThingInfo thingInfo){
-		globalThingDao.removeGlobalThingByID(thingInfo.getId());
-	}
-	
-	public void deleteTag(TagIndex tag){
-		tagIndexDao.removeTagByID(tag.getId());
-	}
-	
-	public GlobalThingInfo findGlobalThingById(String thingID){
-		return globalThingDao.getThingInfoByID(thingID);
-	}
-	
-	public List<GlobalThingInfo> findGlobalThingByIds(String[] thingIDs){
-		return globalThingDao.getThingsByIDs(thingIDs);
+		Set<String> tagNameSet = new HashSet<String>();
+		if(tagList.size() > 0){
+			for(TagIndex tag:tagList){
+				if(!Strings.isBlank(tag.getDisplayName()) && !Strings.isBlank(tag.getTagType())){
+					TagIndex tagIndex = tagIndexDao.getTagIndexByID(tag.getId());
+					if(tagIndex == null){// create tag
+						tagIndexDao.addTagIndex(tagIndex);
+					}
+					tagNameSet.add(tag.getId());
+				}
+			}
+			this.bindTagToThing(tagNameSet.toArray(new String[tagNameSet.size()]), new String[]{thingInfo.getId()});
+			
+		}
 	}
 	
 	
-	public TagIndex findTagById(String tagID){
-		return tagIndexDao.getTagIndexByID(tagID);
-	}
-	
-	public List<GlobalThingInfo> findGlobalThing(){
-		return globalThingDao.getAllThing();
-	}
-	
-	public List<TagIndex> findTagIndex(){
-		return tagIndexDao.getAllThing();
-	}
-	
-	public List<TagIndex> findTagIndexByQuery(String[] tagNameArray){
-		QueryParam query = ConditionBuilder.orCondition().In("_id", tagNameArray).getFinalCondition().build();
-		List<TagIndex> tagIndexList = tagIndexDao.query(query);
-		return tagIndexList;
-	}
-	
-	public TagIndex findTagIndexByTagName(String tagName){
-		return tagIndexDao.getTagIndexByID(tagName);
-	}
-
 	public void bindTagToThing(String tagID,String thingID) {
-		GlobalThingInfo thing=globalThingDao.getThingInfoByID(thingID);
-		TagIndex tag = tagIndexDao.getTagIndexByID(tagID);
-
-		globalThingDao.bindTagsToThing(new String[]{tagID}, thing);
-		tagIndexDao.addThingToTag(tag, Arrays.asList(thing));
+		this.bindTagToThing(new String[]{tagID}, new String[]{thingID});
 	}
 
 
@@ -132,6 +99,31 @@ public class ThingManager {
 		globalThingDao.unbindTagsToThing(new String[]{tagID}, thing);
 
 		tagIndexDao.removeThingFromTag(tag, Arrays.asList(thing));
+	}
+	
+	
+	public List<GlobalThingInfo> findThingByTagName(String[] tagArray, String operation){
+		List<GlobalThingInfo> list = null;
+		List<TagIndex> tagList = tagIndexDao.findTagIndexByTagNameArray(tagArray);
+		
+		Set<String> thingsSet = new HashSet<String>();
+		for(TagIndex ti:tagList){
+			thingsSet.addAll(ti.getGlobalThings());
+		}
+		
+		if(thingsSet.size() > 0){
+			list = globalThingDao.getThingsByIDs(thingsSet.toArray(new String[thingsSet.size()]));
+		}
+		
+		if(operation.equals("and")){
+			Set<String> tagSet = new HashSet<String>(Arrays.asList(tagArray));
+			for(int i=0; i< list.size() ;i++){
+				if(!list.get(i).getTags().containsAll(tagSet)){//include part of 
+					list.remove(i);
+				}
+			}
+		}
+		return list;
 	}
 
 }

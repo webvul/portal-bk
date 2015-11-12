@@ -18,12 +18,16 @@ import com.kii.extension.sdk.service.AbstractDataAccess;
 @Component
 public class TagIndexDao extends AbstractDataAccess<TagIndex> {
 	
-	public List<TagIndex> getAllThing() {
+	private final String BUCKET_INFO = "TagThingInfo";
+	
+	public List<TagIndex> getAllTag() {
 		return super.query(ConditionBuilder.getAll().getFinalCondition().build());
 	}
 	
-	public List<TagIndex> query(QueryParam queryParam) {
-		return super.query(queryParam);
+	public List<TagIndex> findTagIndexByTagNameArray(String[] tagNameArray){
+		QueryParam query = ConditionBuilder.orCondition().In("_id", tagNameArray).getFinalCondition().build();
+		List<TagIndex> tagIndexList = super.query(query);
+		return tagIndexList;
 	}
 	
 	public void removeTagByID(String id){
@@ -91,7 +95,7 @@ public class TagIndexDao extends AbstractDataAccess<TagIndex> {
 
 	@Override
 	protected BucketInfo getBucketInfo() {
-		return new BucketInfo("TagThingInfo");
+		return new BucketInfo(BUCKET_INFO);
 	}
 
 
