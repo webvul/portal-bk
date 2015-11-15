@@ -22,7 +22,12 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-
+/**
+ * Tech Design - Beehive API
+ * User Sync Util to 3rd party systems (同步用户信息到第三方系统)
+ *
+ * refer to doc "Tech Design - Beehive API" for details
+ */
 @Component
 public class UserSyncNotifier {
 

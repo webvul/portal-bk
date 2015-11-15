@@ -12,6 +12,12 @@ import com.kii.extension.sdk.service.UserService;
 
 import java.util.Set;
 
+/**
+ * Tech Design - Beehive API
+ * User Sync Util to Kii Master App (同步用户信息到Kii Master(Federated) App)
+ *
+ * refer to doc "Tech Design - Beehive API" for details
+ */
 @Component
 public class KiiUserSyncDao {
 

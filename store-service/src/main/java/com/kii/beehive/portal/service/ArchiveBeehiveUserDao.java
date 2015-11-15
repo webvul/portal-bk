@@ -32,6 +32,10 @@ public class ArchiveBeehiveUserDao extends AbstractDataAccess<ArchiveBeehiveUser
 
 		archiveUser.setUserName(user.getUserName());
 
+		archiveUser.setPhone(user.getPhone());
+
+		archiveUser.setMail(user.getMail());
+
 		archiveUser.setRole(user.getRole());
 
 		archiveUser.setCompany(user.getCompany());

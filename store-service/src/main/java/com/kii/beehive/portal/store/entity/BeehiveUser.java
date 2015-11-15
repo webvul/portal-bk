@@ -22,6 +22,10 @@ public class BeehiveUser extends KiiEntity {
 
 	private String userName;
 
+	private String phone;
+
+	private String mail;
+
 	private String role;
 
 	private String company;
@@ -61,6 +65,22 @@ public class BeehiveUser extends KiiEntity {
 
 	public void setUserName(String userName) {
 		this.userName = userName;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+	public String getMail() {
+		return mail;
+	}
+
+	public void setMail(String mail) {
+		this.mail = mail;
 	}
 
 	public String getRole() {
