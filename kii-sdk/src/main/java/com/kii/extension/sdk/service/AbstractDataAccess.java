@@ -1,8 +1,5 @@
 package com.kii.extension.sdk.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -12,6 +9,11 @@ import com.kii.extension.sdk.entity.KiiEntity;
 import com.kii.extension.sdk.entity.UpdateResponse;
 import com.kii.extension.sdk.query.ConditionBuilder;
 import com.kii.extension.sdk.query.QueryParam;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 public abstract class AbstractDataAccess<T> {
 
@@ -100,7 +102,7 @@ public abstract class AbstractDataAccess<T> {
 	}
 
 
-	protected String updateEntityWithVersion(Map<String,Object>  entity,String id,int version){
+	protected String updateEntityWithVersion(Map<String,Object> entity, String id, int version){
 
 		return service.updateObjectWithVersion(id, entity, bucketInfo, String.valueOf(version));
 
@@ -131,7 +133,7 @@ public abstract class AbstractDataAccess<T> {
 
 		do {
 
-			List<T>  list=service.query(queryParam, typeCls, bucketInfo);
+			List<T> list=service.query(queryParam, typeCls, bucketInfo);
 			result.addAll(list);
 
 		}while(queryParam.getPaginationKey()!=null);
@@ -156,6 +158,45 @@ public abstract class AbstractDataAccess<T> {
 
 		return fullQuery(query);
 
+	}
+
+	protected List<T> getEntitys(String field, Object[] values) {
+
+		return getEntitys(field, Arrays.asList(values));
+	}
+
+	protected List<T> getEntitys(String field, List<Object> values) {
+
+		List<T> resultList = new ArrayList<T>();
+
+		if(values == null || values.size() == 0) {
+			return resultList;
+		}
+
+		// the "In" query condition only can put 200 elements at most
+		int size = values.size();
+		for(int i = 0; i < size; i += 200) {
+			int endIndex = (i + 200) >= size? size : i + 200;
+			List<Object> tempValues = values.subList(i, endIndex);
+
+			QueryParam query= ConditionBuilder.newCondition().In(field, tempValues).getFinalCondition().build();
+			List<T> tempList = fullQuery(query);
+			resultList.addAll(tempList);
+		}
+
+		return resultList;
+	}
+
+	protected T getEntity(String field, String value) {
+
+		QueryParam query= ConditionBuilder.newCondition().equal(field, value).getFinalCondition().build();
+		List<T> result = fullQuery(query);
+
+		if(result != null && result.size() >= 0) {
+			return result.get(0);
+		}
+
+		return null;
 	}
 
 }

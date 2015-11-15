@@ -5,12 +5,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.annotation.AppBindParam;
-import com.kii.beehive.portal.annotation.BindAppByName;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.extension.sdk.entity.KiiUser;
 import com.kii.extension.sdk.entity.LoginInfo;
-import com.kii.extension.sdk.service.AbstractDataAccess;
 import com.kii.extension.sdk.service.UserService;
+
+import java.util.Set;
 
 @Component
 public class KiiUserSyncDao {
@@ -44,6 +44,12 @@ public class KiiUserSyncDao {
 		LoginInfo loginInfo=userService.login(userID,pwd);
 
 		return loginInfo.getToken();
+	}
+
+	public void disableBeehiveUser(BeehiveUser user,  @AppBindParam String appName) {
+
+		userService.disableUser(user.getKiiUserID());
+
 	}
 
 

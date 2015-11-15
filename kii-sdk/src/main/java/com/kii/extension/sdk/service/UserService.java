@@ -64,5 +64,10 @@ public class UserService {
 
 	}
 
+	public void disableUser(String kiiUserID) {
+
+		// TODO to implement the logic here
+
+	}
 
 }

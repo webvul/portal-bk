@@ -2,6 +2,7 @@ package com.kii.beehive.portal.store.entity;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
@@ -17,13 +18,15 @@ public class BeehiveUser extends KiiEntity {
 
 	private String kiiUserID;
 
-	private String terminal;
+	private String party3rdID;
 
 	private String userName;
 
 	private String role;
 
 	private String company;
+
+	private Set<String> groups;
 
 	private Map<String,Object> customFields=new HashMap<>();
 
@@ -44,12 +47,12 @@ public class BeehiveUser extends KiiEntity {
 		this.kiiUserID = kiiUserID;
 	}
 
-	public String getTerminal() {
-		return terminal;
+	public String getParty3rdID() {
+		return party3rdID;
 	}
 
-	public void setTerminal(String terminal) {
-		this.terminal = terminal;
+	public void setParty3rdID(String party3rdID) {
+		this.party3rdID = party3rdID;
 	}
 
 	public String getUserName() {
@@ -74,6 +77,14 @@ public class BeehiveUser extends KiiEntity {
 
 	public void setCompany(String company) {
 		this.company = company;
+	}
+
+	public Set<String> getGroups() {
+		return groups;
+	}
+
+	public void setGroups(Set<String> groups) {
+		this.groups = groups;
 	}
 
 

@@ -1,10 +1,6 @@
 package com.kii.beehive.portal.service;
 
-import javax.annotation.PostConstruct;
-
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.stereotype.Component;
 
@@ -17,8 +13,6 @@ import com.kii.extension.sdk.service.AbstractDataAccess;
 @Component
 public class DeviceSupplierDao extends AbstractDataAccess<DeviceSupplier>{
 
-
-
 	public List<DeviceSupplier> getAllSupplier(){
 		return super.getAll();
 	}
@@ -27,18 +21,15 @@ public class DeviceSupplierDao extends AbstractDataAccess<DeviceSupplier>{
 		return  super.addKiiEntity(entity);
 	}
 
-	public void updateSupplier(String id,DeviceSupplier map){
+	public void updateSupplier(String party3rdID, DeviceSupplier map){
 
-		super.updateEntity(map,id);
+		super.updateEntity(map, party3rdID);
 	}
 
-	public void removeDeviceSupplier(String id){
+	public void removeDeviceSupplier(String party3rdID){
 
-		super.removeEntity(id);
+		super.removeEntity(party3rdID);
 	}
-
-
-
 
 
 	@Override
@@ -48,7 +39,7 @@ public class DeviceSupplierDao extends AbstractDataAccess<DeviceSupplier>{
 
 	@Override
 	protected BucketInfo getBucketInfo() {
-		return new BucketInfo("deviceParty3rd");
+		return new BucketInfo("DeviceSupplier");
 	}
 
 	public DeviceSupplier getSupplierByID(String id) {

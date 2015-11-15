@@ -7,7 +7,7 @@ public class DeviceSupplier extends KiiEntity {
 
 	private String name;
 
-	private String type;
+	private String party3rdID;
 
 	private String relationAppName;
 
@@ -15,12 +15,12 @@ public class DeviceSupplier extends KiiEntity {
 
 	private String userInfoNotifyUrl;
 
-	public String getType() {
-		return type;
+	public String getParty3rdID() {
+		return party3rdID;
 	}
 
-	public void setType(String type) {
-		this.type = type;
+	public void setParty3rdID(String party3rdID) {
+		this.party3rdID = party3rdID;
 	}
 
 
