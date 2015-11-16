@@ -35,7 +35,6 @@ public class ThingController {
 	private GlobalThingDao globalThingDao;
 
 	/**
-	 * Beehive API - Thing API
 	 * 查询设备
 	 * GET /things/{globalThingID}
 	 *
@@ -46,13 +45,14 @@ public class ThingController {
 	 */
 	@RequestMapping(path = "/{globalThingID}", method = {RequestMethod.GET})
 	public GlobalThingInfo getThingByGlobalID(@PathVariable("globalThingID") String globalThingID) {
-		// TODO
-
-		return null;
+		if(Strings.isBlank(globalThingID)){
+			throw new PortalException();//paramter missing
+		}
+		
+		return globalThingDao.getThingInfoByID(globalThingID);
 	}
 
 	/**
-	 * Beehive API - Thing API
 	 * 列出所有设备
 	 * GET /things/all
 	 *
@@ -66,7 +66,6 @@ public class ThingController {
 	}
 
 	/**
-	 * Beehive API - Thing API
 	 * 创建/更新设备信息
 	 * POST /things/
 	 *
@@ -84,13 +83,14 @@ public class ThingController {
 			throw new PortalException();//paramter missing
 		}
 		
-		if(Strings.isBlank(input.getGlobalThingID())){
+		if(Strings.isBlank(input.getKiiAppID())){
 			throw new PortalException();//paramter missing
 		}
 		
 		GlobalThingInfo thingInfo = new GlobalThingInfo();
 		thingInfo.setVendorThingID(input.getVendorThingID());
 		thingInfo.setGlobalThingID(input.getGlobalThingID());
+		thingInfo.setKiiAppID(input.getKiiAppID());
 		thingInfo.setType(input.getType());
 		thingInfo.setStatus(input.getStatus());
 		thingInfo.setStatusUpdatetime(new Date());
@@ -99,7 +99,6 @@ public class ThingController {
 	}
 
 	/**
-	 * Beehive API - Thing API
 	 * 移除设备
 	 * DELETE /things/{globalThingID}
 	 *
@@ -124,7 +123,6 @@ public class ThingController {
 	}
 
 	/**
-	 * Beehive API - Thing API
 	 * 绑定设备及tag
 	 * PUT /things/{globalThingID...}/tags/{tagName ...}
 	 *
@@ -135,20 +133,20 @@ public class ThingController {
      */
 	@RequestMapping(path="/{globalThingID}/tags/{tagName}",method={RequestMethod.PUT})
 	public void addThingTag(@PathVariable("globalThingID") String globalThingID,@PathVariable("tagName") String tagName){
-
-		if(globalThingID.indexOf(",") < 0 && tagName.indexOf(",") < 0) {
-			// in the case of binding one thing and one tag
-			thingManager.bindTagToThing(tagName,globalThingID);
-		} else {
-			// in the case of binding multiple things or multiple tags
-			String[] thingIDs = globalThingID.split(",");
-			String[] tagIDs = tagName.split(",");
-			thingManager.bindTagToThing(tagIDs, thingIDs);
+		if(Strings.isBlank(globalThingID)){
+			throw new PortalException();//paramter missing
 		}
+		
+		if(Strings.isBlank(tagName)){
+			throw new PortalException();//paramter missing
+		}
+		
+		String[] thingIDs = globalThingID.split(",");
+		String[] tagIDs = tagName.split(",");
+		thingManager.bindTagToThing(tagIDs, thingIDs);
 	}
 
 	/**
-	 * Beehive API - Thing API
 	 * 解除绑定设备及tag
 	 * DELETE /things/{globalThingID}/tags/{tagName}
 	 *
@@ -163,7 +161,6 @@ public class ThingController {
 	}
 
 	/**
-	 * Beehive API - Thing API
 	 * 查询tag下的设备
 	 * GET /things/tag/{tagName...}/operation/{operation}
 	 *

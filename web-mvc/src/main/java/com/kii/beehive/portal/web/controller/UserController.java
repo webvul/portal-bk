@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     /**
-     * Beehive API - User API
      * 创建用户
      * POST /users
      *
@@ -32,7 +31,6 @@ public class UserController {
     }
 
     /**
-     * Beehive API - User API
      * 更新用户
      * PUT /users
      *
@@ -48,7 +46,6 @@ public class UserController {
     }
 
     /**
-     * Beehive API - User API
      * 删除用户
      * DELETE /users
      *
@@ -57,14 +54,13 @@ public class UserController {
      *
      * @param requestBody
      */
-    @RequestMapping(path="/",method={RequestMethod.PUT})
+    @RequestMapping(path="/",method={RequestMethod.DELETE})
     public void deleteUser(@RequestBody String requestBody){
         // TODO
 
     }
 
     /**
-     * Beehive API - User API
      * 查询用户
      * GET /users/
      *

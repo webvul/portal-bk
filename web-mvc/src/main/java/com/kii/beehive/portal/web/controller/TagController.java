@@ -29,7 +29,6 @@ public class TagController {
 	private TagIndexDao tagIndexDao;
 
 	/**
-	 * Beehive API - Thing API
 	 * 列出所有tag
 	 * GET /tags/all
 	 *
@@ -43,7 +42,6 @@ public class TagController {
 	}
 
 	/**
-	 * Beehive API - Thing API
 	 * 创建tag
 	 * POST /tags
 	 *
@@ -70,7 +68,6 @@ public class TagController {
 	}
 
 	/**
-	 * Beehive API - Thing API
 	 * 移除tag
 	 * DELETE /tags/{tagName}
 	 *
@@ -97,9 +94,8 @@ public class TagController {
 	}
 
 	/**
-	 * Beehive API - Thing API
 	 * 查询tag
-	 * GET /tags/tag/{tagName ...}/operation/{operation}
+	 * GET /tags/tag/{tagName ...}
 	 *
 	 * refer to doc "Beehive API - Thing API" for request/response details
 	 * refer to doc "Tech Design - Beehive API", section "Inquire Tag (查询tag)" for more details
@@ -107,11 +103,6 @@ public class TagController {
 	 * @param tagName
 	 * @return
      */
-	@RequestMapping(path = "/tag/{tagName}/operation/{operation}", method = {RequestMethod.GET})
-	public List<TagIndex> getTag(@PathVariable("tagName") String tagName, @PathVariable("operation") String operation) {
-		// TODO
-		return null;
-	}
 
 	@RequestMapping(path = "/tags/{tagName}", method = {RequestMethod.GET})
 	public List<TagIndex> getThingsByTagArray(@PathVariable("tagName") String tagName) {

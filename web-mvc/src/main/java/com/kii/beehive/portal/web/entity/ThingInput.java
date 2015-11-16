@@ -9,6 +9,8 @@ public class ThingInput {
 	private String globalThingID;
 
 	private String vendorThingID;
+	
+	private String kiiAppID;
 
 	private List<TagIndex> tags;
 
@@ -55,6 +57,14 @@ public class ThingInput {
 	public void setTags(List<TagIndex> tags) {
 		this.tags = tags;
 	}
+	
+	public String getKiiAppID() {
+		return kiiAppID;
+	}
+
+	public void setKiiAppID(String kiiAppID) {
+		this.kiiAppID = kiiAppID;
+	}
 
 	@Override
 	public String toString() {
@@ -63,6 +73,8 @@ public class ThingInput {
 		builder.append(globalThingID);
 		builder.append(", vendorThingID=");
 		builder.append(vendorThingID);
+		builder.append(", kiiAppID=");
+		builder.append(kiiAppID);
 		builder.append(", tags=");
 		builder.append(tags);
 		builder.append(", type=");
