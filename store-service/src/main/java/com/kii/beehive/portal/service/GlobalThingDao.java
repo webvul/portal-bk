@@ -52,6 +52,11 @@ public class GlobalThingDao extends AbstractDataAccess<GlobalThingInfo>{
 		return super.getObjectByID(id);
 	}
 
+	public GlobalThingInfo getThingByVendorThingID(String vendorThingID) {
+
+		return super.getEntity("vendorThingID", vendorThingID);
+	}
+
 	public List<GlobalThingInfo> getThingsByIDs(String[] ids){
 		return super.getEntitys(ids);
 	}

@@ -126,4 +126,8 @@ public class ThingManager {
 		return list;
 	}
 
+	public  GlobalThingInfo findThingByVendorThingID(String vendorThingID) {
+		return globalThingDao.getThingByVendorThingID(vendorThingID);
+	}
+
 }

@@ -189,14 +189,21 @@ public abstract class AbstractDataAccess<T> {
 
 	protected T getEntity(String field, String value) {
 
-		QueryParam query= ConditionBuilder.newCondition().equal(field, value).getFinalCondition().build();
-		List<T> result = fullQuery(query);
+		List<T> result = this.getEntitys(field, value);
 
 		if(result != null && result.size() >= 0) {
 			return result.get(0);
 		}
 
 		return null;
+	}
+
+	protected List<T> getEntitys(String field, String value) {
+
+		QueryParam query= ConditionBuilder.newCondition().equal(field, value).getFinalCondition().build();
+		List<T> result = fullQuery(query);
+
+		return result;
 	}
 
 }
