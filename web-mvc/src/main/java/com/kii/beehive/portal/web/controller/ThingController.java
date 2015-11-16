@@ -165,7 +165,7 @@ public class ThingController {
 	/**
 	 * Beehive API - Thing API
 	 * 查询tag下的设备
-	 * GET /things/tag/{tagName...}/{operation}
+	 * GET /things/tag/{tagName...}/operation/{operation}
 	 *
 	 * refer to doc "Beehive API - Thing API" for request/response details
 	 *
@@ -173,7 +173,7 @@ public class ThingController {
 	 * @param operation
      * @return
      */
-	@RequestMapping(path = "/tag/{tagName}/{operation}", method = {RequestMethod.GET})
+	@RequestMapping(path = "/tag/{tagName}/operation/{operation}", method = {RequestMethod.GET})
 	public List<GlobalThingInfo> getThingsByTag(@PathVariable("tagName") String tagName, @PathVariable("operation") String operation) {
 		if(Strings.isBlank(tagName)){
 			throw new PortalException();//paramter missing

@@ -99,7 +99,7 @@ public class TagController {
 	/**
 	 * Beehive API - Thing API
 	 * 查询tag
-	 * GET /tags/tag/{tagName ...}/{operation}
+	 * GET /tags/tag/{tagName ...}/operation/{operation}
 	 *
 	 * refer to doc "Beehive API - Thing API" for request/response details
 	 * refer to doc "Tech Design - Beehive API", section "Inquire Tag (查询tag)" for more details
@@ -107,7 +107,7 @@ public class TagController {
 	 * @param tagName
 	 * @return
      */
-	@RequestMapping(path = "/tag/{tagName}/{operation}", method = {RequestMethod.GET})
+	@RequestMapping(path = "/tag/{tagName}/operation/{operation}", method = {RequestMethod.GET})
 	public List<TagIndex> getTag(@PathVariable("tagName") String tagName, @PathVariable("operation") String operation) {
 		// TODO
 		return null;
