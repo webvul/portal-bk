@@ -10,7 +10,7 @@ import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.kii.beehive.portal.service.AppInfoDao;
+import com.kii.beehive.portal.helper.AppInfoService;
 import com.kii.beehive.portal.service.GlobalThingDao;
 import com.kii.beehive.portal.service.TagIndexDao;
 import com.kii.beehive.portal.store.entity.GlobalThingInfo;
@@ -24,7 +24,7 @@ public class ThingManager {
 	private GlobalThingDao globalThingDao;
 
 	@Autowired
-	private AppInfoManager appInfoDao;
+	private AppInfoService appInfoDao;
 
 	@Autowired
 	private TagIndexDao tagIndexDao;

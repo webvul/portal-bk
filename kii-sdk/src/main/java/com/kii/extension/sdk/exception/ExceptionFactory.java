@@ -3,16 +3,14 @@ package com.kii.extension.sdk.exception;
 import javax.annotation.PostConstruct;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.FileCopyUtils;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.extension.sdk.commons.HttpUtils;
@@ -23,20 +21,58 @@ public class ExceptionFactory {
 	@Autowired
 	private ObjectMapper mapper;
 
-	private Map<Integer,Class<? extends KiiCloudException>> clsMap=new HashMap<>();
+	private Map<Integer,Class<? extends KiiCloudException>> bucketClsMap =new HashMap<>();
+
+	private Map<Integer,Class<? extends KiiCloudException>> userClsMap =new HashMap<>();
 
 
 	@PostConstruct
 	public void init(){
 
-		clsMap.put(400,InvalidBucketException.class);
-		clsMap.put(401,UnauthorizedAccessException.class);
-		clsMap.put(409,StaleVersionedObjectException.class);
-		clsMap.put(404,ObjectNotFoundException.class);
+		bucketClsMap.put(400, InvalidBucketException.class);
+		bucketClsMap.put(401, UnauthorizedAccessException.class);
+		bucketClsMap.put(409, StaleVersionedObjectException.class);
+		bucketClsMap.put(404, ObjectNotFoundException.class);
+
+		userClsMap.put(409, UserAlreadyExistsException.class);
+	}
+
+	public enum OperateType{
+		bucket,user;
+	}
+
+	public OperateType getOperateType(URI url){
+
+		if(url.getPath().contains("/buckets/")){
+			return OperateType.bucket;
+		}else if(url.getPath().contains("/users")){
+			return OperateType.user;
+		}else{
+			return OperateType.bucket;
+		}
 
 	}
 
-	public void checkResponse(HttpResponse response) throws KiiCloudException {
+	public void checkResponse(HttpResponse response,URI uri)throws KiiCloudException{
+
+		OperateType type=getOperateType(uri);
+
+		Map<Integer,Class<? extends KiiCloudException>> map=null;
+		switch(type){
+			case bucket:
+				map=bucketClsMap;
+				break;
+			case user:
+				map=userClsMap;
+				break;
+		}
+		checkResponse(response, map);
+
+	}
+
+
+
+	private void checkResponse(HttpResponse response,Map<Integer,Class<? extends KiiCloudException>> excepMap) throws KiiCloudException {
 
 		int status=response.getStatusLine().getStatusCode();
 
@@ -49,7 +85,7 @@ public class ExceptionFactory {
 
 			String body= HttpUtils.getResponseBody(response);
 
-			Class<? extends KiiCloudException> cls=clsMap.get(status);
+			Class<? extends KiiCloudException> cls= excepMap.get(status);
 
 			if(cls!=null){
 				try {

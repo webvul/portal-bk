@@ -35,6 +35,7 @@ public class AppMasterSalveService {
 
 
 
+
 	public boolean isMaster(AppInfo info){
 
 
@@ -98,16 +99,34 @@ X-Kii-AppKey: <masterAppKey>
 			throw new  KiiCloudException(response);
 		}
 
+			/*
+		curl -XPOST \
+  -H'x-kii-appid: f5795cb7' -H'x-kii-appkey: 12c239d31a3c38dcf53c5208a59d2ddd' \
+  -H'authorization: Bearer YM-ke1JasJU9n4G-7zKC5uXPwC6Y_xUWBTaUJdJmeWU' \
+  -H'content-type: application/json' \
+  https://api-development-beehivecn3.internal.kii.com/api/apps/f5795cb7/oauth2/certs -d {}
+
+		 */
+
+		request=builder.addSubUrl("/oauth2/certs").buildCustomCall("POST","{}").setContentType("application/json").generRequest(mapper);
+
+		client.doRequest(request);
+
 	}
+
+
 
 
 	public void addSalveAppToMaster(AppInfo  masterApp,AppInfo  salveAppInfo){
 
-		ClientInfo info=addSalveApp(masterApp,salveAppInfo);
+
+		ClientInfo info=addSalveApp(masterApp, salveAppInfo);
 
 		registInSalve(info,masterApp,salveAppInfo);
 
 	}
+
+
 
 	static String url="http://$(0).$(1).kiiapps.com/api/apps/$(0)/integration/webauth/callback";
 

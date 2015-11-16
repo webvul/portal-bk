@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -17,7 +18,6 @@ import com.kii.beehive.portal.store.entity.BeehiveUser;
 @Component
 public class UserManager {
 
-
 	@Autowired
 	private BeehiveUserDao userDao;
 
@@ -28,19 +28,28 @@ public class UserManager {
 	@Autowired
 	private AppInfoDao appInfoDao;
 
-	public void addUser(BeehiveUser user){
+	public String addUser(BeehiveUser user){
 
 
-		String kiiUserID=kiiUserDao.addBeehiveUser(user,appInfoDao.getMasterAppInfo().getAppName());
+		String pwd= DigestUtils.sha1Hex(user.getUserName() + "_beehive");
+
+		String kiiUserID=kiiUserDao.addBeehiveUser(user,pwd);
 
 		user.setKiiUserID(kiiUserID);
 
 		userDao.createUser(user);
 
+		return kiiUserID;
+
 	}
 
 
+	public void removeUser(String userID){
 
+		userDao.deleteUser(userID);
+
+		kiiUserDao.removeBeehiveUser(userID);
+	}
 
 
 

@@ -48,16 +48,6 @@ public class TestOAuth extends TestTemplate{
 	private String[] salves={"test-slave-1","test-slave-2"};
 
 
-	@Autowired
-	private FederatedAuthService fedAuthService;
-
-	@Test
-	public void testLogin(){
-
-		fedAuthService.getAuthUrl(salves[0]);
-
-
-	}
 
 	@Test
 	public void testOAuth(){

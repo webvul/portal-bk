@@ -1,4 +1,4 @@
-package com.kii.beehive.portal.manager;
+package com.kii.beehive.portal.helper;
 
 import javax.annotation.PostConstruct;
 
@@ -14,14 +14,15 @@ import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
+import com.kii.extension.sdk.context.AppBindTool;
 import com.kii.extension.sdk.entity.AppInfo;
 import com.kii.extension.sdk.service.AppMasterSalveService;
 import com.kii.extension.sdk.service.DevPortalService;
 
 @Component
-public class AppInfoManager {
+public class AppInfoService implements AppBindTool {
 
-	private Logger log= LoggerFactory.getLogger(AppInfoManager.class);
+	private Logger log= LoggerFactory.getLogger(AppInfoService.class);
 
 	public static final String ZERO_FILL = "000000000000000000";
 	public static final String FF_FILL = "FFFFFFFFFFFFFFFFFF";
@@ -34,6 +35,8 @@ public class AppInfoManager {
 
 	Map<String,String> nameMap=new HashMap<>();
 
+	AppInfo masterApp=null;
+
 	@Autowired
 	private AppInfoDao appInfoDao;
 
@@ -43,26 +46,22 @@ public class AppInfoManager {
 	@Autowired
 	private AppMasterSalveService  masterSalveService;
 
+
 	@PostConstruct
 	public  void init(){
 
 
 		List<KiiAppInfo> appList=appInfoDao.getAllAppInfo();
 
-
-		for(KiiAppInfo kiiApp:appList){
-
-			appInfoBeenAdded(kiiApp);
-
-		}
+		appList.forEach(this::appInfoBeenAdded);
 
 	}
 
 
-	public void setMasterSalve(String masterName,String portalName){
+	public void setMasterSalve(String masterName){
 
 
-		AppInfo masterInfo=getAppInfoByName(masterName);
+		AppInfo masterInfo=getAppInfo(masterName);
 
 		boolean isMaster=masterSalveService.isMaster(masterInfo);
 
@@ -70,13 +69,12 @@ public class AppInfoManager {
 
 			masterSalveService.setMaster(masterInfo);
 
-			AppInfo info=appMap.get(masterName);
-			appInfoDao.setMasterAppInfo(info.getAppID());
 		}
+		appInfoDao.setMasterAppInfo(masterInfo.getAppID());
+
 
 		appMap.values().stream()
-				.filter(info -> !info.getName()
-						.equals(portalName))
+				.filter(info -> !info.getAppID().equals(appInfoDao.getPortalAppID()))
 				.forEach(info -> {
 
 					masterSalveService.addSalveAppToMaster(masterInfo, info);
@@ -97,6 +95,10 @@ public class AppInfoManager {
 		List<AppInfo>  appInfoList=service.getAppInfoList();
 		appInfoList.forEach((app)->{
 
+			if(app.getAppID().equals(appInfoDao.getPortalAppID())){
+				return;
+			}
+
 			KiiAppInfo info=new KiiAppInfo();
 			info.setAppInfo(app);
 
@@ -111,6 +113,8 @@ public class AppInfoManager {
 
 
 	private  void appInfoBeenAdded(KiiAppInfo kiiApp) {
+
+
 		String appID=kiiApp.getAppInfo().getAppID();
 
 		appMap.put(appID, kiiApp.getAppInfo());
@@ -128,6 +132,10 @@ public class AppInfoManager {
 
 		for(String id:kiiApp.getRelThingIDs()){
 			idsMap.put(id,appID);
+		}
+
+		if(kiiApp.getMasterApp()){
+			masterApp=kiiApp.getAppInfo();
 		}
 	}
 
@@ -198,14 +206,27 @@ public class AppInfoManager {
 		return null;
 	}
 
-	public  AppInfo getAppInfo(String appID){
+
+	public  AppInfo getAppInfoByID(String appID){
 
 		return appMap.get(appID);
-	};
+	}
 
-	public  AppInfo getAppInfoByName(String name){
+	@Override
+	public AppInfo getDefaultAppInfo() {
+		return null;
+	}
 
-		return appMap.get(nameMap.get(name));
+
+	@Override
+	public  AppInfo getAppInfo(String name){
+
+		if(name.equals("master")){
+			return masterApp;
+		}else {
+
+			return appMap.get(nameMap.get(name));
+		}
 	};
 
 }

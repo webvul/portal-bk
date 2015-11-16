@@ -3,7 +3,9 @@ package com.kii.beehive.portal.store.entity;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 import com.kii.extension.sdk.entity.KiiEntity;
@@ -25,8 +27,8 @@ public class BeehiveUser extends KiiEntity {
 
 	private String company;
 
-	private Map<String,Object> customFields=new HashMap<>();
 
+	private CustomProperty properties=new CustomProperty();
 
 	public String getBeehiveUserID() {
 		return beehiveUserID;
@@ -77,17 +79,24 @@ public class BeehiveUser extends KiiEntity {
 	}
 
 
-	@JsonUnwrapped(prefix = PREFIX)
-	public Map<String, Object> getCustomFields() {
-		return customFields;
+	@JsonUnwrapped
+	public CustomProperty getCustomFields() {
+		return properties;
 	}
 
-	public void setCustomFields(Map<String, Object> customFields) {
-		this.customFields = customFields;
+	public void setCustomFields(CustomProperty properties) {
+		this.properties = properties;
 	}
 
-	@JsonAnySetter
-	public void setCustomField(String key,Object value){
-		this.customFields.put(key,value);
+	@JsonIgnore
+	public void setCustomField(String key,Object val){
+		this.properties.setCustomField(key,val);
+	};
+
+
+	@JsonIgnore
+	public Object getCustomField(String key){
+		return this.properties.getValueByKey(key);
 	}
+
 }

@@ -12,6 +12,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
@@ -20,6 +22,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.concurrent.FutureCallback;
+import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.apache.http.impl.nio.client.HttpAsyncClients;
@@ -30,6 +33,7 @@ import org.apache.http.nio.client.HttpAsyncClient;
 import org.apache.http.nio.conn.NHttpClientConnectionManager;
 import org.apache.http.nio.reactor.ConnectingIOReactor;
 import org.apache.http.nio.reactor.IOReactorException;
+import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -58,7 +62,7 @@ public class KiiCloudClient {
 	FutureCallback callback=new FutureCallback<HttpResponse>() {
 		@Override
 		public void completed(HttpResponse httpResponse) {
-			factory.checkResponse(httpResponse);
+
 		}
 
 		@Override
@@ -72,6 +76,7 @@ public class KiiCloudClient {
 		}
 	};
 
+//	private Consumer<HttpResponse> exceptionFactory;
 
 	private ScheduledExecutorService executorService= Executors.newSingleThreadScheduledExecutor();
 
@@ -92,15 +97,11 @@ public class KiiCloudClient {
 
 
 		httpClient = HttpAsyncClients.custom()
-				.addInterceptorFirst(new HttpRequestInterceptor() {
-					@Override
-					public void process(HttpRequest httpRequest, HttpContext httpContext) throws HttpException, IOException {
-
-					}
-				})
+				.setRedirectStrategy(new LaxRedirectStrategy())
 				.setConnectionManager(connManager).build();
 
 		httpClient.start();
+
 
 	}
 
@@ -115,13 +116,14 @@ public class KiiCloudClient {
 
 
 
+
 	public <T> T executeRequestWithCls(HttpUriRequest request,Class<T> cls) {
 
 		return executeRequestWithCls(request,cls,null);
 
 	}
 
-	public <T> T executeRequestWithCls(HttpUriRequest request,Class<T> cls,HttpClientContext context){
+	public <T> T executeRequestWithCls(HttpUriRequest request,Class<T> cls,HttpContext context){
 
 
 		String result=executeRequest(request,context);
@@ -135,7 +137,7 @@ public class KiiCloudClient {
 
 	}
 
-	public HttpResponse doRequest(HttpUriRequest request,HttpClientContext context){
+	public HttpResponse doRequest(HttpUriRequest request,HttpContext context){
 		try{
 			Future<HttpResponse> future=null;
 			if(context==null){
@@ -146,25 +148,28 @@ public class KiiCloudClient {
 
 			HttpResponse response=future.get();
 
+			factory.checkResponse(response,request.getURI());
+
 			return response;
 		}  catch (InterruptedException|ExecutionException e) {
 			throw new IllegalArgumentException(e);
 		}
 	}
 
-	public HttpResponse doRequest(HttpUriRequest request){
+	public HttpResponse doRequest(HttpUriRequest request) {
+
 
 		return doRequest(request, null);
 
 	}
 
 
-	public String executeRequest(HttpUriRequest request){
+	public String executeRequest(HttpUriRequest request) {
 		return executeRequest(request, null);
 	}
 
 
-	private String executeRequest(HttpUriRequest request,HttpClientContext context){
+	private String executeRequest(HttpUriRequest request,HttpContext context){
 
 
 			HttpResponse response=doRequest(request, context);
@@ -176,6 +181,7 @@ public class KiiCloudClient {
 
 			return HttpUtils.getResponseBody(response);
 	}
+
 
 
 

@@ -7,10 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
 import com.kii.beehive.portal.annotation.BindAppByName;
+import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.entity.AppInfo;
 import com.kii.extension.sdk.entity.BucketInfo;
 import com.kii.extension.sdk.query.ConditionBuilder;
@@ -22,6 +24,8 @@ public class AppInfoDao extends AbstractDataAccess<KiiAppInfo> {
 
 
 
+	@Autowired
+	private AppBindToolResolver resolver;
 
 
 	@Override
@@ -33,6 +37,10 @@ public class AppInfoDao extends AbstractDataAccess<KiiAppInfo> {
 	protected BucketInfo getBucketInfo() {
 		return new BucketInfo("KiiAppInfoStore");
 	}
+
+	public String getPortalAppID(){
+		return resolver.getAppInfo().getAppID();
+	}
 	
 	public List<KiiAppInfo> getAllAppInfo() {
 		return super.getAll();
@@ -42,6 +50,7 @@ public class AppInfoDao extends AbstractDataAccess<KiiAppInfo> {
 
 		super.addEntity(appInfo, appInfo.getAppInfo().getAppID());
 	}
+
 
 	public KiiAppInfo removeInfo(String id){
 
@@ -68,7 +77,7 @@ public class AppInfoDao extends AbstractDataAccess<KiiAppInfo> {
 
 
 		KiiAppInfo info=new KiiAppInfo();
-		info.setIsMasterApp(true);
+		info.setMasterApp(true);
 
 		super.updateEntity(info,id);
 

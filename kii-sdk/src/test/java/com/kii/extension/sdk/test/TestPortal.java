@@ -25,7 +25,7 @@ public class TestPortal extends TestTemplate{
 //		assertFalse(appTool.isMaster(salves[0]));
 //
 //		String value=appTool.checkMaster(salves[0]);
-//
+
 //		System.out.println(value);
 	}
 

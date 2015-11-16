@@ -9,32 +9,31 @@ import com.kii.beehive.portal.annotation.BindAppByName;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.extension.sdk.entity.KiiUser;
 import com.kii.extension.sdk.entity.LoginInfo;
+import com.kii.extension.sdk.exception.KiiCloudException;
 import com.kii.extension.sdk.service.AbstractDataAccess;
 import com.kii.extension.sdk.service.UserService;
 
 @Component
+@BindAppByName(appName="master")
 public class KiiUserSyncDao {
 
 	@Autowired
 	private UserService userService;
 
-	public String addBeehiveUser(BeehiveUser beehiveUser,@AppBindParam String appName){
+	public String addBeehiveUser(BeehiveUser beehiveUser,String pwd){
 
 		KiiUser user=new KiiUser();
 
-		String pwd= DigestUtils.sha1Hex(beehiveUser.getBeehiveUserID()+"_beehive");
-
 		user.setPassword(pwd);
 
-		user.setCustomProp("beehiveUserID", beehiveUser.getBeehiveUserID());
+		user.setLoginName(beehiveUser.getUserName());
 
 
 		return userService.createUser(user);
 
-
 	}
 
-	public String bindToUser(BeehiveUser user,@AppBindParam String appName){
+	public String bindToUser(BeehiveUser user){
 
 
 		String userID=user.getKiiUserID();
@@ -44,6 +43,11 @@ public class KiiUserSyncDao {
 		LoginInfo loginInfo=userService.login(userID,pwd);
 
 		return loginInfo.getToken();
+	}
+
+	public void removeBeehiveUser(String beehiveUserID){
+
+		userService.removeUserByLoginName(beehiveUserID);
 	}
 
 
