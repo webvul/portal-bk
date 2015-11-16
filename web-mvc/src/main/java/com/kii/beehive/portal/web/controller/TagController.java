@@ -83,10 +83,6 @@ public class TagController {
 	@RequestMapping(path="/{tagName}",method={RequestMethod.DELETE})
 	public ResponseEntity<String> removeTag(@PathVariable("tagName") String tagName){
 		
-		if(Strings.isBlank(tagName)){
-			throw new PortalException();//paramter missing
-		}
-		
 		TagIndex orig =  tagIndexDao.getTagIndexByID(tagName);
 		
 		if(orig == null){
@@ -111,9 +107,6 @@ public class TagController {
 
 	@RequestMapping(path = "/tag/{tagName}", method = {RequestMethod.GET})
 	public ResponseEntity<List<TagIndex>> getThingsByTagArray(@PathVariable("tagName") String tagName) {
-		if(Strings.isBlank(tagName)){
-			throw new PortalException();//paramter missing
-		}
 		
 		List<TagIndex> list = tagIndexDao.findTagIndexByTagNameArray(tagName.split(","));
 		return new ResponseEntity<>(list, HttpStatus.OK);

@@ -5,7 +5,9 @@ import java.util.List;
 
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,12 +46,10 @@ public class ThingController {
 	 * @return
 	 */
 	@RequestMapping(path = "/{globalThingID}", method = {RequestMethod.GET})
-	public GlobalThingInfo getThingByGlobalID(@PathVariable("globalThingID") String globalThingID) {
-		if(Strings.isBlank(globalThingID)){
-			throw new PortalException();//paramter missing
-		}
+	public ResponseEntity<GlobalThingInfo> getThingByGlobalID(@PathVariable("globalThingID") String globalThingID) {
 		
-		return globalThingDao.getThingInfoByID(globalThingID);
+		GlobalThingInfo thing =  globalThingDao.getThingInfoByID(globalThingID);
+		return new ResponseEntity<>(thing, HttpStatus.OK);
 	}
 
 	/**
@@ -61,8 +61,9 @@ public class ThingController {
 	 * @return
      */
 	@RequestMapping(path="/all",method={RequestMethod.GET})
-	public List<GlobalThingInfo> getThing(){
-		return globalThingDao.getAllThing();
+	public ResponseEntity<List<GlobalThingInfo>> getAllThing(){
+		List<GlobalThingInfo> list =  globalThingDao.getAllThing();
+		return new ResponseEntity<>(list, HttpStatus.OK);
 	}
 
 	/**
@@ -74,7 +75,7 @@ public class ThingController {
 	 * @param input
      */
 	@RequestMapping(path="/",method={RequestMethod.POST})
-	public void createThing(@RequestBody ThingInput input){
+	public ResponseEntity<String> createThing(@RequestBody ThingInput input){
 		if(input == null){
 			throw new PortalException();//no body
 		}
@@ -96,6 +97,7 @@ public class ThingController {
 		thingInfo.setStatusUpdatetime(new Date());
 		
 		thingManager.createThing(thingInfo,input.getTags());
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
 	/**
@@ -107,11 +109,7 @@ public class ThingController {
 	 * @param globalThingID
      */
 	@RequestMapping(path="/{globalThingID}",method={RequestMethod.DELETE})
-	public void removeThing(@PathVariable("globalThingID") String globalThingID){
-		
-		if(Strings.isBlank(globalThingID)){
-			throw new PortalException();//paramter missing
-		}
+	public ResponseEntity<String> removeThing(@PathVariable("globalThingID") String globalThingID){
 		
 		GlobalThingInfo orig =  globalThingDao.getThingInfoByID(globalThingID);
 		
@@ -120,6 +118,7 @@ public class ThingController {
 		}
 		
 		globalThingDao.removeGlobalThingByID(orig.getId());
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
 	/**
@@ -132,18 +131,12 @@ public class ThingController {
 	 * @param tagName
      */
 	@RequestMapping(path="/{globalThingID}/tags/{tagName}",method={RequestMethod.PUT})
-	public void addThingTag(@PathVariable("globalThingID") String globalThingID,@PathVariable("tagName") String tagName){
-		if(Strings.isBlank(globalThingID)){
-			throw new PortalException();//paramter missing
-		}
-		
-		if(Strings.isBlank(tagName)){
-			throw new PortalException();//paramter missing
-		}
+	public ResponseEntity<String> addThingTag(@PathVariable("globalThingID") String globalThingID,@PathVariable("tagName") String tagName){
 		
 		String[] thingIDs = globalThingID.split(",");
 		String[] tagIDs = tagName.split(",");
 		thingManager.bindTagToThing(tagIDs, thingIDs);
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
 	/**
@@ -156,8 +149,9 @@ public class ThingController {
 	 * @param tagName
      */
 	@RequestMapping(path="/{globalThingID}/tags/{tagName}/",method={RequestMethod.DELETE})
-	public void removeThingTag(@PathVariable("globalThingID") String globalThingID,@PathVariable("tagName") String tagName){
+	public ResponseEntity<String> removeThingTag(@PathVariable("globalThingID") String globalThingID,@PathVariable("tagName") String tagName){
 		thingManager.unbindTagToThing(tagName,globalThingID);
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
 	/**
@@ -171,16 +165,10 @@ public class ThingController {
      * @return
      */
 	@RequestMapping(path = "/tag/{tagName}/operation/{operation}", method = {RequestMethod.GET})
-	public List<GlobalThingInfo> getThingsByTag(@PathVariable("tagName") String tagName, @PathVariable("operation") String operation) {
-		if(Strings.isBlank(tagName)){
-			throw new PortalException();//paramter missing
-		}
+	public ResponseEntity<List<GlobalThingInfo>> getThingsByTag(@PathVariable("tagName") String tagName, @PathVariable("operation") String operation) {
 		
-		if(Strings.isBlank(operation)){
-			throw new PortalException();//paramter missing
-		}
 		List<GlobalThingInfo> list = this.thingManager.findThingByTagName(tagName.split(","), operation);
 		
-		return list;
+		return new ResponseEntity<>(list, HttpStatus.OK);
 	}
 }
