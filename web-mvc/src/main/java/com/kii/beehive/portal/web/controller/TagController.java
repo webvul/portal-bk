@@ -5,7 +5,9 @@ import java.util.List;
 
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,8 +39,9 @@ public class TagController {
 	 * @return
      */
 	@RequestMapping(path="/all",method={RequestMethod.GET})
-	public List<TagIndex> getAllTag(){
-		return tagIndexDao.getAllTag();
+	public ResponseEntity<List<TagIndex>> getAllTag(){
+		List<TagIndex> list = tagIndexDao.getAllTag();
+		return new ResponseEntity<>(list, HttpStatus.OK);
 	}
 
 	/**
@@ -51,7 +54,7 @@ public class TagController {
 	 * @param input
      */
 	@RequestMapping(path="/",method={RequestMethod.POST})
-	public void createTag(@RequestBody TagIndex input){
+	public ResponseEntity<String> createTag(@RequestBody TagIndex input){
 		if(input == null){
 			throw new PortalException();//no body
 		}
@@ -65,6 +68,7 @@ public class TagController {
 		}
 		
 		tagIndexDao.addTagIndex(input);
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
 	/**
@@ -77,7 +81,7 @@ public class TagController {
 	 * @param tagName
      */
 	@RequestMapping(path="/{tagName}",method={RequestMethod.DELETE})
-	public void removeTag(@PathVariable("tagName") String tagName){
+	public ResponseEntity<String> removeTag(@PathVariable("tagName") String tagName){
 		
 		if(Strings.isBlank(tagName)){
 			throw new PortalException();//paramter missing
@@ -91,6 +95,7 @@ public class TagController {
 		}
 		
 		tagIndexDao.removeTagByID(orig.getId());
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
 	/**
@@ -104,14 +109,14 @@ public class TagController {
 	 * @return
      */
 
-	@RequestMapping(path = "/tags/{tagName}", method = {RequestMethod.GET})
-	public List<TagIndex> getThingsByTagArray(@PathVariable("tagName") String tagName) {
+	@RequestMapping(path = "/tag/{tagName}", method = {RequestMethod.GET})
+	public ResponseEntity<List<TagIndex>> getThingsByTagArray(@PathVariable("tagName") String tagName) {
 		if(Strings.isBlank(tagName)){
 			throw new PortalException();//paramter missing
 		}
 		
 		List<TagIndex> list = tagIndexDao.findTagIndexByTagNameArray(tagName.split(","));
-		return list;
+		return new ResponseEntity<>(list, HttpStatus.OK);
 
 	}
 
