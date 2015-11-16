@@ -1,8 +1,13 @@
 package com.kii.extension.sdk.impl;
 
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
@@ -11,6 +16,7 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.message.BasicNameValuePair;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -229,11 +235,50 @@ public class ApiAccessBuilder {
 		return this;
 	}
 
+	public ApiAccessBuilder deleteUser(String userInfo, String type) {
+
+		if(type==null){
+			request = new HttpDelete(appInfo.getAppSubUrl() + "/users/" + userInfo);
+
+		}else {
+			request = new HttpDelete(appInfo.getAppSubUrl() + "/users/" + type + ":" + userInfo);
+		}
+		return this;
+	}
+
+	public ApiAccessBuilder  loginWithCode(String code,String clientID){
+
+		request=new HttpPost(appInfo.getSiteUrl()+("/api/oauth2/token"));
+
+		List<NameValuePair> postParameters=new ArrayList<>();
+		postParameters.add(new BasicNameValuePair("grant_type","code"));
+		postParameters.add(new BasicNameValuePair("code",code));
+		postParameters.add(new BasicNameValuePair("client_id",clientID));
+//		postParameters.add(new BasicNameValuePair("grant_type","code"));
+
+		/*
+		Map<String,String> map=new HashMap<>();
+		map.put("grant_type","code");
+		map.put("code", code);
+		map.put("client_id",clientID);
+		map.put("redirect_uri","foo");
+		*/
+		try {
+			((HttpEntityEnclosingRequestBase)request).setEntity(new UrlEncodedFormEntity(postParameters));
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		ctxObj=null;
+		return this;
+	}
+
+
+
 	public ApiAccessBuilder login(String user,String pwd){
 		request=new HttpPost(appInfo.getSiteUrl()+("/api/oauth2/token"));
 
 		Map<String,String> map=new HashMap<>();
-		map.put("username",user);
+		map.put("username", user);
 		map.put("password", pwd);
 
 		ctxObj=map;
@@ -280,6 +325,9 @@ public class ApiAccessBuilder {
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 		}
+
+		ctxObj=null;
+		optionalHeader.clear();
 
 		return request;
 	}

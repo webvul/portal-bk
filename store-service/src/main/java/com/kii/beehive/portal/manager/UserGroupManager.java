@@ -7,7 +7,8 @@ import com.kii.beehive.portal.service.BeehiveUserGroupDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.store.entity.BeehiveUserGroup;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +18,7 @@ import java.util.*;
 @Component
 public class UserGroupManager {
 
-    private Logger logger;
+    private Logger logger= LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private BeehiveUserGroupDao beehiveUserGroupDao;
@@ -31,10 +32,7 @@ public class UserGroupManager {
     @Autowired
     private AppInfoDao appInfoDao;
 
-    @PostConstruct
-    public void init() {
-        logger = Logger.getLogger(this.getClass());
-    }
+
 
     /**
      * add users to groups

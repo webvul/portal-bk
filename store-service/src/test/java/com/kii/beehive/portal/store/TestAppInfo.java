@@ -6,16 +6,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.kii.beehive.portal.manager.AppInfoManager;
-import com.kii.beehive.portal.service.AppInfoDao;
+import com.kii.beehive.portal.helper.AppInfoService;
 import com.kii.beehive.portal.service.DemoCrossAppDao;
-import com.kii.beehive.portal.store.entity.KiiAppInfo;
-import com.kii.extension.sdk.entity.AppInfo;
 
 public class TestAppInfo extends TestInit {
 
 	@Autowired
-	private AppInfoManager appDao;
+	private AppInfoService appDao;
 
 	@Autowired
 	private DemoCrossAppDao crossDao;
@@ -36,7 +33,7 @@ public class TestAppInfo extends TestInit {
 	@Test
 	public void createRelation(){
 
-		appDao.setMasterSalve("master-test","portal");
+		appDao.setMasterSalve("test-master");
 	}
 
 	@Test

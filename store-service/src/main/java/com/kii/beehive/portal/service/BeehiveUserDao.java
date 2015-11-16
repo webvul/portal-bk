@@ -18,9 +18,11 @@ public class BeehiveUserDao extends AbstractDataAccess<BeehiveUser> {
 
 	public void createUser(BeehiveUser user){
 
-		super.addEntity(user, user.getBeehiveUserID());
+		super.addEntity(user, user.getKiiUserID());
+
 
 	}
+
 
 	public void updateUser(BeehiveUser user) {
 
@@ -36,16 +38,12 @@ public class BeehiveUserDao extends AbstractDataAccess<BeehiveUser> {
 
 	}
 
-	public BeehiveUser getUserCustomInfoByID(String userID,Set<String> field){
+	public Map<String,Object> getUserCustomInfoByID(String userID,Set<String> field){
 
 		BeehiveUser user=super.getObjectByID(userID);
 
-		user.getCustomFields().keySet().removeIf((k) -> {
-			String key = k.substring(BeehiveUser.PREFIX.length() + 1);
-			return !field.contains(key);
-		});
 
-		return user;
+		return user.getCustomFields().filter(field);
 
 	}
 
@@ -53,7 +51,7 @@ public class BeehiveUserDao extends AbstractDataAccess<BeehiveUser> {
 
 		Map<String,Object> paramMap=new HashMap<>();
 
-		fieldMap.entrySet().stream().forEach(e->paramMap.put(BeehiveUser.PREFIX+e.getKey(),e.getValue()));
+		paramMap.putAll(fieldMap);
 
 		super.updateEntity(paramMap, userID);
 

@@ -37,6 +37,16 @@ public class UserService {
 		return login;
 	}
 
+	public  LoginInfo loginWithCode(String code,String clientID){
+
+
+		HttpUriRequest request= getBuilder().loginWithCode(code, clientID).setContentType("application/x-www-form-urlencoded").generRequest(mapper);
+
+		LoginInfo login= client.executeRequestWithCls(request, LoginInfo.class);
+
+		return login;
+	}
+
 	private ApiAccessBuilder getBuilder() {
 		AppInfo info= bindToolResolver.getAppInfo();
 
@@ -70,4 +80,18 @@ public class UserService {
 
 	}
 
+	public void removeUserByLoginName(String beehiveUserID) {
+
+		HttpUriRequest request=getBuilder().deleteUser(beehiveUserID, "LOGIN_NAME").generRequest(mapper);
+
+		client.doRequest(request);
+	}
+
+
+	public void removeUserByID(String beehiveUserID) {
+
+		HttpUriRequest request=getBuilder().deleteUser(beehiveUserID,null).generRequest(mapper);
+
+		client.doRequest(request);
+	}
 }

@@ -21,11 +21,11 @@ public class KiiAppInfo extends KiiEntity{
 
 	private boolean isMasterApp=false;
 
-	public boolean isMasterApp() {
+	public boolean getMasterApp() {
 		return isMasterApp;
 	}
 
-	public void setIsMasterApp(boolean isMasterApp) {
+	public void setMasterApp(boolean isMasterApp) {
 		this.isMasterApp = isMasterApp;
 	}
 

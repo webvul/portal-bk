@@ -4,5 +4,10 @@ dependencies {
 
 	compile group:'org.springframework',name:'spring-context',version:"${springVersion}"
 
+	compile group:'org.springframework',name:'spring-aspects',version:"${springVersion}"
+
+	compile group:'org.springframework',name:'spring-aop',version:"${springVersion}"
+
+
 	testCompile group:"org.springframework",name:"spring-test",version:"${springVersion}"
 }

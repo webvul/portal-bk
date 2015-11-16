@@ -2,21 +2,23 @@ package com.kii.beehive.portal.manager;
 
 import java.util.*;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import com.kii.beehive.portal.notify.UserSyncNotifier;
 import com.kii.beehive.portal.service.*;
 import com.kii.beehive.portal.store.entity.BeehiveUserGroup;
-import org.apache.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 
-import javax.annotation.PostConstruct;
 
 @Component
 public class UserManager {
 
-	private Logger logger;
+	private Logger logger= LoggerFactory.getLogger(UserManager.class);
 
 	@Autowired
 	private ArchiveBeehiveUserDao archiveUserDao;
@@ -36,18 +38,16 @@ public class UserManager {
 	@Autowired
 	private AppInfoDao appInfoDao;
 
-	@PostConstruct
-	public void init() {
-		logger = Logger.getLogger(this.getClass());
-	}
+
 
 	public String addUser(BeehiveUser user){
 
 		logger.debug("Start addUser(BeehiveUser user)");
 		logger.debug("user:" + user);
 
-		// create user in Kii Master App
-		String kiiUserID=kiiUserDao.addBeehiveUser(user,appInfoDao.getMasterAppInfo().getAppName());
+		String pwd= DigestUtils.sha1Hex(user.getUserName() + "_beehive");
+
+		String kiiUserID=kiiUserDao.addBeehiveUser(user,pwd);
 
 		user.setKiiUserID(kiiUserID);
 
@@ -147,7 +147,6 @@ public class UserManager {
 			existGroupIDs = existUser.getGroups();
 		}
 
-
 		if (groupIDs.containsAll(existGroupIDs) && existGroupIDs.containsAll(groupIDs)) {
 			logger.debug("no change on relation bwtween user group and user:" + userID);
 			return;
@@ -175,7 +174,7 @@ public class UserManager {
 		List<BeehiveUserGroup> userGroupList = userGroupDao.getUserGroupByIDs(userIDsToUpdateGroup);
 
 		// update the user info into table BeehiveUserGroup
-		userGroupList.stream().forEach((group) -> {
+		userGroupList.forEach((group) -> {
 			String tempId = group.getUserGroupID();
 			Set<String> tempUsers = group.getUsers();
 
@@ -191,5 +190,11 @@ public class UserManager {
 
 	}
 
+	public void removeUser(String userID){
+
+		userDao.deleteUser(userID);
+
+		kiiUserDao.removeBeehiveUser(userID);
+	}
 
 }

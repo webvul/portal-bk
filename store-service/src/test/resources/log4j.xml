@@ -11,7 +11,7 @@
 
 
     <logger name="org.apache.http">
-        <level value="info" />
+        <level value="debug" />
     </logger>
 
     <root>
