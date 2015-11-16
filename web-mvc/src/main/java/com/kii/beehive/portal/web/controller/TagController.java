@@ -16,18 +16,40 @@ import com.kii.beehive.portal.service.TagIndexDao;
 import com.kii.beehive.portal.store.entity.TagIndex;
 import com.kii.beehive.portal.web.help.PortalException;
 
+/**
+ * Beehive API - Thing API
+ *
+ * refer to doc "Tech Design - Beehive API" section "Thing API" for details
+ */
 @RestController
 @RequestMapping(path = "/tags",  consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
 public class TagController {
 	
 	@Autowired
 	private TagIndexDao tagIndexDao;
-	
+
+	/**
+	 * 列出所有tag
+	 * GET /tags/all
+	 *
+	 * refer to doc "Beehive API - Thing API" for request/response details
+	 *
+	 * @return
+     */
 	@RequestMapping(path="/all",method={RequestMethod.GET})
 	public List<TagIndex> getAllTag(){
 		return tagIndexDao.getAllTag();
 	}
-	
+
+	/**
+	 * 创建tag
+	 * POST /tags
+	 *
+	 * refer to doc "Beehive API - Thing API" for request/response details
+	 * refer to doc "Tech Design - Beehive API", section "Create/Update Tag (创建/更新tag)" for more details
+	 *
+	 * @param input
+     */
 	@RequestMapping(path="/",method={RequestMethod.POST})
 	public void createTag(@RequestBody TagIndex input){
 		if(input == null){
@@ -44,9 +66,18 @@ public class TagController {
 		
 		tagIndexDao.addTagIndex(input);
 	}
-	
+
+	/**
+	 * 移除tag
+	 * DELETE /tags/{tagName}
+	 *
+	 * refer to doc "Beehive API - Thing API" for request/response details
+	 * refer to doc "Tech Design - Beehive API", section "Delete Tag (移除tag)" for more details
+	 *
+	 * @param tagName
+     */
 	@RequestMapping(path="/{tagName}",method={RequestMethod.DELETE})
-	public void removeThing(@PathVariable("tagName") String tagName){
+	public void removeTag(@PathVariable("tagName") String tagName){
 		
 		if(Strings.isBlank(tagName)){
 			throw new PortalException();//paramter missing
@@ -61,6 +92,17 @@ public class TagController {
 		
 		tagIndexDao.removeTagByID(orig.getId());
 	}
+
+	/**
+	 * 查询tag
+	 * GET /tags/tag/{tagName ...}
+	 *
+	 * refer to doc "Beehive API - Thing API" for request/response details
+	 * refer to doc "Tech Design - Beehive API", section "Inquire Tag (查询tag)" for more details
+	 *
+	 * @param tagName
+	 * @return
+     */
 
 	@RequestMapping(path = "/tags/{tagName}", method = {RequestMethod.GET})
 	public List<TagIndex> getThingsByTagArray(@PathVariable("tagName") String tagName) {

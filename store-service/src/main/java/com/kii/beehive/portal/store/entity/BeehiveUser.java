@@ -2,6 +2,7 @@ package com.kii.beehive.portal.store.entity;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
@@ -19,14 +20,21 @@ public class BeehiveUser extends KiiEntity {
 
 	private String kiiUserID;
 
-	private String terminal;
+	private String party3rdID;
 
 	private String userName;
+
+	private String phone;
+
+	private String mail;
 
 	private String role;
 
 	private String company;
 
+	private Set<String> groups;
+
+	private Map<String,Object> customFields=new HashMap<>();
 
 	private CustomProperty properties=new CustomProperty();
 
@@ -46,12 +54,12 @@ public class BeehiveUser extends KiiEntity {
 		this.kiiUserID = kiiUserID;
 	}
 
-	public String getTerminal() {
-		return terminal;
+	public String getParty3rdID() {
+		return party3rdID;
 	}
 
-	public void setTerminal(String terminal) {
-		this.terminal = terminal;
+	public void setParty3rdID(String party3rdID) {
+		this.party3rdID = party3rdID;
 	}
 
 	public String getUserName() {
@@ -60,6 +68,22 @@ public class BeehiveUser extends KiiEntity {
 
 	public void setUserName(String userName) {
 		this.userName = userName;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+	public String getMail() {
+		return mail;
+	}
+
+	public void setMail(String mail) {
+		this.mail = mail;
 	}
 
 	public String getRole() {
@@ -76,6 +100,14 @@ public class BeehiveUser extends KiiEntity {
 
 	public void setCompany(String company) {
 		this.company = company;
+	}
+
+	public Set<String> getGroups() {
+		return groups;
+	}
+
+	public void setGroups(Set<String> groups) {
+		this.groups = groups;
 	}
 
 

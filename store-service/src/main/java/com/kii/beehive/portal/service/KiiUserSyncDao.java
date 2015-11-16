@@ -13,6 +13,14 @@ import com.kii.extension.sdk.exception.KiiCloudException;
 import com.kii.extension.sdk.service.AbstractDataAccess;
 import com.kii.extension.sdk.service.UserService;
 
+import java.util.Set;
+
+/**
+ * Tech Design - Beehive API
+ * User Sync Util to Kii Master App (同步用户信息到Kii Master(Federated) App)
+ *
+ * refer to doc "Tech Design - Beehive API" for details
+ */
 @Component
 @BindAppByName(appName="master")
 public class KiiUserSyncDao {
@@ -45,9 +53,15 @@ public class KiiUserSyncDao {
 		return loginInfo.getToken();
 	}
 
-	public void removeBeehiveUser(String beehiveUserID){
+	public void removeBeehiveUser(String beehiveUserID) {
 
 		userService.removeUserByLoginName(beehiveUserID);
+	}
+
+	public void disableBeehiveUser(BeehiveUser user,  @AppBindParam String appName) {
+
+		userService.disableUser(user.getKiiUserID());
+
 	}
 
 
