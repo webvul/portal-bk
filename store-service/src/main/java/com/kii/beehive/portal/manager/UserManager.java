@@ -6,18 +6,19 @@ import org.apache.commons.codec.digest.DigestUtils;
 import com.kii.beehive.portal.notify.UserSyncNotifier;
 import com.kii.beehive.portal.service.*;
 import com.kii.beehive.portal.store.entity.BeehiveUserGroup;
-import org.apache.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 
-import javax.annotation.PostConstruct;
 
 @Component
 public class UserManager {
 
-	private Logger logger;
+	private Logger logger= LoggerFactory.getLogger(UserManager.class);
 
 	@Autowired
 	private ArchiveBeehiveUserDao archiveUserDao;
@@ -173,7 +174,7 @@ public class UserManager {
 		List<BeehiveUserGroup> userGroupList = userGroupDao.getUserGroupByIDs(userIDsToUpdateGroup);
 
 		// update the user info into table BeehiveUserGroup
-		userGroupList.stream().forEach((group) -> {
+		userGroupList.forEach((group) -> {
 			String tempId = group.getUserGroupID();
 			Set<String> tempUsers = group.getUsers();
 
