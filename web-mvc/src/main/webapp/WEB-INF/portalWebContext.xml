@@ -33,4 +33,7 @@
     <mvc:interceptors>
         <bean class="com.kii.beehive.portal.web.help.OptionalInterceptor" />
     </mvc:interceptors>
+
+    <bean class="org.springframework.web.util.Log4jConfigListener" />
+
 </beans>
