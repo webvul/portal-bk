@@ -1,3 +1,5 @@
+==========
+==========
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -9,23 +11,10 @@
         <mime-type>application/json</mime-type>
     </mime-mapping>
 
-    <context-param>
-        <param-name>spring.profiles.active</param-name>
-        <param-value>production</param-value>
-    </context-param>
 
     <context-param>
-        <param-name>log4jConfigLocation</param-name>
-        <param-value>classpath:com/kii/beehive/portal/web/log4j.production.xml</param-value>
-    </context-param>
-
-    <listener>
-        <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
-    </listener>
-
-    <context-param>
-        <param-name>log4jConfigLocation</param-name>
-        <param-value>classpath:com/kii/beehive/portal/web/log4j.product.xml</param-value>
+            <param-name>spring.profiles.active</param-name>
+            <param-value>test</param-value>
     </context-param>
 
     <listener>
@@ -57,8 +46,6 @@
         <servlet-name>SpringMVC</servlet-name>
         <url-pattern>/api/*</url-pattern>
     </servlet-mapping>
-
-
 
     <filter>
         <filter-name>charsetFilter</filter-name>

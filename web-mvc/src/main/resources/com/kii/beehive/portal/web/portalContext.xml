@@ -20,24 +20,22 @@
         <property name="devPortalUrl"  value="${beehive.kiicloud.dev-portal.url}" />
     </bean>
 
-    <beans profile="test" >
-        <bean   class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-            <property name="locations" value="classpath:com/kii/beehive/portal/web/config.test.properties"/>
+    <bean   class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+            <property name="locations" value="classpath:com/kii/beehive/portal/web/config.${spring.profile}.properties"/>
         </bean>
 
         <bean class="com.kii.extension.factory.LocalPropertyBindTool" >
-            <property name="propFileName" value="classpath:com/kii/beehive/portal/web/beehive.portal.store.test.properties" />
-        </bean>
-    </beans>
-
-    <beans profile="production" >
-        <bean   class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-            <property name="locations" value="classpath:com/kii/beehive/portal/web/config.production.properties"/>
+            <property name="propFileName" value="classpath:com/kii/beehive/portal/web/beehive.portal.store.${spring.profile}.properties" />
         </bean>
 
-        <bean class="com.kii.extension.factory.LocalPropertyBindTool" >
-            <property name="propFileName" value="classpath:com/kii/beehive/portal/web/beehive.portal.store.production.properties" />
-        </bean>
-    </beans>
+        <bean id="log4jInitializer" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" >
+            <property name="targetClass" value="org.springframework.util.Log4jConfigurer" />
+            <property name="targetMethod" value="initLogging" />
+            <property name="arguments">
+                <list>
+                    <value>classpath:com/kii/beehive/portal/web/log4j.${spring.profile}.xml</value>
+                </list>
+            </property>
+    </bean>
 
 </beans>

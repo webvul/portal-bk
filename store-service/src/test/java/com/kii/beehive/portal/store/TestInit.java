@@ -1,6 +1,7 @@
 package com.kii.beehive.portal.store;
 
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ public class TestInit {
 //
 //	@Autowired
 //	private ThingInfoRepository thingRep;
+
 
 
 	@Test
