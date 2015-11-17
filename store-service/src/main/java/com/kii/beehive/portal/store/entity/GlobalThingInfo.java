@@ -1,8 +1,12 @@
 package com.kii.beehive.portal.store.entity;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 
 import com.kii.extension.sdk.entity.KiiEntity;
 
@@ -21,6 +25,8 @@ public class GlobalThingInfo extends KiiEntity {
 	private String kiiAppID;
 
 	private Date statusUpdatetime;
+
+	private Map<String,Object> customProperties=new HashMap<>();
 
 	@Override
 	public String getId() {
@@ -87,6 +93,19 @@ public class GlobalThingInfo extends KiiEntity {
 
 	public void setStatusUpdatetime(Date statusUpdatetime) {
 		this.statusUpdatetime = statusUpdatetime;
+	}
+
+	public Map<String, Object> getCustomProperties() {
+		return customProperties;
+	}
+
+	public void setCustomProperties(Map<String, Object> customProperties) {
+		this.customProperties = customProperties;
+	}
+
+	@JsonAnySetter
+	public void setCustomProperty(String key,Object val){
+		git this.customProperties.put(key,val);
 	}
 
 	@Override

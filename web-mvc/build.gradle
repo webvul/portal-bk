@@ -5,13 +5,21 @@ dependencies {
 
 	compile project(":commons")
 	compile project(":store-service")
-	compile group:'org.springframework',name:'spring-webmvc',version:"${springVersion}"
+	compile group: 'org.springframework', name: 'spring-webmvc', version: "${springVersion}"
 
 	testRuntime 'org.eclipse.jetty:jetty-server:9.3.2.v20150730'
 	testRuntime 'org.eclipse.jetty:jetty-webapp:9.3.2.v20150730'
 
-	providedCompile group:"javax.servlet",name:"servlet-api",version:"3.+"
+	providedCompile group: "javax.servlet", name: "servlet-api", version: "3.+"
 	compile "org.apache.logging.log4j:log4j-core:2.3"
 
+}
 
+
+task testWarTask(type: War) {
+}
+
+task productionWarTask(type: War){
+
+	webXml=file( "src/main/deploy/web.xml")
 }

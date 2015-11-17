@@ -12,15 +12,6 @@
     <context:component-scan base-package="com.kii.beehive.portal" />
 
 
-
-    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="locations" value="classpath:com/kii/beehive/portal/web/config.properties"/>
-    </bean>
-
-    <bean class="com.kii.extension.factory.LocalPropertyBindTool" >
-        <property name="propFileName" value="classpath:com/kii/beehive/portal/web/beehive.portal.store.properties" />
-    </bean>
-
     <bean class="com.kii.extension.factory.KiiCloudSDKConfig" />
 
     <bean id="appBindAspect"  class="com.kii.beehive.portal.aop.AppBindAspect" />
@@ -29,6 +20,24 @@
         <property name="devPortalUrl"  value="${beehive.kiicloud.dev-portal.url}" />
     </bean>
 
-    <context:component-scan base-package="com.kii.beehive.portal" />
+    <beans profile="test" >
+        <bean   class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+            <property name="locations" value="classpath:com/kii/beehive/portal/web/config.test.properties"/>
+        </bean>
+
+        <bean class="com.kii.extension.factory.LocalPropertyBindTool" >
+            <property name="propFileName" value="classpath:com/kii/beehive/portal/web/beehive.portal.store.test.properties" />
+        </bean>
+    </beans>
+
+    <beans profile="production" >
+        <bean   class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+            <property name="locations" value="classpath:com/kii/beehive/portal/web/config.production.properties"/>
+        </bean>
+
+        <bean class="com.kii.extension.factory.LocalPropertyBindTool" >
+            <property name="propFileName" value="classpath:com/kii/beehive/portal/web/beehive.portal.store.production.properties" />
+        </bean>
+    </beans>
 
 </beans>
