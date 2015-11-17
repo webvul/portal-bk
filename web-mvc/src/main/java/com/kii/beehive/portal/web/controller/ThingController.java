@@ -94,7 +94,6 @@ public class ThingController {
 		thingInfo.setKiiAppID(input.getKiiAppID());
 		thingInfo.setType(input.getType());
 		thingInfo.setStatus(input.getStatus());
-		thingInfo.setStatusUpdatetime(new Date());
 		
 		thingManager.createThing(thingInfo,input.getTags());
 		return new ResponseEntity<>(HttpStatus.OK);

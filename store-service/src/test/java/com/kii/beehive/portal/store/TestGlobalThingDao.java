@@ -1,6 +1,10 @@
 package com.kii.beehive.portal.store;
 
 import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
@@ -32,17 +36,20 @@ public class TestGlobalThingDao extends TestInit {
 
 		GlobalThingInfo thing=new GlobalThingInfo();
 		thing.setId("001");
+		thing.setVendorThingID("MacAddr1");
 		thing.setKiiAppID("a");
 
 
 		thingDao.addThingInfo(thing);
 
 		thing.setId("002");
+		thing.setVendorThingID("MacAddr2");
 		thing.setKiiAppID("b");
 
 		thingDao.addThingInfo(thing);
 		
 		thing.setId("003");
+		thing.setVendorThingID("MacAddr3");
 		thing.setKiiAppID("c");
 
 		thingDao.addThingInfo(thing);
@@ -119,7 +126,48 @@ public class TestGlobalThingDao extends TestInit {
 		assertEquals(0,tag.getKiiAppIDs().size());
 	}
 
-
+	@Test
+	public void addThing() throws Exception{
+		String vendorThingID = "VendorThingID1";
+		GlobalThingInfo thingInfo = new GlobalThingInfo();
+		thingInfo.setVendorThingID(vendorThingID);
+		thingInfo.setKiiAppID("AppID1");
+		thingInfo.setGlobalThingID(vendorThingID+"-AppID1");
+		
+		List<TagIndex> tagList = new ArrayList<TagIndex>();
+		TagIndex tag1=new TagIndex();
+		tag1.setTagType(TagType.System.toString());
+		tag1.setDisplayName("demo1");
+		tagList.add(tag1);
+		
+		TagIndex tag2=new TagIndex();
+		tag2.setTagType(TagType.Location.toString());
+		tag2.setDisplayName("1F");
+		tagList.add(tag2);
+		
+		thingManager.createThing(thingInfo, tagList);
+		
+		GlobalThingInfo info = thingManager.findThingByVendorThingID(vendorThingID);
+		assertNotNull(info);
+		assertEquals(2,info.getTags().size());
+	}
+	
+	@Test
+	public void deleteThing() throws Exception{
+		thingDao.removeGlobalThingByID("001");
+		GlobalThingInfo info = thingDao.getThingInfoByID("001");
+		assertNull(info);
+	}
+	
+	@Test
+	public void deleteTag() throws Exception{
+		TagIndex tag=new TagIndex();
+		tag.setTagType(TagType.System.toString());
+		tag.setDisplayName("demo1");
+		tagIndexDao.removeTagByID(tag.getId());
+		TagIndex tagIndex = tagIndexDao.getTagIndexByID(tag.getId());
+		assertNull(tagIndex);
+	}
 
 	@After
 	public void cleanData(){

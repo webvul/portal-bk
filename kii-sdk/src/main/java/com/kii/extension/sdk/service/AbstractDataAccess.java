@@ -1,19 +1,19 @@
 package com.kii.extension.sdk.service;
 
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.kii.extension.sdk.entity.BucketInfo;
 import com.kii.extension.sdk.entity.CreateResponse;
 import com.kii.extension.sdk.entity.KiiEntity;
 import com.kii.extension.sdk.entity.UpdateResponse;
+import com.kii.extension.sdk.exception.KiiCloudException;
 import com.kii.extension.sdk.query.ConditionBuilder;
 import com.kii.extension.sdk.query.QueryParam;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
 public abstract class AbstractDataAccess<T> {
 
@@ -32,8 +32,11 @@ public abstract class AbstractDataAccess<T> {
 
 
 	protected  T  getObjectByID(String id){
-
-		return service.getObjectByID(id, bucketInfo, typeCls);
+		try {
+			return service.getObjectByID(id, bucketInfo, typeCls);
+		}catch(KiiCloudException e){
+			return null;
+		}
 	}
 
 	protected UpdateResponse addEntity(T  entity,String id){
