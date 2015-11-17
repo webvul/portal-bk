@@ -17,9 +17,12 @@ dependencies {
 
 
 task testWarTask(type: War) {
+	archiveName "beehive-portal-test.war"
 }
 
 task productionWarTask(type: War){
+
+	archiveName "beehive-portal.war"
 
 	webXml=file( "src/main/deploy/web.xml")
 }

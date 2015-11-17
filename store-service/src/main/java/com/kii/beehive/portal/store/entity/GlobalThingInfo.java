@@ -105,7 +105,7 @@ public class GlobalThingInfo extends KiiEntity {
 
 	@JsonAnySetter
 	public void setCustomProperty(String key,Object val){
-		git this.customProperties.put(key,val);
+		this.customProperties.put(key,val);
 	}
 
 	@Override
