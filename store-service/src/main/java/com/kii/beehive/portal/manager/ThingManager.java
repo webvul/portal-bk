@@ -2,6 +2,7 @@ package com.kii.beehive.portal.manager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -35,14 +36,16 @@ public class ThingManager {
 			AppInfo appInfo=appInfoDao.getMatchAppInfoByThing(thingInfo.getVendorThingID());
 			thingInfo.setKiiAppID(appInfo.getAppID());
 		}
+		
+		thingInfo.setStatusUpdatetime(new Date());
 		globalThingDao.addThingInfo(thingInfo);
 		Set<String> tagNameSet = new HashSet<String>();
-		if(tagList.size() > 0){
+		if(tagList != null && tagList.size() > 0){
 			for(TagIndex tag:tagList){
 				if(!Strings.isBlank(tag.getDisplayName()) && !Strings.isBlank(tag.getTagType())){
 					TagIndex tagIndex = tagIndexDao.getTagIndexByID(tag.getId());
 					if(tagIndex == null){// create tag
-						tagIndexDao.addTagIndex(tagIndex);
+						tagIndexDao.addTagIndex(tag);
 					}
 					tagNameSet.add(tag.getId());
 				}
