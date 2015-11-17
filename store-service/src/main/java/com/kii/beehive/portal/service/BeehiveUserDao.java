@@ -1,13 +1,21 @@
 package com.kii.beehive.portal.service;
 
-import java.util.*;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.annotation.BindAppByName;
+import com.kii.beehive.portal.helper.SimpleQueryTool;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.extension.sdk.entity.BucketInfo;
+import com.kii.extension.sdk.query.QueryParam;
 import com.kii.extension.sdk.service.AbstractDataAccess;
 
 
@@ -15,6 +23,11 @@ import com.kii.extension.sdk.service.AbstractDataAccess;
 @Component
 public class BeehiveUserDao extends AbstractDataAccess<BeehiveUser> {
 
+	private Logger log= LoggerFactory.getLogger(BeehiveUserDao.class);
+
+
+	@Autowired
+	private SimpleQueryTool queryTool;
 
 	public void createUser(BeehiveUser user){
 
@@ -31,7 +44,7 @@ public class BeehiveUserDao extends AbstractDataAccess<BeehiveUser> {
 
 	public void updateUserGroups(String userID, Set<String> groups){
 
-		Map<String,Object> paramMap = new HashMap<String, Object>();
+		Map<String,Object> paramMap = new HashMap<>();
 		paramMap.put("groups", groups);
 
 		super.updateEntity(paramMap, userID);
@@ -79,10 +92,20 @@ public class BeehiveUserDao extends AbstractDataAccess<BeehiveUser> {
 	 */
 	public BeehiveUser getUserByID(String beehiveUserID) {
 
-		BeehiveUser user = getEntity("beehiveUserID", beehiveUserID);
+		QueryParam query=queryTool.getSimpleQuery("beehiveUserID",beehiveUserID);
 
-		return user;
+		List<BeehiveUser> users = super.query(query);
+
+		if(users.size()>0){
+			log.warn(" duplicate external user ID");
+		}else if(users.size()==0){
+			return null;
+		}
+
+		return users.get(0);
 	}
+
+
 
 	/**
 	 * get list of beehive users
@@ -92,9 +115,11 @@ public class BeehiveUserDao extends AbstractDataAccess<BeehiveUser> {
      */
 	public List<BeehiveUser> getUserByIDs(List<String> beehiveUserIDList) {
 
-		List<BeehiveUser> resultList = getEntitys("beehiveUserID", Arrays.asList(beehiveUserIDList));
 
-		return resultList;
+		QueryParam query=queryTool.getEntitys("beehiveUserID", beehiveUserIDList);
+
+		return super.fullQuery(query);
+
 	}
 
 	/**
@@ -102,20 +127,20 @@ public class BeehiveUserDao extends AbstractDataAccess<BeehiveUser> {
 	 * @param beehiveUserIDList
 	 * @return
      */
-	public List<String> getNonExistUserIDs(List<String> beehiveUserIDList) {
-
-		List<BeehiveUser> resultList = this.getUserByIDs(beehiveUserIDList);
-
-		List<String> existList = new ArrayList<>();
-		resultList.stream().forEach((e)->{
-			existList.add(e.getBeehiveUserID());
-		});
-
-		List<String> nonExistList = new ArrayList<String>();
-		nonExistList.addAll(beehiveUserIDList);
-		nonExistList.removeAll(existList);
-
-		return nonExistList;
-	}
+//	public List<String> getNonExistUserIDs(List<String> beehiveUserIDList) {
+//
+//		List<BeehiveUser> resultList = this.getUserByIDs(beehiveUserIDList);
+//
+//		List<String> existList = new ArrayList<>();
+//		resultList.stream().forEach((e)->{
+//			existList.add(e.getBeehiveUserID());
+//		});
+//
+//		List<String> nonExistList = new ArrayList<String>();
+//		nonExistList.addAll(beehiveUserIDList);
+//		nonExistList.removeAll(existList);
+//
+//		return nonExistList;
+//	}
 
 }

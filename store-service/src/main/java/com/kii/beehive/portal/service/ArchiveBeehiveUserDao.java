@@ -1,11 +1,12 @@
 package com.kii.beehive.portal.service;
 
+import org.springframework.stereotype.Component;
+
 import com.kii.beehive.portal.annotation.BindAppByName;
 import com.kii.beehive.portal.store.entity.ArchiveBeehiveUser;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.extension.sdk.entity.BucketInfo;
 import com.kii.extension.sdk.service.AbstractDataAccess;
-import org.springframework.stereotype.Component;
 
 
 @BindAppByName(appName="portal")

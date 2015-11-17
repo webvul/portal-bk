@@ -1,18 +1,24 @@
 package com.kii.beehive.portal.manager;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import com.kii.beehive.portal.notify.UserSyncNotifier;
-import com.kii.beehive.portal.service.*;
-import com.kii.beehive.portal.store.entity.BeehiveUserGroup;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.kii.beehive.portal.notify.UserSyncNotifier;
+import com.kii.beehive.portal.service.AppInfoDao;
+import com.kii.beehive.portal.service.ArchiveBeehiveUserDao;
+import com.kii.beehive.portal.service.BeehiveUserDao;
+import com.kii.beehive.portal.service.BeehiveUserGroupDao;
+import com.kii.beehive.portal.service.KiiUserSyncDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
+import com.kii.beehive.portal.store.entity.BeehiveUserGroup;
 
 
 @Component
@@ -175,7 +181,7 @@ public class UserManager {
 
 		// update the user info into table BeehiveUserGroup
 		userGroupList.forEach((group) -> {
-			String tempId = group.getUserGroupID();
+			String tempId = group.getId();
 			Set<String> tempUsers = group.getUsers();
 
 			// add or remove user from the user group

@@ -1,22 +1,30 @@
 package com.kii.beehive.portal.service;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.kii.beehive.portal.annotation.BindAppByName;
+import com.kii.beehive.portal.helper.SimpleQueryTool;
 import com.kii.beehive.portal.store.entity.BeehiveUserGroup;
 import com.kii.extension.sdk.entity.BucketInfo;
 import com.kii.extension.sdk.service.AbstractDataAccess;
-import org.springframework.stereotype.Component;
-
-import java.util.*;
 
 
 @BindAppByName(appName = "portal")
 @Component
 public class BeehiveUserGroupDao extends AbstractDataAccess<BeehiveUserGroup> {
 
+	@Autowired
+	private SimpleQueryTool queryTool;
 
     public void createUserGroup(BeehiveUserGroup userGroup) {
 
-        super.addEntity(userGroup, userGroup.getUserGroupID());
+        super.addKiiEntity(userGroup);
 
     }
 
@@ -40,11 +48,13 @@ public class BeehiveUserGroupDao extends AbstractDataAccess<BeehiveUserGroup> {
     }
 
     public BeehiveUserGroup getUserGroupByID(String userGroupID) {
-        return super.getEntity("userGroupID", userGroupID);
+
+		return super.getObjectByID(userGroupID);
     }
 
     public List<BeehiveUserGroup> getUserGroupByIDs(List<String> userGroupIDs) {
-        return super.getEntitys("userGroupID", Arrays.asList(userGroupIDs));
+
+        return super.getEntitys(userGroupIDs.toArray(new String[0]));
     }
 
     @Override

@@ -9,11 +9,7 @@ import com.kii.beehive.portal.annotation.BindAppByName;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.extension.sdk.entity.KiiUser;
 import com.kii.extension.sdk.entity.LoginInfo;
-import com.kii.extension.sdk.exception.KiiCloudException;
-import com.kii.extension.sdk.service.AbstractDataAccess;
 import com.kii.extension.sdk.service.UserService;
-
-import java.util.Set;
 
 /**
  * Tech Design - Beehive API

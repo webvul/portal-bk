@@ -56,7 +56,7 @@ public class UserGroupController {
      *
      * @param requestBody
      */
-    @RequestMapping(path="/",method={RequestMethod.PUT})
+    @RequestMapping(path="/",method={RequestMethod.DELETE})
     public void deleteUserGroup(@RequestBody String requestBody){
         // TODO
 

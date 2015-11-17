@@ -33,7 +33,7 @@ public abstract class AbstractDataAccess<T> {
 
 	protected  T  getObjectByID(String id){
 
-		return service.getObjectByID(id,bucketInfo,typeCls);
+		return service.getObjectByID(id, bucketInfo, typeCls);
 	}
 
 	protected UpdateResponse addEntity(T  entity,String id){
@@ -160,50 +160,5 @@ public abstract class AbstractDataAccess<T> {
 
 	}
 
-	protected List<T> getEntitys(String field, Object[] values) {
-
-		return getEntitys(field, Arrays.asList(values));
-	}
-
-	protected List<T> getEntitys(String field, List<Object> values) {
-
-		List<T> resultList = new ArrayList<T>();
-
-		if(values == null || values.size() == 0) {
-			return resultList;
-		}
-
-		// the "In" query condition only can put 200 elements at most
-		int size = values.size();
-		for(int i = 0; i < size; i += 200) {
-			int endIndex = (i + 200) >= size? size : i + 200;
-			List<Object> tempValues = values.subList(i, endIndex);
-
-			QueryParam query= ConditionBuilder.newCondition().In(field, tempValues).getFinalCondition().build();
-			List<T> tempList = fullQuery(query);
-			resultList.addAll(tempList);
-		}
-
-		return resultList;
-	}
-
-	protected T getEntity(String field, String value) {
-
-		List<T> result = this.getEntitys(field, value);
-
-		if(result != null && result.size() >= 0) {
-			return result.get(0);
-		}
-
-		return null;
-	}
-
-	protected List<T> getEntitys(String field, String value) {
-
-		QueryParam query= ConditionBuilder.newCondition().equal(field, value).getFinalCondition().build();
-		List<T> result = fullQuery(query);
-
-		return result;
-	}
 
 }

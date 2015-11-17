@@ -12,6 +12,15 @@ public class NotifyUserFailure extends KiiEntity {
 
 	private String failureTime;
 
+	@Override
+	public String getId(){
+		return party3rdID;
+	}
+
+	@Override
+	public void setId(String id){
+		this.party3rdID=id;
+	}
 
 	public String getParty3rdID() {
 		return party3rdID;

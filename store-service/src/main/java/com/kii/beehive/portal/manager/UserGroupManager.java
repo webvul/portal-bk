@@ -1,19 +1,22 @@
 package com.kii.beehive.portal.manager;
 
-import com.kii.beehive.portal.notify.UserSyncNotifier;
-import com.kii.beehive.portal.service.AppInfoDao;
-import com.kii.beehive.portal.service.BeehiveUserDao;
-import com.kii.beehive.portal.service.BeehiveUserGroupDao;
-import com.kii.beehive.portal.store.entity.BeehiveUser;
-import com.kii.beehive.portal.store.entity.BeehiveUserGroup;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-import java.util.*;
+import com.kii.beehive.portal.notify.UserSyncNotifier;
+import com.kii.beehive.portal.service.AppInfoDao;
+import com.kii.beehive.portal.service.BeehiveUserDao;
+import com.kii.beehive.portal.service.BeehiveUserGroupDao;
+import com.kii.beehive.portal.store.entity.BeehiveUser;
+import com.kii.beehive.portal.store.entity.BeehiveUserGroup;
 
 @Component
 public class UserGroupManager {

@@ -7,20 +7,21 @@ public class DeviceSupplier extends KiiEntity {
 
 	private String name;
 
-	private String party3rdID;
+//	private String party3rdID;
 
 	private String relationAppName;
 
 	private String description;
 
-	private String userInfoNotifyUrl;
+	private String userInfoNotifyUrl="";
+
 
 	public String getParty3rdID() {
-		return party3rdID;
+		return getId();
 	}
 
 	public void setParty3rdID(String party3rdID) {
-		this.party3rdID = party3rdID;
+		setId(party3rdID);
 	}
 
 

@@ -1,12 +1,13 @@
 package com.kii.beehive.portal.service;
 
+import java.util.List;
+
+import org.springframework.stereotype.Component;
+
 import com.kii.beehive.portal.annotation.BindAppByName;
 import com.kii.beehive.portal.store.entity.NotifyUserFailure;
 import com.kii.extension.sdk.entity.BucketInfo;
 import com.kii.extension.sdk.service.AbstractDataAccess;
-import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @BindAppByName(appName="portal")
 @Component
@@ -29,7 +30,7 @@ public class NotifyUserFailureDao extends AbstractDataAccess<NotifyUserFailure>{
 
 	public List<NotifyUserFailure> getNotifyUserFailureByParty3rdID(String[] party3rdIDs) {
 
-		return getEntitys("party3rdID", party3rdIDs);
+		return super.getEntitys(party3rdIDs);
 	}
 
 	@Override

@@ -13,8 +13,8 @@ import org.springframework.util.StringUtils;
 
 import com.kii.beehive.portal.annotation.AppBindParam;
 import com.kii.beehive.portal.annotation.BindAppByName;
-import com.kii.extension.sdk.entity.AppChoice;
 import com.kii.extension.sdk.context.AppBindToolResolver;
+import com.kii.extension.sdk.entity.AppChoice;
 
 
 @Aspect

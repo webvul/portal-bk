@@ -1,20 +1,19 @@
 package com.kii.beehive.portal.store.entity;
 
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
-import com.kii.extension.sdk.entity.KiiEntity;
-
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
+
+import com.kii.extension.sdk.entity.KiiEntity;
 
 
 public class BeehiveUserGroup extends KiiEntity {
 
     public static final String PREFIX = "custom-";
 
-    private String userGroupID;
 
     private String userGroupName;
 
@@ -25,11 +24,11 @@ public class BeehiveUserGroup extends KiiEntity {
     private Map<String, Object> customFields = new HashMap<>();
 
     public String getUserGroupID() {
-        return userGroupID;
+        return getId();
     }
 
     public void setUserGroupID(String userGroupID) {
-        this.userGroupID = userGroupID;
+        this.setId(userGroupID);
     }
 
     public String getUserGroupName() {

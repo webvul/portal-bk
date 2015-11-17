@@ -1,26 +1,35 @@
 package com.kii.beehive.portal.notify;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kii.beehive.portal.service.DeviceSupplierDao;
-import com.kii.beehive.portal.service.NotifyUserFailureDao;
-import com.kii.beehive.portal.store.entity.NotifyUserFailure;
+import javax.annotation.PostConstruct;
+
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import com.kii.beehive.portal.service.DeviceSupplierDao;
+import com.kii.beehive.portal.service.NotifyUserFailureDao;
+import com.kii.beehive.portal.store.entity.DeviceSupplier;
+import com.kii.beehive.portal.store.entity.NotifyUserFailure;
 
 /**
  * Tech Design - Beehive API
@@ -48,12 +57,12 @@ public class UserSyncNotifier {
 
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy/MM/dd hhmmss");
 
-    private Logger logger;
+    private Logger logger= LoggerFactory.getLogger(this.getClass());;
 
     private ThreadPoolExecutor executor;
 
     // map between device supplier ID and userInfoNotifyUrl
-    private Map<String, String> userInfoNotifyUrlMap;
+    private Map<String, String> userInfoNotifyUrlMap= new ConcurrentHashMap<String, String>();;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -67,14 +76,14 @@ public class UserSyncNotifier {
     @PostConstruct
     public void init() {
 
-        logger = Logger.getLogger(this.getClass());
 
         executor = new ThreadPoolExecutor(8, 64, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
 
-        userInfoNotifyUrlMap = new ConcurrentHashMap<String, String>();
-        supplierDao.getAllSupplier().stream().forEach((entity) -> {
-            userInfoNotifyUrlMap.put(entity.getId(), entity.getUserInfoNotifyUrl());
-        });
+        List<DeviceSupplier>  list=supplierDao.getAllSupplier();
+
+		list.forEach((entity) -> {
+			userInfoNotifyUrlMap.put(entity.getParty3rdID(), entity.getUserInfoNotifyUrl());
+		});
 
         logger.info("loaded user info notify url:" + userInfoNotifyUrlMap);
 
@@ -127,24 +136,27 @@ public class UserSyncNotifier {
         logger.debug("beehiveUserIDList:" + beehiveUserIDList);
         logger.debug("changeType:" + changeType);
 
-        try {
 
-            Map<String, Object> map = new HashMap<String, Object>();
+
+            Map<String, Object> map = new HashMap<>();
             map.put("user_id", beehiveUserIDList);
             map.put("change_type", changeType);
 
-            String notifyContent = objectMapper.writeValueAsString(map);
+		try {
+             final String notifyContent = objectMapper.writeValueAsString(map);
+
 
             // start new threads to call the url of each device supplier
             userInfoNotifyUrlMap.forEach((party3rdID, url) -> {
-                if (!party3rdID.equals(sourceParty3rdID)) {
-                    notifyInThread(party3rdID, notifyContent, url);
-                }
-            });
+				if (!party3rdID.equals(sourceParty3rdID)) {
+					notifyInThread(party3rdID, notifyContent, url);
+				}
+			});
+		} catch (Exception e) {
+			throw new IllegalArgumentException(e);
+		}
 
-        } catch (Exception e) {
-            logger.error(e);
-        }
+
 
         logger.debug("End notifyDeviceSuppliersAsync(String sourceParty3rdID, List<String> beehiveUserIDList, String changeType)");
 
@@ -170,7 +182,6 @@ public class UserSyncNotifier {
                 logger.debug("notifyContent:" + notifyContent);
                 logger.debug("userInfoNotifyUrl:" + userInfoNotifyUrl);
 
-                try {
                     HttpPost method = new HttpPost(userInfoNotifyUrl);
 
                     StringEntity entity = new StringEntity(notifyContent, "UTF-8");
@@ -187,9 +198,13 @@ public class UserSyncNotifier {
                         for (int i = 0; i < URL_RETRY_COUNT; i++) {
 
                             interval += URL_RETRY_INTERVAL_INCREASE;
-                            Thread.sleep(interval);
+							try {
+								Thread.sleep(interval);
+							} catch (InterruptedException e) {
+								return;
+							}
 
-                            notifyResult = notifySingle(method);
+							notifyResult = notifySingle(method);
 
                             // if retry succeeds, break
                             if (notifyResult == true) {
@@ -209,10 +224,6 @@ public class UserSyncNotifier {
                             storeNotifyFailure(destParty3rdID, notifyContent, userInfoNotifyUrl);
                         }
                     }
-                } catch (Exception e) {
-                    logger.error(e);
-                }
-
                 logger.debug("End thread to notify");
             }
         });

@@ -53,7 +53,7 @@ public class ConditionBuilder {
 		return this;
 	}
 
-	public ConditionBuilder In(String field, List<Object> objList) {
+	public ConditionBuilder In(String field, List<?> objList) {
 		InCollect q = new InCollect();
 		q.setField(field);
 		q.setValues(objList);

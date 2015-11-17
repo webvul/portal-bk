@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
@@ -37,6 +35,15 @@ public class BeehiveUser extends KiiEntity {
 	private Map<String,Object> customFields=new HashMap<>();
 
 	private CustomProperty properties=new CustomProperty();
+
+	@Override
+	public String getId(){
+		return kiiUserID;
+	}
+
+	public void setId(String id){
+		this.kiiUserID=id;
+	}
 
 	public String getBeehiveUserID() {
 		return beehiveUserID;

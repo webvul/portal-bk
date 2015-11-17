@@ -6,10 +6,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.kii.beehive.portal.store.entity.GlobalThingInfo;
 import com.kii.beehive.portal.annotation.BindAppByName;
+import com.kii.beehive.portal.helper.SimpleQueryTool;
+import com.kii.beehive.portal.store.entity.GlobalThingInfo;
 import com.kii.extension.sdk.entity.BucketInfo;
 import com.kii.extension.sdk.query.ConditionBuilder;
 import com.kii.extension.sdk.query.QueryParam;
@@ -18,6 +22,13 @@ import com.kii.extension.sdk.service.AbstractDataAccess;
 @BindAppByName(appName="portal")
 @Component
 public class GlobalThingDao extends AbstractDataAccess<GlobalThingInfo>{
+
+
+	private Logger log= LoggerFactory.getLogger(BeehiveUserDao.class);
+
+
+	@Autowired
+	private SimpleQueryTool queryTool;
 
 	private final String TAGS = "tags";
 	private final String BUCKET_INFO = "GlobalThingInfo";
@@ -54,7 +65,19 @@ public class GlobalThingDao extends AbstractDataAccess<GlobalThingInfo>{
 
 	public GlobalThingInfo getThingByVendorThingID(String vendorThingID) {
 
-		return super.getEntity("vendorThingID", vendorThingID);
+		QueryParam query=queryTool.getSimpleQuery("vendorThingID",vendorThingID);
+
+		List<GlobalThingInfo> list=super.query(query);
+
+		if(list.size()>1){
+			log.warn("duplicate vendor thing id");
+		}else if(list.isEmpty()){
+			return null;
+		}
+
+		return list.get(0);
+
+
 	}
 
 	public List<GlobalThingInfo> getThingsByIDs(String[] ids){
