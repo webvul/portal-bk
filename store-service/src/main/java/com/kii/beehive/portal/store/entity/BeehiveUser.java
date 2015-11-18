@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 import com.kii.extension.sdk.entity.KiiEntity;
@@ -14,7 +15,7 @@ public class BeehiveUser extends KiiEntity {
 
 	public static final String PREFIX = "custom-";
 
-	private String beehiveUserID;
+	private String aliUserID;
 
 	private String kiiUserID;
 
@@ -49,12 +50,13 @@ public class BeehiveUser extends KiiEntity {
 		this.kiiUserID=id;
 	}
 
-	public String getBeehiveUserID() {
-		return beehiveUserID;
+	@JsonProperty("userID")
+	public String getAliUserID() {
+		return aliUserID;
 	}
 
-	public void setBeehiveUserID(String beehiveUserID) {
-		this.beehiveUserID = beehiveUserID;
+	public void setAliUserID(String aliUserID) {
+		this.aliUserID = aliUserID;
 	}
 
 	public String getKiiUserID() {

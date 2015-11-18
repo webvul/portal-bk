@@ -56,7 +56,7 @@ public class UserGroupManager {
             Set<String> existGroupIDs = user.getGroups();
             existGroupIDs.addAll(beehiveUserGroupIDs);
 
-            beehiveUserDao.updateUserGroups(user.getBeehiveUserID(), existGroupIDs);
+            beehiveUserDao.updateUserGroups(user.getAliUserID(), existGroupIDs);
         });
 
         List<BeehiveUserGroup> groups = beehiveUserGroupDao.getUserGroupByIDs(beehiveUserGroupIDs);
@@ -94,7 +94,7 @@ public class UserGroupManager {
             Set<String> existGroupIDs = user.getGroups();
             existGroupIDs.removeAll(beehiveUserGroupIDs);
 
-            beehiveUserDao.updateUserGroups(user.getBeehiveUserID(), existGroupIDs);
+            beehiveUserDao.updateUserGroups(user.getAliUserID(), existGroupIDs);
         });
 
         List<BeehiveUserGroup> groups = beehiveUserGroupDao.getUserGroupByIDs(beehiveUserGroupIDs);
@@ -242,7 +242,7 @@ public class UserGroupManager {
 
         // update the user group info into table BeehiveUser
         beehiveUserList.stream().forEach((beehiveUser) -> {
-            String tempId = beehiveUser.getBeehiveUserID();
+            String tempId = beehiveUser.getAliUserID();
             Set<String> tempGroups = beehiveUser.getGroups();
 
             // add or remove the user group from user

@@ -17,7 +17,7 @@ public class WebEnvLoader {
 
 		WebAppContext webapp = new WebAppContext();
 
-		webapp.setContextPath("/beehive");
+		webapp.setContextPath("/beehive-portal");
 
 		File warFile = new File("web-mvc/src/main/webapp/");
 

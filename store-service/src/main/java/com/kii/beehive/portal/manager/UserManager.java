@@ -81,7 +81,7 @@ public class UserManager {
 //			throw new KiiCloudException();
 //		}
 
-//		this.checkUserGroupsChange(user.getBeehiveUserID(), user.getGroups());
+//		this.checkUserGroupsChange(user.getAliUserID(), user.getGroups());
 		userDao.updateUser(user);
 
 	}
@@ -111,7 +111,7 @@ public class UserManager {
 
 		kiiUserDao.disableBeehiveUser(user);
 
-//		this.checkUserGroupsChange(user.getBeehiveUserID(), null);
+//		this.checkUserGroupsChange(user.getAliUserID(), null);
 
 		userDao.deleteUser(userID);
 

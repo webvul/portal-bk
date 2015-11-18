@@ -4,7 +4,6 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.kii.beehive.portal.annotation.AppBindParam;
 import com.kii.beehive.portal.annotation.BindAppByName;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.extension.sdk.entity.KiiUser;
@@ -42,7 +41,7 @@ public class KiiUserSyncDao {
 
 		String userID=user.getKiiUserID();
 
-		String pwd=DigestUtils.sha1Hex(user.getBeehiveUserID()+"_beehive");
+		String pwd=DigestUtils.sha1Hex(user.getAliUserID()+"_beehive");
 
 		LoginInfo loginInfo=userService.login(userID,pwd);
 

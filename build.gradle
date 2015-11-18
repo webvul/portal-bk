@@ -44,7 +44,7 @@ task buildwar(type:War , dependsOn:'pullGit'){
 
 task deploy(type:Copy,dependsOn:'buildwar'){
 
-	from('./build/libs/beehive-portal.war')
+	from('./web-mvc/build/libs/beehive-portal.war')
 	into('/opt/tomcat/webapps')
 }
 
