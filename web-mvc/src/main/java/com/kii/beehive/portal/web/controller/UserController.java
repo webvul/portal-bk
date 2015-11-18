@@ -1,8 +1,10 @@
 package com.kii.beehive.portal.web.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.portal.manager.UserManager;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
+import com.kii.beehive.portal.web.entity.OutputUser;
 
 /**
  * Beehive API - User API
@@ -38,9 +41,10 @@ public class UserController {
 		return map;
     }
 
-    @RequestMapping(path="/{userID}",method={RequestMethod.PUT})
-    public void updateUser(@RequestBody BeehiveUser user){
+    @RequestMapping(path="/{userID}",method={RequestMethod.PATCH})
+    public void updateUser(@PathVariable("userID") String userID,@RequestBody BeehiveUser user){
 
+		user.setId(userID);
 		userManager.updateUser(user);
 
 
@@ -48,17 +52,14 @@ public class UserController {
     }
 
 	@RequestMapping(path="/{userID}",method={RequestMethod.GET})
-	public BeehiveUser getUser(@PathVariable("userID") String userID){
+	public OutputUser getUser(@PathVariable("userID") String userID){
 
 
-		return userManager.getUserByID(userID);
-
-
-
+		return new OutputUser(userManager.getUserByID(userID));
 	}
 
 
-    @RequestMapping(path="/{userID}/customProp",method={RequestMethod.PATCH})
+    @RequestMapping(path="/{userID}/custom",method={RequestMethod.PATCH})
     public void updateCustomProp(@PathVariable("userID") String userID,@RequestBody Map<String,Object> props){
 
 		userManager.updateCustomProp(userID,props);
@@ -73,11 +74,12 @@ public class UserController {
 	}
 
 
-    @RequestMapping(path="/simple-query",method={RequestMethod.POST})
-    public List<BeehiveUser> queryUserByProps(@RequestBody Map<String,Object> queryMap){
+    @RequestMapping(path="/simplequery",method={RequestMethod.POST})
+    public List<OutputUser> queryUserByProps(@RequestBody Map<String,Object> queryMap){
 
-
-		return userManager.simpleQueryUser(queryMap);
+		return  userManager.simpleQueryUser(queryMap).stream()
+				.map((e) -> new OutputUser(e))
+				.collect(Collectors.toCollection(ArrayList::new));
 
     }
 

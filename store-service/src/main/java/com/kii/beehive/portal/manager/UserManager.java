@@ -77,9 +77,9 @@ public class UserManager {
 
 	public void updateUser(BeehiveUser user) {
 
-		if(StringUtils.isEmpty(user.getUserName())){
-			throw new KiiCloudException();
-		}
+//		if(StringUtils.isEmpty(user.getUserName())){
+//			throw new KiiCloudException();
+//		}
 
 //		this.checkUserGroupsChange(user.getBeehiveUserID(), user.getGroups());
 		userDao.updateUser(user);

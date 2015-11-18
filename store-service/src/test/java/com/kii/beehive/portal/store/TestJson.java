@@ -10,12 +10,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.store.entity.GlobalThingInfo;
 
-public class TestJson extends TestInit{
+public class TestJson {
 
-	@Autowired
-	private ObjectMapper mapper;
+	private ObjectMapper mapper=new ObjectMapper();
+
+	@Test
+	public void testUser() throws IOException{
+
+		String json="{\n\"userName\": \"bob\",\n\"company\": \"test\",\n}";
+
+		json="{  userName: \"john\",\n" +
+				"company: \"test\",\n" +
+				"}";
+
+		BeehiveUser user=mapper.readValue(json, BeehiveUser.class);
+
+
+
+
+	}
 
 	@Test
 	public void testSet() throws IOException {

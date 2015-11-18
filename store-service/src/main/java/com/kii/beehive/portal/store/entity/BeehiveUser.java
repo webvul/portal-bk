@@ -36,6 +36,10 @@ public class BeehiveUser extends KiiEntity {
 
 	private CustomProperty properties=new CustomProperty();
 
+	public BeehiveUser(){
+
+	}
+
 	@Override
 	public String getId(){
 		return kiiUserID;

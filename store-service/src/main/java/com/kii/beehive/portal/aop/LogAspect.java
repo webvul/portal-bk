@@ -22,10 +22,10 @@ public class LogAspect {
 	private ObjectMapper mapper;
 
 
-	private Logger log= LoggerFactory.getLogger("manager log");
+	private Logger log= LoggerFactory.getLogger("manager-log");
 
 
-	@Before("within ( com.kii.beehive.portal.manager..* ) ")
+	@Before("within ( com.kii.beehive.portal.manager.* ) ")
 	public void beforeCallBusinessFun(JoinPoint joinPoint){
 
 		Method method=logMethod(joinPoint,"been called");
@@ -52,8 +52,8 @@ public class LogAspect {
 		return method;
 	}
 
-	@AfterReturning("within ( com.kii.beehive.portal.manager..* ) ")
-	public void afterCallBusinessFun(Object result,JoinPoint joinPoint){
+	@AfterReturning(pointcut = "within ( com.kii.beehive.portal.manager.* )",   returning = "result" )
+	public void afterCallBusinessFun(JoinPoint joinPoint,Object result){
 
 		logMethod(joinPoint,"execute finish ");
 

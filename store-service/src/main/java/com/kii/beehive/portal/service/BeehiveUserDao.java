@@ -41,8 +41,10 @@ public class BeehiveUserDao extends AbstractDataAccess<BeehiveUser> {
 
 	public void updateUser(BeehiveUser user) {
 
-		super.updateEntity(user, user.getBeehiveUserID());
+		super.updateEntity(user, user.getId());
 	}
+
+
 
 	public void updateUserGroups(String userID, Set<String> groups){
 

@@ -23,7 +23,10 @@ public class TestInit {
 //	@Autowired
 //	private ThingInfoRepository thingRep;
 
+	@Before
+	public void init(){
 
+	}
 
 	@Test
 	public void  testInit(){

@@ -17,6 +17,11 @@ public class CustomProperty implements Serializable{
 
 	}
 
+	@JsonIgnore
+	public Map<String,Object> getOriginFields(){
+		return customFields;
+	}
+
 	@JsonAnyGetter
 	public Map<String,Object> getCustomField(){
 

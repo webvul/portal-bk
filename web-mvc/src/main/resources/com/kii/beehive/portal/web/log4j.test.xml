@@ -9,6 +9,9 @@
         </layout>
     </appender>
 
+    <logger name="com.fasterxml.jackson">
+        <level value="debug" />
+    </logger>
 
     <logger name="org.apache.http">
         <level value="debug" />
@@ -19,7 +22,7 @@
     </logger>
 
     <root>
-        <priority value="info" />
+        <priority value="debug" />
         <appender-ref ref="console" />
     </root>
 
