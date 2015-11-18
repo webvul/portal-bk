@@ -11,6 +11,8 @@ public class ThingInput {
 	private String vendorThingID;
 	
 	private String kiiAppID;
+	
+	private String password;
 
 	private List<TagIndex> tags;
 
@@ -64,6 +66,14 @@ public class ThingInput {
 
 	public void setKiiAppID(String kiiAppID) {
 		this.kiiAppID = kiiAppID;
+	}
+	
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 	@Override

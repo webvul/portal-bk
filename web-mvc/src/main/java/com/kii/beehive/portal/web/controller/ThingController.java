@@ -1,6 +1,5 @@
 package com.kii.beehive.portal.web.controller;
 
-import java.util.Date;
 import java.util.List;
 
 import org.apache.logging.log4j.util.Strings;
@@ -88,10 +87,15 @@ public class ThingController {
 			throw new PortalException();//paramter missing
 		}
 		
+		if(Strings.isBlank(input.getPassword())){
+			throw new PortalException();//paramter missing
+		}
+		
 		GlobalThingInfo thingInfo = new GlobalThingInfo();
 		thingInfo.setVendorThingID(input.getVendorThingID());
 		thingInfo.setGlobalThingID(input.getGlobalThingID());
 		thingInfo.setKiiAppID(input.getKiiAppID());
+		thingInfo.setPassword(input.getPassword());
 		thingInfo.setType(input.getType());
 		thingInfo.setStatus(input.getStatus());
 		
