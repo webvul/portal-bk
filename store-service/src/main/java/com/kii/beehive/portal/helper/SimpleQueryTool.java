@@ -1,6 +1,7 @@
 package com.kii.beehive.portal.helper;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
@@ -25,6 +26,19 @@ public class SimpleQueryTool {
 		QueryParam query= ConditionBuilder.newCondition().In(field, values).getFinalCondition().build();
 
 		return query;
+	}
+
+	public QueryParam getEntitysByFields(Map<String,Object> fields){
+
+		ConditionBuilder builder= ConditionBuilder.andCondition();
+
+		fields.forEach((k,v)->{
+
+			builder.equal(k,v);
+		});
+
+		return builder.getFinalCondition().build();
+
 	}
 
 

@@ -1,6 +1,8 @@
 package com.kii.beehive.portal.service;
 
 
+import javax.management.Query;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,14 +53,6 @@ public class BeehiveUserDao extends AbstractDataAccess<BeehiveUser> {
 
 	}
 
-	public Map<String,Object> getUserCustomInfoByID(String userID,Set<String> field){
-
-		BeehiveUser user=super.getObjectByID(userID);
-
-
-		return user.getCustomFields().filter(field);
-
-	}
 
 	public void updateUserCustomFields(String userID,Map<String,Object> fieldMap){
 
@@ -70,8 +64,31 @@ public class BeehiveUserDao extends AbstractDataAccess<BeehiveUser> {
 
 	}
 
+
+	public List<BeehiveUser> getUserByIDs(List<String> beehiveUserIDList) {
+
+
+		return super.getEntitys(beehiveUserIDList.toArray(new String[0]));
+
+	}
+
+	public BeehiveUser  getUserByID(String userID){
+		return super.getObjectByID(userID);
+	}
+
+
 	public void deleteUser(String userID){
 		super.removeEntity(userID);
+	}
+
+	public List<BeehiveUser>  getUsersBySimpleQuery(Map<String,Object> params){
+		QueryParam query=queryTool.getEntitysByFields(params);
+
+		return super.fullQuery(query);
+	}
+
+	public List<BeehiveUser> getAllUsers(){
+		return super.getAll();
 	}
 
 	@Override
@@ -84,63 +101,5 @@ public class BeehiveUserDao extends AbstractDataAccess<BeehiveUser> {
 		return new BucketInfo("beehiveUser");
 	}
 
-	/**
-	 * get beehive user
-	 *
-	 * @param beehiveUserID
-	 * @return
-	 */
-	public BeehiveUser getUserByID(String beehiveUserID) {
-
-		QueryParam query=queryTool.getSimpleQuery("beehiveUserID",beehiveUserID);
-
-		List<BeehiveUser> users = super.query(query);
-
-		if(users.size()>0){
-			log.warn(" duplicate external user ID");
-		}else if(users.size()==0){
-			return null;
-		}
-
-		return users.get(0);
-	}
-
-
-
-	/**
-	 * get list of beehive users
-	 *
-	 * @param beehiveUserIDList
-	 * @return
-     */
-	public List<BeehiveUser> getUserByIDs(List<String> beehiveUserIDList) {
-
-
-		QueryParam query=queryTool.getEntitys("beehiveUserID", beehiveUserIDList);
-
-		return super.fullQuery(query);
-
-	}
-
-	/**
-	 * get the list of non existing beehive user ID
-	 * @param beehiveUserIDList
-	 * @return
-     */
-//	public List<String> getNonExistUserIDs(List<String> beehiveUserIDList) {
-//
-//		List<BeehiveUser> resultList = this.getUserByIDs(beehiveUserIDList);
-//
-//		List<String> existList = new ArrayList<>();
-//		resultList.stream().forEach((e)->{
-//			existList.add(e.getBeehiveUserID());
-//		});
-//
-//		List<String> nonExistList = new ArrayList<String>();
-//		nonExistList.addAll(beehiveUserIDList);
-//		nonExistList.removeAll(existList);
-//
-//		return nonExistList;
-//	}
 
 }

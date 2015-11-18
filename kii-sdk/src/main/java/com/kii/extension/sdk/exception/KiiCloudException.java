@@ -56,4 +56,11 @@ public class KiiCloudException extends RuntimeException {
 	public void setMessage(String message) {
 		this.message = message;
 	}
+
+	@Override
+	@JsonIgnore
+	public StackTraceElement[] getStackTrace() {
+		return super.getStackTrace();
+
+	}
 }

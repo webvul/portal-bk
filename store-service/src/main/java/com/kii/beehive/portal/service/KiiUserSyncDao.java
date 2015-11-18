@@ -54,7 +54,7 @@ public class KiiUserSyncDao {
 		userService.removeUserByLoginName(beehiveUserID);
 	}
 
-	public void disableBeehiveUser(BeehiveUser user,  @AppBindParam String appName) {
+	public void disableBeehiveUser(BeehiveUser user) {
 
 		userService.disableUser(user.getKiiUserID());
 

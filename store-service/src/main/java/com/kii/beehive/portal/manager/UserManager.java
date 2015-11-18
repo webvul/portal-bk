@@ -3,6 +3,7 @@ package com.kii.beehive.portal.manager;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.codec.digest.DigestUtils;
@@ -10,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import com.kii.beehive.portal.notify.UserSyncNotifier;
 import com.kii.beehive.portal.service.AppInfoDao;
@@ -19,6 +21,7 @@ import com.kii.beehive.portal.service.BeehiveUserGroupDao;
 import com.kii.beehive.portal.service.KiiUserSyncDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.store.entity.BeehiveUserGroup;
+import com.kii.extension.sdk.exception.KiiCloudException;
 
 
 @Component
@@ -38,18 +41,19 @@ public class UserManager {
 	@Autowired
 	private KiiUserSyncDao kiiUserDao;
 
-	@Autowired
-	private UserSyncNotifier userSyncNotifier;
+//	@Autowired
+//	private UserSyncNotifier userSyncNotifier;
 
-	@Autowired
-	private AppInfoDao appInfoDao;
+//	@Autowired
+//	private AppInfoDao appInfoDao;
 
 
 
 	public String addUser(BeehiveUser user){
 
-		logger.debug("Start addUser(BeehiveUser user)");
-		logger.debug("user:" + user);
+		if(StringUtils.isEmpty(user.getUserName())){
+			throw new KiiCloudException();
+		}
 
 		String pwd= DigestUtils.sha1Hex(user.getUserName() + "_beehive");
 
@@ -59,78 +63,58 @@ public class UserManager {
 
 		logger.debug("kiiUserID:" + kiiUserID);
 
-		String beehiveUserID = user.getBeehiveUserID();
-
-		// check and update user group change
-		//
-		// important:
-		// this has to go before the user update(table BeehiveUser),
-		// to get the exist list of user groups under the user
-		this.checkUserGroupsChange(beehiveUserID, user.getGroups());
-
 		// create user in table BeehiveUser
 		userDao.createUser(user);
 
 		// notify the other device suppliers of the user info change in async way
-		userSyncNotifier.notifyDeviceSuppliersAsync(user.getParty3rdID(),
-				beehiveUserID, UserSyncNotifier.CHANGE_TYPE_CREATE);
+//		userSyncNotifier.notifyDeviceSuppliersAsync(user.getParty3rdID(),
+//				beehiveUserID, UserSyncNotifier.CHANGE_TYPE_CREATE);
 
-		logger.debug("End addUser(BeehiveUser user)");
-		logger.debug("beehiveUserID:" + beehiveUserID);
-		return beehiveUserID;
+		return kiiUserID;
 	}
+
+
 
 	public void updateUser(BeehiveUser user) {
 
-		logger.debug("Start updateUser(BeehiveUser user)");
-		logger.debug("user:" + user);
+		if(StringUtils.isEmpty(user.getUserName())){
+			throw new KiiCloudException();
+		}
 
-		// check and update user group change
-		//
-		// important:
-		// this has to go before the user update(table BeehiveUser),
-		// to get the exist list of user groups under the user
-		this.checkUserGroupsChange(user.getBeehiveUserID(), user.getGroups());
-
-		// update user in table BeehiveUser
+//		this.checkUserGroupsChange(user.getBeehiveUserID(), user.getGroups());
 		userDao.updateUser(user);
 
-		// notify the other device suppliers of the user info change in async way
-		userSyncNotifier.notifyDeviceSuppliersAsync(user.getParty3rdID(),
-				user.getBeehiveUserID(), UserSyncNotifier.CHANGE_TYPE_UPDATE);
-
-		logger.debug("End updateUser(BeehiveUser user)");
 	}
 
-	public void deleteUser(BeehiveUser user) {
+	public void updateCustomProp(String userID,Map<String,Object> customProps){
 
-		logger.debug("Start deleteUser(BeehiveUser user)");
-		logger.debug("user:" + user);
+		userDao.updateUserCustomFields(userID, customProps);
 
-		String beehiveUserID = user.getBeehiveUserID();
+	}
 
-		// disable user in Kii Master App
-		kiiUserDao.disableBeehiveUser(user, appInfoDao.getMasterAppInfo().getAppName());
+	public List<BeehiveUser> simpleQueryUser(Map<String,Object> queryMap){
 
-		// archive the user to table ArchiveBeehiveUser
-		user = userDao.getUserByID(beehiveUserID);
+		if(queryMap.isEmpty()){
+			return userDao.getAllUsers();
+		}else {
+			return userDao.getUsersBySimpleQuery(queryMap);
+		}
+	}
+
+
+	public void deleteUser(String userID) {
+
+
+
+		BeehiveUser user = userDao.getUserByID(userID);
 		archiveUserDao.archive(user);
 
-		// check and update user group change
-		//
-		// important:
-		// this has to go before the user update(table BeehiveUser),
-		// to get the exist list of user groups under the user
-		this.checkUserGroupsChange(user.getBeehiveUserID(), null);
+		kiiUserDao.disableBeehiveUser(user);
 
-		// remove the user from table BeehiveUser
-		userDao.deleteUser(beehiveUserID);
+//		this.checkUserGroupsChange(user.getBeehiveUserID(), null);
 
-		// notify the other device suppliers of the user info change in async way
-		userSyncNotifier.notifyDeviceSuppliersAsync(user.getParty3rdID(),
-				beehiveUserID, UserSyncNotifier.CHANGE_TYPE_DELETE);
+		userDao.deleteUser(userID);
 
-		logger.debug("End deleteUser(BeehiveUser user)");
 	}
 
 	/**
@@ -142,9 +126,6 @@ public class UserManager {
 	 */
 	private void checkUserGroupsChange(String userID, Set<String> groupIDs) {
 
-		if(groupIDs == null) {
-			groupIDs = new HashSet<String>();
-		}
 
 		BeehiveUser existUser = userDao.getUserByID(userID);
 
@@ -158,7 +139,6 @@ public class UserManager {
 			return;
 		}
 
-		// get the user groups(ID) to remove the user
 		Set<String> groupIDsToRemoveUser = new HashSet<String>();
 		groupIDsToRemoveUser.addAll(existGroupIDs);
 		groupIDsToRemoveUser.removeAll(groupIDs);
@@ -196,11 +176,8 @@ public class UserManager {
 
 	}
 
-	public void removeUser(String userID){
 
-		userDao.deleteUser(userID);
-
-		kiiUserDao.removeBeehiveUser(userID);
+	public BeehiveUser getUserByID(String userID) {
+		return userDao.getUserByID(userID);
 	}
-
 }
