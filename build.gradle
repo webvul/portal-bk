@@ -20,6 +20,7 @@ allprojects {
 
 	dependencies {
 
+
 		compile  "org.apache.logging.log4j:log4j-core:2.3"
 		compile group:"org.slf4j",name:"slf4j-log4j12",version:"1.7.6"
 
@@ -27,8 +28,23 @@ allprojects {
 
 		testCompile 'junit:junit:4.12'
 
-
 	}
 }
 
+
+task pullGit(type:Exec) {
+	workingDir  './'
+	commandLine 'git', 'pull', 'origin','master'
+}
+
+task buildwar(type:War , dependsOn:'pullGit'){
+
+	archiveName "beehive-portal.war"
+}
+
+task deploy(type:Copy,dependsOn:'buildwar'){
+
+	from('./build/libs/beehive-portal.war')
+	into('/opt/tomcat/webapps')
+}
 

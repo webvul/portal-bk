@@ -16,4 +16,3 @@ dependencies {
 
 }
 
-war.archiveName "beehive-portal.war"
