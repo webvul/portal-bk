@@ -41,15 +41,6 @@ public class BeehiveUser extends KiiEntity {
 
 	}
 
-	@Override
-	public String getId(){
-		return kiiUserID;
-	}
-
-	public void setId(String id){
-		this.kiiUserID=id;
-	}
-
 	@JsonProperty("userID")
 	public String getAliUserID() {
 		return aliUserID;

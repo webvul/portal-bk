@@ -34,6 +34,7 @@ public class SimpleQueryTool {
 
 		fields.forEach((k,v)->{
 
+
 			builder.equal(k,v);
 		});
 

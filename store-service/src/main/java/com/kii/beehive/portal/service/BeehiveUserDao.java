@@ -31,10 +31,18 @@ public class BeehiveUserDao extends AbstractDataAccess<BeehiveUser> {
 	@Autowired
 	private SimpleQueryTool queryTool;
 
-	public void createUser(BeehiveUser user){
+	public String createUser(BeehiveUser user){
 
-		super.addEntity(user, user.getKiiUserID());
+		String id=null;
 
+		if(user.getAliUserID()==null){
+			id=user.getKiiUserID();
+		}else{
+			id=user.getAliUserID();
+		}
+		super.addEntity(user, id);
+
+		return id;
 
 	}
 

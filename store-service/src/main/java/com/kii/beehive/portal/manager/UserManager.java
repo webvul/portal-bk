@@ -1,6 +1,7 @@
 package com.kii.beehive.portal.manager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,7 @@ import com.kii.beehive.portal.service.BeehiveUserGroupDao;
 import com.kii.beehive.portal.service.KiiUserSyncDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.store.entity.BeehiveUserGroup;
+import com.kii.beehive.portal.store.entity.CustomProperty;
 import com.kii.extension.sdk.exception.KiiCloudException;
 
 
@@ -51,9 +53,6 @@ public class UserManager {
 
 	public String addUser(BeehiveUser user){
 
-		if(StringUtils.isEmpty(user.getUserName())){
-			throw new KiiCloudException();
-		}
 
 		String pwd= DigestUtils.sha1Hex(user.getUserName() + "_beehive");
 
@@ -63,27 +62,30 @@ public class UserManager {
 
 		logger.debug("kiiUserID:" + kiiUserID);
 
+
 		// create user in table BeehiveUser
-		userDao.createUser(user);
+		String id=userDao.createUser(user);
 
 		// notify the other device suppliers of the user info change in async way
 //		userSyncNotifier.notifyDeviceSuppliersAsync(user.getParty3rdID(),
 //				beehiveUserID, UserSyncNotifier.CHANGE_TYPE_CREATE);
 
-		return kiiUserID;
+		return id;
 	}
 
 
 
 	public void updateUser(BeehiveUser user) {
 
-//		if(StringUtils.isEmpty(user.getUserName())){
-//			throw new KiiCloudException();
-//		}
-
-//		this.checkUserGroupsChange(user.getAliUserID(), user.getGroups());
+//		CustomProperty prop=user.getCustomFields();
+//
+//		if(prop.isEmpty()){
 		userDao.updateUser(user);
-
+//		}else {
+//			BeehiveUser oldUser=userDao.getUserByID(user.getId());
+//			user.getCustomFields().join(oldUser.getCustomFields());
+//			userDao.updateUser(user);
+//		}
 	}
 
 	public void updateCustomProp(String userID,Map<String,Object> customProps){
@@ -97,6 +99,17 @@ public class UserManager {
 		if(queryMap.isEmpty()){
 			return userDao.getAllUsers();
 		}else {
+
+			Map<String,Object> map=new HashMap<>();
+			queryMap.forEach((k,v)->{
+				if(k.startsWith("custom.")){
+					String newK=k.replace(".","-");
+					map.put(newK,v);
+				}else{
+					map.put(k,v);
+				}
+			});
+
 			return userDao.getUsersBySimpleQuery(queryMap);
 		}
 	}

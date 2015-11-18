@@ -19,7 +19,7 @@ public class OutputUser  extends BeehiveUser{
 	}
 
 	public OutputUser(BeehiveUser user){
-		BeanUtils.copyProperties(user, this, "customFields","customField");
+		BeanUtils.copyProperties(user, this, "customFields", "customField");
 
 		this.setCustomFields(user.getCustomFields());
 	}
@@ -40,5 +40,15 @@ public class OutputUser  extends BeehiveUser{
 	}
 
 
+	public BeehiveUser getBeehiveUser(){
+
+		BeehiveUser user=new BeehiveUser();
+
+		BeanUtils.copyProperties(user, this, "customFields", "customField");
+
+		user.setCustomFields(this.getCustomFields());
+
+		return user;
+	}
 
 }

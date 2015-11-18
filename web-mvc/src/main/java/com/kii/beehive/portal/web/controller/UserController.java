@@ -7,7 +7,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kii.beehive.portal.manager.UserManager;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.entity.OutputUser;
+import com.kii.beehive.portal.web.help.PortalException;
+import com.kii.extension.sdk.exception.KiiCloudException;
 
 /**
  * Beehive API - User API
@@ -34,18 +38,23 @@ public class UserController {
     @RequestMapping(path="/",method={RequestMethod.POST})
     public Map<String,String> createUser(@RequestBody BeehiveUser user){
 
-		String id=userManager.addUser(user);
+		if(StringUtils.isEmpty(user.getUserName())||StringUtils.isEmpty(user.getAliUserID())){
+			throw new PortalException("RequiredFieldsMissing","user name or 3partyID cannot been null", HttpStatus.BAD_REQUEST);
+		}
+
+		String userID=userManager.addUser(user);
 
 		Map<String,String> map=new HashMap<>();
-		map.put("userID",id);
+		map.put("userID",userID);
+		map.put("userName",user.getUserName());
 		return map;
     }
 
     @RequestMapping(path="/{userID}",method={RequestMethod.PATCH})
-    public void updateUser(@PathVariable("userID") String userID,@RequestBody BeehiveUser user){
+    public void updateUser(@PathVariable("userID") String userID,@RequestBody OutputUser user){
 
 		user.setId(userID);
-		userManager.updateUser(user);
+		userManager.updateUser(user.getBeehiveUser());
 
 
 

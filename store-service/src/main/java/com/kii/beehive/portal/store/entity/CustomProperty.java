@@ -37,7 +37,7 @@ public class CustomProperty implements Serializable{
 		if(key.startsWith("custom-")){
 			key=key.substring(7,key.length());
 		}
-		this.customFields.put(key,value);
+		this.customFields.put(key, value);
 	}
 
 	@JsonIgnore
@@ -53,4 +53,12 @@ public class CustomProperty implements Serializable{
 		return map;
 	}
 
+	public boolean isEmpty() {
+		return customFields.isEmpty();
+	}
+
+	public void join(CustomProperty customFields) {
+		customFields.customFields.putAll(this.customFields);
+		this.customFields=customFields.customFields;
+	}
 }
