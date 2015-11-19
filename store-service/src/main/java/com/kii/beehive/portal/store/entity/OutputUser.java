@@ -1,4 +1,4 @@
-package com.kii.beehive.portal.web.entity;
+package com.kii.beehive.portal.store.entity;
 
 
 import java.util.Map;

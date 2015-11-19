@@ -183,6 +183,12 @@ public class KiiCloudClient {
 	}
 
 
+	public Future<HttpResponse> syncExecuteRequest(HttpUriRequest request,FutureCallback<HttpResponse>  callback){
+
+		return  httpClient.execute(request,callback);
+
+	}
+
 
 
 

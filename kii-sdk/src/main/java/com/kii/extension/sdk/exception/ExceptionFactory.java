@@ -90,7 +90,6 @@ public class ExceptionFactory {
 			if(cls!=null){
 				try {
 					KiiCloudException e = mapper.readValue(body, cls);
-					e.setStatusCode(status);
 
 					throw e;
 				}catch(IOException ex){

@@ -31,6 +31,11 @@ public class DeviceSupplierDao extends AbstractDataAccess<DeviceSupplier>{
 		super.removeEntity(party3rdID);
 	}
 
+	public DeviceSupplier getSupplierByID(String id) {
+		return super.getObjectByID(id);
+	}
+
+
 
 	@Override
 	protected Class<DeviceSupplier> getTypeCls() {
@@ -42,7 +47,4 @@ public class DeviceSupplierDao extends AbstractDataAccess<DeviceSupplier>{
 		return new BucketInfo("DeviceSupplier");
 	}
 
-	public DeviceSupplier getSupplierByID(String id) {
-		return super.getObjectByID(id);
-	}
 }

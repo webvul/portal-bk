@@ -19,6 +19,12 @@ value	string	The value of the field
 	private String value;
 
 	@Override
+	public int getStatusCode(){
+		return 409;
+	}
+
+
+	@Override
 	public String getErrorCode() {
 		return errorCode;
 	}

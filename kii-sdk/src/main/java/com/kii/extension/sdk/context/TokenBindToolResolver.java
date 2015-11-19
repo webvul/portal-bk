@@ -19,6 +19,8 @@ public class TokenBindToolResolver {
 
 	private ThreadLocal<String> tokenDirectLocal=new ThreadLocal<>();
 
+
+
 	public void bindToken(String token){
 		tokenDirectLocal.set(token);
 	}
@@ -48,5 +50,6 @@ public class TokenBindToolResolver {
 
 
 	}
+
 
 }

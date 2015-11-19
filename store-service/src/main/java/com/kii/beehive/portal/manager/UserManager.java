@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import com.kii.beehive.portal.helper.SyncMsgService;
 import com.kii.beehive.portal.notify.UserSyncNotifier;
 import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.service.ArchiveBeehiveUserDao;
@@ -43,11 +44,8 @@ public class UserManager {
 	@Autowired
 	private KiiUserSyncDao kiiUserDao;
 
-//	@Autowired
-//	private UserSyncNotifier userSyncNotifier;
-
-//	@Autowired
-//	private AppInfoDao appInfoDao;
+	@Autowired
+	private SyncMsgService msgService;
 
 
 
@@ -66,6 +64,7 @@ public class UserManager {
 		String id=userDao.createUser(user);
 
 
+		msgService.addInsertMsg(id,user);
 		return id;
 	}
 
@@ -75,6 +74,9 @@ public class UserManager {
 
 		userDao.updateUser(user,userID);
 
+		msgService.addUpdateMsg(userID, user);
+
+
 	}
 
 	public void updateCustomProp(String userID,Map<String,Object> customProps){
@@ -82,7 +84,9 @@ public class UserManager {
 		BeehiveUser user=new BeehiveUser();
 		user.setCustomFields(new CustomProperty(customProps));
 
-		userDao.updateUser(user,userID);
+		userDao.updateUser(user, userID);
+
+		msgService.addUpdateMsg(userID, user);
 
 	}
 
@@ -119,6 +123,9 @@ public class UserManager {
 //		this.checkUserGroupsChange(user.getAliUserID(), null);
 
 		userDao.deleteUser(userID);
+
+		msgService.addDeleteMsg(userID);
+
 
 	}
 

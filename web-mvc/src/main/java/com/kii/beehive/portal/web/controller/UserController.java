@@ -18,9 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.portal.manager.UserManager;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
-import com.kii.beehive.portal.web.entity.OutputUser;
+import com.kii.beehive.portal.store.entity.OutputUser;
 import com.kii.beehive.portal.web.help.PortalException;
-import com.kii.extension.sdk.exception.KiiCloudException;
 
 /**
  * Beehive API - User API

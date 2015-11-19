@@ -8,7 +8,7 @@ public class QueryBuilder {
 	private final Logger log=LoggerFactory.getLogger(QueryBuilder.class);
 
 	public QueryBuilder(){
-		queryParam.setBestEffortLimit(5);
+//		queryParam.setBestEffortLimit(50);
 	}
 	
 //	private SingleCol condition=new SingleCol();
@@ -29,6 +29,12 @@ public class QueryBuilder {
 
 	
 	//=====================================
+
+	public QueryBuilder bestEffortLimit(int limit){
+		queryParam.setBestEffortLimit(limit);
+		return this;
+	}
+
 	public QueryBuilder orderBy(String field){
 		clause.setOrderBy(field);
 		return this;
