@@ -18,18 +18,18 @@ public class JsonTest {
 
 	private ObjectMapper mapper=new ObjectMapper();
 
-	@Test
-	public void test() throws IOException {
-		String outJson="{\"party3rdID\":\"name:9\"}";
-
-		OutputUser user=mapper.readValue(outJson,OutputUser.class);
-
-		assertEquals(user.getParty3rdID(),"name:9");
-
-		BeehiveUser newUser=user.getBeehiveUser();
-
-		assertEquals(newUser.getParty3rdID(),"name:9");
-
-
-	}
+//	@Test
+//	public void test() throws IOException {
+//		String outJson="{\"party3rdID\":\"name:9\"}";
+//
+//		OutputUser user=mapper.readValue(outJson,OutputUser.class);
+//
+////		assertEquals(user.getParty3rdID(),"name:9");
+//
+//		BeehiveUser newUser=user.getBeehiveUser();
+//
+////		assertEquals(newUser.getParty3rdID(),"name:9");
+//
+//
+//	}
 }
