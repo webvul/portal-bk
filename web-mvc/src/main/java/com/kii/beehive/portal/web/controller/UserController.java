@@ -38,8 +38,8 @@ public class UserController {
     @RequestMapping(path="/",method={RequestMethod.POST})
     public Map<String,String> createUser(@RequestBody BeehiveUser user){
 
-		if(StringUtils.isEmpty(user.getUserName())||StringUtils.isEmpty(user.getAliUserID())){
-			throw new PortalException("RequiredFieldsMissing","user name or 3partyID cannot been null", HttpStatus.BAD_REQUEST);
+		if(StringUtils.isEmpty(user.getUserName())&&StringUtils.isEmpty(user.getAliUserID())){
+			throw new PortalException("RequiredFieldsMissing","username or userID cannot been null", HttpStatus.BAD_REQUEST);
 		}
 
 		String userID=userManager.addUser(user);
@@ -53,8 +53,7 @@ public class UserController {
     @RequestMapping(path="/{userID}",method={RequestMethod.PATCH})
     public void updateUser(@PathVariable("userID") String userID,@RequestBody OutputUser user){
 
-		user.setId(userID);
-		userManager.updateUser(user.getBeehiveUser());
+		userManager.updateUser(user.getBeehiveUser(),userID);
 
 
 

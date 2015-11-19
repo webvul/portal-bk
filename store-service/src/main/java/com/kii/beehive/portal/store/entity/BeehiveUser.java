@@ -19,7 +19,7 @@ public class BeehiveUser extends KiiEntity {
 
 	private String kiiUserID;
 
-	private String party3rdID;
+//	private String party3rdID;
 
 	private String userName;
 
@@ -58,13 +58,13 @@ public class BeehiveUser extends KiiEntity {
 		this.kiiUserID = kiiUserID;
 	}
 
-	public String getParty3rdID() {
-		return party3rdID;
-	}
-
-	public void setParty3rdID(String party3rdID) {
-		this.party3rdID = party3rdID;
-	}
+//	public String getParty3rdID() {
+//		return party3rdID;
+//	}
+//
+//	public void setParty3rdID(String party3rdID) {
+//		this.party3rdID = party3rdID;
+//	}
 
 	public String getUserName() {
 		return userName;

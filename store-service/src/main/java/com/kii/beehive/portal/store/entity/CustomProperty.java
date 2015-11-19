@@ -17,6 +17,10 @@ public class CustomProperty implements Serializable{
 
 	}
 
+	public CustomProperty(Map<String,Object> param){
+		this.customFields.putAll(param);
+	}
+
 	@JsonIgnore
 	public Map<String,Object> getOriginFields(){
 		return customFields;
@@ -45,6 +49,7 @@ public class CustomProperty implements Serializable{
 		return customFields.get(key);
 	}
 
+	@JsonIgnore
 	public Map<String,Object> filter(Set<String> filter){
 		Map<String,Object> map=new HashMap<>(customFields);
 
@@ -53,10 +58,12 @@ public class CustomProperty implements Serializable{
 		return map;
 	}
 
+	@JsonIgnore
 	public boolean isEmpty() {
 		return customFields.isEmpty();
 	}
 
+	@JsonIgnore
 	public void join(CustomProperty customFields) {
 		customFields.customFields.putAll(this.customFields);
 		this.customFields=customFields.customFields;

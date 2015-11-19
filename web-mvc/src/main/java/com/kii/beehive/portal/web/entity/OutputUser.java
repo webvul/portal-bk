@@ -39,12 +39,12 @@ public class OutputUser  extends BeehiveUser{
 		super.setCustomFields(properties);
 	}
 
-
+	@JsonIgnore
 	public BeehiveUser getBeehiveUser(){
 
 		BeehiveUser user=new BeehiveUser();
 
-		BeanUtils.copyProperties(user, this, "customFields", "customField");
+		BeanUtils.copyProperties(this, user, "customFields", "customField");
 
 		user.setCustomFields(this.getCustomFields());
 

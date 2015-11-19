@@ -54,6 +54,7 @@ public class UserManager {
 	public String addUser(BeehiveUser user){
 
 
+
 		String pwd= DigestUtils.sha1Hex(user.getUserName() + "_beehive");
 
 		String kiiUserID=kiiUserDao.addBeehiveUser(user,pwd);
@@ -62,35 +63,26 @@ public class UserManager {
 
 		logger.debug("kiiUserID:" + kiiUserID);
 
-
-		// create user in table BeehiveUser
 		String id=userDao.createUser(user);
 
-		// notify the other device suppliers of the user info change in async way
-//		userSyncNotifier.notifyDeviceSuppliersAsync(user.getParty3rdID(),
-//				beehiveUserID, UserSyncNotifier.CHANGE_TYPE_CREATE);
 
 		return id;
 	}
 
 
 
-	public void updateUser(BeehiveUser user) {
+	public void updateUser(BeehiveUser user,String userID) {
 
-//		CustomProperty prop=user.getCustomFields();
-//
-//		if(prop.isEmpty()){
-		userDao.updateUser(user);
-//		}else {
-//			BeehiveUser oldUser=userDao.getUserByID(user.getId());
-//			user.getCustomFields().join(oldUser.getCustomFields());
-//			userDao.updateUser(user);
-//		}
+		userDao.updateUser(user,userID);
+
 	}
 
 	public void updateCustomProp(String userID,Map<String,Object> customProps){
 
-		userDao.updateUserCustomFields(userID, customProps);
+		BeehiveUser user=new BeehiveUser();
+		user.setCustomFields(new CustomProperty(customProps));
+
+		userDao.updateUser(user,userID);
 
 	}
 
@@ -110,7 +102,7 @@ public class UserManager {
 				}
 			});
 
-			return userDao.getUsersBySimpleQuery(queryMap);
+			return userDao.getUsersBySimpleQuery(map);
 		}
 	}
 

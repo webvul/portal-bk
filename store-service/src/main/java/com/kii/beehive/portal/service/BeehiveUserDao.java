@@ -47,9 +47,10 @@ public class BeehiveUserDao extends AbstractDataAccess<BeehiveUser> {
 	}
 
 
-	public void updateUser(BeehiveUser user) {
+	public void updateUser(BeehiveUser user,String userID) {
 
-		super.updateEntity(user, user.getId());
+		user.setId(null);
+		super.updateEntity(user, userID);
 	}
 
 
@@ -64,15 +65,15 @@ public class BeehiveUserDao extends AbstractDataAccess<BeehiveUser> {
 	}
 
 
-	public void updateUserCustomFields(String userID,Map<String,Object> fieldMap){
-
-		Map<String,Object> paramMap=new HashMap<>();
-
-		paramMap.putAll(fieldMap);
-
-		super.updateEntity(paramMap, userID);
-
-	}
+//	public void updateUserCustomFields(String userID,Map<String,Object> fieldMap){
+//
+//		Map<String,Object> paramMap=new HashMap<>();
+//
+//		paramMap.putAll(fieldMap);
+//
+//		super.updateEntity(paramMap, userID);
+//
+//	}
 
 
 	public List<BeehiveUser> getUserByIDs(List<String> beehiveUserIDList) {

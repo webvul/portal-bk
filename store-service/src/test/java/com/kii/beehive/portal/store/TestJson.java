@@ -17,6 +17,8 @@ public class TestJson {
 
 	private ObjectMapper mapper=new ObjectMapper();
 
+
+
 	@Test
 	public void testUser() throws IOException{
 
@@ -27,6 +29,7 @@ public class TestJson {
 				"}";
 
 		BeehiveUser user=mapper.readValue(json, BeehiveUser.class);
+
 
 
 

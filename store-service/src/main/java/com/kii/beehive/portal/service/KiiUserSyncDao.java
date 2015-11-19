@@ -3,6 +3,7 @@ package com.kii.beehive.portal.service;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import com.kii.beehive.portal.annotation.BindAppByName;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
@@ -29,8 +30,11 @@ public class KiiUserSyncDao {
 
 		user.setPassword(pwd);
 
-		user.setLoginName(beehiveUser.getUserName());
-
+		if(!StringUtils.isEmpty(beehiveUser.getAliUserID())) {
+			user.setLoginName(beehiveUser.getAliUserID());
+		}else{
+			user.setLoginName(beehiveUser.getUserName());
+		}
 
 		return userService.createUser(user);
 

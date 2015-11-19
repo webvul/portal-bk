@@ -32,7 +32,11 @@ public class KiiCloudException extends RuntimeException {
 
 	private String message;
 
-	protected int statusCode;
+	private int statusCode;
+
+	public void setStatusCode(int code){
+		this.statusCode=code;
+	}
 
 	@JsonIgnore
 	public int getStatusCode() {

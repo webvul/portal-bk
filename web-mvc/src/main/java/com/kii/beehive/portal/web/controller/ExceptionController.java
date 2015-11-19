@@ -1,5 +1,8 @@
 package com.kii.beehive.portal.web.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +20,22 @@ public class ExceptionController {
 
 	@Autowired
 	private ObjectMapper mapper;
+
+	@ExceptionHandler(Throwable.class)
+	public ResponseEntity<String> handleGlobalException(Throwable ex) {
+
+
+//		String error=ex.getErrorCode().toString();
+
+		Map<String,String> errorMap=new HashMap<>();
+		errorMap.put("errorCode",ex.getClass().getSimpleName());
+		errorMap.put("errorMessage",ex.getMessage());
+
+//		String errJson=mapper.writeValueAsString(errorMap);
+
+		ResponseEntity<String> resp=new ResponseEntity(errorMap,HttpStatus.INTERNAL_SERVER_ERROR);
+		return resp;
+	}
 
 	@ExceptionHandler(PortalException.class)
 	public ResponseEntity<String> handleServiceException(PortalException ex) {

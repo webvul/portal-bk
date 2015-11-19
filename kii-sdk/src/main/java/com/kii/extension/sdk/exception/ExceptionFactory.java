@@ -76,7 +76,7 @@ public class ExceptionFactory {
 
 		int status=response.getStatusLine().getStatusCode();
 
-		if(status>200&&status<300){
+		if(status>=200&&status<300){
 
 			return;
 		}
@@ -90,6 +90,8 @@ public class ExceptionFactory {
 			if(cls!=null){
 				try {
 					KiiCloudException e = mapper.readValue(body, cls);
+					e.setStatusCode(status);
+
 					throw e;
 				}catch(IOException ex){
 					throw new IllegalArgumentException(ex);
