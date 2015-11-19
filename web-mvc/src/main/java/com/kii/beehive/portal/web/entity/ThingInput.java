@@ -1,7 +1,10 @@
 package com.kii.beehive.portal.web.entity;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.kii.beehive.portal.store.entity.TagIndex;
 
 public class ThingInput {
@@ -19,6 +22,13 @@ public class ThingInput {
 	private String type;
 
 	private String status;
+	
+	private Map<String,Object> custom=new HashMap<>();
+	
+	@JsonAnySetter
+	public void setCustom(String key,Object val){
+		this.custom.put(key,val);
+	}
 
 	public String getGlobalThingID() {
 		return globalThingID;
@@ -74,6 +84,14 @@ public class ThingInput {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+	
+	public Map<String, Object> getCustom() {
+		return custom;
+	}
+
+	public void setCustom(Map<String, Object> custom) {
+		this.custom = custom;
 	}
 
 	@Override

@@ -1,7 +1,9 @@
 package com.kii.beehive.portal.web.controller;
 
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kii.beehive.portal.manager.ThingManager;
 import com.kii.beehive.portal.service.TagIndexDao;
 import com.kii.beehive.portal.store.entity.TagIndex;
 import com.kii.beehive.portal.web.help.PortalException;
@@ -29,7 +32,9 @@ public class TagController {
 	
 	@Autowired
 	private TagIndexDao tagIndexDao;
-
+	
+	@Autowired
+	private ThingManager thingManager;
 	/**
 	 * 列出所有tag
 	 * GET /tags/all
@@ -54,7 +59,7 @@ public class TagController {
 	 * @param input
      */
 	@RequestMapping(path="/",method={RequestMethod.POST})
-	public ResponseEntity<String> createTag(@RequestBody TagIndex input){
+	public Map<String,String> createTag(@RequestBody TagIndex input){
 		if(input == null){
 			throw new PortalException();//no body
 		}
@@ -68,7 +73,9 @@ public class TagController {
 		}
 		
 		tagIndexDao.addTagIndex(input);
-		return new ResponseEntity<>(HttpStatus.OK);
+		Map<String,String> map=new HashMap<>();
+		map.put("tagName",input.getId());
+		return map;
 	}
 
 	/**
@@ -89,8 +96,7 @@ public class TagController {
 			//not found object
 			throw new PortalException();
 		}
-		
-		tagIndexDao.removeTagByID(orig.getId());
+		thingManager.removeTag(orig);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 

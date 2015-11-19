@@ -32,11 +32,7 @@ public abstract class AbstractDataAccess<T> {
 
 
 	protected  T  getObjectByID(String id){
-//		try {
-			return service.getObjectByID(id, bucketInfo, typeCls);
-//		}catch(KiiCloudException e){
-//			return null;
-//		}
+		return service.getObjectByID(id, bucketInfo, typeCls);
 	}
 
 	protected UpdateResponse addEntity(T  entity,String id){

@@ -1,6 +1,8 @@
 package com.kii.beehive.portal.web.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,7 +76,8 @@ public class ThingController {
 	 * @param input
      */
 	@RequestMapping(path="/",method={RequestMethod.POST})
-	public ResponseEntity<String> createThing(@RequestBody ThingInput input){
+	public Map<String,String> createThing(@RequestBody ThingInput input){
+		
 		if(input == null){
 			throw new PortalException();//no body
 		}
@@ -97,10 +100,14 @@ public class ThingController {
 		thingInfo.setKiiAppID(input.getKiiAppID());
 		thingInfo.setPassword(input.getPassword());
 		thingInfo.setType(input.getType());
+		thingInfo.setCustom(input.getCustom());
 		thingInfo.setStatus(input.getStatus());
 		
 		thingManager.createThing(thingInfo,input.getTags());
-		return new ResponseEntity<>(HttpStatus.OK);
+		
+		Map<String,String> map=new HashMap<>();
+		map.put("globalThingID",input.getGlobalThingID());
+		return map;
 	}
 
 	/**
@@ -120,7 +127,7 @@ public class ThingController {
 			throw new PortalException();//not found object
 		}
 		
-		globalThingDao.removeGlobalThingByID(orig.getId());
+		thingManager.removeThings(orig);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 

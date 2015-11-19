@@ -46,7 +46,7 @@ public class TestBeehiveUser extends TestInit{
 
 		String json=mapper.writeValueAsString(user);
 
-
+System.out.println(json);
 		BeehiveUser newUser=mapper.readValue(json, BeehiveUser.class);
 
 		assertEquals(newUser.getCustomField("no"),"abcdef");
