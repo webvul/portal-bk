@@ -7,8 +7,6 @@ public class DeviceSupplier extends KiiEntity {
 
 	private String name;
 
-//	private String party3rdID;
-
 	private String relationAppName;
 
 	private String description;

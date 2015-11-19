@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.springframework.beans.BeanUtils;
 
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
@@ -37,6 +38,14 @@ public class OutputUser  extends BeehiveUser{
 
 	public void setCustomFields(CustomProperty properties) {
 		super.setCustomFields(properties);
+	}
+
+	@JsonAnySetter
+	public void setCustomField(String key,Object value){
+		if(key.startsWith("custom.")) {
+			key=key.substring(7);
+			super.setCustomField(key, value);
+		}
 	}
 
 	@JsonIgnore
