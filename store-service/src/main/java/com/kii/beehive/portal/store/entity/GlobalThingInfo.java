@@ -17,6 +17,8 @@ public class GlobalThingInfo extends KiiEntity {
 	private String vendorThingID;
 
 	private String type;
+	
+	private String password;
 
 	private String status;
 	
@@ -101,6 +103,14 @@ public class GlobalThingInfo extends KiiEntity {
 
 	public void setCustomProperties(Map<String, Object> customProperties) {
 		this.customProperties = customProperties;
+	}
+	
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 	@JsonAnySetter
