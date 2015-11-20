@@ -1,7 +1,9 @@
 package com.kii.beehive.portal.aop;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
@@ -28,17 +30,22 @@ public class LogAspect {
 	@Before("within ( com.kii.beehive.portal.manager.* ) ")
 	public void beforeCallBusinessFun(JoinPoint joinPoint){
 
-		Method method=logMethod(joinPoint,"been called");
+		try {
+			Method method = logMethod(joinPoint, "been called");
 
-		StringBuilder sb=new StringBuilder("arg list:\n");
+			StringBuilder sb = new StringBuilder("arg list:\n");
 
-		for(int i=0;i<joinPoint.getArgs().length;i++){
+			for (int i = 0; i < joinPoint.getArgs().length; i++) {
 
-			String name=method.getParameters()[i].getName();
-			Object val=joinPoint.getArgs()[i];
-			sb.append(name).append(":").append(safeToString(val)).append("\n");
+				String name = method.getParameters()[i].getName();
+				Object val = joinPoint.getArgs()[i];
+				sb.append(name).append(":").append(safeToString(val)).append("\n");
+			}
+			log.debug(sb.toString());
+		}catch(Throwable ex){
+			ex.printStackTrace();
+			return;
 		}
-		log.debug(sb.toString());
 
 	}
 
@@ -55,9 +62,15 @@ public class LogAspect {
 	@AfterReturning(pointcut = "within ( com.kii.beehive.portal.manager.* )",   returning = "result" )
 	public void afterCallBusinessFun(JoinPoint joinPoint,Object result){
 
+		try {
 		logMethod(joinPoint,"execute finish ");
 
 		log.debug(" result:"+ safeToString(result));
+
+	}catch(Throwable ex){
+		ex.printStackTrace();
+		return;
+	}
 	}
 
 	private String safeToString(Object obj){
@@ -65,15 +78,22 @@ public class LogAspect {
 		if(obj==null){
 			return "null";
 		}
-		if(obj instanceof  Number){
+
+		if(obj.getClass().isPrimitive()){
 			return String.valueOf(obj);
 		}else if(obj instanceof String ){
-			return (String)obj;
+			return String.valueOf(obj);
+		}else if(obj.getClass().isArray()){
+			Object[] objArray=(Object[])obj;
+
+			return Arrays.deepToString(objArray);
+
+
 		}else if(obj.getClass().getPackage().getName().startsWith("com.kii")){
 			try {
 				return mapper.writeValueAsString(obj);
 			} catch (JsonProcessingException e) {
-				throw new IllegalArgumentException(e);
+				return "";
 			}
 
 		}else{

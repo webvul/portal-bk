@@ -28,7 +28,7 @@ public class GlobalThingInfo extends KiiEntity {
 
 	private Date statusUpdatetime;
 
-	private Map<String,Object> customProperties=new HashMap<>();
+	private Map<String,Object> custom=new HashMap<>();
 
 	@Override
 	public String getId() {
@@ -97,12 +97,12 @@ public class GlobalThingInfo extends KiiEntity {
 		this.statusUpdatetime = statusUpdatetime;
 	}
 
-	public Map<String, Object> getCustomProperties() {
-		return customProperties;
+	public Map<String, Object> getCustom() {
+		return custom;
 	}
 
-	public void setCustomProperties(Map<String, Object> customProperties) {
-		this.customProperties = customProperties;
+	public void setCustom(Map<String, Object> custom) {
+		this.custom = custom;
 	}
 	
 	public String getPassword() {
@@ -114,8 +114,8 @@ public class GlobalThingInfo extends KiiEntity {
 	}
 
 	@JsonAnySetter
-	public void setCustomProperty(String key,Object val){
-		this.customProperties.put(key,val);
+	public void setCustom(String key,Object val){
+		this.custom.put(key,val);
 	}
 
 	@Override

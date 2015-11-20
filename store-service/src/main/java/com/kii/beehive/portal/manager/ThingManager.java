@@ -17,6 +17,7 @@ import com.kii.beehive.portal.service.TagIndexDao;
 import com.kii.beehive.portal.store.entity.GlobalThingInfo;
 import com.kii.beehive.portal.store.entity.TagIndex;
 import com.kii.extension.sdk.entity.AppInfo;
+import com.kii.extension.sdk.exception.KiiCloudException;
 
 @Component
 public class ThingManager {
@@ -43,10 +44,7 @@ public class ThingManager {
 		if(tagList != null && tagList.size() > 0){
 			for(TagIndex tag:tagList){
 				if(!Strings.isBlank(tag.getDisplayName()) && !Strings.isBlank(tag.getTagType())){
-					TagIndex tagIndex = tagIndexDao.getTagIndexByID(tag.getId());
-					if(tagIndex == null){// create tag
-						tagIndexDao.addTagIndex(tag);
-					}
+					this.checkTagAndCreate(tag);
 					tagNameSet.add(tag.getId());
 				}
 			}
@@ -55,6 +53,13 @@ public class ThingManager {
 		}
 	}
 	
+	public void checkTagAndCreate(TagIndex tag){
+		try{
+			tagIndexDao.getTagIndexByID(tag.getId());
+		}catch(KiiCloudException e){// create tag
+			tagIndexDao.addTagIndex(tag);
+		}
+	}
 	
 	public void bindTagToThing(String tagID,String thingID) {
 		this.bindTagToThing(new String[]{tagID}, new String[]{thingID});
@@ -97,13 +102,33 @@ public class ThingManager {
 	
 	public void unbindTagToThing(String tagID,String thingID) {
 		GlobalThingInfo thing=globalThingDao.getThingInfoByID(thingID);
+		globalThingDao.removeTagsFromThing(thing, new String[]{tagID});
+		
 		TagIndex tag = tagIndexDao.getTagIndexByID(tagID);
-
-		globalThingDao.unbindTagsToThing(new String[]{tagID}, thing);
-
 		tagIndexDao.removeThingFromTag(tag, Arrays.asList(thing));
 	}
 	
+	
+	public void removeTag(TagIndex orig) {
+		Set<String> thingIDSet = orig.getGlobalThings();
+		for(String thingID:thingIDSet){
+			GlobalThingInfo thing=globalThingDao.getThingInfoByID(thingID);
+			globalThingDao.removeTagsFromThing(thing, new String[]{orig.getId()});
+		}
+		tagIndexDao.removeTagByID(orig.getId());
+		
+		
+	}
+	
+	public void removeThings(GlobalThingInfo orig) {
+		Set<String> tagSet = orig.getTags();
+		for(String tagID:tagSet){
+			TagIndex tag = tagIndexDao.getTagIndexByID(tagID);
+			tagIndexDao.removeThingFromTag(tag, Arrays.asList(orig));
+		}
+		
+		globalThingDao.removeGlobalThingByID(orig.getId());
+	}
 	
 	public List<GlobalThingInfo> findThingByTagName(String[] tagArray, String operation){
 		List<GlobalThingInfo> list = null;
