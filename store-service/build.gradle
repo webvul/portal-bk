@@ -6,6 +6,6 @@ dependencies {
 
 	compile "org.springframework:spring-aspects:${springVersion}"
 
-	compile "org.springframework:spring-aop:version:${springVersion}"
+	compile "org.springframework:spring-aop:${springVersion}"
 
 }
