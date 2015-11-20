@@ -2,14 +2,21 @@
 apply plugin: 'war'
 //apply plugin: 'jetty'
 
+ext {
+	tomcatVersion = "8.0.1"
+}
 dependencies {
 
 	compile project(":commons")
 	compile project(":store-service")
-	compile group: 'org.springframework', name: 'spring-webmvc', version: "${springVersion}"
+	compile group: "org.springframework:spring-webmvc:${springVersion}"
 
 	testCompile 'org.eclipse.jetty:jetty-server:9.3.2.v20150730'
 	testCompile 'org.eclipse.jetty:jetty-webapp:9.3.2.v20150730'
+
+	testCompile "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}"
+	testCompile "org.apache.tomcat.embed:tomcat-embed-logging-juli:${tomcatVersion}"
+	testCompile "org.apache.tomcat.embed:tomcat-embed-jasper:${tomcatVersion}"
 
 	providedCompile group: "javax.servlet", name: "servlet-api", version: "3.+"
 	compile "org.apache.logging.log4j:log4j-core:2.3"
