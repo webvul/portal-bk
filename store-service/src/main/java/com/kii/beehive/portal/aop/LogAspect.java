@@ -1,7 +1,9 @@
 package com.kii.beehive.portal.aop;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
@@ -65,10 +67,17 @@ public class LogAspect {
 		if(obj==null){
 			return "null";
 		}
-		if(obj instanceof  Number){
+
+		if(obj.getClass().isPrimitive()){
 			return String.valueOf(obj);
 		}else if(obj instanceof String ){
-			return (String)obj;
+			return String.valueOf(obj);
+		}else if(obj.getClass().isArray()){
+			Object[] objArray=(Object[])obj;
+
+			return Arrays.deepToString(objArray);
+
+
 		}else if(obj.getClass().getPackage().getName().startsWith("com.kii")){
 			try {
 				return mapper.writeValueAsString(obj);
