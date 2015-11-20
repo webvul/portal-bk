@@ -37,7 +37,7 @@ task pullGit(type:Exec) {
 	commandLine 'git', 'pull', 'origin','master'
 }
 
-task buildwar(type:War , dependsOn:['pullGit','build']){
+task buildwar(type:War , dependsOn:['pullGit','assemble']){
 
 	archiveName "beehive-portal.war"
 }
