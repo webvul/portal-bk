@@ -9,7 +9,7 @@ dependencies {
 
 	compile project(":commons")
 	compile project(":store-service")
-	compile group: "org.springframework:spring-webmvc:${springVersion}"
+	compile "org.springframework:spring-webmvc:${springVersion}"
 
 	testCompile 'org.eclipse.jetty:jetty-server:9.3.2.v20150730'
 	testCompile 'org.eclipse.jetty:jetty-webapp:9.3.2.v20150730'
