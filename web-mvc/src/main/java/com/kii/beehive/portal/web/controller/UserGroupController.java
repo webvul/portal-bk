@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
  * refer to doc "Tech Design - Beehive API" section "User API" for details
  */
 @RestController
-@RequestMapping(path = "/usergroup",  consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
+@RequestMapping(path = "/usergroup",  consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
 public class UserGroupController {
 
 

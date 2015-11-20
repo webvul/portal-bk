@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -32,6 +34,23 @@ public class NotifySenderTool {
 
 	private final Integer RETRY_NUM=6;
 
+	private static final int[] delayArray=new int[5];
+
+	private ScheduledExecutorService  executeService= Executors.newScheduledThreadPool(1);
+
+	static{
+
+		int[] array=new int[]{30,60,120,300,600};
+		int sum=0;
+		for(int i=0;i<array.length;i++){
+			sum+=array[i];
+			delayArray[i]=sum;
+		}
+
+	}
+
+
+
 	@Async
 	public void doSyncTask(SupplierPushMsgTask msg,final Map<String,String> urlMap){
 
@@ -55,37 +74,6 @@ public class NotifySenderTool {
 
 		supplierList.parallelStream().forEach((name) -> {
 
-			HttpPost request = new HttpPost(urlMap.get(name));
-
-			request.setEntity(new StringEntity(context, ContentType.APPLICATION_JSON));
-
-			client.syncExecuteRequest(request, new FutureCallback<HttpResponse>() {
-				@Override
-				public void completed(HttpResponse httpResponse) {
-					int status=httpResponse.getStatusLine().getStatusCode();
-					if(status>=200&&status<300){
-						retryRecord.put(name,100);
-					}else{
-						retryRecord.merge(name,RETRY_NUM, (k, v) -> v--);
-
-					}
-					latch.countDown();
-				}
-
-				@Override
-				public void failed(Exception e) {
-					retryRecord.merge(name, RETRY_NUM, (k, v) -> v--);
-					latch.countDown();
-
-				}
-
-				@Override
-				public void cancelled() {
-					retryRecord.merge(name, RETRY_NUM, (k, v) -> v--);
-
-					latch.countDown();
-				}
-			});
 
 		});
 
@@ -101,6 +89,42 @@ public class NotifySenderTool {
 			e.printStackTrace();
 		}
 
+
+	}
+
+	private void doRequest(String url,SupplierPushMsgTask msg ){
+
+		HttpPost request = new HttpPost(url);
+
+		request.setEntity(new StringEntity(msg.getMsgContent(), ContentType.APPLICATION_JSON));
+
+
+//		client.syncExecuteRequest(request, new FutureCallback<HttpResponse>() {
+//			@Override
+//			public void completed(HttpResponse httpResponse) {
+//				int status=httpResponse.getStatusLine().getStatusCode();
+//				if(status>=200&&status<300){
+//					retryRecord.put(name,100);
+//				}else{
+//					retryRecord.merge(name,RETRY_NUM, (k, v) -> v--);
+//
+//				}
+//
+//			}
+//
+//			@Override
+//			public void failed(Exception e) {
+//				retryRecord.merge(name, RETRY_NUM, (k, v) -> v--);
+//
+//			}
+//
+//			@Override
+//			public void cancelled() {
+//				retryRecord.merge(name, RETRY_NUM, (k, v) -> v--);
+//
+//
+//			}
+//		});
 
 	}
 }

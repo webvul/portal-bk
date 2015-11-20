@@ -12,7 +12,7 @@ public class UserSyncMsg {
 
 	private BeehiveUser user;
 
-	private Map<String,Object> userMap;
+//	private Map<String,Object> userMap;
 
 	private String userID;
 
@@ -25,14 +25,14 @@ public class UserSyncMsg {
 		this.user = user;
 	}
 
-	@JsonProperty("context")
-	public Map<String, Object> getUserMap() {
-		return userMap;
-	}
-
-	public void setUserMap(Map<String, Object> userMap) {
-		this.userMap = userMap;
-	}
+//	@JsonProperty("context")
+//	public Map<String, Object> getUserMap() {
+//		return userMap;
+//	}
+//
+//	public void setUserMap(Map<String, Object> userMap) {
+//		this.userMap = userMap;
+//	}
 
 	public String getUserID() {
 		return userID;

@@ -1,5 +1,5 @@
 ext {
-	springVersion = "4.2.0.RELEASE"
+	springVersion = "4.2.3.RELEASE"
 	aspectjVersion="1.8.1"
 	jacksonVersion="2.6.1"
 }

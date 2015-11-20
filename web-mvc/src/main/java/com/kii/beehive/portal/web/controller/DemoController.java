@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kii.beehive.portal.web.entity.HelloEntry;
 
 @RestController
-@RequestMapping(path="/",consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
+@RequestMapping(path="/",consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
 public class DemoController {
 
 

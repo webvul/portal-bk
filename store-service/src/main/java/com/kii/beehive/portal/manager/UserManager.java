@@ -64,7 +64,7 @@ public class UserManager {
 		String id=userDao.createUser(user);
 
 
-		msgService.addInsertMsg(id,user);
+//		msgService.addInsertMsg(id,user);
 		return id;
 	}
 
@@ -74,7 +74,7 @@ public class UserManager {
 
 		userDao.updateUser(user,userID);
 
-		msgService.addUpdateMsg(userID, user);
+//		msgService.addUpdateMsg(userID, user);
 
 
 	}
@@ -86,7 +86,7 @@ public class UserManager {
 
 		userDao.updateUser(user, userID);
 
-		msgService.addUpdateMsg(userID, user);
+//		msgService.addUpdateMsg(userID, user);
 
 	}
 
@@ -124,7 +124,7 @@ public class UserManager {
 
 		userDao.deleteUser(userID);
 
-		msgService.addDeleteMsg(userID);
+//		msgService.addDeleteMsg(userID);
 
 
 	}

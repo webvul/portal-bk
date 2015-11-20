@@ -80,7 +80,7 @@ public class SyncMsgService {
 
 	}
 
-	@Scheduled(fixedRate=10000)
+//	@Scheduled(fixedRate=10000)
 	public void executeSyncTask(){
 
 		Map<String,String> urlMap=new HashMap<>();

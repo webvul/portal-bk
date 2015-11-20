@@ -19,7 +19,7 @@ import java.util.Date;
  * refer to doc "Tech Design - Beehive API" section "Thing API" for details
  */
 @RestController
-@RequestMapping(path = "/onboardinghelper",  consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
+@RequestMapping(path = "/onboardinghelper",  consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
 public class OnboardingHelperController {
 
     @Autowired

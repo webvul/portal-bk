@@ -27,7 +27,7 @@ import com.kii.beehive.portal.web.help.PortalException;
  * refer to doc "Tech Design - Beehive API" section "Thing API" for details
  */
 @RestController
-@RequestMapping(path = "/tags",  consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
+@RequestMapping(path = "/tags",  consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
 public class TagController {
 	
 	@Autowired

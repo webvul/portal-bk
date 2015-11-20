@@ -12,7 +12,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
-@ContextConfiguration("classpath:com/kii/beehive/portal/web/testPortalContext.xml")
+@ContextConfiguration("file:src/main/webapp/WEB-INF/portalWebContext.xml")
 public class WebTestTemplate {
 
 	@Autowired
