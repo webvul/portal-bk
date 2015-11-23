@@ -2,6 +2,7 @@ package com.kii.beehive.portal.store.entity.usersync;
 
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import com.kii.beehive.portal.store.entity.BeehiveUser;
@@ -12,11 +13,13 @@ public class UserSyncMsg {
 
 	private BeehiveUser user;
 
-//	private Map<String,Object> userMap;
-
 	private String userID;
 
-	@JsonProperty("context")
+	private int retryCount=0;
+
+
+
+	@JsonIgnore()
 	public BeehiveUser getUser() {
 		return user;
 	}
@@ -24,15 +27,6 @@ public class UserSyncMsg {
 	public void setUser(BeehiveUser user) {
 		this.user = user;
 	}
-
-//	@JsonProperty("context")
-//	public Map<String, Object> getUserMap() {
-//		return userMap;
-//	}
-//
-//	public void setUserMap(Map<String, Object> userMap) {
-//		this.userMap = userMap;
-//	}
 
 	public String getUserID() {
 		return userID;
@@ -50,5 +44,11 @@ public class UserSyncMsg {
 		this.type = type;
 	}
 
+	public int getRetryCount() {
+		return retryCount;
+	}
 
+	public void setRetryCount(int retryCount) {
+		this.retryCount = retryCount;
+	}
 }

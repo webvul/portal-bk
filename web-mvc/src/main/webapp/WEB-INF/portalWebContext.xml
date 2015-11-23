@@ -46,6 +46,17 @@
         </property>
     </bean>
 
+    <!-- log4j -->
+    <bean id="log4jInitializer" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" >
+        <property name="targetClass" value="org.springframework.util.Log4jWebConfigurer" />
+        <property name="targetMethod" value="initLogging" />
+        <property name="arguments">
+            <list>
+                <value>classpath:com/kii/beehive/portal/web/log4j.${spring.profile}.xml</value>
+            </list>
+        </property>
+    </bean>
+
     <mvc:interceptors>
         <bean class="com.kii.beehive.portal.web.help.OptionalInterceptor" />
     </mvc:interceptors>

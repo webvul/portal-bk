@@ -11,7 +11,6 @@ import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.kii.beehive.portal.helper.AppInfoService;
 import com.kii.beehive.portal.service.GlobalThingDao;
 import com.kii.beehive.portal.service.TagIndexDao;
 import com.kii.beehive.portal.store.entity.GlobalThingInfo;
@@ -25,19 +24,13 @@ public class ThingManager {
 	@Autowired
 	private GlobalThingDao globalThingDao;
 
-	@Autowired
-	private AppInfoService appInfoDao;
 
 	@Autowired
 	private TagIndexDao tagIndexDao;
 
 
 	public void createThing(GlobalThingInfo thingInfo, List<TagIndex> tagList){
-		if(thingInfo.getKiiAppID()==null){
-			AppInfo appInfo=appInfoDao.getMatchAppInfoByThing(thingInfo.getVendorThingID());
-			thingInfo.setKiiAppID(appInfo.getAppID());
-		}
-		
+
 		thingInfo.setStatusUpdatetime(new Date());
 		globalThingDao.addThingInfo(thingInfo);
 		Set<String> tagNameSet = new HashSet<String>();

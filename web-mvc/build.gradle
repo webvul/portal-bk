@@ -11,6 +11,9 @@ dependencies {
 	compile project(":store-service")
 	compile "org.springframework:spring-webmvc:${springVersion}"
 
+
+
+
 	testCompile 'org.eclipse.jetty:jetty-server:9.3.2.v20150730'
 	testCompile 'org.eclipse.jetty:jetty-webapp:9.3.2.v20150730'
 
@@ -18,6 +21,7 @@ dependencies {
 	testCompile "org.apache.tomcat.embed:tomcat-embed-logging-juli:${tomcatVersion}"
 	testCompile "org.apache.tomcat.embed:tomcat-embed-jasper:${tomcatVersion}"
 
+	providedCompile  "com.alibaba.appengine:services-api:1.4.2"
 	providedCompile group: "javax.servlet", name: "servlet-api", version: "3.+"
 	compile "org.apache.logging.log4j:log4j-core:2.3"
 

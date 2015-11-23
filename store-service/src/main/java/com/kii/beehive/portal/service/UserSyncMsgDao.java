@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
+import com.kii.beehive.portal.annotation.BindAppByName;
 import com.kii.beehive.portal.store.entity.usersync.ExecuteResult;
 import com.kii.beehive.portal.store.entity.usersync.SupplierPushMsgTask;
 import com.kii.extension.sdk.entity.BucketInfo;
@@ -13,13 +14,19 @@ import com.kii.extension.sdk.query.ConditionBuilder;
 import com.kii.extension.sdk.query.QueryParam;
 import com.kii.extension.sdk.service.AbstractDataAccess;
 
+@BindAppByName(appName="portal")
 @Component
 public class UserSyncMsgDao extends AbstractDataAccess<SupplierPushMsgTask>{
+
+	public  static final Integer RETRY_NUM=5;
+
 
 	public void addUserSyncMsg(SupplierPushMsgTask msg){
 
 
-		super.addKiiEntity(msg);
+		String id=super.addKiiEntity(msg);
+		msg.setId(id);
+
 	}
 
 
@@ -36,16 +43,40 @@ public class UserSyncMsgDao extends AbstractDataAccess<SupplierPushMsgTask>{
 
 	}
 
+	public void successSupplier(String supplierID,int retry,String id){
 
-	public void updateTaskStatus(Map<String,Integer> retryRecord,String id,int version){
+		Map<String,Object> map=new HashMap<>();
 
-		ExecuteResult result=ExecuteResult.Working;
+		map.put(supplierID,100+(RETRY_NUM-retry));
 
+		super.updateEntity(map, id);
+
+	}
+
+
+	public void recordRetrySupplier(String supplierID,int retry,String id){
+
+		Map<String,Object> map=new HashMap<>();
+
+		map.put(supplierID,retry);
+
+		super.updateEntity(map, id);
+
+	}
+
+
+	public void updateTaskStatus(String id){
+
+		SupplierPushMsgTask task=super.getObjectByID(id);
+
+		Map<String,Integer> retryRecord=task.getRetryRecord();
+
+		ExecuteResult result=null;
 
 		int successNum=0;
 		int failNum=0;
 		for(Integer val:retryRecord.values()){
-			if(val==100){
+			if(val>=100){
 				successNum++;
 			}
 			if(val<=0){
@@ -67,7 +98,7 @@ public class UserSyncMsgDao extends AbstractDataAccess<SupplierPushMsgTask>{
 		map.put("retryRecord",retryRecord);
 
 
-		super.updateEntityWithVersion(map, id, version);
+		super.updateEntityWithVersion(map, id, task.getVersion());
 	}
 
 	@Override

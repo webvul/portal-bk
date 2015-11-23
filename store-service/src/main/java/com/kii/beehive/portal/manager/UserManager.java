@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import com.kii.beehive.portal.helper.SyncMsgService;
-import com.kii.beehive.portal.notify.UserSyncNotifier;
 import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.service.ArchiveBeehiveUserDao;
 import com.kii.beehive.portal.service.BeehiveUserDao;
@@ -64,7 +63,7 @@ public class UserManager {
 		String id=userDao.createUser(user);
 
 
-//		msgService.addInsertMsg(id,user);
+		msgService.addInsertMsg(id,user);
 		return id;
 	}
 
@@ -74,7 +73,7 @@ public class UserManager {
 
 		userDao.updateUser(user,userID);
 
-//		msgService.addUpdateMsg(userID, user);
+		msgService.addUpdateMsg(userID, user);
 
 
 	}
@@ -86,7 +85,7 @@ public class UserManager {
 
 		userDao.updateUser(user, userID);
 
-//		msgService.addUpdateMsg(userID, user);
+		msgService.addUpdateMsg(userID, user);
 
 	}
 
@@ -120,11 +119,11 @@ public class UserManager {
 
 		kiiUserDao.disableBeehiveUser(user);
 
-//		this.checkUserGroupsChange(user.getAliUserID(), null);
+		this.checkUserGroupsChange(user.getAliUserID(), null);
 
 		userDao.deleteUser(userID);
 
-//		msgService.addDeleteMsg(userID);
+		msgService.addDeleteMsg(userID);
 
 
 	}
