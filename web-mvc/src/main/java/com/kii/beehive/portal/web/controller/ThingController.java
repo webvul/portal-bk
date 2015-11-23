@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kii.beehive.portal.manager.ThingManager;
 import com.kii.beehive.portal.service.GlobalThingDao;
 import com.kii.beehive.portal.store.entity.GlobalThingInfo;
+import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.entity.ThingInput;
 import com.kii.beehive.portal.web.help.PortalException;
 
@@ -79,19 +80,19 @@ public class ThingController {
 	public Map<String,String> createThing(@RequestBody ThingInput input){
 		
 		if(input == null){
-			throw new PortalException();//no body
+			throw new PortalException(ErrorCode.NO_BODY,"Body is null", HttpStatus.BAD_REQUEST);
 		}
 		
 		if(Strings.isBlank(input.getVendorThingID())){
-			throw new PortalException();//paramter missing
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"VendorThingID is empty", HttpStatus.BAD_REQUEST);
 		}
 		
 		if(Strings.isBlank(input.getKiiAppID())){
-			throw new PortalException();//paramter missing
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"KiiAppID is empty", HttpStatus.BAD_REQUEST);
 		}
 		
 		if(Strings.isBlank(input.getPassword())){
-			throw new PortalException();//paramter missing
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"Password is empty", HttpStatus.BAD_REQUEST);
 		}
 		
 		GlobalThingInfo thingInfo = new GlobalThingInfo();
@@ -124,7 +125,7 @@ public class ThingController {
 		GlobalThingInfo orig =  globalThingDao.getThingInfoByID(globalThingID);
 		
 		if(orig == null){
-			throw new PortalException();//not found object
+			throw new PortalException(ErrorCode.NOT_FOUND,"NotFound", HttpStatus.BAD_REQUEST);
 		}
 		
 		thingManager.removeThings(orig);
