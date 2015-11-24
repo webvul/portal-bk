@@ -47,10 +47,20 @@
         <property name="devPortalUrl"  value="${beehive.kiicloud.dev-portal.url}" />
     </bean>
 
-    <bean class="com.kii.extension.factory.LocalPropertyBindTool" >
+    <bean name="propAppBindTool" class="com.kii.extension.factory.LocalPropertyBindTool" >
             <property name="propFileName" value="classpath:com/kii/beehive/portal/web/beehive.portal.store.${spring.profile}.properties" />
     </bean>
 
+    <!-- log4j    -->
 
+    <bean id="log4jInitializer" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" >
+        <property name="targetClass" value="org.springframework.util.Log4jConfigurer" />
+        <property name="targetMethod" value="initLogging" />
+        <property name="arguments">
+            <list>
+                <value>classpath:com/kii/beehive/portal/web/log4j.${spring.profile}.xml</value>
+            </list>
+        </property>
+    </bean>
 
 </beans>

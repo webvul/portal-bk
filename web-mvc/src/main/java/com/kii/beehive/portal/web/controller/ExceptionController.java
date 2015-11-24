@@ -3,6 +3,8 @@ package com.kii.beehive.portal.web.controller;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,12 +20,15 @@ import com.kii.extension.sdk.exception.KiiCloudException;
 @ControllerAdvice
 public class ExceptionController {
 
+	private Logger log= LoggerFactory.getLogger(ExceptionController.class);
+
 	@Autowired
 	private ObjectMapper mapper;
 
 	@ExceptionHandler(Throwable.class)
 	public ResponseEntity<String> handleGlobalException(Throwable ex) {
 
+		log.error("global exception ",ex);
 
 //		String error=ex.getErrorCode().toString();
 
@@ -40,6 +45,8 @@ public class ExceptionController {
 	@ExceptionHandler(PortalException.class)
 	public ResponseEntity<String> handleServiceException(PortalException ex) {
 
+		log.error("portal exception ",ex);
+
 
 		String error=ex.getErrorCode().toString();
 
@@ -50,6 +57,7 @@ public class ExceptionController {
 	@ExceptionHandler(KiiCloudException.class)
 	public ResponseEntity<String> handleKiiCloudException(KiiCloudException ex) {
 
+		log.error("kiicloud exception ",ex);
 
 		String error= null;
 		try {

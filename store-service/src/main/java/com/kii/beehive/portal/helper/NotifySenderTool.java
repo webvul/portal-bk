@@ -59,7 +59,7 @@ public class NotifySenderTool {
 
 
 
-//	@Async
+	@Async
 	public void doMsgSendTask(SupplierPushMsgTask msgTask, final Map<String,String> urlMap){
 
 

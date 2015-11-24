@@ -43,19 +43,19 @@ public class SyncMsgService {
 	@Autowired
 	private NotifySenderTool notifyTool;
 
-	@Async
+
 	public void addUpdateMsg(String userID,BeehiveUser user){
 		addSyncMsg(userID, UserSyncMsgType.Update,user);
 	}
 
 
-	@Async
+
 	public void addDeleteMsg(String userID){
 		addSyncMsg(userID, UserSyncMsgType.Delete,null);
 
 	}
 
-	@Async
+
 	public void addInsertMsg(String userID,BeehiveUser user){
 		addSyncMsg(user.getId(), UserSyncMsgType.Create,user);
 

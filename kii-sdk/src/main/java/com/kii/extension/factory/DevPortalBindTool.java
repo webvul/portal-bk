@@ -41,7 +41,9 @@ public class DevPortalBindTool implements AppBindTool {
 
 			appInfoMap.put(info.getName(),info);
 
+
 		});
+
 
 
 

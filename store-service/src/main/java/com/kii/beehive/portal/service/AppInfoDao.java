@@ -20,7 +20,7 @@ import com.kii.extension.sdk.service.AbstractDataAccess;
 import com.kii.extension.sdk.service.AppMasterSalveService;
 import com.kii.extension.sdk.service.DevPortalService;
 
-@BindAppByName(appName="portal")
+@BindAppByName(appName="portal",appBindSource="propAppBindTool" )
 @Component
 public class AppInfoDao extends AbstractDataAccess<KiiAppInfo> {
 
@@ -82,7 +82,7 @@ public class AppInfoDao extends AbstractDataAccess<KiiAppInfo> {
 	public KiiAppInfo getMasterAppInfo(){
 
 
-		List<KiiAppInfo>  infoList=super.query(ConditionBuilder.newCondition().equal("master", true).getFinalCondition().build());
+		List<KiiAppInfo>  infoList=super.query(ConditionBuilder.newCondition().equal("masterApp", true).getFinalCondition().build());
 		if(infoList.size()==0){
 			return null;
 		}else{

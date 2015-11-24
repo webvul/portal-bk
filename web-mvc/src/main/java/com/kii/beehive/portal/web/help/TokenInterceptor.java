@@ -19,11 +19,11 @@ public class TokenInterceptor extends HandlerInterceptorAdapter {
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
 
-		String path=request.getContextPath();
+//		String path=request.getContextPath();
 
-		if(!path.startsWith("users")){
-			return true;
-		}
+//		if(!path.startsWith("users")){
+//			return true;
+//		}
 
 		String auth=request.getHeader("Authorization");
 
@@ -32,7 +32,9 @@ public class TokenInterceptor extends HandlerInterceptorAdapter {
 			throw new UnauthorizedAccessException();
 		}
 
-		String token=auth.substring(7);
+		auth=auth.trim();
+
+		String token=auth.substring(auth.lastIndexOf(" ")+1).trim();
 
 
 		tokenService.setToken(token, PortalTokenService.PortalTokenType.UserSync);
