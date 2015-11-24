@@ -124,10 +124,6 @@ public class ThingController {
 		
 		GlobalThingInfo orig =  globalThingDao.getThingInfoByID(globalThingID);
 		
-		if(orig == null){
-			throw new PortalException(ErrorCode.NOT_FOUND,"NotFound", HttpStatus.BAD_REQUEST);
-		}
-		
 		thingManager.removeThings(orig);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}

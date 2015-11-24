@@ -93,10 +93,6 @@ public class TagController {
 		
 		TagIndex orig =  tagIndexDao.getTagIndexByID(tagName);
 		
-		if(orig == null){
-			//not found object
-			throw new PortalException(ErrorCode.NOT_FOUND,"NotFound", HttpStatus.BAD_REQUEST);
-		}
 		thingManager.removeTag(orig);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}

@@ -1,29 +1,34 @@
 package com.kii.beehive.portal.web.controller;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kii.beehive.portal.service.BeehiveUserDao;
-import com.kii.beehive.portal.service.BeehiveUserGroupDao;
-import com.kii.beehive.portal.store.entity.BeehiveUser;
-import com.kii.beehive.portal.store.entity.BeehiveUserGroup;
-import com.kii.beehive.portal.store.entity.GlobalThingInfo;
-import com.kii.beehive.portal.web.WebTestTemplate;
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertNotNull;
+import static junit.framework.TestCase.assertNull;
+import static junit.framework.TestCase.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
-import java.util.*;
-
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kii.beehive.portal.service.BeehiveUserDao;
+import com.kii.beehive.portal.service.BeehiveUserGroupDao;
+import com.kii.beehive.portal.store.entity.BeehiveUser;
+import com.kii.beehive.portal.store.entity.BeehiveUserGroup;
+import com.kii.beehive.portal.web.WebTestTemplate;
 
 public class TestUserGroupController extends WebTestTemplate {
 
@@ -35,6 +40,9 @@ public class TestUserGroupController extends WebTestTemplate {
 
     @Autowired
     private BeehiveUserGroupDao userGroupDao;
+    
+    @Autowired
+	private WebApplicationContext wac;
 
     private List<String> userIDListForTest = new ArrayList<>();
 
@@ -42,7 +50,7 @@ public class TestUserGroupController extends WebTestTemplate {
 
     @Before
     public void before() {
-
+    	this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
         userIDListForTest.add("test.userid.1");
         userIDListForTest.add("test.userid.2");
         userIDListForTest.add("test.userid.3");
