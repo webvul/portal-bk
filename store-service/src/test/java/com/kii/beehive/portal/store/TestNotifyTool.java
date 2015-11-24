@@ -60,7 +60,7 @@ public class TestNotifyTool extends TestInit {
 
 		Map<String,String> urlMap=supplierDao.getUrlMap();
 		for(String k:urlMap.keySet()){
-			urlMap.put(k,"http://127.0.0.1:7080/supplier-callback/user-sync");
+			urlMap.put(k,"http://127.0.0.1:7080/user-sync");
 		}
 
 		msgDao.addUserSyncMsg(task);

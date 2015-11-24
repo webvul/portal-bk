@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -22,6 +23,9 @@ import com.kii.beehive.portal.store.entity.usersync.UserSyncMsgType;
 
 @Component
 public class SyncMsgService {
+
+	@Value("${spring.profile}")
+	private String profile;
 
 	@Autowired
 	private UserSyncMsgDao msgDao;
@@ -79,8 +83,10 @@ public class SyncMsgService {
 
 		msgDao.addUserSyncMsg(entity);
 
-		notifyTool.doMsgSendTask(entity, supplierDao.getUrlMap());
+		if("production".equals(profile)) {
 
+			notifyTool.doMsgSendTask(entity, supplierDao.getUrlMap());
+		}
 	}
 
 
@@ -88,7 +94,9 @@ public class SyncMsgService {
 	@Scheduled(fixedRate=1000*60*60)
 	public void executeSyncTask(){
 
-
+		if(!"production".equals(profile)) {
+			return;
+		}
 
 		List<SupplierPushMsgTask>  msgList= msgDao.getUnfinishMsgList();
 

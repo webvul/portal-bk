@@ -3,6 +3,8 @@ package mock.supplier.service;
 import java.io.File;
 
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.ServletHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.webapp.WebAppContext;
 
 public class SupplierService {
@@ -10,25 +12,16 @@ public class SupplierService {
 	public static void main( String[] args ) throws Exception
 	{
 
-//		System.setProperty("spring.profile","test");
-
 		Server server = new Server(7080);
 
-		WebAppContext webapp = new WebAppContext();
 
-		webapp.setContextPath("/supplier-callback");
+		ServletHandler  handler=new ServletHandler();
 
-//		File warFile = new File("web-mvc/src/main/webapp/");
+		handler.addServletWithMapping(SupplierServlet.class,"/user-sync");
 
-//		webapp.setWar(warFile.getAbsolutePath());
-
-//		server.setHandler(webapp);
-
-		webapp.addServlet(SupplierServlet.class,"/user-sync");
-
+		server.setHandler(handler);
 
 		server.start();
-//		server.dumpStdErr();
 		server.join();
 	}
 }

@@ -65,25 +65,42 @@ public class UserSyncMsgDao extends AbstractDataAccess<SupplierPushMsgTask>{
 	}
 
 
-	public void updateTaskStatus(String id){
+	public void updateTaskStatus(String id,boolean sign){
 
 		SupplierPushMsgTask task=super.getObjectByID(id);
 
 		Map<String,Integer> retryRecord=task.getRetryRecord();
 
-		ExecuteResult result=null;
+
+		Map<String,Object> map=new HashMap<>();
+
 
 		int successNum=0;
 		int failNum=0;
-		for(Integer val:retryRecord.values()){
+
+		for(Map.Entry<String,Integer> entry:retryRecord.entrySet()){
+
+			int val=entry.getValue();
 			if(val>=100){
 				successNum++;
+				continue;
 			}
 			if(val<=0){
 				failNum++;
+				continue;
 			}
+
+			if(!sign){
+				val--;
+				map.put(entry.getKey(),val);
+				if(val<=0){
+					failNum++;
+				}
+			}
+
 		}
 
+		ExecuteResult result=null;
 		if(successNum==retryRecord.size()){
 			result=ExecuteResult.Success;
 		}else if(failNum+successNum==retryRecord.size()){
@@ -92,11 +109,7 @@ public class UserSyncMsgDao extends AbstractDataAccess<SupplierPushMsgTask>{
 			result=ExecuteResult.Working;
 		}
 
-		Map<String,Object> map=new HashMap<>();
-
 		map.put("result",result);
-		map.put("retryRecord",retryRecord);
-
 
 		super.updateEntityWithVersion(map, id, task.getVersion());
 	}

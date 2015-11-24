@@ -91,12 +91,8 @@ public class NotifySenderTool {
 		});
 
 		try {
-			boolean sign=latch.await(5, TimeUnit.MINUTES);
-			if(!sign){
-				retryRecord.replaceAll((k,v)->v==100?100:v-- );
-			}
-
-			msgDao.updateTaskStatus(msgTask.getId());
+			boolean sign=latch.await(20, TimeUnit.MINUTES);
+			msgDao.updateTaskStatus(msgTask.getId(),sign);
 		} catch (InterruptedException e) {
 
 			e.printStackTrace();
@@ -142,14 +138,11 @@ public class NotifySenderTool {
 
 			final int newRetry = retry - 1;
 
-			msgDao.recordRetrySupplier(supplierID, retry, task.getId());
+			msgDao.recordRetrySupplier(supplierID, newRetry, task.getId());
 
-			if (retry > 0) {
-				executeService.schedule(() -> {
-
-					doRequest(newRetry);
-
-				}, delayArray[newRetry], TimeUnit.SECONDS);
+			if (newRetry > 0) {
+				executeService.schedule(
+						() -> doRequest(newRetry), delayArray[newRetry], TimeUnit.SECONDS);
 			}
 			return;
 		}
