@@ -17,7 +17,7 @@ import org.springframework.web.context.WebApplicationContext;
 public class WebTestTemplate {
 
 	@Autowired
-	private WebApplicationContext wac;
+	protected WebApplicationContext wac;
 
 	protected MockMvc mockMvc;
 	

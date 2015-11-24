@@ -21,7 +21,6 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kii.beehive.portal.service.BeehiveUserDao;
@@ -41,9 +40,6 @@ public class TestUserGroupController extends WebTestTemplate {
     @Autowired
     private BeehiveUserGroupDao userGroupDao;
     
-    @Autowired
-	private WebApplicationContext wac;
-
     private List<String> userIDListForTest = new ArrayList<>();
 
     private String userGroupID;
