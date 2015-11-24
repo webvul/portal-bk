@@ -111,14 +111,14 @@ public class UserGroupController {
 
     /**
      * 查询用户群组
-     * POST /usergroup
+     * POST /usergroup/simplequery
      *
      * refer to doc "Beehive API - User API" for request/response details
      * refer to doc "Tech Design - Beehive API", section "Inquire User Group (查询用户群组)" for more details
      *
      * @param queryMap
      */
-    @RequestMapping(path="/",method={RequestMethod.POST})
+    @RequestMapping(path="/simplequery",method={RequestMethod.POST})
     public ResponseEntity queryUserGroup(@RequestBody Map<String,Object> queryMap){
 
         Boolean includeUserData = (Boolean)queryMap.remove("includeUserData");

@@ -182,7 +182,7 @@ public class TestUserGroupController extends WebTestTemplate {
         String ctx= mapper.writeValueAsString(request);
 
         String result=this.mockMvc.perform(
-                patch("/usergroup/" + userGroupID).content(ctx)
+                patch("/usergroup/simplequery" + userGroupID).content(ctx)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
         )
