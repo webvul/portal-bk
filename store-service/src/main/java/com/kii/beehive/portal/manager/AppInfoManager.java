@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
-import com.kii.extension.sdk.context.AppBindTool;
 import com.kii.extension.sdk.entity.AppInfo;
 import com.kii.extension.sdk.exception.ObjectNotFoundException;
 import com.kii.extension.sdk.service.AppMasterSalveService;

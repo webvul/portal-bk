@@ -1,9 +1,6 @@
 package com.kii.beehive.portal.store.entity.usersync;
 
-import java.util.Map;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 

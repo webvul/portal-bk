@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.utils.HttpClientUtils;
 import org.springframework.util.FileCopyUtils;
 
 public class HttpUtils {

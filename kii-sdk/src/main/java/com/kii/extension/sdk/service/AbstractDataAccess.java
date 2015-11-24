@@ -11,7 +11,6 @@ import com.kii.extension.sdk.entity.BucketInfo;
 import com.kii.extension.sdk.entity.CreateResponse;
 import com.kii.extension.sdk.entity.KiiEntity;
 import com.kii.extension.sdk.entity.UpdateResponse;
-import com.kii.extension.sdk.exception.KiiCloudException;
 import com.kii.extension.sdk.query.ConditionBuilder;
 import com.kii.extension.sdk.query.QueryParam;
 

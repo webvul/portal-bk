@@ -1,15 +1,19 @@
 package com.kii.beehive.portal.manager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.service.BeehiveUserDao;
@@ -33,7 +37,66 @@ public class UserGroupManager {
     @Autowired
     private AppInfoDao appInfoDao;
 
+    @Autowired
+    private ObjectMapper objectMapper;
 
+    /**
+     * check whether the param userGroupID existing or not
+     * @param userGroupID
+     * @return
+     */
+    public boolean checkUserGroupIDExist(String userGroupID) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("userGroupID", userGroupID);
+        BeehiveUserGroup userGroup = this.getUserGroupBySimpleQuery(map, false);
+
+        return userGroup != null;
+    }
+
+    /**
+     * search user group by simple query
+     * @param queryMap
+     */
+    public BeehiveUserGroup getUserGroupBySimpleQuery(Map<String,Object> queryMap, boolean includeUserData) {
+
+        logger.debug("Start getUserGroupBySimpleQuery(Map<String,Object> queryMap, boolean includeUserData)");
+        logger.debug("queryMap:" + queryMap);
+        logger.debug("includeUserData:" + includeUserData);
+
+        // get user group
+        List<BeehiveUserGroup> groupList =  beehiveUserGroupDao.getUserGroupsBySimpleQuery(queryMap);
+
+        if(groupList == null || groupList.isEmpty()) {
+            return null;
+        }
+
+        BeehiveUserGroup userGroup = groupList.get(0);
+
+        // if includeUserData is true, get the user entities and add into user group
+        Set<String> userIDs = userGroup.getUsers();
+        if(userIDs != null && !userIDs.isEmpty() && includeUserData) {
+
+            // get user entities
+            List<String> userIDList = new ArrayList<>(userIDs);
+            List<BeehiveUser> userList = beehiveUserDao.getUserByIDs(userIDList);
+
+            // conver user entities to json string and set into user group
+            Set<String> jsonUsers = new HashSet<>();
+            userList.forEach(user->{
+                try {
+                    jsonUsers.add(objectMapper.writeValueAsString(user));
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                };
+            });
+            userGroup.setUsers(jsonUsers);
+
+        }
+
+        logger.debug("End getUserGroupBySimpleQuery(Map<String,Object> queryMap, boolean includeUserData): " + userGroup);
+
+        return userGroup;
+    }
 
     /**
      * add users to groups
@@ -118,17 +181,11 @@ public class UserGroupManager {
         logger.debug("userGroup:" + userGroup);
         logger.debug("party3rdID:" + party3rdID);
 
-        // generate user group id
-        String userGroupID = DigestUtils.sha1Hex(userGroup.getUserGroupName());
-        userGroup.setUserGroupID(userGroupID);
+        // creat user group
+        String userGroupID = beehiveUserGroupDao.createUserGroup(userGroup);
 
         // check and update user change
-        // important:
-        // this has to go before the user group update(table BeehiveUserGroup),
-        // to get the exist list of users under the user group
-        this.checkUsersChange(userGroup.getUserGroupID(), userGroup.getUsers(), party3rdID);
-
-        beehiveUserGroupDao.createUserGroup(userGroup);
+        this.checkUsersChange(userGroupID, userGroup.getUsers(), party3rdID);
 
         logger.debug("End createUserGroup(BeehiveUserGroup userGroup, String party3rdID)");
         logger.debug("userGroupID:" + userGroupID);
@@ -165,22 +222,22 @@ public class UserGroupManager {
      * delete user group in Beehive (table BeehiveUserGroup)
      * if there is user info under the user group, add the group to these user info(table BeehiveUser)
      *
-     * @param userGroup
+     * @param userGroupID
      * @param party3rdID
      */
-    public void deleteUserGroup(BeehiveUserGroup userGroup, String party3rdID) {
+    public void deleteUserGroup(String userGroupID, String party3rdID) {
 
         logger.debug("Start deleteUserGroup(BeehiveUserGroup userGroup, String party3rdID)");
-        logger.debug("userGroup:" + userGroup);
+        logger.debug("userGroup:" + userGroupID);
         logger.debug("party3rdID:" + party3rdID);
 
         // check and update user change
         // important:
         // this has to go before the user group update(table BeehiveUserGroup),
         // to get the exist list of users under the user group
-        this.checkUsersChange(userGroup.getUserGroupID(), null, party3rdID);
+        this.checkUsersChange(userGroupID, null, party3rdID);
 
-        beehiveUserGroupDao.deleteUserGroup(userGroup.getUserGroupID());
+        beehiveUserGroupDao.deleteUserGroup(userGroupID);
 
         logger.debug("End deleteUserGroup(BeehiveUserGroup userGroup, String party3rdID)");
 

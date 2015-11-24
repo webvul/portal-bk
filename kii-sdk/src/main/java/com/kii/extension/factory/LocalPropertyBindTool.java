@@ -11,9 +11,9 @@ import java.util.Properties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
 
+import com.kii.extension.sdk.context.AppBindTool;
 import com.kii.extension.sdk.entity.AppInfo;
 import com.kii.extension.sdk.entity.SiteType;
-import com.kii.extension.sdk.context.AppBindTool;
 
 public class LocalPropertyBindTool implements AppBindTool {
 

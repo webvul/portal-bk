@@ -1,10 +1,5 @@
 package com.kii.beehive.portal.manager;
 
-import javax.annotation.PostConstruct;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

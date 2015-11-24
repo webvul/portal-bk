@@ -15,7 +15,6 @@ import com.kii.beehive.portal.service.GlobalThingDao;
 import com.kii.beehive.portal.service.TagIndexDao;
 import com.kii.beehive.portal.store.entity.GlobalThingInfo;
 import com.kii.beehive.portal.store.entity.TagIndex;
-import com.kii.extension.sdk.entity.AppInfo;
 import com.kii.extension.sdk.exception.KiiCloudException;
 
 @Component
@@ -30,6 +29,7 @@ public class ThingManager {
 
 
 	public void createThing(GlobalThingInfo thingInfo, List<TagIndex> tagList){
+
 
 		thingInfo.setStatusUpdatetime(new Date());
 		globalThingDao.addThingInfo(thingInfo);
@@ -149,6 +149,13 @@ public class ThingManager {
 
 	public  GlobalThingInfo findThingByVendorThingID(String vendorThingID) {
 		return globalThingDao.getThingByVendorThingID(vendorThingID);
+	}
+
+	private String generateGlobalThingID(GlobalThingInfo thingInfo) {
+
+		String globalThingID = thingInfo.getKiiAppID() + "-" + thingInfo.getVendorThingID();
+
+		return globalThingID;
 	}
 
 }

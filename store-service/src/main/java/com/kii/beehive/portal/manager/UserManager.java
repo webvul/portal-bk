@@ -12,10 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import com.kii.beehive.portal.helper.SyncMsgService;
-import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.service.ArchiveBeehiveUserDao;
 import com.kii.beehive.portal.service.BeehiveUserDao;
 import com.kii.beehive.portal.service.BeehiveUserGroupDao;
@@ -23,7 +21,6 @@ import com.kii.beehive.portal.service.KiiUserSyncDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.store.entity.BeehiveUserGroup;
 import com.kii.beehive.portal.store.entity.CustomProperty;
-import com.kii.extension.sdk.exception.KiiCloudException;
 
 
 @Component

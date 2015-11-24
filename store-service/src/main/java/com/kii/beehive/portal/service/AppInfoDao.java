@@ -17,8 +17,6 @@ import com.kii.extension.sdk.entity.AppInfo;
 import com.kii.extension.sdk.entity.BucketInfo;
 import com.kii.extension.sdk.query.ConditionBuilder;
 import com.kii.extension.sdk.service.AbstractDataAccess;
-import com.kii.extension.sdk.service.AppMasterSalveService;
-import com.kii.extension.sdk.service.DevPortalService;
 
 @BindAppByName(appName="portal",appBindSource="propAppBindTool" )
 @Component

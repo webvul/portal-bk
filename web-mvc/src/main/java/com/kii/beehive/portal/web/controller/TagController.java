@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kii.beehive.portal.manager.ThingManager;
 import com.kii.beehive.portal.service.TagIndexDao;
 import com.kii.beehive.portal.store.entity.TagIndex;
+import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.help.PortalException;
 
 /**
@@ -61,15 +62,15 @@ public class TagController {
 	@RequestMapping(path="/",method={RequestMethod.POST})
 	public Map<String,String> createTag(@RequestBody TagIndex input){
 		if(input == null){
-			throw new PortalException();//no body
+			throw new PortalException(ErrorCode.NO_BODY,"Body is null", HttpStatus.BAD_REQUEST);
 		}
 		
 		if(Strings.isBlank(input.getTagType())){
-			throw new PortalException();//paramter missing
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"TagType is empty", HttpStatus.BAD_REQUEST);
 		}
 		
 		if(Strings.isBlank(input.getDisplayName())){
-			throw new PortalException();//paramter missing
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"DisplayName is empty", HttpStatus.BAD_REQUEST);
 		}
 		
 		tagIndexDao.addTagIndex(input);
@@ -92,10 +93,6 @@ public class TagController {
 		
 		TagIndex orig =  tagIndexDao.getTagIndexByID(tagName);
 		
-		if(orig == null){
-			//not found object
-			throw new PortalException();
-		}
 		thingManager.removeTag(orig);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}

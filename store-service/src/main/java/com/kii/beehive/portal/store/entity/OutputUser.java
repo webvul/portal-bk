@@ -2,16 +2,11 @@ package com.kii.beehive.portal.store.entity;
 
 
 import java.util.Map;
-import java.util.Set;
 
 import org.springframework.beans.BeanUtils;
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
-
-import com.kii.beehive.portal.store.entity.BeehiveUser;
-import com.kii.beehive.portal.store.entity.CustomProperty;
 
 public class OutputUser  extends BeehiveUser{
 

@@ -7,8 +7,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.kii.extension.sdk.entity.AppInfo;
 import com.kii.extension.sdk.context.AppBindTool;
+import com.kii.extension.sdk.entity.AppInfo;
 import com.kii.extension.sdk.service.DevPortalService;
 
 public class DevPortalBindTool implements AppBindTool {
