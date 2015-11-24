@@ -68,4 +68,5 @@ public class BeehiveUserGroup extends KiiEntity {
     public void setCustomField(String key, Object value) {
         this.customFields.put(key, value);
     }
+
 }

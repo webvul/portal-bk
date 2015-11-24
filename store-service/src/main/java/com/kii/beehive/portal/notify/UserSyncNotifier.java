@@ -32,6 +32,8 @@ import com.kii.beehive.portal.store.entity.DeviceSupplier;
 import com.kii.beehive.portal.store.entity.NotifyUserFailure;
 
 /**
+ * @Deprecated should be replaced with SyncMsgService
+ *
  * Tech Design - Beehive API
  * User Sync Util to 3rd party systems (同步用户信息到第三方系统)
  *

@@ -8,6 +8,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.kii.extension.sdk.query.QueryParam;
 import com.kii.beehive.portal.annotation.BindAppByName;
 import com.kii.beehive.portal.helper.SimpleQueryTool;
 import com.kii.beehive.portal.store.entity.BeehiveUserGroup;
@@ -22,9 +23,9 @@ public class BeehiveUserGroupDao extends AbstractDataAccess<BeehiveUserGroup> {
 	@Autowired
 	private SimpleQueryTool queryTool;
 
-    public void createUserGroup(BeehiveUserGroup userGroup) {
+    public String createUserGroup(BeehiveUserGroup userGroup) {
 
-        super.addKiiEntity(userGroup);
+        return super.addKiiEntity(userGroup);
 
     }
 
@@ -55,6 +56,12 @@ public class BeehiveUserGroupDao extends AbstractDataAccess<BeehiveUserGroup> {
     public List<BeehiveUserGroup> getUserGroupByIDs(List<String> userGroupIDs) {
 
         return super.getEntitys(userGroupIDs.toArray(new String[0]));
+    }
+
+    public List<BeehiveUserGroup>  getUserGroupsBySimpleQuery(Map<String,Object> params){
+        QueryParam query=queryTool.getEntitysByFields(params);
+
+        return super.fullQuery(query);
     }
 
     @Override

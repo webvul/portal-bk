@@ -12,6 +12,8 @@ public class KiiAppInfo extends KiiEntity{
 
 	private String appName;
 
+	private String defaultThingOwnerID;
+
 	private Set<String> relThingIDs =new HashSet<String>();
 
 	private String thingIDPrefix;
@@ -59,4 +61,11 @@ public class KiiAppInfo extends KiiEntity{
 		this.thingIDPrefix = thingIDPrefix;
 	}
 
+	public String getDefaultThingOwnerID() {
+		return defaultThingOwnerID;
+	}
+
+	public void setDefaultThingOwnerID(String defaultThingOwnerID) {
+		this.defaultThingOwnerID = defaultThingOwnerID;
+	}
 }

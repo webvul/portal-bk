@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.kii.extension.sdk.exception.ObjectNotFoundException;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -33,11 +34,26 @@ public class ThingManager {
 
 
 	public void createThing(GlobalThingInfo thingInfo, List<TagIndex> tagList){
+
+		String globalThingID = thingInfo.getGlobalThingID();
+		if(Strings.isBlank(globalThingID)) {
+			globalThingID = this.generateGlobalThingID(thingInfo);
+			thingInfo.setGlobalThingID(globalThingID);
+		}
+
 		if(thingInfo.getKiiAppID()==null){
 			AppInfo appInfo=appInfoDao.getMatchAppInfoByThing(thingInfo.getVendorThingID());
 			thingInfo.setKiiAppID(appInfo.getAppID());
 		}
-		
+
+		// get default thing owner id by Kii App ID
+		// throw exception if default thing owner not found
+		String defaultThingOwnerID = appInfoDao.getDefaultThingOwnerID(thingInfo.getKiiAppID());
+		if(Strings.isBlank(defaultThingOwnerID)) {
+			throw new ObjectNotFoundException();
+		}
+
+		thingInfo.setDefaultOwnerID(defaultThingOwnerID);
 		thingInfo.setStatusUpdatetime(new Date());
 		globalThingDao.addThingInfo(thingInfo);
 		Set<String> tagNameSet = new HashSet<String>();
@@ -156,6 +172,13 @@ public class ThingManager {
 
 	public  GlobalThingInfo findThingByVendorThingID(String vendorThingID) {
 		return globalThingDao.getThingByVendorThingID(vendorThingID);
+	}
+
+	private String generateGlobalThingID(GlobalThingInfo thingInfo) {
+
+		String globalThingID = thingInfo.getKiiAppID() + "-" + thingInfo.getVendorThingID();
+
+		return globalThingID;
 	}
 
 }

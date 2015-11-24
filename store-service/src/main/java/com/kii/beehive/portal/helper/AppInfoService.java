@@ -35,6 +35,8 @@ public class AppInfoService implements AppBindTool {
 
 	Map<String,String> nameMap=new HashMap<>();
 
+	Map<String,String> defaultThingOwnerIDMap=new HashMap<>();
+
 	AppInfo masterApp=null;
 
 	@Autowired
@@ -121,6 +123,8 @@ public class AppInfoService implements AppBindTool {
 
 		nameMap.put(kiiApp.getAppName(),appID);
 
+		defaultThingOwnerIDMap.put(appID, kiiApp.getDefaultThingOwnerID());
+
 		if(kiiApp.getThingIDPrefix()!=null) {
 
 			String lower= (kiiApp.getThingIDPrefix()+ ZERO_FILL).substring(0,12);
@@ -141,7 +145,11 @@ public class AppInfoService implements AppBindTool {
 
 	private  void appInfoBeenRemoved(KiiAppInfo kiiApp) {
 
-		appMap.remove(kiiApp.getAppInfo().getAppID());
+		String kiiAppID = kiiApp.getAppInfo().getAppID();
+
+		appMap.remove(kiiAppID);
+
+		defaultThingOwnerIDMap.remove(kiiAppID);
 
 		if(kiiApp.getThingIDPrefix()!=null) {
 
@@ -228,5 +236,9 @@ public class AppInfoService implements AppBindTool {
 			return appMap.get(nameMap.get(name));
 		}
 	};
+
+	public String getDefaultThingOwnerID(String kiiAppID) {
+		return defaultThingOwnerIDMap.get(kiiAppID);
+	}
 
 }

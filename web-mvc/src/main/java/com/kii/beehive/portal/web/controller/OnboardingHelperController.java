@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Beehive API - Thing API
@@ -26,7 +28,7 @@ public class OnboardingHelperController {
     private ThingManager thingManager;
 
     /**
-     * 设置onboarding信息
+     * 创建更新设备信息
      * POST /onboardinghelper
      *
      * refer to doc "Beehive API - Thing API" for request/response details
@@ -34,39 +36,42 @@ public class OnboardingHelperController {
      * @param input
      */
     @RequestMapping(path="/",method={RequestMethod.POST})
-    public ResponseEntity<String> setOnboardingInfo(@RequestBody ThingInput input){
+    public Map<String,String> setOnboardingInfo(@RequestBody ThingInput input){
+
         if(input == null){
-            throw new PortalException();//no body
+            throw new PortalException("RequiredFieldsMissing","not data input", HttpStatus.BAD_REQUEST);//no body
         }
 
         if(Strings.isBlank(input.getVendorThingID())){
-            throw new PortalException();//paramter missing
+            throw new PortalException("RequiredFieldsMissing","vendorThingID cannot been null", HttpStatus.BAD_REQUEST);//paramter missing
         }
 
         if(Strings.isBlank(input.getKiiAppID())){
-            throw new PortalException();//paramter missing
+            throw new PortalException("RequiredFieldsMissing","KiiAppID cannot been null", HttpStatus.BAD_REQUEST);//paramter missing
         }
 
-        // get global thing ID
-        String globalThingID = input.getGlobalThingID();
-        if(globalThingID == null) {
-            globalThingID = this.generateGlobalThingID(input);
+        if(Strings.isBlank(input.getPassword())){
+            throw new PortalException("RequiredFieldsMissing","password cannot been null", HttpStatus.BAD_REQUEST);//paramter missing
         }
 
         GlobalThingInfo thingInfo = new GlobalThingInfo();
         thingInfo.setVendorThingID(input.getVendorThingID());
-        thingInfo.setGlobalThingID(globalThingID);
+        thingInfo.setGlobalThingID(input.getGlobalThingID());
         thingInfo.setKiiAppID(input.getKiiAppID());
+        thingInfo.setPassword(input.getPassword());
         thingInfo.setType(input.getType());
+        thingInfo.setCustom(input.getCustom());
         thingInfo.setStatus(input.getStatus());
-        thingInfo.setStatusUpdatetime(new Date());
 
         thingManager.createThing(thingInfo,input.getTags());
-        return new ResponseEntity<>(HttpStatus.OK);
+
+        Map<String,String> map=new HashMap<>();
+        map.put("globalThingID",input.getGlobalThingID());
+        return map;
     }
 
     /**
-     * 获取onboarding信息
+     * 查询设备（vendorThingID）
      * GET /onboardinghelper/{vendorThingID}
      *
      * refer to doc "Beehive API - Thing API" for request/response details
@@ -76,26 +81,15 @@ public class OnboardingHelperController {
     @RequestMapping(path="/{vendorThingID}",method={RequestMethod.GET})
     public ResponseEntity<GlobalThingInfo> getOnboardingInfo(@PathVariable("vendorThingID") String vendorThingID){
 
+        // 1.	根据URL参数vendorThingID查询table GlobalThing并返回相应的设备信息
+        //        ●	如果table GlobalThing中此vendorThingID不存在，返回相应的错误信息
         GlobalThingInfo globalThingInfo = thingManager.findThingByVendorThingID(vendorThingID);
 
+        if(globalThingInfo == null) {
+            throw new PortalException("DataNotFound", "vendorThingID not found", HttpStatus.NOT_FOUND);
+        }
+
         return new ResponseEntity<>(globalThingInfo, HttpStatus.OK);
-    }
-
-    /**
-     * get the default owner ID of the thing
-     * @return
-     */
-    private String getDefaultOwnerID(String vendorThingID) {
-        // TODO
-
-        return null;
-    }
-
-    private String generateGlobalThingID(ThingInput input) {
-
-        String globalThingID = input.getKiiAppID() + input.getVendorThingID();
-
-        return globalThingID;
     }
 
 }
