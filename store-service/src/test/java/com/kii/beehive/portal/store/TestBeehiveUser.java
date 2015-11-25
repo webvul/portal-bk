@@ -39,17 +39,18 @@ public class TestBeehiveUser extends TestInit{
 		BeehiveUser user=new BeehiveUser();
 
 		user.setCompany("demo");
-		user.setUserName("alice");
+		user.setUserName("王二");
 
 		user.setCustomField("id", "1234567");
 		user.setCustomField("no", "abcdef");
 
-		String json=mapper.writeValueAsString(user);
-
-System.out.println(json);
-		BeehiveUser newUser=mapper.readValue(json, BeehiveUser.class);
-
-		assertEquals(newUser.getCustomField("no"),"abcdef");
+		userMang.addUser(user);
+//		String json=mapper.writeValueAsString(user);
+//
+//System.out.println(json);
+//		BeehiveUser newUser=mapper.readValue(json, BeehiveUser.class);
+//
+//		assertEquals(newUser.getCustomField("no"),"abcdef");
 
 	}
 

@@ -1,5 +1,7 @@
 package com.kii.beehive.portal.service;
 
+import java.util.Base64;
+
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -10,6 +12,8 @@ import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.extension.sdk.entity.KiiUser;
 import com.kii.extension.sdk.entity.LoginInfo;
 import com.kii.extension.sdk.service.UserService;
+
+import sun.misc.BASE64Encoder;
 
 /**
  * Tech Design - Beehive API
@@ -24,37 +28,44 @@ public class KiiUserSyncDao {
 	@Autowired
 	private UserService userService;
 
-	public String addBeehiveUser(BeehiveUser beehiveUser,String pwd){
+	public void addBeehiveUser(BeehiveUser beehiveUser){
 
 		KiiUser user=new KiiUser();
 
-		user.setPassword(pwd);
+
+		user.setDisplayName(beehiveUser.getUserName());
 
 		if(!StringUtils.isEmpty(beehiveUser.getAliUserID())) {
 			user.setLoginName(beehiveUser.getAliUserID());
 		}else{
-			user.setLoginName(beehiveUser.getUserName());
+			String loginName= new String(Base64.getEncoder().encode(beehiveUser.getUserName().getBytes()));
+			user.setLoginName(loginName);
 		}
 
-		return userService.createUser(user);
+		String pwd=DigestUtils.sha1Hex(user.getLoginName()+"_beehive");
+		user.setPassword(pwd);
+		String kiiUserID= userService.createUser(user);
+
+		beehiveUser.setKiiUserID(kiiUserID);
+		beehiveUser.setKiiLoginName(user.getLoginName());
 
 	}
 
 	public String bindToUser(BeehiveUser user){
 
 
-		String userID=user.getKiiUserID();
+		String userID=user.getKiiLoginName();
 
-		String pwd=DigestUtils.sha1Hex(user.getAliUserID()+"_beehive");
+		String pwd=DigestUtils.sha1Hex(user.getKiiLoginName()+"_beehive");
 
 		LoginInfo loginInfo=userService.login(userID,pwd);
 
 		return loginInfo.getToken();
 	}
 
-	public void removeBeehiveUser(String beehiveUserID) {
+	public void removeBeehiveUser(String kiiUserID) {
 
-		userService.removeUserByLoginName(beehiveUserID);
+		userService.removeUserByID(kiiUserID);
 	}
 
 	public void disableBeehiveUser(BeehiveUser user) {

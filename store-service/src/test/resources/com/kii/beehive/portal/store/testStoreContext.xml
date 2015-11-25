@@ -21,7 +21,7 @@
     <bean:annotation-config />
 
 
-    <bean class="com.kii.extension.factory.LocalPropertyBindTool" >
+    <bean id="propAppBindTool" class="com.kii.extension.factory.LocalPropertyBindTool" >
         <property name="propFileName" value="classpath:com/kii/beehive/portal/store/beehive.portal.store.properties" />
     </bean>
 

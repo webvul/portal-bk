@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.codec.Charsets;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpDelete;
@@ -14,9 +15,13 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.entity.ContentType;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.nio.entity.NStringEntity;
+import org.apache.http.params.CoreProtocolPNames;
+import org.apache.http.util.EncodingUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -305,6 +310,8 @@ public class ApiAccessBuilder {
 
 		request.setHeader("X-Kii-AppID",appInfo.getAppID());
 		request.setHeader("X-Kii-AppKey", appInfo.getAppKey());
+
+
 		if(token!=null){
 			request.setHeader("Authorization","Bearer "+token);
 		}
@@ -312,19 +319,27 @@ public class ApiAccessBuilder {
 			request.setHeader(entry.getKey(),entry.getValue());
 		}
 
-		try {
+//		String contentType=request.getHeaders("Content-Type")[0].getValue()+"; charset=UTF-8";
+//		request.setHeader("Content-Type",contentType);
+
+
 			if(request instanceof HttpEntityEnclosingRequestBase  && ctxObj!= null){
 
 			 	if(ctxObj instanceof String ) {
-					((HttpEntityEnclosingRequestBase)request).setEntity(new StringEntity((String)ctxObj,ContentType.TEXT_PLAIN));
+					((HttpEntityEnclosingRequestBase)request).setEntity(new StringEntity((String)ctxObj, Charsets.UTF_8));
 				}else{
-					String context = mapper.writeValueAsString(ctxObj);
-					((HttpEntityEnclosingRequestBase)request).setEntity(new StringEntity(context,ContentType.APPLICATION_JSON));
+					try {
+						String context = mapper.writeValueAsString(ctxObj);
+						((HttpEntityEnclosingRequestBase)request).setEntity(new StringEntity(context,Charsets.UTF_8));
+
+					} catch (JsonProcessingException e) {
+						throw new IllegalArgumentException(e);
+					}
+
 				}
 			}
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-		}
+
+
 
 		ctxObj=null;
 		optionalHeader.clear();

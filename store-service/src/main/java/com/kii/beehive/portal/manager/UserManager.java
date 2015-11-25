@@ -34,8 +34,8 @@ public class UserManager {
 	@Autowired
 	private BeehiveUserDao userDao;
 
-	@Autowired
-	private BeehiveUserGroupDao userGroupDao;
+//	@Autowired
+//	private BeehiveUserGroupDao userGroupDao;
 
 	@Autowired
 	private KiiUserSyncDao kiiUserDao;
@@ -48,17 +48,11 @@ public class UserManager {
 	public String addUser(BeehiveUser user){
 
 
+		kiiUserDao.addBeehiveUser(user);
 
-		String pwd= DigestUtils.sha1Hex(user.getUserName() + "_beehive");
-
-		String kiiUserID=kiiUserDao.addBeehiveUser(user,pwd);
-
-		user.setKiiUserID(kiiUserID);
-
-		logger.debug("kiiUserID:" + kiiUserID);
+		logger.debug("kiiUserID:" + user.getKiiUserID());
 
 		String id=userDao.createUser(user);
-
 
 		msgService.addInsertMsg(id,user);
 		return id;
@@ -116,7 +110,7 @@ public class UserManager {
 
 		kiiUserDao.disableBeehiveUser(user);
 
-		this.checkUserGroupsChange(user.getAliUserID(), null);
+//		this.checkUserGroupsChange(user.getAliUserID(), null);
 
 		userDao.deleteUser(userID);
 
@@ -132,57 +126,57 @@ public class UserManager {
 	 * @param userID
 	 * @param groupIDs  new set of user groups under the user
 	 */
-	private void checkUserGroupsChange(String userID, Set<String> groupIDs) {
-
-
-		BeehiveUser existUser = userDao.getUserByID(userID);
-
-		Set<String> existGroupIDs = new HashSet<String>();
-		if (existUser != null && existUser.getGroups() != null) {
-			existGroupIDs = existUser.getGroups();
-		}
-
-		if (groupIDs.containsAll(existGroupIDs) && existGroupIDs.containsAll(groupIDs)) {
-			logger.debug("no change on relation bwtween user group and user:" + userID);
-			return;
-		}
-
-		Set<String> groupIDsToRemoveUser = new HashSet<String>();
-		groupIDsToRemoveUser.addAll(existGroupIDs);
-		groupIDsToRemoveUser.removeAll(groupIDs);
-
-		logger.debug("groupIDsToRemoveUser:" + groupIDsToRemoveUser);
-
-		// get the user groups(ID) to add the user
-		Set<String> groupIDsToAddUser = new HashSet<String>();
-		groupIDsToAddUser.addAll(groupIDs);
-		groupIDsToAddUser.removeAll(existGroupIDs);
-
-		logger.debug("groupIDsToAddUser:" + groupIDsToAddUser);
-
-		// get the user groups(ID) to add or remove the user
-		List<String> userIDsToUpdateGroup = new ArrayList<String>();
-		userIDsToUpdateGroup.addAll(groupIDsToRemoveUser);
-		userIDsToUpdateGroup.addAll(groupIDsToAddUser);
-
-		List<BeehiveUserGroup> userGroupList = userGroupDao.getUserGroupByIDs(userIDsToUpdateGroup);
-
-		// update the user info into table BeehiveUserGroup
-		userGroupList.forEach((group) -> {
-			String tempId = group.getId();
-			Set<String> tempUsers = group.getUsers();
-
-			// add or remove user from the user group
-			if (groupIDsToAddUser.contains(tempId)) {
-				tempUsers.add(userID);
-			} else if (groupIDsToRemoveUser.contains(tempId)) {
-				tempUsers.remove(userID);
-			}
-
-			userGroupDao.updateUsers(tempId, tempUsers);
-		});
-
-	}
+//	private void checkUserGroupsChange(String userID, Set<String> groupIDs) {
+//
+//
+//		BeehiveUser existUser = userDao.getUserByID(userID);
+//
+//		Set<String> existGroupIDs = new HashSet<String>();
+//		if (existUser != null && existUser.getGroups() != null) {
+//			existGroupIDs = existUser.getGroups();
+//		}
+//
+//		if (groupIDs.containsAll(existGroupIDs) && existGroupIDs.containsAll(groupIDs)) {
+//			logger.debug("no change on relation bwtween user group and user:" + userID);
+//			return;
+//		}
+//
+//		Set<String> groupIDsToRemoveUser = new HashSet<String>();
+//		groupIDsToRemoveUser.addAll(existGroupIDs);
+//		groupIDsToRemoveUser.removeAll(groupIDs);
+//
+//		logger.debug("groupIDsToRemoveUser:" + groupIDsToRemoveUser);
+//
+//		// get the user groups(ID) to add the user
+//		Set<String> groupIDsToAddUser = new HashSet<String>();
+//		groupIDsToAddUser.addAll(groupIDs);
+//		groupIDsToAddUser.removeAll(existGroupIDs);
+//
+//		logger.debug("groupIDsToAddUser:" + groupIDsToAddUser);
+//
+//		// get the user groups(ID) to add or remove the user
+//		List<String> userIDsToUpdateGroup = new ArrayList<String>();
+//		userIDsToUpdateGroup.addAll(groupIDsToRemoveUser);
+//		userIDsToUpdateGroup.addAll(groupIDsToAddUser);
+//
+//		List<BeehiveUserGroup> userGroupList = userGroupDao.getUserGroupByIDs(userIDsToUpdateGroup);
+//
+//		// update the user info into table BeehiveUserGroup
+//		userGroupList.forEach((group) -> {
+//			String tempId = group.getId();
+//			Set<String> tempUsers = group.getUsers();
+//
+//			// add or remove user from the user group
+//			if (groupIDsToAddUser.contains(tempId)) {
+//				tempUsers.add(userID);
+//			} else if (groupIDsToRemoveUser.contains(tempId)) {
+//				tempUsers.remove(userID);
+//			}
+//
+//			userGroupDao.updateUsers(tempId, tempUsers);
+//		});
+//
+//	}
 
 
 	public BeehiveUser getUserByID(String userID) {
