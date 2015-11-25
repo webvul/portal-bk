@@ -39,7 +39,7 @@ public class OnboardingHelperController {
      *
      * @param input
      */
-    @RequestMapping(path="/",method={RequestMethod.POST})
+    @RequestMapping(path="",method={RequestMethod.POST})
     public Map<String,String> setOnboardingInfo(@RequestBody ThingInput input){
 
         if(input == null){

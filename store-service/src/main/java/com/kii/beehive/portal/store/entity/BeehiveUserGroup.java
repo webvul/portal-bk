@@ -1,10 +1,13 @@
 package com.kii.beehive.portal.store.entity;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 import com.kii.extension.sdk.entity.KiiEntity;
@@ -19,7 +22,7 @@ public class BeehiveUserGroup extends KiiEntity {
 
     private String description;
 
-    private Set<String> users;
+    private Set<Object> users;
 
     private Map<String, Object> customFields = new HashMap<>();
 
@@ -47,11 +50,20 @@ public class BeehiveUserGroup extends KiiEntity {
         this.description = description;
     }
 
-    public Set<String> getUsers() {
+    public Set<Object> getUsers() {
         return users;
     }
 
-    public void setUsers(Set<String> users) {
+    @JsonIgnore
+    public Set<String> getUserIDs() {
+        Set<String> IDs = new HashSet<>();
+        if(users != null) {
+            users.forEach(ID->IDs.add((String)ID));
+        }
+        return IDs;
+    }
+
+    public void setUsers(Set<Object> users) {
         this.users = users;
     }
 

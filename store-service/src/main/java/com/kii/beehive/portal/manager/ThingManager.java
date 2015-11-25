@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+
 import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,11 +19,17 @@ import com.kii.beehive.portal.service.TagIndexDao;
 import com.kii.beehive.portal.store.entity.GlobalThingInfo;
 import com.kii.beehive.portal.store.entity.TagIndex;
 import com.kii.extension.sdk.exception.KiiCloudException;
+import com.kii.beehive.portal.service.AppInfoDao;
+import com.kii.beehive.portal.store.entity.KiiAppInfo;
+import com.kii.extension.sdk.exception.ObjectNotFoundException;
 
 @Component
 public class ThingManager {
 
 	private Logger log= LoggerFactory.getLogger(ThingManager.class);
+
+	@Autowired
+	private AppInfoDao appInfoDao;
 
 	@Autowired
 	private GlobalThingDao globalThingDao;
@@ -34,6 +41,21 @@ public class ThingManager {
 
 	public String createThing(GlobalThingInfo thingInfo, List<TagIndex> tagList){
 
+		String globalThingID = thingInfo.getGlobalThingID();
+		if(Strings.isBlank(globalThingID)) {
+			globalThingID = this.generateGlobalThingID(thingInfo);
+			thingInfo.setGlobalThingID(globalThingID);
+		}
+
+		// get default thing owner id by Kii App ID
+		// throw exception if default thing owner not found
+		KiiAppInfo masterAppInfo = appInfoDao.getMasterAppInfo();
+		String defaultThingOwnerID = masterAppInfo.getDefaultThingOwnerID();
+		if(Strings.isBlank(defaultThingOwnerID)) {
+			throw new ObjectNotFoundException();
+		}
+
+		thingInfo.setDefaultOwnerID(defaultThingOwnerID);
 
 		thingInfo.setStatusUpdatetime(new Date());
 		globalThingDao.addThingInfo(thingInfo);

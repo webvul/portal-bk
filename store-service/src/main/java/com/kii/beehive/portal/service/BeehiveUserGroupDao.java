@@ -50,6 +50,10 @@ public class BeehiveUserGroupDao extends AbstractDataAccess<BeehiveUserGroup> {
 
     public BeehiveUserGroup getUserGroupByID(String userGroupID) {
 
+        if(!checkExist(userGroupID)) {
+            return null;
+        }
+
 		return super.getObjectByID(userGroupID);
     }
 

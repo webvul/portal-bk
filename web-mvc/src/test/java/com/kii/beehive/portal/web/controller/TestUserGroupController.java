@@ -48,15 +48,18 @@ public class TestUserGroupController extends WebTestTemplate {
 
     private String userGroupID;
 
-    private String userGroupName;
+    private List<String> userGroupNameListForTest = new ArrayList<>();
 
     @Before
     public void before() {
     	super.before();
 
-        clear();
+        userGroupNameListForTest.add("test.usergroupname");
+        userGroupNameListForTest.add("test.usergroupname.new");
 
-        userGroupName = "test.usergroupname";
+        System.out.println("before to delete user group");
+        clear();
+        System.out.println("after to delete user group");
 
         userIDListForTest.add("test.userid.1");
         userIDListForTest.add("test.userid.2");
@@ -83,13 +86,16 @@ public class TestUserGroupController extends WebTestTemplate {
             }
         }
 
-        try {
-            Map<String, Object> param = new HashMap<>();
-            param.put("userGroupName", userGroupName);
-            userGroupID = userGroupDao.getUserGroupsBySimpleQuery(param).get(0).getUserGroupID();
-            userGroupDao.deleteUserGroup(userGroupID);
-        } catch(Exception e) {
-            e.printStackTrace();
+        for(String userGroupName : userGroupNameListForTest) {
+            try {
+                Map<String, Object> param = new HashMap<>();
+                param.put("userGroupName", userGroupName);
+                userGroupID = userGroupDao.getUserGroupsBySimpleQuery(param).get(0).getUserGroupID();
+                userGroupDao.deleteUserGroup(userGroupID);
+                System.out.println("success to delete user group");
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -216,7 +222,7 @@ public class TestUserGroupController extends WebTestTemplate {
         String ctx= mapper.writeValueAsString(request);
 
         String result=this.mockMvc.perform(
-                patch("/usergroup/simplequery" + userGroupID).content(ctx)
+                post("/usergroup/simplequery").content(ctx)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
         )
@@ -235,8 +241,9 @@ public class TestUserGroupController extends WebTestTemplate {
 
         assertEquals(2, ((List)map.get("users")).size());
         for(Object s : ((List)map.get("users"))) {
+            System.out.println("user: " + s);
             Map<String, Object> user = (Map)s;
-            String id = (String)user.get("aliUserID");
+            String id = (String)user.get("userID");
             String name = (String)user.get("userName");
 
             assertTrue(userIDListForTest.contains(id));
@@ -258,6 +265,8 @@ public class TestUserGroupController extends WebTestTemplate {
 
         String result=this.mockMvc.perform(
                 delete("/usergroup/" + userGroupID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("UTF-8")
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();

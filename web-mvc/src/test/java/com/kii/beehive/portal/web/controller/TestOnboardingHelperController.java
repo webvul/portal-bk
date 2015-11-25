@@ -1,13 +1,5 @@
 package com.kii.beehive.portal.web.controller;
 
-
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertNotNull;
-import static junit.framework.TestCase.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,13 +13,20 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.kii.beehive.portal.service.GlobalThingDao;
 import com.kii.beehive.portal.service.TagIndexDao;
 import com.kii.beehive.portal.store.entity.GlobalThingInfo;
 import com.kii.beehive.portal.web.WebTestTemplate;
+
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertNotNull;
+import static junit.framework.TestCase.assertTrue;
+
 
 public class TestOnboardingHelperController extends WebTestTemplate {
 
@@ -125,7 +124,7 @@ public class TestOnboardingHelperController extends WebTestTemplate {
         String ctx= mapper.writeValueAsString(request);
 
         String result=this.mockMvc.perform(
-                post("/onboardinghelper/").content(ctx)
+                post("/onboardinghelper").content(ctx)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
         )
@@ -169,7 +168,7 @@ public class TestOnboardingHelperController extends WebTestTemplate {
 
         Map<String,Object> map=mapper.readValue(result, Map.class);
 
-        // assert http reture
+        // assert http return
         assertEquals("da0b6a25-vendor.id.for.test", map.get("globalThingID"));
         assertEquals("vendor.id.for.test", map.get("vendorThingID"));
         assertEquals("da0b6a25", map.get("kiiAppID"));
