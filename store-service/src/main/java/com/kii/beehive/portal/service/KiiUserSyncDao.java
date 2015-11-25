@@ -2,6 +2,7 @@ package com.kii.beehive.portal.service;
 
 import java.util.Base64;
 
+import org.apache.commons.codec.Charsets;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -37,7 +38,7 @@ public class KiiUserSyncDao {
 		if(!StringUtils.isEmpty(beehiveUser.getAliUserID())) {
 			user.setLoginName(beehiveUser.getAliUserID());
 		}else{
-			String loginName= new String(Base64.getEncoder().encode(beehiveUser.getUserName().getBytes()));
+			String loginName= new String(Base64.getEncoder().encode(beehiveUser.getUserName().getBytes(Charsets.UTF_8)));
 			user.setLoginName(loginName);
 		}
 

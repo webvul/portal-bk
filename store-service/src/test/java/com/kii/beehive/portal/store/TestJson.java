@@ -3,7 +3,9 @@ package com.kii.beehive.portal.store;
 import static junit.framework.TestCase.assertEquals;
 
 import java.io.IOException;
+import java.util.Base64;
 
+import org.apache.commons.codec.Charsets;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,6 +18,15 @@ public class TestJson {
 	private ObjectMapper mapper=new ObjectMapper();
 
 
+	@Test
+	public void testEncode(){
+
+		String name="中文名";
+
+		String loginName= new String(Base64.getEncoder().encode(name.getBytes(Charsets.UTF_8)));
+
+		System.out.println(loginName);
+	}
 
 	@Test
 	public void testUser() throws IOException{
