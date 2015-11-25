@@ -1,5 +1,6 @@
 package com.kii.beehive.portal.store.entity.usersync;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,6 +24,8 @@ public class SupplierPushMsgTask extends KiiEntity{
 
 	private ExecuteResult result=ExecuteResult.Working;
 
+	private Date finishTime;
+
 	public UserSyncMsg getMsgContent() {
 		return msgContent;
 	}
@@ -41,6 +44,13 @@ public class SupplierPushMsgTask extends KiiEntity{
 		this.retryRecord.put(supplierID,retryNum);
 	}
 
+	public Date getFinishTime() {
+		return finishTime;
+	}
+
+	public void setFinishTime(Date finishTime) {
+		this.finishTime = finishTime;
+	}
 
 	public String getSourceSupplier() {
 		return sourceSupplier;

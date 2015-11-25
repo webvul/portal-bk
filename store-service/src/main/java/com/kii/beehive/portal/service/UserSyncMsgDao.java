@@ -1,5 +1,6 @@
 package com.kii.beehive.portal.service;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +49,7 @@ public class UserSyncMsgDao extends AbstractDataAccess<SupplierPushMsgTask>{
 		Map<String,Object> map=new HashMap<>();
 
 		map.put(supplierID,100+(RETRY_NUM-retry));
+		map.put("finishTime",new Date());
 
 		super.updateEntity(map, id);
 
@@ -72,11 +74,12 @@ public class UserSyncMsgDao extends AbstractDataAccess<SupplierPushMsgTask>{
 		Map<String,Integer> retryRecord=task.getRetryRecord();
 
 
-		Map<String,Object> map=new HashMap<>();
 
 
 		int successNum=0;
 		int failNum=0;
+
+		Map<String,Object> map=new HashMap<>();
 
 		for(Map.Entry<String,Integer> entry:retryRecord.entrySet()){
 
@@ -100,16 +103,19 @@ public class UserSyncMsgDao extends AbstractDataAccess<SupplierPushMsgTask>{
 
 		}
 
-		ExecuteResult result=null;
+
 		if(successNum==retryRecord.size()){
-			result=ExecuteResult.Success;
+			map.put("result",ExecuteResult.Success);
+			map.put("finishTime",new Date());
+
 		}else if(failNum+successNum==retryRecord.size()){
-			 result=ExecuteResult.Finish;
-		 }else{
-			result=ExecuteResult.Working;
+			map.put("result",ExecuteResult.Finish);
+			map.put("finishTime",new Date());
+
+		}else{
+			map.put("result",ExecuteResult.Working);
 		}
 
-		map.put("result",result);
 
 		super.updateEntityWithVersion(map, id, task.getVersion());
 	}
