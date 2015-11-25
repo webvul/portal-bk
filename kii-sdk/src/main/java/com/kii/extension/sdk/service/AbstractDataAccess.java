@@ -30,6 +30,10 @@ public abstract class AbstractDataAccess<T> {
 	private DataService service;
 
 
+	protected boolean checkExist(String id){
+		return service.checkObjectExist(id,bucketInfo);
+	}
+
 	protected  T  getObjectByID(String id){
 		return service.getObjectByID(id, bucketInfo, typeCls);
 	}

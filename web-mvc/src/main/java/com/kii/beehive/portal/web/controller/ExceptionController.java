@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.kii.beehive.portal.exception.StoreException;
 import com.kii.beehive.portal.web.help.PortalException;
 import com.kii.extension.sdk.exception.KiiCloudException;
 
@@ -39,6 +40,23 @@ public class ExceptionController {
 //		String errJson=mapper.writeValueAsString(errorMap);
 
 		ResponseEntity<String> resp=new ResponseEntity(errorMap,HttpStatus.INTERNAL_SERVER_ERROR);
+		return resp;
+	}
+
+	@ExceptionHandler(StoreException.class)
+	public ResponseEntity<String> handleStoreServiceException(StoreException ex) {
+
+		log.error("store exception ",ex);
+
+		String error= null;
+		try {
+			error = mapper.writeValueAsString(ex);
+		} catch (JsonProcessingException e) {
+			throw new IllegalArgumentException(e);
+		}
+
+		ResponseEntity<String> resp=new ResponseEntity(error,HttpStatus.valueOf(ex.getStatusCode()));
+
 		return resp;
 	}
 

@@ -56,6 +56,8 @@ public class UserManager {
 
 	public void updateUser(BeehiveUser user,String userID) {
 
+
+
 		userDao.updateUser(user,userID);
 
 		msgService.addUpdateMsg(userID, user);

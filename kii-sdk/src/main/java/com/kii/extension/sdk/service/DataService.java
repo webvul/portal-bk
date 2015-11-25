@@ -155,6 +155,17 @@ public class DataService {
 		return getUpdateResponse(response);
 	}
 
+	public boolean checkObjectExist(String id,BucketInfo bucket){
+
+		HttpUriRequest request=getBuilder().bindBucketInfo(bucket).header(id).generRequest(mapper);
+
+		client.shutdownExceptionFactory();
+
+		HttpResponse response = client.doRequest(request);
+
+		return response.getStatusLine().getStatusCode()==204;
+	}
+
 
 
 	public String  updateObjectWithVersion(String id,Map<String,Object> obj,BucketInfo bucket,String version){

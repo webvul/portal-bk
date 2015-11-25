@@ -12,6 +12,7 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpHead;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -195,6 +196,18 @@ public class ApiAccessBuilder {
 		updateAll(id, entity);
 
 		this.optionalHeader.put("If-Match",version);
+
+		return this;
+	}
+
+	public ApiAccessBuilder header(String id){
+		request=new HttpHead(appInfo.getAppSubUrl()+scopeSubUrl+bucketUrl+"/objects/"+id);
+
+//		this.setContentType("application/vnd."+appInfo.getAppID()+".mydata+json");
+
+//		this.optionalHeader.put("X-HTTP-Method-Override", "PATCH");
+
+//		ctxObj=entity;
 
 		return this;
 	}

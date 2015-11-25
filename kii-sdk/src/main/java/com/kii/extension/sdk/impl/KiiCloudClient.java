@@ -43,6 +43,12 @@ public class KiiCloudClient {
 	@Autowired
 	private ObjectMapper mapper;
 
+	private ThreadLocal<Boolean> exceptionSign=ThreadLocal.withInitial(()->true);
+
+	public void shutdownExceptionFactory(){
+		exceptionSign.set(false);
+	}
+
 
 
 
@@ -135,8 +141,10 @@ public class KiiCloudClient {
 
 			HttpResponse response=future.get();
 
-			factory.checkResponse(response,request.getURI());
-
+			if(exceptionSign.get()) {
+				factory.checkResponse(response, request.getURI());
+			}
+			exceptionSign.set(true);
 			return response;
 		}  catch (InterruptedException|ExecutionException e) {
 			throw new IllegalArgumentException(e);
