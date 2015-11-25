@@ -63,10 +63,10 @@ public class OnboardingHelperController {
         thingInfo.setCustom(input.getCustom());
         thingInfo.setStatus(input.getStatus());
 
-        thingManager.createThing(thingInfo,input.getTags());
+        String globalThingID = thingManager.createThing(thingInfo,input.getTags());
 
         Map<String,String> map=new HashMap<>();
-        map.put("globalThingID",input.getGlobalThingID());
+        map.put("globalThingID", globalThingID);
         return map;
     }
 

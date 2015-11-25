@@ -43,9 +43,7 @@ public class UserGroupManager {
      * @return
      */
     public boolean checkUserGroupIDExist(String userGroupID) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("userGroupID", userGroupID);
-        BeehiveUserGroup userGroup = this.getUserGroupBySimpleQuery(map, false);
+        BeehiveUserGroup userGroup = beehiveUserGroupDao.getUserGroupByID(userGroupID);
 
         return userGroup != null;
     }

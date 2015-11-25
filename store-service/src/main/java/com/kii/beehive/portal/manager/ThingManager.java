@@ -9,6 +9,8 @@ import java.util.Set;
 
 import com.kii.extension.sdk.exception.ObjectNotFoundException;
 import org.apache.logging.log4j.util.Strings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,6 +25,8 @@ import com.kii.extension.sdk.exception.KiiCloudException;
 @Component
 public class ThingManager {
 
+	private Logger log= LoggerFactory.getLogger(ThingManager.class);
+
 	@Autowired
 	private GlobalThingDao globalThingDao;
 
@@ -33,7 +37,7 @@ public class ThingManager {
 	private TagIndexDao tagIndexDao;
 
 
-	public void createThing(GlobalThingInfo thingInfo, List<TagIndex> tagList){
+	public String createThing(GlobalThingInfo thingInfo, List<TagIndex> tagList){
 
 		String globalThingID = thingInfo.getGlobalThingID();
 		if(Strings.isBlank(globalThingID)) {
@@ -67,6 +71,8 @@ public class ThingManager {
 			this.bindTagToThing(tagNameSet.toArray(new String[tagNameSet.size()]), new String[]{thingInfo.getId()});
 			
 		}
+
+		return globalThingID;
 	}
 	
 	public void checkTagAndCreate(TagIndex tag){
@@ -109,7 +115,7 @@ public class ThingManager {
 
 		}else{
 			List<TagIndex> tags = tagIndexDao.getTagsByIDs(tagIDs);
-
+			log.debug("tags: " + tags);
 			for (TagIndex tag : tags) {
 				tagIndexDao.addThingToTag(tag, things);
 			}

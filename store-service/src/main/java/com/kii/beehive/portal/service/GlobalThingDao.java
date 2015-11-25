@@ -24,7 +24,7 @@ import com.kii.extension.sdk.service.AbstractDataAccess;
 public class GlobalThingDao extends AbstractDataAccess<GlobalThingInfo>{
 
 
-	private Logger log= LoggerFactory.getLogger(BeehiveUserDao.class);
+	private Logger log= LoggerFactory.getLogger(GlobalThingDao.class);
 
 
 	@Autowired
