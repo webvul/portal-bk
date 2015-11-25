@@ -50,6 +50,9 @@ public class KiiUserSyncDao {
 		beehiveUser.setKiiUserID(kiiUserID);
 		beehiveUser.setKiiLoginName(user.getLoginName());
 
+		if(StringUtils.isEmpty(beehiveUser.getAliUserID())){
+			beehiveUser.setAliUserID(kiiUserID);
+		}
 	}
 
 	public String bindToUser(BeehiveUser user){

@@ -145,7 +145,10 @@ GET https://<slaveAppId>.<kiiapps-domain>/api/apps/<slaveAppId>/integration/weba
 //		String code=redirectUrl.substring(codeIdx+5,codeEnd);
 //
 //		log.info(currentUrl);
-
+/*
+http://c1744915.development-beehivecn3.internal.kiiapps.com/api/apps/c1744915/integration/webauth/callback
+?code=c4jlvok2jr6222tiumrkfgpponp6p2m2nferlf4hes0uoseuqtq8sbst51mlvlrj&state=
+ */
 
 		return  null;
 	}

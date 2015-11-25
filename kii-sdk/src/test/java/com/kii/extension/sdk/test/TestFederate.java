@@ -69,6 +69,8 @@ public class TestFederate extends TestTemplate {
 
 
 		resolver.setAppName("test-master");
+
+//		masterSalveService.
 //
 //
 //		LoginInfo login=userService.loginWithCode(code,salve.getClientID());

@@ -20,6 +20,13 @@ allprojects {
 		}
 	}
 
+	compileJava {
+		//enable compilation in a separate daemon process
+		options.fork = true
+
+		options.encoding= "UTF-8"
+	}
+
 
 	dependencies {
 
@@ -41,8 +48,11 @@ allprojects {
 	}
 }
 
+task cleanold(type:Delete,dependsOn:'clean'){
+	delete('/opt/tomcat/webapps/beehive-portal.war')
+}
 
-task pullGit(type:Exec) {
+task pullGit(type:Exec,dependsOn:"cleanold") {
 	workingDir  './'
 	commandLine 'git', 'pull', 'origin','master'
 }
