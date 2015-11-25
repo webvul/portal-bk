@@ -41,6 +41,10 @@ public class OutputUser  extends BeehiveUser{
 			key=key.substring(7);
 			super.setCustomField(key, value);
 		}
+		if(key.equals("custom")){
+			CustomProperty prop=new CustomProperty((Map)value);
+			super.setCustomFields(prop);
+		}
 	}
 
 	@JsonIgnore

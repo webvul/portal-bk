@@ -26,6 +26,8 @@ public class TestUserController extends WebTestTemplate{
 	private ObjectMapper mapper;
 
 
+
+
 	@Test
 	public void testEncode() throws Exception {
 
@@ -104,6 +106,8 @@ public class TestUserController extends WebTestTemplate{
 
 		assertEquals(map.get("userID"),"21110219700930101913");
 		assertEquals(map.get("userName"),"张三");
+
+
 
 //				.andExpect(content().contentType("application/json"));
 	}

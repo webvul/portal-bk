@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.portal.manager.UserManager;
+import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.store.entity.OutputUser;
 import com.kii.beehive.portal.web.help.PortalException;
 
@@ -40,7 +41,9 @@ public class UserController {
 			throw new PortalException("RequiredFieldsMissing","username or userID cannot been null", HttpStatus.BAD_REQUEST);
 		}
 
-		String userID=userManager.addUser(user);
+		BeehiveUser beehiveUser=user.getBeehiveUser();
+
+		String userID=userManager.addUser(beehiveUser);
 
 		Map<String,String> map=new HashMap<>();
 		map.put("userID",userID);
