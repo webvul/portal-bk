@@ -23,6 +23,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.kii.beehive.portal.service.BeehiveUserDao;
 import com.kii.beehive.portal.service.BeehiveUserGroupDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;

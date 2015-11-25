@@ -1,8 +1,6 @@
 package com.kii.beehive.portal.web;
 
 
-import static junit.framework.TestCase.assertEquals;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class JsonTest {

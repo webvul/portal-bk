@@ -1,7 +1,5 @@
 package com.kii.beehive.portal.store;
 
-import static junit.framework.TestCase.assertEquals;
-
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;

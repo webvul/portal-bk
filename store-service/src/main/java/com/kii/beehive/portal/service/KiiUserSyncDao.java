@@ -13,7 +13,6 @@ import com.kii.extension.sdk.entity.KiiUser;
 import com.kii.extension.sdk.entity.LoginInfo;
 import com.kii.extension.sdk.service.UserService;
 
-import sun.misc.BASE64Encoder;
 
 /**
  * Tech Design - Beehive API

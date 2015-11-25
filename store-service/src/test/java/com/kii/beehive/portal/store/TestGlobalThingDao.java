@@ -1,7 +1,8 @@
 package com.kii.beehive.portal.store;
 
 import static junit.framework.TestCase.assertEquals;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
 import java.util.List;

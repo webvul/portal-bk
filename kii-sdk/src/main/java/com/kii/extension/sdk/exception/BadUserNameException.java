@@ -1,7 +1,6 @@
 package com.kii.extension.sdk.exception;
 
 import java.util.Map;
-import java.util.Set;
 
 public class BadUserNameException extends KiiCloudException {
 

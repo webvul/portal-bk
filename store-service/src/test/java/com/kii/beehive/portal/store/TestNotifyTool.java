@@ -1,6 +1,5 @@
 package com.kii.beehive.portal.store;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Before;

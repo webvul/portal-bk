@@ -22,6 +22,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.kii.beehive.portal.service.GlobalThingDao;
 import com.kii.beehive.portal.service.TagIndexDao;
 import com.kii.beehive.portal.store.entity.GlobalThingInfo;

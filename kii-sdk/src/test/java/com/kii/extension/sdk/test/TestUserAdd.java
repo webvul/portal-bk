@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.entity.KiiUser;
 import com.kii.extension.sdk.service.UserService;
 

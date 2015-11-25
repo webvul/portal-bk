@@ -5,9 +5,7 @@ import static junit.framework.TestCase.assertEquals;
 import java.io.IOException;
 
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.beehive.portal.store.entity.BeehiveUser;
