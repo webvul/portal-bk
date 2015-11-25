@@ -62,7 +62,7 @@ task buildwar(type:War , dependsOn:['pullGit','assemble']){
 	archiveName "beehive-portal.war"
 }
 
-task deploy(type:Copy,dependsOn:["cleanold",'buildwar']g){
+task deploy(type:Copy,dependsOn:["cleanold",'buildwar']){
 
 	from('./web-mvc/build/libs/beehive-portal.war')
 	into('/opt/tomcat/webapps')
