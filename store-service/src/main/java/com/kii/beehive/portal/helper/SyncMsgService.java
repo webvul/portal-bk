@@ -78,10 +78,10 @@ public class SyncMsgService {
 
 		msgDao.addUserSyncMsg(entity);
 
-		if("production".equals(profile)) {
+//		if("production".equals(profile)) {
 
 			notifyTool.doMsgSendTask(entity, supplierDao.getUrlMap());
-		}
+//		}
 	}
 
 
@@ -89,9 +89,9 @@ public class SyncMsgService {
 	@Scheduled(fixedRate=1000*60*60)
 	public void executeSyncTask(){
 
-		if(!"production".equals(profile)) {
-			return;
-		}
+//		if(!"production".equals(profile)) {
+//			return;
+//		}
 
 		List<SupplierPushMsgTask>  msgList= msgDao.getUnfinishMsgList();
 
