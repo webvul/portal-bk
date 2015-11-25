@@ -1,11 +1,6 @@
 package com.kii.extension.sdk.test;
 
 
-import static junit.framework.TestCase.assertNotNull;
-
-import java.util.HashMap;
-import java.util.Map;
-
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -13,8 +8,6 @@ import com.kii.extension.factory.LocalPropertyBindTool;
 import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.context.TokenBindToolResolver;
 import com.kii.extension.sdk.entity.AppInfo;
-import com.kii.extension.sdk.entity.BucketInfo;
-import com.kii.extension.sdk.entity.LoginInfo;
 import com.kii.extension.sdk.entity.SiteType;
 import com.kii.extension.sdk.service.AppMasterSalveService;
 import com.kii.extension.sdk.service.DataService;

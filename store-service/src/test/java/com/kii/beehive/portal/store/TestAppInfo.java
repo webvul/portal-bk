@@ -1,13 +1,10 @@
 package com.kii.beehive.portal.store;
 
-import static junit.framework.TestCase.assertEquals;
-
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.kii.beehive.portal.helper.AppInfoService;
 import com.kii.beehive.portal.service.DemoCrossAppDao;
 
 @Ignore("just ")

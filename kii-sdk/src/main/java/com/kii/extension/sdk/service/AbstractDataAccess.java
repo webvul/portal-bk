@@ -11,7 +11,6 @@ import com.kii.extension.sdk.entity.BucketInfo;
 import com.kii.extension.sdk.entity.CreateResponse;
 import com.kii.extension.sdk.entity.KiiEntity;
 import com.kii.extension.sdk.entity.UpdateResponse;
-import com.kii.extension.sdk.exception.KiiCloudException;
 import com.kii.extension.sdk.query.ConditionBuilder;
 import com.kii.extension.sdk.query.QueryParam;
 
@@ -30,6 +29,10 @@ public abstract class AbstractDataAccess<T> {
 	@Autowired
 	private DataService service;
 
+
+	protected boolean checkExist(String id){
+		return service.checkObjectExist(id,bucketInfo);
+	}
 
 	protected  T  getObjectByID(String id){
 		return service.getObjectByID(id, bucketInfo, typeCls);

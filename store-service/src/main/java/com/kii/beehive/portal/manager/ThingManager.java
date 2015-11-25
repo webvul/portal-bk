@@ -7,19 +7,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.kii.extension.sdk.exception.ObjectNotFoundException;
 import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.kii.beehive.portal.helper.AppInfoService;
 import com.kii.beehive.portal.service.GlobalThingDao;
 import com.kii.beehive.portal.service.TagIndexDao;
 import com.kii.beehive.portal.store.entity.GlobalThingInfo;
 import com.kii.beehive.portal.store.entity.TagIndex;
-import com.kii.extension.sdk.entity.AppInfo;
 import com.kii.extension.sdk.exception.KiiCloudException;
 
 @Component
@@ -30,8 +27,6 @@ public class ThingManager {
 	@Autowired
 	private GlobalThingDao globalThingDao;
 
-	@Autowired
-	private AppInfoService appInfoDao;
 
 	@Autowired
 	private TagIndexDao tagIndexDao;
@@ -39,25 +34,7 @@ public class ThingManager {
 
 	public String createThing(GlobalThingInfo thingInfo, List<TagIndex> tagList){
 
-		String globalThingID = thingInfo.getGlobalThingID();
-		if(Strings.isBlank(globalThingID)) {
-			globalThingID = this.generateGlobalThingID(thingInfo);
-			thingInfo.setGlobalThingID(globalThingID);
-		}
 
-		if(thingInfo.getKiiAppID()==null){
-			AppInfo appInfo=appInfoDao.getMatchAppInfoByThing(thingInfo.getVendorThingID());
-			thingInfo.setKiiAppID(appInfo.getAppID());
-		}
-
-		// get default thing owner id by Kii App ID
-		// throw exception if default thing owner not found
-		String defaultThingOwnerID = appInfoDao.getDefaultThingOwnerID(thingInfo.getKiiAppID());
-		if(Strings.isBlank(defaultThingOwnerID)) {
-			throw new ObjectNotFoundException();
-		}
-
-		thingInfo.setDefaultOwnerID(defaultThingOwnerID);
 		thingInfo.setStatusUpdatetime(new Date());
 		globalThingDao.addThingInfo(thingInfo);
 		Set<String> tagNameSet = new HashSet<String>();

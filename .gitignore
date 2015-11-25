@@ -7,7 +7,7 @@ ObjectStore/
 .settings/
 bin/
 build/
-tomcat*/
+tomcat.*
 target/
 .DS_Store
 tmp/

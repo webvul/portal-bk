@@ -2,10 +2,6 @@ package com.kii.extension.sdk.query.condition;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-
-import org.springframework.util.StringUtils;
-
-import com.kii.extension.sdk.query.Condition;
 import com.kii.extension.sdk.query.ConditionType;
 
 @XmlRootElement

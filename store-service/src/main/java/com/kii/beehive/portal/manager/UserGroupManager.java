@@ -1,8 +1,12 @@
 package com.kii.beehive.portal.manager;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kii.beehive.portal.notify.UserSyncNotifier;
+
 import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.service.BeehiveUserDao;
 import com.kii.beehive.portal.service.BeehiveUserGroupDao;
@@ -28,8 +32,7 @@ public class UserGroupManager {
     @Autowired
     private BeehiveUserDao beehiveUserDao;
 
-    @Autowired
-    private UserSyncNotifier userSyncNotifier;
+
 
     @Autowired
     private AppInfoDao appInfoDao;
@@ -124,8 +127,6 @@ public class UserGroupManager {
             beehiveUserGroupDao.updateUsers(group.getUserGroupID(), existUserIDs);
         });
 
-        // notify the other device suppliers of the user info change in async way
-        userSyncNotifier.notifyDeviceSuppliersAsync(party3rdID, beehiveUserIDs, UserSyncNotifier.CHANGE_TYPE_UPDATE);
 
         logger.debug("End addUsersToGroups(List<String> beehiveUserIDs, List<String> beehiveUserGroupIDs, String party3rdID)");
 
@@ -161,9 +162,6 @@ public class UserGroupManager {
 
             beehiveUserGroupDao.updateUsers(group.getUserGroupID(), existUserIDs);
         });
-
-        // notify the other device suppliers of the user info change in async way
-        userSyncNotifier.notifyDeviceSuppliersAsync(party3rdID, beehiveUserIDs, UserSyncNotifier.CHANGE_TYPE_UPDATE);
 
         logger.debug("End removeUsersFromGroups(List<String> beehiveUserIDs, List<String> beehiveUserGroupIDs, String party3rdID)");
     }
@@ -305,8 +303,6 @@ public class UserGroupManager {
             beehiveUserDao.updateUserGroups(tempId, tempGroups);
         });
 
-        // notify the other device suppliers of the user info change in async way
-        userSyncNotifier.notifyDeviceSuppliersAsync(party3rdID, userIDsToUpdateGroup, UserSyncNotifier.CHANGE_TYPE_UPDATE);
 
     }
 

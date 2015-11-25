@@ -1,8 +1,6 @@
 package com.kii.extension.sdk.test;
 
 
-import static junit.framework.TestCase.assertNotNull;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,15 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.kii.extension.sdk.entity.BucketInfo;
 import com.kii.extension.sdk.context.AppBindTool;
 import com.kii.extension.sdk.context.AppBindToolResolver;
+import com.kii.extension.sdk.context.TokenBindToolResolver;
+import com.kii.extension.sdk.context.UserTokenBindTool;
+import com.kii.extension.sdk.entity.BucketInfo;
 import com.kii.extension.sdk.entity.KiiUser;
 import com.kii.extension.sdk.service.DataService;
-import com.kii.extension.sdk.context.TokenBindToolResolver;
-import com.kii.extension.sdk.service.FederatedAuthService;
 import com.kii.extension.sdk.service.UserService;
-import com.kii.extension.sdk.context.UserTokenBindTool;
 
 public class TestOAuth extends TestTemplate{
 

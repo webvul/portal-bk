@@ -1,8 +1,6 @@
 package com.kii.beehive.portal.service;
 
 
-import javax.management.Query;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.annotation.BindAppByName;
+import com.kii.beehive.portal.exception.UserNotExistException;
 import com.kii.beehive.portal.helper.SimpleQueryTool;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.extension.sdk.entity.BucketInfo;
@@ -49,13 +48,19 @@ public class BeehiveUserDao extends AbstractDataAccess<BeehiveUser> {
 
 	public void updateUser(BeehiveUser user,String userID) {
 
-		user.setId(null);
-		super.updateEntity(user, userID);
+		boolean isExist=super.checkExist(userID);
+		if(isExist) {
+			user.setId(null);
+			super.updateEntity(user, userID);
+		}else{
+			throw new UserNotExistException(userID);
+		}
 	}
 
 
 
 	public void updateUserGroups(String userID, Set<String> groups){
+
 
 		Map<String,Object> paramMap = new HashMap<>();
 		paramMap.put("groups", groups);

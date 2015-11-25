@@ -19,7 +19,7 @@ public class BeehiveUser extends KiiEntity {
 
 	private String kiiUserID;
 
-//	private String party3rdID;
+	private String kiiLoginName;
 
 	private String userName;
 
@@ -57,14 +57,6 @@ public class BeehiveUser extends KiiEntity {
 	public void setKiiUserID(String kiiUserID) {
 		this.kiiUserID = kiiUserID;
 	}
-
-//	public String getParty3rdID() {
-//		return party3rdID;
-//	}
-//
-//	public void setParty3rdID(String party3rdID) {
-//		this.party3rdID = party3rdID;
-//	}
 
 	public String getUserName() {
 		return userName;
@@ -114,6 +106,13 @@ public class BeehiveUser extends KiiEntity {
 		this.groups = groups;
 	}
 
+	public String getKiiLoginName() {
+		return kiiLoginName;
+	}
+
+	public void setKiiLoginName(String kiiLoginName) {
+		this.kiiLoginName = kiiLoginName;
+	}
 
 	@JsonUnwrapped
 	public CustomProperty getCustomFields() {

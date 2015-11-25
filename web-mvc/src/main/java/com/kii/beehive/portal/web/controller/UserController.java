@@ -35,13 +35,15 @@ public class UserController {
 	private UserManager userManager;
 
     @RequestMapping(path="/",method={RequestMethod.POST})
-    public Map<String,String> createUser(@RequestBody BeehiveUser user){
+    public Map<String,String> createUser(@RequestBody OutputUser user){
 
 		if(StringUtils.isEmpty(user.getUserName())&&StringUtils.isEmpty(user.getAliUserID())){
 			throw new PortalException("RequiredFieldsMissing","username or userID cannot been null", HttpStatus.BAD_REQUEST);
 		}
 
-		String userID=userManager.addUser(user);
+		BeehiveUser beehiveUser=user.getBeehiveUser();
+
+		String userID=userManager.addUser(beehiveUser);
 
 		Map<String,String> map=new HashMap<>();
 		map.put("userID",userID);

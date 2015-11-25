@@ -39,6 +39,8 @@ public class ExceptionFactory {
 		bucketClsMap.put(404, ObjectNotFoundException.class);
 
 		userClsMap.put(409, UserAlreadyExistsException.class);
+		userClsMap.put(400,BadUserNameException.class);
+		userClsMap.put(404,UserNotFoundException.class);
 	}
 
 	public enum OperateType{

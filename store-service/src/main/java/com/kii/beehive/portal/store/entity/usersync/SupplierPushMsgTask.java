@@ -1,15 +1,20 @@
 package com.kii.beehive.portal.store.entity.usersync;
 
+import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.kii.extension.sdk.entity.KiiEntity;
 
 public class SupplierPushMsgTask extends KiiEntity{
 
-	private String msgContent;
+
+
+	private UserSyncMsg msgContent;
 
 	private String sourceSupplier;
 
@@ -19,20 +24,32 @@ public class SupplierPushMsgTask extends KiiEntity{
 
 	private ExecuteResult result=ExecuteResult.Working;
 
-	public String getMsgContent() {
+	private Date finishTime;
+
+	public UserSyncMsg getMsgContent() {
 		return msgContent;
 	}
 
-	public void setMsgContent(String msgContent) {
+	public void setMsgContent(UserSyncMsg msgContent) {
 		this.msgContent = msgContent;
 	}
 
+	@JsonAnyGetter
 	public Map<String, Integer> getRetryRecord() {
 		return retryRecord;
 	}
 
-	public void setRetryRecord(Map<String, Integer> retryRecord) {
-		this.retryRecord = retryRecord;
+	@JsonAnySetter
+	public void setRetryRecord(String supplierID,int retryNum) {
+		this.retryRecord.put(supplierID,retryNum);
+	}
+
+	public Date getFinishTime() {
+		return finishTime;
+	}
+
+	public void setFinishTime(Date finishTime) {
+		this.finishTime = finishTime;
 	}
 
 	public String getSourceSupplier() {
@@ -49,5 +66,15 @@ public class SupplierPushMsgTask extends KiiEntity{
 
 	public void setResult(ExecuteResult result) {
 		this.result = result;
+	}
+
+	@JsonIgnore
+	public int getRetryCount(String supplierID) {
+		return retryRecord.get(supplierID);
+	}
+
+	@JsonIgnore
+	public void countdownRetryCount(String supplierID){
+		retryRecord.compute(supplierID,(id,currVal)->currVal-- );
 	}
 }

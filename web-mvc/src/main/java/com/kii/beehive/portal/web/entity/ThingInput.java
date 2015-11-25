@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+
 import com.kii.beehive.portal.store.entity.TagIndex;
 
 public class ThingInput {

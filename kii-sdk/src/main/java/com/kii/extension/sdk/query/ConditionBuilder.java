@@ -1,8 +1,6 @@
 package com.kii.extension.sdk.query;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import com.kii.extension.sdk.query.condition.All;

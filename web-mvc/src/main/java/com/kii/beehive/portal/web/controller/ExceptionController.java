@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.kii.beehive.portal.exception.StoreException;
 import com.kii.beehive.portal.web.help.PortalException;
 import com.kii.extension.sdk.exception.KiiCloudException;
 
@@ -28,7 +29,7 @@ public class ExceptionController {
 	@ExceptionHandler(Throwable.class)
 	public ResponseEntity<String> handleGlobalException(Throwable ex) {
 
-		log.error("Handle Throwable", ex);
+		log.error("global exception ",ex);
 
 //		String error=ex.getErrorCode().toString();
 
@@ -42,10 +43,28 @@ public class ExceptionController {
 		return resp;
 	}
 
+	@ExceptionHandler(StoreException.class)
+	public ResponseEntity<String> handleStoreServiceException(StoreException ex) {
+
+		log.error("store exception ",ex);
+
+		String error= null;
+		try {
+			error = mapper.writeValueAsString(ex);
+		} catch (JsonProcessingException e) {
+			throw new IllegalArgumentException(e);
+		}
+
+		ResponseEntity<String> resp=new ResponseEntity(error,HttpStatus.valueOf(ex.getStatusCode()));
+
+		return resp;
+	}
+
 	@ExceptionHandler(PortalException.class)
 	public ResponseEntity<String> handleServiceException(PortalException ex) {
 
-		log.error("Handle PortalException", ex);
+		log.error("portal exception ",ex);
+
 
 		String error=ex.getErrorCode().toString();
 
@@ -56,7 +75,7 @@ public class ExceptionController {
 	@ExceptionHandler(KiiCloudException.class)
 	public ResponseEntity<String> handleKiiCloudException(KiiCloudException ex) {
 
-		log.error("Handle KiiCloudException", ex);
+		log.error("kiicloud exception ",ex);
 
 		String error= null;
 		try {

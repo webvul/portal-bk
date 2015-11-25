@@ -1,27 +1,26 @@
 package com.kii.beehive.portal.helper;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.kii.beehive.portal.manager.NotifySenderTool;
 import com.kii.beehive.portal.service.DeviceSupplierDao;
 import com.kii.beehive.portal.service.UserSyncMsgDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
-import com.kii.beehive.portal.store.entity.DeviceSupplier;
 import com.kii.beehive.portal.store.entity.usersync.SupplierPushMsgTask;
 import com.kii.beehive.portal.store.entity.usersync.UserSyncMsg;
 import com.kii.beehive.portal.store.entity.usersync.UserSyncMsgType;
 
 @Component
 public class SyncMsgService {
+
+	@Value("${spring.profile}")
+	private String profile;
 
 	@Autowired
 	private UserSyncMsgDao msgDao;
@@ -39,15 +38,18 @@ public class SyncMsgService {
 	@Autowired
 	private NotifySenderTool notifyTool;
 
+
 	public void addUpdateMsg(String userID,BeehiveUser user){
 		addSyncMsg(userID, UserSyncMsgType.Update,user);
 	}
+
 
 
 	public void addDeleteMsg(String userID){
 		addSyncMsg(userID, UserSyncMsgType.Delete,null);
 
 	}
+
 
 	public void addInsertMsg(String userID,BeehiveUser user){
 		addSyncMsg(user.getId(), UserSyncMsgType.Create,user);
@@ -57,44 +59,44 @@ public class SyncMsgService {
 	private void addSyncMsg(String userID,UserSyncMsgType type,BeehiveUser user){
 
 		UserSyncMsg  msg=new UserSyncMsg();
-		if(user!=null) {
-			msg.setUser(user);
-		}
 
 		msg.setUserID(userID);
 		msg.setType(type);
+		msg.setRetryCount(0);
 
-		String msgJson=null;
-		try {
-			 msgJson=mapper.writeValueAsString(msg);
-		} catch (JsonProcessingException e) {
-			throw new IllegalArgumentException(e);
-		}
+//		String msgJson=null;
+//		try {
+//			 msgJson=mapper.writeValueAsString(msg);
+//		} catch (JsonProcessingException e) {
+//			throw new IllegalArgumentException(e);
+//		}
 
 		SupplierPushMsgTask entity=new SupplierPushMsgTask();
 
-		entity.setMsgContent(msgJson);
+		entity.setMsgContent(msg);
 		entity.setSourceSupplier(tokenService.getSupplierInfo().getId());
 
 		msgDao.addUserSyncMsg(entity);
 
+		if("production".equals(profile)) {
+
+			notifyTool.doMsgSendTask(entity, supplierDao.getUrlMap());
+		}
 	}
 
-//	@Scheduled(fixedRate=10000)
+
+
+	@Scheduled(fixedRate=1000*60*60)
 	public void executeSyncTask(){
 
-		Map<String,String> urlMap=new HashMap<>();
-
-
-		List<DeviceSupplier> supplierList=supplierDao.getAllSupplier();
-
-		supplierList.forEach((s) -> urlMap.put(s.getId(), s.getUserInfoNotifyUrl()));
-
+		if(!"production".equals(profile)) {
+			return;
+		}
 
 		List<SupplierPushMsgTask>  msgList= msgDao.getUnfinishMsgList();
 
 
-		msgList.parallelStream().forEach((msg)->notifyTool.doSyncTask(msg,urlMap));
+		msgList.parallelStream().forEach((msg)->notifyTool.doMsgSendTask(msg, supplierDao.getUrlMap()));
 
 	}
 }
