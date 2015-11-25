@@ -51,15 +51,15 @@ public class TestOAuth extends TestTemplate{
 
 
 		appResolver.setAppName(master);
+//
+//		KiiUser user=new KiiUser();
+//		user.setDisplayName("demo1");
+//		user.setEmailAddress("demo1@foo.com");
+//		user.setPassword("qwerty");
 
-		KiiUser user=new KiiUser();
-		user.setDisplayName("demo1");
-		user.setEmailAddress("demo1@foo.com");
-		user.setPassword("qwerty");
+//		String userID=service.createUser(user);
 
-		String userID=service.createUser(user);
-
-		tokenResolver.bindUser();
+//		tokenResolver.bindUser();
 
 		userTool.bindUserInfo("demo","qwerty");
 
