@@ -46,6 +46,8 @@ public class UserManager {
 
 		logger.debug("kiiUserID:" + user.getKiiUserID());
 
+
+
 		String id=userDao.createUser(user);
 
 		msgService.addInsertMsg(id,user);
