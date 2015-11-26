@@ -59,7 +59,7 @@ public class TagController {
 	 *
 	 * @param input
      */
-	@RequestMapping(path="/",method={RequestMethod.POST})
+	@RequestMapping(path="",method={RequestMethod.POST})
 	public Map<String,String> createTag(@RequestBody TagIndex input){
 		if(input == null){
 			throw new PortalException(ErrorCode.NO_BODY,"Body is null", HttpStatus.BAD_REQUEST);

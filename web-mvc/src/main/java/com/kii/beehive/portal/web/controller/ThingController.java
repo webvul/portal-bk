@@ -76,7 +76,7 @@ public class ThingController {
 	 *
 	 * @param input
      */
-	@RequestMapping(path="/",method={RequestMethod.POST})
+	@RequestMapping(path="",method={RequestMethod.POST})
 	public Map<String,String> createThing(@RequestBody ThingInput input){
 		
 		if(input == null){

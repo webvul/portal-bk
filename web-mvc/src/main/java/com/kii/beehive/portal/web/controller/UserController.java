@@ -34,7 +34,7 @@ public class UserController {
 	@Autowired
 	private UserManager userManager;
 
-    @RequestMapping(path="/",method={RequestMethod.POST})
+    @RequestMapping(path="",method={RequestMethod.POST})
     public Map<String,String> createUser(@RequestBody OutputUser user){
 
 		if(StringUtils.isEmpty(user.getUserName())&&StringUtils.isEmpty(user.getAliUserID())){
