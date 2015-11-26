@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.http.HttpResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +19,8 @@ import com.kii.extension.sdk.commons.HttpUtils;
 
 @Component
 public class ExceptionFactory {
+
+	private Logger log= LoggerFactory.getLogger(ExceptionFactory.class);
 
 	@Autowired
 	private ObjectMapper mapper;
@@ -86,7 +90,7 @@ public class ExceptionFactory {
 		if(status>=400){
 
 			String body= HttpUtils.getResponseBody(response);
-
+			log.error("Http Code: " + status + ", Response Body: " + body);
 			Class<? extends KiiCloudException> cls= excepMap.get(status);
 
 			if(cls!=null){
