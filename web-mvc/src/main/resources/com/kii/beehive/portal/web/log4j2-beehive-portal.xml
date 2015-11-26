@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Configuration status="WARN" >
+    <Appenders>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d %-5p %C{3}.%M(%L) - %m%n" />
+        </Console>
+    </Appenders>
+
+    <Loggers>
+
+        <logger name="com.fasterxml.jackson" level="info" >
+            <AppenderRef ref="console"/>
+        </logger>
+
+        <logger name="org.apache.http.nio.conn" level="info" >
+            <AppenderRef ref="console"/>
+        </logger>
+
+        <logger name="org.springframework.web" level="info" >
+            <AppenderRef ref="console"/>
+        </logger>
+
+        <root level="debug" >
+           <AppenderRef ref="console" />
+        </root>
+    </Loggers>
+
+</Configuration>

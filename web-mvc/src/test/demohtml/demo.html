@@ -6,15 +6,12 @@
 
     <script language="javascript" >
 
-        function doCall(callback,url,data,type){
+        function doCall(url,data,type,callback){
             var ajaxParam={};
 
             var headers={};
             headers["accept"]="*/*"
 
-		    if(adminToken!=undefined){
-  	            headers['Authorization'] = "Bearer " + adminToken;
-		    }
 
 		    ajaxParam["headers"]=headers;
 
@@ -24,6 +21,12 @@
                 ajaxParam["type"]=type;
             }
             ajaxParam["contentType"]="application/json";
+
+            if(callback==undefined){
+                callback=function(v){
+                    console.log(v);
+                }
+            }
 
 		    ajaxParam["success"]=function(anything, textStatus,jqXHR){
 		        if ((200 <= (_ref1 = jqXHR.status) && _ref1 < 400)) {
@@ -46,8 +49,7 @@
 			    ajaxParam["data"]=JSON.stringify(data);
 		    }
 
-            var local="./api/";
-            //local="http://localhost:8080/api-wrap-service/api/";
+            var local="http://114.215.196.178:8080/beehive-portal/api/";
 
 		    $.ajax(local+url,ajaxParam);
 
@@ -57,7 +59,7 @@
 
         function hello(){
 
-
+            doCall("/echo",{"foo":"bar"});
 
         }
 

@@ -9,7 +9,7 @@
     </appender>
 
     <logger name="com.fasterxml.jackson">
-        <level value="debug" />
+        <level value="info" />
     </logger>
 
     <logger name="org.apache.http">

@@ -3,10 +3,12 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:mvc="http://www.springframework.org/schema/mvc"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-
-       http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/mvc
+       http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
     <import resource="classpath:com/kii/beehive/portal/web/portalContext.xml" />
 
@@ -46,12 +48,14 @@
     </bean>
 
 
+    <mvc:cors>
+        <mvc:mapping path="/**"
+                     allowed-origins="*"
+                     allowed-methods="GET, PUT,POST,PATCH,DELETE"
+                     max-age="3600" />
+    </mvc:cors>
 
     <mvc:interceptors>
-        <mvc:interceptor>
-            <mvc:mapping path="/*"/>
-            <bean class="com.kii.beehive.portal.web.help.OptionalInterceptor" />
-        </mvc:interceptor>
         <mvc:interceptor>
             <mvc:mapping path="/users/*"/>
             <bean class="com.kii.beehive.portal.web.help.TokenInterceptor"  />
