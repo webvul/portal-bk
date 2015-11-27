@@ -148,7 +148,7 @@ public class DataService {
 
 	public <T> UpdateResponse  fullUpdateObjectWithVersion(String id,T obj,BucketInfo bucket,String version){
 
-		HttpUriRequest request=getBuilder().bindBucketInfo(bucket).updateAll(id, obj).generRequest(mapper);
+		HttpUriRequest request=getBuilder().bindBucketInfo(bucket).updateAllWithVersion(id, obj,version).generRequest(mapper);
 
 		HttpResponse  response= client.doRequest(request);
 
@@ -170,7 +170,7 @@ public class DataService {
 
 	public String  updateObjectWithVersion(String id,Map<String,Object> obj,BucketInfo bucket,String version){
 
-		HttpUriRequest request=getBuilder().bindBucketInfo(bucket).update(id, obj).generRequest(mapper);
+		HttpUriRequest request=getBuilder().bindBucketInfo(bucket).updateWithVersion(id, obj,version).generRequest(mapper);
 
 		HttpResponse  response= client.doRequest(request);
 
@@ -207,7 +207,7 @@ public class DataService {
 
 	public String  updateObjectWithVersionWithEntity(String id,Object obj,BucketInfo bucket,String version){
 
-		HttpUriRequest request=getBuilder().bindBucketInfo(bucket).update(id, obj).generRequest(mapper);
+		HttpUriRequest request=getBuilder().bindBucketInfo(bucket).updateWithVersion(id, obj,version).generRequest(mapper);
 
 		HttpResponse  response= client.doRequest(request);
 

@@ -1,7 +1,9 @@
 package com.kii.beehive.portal.web.controller;
 
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kii.beehive.portal.manager.ThingManager;
 import com.kii.beehive.portal.service.TagIndexDao;
 import com.kii.beehive.portal.store.entity.TagIndex;
+import com.kii.beehive.portal.store.entity.TagType;
 import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.help.PortalException;
 
@@ -45,9 +48,9 @@ public class TagController {
 	 * @return
      */
 	@RequestMapping(path="/all",method={RequestMethod.GET})
-	public ResponseEntity<List<TagIndex>> getAllTag(){
+	public List<TagIndex> getAllTag(){
 		List<TagIndex> list = tagIndexDao.getAllTag();
-		return new ResponseEntity<>(list, HttpStatus.OK);
+		return list;
 	}
 
 	/**
@@ -57,25 +60,17 @@ public class TagController {
 	 * refer to doc "Beehive API - Thing API" for request/response details
 	 * refer to doc "Tech Design - Beehive API", section "Create/Update Tag (创建/更新tag)" for more details
 	 *
-	 * @param input
+	 * @param tagName
      */
-	@RequestMapping(path="",method={RequestMethod.POST})
-	public Map<String,String> createTag(@RequestBody TagIndex input){
-		if(input == null){
-			throw new PortalException(ErrorCode.NO_BODY,"Body is null", HttpStatus.BAD_REQUEST);
-		}
-		
-		if(Strings.isBlank(input.getTagType())){
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"TagType is empty", HttpStatus.BAD_REQUEST);
-		}
-		
-		if(Strings.isBlank(input.getDisplayName())){
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"DisplayName is empty", HttpStatus.BAD_REQUEST);
-		}
-		
-		tagIndexDao.addTagIndex(input);
+	@RequestMapping(path="/custom/{tagName}",method={RequestMethod.PUT})
+	public Map<String,String> createTag(@RequestBody TagIndex tag,@PathVariable("tagName") String tagName){
+
+		tag.setDisplayName(tagName);
+		tag.setTagType(TagType.Custom);
+
+		String  id=tagIndexDao.addTagIndex(tag);
 		Map<String,String> map=new HashMap<>();
-		map.put("tagName",input.getId());
+		map.put("tagName",id);
 		return map;
 	}
 
@@ -88,13 +83,13 @@ public class TagController {
 	 *
 	 * @param tagName
      */
-	@RequestMapping(path="/{tagName}",method={RequestMethod.DELETE})
-	public ResponseEntity<String> removeTag(@PathVariable("tagName") String tagName){
+	@RequestMapping(path="/custom/{tagName}",method={RequestMethod.DELETE})
+	public void removeTag(@PathVariable("tagName") String tagName){
 		
-		TagIndex orig =  tagIndexDao.getTagIndexByID(tagName);
+		TagIndex orig =  tagIndexDao.getTagIndexByID(TagType.Custom.getTagName(tagName));
 		
 		thingManager.removeTag(orig);
-		return new ResponseEntity<>(HttpStatus.OK);
+		return ;
 	}
 
 	/**
@@ -108,11 +103,27 @@ public class TagController {
 	 * @return
      */
 
-	@RequestMapping(path = "/tag/{tagName}", method = {RequestMethod.GET})
-	public ResponseEntity<List<TagIndex>> getThingsByTagArray(@PathVariable("tagName") String tagName) {
+	@RequestMapping(path = "/{tagName}", method = {RequestMethod.GET})
+	public List<TagIndex> getThingsByTagArray(@PathVariable("tagName") String tagName) {
 		
 		List<TagIndex> list = tagIndexDao.findTagIndexByTagNameArray(tagName.split(","));
-		return new ResponseEntity<>(list, HttpStatus.OK);
+		return list;
+
+	}
+
+	@RequestMapping(path = "/{type}/{tagName}", method = {RequestMethod.GET})
+	public List<TagIndex> getThingsByTag(@PathVariable("type")String type,@PathVariable("tagName") String tagName) {
+
+//		Collection<String> tagCol=new HashSet<String>();
+		String[] tags=tagName.split(",");
+		TagType t=TagType.valueOf(type);
+
+		for(int i=0;i<tags.length;i++){
+			tags[i]=t.getTagName(tags[i]);
+
+		}
+		List<TagIndex> list = tagIndexDao.findTagIndexByTagNameArray(tags);
+		return list;
 
 	}
 

@@ -173,6 +173,10 @@ public class ConditionBuilder {
 		}
 	}
 
+	public QueryParam getFinalQueryParam(){
+		return this.getFinalCondition().build();
+	}
+
 
 	public static ConditionBuilder getAll() {
 		ConditionBuilder cb=new ConditionBuilder();

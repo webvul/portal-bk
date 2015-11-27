@@ -1,6 +1,7 @@
 package com.kii.beehive.portal.service;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,10 +34,10 @@ public class GlobalThingDao extends AbstractDataAccess<GlobalThingInfo>{
 	private final String TAGS = "tags";
 	private final String BUCKET_INFO = "GlobalThingInfo";
 
-	public void bindTagsToThing(String[] tags,GlobalThingInfo thing){
+	public void bindTagsToThing(Collection<String> tags, GlobalThingInfo thing){
 
 		Set<String> currTags=thing.getTags();
-		currTags.addAll(Arrays.asList(tags));
+		currTags.addAll(tags);
 
 		Map<String,Object> valMap=new HashMap<>();
 		valMap.put(TAGS,currTags);
@@ -80,12 +81,12 @@ public class GlobalThingDao extends AbstractDataAccess<GlobalThingInfo>{
 
 	}
 
-	public List<GlobalThingInfo> getThingsByIDs(String[] ids){
-		return super.getEntitys(ids);
+	public List<GlobalThingInfo> getThingsByIDs(Collection<String> ids){
+		return super.getEntitys(ids.toArray(new String[0]));
 	}
 
 	public void addThingInfo(GlobalThingInfo thing){
-		super.addKiiEntity(thing);
+		super.updateEntityAllWithVersion(thing,0);
 	}
 
 	public List<GlobalThingInfo> getAllThing() {

@@ -22,7 +22,7 @@ public class BeehiveUserGroup extends KiiEntity {
 
     private String description;
 
-    private Set<Object> users;
+    private Set<String> users;
 
     private Map<String, Object> customFields = new HashMap<>();
 
@@ -50,7 +50,7 @@ public class BeehiveUserGroup extends KiiEntity {
         this.description = description;
     }
 
-    public Set<Object> getUsers() {
+    public Set<String> getUsers() {
         return users;
     }
 
@@ -63,7 +63,7 @@ public class BeehiveUserGroup extends KiiEntity {
         return IDs;
     }
 
-    public void setUsers(Set<Object> users) {
+    public void setUsers(Set<String> users) {
         this.users = users;
     }
 

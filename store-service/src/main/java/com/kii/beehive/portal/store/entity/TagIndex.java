@@ -3,12 +3,18 @@ package com.kii.beehive.portal.store.entity;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.logging.log4j.util.Strings;
+import org.springframework.util.StringUtils;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import com.kii.beehive.portal.exception.TagFormatInvalidException;
 import com.kii.extension.sdk.entity.KiiEntity;
 
 
 public class TagIndex extends KiiEntity {
 
-	private String tagType;
+	private TagType tagType;
 	
 	private String displayName;
 	
@@ -18,9 +24,35 @@ public class TagIndex extends KiiEntity {
 
 	private Set<String> kiiAppIDs=new HashSet<>();
 
-	@Override
-	public String getId() {
-		return tagType +"-" + displayName;
+	public static TagIndex generCustomTagIndex(String name){
+
+
+		TagIndex tag=new TagIndex();
+
+		tag.tagType=TagType.Custom;
+		tag.displayName=name;
+
+		tag.fillID();
+
+
+		return tag;
+	}
+
+	public void fillID(){
+		setId(tagType.getTagName(displayName));
+	}
+
+	public void verify(){
+
+
+		if(StringUtils.isEmpty(getDisplayName())){
+			throw new TagFormatInvalidException("DisplayName");
+		}
+	}
+
+
+	public String getTagName(){
+		return getId();
 	}
 
 	public Set<String> getGlobalThings() {
@@ -39,11 +71,11 @@ public class TagIndex extends KiiEntity {
 		this.kiiAppIDs = kiiAppIDs;
 	}
 
-	public String getTagType() {
+	public TagType getTagType() {
 		return tagType;
 	}
 
-	public void setTagType(String tagType) {
+	public void setTagType(TagType tagType) {
 		this.tagType = tagType;
 	}
 

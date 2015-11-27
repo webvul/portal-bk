@@ -1,14 +1,19 @@
 package com.kii.beehive.portal.web.controller;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.util.Strings;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kii.beehive.portal.manager.ThingManager;
 import com.kii.beehive.portal.service.GlobalThingDao;
 import com.kii.beehive.portal.store.entity.GlobalThingInfo;
+import com.kii.beehive.portal.store.entity.TagType;
 import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.entity.ThingInput;
 import com.kii.beehive.portal.web.help.PortalException;
@@ -62,11 +68,11 @@ public class ThingController {
 	 *
 	 * @return
      */
-	@RequestMapping(path="/all",method={RequestMethod.GET})
-	public ResponseEntity<List<GlobalThingInfo>> getAllThing(){
-		List<GlobalThingInfo> list =  globalThingDao.getAllThing();
-		return new ResponseEntity<>(list, HttpStatus.OK);
-	}
+//	@RequestMapping(path="/all",method={RequestMethod.GET})
+//	public ResponseEntity<List<GlobalThingInfo>> getAllThing(){
+//		List<GlobalThingInfo> list =  globalThingDao.getAllThing();
+//		return new ResponseEntity<>(list, HttpStatus.OK);
+//	}
 
 	/**
 	 * 创建/更新设备信息
@@ -79,35 +85,29 @@ public class ThingController {
 	@RequestMapping(path="",method={RequestMethod.POST})
 	public Map<String,String> createThing(@RequestBody ThingInput input){
 		
-		if(input == null){
-			throw new PortalException(ErrorCode.NO_BODY,"Body is null", HttpStatus.BAD_REQUEST);
-		}
-		
-		if(Strings.isBlank(input.getVendorThingID())){
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"VendorThingID is empty", HttpStatus.BAD_REQUEST);
-		}
-		
-		if(Strings.isBlank(input.getKiiAppID())){
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"KiiAppID is empty", HttpStatus.BAD_REQUEST);
-		}
-		
-		if(Strings.isBlank(input.getPassword())){
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"Password is empty", HttpStatus.BAD_REQUEST);
-		}
+//		if(input == null){
+//			throw new PortalException(ErrorCode.NO_BODY,"Body is null", HttpStatus.BAD_REQUEST);
+//		}
+
+		input.verifyInput();
+
 		
 		GlobalThingInfo thingInfo = new GlobalThingInfo();
-		thingInfo.setVendorThingID(input.getVendorThingID());
-		thingInfo.setGlobalThingID(input.getGlobalThingID());
-		thingInfo.setKiiAppID(input.getKiiAppID());
-		thingInfo.setPassword(input.getPassword());
-		thingInfo.setType(input.getType());
-		thingInfo.setCustom(input.getCustom());
-		thingInfo.setStatus(input.getStatus());
+
+		BeanUtils.copyProperties(input,thingInfo);
+
+//		thingInfo.setVendorThingID(input.getVendorThingID());
+//		thingInfo.setGlobalThingID(input.getGlobalThingID());
+//		thingInfo.setKiiAppID(input.getKiiAppID());
+//		thingInfo.setPassword(input.getPassword());
+//		thingInfo.setType(input.getType());
+//		thingInfo.setCustom(input.getCustom());
+//		thingInfo.setStatus(input.getStatus());
 		
-		thingManager.createThing(thingInfo,input.getTags());
+		String thingID=thingManager.createThing(thingInfo,input.getInputTags());
 		
 		Map<String,String> map=new HashMap<>();
-		map.put("globalThingID",input.getGlobalThingID());
+		map.put("globalThingID",thingID);
 		return map;
 	}
 
@@ -137,12 +137,15 @@ public class ThingController {
 	 * @param globalThingID
 	 * @param tagName
      */
-	@RequestMapping(path="/{globalThingID}/tags/{tagName}",method={RequestMethod.PUT})
+	@RequestMapping(path="/{globalThingID}/tags/custom/{tagName}",method={RequestMethod.PUT})
 	public ResponseEntity<String> addThingTag(@PathVariable("globalThingID") String globalThingID,@PathVariable("tagName") String tagName){
 		
 		String[] thingIDs = globalThingID.split(",");
-		String[] tagIDs = tagName.split(",");
-		thingManager.bindTagToThing(tagIDs, thingIDs);
+		List<String> tagIDs = CollectionUtils.arrayToList(tagName.split(","));
+
+		List<String> tags=tagIDs.stream().map((s)-> TagType.Custom.getTagName(s)).collect(Collectors.toList());
+
+		thingManager.bindTagToThing(tags, Arrays.asList(thingIDs));
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
@@ -155,10 +158,10 @@ public class ThingController {
 	 * @param globalThingID
 	 * @param tagName
      */
-	@RequestMapping(path="/{globalThingID}/tags/{tagName}/",method={RequestMethod.DELETE})
-	public ResponseEntity<String> removeThingTag(@PathVariable("globalThingID") String globalThingID,@PathVariable("tagName") String tagName){
-		thingManager.unbindTagToThing(tagName,globalThingID);
-		return new ResponseEntity<>(HttpStatus.OK);
+	@RequestMapping(path="/{globalThingID}/tags/custom/{tagName}/",method={RequestMethod.DELETE})
+	public void removeThingTag(@PathVariable("globalThingID") String globalThingID,@PathVariable("tagName") String tagName){
+		thingManager.unbindTagToThing(TagType.Custom.getTagName(tagName),globalThingID);
+		return;
 	}
 
 	/**

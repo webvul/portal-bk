@@ -41,6 +41,8 @@ public class ExceptionFactory {
 		userClsMap.put(409, UserAlreadyExistsException.class);
 		userClsMap.put(400,BadUserNameException.class);
 		userClsMap.put(404,UserNotFoundException.class);
+		userClsMap.put(401, UnauthorizedAccessException.class);
+
 	}
 
 	public enum OperateType{

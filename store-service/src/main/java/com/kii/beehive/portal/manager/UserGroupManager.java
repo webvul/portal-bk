@@ -87,7 +87,7 @@ public class UserGroupManager {
         BeehiveUserGroup userGroup = groupList.get(0);
 
         // if includeUserData is true, get the user entities and add into user group
-        Set<Object> userIDs = userGroup.getUsers();
+        Set<String> userIDs = userGroup.getUsers();
         if(userIDs != null && !userIDs.isEmpty() && includeUserData) {
 
             // get user entities
@@ -97,7 +97,7 @@ public class UserGroupManager {
             });
 
             List<BeehiveUser> userList = beehiveUserDao.getUserByIDs(userIDList);
-            userGroup.setUsers(new HashSet<>(userList));
+            userGroup.setUsers(new HashSet<>(userIDList));
 
         }
 

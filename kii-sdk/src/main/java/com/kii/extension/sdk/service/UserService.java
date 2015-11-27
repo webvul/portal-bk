@@ -76,7 +76,15 @@ public class UserService {
 
 	public void disableUser(String kiiUserID) {
 
-		// TODO to implement the logic here
+		HttpUriRequest request=getBuilder().setUserStatus(kiiUserID,true).generRequest(mapper);
+
+		client.doRequest(request);
+	}
+
+	public void enableUser(String kiiUserID) {
+		HttpUriRequest request=getBuilder().setUserStatus(kiiUserID,false).generRequest(mapper);
+
+		client.doRequest(request);
 
 	}
 
@@ -94,4 +102,6 @@ public class UserService {
 
 		client.doRequest(request);
 	}
+
+
 }

@@ -1,14 +1,18 @@
 package com.kii.beehive.portal.service;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.annotation.BindAppByName;
 import com.kii.beehive.portal.store.entity.GlobalThingInfo;
 import com.kii.beehive.portal.store.entity.TagIndex;
+import com.kii.beehive.portal.store.entity.TagType;
 import com.kii.extension.sdk.entity.BucketInfo;
 import com.kii.extension.sdk.query.ConditionBuilder;
 import com.kii.extension.sdk.query.QueryParam;
@@ -17,6 +21,8 @@ import com.kii.extension.sdk.service.AbstractDataAccess;
 @BindAppByName(appName="portal")
 @Component
 public class TagIndexDao extends AbstractDataAccess<TagIndex> {
+
+	private Logger log= LoggerFactory.getLogger(TagIndexDao.class);
 	
 	private final String BUCKET_INFO = "TagThingInfo";
 	
@@ -25,16 +31,48 @@ public class TagIndexDao extends AbstractDataAccess<TagIndex> {
 	}
 	
 	public List<TagIndex> findTagIndexByTagNameArray(String[] tagNameArray){
-		QueryParam query = ConditionBuilder.orCondition().In("_id", tagNameArray).getFinalCondition().build();
-		List<TagIndex> tagIndexList = super.query(query);
+		List<TagIndex> tagIndexList = super.getEntitys(tagNameArray);
 		return tagIndexList;
 	}
 	
 	public void removeTagByID(String id){
 		super.removeEntity(id);
 	}
+
+
+	public void bindThingToTag(Collection<String> tagIDs,List<GlobalThingInfo> things){
+
+		if(tagIDs.size()==1) {
+			TagIndex tag = getTagIndexByID(tagIDs.iterator().next());
+
+			addThingToTag(tag, things);
+
+		}else{
+			List<TagIndex> tags = getTagsByIDs(tagIDs);
+			log.debug("tags: " + tags);
+			for (TagIndex tag : tags) {
+				addThingToTag(tag, things);
+			}
+		}
+	}
+
+	public void unbindThingFromTag(Collection<String> tagIDs,List<GlobalThingInfo> things){
+
+		if(tagIDs.size()==1) {
+			TagIndex tag = getTagIndexByID(tagIDs.iterator().next());
+
+			removeThingFromTag(tag, things);
+
+		}else{
+			List<TagIndex> tags = getTagsByIDs(tagIDs);
+			log.debug("tags: " + tags);
+			for (TagIndex tag : tags) {
+				removeThingFromTag(tag, things);
+			}
+		}
+	}
 	
-	public void addThingToTag(TagIndex tagIdx,List<GlobalThingInfo> things){
+	private void addThingToTag(TagIndex tagIdx,List<GlobalThingInfo> things){
 
 		Set<String> newThings=things.stream().map(GlobalThingInfo::getId).collect(Collectors.toSet());
 
@@ -54,7 +92,7 @@ public class TagIndexDao extends AbstractDataAccess<TagIndex> {
 
 	}
 
-	public void removeThingFromTag(TagIndex tagIdx,List<GlobalThingInfo> things){
+	private void removeThingFromTag(TagIndex tagIdx,List<GlobalThingInfo> things){
 		
 		Set<String> removeThings=things.stream().map(GlobalThingInfo::getId).collect(Collectors.toSet());
 
@@ -75,17 +113,26 @@ public class TagIndexDao extends AbstractDataAccess<TagIndex> {
 
 	}
 
+	public boolean isTagIndexExist(String id){
+		return super.checkExist(id);
+	}
+
+
 	public TagIndex getTagIndexByID(String id){
 		return super.getObjectByID(id);
 	}
 
-	public void addTagIndex(TagIndex tag) {
-
-		super.addKiiEntity(tag);
+	public TagIndex getCustomTagIndexByID(String id){
+		return super.getObjectByID(TagType.Custom.getTagName(id));
 	}
 
-	public List<TagIndex> getTagsByIDs(String[] ids){
-		return super.getEntitys(ids);
+	public String addTagIndex(TagIndex tag) {
+		tag.fillID();
+		return super.addKiiEntity(tag);
+	}
+
+	public List<TagIndex> getTagsByIDs(Collection<String> ids){
+		return super.getEntitys(ids.toArray(new String[0]));
 	}
 
 	@Override
