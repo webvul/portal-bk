@@ -68,18 +68,20 @@ public class TestFederate extends TestTemplate {
 	public void testLogin(){
 
 		String slaveApp="test-slave-1";
-		AppInfo salve=bindTool.getAppInfo(slaveApp);
-//		AppInfo master=bindTool.getAppInfo("test-master");
+//		AppInfo salve=bindTool.getAppInfo(slaveApp);
+////		AppInfo master=bindTool.getAppInfo("test-master");
+//
+//
+//		String url=service.getAuthUrl(salve);
+//
+//
+//		FederatedAuthResult result=service.generAuthRequest(url, SiteType.BH01A, "demo", "qwerty");
+//
+//		resolver.setAppName(slaveApp);
+//
+//		tokenResolver.bindToken(result.getAppAuthToken());
 
-
-		String url=service.getAuthUrl(salve);
-
-
-		FederatedAuthResult result=service.generAuthRequest(url, SiteType.BH01A, "demo", "qwerty");
-
-		resolver.setAppName(slaveApp);
-
-		tokenResolver.bindToken(result.getAppAuthToken());
+		service.loginSalveApp(slaveApp,"demo","qwerty");
 
 		Map<String,String> obj=new HashMap<>();
 		obj.put("foo","bar");

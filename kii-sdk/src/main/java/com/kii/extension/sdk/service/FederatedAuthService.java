@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.beehive.portal.common.utils.StrTemplate;
 import com.kii.extension.sdk.context.AppBindToolResolver;
+import com.kii.extension.sdk.context.TokenBindToolResolver;
 import com.kii.extension.sdk.entity.AppInfo;
 import com.kii.extension.sdk.entity.FederatedAuthResult;
 import com.kii.extension.sdk.entity.SiteType;
@@ -48,9 +49,30 @@ public class FederatedAuthService {
 	private String authInitUrl="http://$(0).$(1).kiiapps.com/api/apps/$(0)/integration/webauth/connect?id=kii";
 
 
+	@Autowired
+	private AppBindToolResolver resolver;
+
+	@Autowired
+	private TokenBindToolResolver tokenResolver;
 
 
-	public String getAuthUrl(AppInfo salveInfo){
+
+	public void loginSalveApp(String appName,String userName,String pwd){
+
+		bindToolResolver.setAppName(appName);
+
+		AppInfo salve=bindToolResolver.getAppInfo();
+
+		String url=getAuthUrl(salve);
+		FederatedAuthResult result=generAuthRequest(url, salve.getSiteType(), userName, pwd);
+
+		resolver.setAppName(appName);
+
+		tokenResolver.bindToken(result.getAppAuthToken());
+
+	}
+
+	private String getAuthUrl(AppInfo salveInfo){
 
 		/*
 GET https://<slaveAppId>.<kiiapps-domain>/api/apps/<slaveAppId>/integration/webauth/connect?id=kii
@@ -67,10 +89,11 @@ GET https://<slaveAppId>.<kiiapps-domain>/api/apps/<slaveAppId>/integration/weba
 
 		HttpUriRequest currentReq = (HttpUriRequest) context.getAttribute(
 				HttpCoreContext.HTTP_REQUEST);
+
 		HttpHost currentHost = (HttpHost)  context.getAttribute(
 				HttpCoreContext.HTTP_TARGET_HOST);
 
-		String currentUrl = (currentReq.getURI().isAbsolute()) ? currentReq.getURI().toString() : (currentHost.toURI() + currentReq.getURI());
+		String currentUrl =  currentHost.toURI()+currentReq.getURI();
 
 		log.info(currentUrl);
 
@@ -87,7 +110,7 @@ GET https://<slaveAppId>.<kiiapps-domain>/api/apps/<slaveAppId>/integration/weba
 
 	private static String authUrl="http://$(0).$(1).kiiapps.com/api/apps/$(0)/oauth2/login";
 
-	public  FederatedAuthResult  generAuthRequest(String fullUrl,SiteType site,String user,String pwd)  {
+	private  FederatedAuthResult  generAuthRequest(String fullUrl,SiteType site,String user,String pwd)  {
 
 		int idx=fullUrl.indexOf("?");
 
@@ -136,10 +159,6 @@ GET https://<slaveAppId>.<kiiapps-domain>/api/apps/<slaveAppId>/integration/weba
 
 		HttpUriRequest currentReq = (HttpUriRequest) context.getAttribute(
 				HttpCoreContext.HTTP_REQUEST);
-//		HttpHost currentHost = (HttpHost)  context.getAttribute(
-//				HttpCoreContext.HTTP_TARGET_HOST);
-//
-//		String currentUrl = (currentReq.getURI().isAbsolute()) ? currentReq.getURI().toString() : (currentHost.toURI() + currentReq.getURI());
 
 		FederatedAuthResult result=new FederatedAuthResult(currentReq.getURI().getQuery());
 
