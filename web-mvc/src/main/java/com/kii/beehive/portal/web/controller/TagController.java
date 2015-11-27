@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.portal.manager.ThingManager;
 import com.kii.beehive.portal.service.TagIndexDao;
+import com.kii.beehive.portal.store.entity.GlobalThingInfo;
 import com.kii.beehive.portal.store.entity.TagIndex;
 import com.kii.beehive.portal.store.entity.TagType;
 import com.kii.beehive.portal.web.constant.ErrorCode;
@@ -116,7 +118,7 @@ public class TagController {
 
 //		Collection<String> tagCol=new HashSet<String>();
 		String[] tags=tagName.split(",");
-		TagType t=TagType.valueOf(type);
+		TagType t=TagType.valueOf(StringUtils.capitalize(type));
 
 		for(int i=0;i<tags.length;i++){
 			tags[i]=t.getTagName(tags[i]);
@@ -125,6 +127,14 @@ public class TagController {
 		List<TagIndex> list = tagIndexDao.findTagIndexByTagNameArray(tags);
 		return list;
 
+	}
+
+	@RequestMapping(path = "/{tagName}/operation/{operation}", method = {RequestMethod.GET})
+	public ResponseEntity<List<GlobalThingInfo>> getThingsByTagExpress(@PathVariable("tagName") String tagName, @PathVariable("operation") String operation) {
+
+		List<GlobalThingInfo> list = this.thingManager.findThingByTagName(tagName.split(","), operation);
+
+		return new ResponseEntity<>(list, HttpStatus.OK);
 	}
 
 }

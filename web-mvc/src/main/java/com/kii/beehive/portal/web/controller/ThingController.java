@@ -158,7 +158,7 @@ public class ThingController {
 	 * @param globalThingID
 	 * @param tagName
      */
-	@RequestMapping(path="/{globalThingID}/tags/custom/{tagName}/",method={RequestMethod.DELETE})
+	@RequestMapping(path="/{globalThingID}/tags/custom/{tagName}",method={RequestMethod.DELETE})
 	public void removeThingTag(@PathVariable("globalThingID") String globalThingID,@PathVariable("tagName") String tagName){
 		thingManager.unbindTagToThing(TagType.Custom.getTagName(tagName),globalThingID);
 		return;
@@ -174,11 +174,5 @@ public class ThingController {
 	 * @param operation
      * @return
      */
-	@RequestMapping(path = "/tag/{tagName}/operation/{operation}", method = {RequestMethod.GET})
-	public ResponseEntity<List<GlobalThingInfo>> getThingsByTag(@PathVariable("tagName") String tagName, @PathVariable("operation") String operation) {
-		
-		List<GlobalThingInfo> list = this.thingManager.findThingByTagName(tagName.split(","), operation);
-		
-		return new ResponseEntity<>(list, HttpStatus.OK);
-	}
+
 }
