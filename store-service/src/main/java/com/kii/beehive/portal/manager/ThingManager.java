@@ -59,9 +59,9 @@ public class ThingManager {
 		// do not throw application exception for system-error (data not complete)
 
 		KiiAppInfo masterAppInfo = appInfoDao.getMasterAppInfo();
-		String defaultThingOwnerID = masterAppInfo.getDefaultThingOwnerID();
+//		String defaultThingOwnerID = masterAppInfo.getDefaultThingOwnerID();
 
-		thingInfo.setDefaultOwnerID(defaultThingOwnerID);
+//		thingInfo.setDefaultOwnerID(defaultThingOwnerID);
 
 		thingInfo.setStatusUpdatetime(new Date());
 		globalThingDao.addThingInfo(thingInfo);

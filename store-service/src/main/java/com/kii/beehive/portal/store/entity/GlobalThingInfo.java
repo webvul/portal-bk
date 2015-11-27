@@ -18,7 +18,7 @@ public class GlobalThingInfo extends KiiEntity {
 
 	private String type;
 
-	private String defaultOwnerID;
+//	private String defaultOwnerID;
 
 //	private String password;
 
@@ -46,13 +46,13 @@ public class GlobalThingInfo extends KiiEntity {
 		this.globalThingID = globalThingID;
 	}
 
-	public String getDefaultOwnerID() {
-		return defaultOwnerID;
-	}
-
-	public void setDefaultOwnerID(String defaultOwnerID) {
-		this.defaultOwnerID = defaultOwnerID;
-	}
+//	public String getDefaultOwnerID() {
+//		return defaultOwnerID;
+//	}
+//
+//	public void setDefaultOwnerID(String defaultOwnerID) {
+//		this.defaultOwnerID = defaultOwnerID;
+//	}
 
 	public Set<String> getTags() {
 		return tags;
