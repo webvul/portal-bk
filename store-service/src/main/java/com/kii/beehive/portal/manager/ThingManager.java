@@ -47,16 +47,6 @@ public class ThingManager {
 		tagList.forEach((str)->{
 			tagSet.add(TagIndex.generCustomTagIndex(str));
 		});
-		thingInfo.setGlobalThingID(thingInfo.getVendorThingID());
-		return createThingWithTag(thingInfo,tagSet);
-	}
-
-
-	private String createThingWithTag(GlobalThingInfo thingInfo, Collection<TagIndex> tagList){
-
-//		thingInfo.generGlobalThingID();
-
-		// do not throw application exception for system-error (data not complete)
 
 		KiiAppInfo masterAppInfo = appInfoDao.getMasterAppInfo();
 		String defaultThingOwnerID = masterAppInfo.getDefaultThingOwnerID();
@@ -67,17 +57,18 @@ public class ThingManager {
 		globalThingDao.addThingInfo(thingInfo);
 
 		Set<String> tagNameSet = new HashSet<String>();
-			for(TagIndex tag:tagList){
-				if(!StringUtils.isEmpty(tag.getDisplayName()) && !StringUtils.isEmpty(tag.getTagType())){
-					if(!tagIndexDao.isTagIndexExist(tag.getId())) {
-						tagNameSet.add(tag.getId());
-					}
+		for(TagIndex tag:tagSet){
+			if(!StringUtils.isEmpty(tag.getDisplayName()) && !StringUtils.isEmpty(tag.getTagType())){
+				if(!tagIndexDao.isTagIndexExist(tag.getId())) {
+					tagNameSet.add(tag.getId());
 				}
 			}
+		}
 		this.bindTagToThing(tagNameSet, Collections.singleton(thingInfo.getId()));
 
 		return thingInfo.getGlobalThingID();
 	}
+
 
 	
 	public void bindTagToThing(String tagID,String thingID) {

@@ -86,7 +86,9 @@ public class GlobalThingDao extends AbstractDataAccess<GlobalThingInfo>{
 	}
 
 	public void addThingInfo(GlobalThingInfo thing){
-		super.updateEntityAllWithVersion(thing,0);
+		thing.setGlobalThingID(thing.getVendorThingID());
+
+		super.updateEntityAll(thing);
 	}
 
 	public List<GlobalThingInfo> getAllThing() {

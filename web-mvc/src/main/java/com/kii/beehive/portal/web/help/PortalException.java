@@ -43,7 +43,7 @@ public class PortalException extends RuntimeException {
 	}
 
 	public String getErrorCode(){
-		return null;
+		return errorCode;
 	}
 
 	public HttpStatus getHttpStatus() {
