@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Set;
 
 
-import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,15 +22,11 @@ import com.kii.beehive.portal.service.TagIndexDao;
 import com.kii.beehive.portal.store.entity.GlobalThingInfo;
 import com.kii.beehive.portal.store.entity.TagIndex;
 import com.kii.beehive.portal.service.AppInfoDao;
-import com.kii.beehive.portal.store.entity.KiiAppInfo;
 
 @Component
 public class ThingManager {
 
 	private Logger log= LoggerFactory.getLogger(ThingManager.class);
-
-	@Autowired
-	private AppInfoDao appInfoDao;
 
 	@Autowired
 	private GlobalThingDao globalThingDao;
@@ -47,33 +42,17 @@ public class ThingManager {
 		tagList.forEach((str)->{
 			tagSet.add(TagIndex.generCustomTagIndex(str));
 		});
-		thingInfo.setGlobalThingID(thingInfo.getVendorThingID());
-		return createThingWithTag(thingInfo,tagSet);
-	}
-
-
-	private String createThingWithTag(GlobalThingInfo thingInfo, Collection<TagIndex> tagList){
-
-//		thingInfo.generGlobalThingID();
-
-		// do not throw application exception for system-error (data not complete)
-
-		KiiAppInfo masterAppInfo = appInfoDao.getMasterAppInfo();
-//		String defaultThingOwnerID = masterAppInfo.getDefaultThingOwnerID();
-
-//		thingInfo.setDefaultOwnerID(defaultThingOwnerID);
-
-		thingInfo.setStatusUpdatetime(new Date());
 		globalThingDao.addThingInfo(thingInfo);
 
 		Set<String> tagNameSet = new HashSet<String>();
-			for(TagIndex tag:tagList){
-				if(!StringUtils.isEmpty(tag.getDisplayName()) && !StringUtils.isEmpty(tag.getTagType())){
-					if(!tagIndexDao.isTagIndexExist(tag.getId())) {
-						tagNameSet.add(tag.getId());
-					}
+
+		for(TagIndex tag:tagSet){
+			if(!StringUtils.isEmpty(tag.getDisplayName()) && !StringUtils.isEmpty(tag.getTagType())){
+				if(!tagIndexDao.isTagIndexExist(tag.getId())) {
+					tagNameSet.add(tag.getId());
 				}
 			}
+		}
 		this.bindTagToThing(tagNameSet, Collections.singleton(thingInfo.getId()));
 
 		return thingInfo.getGlobalThingID();

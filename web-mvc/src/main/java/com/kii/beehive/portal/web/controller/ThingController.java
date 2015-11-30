@@ -84,10 +84,6 @@ public class ThingController {
      */
 	@RequestMapping(path="",method={RequestMethod.POST})
 	public Map<String,String> createThing(@RequestBody ThingInput input){
-		
-//		if(input == null){
-//			throw new PortalException(ErrorCode.NO_BODY,"Body is null", HttpStatus.BAD_REQUEST);
-//		}
 
 		input.verifyInput();
 
@@ -96,14 +92,6 @@ public class ThingController {
 
 		BeanUtils.copyProperties(input,thingInfo);
 
-//		thingInfo.setVendorThingID(input.getVendorThingID());
-//		thingInfo.setGlobalThingID(input.getGlobalThingID());
-//		thingInfo.setKiiAppID(input.getKiiAppID());
-//		thingInfo.setPassword(input.getPassword());
-//		thingInfo.setType(input.getType());
-//		thingInfo.setCustom(input.getCustom());
-//		thingInfo.setStatus(input.getStatus());
-		
 		String thingID=thingManager.createThing(thingInfo,input.getInputTags());
 		
 		Map<String,String> map=new HashMap<>();

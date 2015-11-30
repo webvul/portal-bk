@@ -2,6 +2,7 @@ package com.kii.beehive.portal.service;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -85,8 +86,13 @@ public class GlobalThingDao extends AbstractDataAccess<GlobalThingInfo>{
 		return super.getEntitys(ids.toArray(new String[0]));
 	}
 
-	public void addThingInfo(GlobalThingInfo thing){
-		super.updateEntityAllWithVersion(thing,0);
+	public void addThingInfo(GlobalThingInfo thingInfo){
+
+		thingInfo.setGlobalThingID(thingInfo.getVendorThingID());
+
+		thingInfo.setStatusUpdatetime(new Date());
+
+		super.updateEntityAll(thingInfo);
 	}
 
 	public List<GlobalThingInfo> getAllThing() {
