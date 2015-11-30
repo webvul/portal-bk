@@ -61,7 +61,7 @@
             <bean class="com.kii.beehive.portal.web.help.TokenInterceptor"  />
         </mvc:interceptor>
         <mvc:interceptor>
-            <mvc:mapping path="/users/*"/>
+            <mvc:mapping path="/users/**"/>
             <bean class="com.kii.beehive.portal.web.help.TokenInterceptor"  />
         </mvc:interceptor>
     </mvc:interceptors>
