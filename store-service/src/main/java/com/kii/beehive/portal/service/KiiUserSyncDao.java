@@ -31,6 +31,24 @@ public class KiiUserSyncDao {
 	@Autowired
 	private UserService userService;
 
+	public String addDefaultOwner(String name,String pwd){
+
+		KiiUser user=new KiiUser();
+
+		user.setLoginName(name);
+		user.setPassword(pwd);
+
+		try {
+			return userService.createUser(user);
+		}catch (UserAlreadyExistsException e){
+
+			userService.removeUserByLoginName(name);
+
+			return userService.createUser(user);
+
+		}
+	}
+
 	public void addBeehiveUser(BeehiveUser beehiveUser){
 
 		KiiUser user=new KiiUser();

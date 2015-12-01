@@ -43,43 +43,16 @@ public class AppInfoDao extends AbstractDataAccess<KiiAppInfo> {
 	public String getPortalAppID(){
 		return resolver.getAppInfo().getAppID();
 	}
-//
-	@Cacheable(cacheNames="appInfo-map",key="'map'")
-	public Map<String,AppInfo> getAllAppInfo() {
 
-
-		List<KiiAppInfo>  list=super.getAll();
-
-		Map<String,AppInfo> map=new HashMap<>();
-
-		list.forEach((app)->map.put(app.getAppName(),app.getAppInfo()));
-
-		return map;
-	}
-
-
-	@CacheEvict(cacheNames={"appInfo-map,appInfo_id"},key="'map'")
-	@CachePut(cacheNames={"appInfo"},key="#appInfo.appName")
+	@CachePut(cacheNames={"appInfo"},key="#appInfo.id")
 	public void addAppInfo(KiiAppInfo appInfo) {
 
 		super.addEntity(appInfo, appInfo.getAppInfo().getAppID());
 	}
 
-	@Cacheable(cacheNames={"appInfo_id"})
+	@Cacheable(cacheNames={"appInfo"})
 	public KiiAppInfo getAppInfoByID(String id){
 		return super.getObjectByID(id);
-	}
-
-	@Cacheable(cacheNames={"appInfo"})
-	public KiiAppInfo getAppInfoByName(String appName){
-		List<KiiAppInfo>  infoList=super.query(ConditionBuilder.newCondition().equal("appName", appName).getFinalCondition().build());
-
-		if(infoList.size()==0){
-			return null;
-		}else{
-			return infoList.get(0);
-		}
-
 	}
 
 	@Cacheable(cacheNames="appInfo",key="'master-app'")

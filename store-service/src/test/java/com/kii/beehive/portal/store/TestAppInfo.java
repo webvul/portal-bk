@@ -21,17 +21,6 @@ public class TestAppInfo extends TestInit {
 
 	}
 
-//	@Test
-	public void testFillAppInfo(){
-
-
-	}
-
-//	@Test
-	public void createRelation(){
-
-	}
-
 	@Test
 	public void testOAuth(){
 

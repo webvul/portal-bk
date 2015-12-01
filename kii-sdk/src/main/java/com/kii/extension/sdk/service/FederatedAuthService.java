@@ -57,18 +57,20 @@ public class FederatedAuthService {
 
 
 
-	public void loginSalveApp(String appName,String userName,String pwd){
+	public FederatedAuthResult loginSalveApp(String appID,String userName,String pwd){
 
-		bindToolResolver.setAppName(appName);
+		bindToolResolver.setAppName(appID);
 
 		AppInfo salve=bindToolResolver.getAppInfo();
 
 		String url=getAuthUrl(salve);
 		FederatedAuthResult result=generAuthRequest(url, salve.getSiteType(), userName, pwd);
 
-		resolver.setAppName(appName);
+		resolver.setAppName(appID);
 
 		tokenResolver.bindToken(result.getAppAuthToken());
+
+		return result;
 
 	}
 

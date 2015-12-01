@@ -19,8 +19,6 @@ public class AppBindToolResolver  {
 
 	private ThreadLocal<AppChoice>  appChoiceLocal;
 
-//	private ThreadLocal<AppInfo>  directAppInfoLocal=new ThreadLocal<>();
-
 	private String[] getBeanNameArray(){
 
 		return context.getBeanNamesForType(AppBindTool.class);
@@ -39,10 +37,6 @@ public class AppBindToolResolver  {
 
 	}
 
-
-//	public void setAppInfoDrectly(AppInfo appInfo){
-//		directAppInfoLocal.set(appInfo);
-//	}
 
 
 	public void setAppChoice(AppChoice choice){

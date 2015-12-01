@@ -10,7 +10,7 @@
     </appender>
 
 
-    <logger name="org.apache.http">
+    <logger name="org.apache.http.nio.conn.Wire">
         <level value="debug" />
     </logger>
 
