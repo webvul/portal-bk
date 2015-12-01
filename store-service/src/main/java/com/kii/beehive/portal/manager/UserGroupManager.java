@@ -97,8 +97,7 @@ public class UserGroupManager {
             });
 
             List<BeehiveUser> userList = beehiveUserDao.getUserByIDs(userIDList);
-            userGroup.setUsers(new HashSet<>(userIDList));
-
+            userGroup.setBeehiveUserList(userList);
         }
 
         logger.debug("End getUserGroupBySimpleQuery(Map<String,Object> queryMap, boolean includeUserData): " + userGroup);
