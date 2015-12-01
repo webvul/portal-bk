@@ -54,10 +54,10 @@ public class ThingController {
 	 * @return
 	 */
 	@RequestMapping(path = "/{globalThingID}", method = {RequestMethod.GET})
-	public ResponseEntity<GlobalThingInfo> getThingByGlobalID(@PathVariable("globalThingID") String globalThingID) {
+	public GlobalThingInfo getThingByGlobalID(@PathVariable("globalThingID") String globalThingID) {
 		
 		GlobalThingInfo thing =  globalThingDao.getThingInfoByID(globalThingID);
-		return new ResponseEntity<>(thing, HttpStatus.OK);
+		return thing;
 	}
 
 	/**

@@ -38,5 +38,8 @@ public class PortalTokenService {
 		this.tokenLocal.set(new TokenInfo(token,type));
 	}
 
+	public void cleanToken(){
+		tokenLocal.remove();
+	}
 
 }

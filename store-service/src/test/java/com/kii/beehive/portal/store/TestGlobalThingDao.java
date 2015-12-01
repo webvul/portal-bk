@@ -21,6 +21,7 @@ import com.kii.beehive.portal.service.TagIndexDao;
 import com.kii.beehive.portal.store.entity.GlobalThingInfo;
 import com.kii.beehive.portal.store.entity.TagIndex;
 import com.kii.beehive.portal.store.entity.TagType;
+import com.kii.beehive.portal.store.entity.Token.PortalTokenType;
 
 public class TestGlobalThingDao extends TestInit {
 	
@@ -41,7 +42,7 @@ public class TestGlobalThingDao extends TestInit {
 	@Before
 	public void addData(){
 
-		portalToken.setToken("test", PortalTokenService.PortalTokenType.Demo);
+		portalToken.setToken("test", PortalTokenType.Demo);
 
 		String suf=String.valueOf(System.currentTimeMillis());
 

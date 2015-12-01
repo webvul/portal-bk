@@ -5,6 +5,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.MethodSignature;
@@ -40,7 +41,22 @@ public class AppBindAspect {
 
 	}
 
-	@Before("execution (*  com.kii.beehive.portal.service..*(@com.kii.beehive.portal.annotation.AppBindParam (*) , .. ))")
+
+
+	@After("execution (* com.kii.extension.sdk.service.AbstractDataAccess+.*(..)  ) ")
+	public void afterCallDataAccess(JoinPoint joinPoint){
+
+		bindTool.clean();
+
+	}
+
+	@After("execution (*  com.kii.beehive.portal.service..*(@com.kii.beehive.portal.annotation.AppBindParam (*) , .. ))")
+	public void  afterCallBindParam(JoinPoint joinPoint ){
+		bindTool.clean();
+	}
+
+
+		@Before("execution (*  com.kii.beehive.portal.service..*(@com.kii.beehive.portal.annotation.AppBindParam (*) , .. ))")
 	public void  beforeCallBindParam(JoinPoint joinPoint ){
 		MethodSignature signature = (MethodSignature) joinPoint.getSignature();
 		Method method = signature.getMethod();
