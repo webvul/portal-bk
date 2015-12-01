@@ -150,6 +150,10 @@ public class ThingManager {
 			}
 		}
 
+		if (thingsSet.isEmpty()) {
+			return new ArrayList<>();
+		}
+
 		return  globalThingDao.getThingsByIDs(thingsSet);
 
 		

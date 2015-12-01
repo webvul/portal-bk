@@ -174,5 +174,12 @@ public class ThingController {
 	 * @param operation
      * @return
      */
+	@RequestMapping(path = "/tag/{tagName}/operation/{operation}", method = {RequestMethod.GET})
+	public ResponseEntity<List<GlobalThingInfo>> getThingsByTagExpress(@PathVariable("tagName") String tagName, @PathVariable("operation") String operation) {
+
+		List<GlobalThingInfo> list = this.thingManager.findThingByTagName(tagName.split(","), operation);
+
+		return new ResponseEntity<>(list, HttpStatus.OK);
+	}
 
 }
