@@ -57,18 +57,17 @@ public class TagController {
 
 	/**
 	 * 创建tag
-	 * POST /tags
+	 * POST /tags/custom
 	 *
 	 * refer to doc "Beehive API - Thing API" for request/response details
 	 * refer to doc "Tech Design - Beehive API", section "Create/Update Tag (创建/更新tag)" for more details
 	 *
-	 * @param tagName
      */
-	@RequestMapping(path="/custom/{tagName}",method={RequestMethod.PUT})
-	public Map<String,String> createTag(@RequestBody TagIndex tag,@PathVariable("tagName") String tagName){
+	@RequestMapping(path="/custom",method={RequestMethod.POST})
+	public Map<String,String> createTag(@RequestBody TagIndex tag){
 
-		tag.setDisplayName(tagName);
 		tag.setTagType(TagType.Custom);
+		tag.fillID();
 
 		String  id=tagIndexDao.addTagIndex(tag);
 		Map<String,String> map=new HashMap<>();
