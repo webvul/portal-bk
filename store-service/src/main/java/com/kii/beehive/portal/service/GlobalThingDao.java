@@ -82,7 +82,7 @@ public class GlobalThingDao extends AbstractDataAccess<GlobalThingInfo>{
 	}
 
 	public List<GlobalThingInfo> getThingsByIDs(Collection<String> ids){
-		return super.getEntitys(ids.toArray(new String[0]));
+		return super.getEntitys(ids.toArray(new String[ids.size()]));
 	}
 
 	public void addThingInfo(GlobalThingInfo thing){

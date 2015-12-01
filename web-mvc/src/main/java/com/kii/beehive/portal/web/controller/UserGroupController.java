@@ -4,7 +4,6 @@ package com.kii.beehive.portal.web.controller;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -77,13 +76,6 @@ public class UserGroupController {
         // check whether userGroupID existing
         if(userGroupManager.checkUserGroupIDExist(userGroupID) == false) {
             throw new PortalException("DataNotFound", "userGroupID not found", HttpStatus.NOT_FOUND);
-        }
-
-        String userGroupName = userGroup.getUserGroupName();
-        if(!Strings.isBlank(userGroupName)) {
-            if(userGroupManager.checkUserGroupNameExist(userGroupName)) {
-                throw new PortalException("DuplicatedData", "userGroupName already exists", HttpStatus.CONFLICT);
-            }
         }
 
         // update user group
