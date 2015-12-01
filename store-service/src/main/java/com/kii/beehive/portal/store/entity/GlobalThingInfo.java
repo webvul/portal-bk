@@ -18,10 +18,6 @@ public class GlobalThingInfo extends PortalEntity {
 
 	private String type;
 
-//	private String defaultOwnerID;
-
-//	private String password;
-
 	private Map<String,Object> status;
 
 	private Set<String> tags=new HashSet<>();
@@ -32,10 +28,6 @@ public class GlobalThingInfo extends PortalEntity {
 
 	private Map<String,Object> custom=new HashMap<>();
 
-//	public void generGlobalThingID(){
-//		this.globalThingID= kiiAppID + "-" + vendorThingID;
-//	}
-
 	@Override
 	public String getId() {
 		return globalThingID;
@@ -45,14 +37,6 @@ public class GlobalThingInfo extends PortalEntity {
 	public void setId(String globalThingID) {
 		this.globalThingID = globalThingID;
 	}
-
-//	public String getDefaultOwnerID() {
-//		return defaultOwnerID;
-//	}
-//
-//	public void setDefaultOwnerID(String defaultOwnerID) {
-//		this.defaultOwnerID = defaultOwnerID;
-//	}
 
 	public Set<String> getTags() {
 		return tags;

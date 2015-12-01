@@ -20,6 +20,7 @@ import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.beehive.portal.service.GlobalThingDao;
 import com.kii.beehive.portal.service.TagIndexDao;
 import com.kii.beehive.portal.store.entity.GlobalThingInfo;
+import com.kii.beehive.portal.store.entity.KiiAppInfo;
 import com.kii.beehive.portal.store.entity.TagIndex;
 import com.kii.beehive.portal.service.AppInfoDao;
 
@@ -35,6 +36,7 @@ public class ThingManager {
 	@Autowired
 	private TagIndexDao tagIndexDao;
 
+
 	public String createThing(GlobalThingInfo thingInfo, Collection<String> tagList) {
 
 		Set<TagIndex> tagSet=new HashSet<>();
@@ -42,10 +44,11 @@ public class ThingManager {
 		tagList.forEach((str)->{
 			tagSet.add(TagIndex.generCustomTagIndex(str));
 		});
+
+		thingInfo.setStatusUpdatetime(new Date());
 		globalThingDao.addThingInfo(thingInfo);
 
 		Set<String> tagNameSet = new HashSet<String>();
-
 		for(TagIndex tag:tagSet){
 			if(!StringUtils.isEmpty(tag.getDisplayName()) && !StringUtils.isEmpty(tag.getTagType())){
 				if(!tagIndexDao.isTagIndexExist(tag.getId())) {
@@ -57,6 +60,7 @@ public class ThingManager {
 
 		return thingInfo.getGlobalThingID();
 	}
+
 
 	
 	public void bindTagToThing(String tagID,String thingID) {

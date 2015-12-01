@@ -60,19 +60,6 @@ public class ThingController {
 		return thing;
 	}
 
-	/**
-	 * 列出所有设备
-	 * GET /things/all
-	 *
-	 * refer to doc "Beehive API - Thing API" for request/response details
-	 *
-	 * @return
-     */
-//	@RequestMapping(path="/all",method={RequestMethod.GET})
-//	public ResponseEntity<List<GlobalThingInfo>> getAllThing(){
-//		List<GlobalThingInfo> list =  globalThingDao.getAllThing();
-//		return new ResponseEntity<>(list, HttpStatus.OK);
-//	}
 
 	/**
 	 * 创建/更新设备信息
@@ -108,12 +95,12 @@ public class ThingController {
 	 * @param globalThingID
      */
 	@RequestMapping(path="/{globalThingID}",method={RequestMethod.DELETE})
-	public ResponseEntity<String> removeThing(@PathVariable("globalThingID") String globalThingID){
+	public void removeThing(@PathVariable("globalThingID") String globalThingID){
 		
 		GlobalThingInfo orig =  globalThingDao.getThingInfoByID(globalThingID);
 		
 		thingManager.removeThings(orig);
-		return new ResponseEntity<>(HttpStatus.OK);
+		return;
 	}
 
 	/**
@@ -126,7 +113,7 @@ public class ThingController {
 	 * @param tagName
      */
 	@RequestMapping(path="/{globalThingID}/tags/custom/{tagName}",method={RequestMethod.PUT})
-	public ResponseEntity<String> addThingTag(@PathVariable("globalThingID") String globalThingID,@PathVariable("tagName") String tagName){
+	public void addThingTag(@PathVariable("globalThingID") String globalThingID,@PathVariable("tagName") String tagName){
 		
 		String[] thingIDs = globalThingID.split(",");
 		List<String> tagIDs = CollectionUtils.arrayToList(tagName.split(","));
@@ -134,7 +121,7 @@ public class ThingController {
 		List<String> tags=tagIDs.stream().map((s)-> TagType.Custom.getTagName(s)).collect(Collectors.toList());
 
 		thingManager.bindTagToThing(tags, Arrays.asList(thingIDs));
-		return new ResponseEntity<>(HttpStatus.OK);
+		return ;
 	}
 
 	/**
@@ -152,15 +139,6 @@ public class ThingController {
 		return;
 	}
 
-	/**
-	 * 查询tag下的设备
-	 * GET /things/tag/{tagName...}/operation/{operation}
-	 *
-	 * refer to doc "Beehive API - Thing API" for request/response details
-	 *
-	 * @param tagName
-	 * @param operation
-     * @return
-     */
+
 
 }

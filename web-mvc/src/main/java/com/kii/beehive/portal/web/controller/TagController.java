@@ -116,7 +116,6 @@ public class TagController {
 	@RequestMapping(path = "/{type}/{tagName}", method = {RequestMethod.GET})
 	public List<TagIndex> getThingsByTag(@PathVariable("type")String type,@PathVariable("tagName") String tagName) {
 
-//		Collection<String> tagCol=new HashSet<String>();
 		String[] tags=tagName.split(",");
 		TagType t=TagType.valueOf(StringUtils.capitalize(type));
 
@@ -130,11 +129,11 @@ public class TagController {
 	}
 
 	@RequestMapping(path = "/{tagName}/operation/{operation}", method = {RequestMethod.GET})
-	public ResponseEntity<List<GlobalThingInfo>> getThingsByTagExpress(@PathVariable("tagName") String tagName, @PathVariable("operation") String operation) {
+	public List<GlobalThingInfo> getThingsByTagExpress(@PathVariable("tagName") String tagName, @PathVariable("operation") String operation) {
 
 		List<GlobalThingInfo> list = this.thingManager.findThingByTagName(tagName.split(","), operation);
 
-		return new ResponseEntity<>(list, HttpStatus.OK);
+		return list;
 	}
 
 }

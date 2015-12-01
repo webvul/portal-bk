@@ -86,13 +86,10 @@ public class GlobalThingDao extends AbstractDataAccess<GlobalThingInfo>{
 		return super.getEntitys(ids.toArray(new String[0]));
 	}
 
-	public void addThingInfo(GlobalThingInfo thingInfo){
+	public void addThingInfo(GlobalThingInfo thing){
+		thing.setGlobalThingID(thing.getVendorThingID());
 
-		thingInfo.setGlobalThingID(thingInfo.getVendorThingID());
-
-		thingInfo.setStatusUpdatetime(new Date());
-
-		super.updateEntityAll(thingInfo);
+		super.updateEntityAll(thing);
 	}
 
 	public List<GlobalThingInfo> getAllThing() {
