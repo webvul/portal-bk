@@ -80,7 +80,7 @@ public class TestGlobalThingDao extends TestInit {
 		//System.out.println(tag.getGlobalThings());
 		//System.out.println(tag.getKiiAppIDs());
 		
-		assertEquals(1,tag.getGlobalThings().size());
+		assertEquals(1,tag.getThings().size());
 		assertEquals(1,tag.getKiiAppIDs().size());
 	}
 
@@ -98,11 +98,11 @@ public class TestGlobalThingDao extends TestInit {
 				CollectUtils.createList("001","002"));
 		
 		TagIndex tag = tagIndexDao.getTagIndexByID(tag1.getId());
-		assertEquals(2,tag.getGlobalThings().size());
+		assertEquals(2,tag.getThings().size());
 		assertEquals(2,tag.getKiiAppIDs().size());
 		
 		tag = tagIndexDao.getTagIndexByID(tag2.getId());
-		assertEquals(2,tag.getGlobalThings().size());
+		assertEquals(2,tag.getThings().size());
 		assertEquals(2,tag.getKiiAppIDs().size());
 		
 		//String json=mapper.writeValueAsString(tag);
@@ -126,7 +126,7 @@ public class TestGlobalThingDao extends TestInit {
 		//System.out.println(tag.getGlobalThings());
 		//System.out.println(tag.getKiiAppIDs());
 		
-		assertEquals(0,tag.getGlobalThings().size());
+		assertEquals(0,tag.getThings().size());
 		assertEquals(0,tag.getKiiAppIDs().size());
 	}
 

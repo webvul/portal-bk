@@ -1,9 +1,8 @@
 package com.kii.beehive.portal.web.controller;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.After;
 import org.junit.Test;
@@ -12,13 +11,12 @@ import org.springframework.http.MediaType;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kii.beehive.portal.service.TagIndexDao;
-import com.kii.beehive.portal.store.entity.BeehiveUserGroup;
 import com.kii.beehive.portal.store.entity.TagType;
 import com.kii.beehive.portal.web.WebTestTemplate;
 
+import static junit.framework.Assert.assertTrue;
 import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertNotNull;
-import static junit.framework.TestCase.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -38,8 +36,11 @@ public class TestTagController extends WebTestTemplate {
     @After
     public void after() {
 
-        tagIndexDao.removeTagByID(TagType.Custom + "-" + displayName);
-
+        try {
+            tagIndexDao.removeTagByID(TagType.Custom + "-" + displayName);
+        }catch(Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
@@ -65,6 +66,41 @@ public class TestTagController extends WebTestTemplate {
         String tagName = (String)map.get("tagName");
         assertEquals(TagType.Custom + "-" + displayName, tagName);
 
+
+    }
+
+    @Test
+    public void testGetAllTag() throws Exception {
+
+        String ctx= mapper.writeValueAsString(null);
+
+        String result=this.mockMvc.perform(
+                get("/tags/all").content(ctx)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("UTF-8")
+        )
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        Object map=mapper.readValue(result, Object.class);
+
+        // assert http reture
+//        String tagName = (String)map.get("tagName");
+//        assertEquals(TagType.Custom + "-" + displayName, tagName);
+
+        System.out.println("response: " + map);
+
+        Map<String, Object>[] mapArray = (Map<String, Object>[])map;
+
+        assertTrue(mapArray.length > 0);
+        for (Map<String, Object> m : mapArray) {
+            Set<String> keys = m.keySet();
+            assertTrue(keys.contains("displayName"));
+            assertTrue(keys.contains("description"));
+            assertTrue(keys.contains("tagName"));
+            assertTrue(keys.contains("tagType"));
+            assertTrue(keys.contains("things"));
+        }
 
     }
 

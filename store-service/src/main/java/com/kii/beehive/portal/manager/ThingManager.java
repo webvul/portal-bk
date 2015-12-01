@@ -113,7 +113,7 @@ public class ThingManager {
 	
 	
 	public void removeTag(TagIndex orig) {
-		Set<String> thingIDSet = orig.getGlobalThings();
+		Set<String> thingIDSet = orig.getThings();
 		for(String thingID:thingIDSet){
 			GlobalThingInfo thing=globalThingDao.getThingInfoByID(thingID);
 			globalThingDao.removeTagsFromThing(thing, new String[]{orig.getId()});
@@ -141,12 +141,12 @@ public class ThingManager {
 		}
 
 		Set<String> thingsSet = new HashSet<String>();
-		thingsSet.addAll(tagList.iterator().next().getGlobalThings());
+		thingsSet.addAll(tagList.iterator().next().getThings());
 		for(TagIndex ti:tagList){
 			if(operation.equals("or")) {
-				thingsSet.addAll(ti.getGlobalThings());
+				thingsSet.addAll(ti.getThings());
 			}else if(operation.equals("and")){
-				thingsSet.retainAll(ti.getGlobalThings());
+				thingsSet.retainAll(ti.getThings());
 			}
 		}
 
