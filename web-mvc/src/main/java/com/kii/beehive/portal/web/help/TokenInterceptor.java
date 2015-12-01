@@ -19,12 +19,6 @@ public class TokenInterceptor extends HandlerInterceptorAdapter {
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
 
-//		String path=request.getContextPath();
-
-//		if(!path.startsWith("users")){
-//			return true;
-//		}
-
 		String auth=request.getHeader("Authorization");
 
 		if(auth==null||!auth.startsWith("Bearer ")){

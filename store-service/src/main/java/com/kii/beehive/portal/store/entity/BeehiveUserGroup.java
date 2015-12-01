@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.kii.extension.sdk.entity.KiiEntity;
 
 
-public class BeehiveUserGroup extends KiiEntity {
+public class BeehiveUserGroup extends PortalEntity {
 
     public static final String PREFIX = "custom-";
 

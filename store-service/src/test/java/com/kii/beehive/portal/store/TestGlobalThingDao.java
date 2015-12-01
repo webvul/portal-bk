@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 
 import com.kii.beehive.portal.common.utils.CollectUtils;
+import com.kii.beehive.portal.helper.PortalTokenService;
 import com.kii.beehive.portal.manager.ThingManager;
 import com.kii.beehive.portal.service.GlobalThingDao;
 import com.kii.beehive.portal.service.TagIndexDao;
@@ -33,29 +34,44 @@ public class TestGlobalThingDao extends TestInit {
 	@Autowired
 	private TagIndexDao tagIndexDao;
 
+
+	@Autowired
+	private PortalTokenService  portalToken;
+
 	@Before
 	public void addData(){
 
+		portalToken.setToken("test", PortalTokenService.PortalTokenType.Demo);
+
+		String suf=String.valueOf(System.currentTimeMillis());
 
 		GlobalThingInfo thing=new GlobalThingInfo();
-		thing.setId("001");
-		thing.setVendorThingID("MacAddr1");
+//		thing.setId("001"+suf);
+		thing.setVendorThingID("MacAddr1"+suf);
 		thing.setKiiAppID("a");
-
-
-		thingDao.addThingInfo(thing);
-
-		thing.setId("002");
-		thing.setVendorThingID("MacAddr2");
-		thing.setKiiAppID("b");
+//		thing.setGlobalThingID(thing.get);
 
 		thingDao.addThingInfo(thing);
-		
-		thing.setId("003");
-		thing.setVendorThingID("MacAddr3");
-		thing.setKiiAppID("c");
 
-		thingDao.addThingInfo(thing);
+		GlobalThingInfo info=thingDao.getObjectByID(thing.getGlobalThingID());
+
+//		TokenInfo  token=new TokenInfo("test", PortalTokenService.PortalTokenType.Demo);
+
+		assertEquals("Demo:test",info.getCreateBy());
+
+
+
+//		thing.setId("002");
+//		thing.setVendorThingID("MacAddr2");
+//		thing.setKiiAppID("b");
+//
+//		thingDao.addThingInfo(thing);
+//
+//		thing.setId("003");
+//		thing.setVendorThingID("MacAddr3");
+//		thing.setKiiAppID("c");
+
+//		thingDao.addThingInfo(thing);
 
 
 		TagIndex tag=new TagIndex();
@@ -66,6 +82,8 @@ public class TestGlobalThingDao extends TestInit {
 		tag.setTagType(TagType.System);
 		tag.setDisplayName("demo2");
 		tagIndexDao.addTagIndex(tag);
+
+
 	}
 	
 	@Test

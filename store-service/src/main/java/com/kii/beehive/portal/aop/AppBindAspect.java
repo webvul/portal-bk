@@ -24,8 +24,9 @@ public class AppBindAspect {
 	@Autowired
 	private AppBindToolResolver  bindTool;
 
-	@Before("within (@com.kii.beehive.portal.annotation.BindAppByName  com.kii.beehive.portal.service..* ) ")
-	public void beforeCallBindDao(JoinPoint joinPoint){
+
+	@Before("execution (* com.kii.extension.sdk.service.AbstractDataAccess+.*(..)  ) ")
+	public void beforeCallDataAccess(JoinPoint joinPoint){
 
 		BindAppByName  appByName=joinPoint.getTarget().getClass().getAnnotation(BindAppByName.class);
 
@@ -38,23 +39,6 @@ public class AppBindAspect {
 		bindTool.setAppChoice(choice);
 
 	}
-
-
-//	@Before("within (@com.kii.beehive.portal.annotation.BindAppByName  com.kii.beehive.portal.service..* ) ")
-//	public void beforeCallBindFunction(JoinPoint joinPoint){
-//
-//		BindAppByName  appByName=joinPoint.getTarget().getClass().getAnnotation(BindAppByName.class);
-//
-//		AppChoice choice=new AppChoice();
-//		if(!StringUtils.isEmpty(appByName.appBindSource())) {
-//			choice.setBindName(appByName.appBindSource());
-//		}
-//		choice.setAppName(appByName.appName());
-//
-//		bindTool.setAppChoice(choice);
-//
-//	}
-
 
 	@Before("execution (*  com.kii.beehive.portal.service..*(@com.kii.beehive.portal.annotation.AppBindParam (*) , .. ))")
 	public void  beforeCallBindParam(JoinPoint joinPoint ){

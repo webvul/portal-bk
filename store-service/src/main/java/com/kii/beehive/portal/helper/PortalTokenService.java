@@ -27,6 +27,15 @@ public class PortalTokenService {
 		}
 	}
 
+
+	public PortalTokenType getTokenType(){
+		return tokenLocal.get().type;
+	}
+
+	public String getUserDescription(){
+		return tokenLocal.get().getDescription();
+	}
+
 	public void setToken(String token,PortalTokenType type) {
 		this.tokenLocal.set(new TokenInfo(token,type));
 	}
@@ -39,11 +48,15 @@ public class PortalTokenService {
 			this.token=token;
 			this.type=type;
 		}
+
+		public String getDescription(){
+			return type.name()+":"+token;
+		}
 	}
 
 	public enum PortalTokenType {
 
-		UserSync;
+		UserSync,Demo;
 
 	}
 }
