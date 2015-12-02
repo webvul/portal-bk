@@ -117,9 +117,7 @@ public class UserGroupController {
         // delete user group
         userGroupManager.deleteUserGroup(userGroupID, null);
 
-        Map<String,String> resultMap = new HashMap<>();
-        resultMap.put("userGroupID", userGroupID);
-        return new ResponseEntity<>(resultMap, HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**
