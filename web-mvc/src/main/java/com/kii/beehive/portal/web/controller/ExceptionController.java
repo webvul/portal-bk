@@ -2,6 +2,7 @@ package com.kii.beehive.portal.web.controller;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -18,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -61,6 +63,10 @@ public class ExceptionController {
 
 			if(!filter.contains(desc.getDisplayName()) ){
 				try {
+					Method method=desc.getReadMethod();
+					if(method.isAnnotationPresent(JsonIgnore.class)){
+						continue;
+					}
 					Object val=desc.getReadMethod().invoke(ex,null);
 					if(val==null){
 						continue;
