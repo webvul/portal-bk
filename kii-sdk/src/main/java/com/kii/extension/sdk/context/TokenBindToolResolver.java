@@ -51,5 +51,12 @@ public class TokenBindToolResolver {
 
 	}
 
+	public void clean(){
+
+		appChoiceLocal.remove();
+
+		tokenDirectLocal.remove();
+	}
+
 
 }

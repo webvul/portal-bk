@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Set;
 
 
-import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +20,9 @@ import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.beehive.portal.service.GlobalThingDao;
 import com.kii.beehive.portal.service.TagIndexDao;
 import com.kii.beehive.portal.store.entity.GlobalThingInfo;
+import com.kii.beehive.portal.store.entity.KiiAppInfo;
 import com.kii.beehive.portal.store.entity.TagIndex;
 import com.kii.beehive.portal.service.AppInfoDao;
-import com.kii.beehive.portal.store.entity.KiiAppInfo;
 
 @Component
 public class ThingManager {
@@ -31,14 +30,15 @@ public class ThingManager {
 	private Logger log= LoggerFactory.getLogger(ThingManager.class);
 
 	@Autowired
-	private AppInfoDao appInfoDao;
-
-	@Autowired
 	private GlobalThingDao globalThingDao;
 
 
 	@Autowired
 	private TagIndexDao tagIndexDao;
+
+	@Autowired
+	private AppInfoDao appInfoDao;
+
 
 	public String createThing(GlobalThingInfo thingInfo, Collection<String> tagList) {
 		
@@ -49,11 +49,6 @@ public class ThingManager {
 		tagList.forEach((str)->{
 			tagSet.add(TagIndex.generCustomTagIndex(str));
 		});
-
-		KiiAppInfo masterAppInfo = appInfoDao.getMasterAppInfo();
-		String defaultThingOwnerID = masterAppInfo.getDefaultThingOwnerID();
-
-		thingInfo.setDefaultOwnerID(defaultThingOwnerID);
 
 		thingInfo.setStatusUpdatetime(new Date());
 		globalThingDao.addThingInfo(thingInfo);

@@ -9,7 +9,7 @@ import com.kii.beehive.portal.store.entity.BeehiveGuestLog;
 import com.kii.extension.sdk.entity.BucketInfo;
 import com.kii.extension.sdk.service.AbstractDataAccess;
 
-@BindAppByName(appName="portal")
+@BindAppByName(appName="portal",appBindSource="propAppBindTool")
 @Component
 public class BeehiveGuestDao extends AbstractDataAccess {
 

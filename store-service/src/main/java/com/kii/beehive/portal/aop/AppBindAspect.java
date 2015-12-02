@@ -5,6 +5,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.MethodSignature;
@@ -24,8 +25,9 @@ public class AppBindAspect {
 	@Autowired
 	private AppBindToolResolver  bindTool;
 
-	@Before("within (@com.kii.beehive.portal.annotation.BindAppByName  com.kii.beehive.portal.service..* ) ")
-	public void beforeCallBindDao(JoinPoint joinPoint){
+
+	@Before("execution (* com.kii.extension.sdk.service.AbstractDataAccess+.*(..)  ) ")
+	public void beforeCallDataAccess(JoinPoint joinPoint){
 
 		BindAppByName  appByName=joinPoint.getTarget().getClass().getAnnotation(BindAppByName.class);
 
@@ -40,20 +42,20 @@ public class AppBindAspect {
 	}
 
 
-//	@Before("within (@com.kii.beehive.portal.annotation.BindAppByName  com.kii.beehive.portal.service..* ) ")
-//	public void beforeCallBindFunction(JoinPoint joinPoint){
-//
-//		BindAppByName  appByName=joinPoint.getTarget().getClass().getAnnotation(BindAppByName.class);
-//
-//		AppChoice choice=new AppChoice();
-//		if(!StringUtils.isEmpty(appByName.appBindSource())) {
-//			choice.setBindName(appByName.appBindSource());
-//		}
-//		choice.setAppName(appByName.appName());
-//
-//		bindTool.setAppChoice(choice);
-//
-//	}
+
+
+
+	@After("execution (* com.kii.extension.sdk.service.AbstractDataAccess+.*(..)  ) ")
+	public void afterCallDataAccess(JoinPoint joinPoint){
+
+		bindTool.clean();
+
+	}
+
+	@After("execution (*  com.kii.beehive.portal.service..*(@com.kii.beehive.portal.annotation.AppBindParam (*) , .. ))")
+	public void  afterCallBindParam(JoinPoint joinPoint ){
+		bindTool.clean();
+	}
 
 
 	@Before("execution (*  com.kii.beehive.portal.service..*(@com.kii.beehive.portal.annotation.AppBindParam (*) , .. ))")
@@ -94,6 +96,28 @@ public class AppBindAspect {
 			choice.setBindName(annotation.appBindSource());
 		}
 		bindTool.setAppChoice(choice);
+
+	}
+
+	@Before("within (@com.kii.beehive.portal.annotation.BindAppByName  com.kii.beehive.portal.service..* ) ")
+	public void beforeCallAppBindByName(JoinPoint joinPoint){
+
+		BindAppByName  appByName=joinPoint.getTarget().getClass().getAnnotation(BindAppByName.class);
+
+		AppChoice choice=new AppChoice();
+		if(!StringUtils.isEmpty(appByName.appBindSource())) {
+			choice.setBindName(appByName.appBindSource());
+		}
+		choice.setAppName(appByName.appName());
+
+		bindTool.setAppChoice(choice);
+
+	}
+
+	@After("within (@com.kii.beehive.portal.annotation.BindAppByName  com.kii.beehive.portal.service..* ) ")
+	public void afterCallAppBindByName(JoinPoint joinPoint){
+
+		bindTool.clean();
 
 	}
 

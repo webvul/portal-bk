@@ -12,7 +12,7 @@ import com.kii.beehive.portal.exception.TagFormatInvalidException;
 import com.kii.extension.sdk.entity.KiiEntity;
 
 
-public class TagIndex extends KiiEntity {
+public class TagIndex extends PortalEntity {
 
 	private TagType tagType;
 	

@@ -2,6 +2,7 @@ package com.kii.beehive.portal.service;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +21,7 @@ import com.kii.extension.sdk.query.ConditionBuilder;
 import com.kii.extension.sdk.query.QueryParam;
 import com.kii.extension.sdk.service.AbstractDataAccess;
 
-@BindAppByName(appName="portal")
+@BindAppByName(appName="portal",appBindSource="propAppBindTool")
 @Component
 public class GlobalThingDao extends AbstractDataAccess<GlobalThingInfo>{
 

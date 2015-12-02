@@ -1,6 +1,7 @@
 package com.kii.extension.sdk.context;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -10,15 +11,13 @@ import com.kii.extension.sdk.entity.AppChoice;
 import com.kii.extension.sdk.entity.AppInfo;
 
 @Component
-public class AppBindToolResolver {
+public class AppBindToolResolver  {
 
 	@Autowired
 	private ApplicationContext context;
 
 
 	private ThreadLocal<AppChoice>  appChoiceLocal;
-
-	private ThreadLocal<AppInfo>  directAppInfoLocal=new ThreadLocal<>();
 
 	private String[] getBeanNameArray(){
 
@@ -39,10 +38,6 @@ public class AppBindToolResolver {
 	}
 
 
-	public void setAppInfoDrectly(AppInfo appInfo){
-		directAppInfoLocal.set(appInfo);
-	}
-
 
 	public void setAppChoice(AppChoice choice){
 
@@ -62,29 +57,13 @@ public class AppBindToolResolver {
 
 	}
 
-//	public AppInfo getAppInfoByName(String appName){
-//
-//		for (String bean : getBeanNameArray()) {
-//			AppBindTool bindTool = context.getBean(bean, AppBindTool.class);
-//
-//			AppInfo info = bindTool.getAppInfo(appName);
-//
-//			if(info!=null){
-//				return info;
-//			}
-//
-//		}
-//		return null;
-//
-//	}
-
 	public AppInfo getAppInfo(){
 
-		AppInfo directInfo=directAppInfoLocal.get();
-
-		if(directInfo!=null){
-			return directInfo;
-		}
+//		AppInfo directInfo=directAppInfoLocal.get();
+//
+//		if(directInfo!=null){
+//			return directInfo;
+//		}
 
 		AppChoice choice=appChoiceLocal.get();
 
@@ -109,6 +88,14 @@ public class AppBindToolResolver {
 
 	}
 
+	public void clean(){
+
+		appChoiceLocal.remove();
+
+//		directAppInfoLocal.remove();
+
+	}
+
 
 	private AppInfo searchAppInfo(AppBindTool bindTool,AppChoice choice){
 
@@ -118,6 +105,7 @@ public class AppBindToolResolver {
 		if(choice.getAppName()!=null) {
 			info = bindTool.getAppInfo(choice.getAppName());
 		}
+		this.setAppChoice(choice);
 
 		return info;
 

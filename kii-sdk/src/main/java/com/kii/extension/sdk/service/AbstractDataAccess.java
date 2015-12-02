@@ -30,24 +30,24 @@ public abstract class AbstractDataAccess<T> {
 	private DataService service;
 
 
-	protected boolean checkExist(String id){
+	public  boolean checkExist(String id){
 		return service.checkObjectExist(id,bucketInfo);
 	}
 
-	protected  T  getObjectByID(String id){
+	public  T  getObjectByID(String id){
 		return service.getObjectByID(id, bucketInfo, typeCls);
 	}
 
-	protected UpdateResponse addEntity(T  entity,String id){
+	public UpdateResponse addEntity(T  entity,String id){
 		return  service.fullUpdateObject(id, entity, bucketInfo);
 	}
 
 
-	protected CreateResponse addEntity(T  entity){
+	public CreateResponse addEntity(T  entity){
 		return  service.createObject(entity, bucketInfo);
 	}
 
-	protected <E extends KiiEntity> String addKiiEntity(E  entity){
+	public <E extends KiiEntity> String addKiiEntity(E  entity){
 
 		if(entity.getId()==null){
 			CreateResponse resp=service.createObject(entity, bucketInfo);
@@ -62,74 +62,74 @@ public abstract class AbstractDataAccess<T> {
 	}
 
 
-	protected void removeEntity(String id){
+	public void removeEntity(String id){
 		service.removeObject(id,bucketInfo);
 	}
 
 
-	protected void removeEntityWithVersion(String id,int version){
+	public void removeEntityWithVersion(String id,int version){
 		service.removeObjectWithVersion(id, String.valueOf(version), bucketInfo);
 	}
 
-	protected UpdateResponse updateEntityAll(T entity,String id){
+	public UpdateResponse updateEntityAll(T entity,String id){
 
 		return service.fullUpdateObject(id, entity, bucketInfo);
 
 	}
 
 
-	protected UpdateResponse updateEntityAllWithVersion(T entity,String id,int version){
+	public UpdateResponse updateEntityAllWithVersion(T entity,String id,int version){
 
 		return service.fullUpdateObjectWithVersion(id, entity, bucketInfo, String.valueOf(version));
 
 	}
 
-	protected <E extends KiiEntity> UpdateResponse updateEntityAll(E entity){
+	public <E extends KiiEntity> UpdateResponse updateEntityAll(E entity){
 
 		return service.fullUpdateObject(entity.getId(), entity, bucketInfo);
 
 	}
 
 
-	protected <E extends KiiEntity> UpdateResponse updateEntityAllWithVersion(E entity,int version){
+	public <E extends KiiEntity> UpdateResponse updateEntityAllWithVersion(E entity,int version){
 
 		return service.fullUpdateObjectWithVersion(entity.getId(), entity, bucketInfo, String.valueOf(version));
 
 	}
 
-	protected String updateEntity(Map<String,Object> entity,String id){
+	public String updateEntity(Map<String,Object> entity,String id){
 
 		return service.updateObject(id, entity, bucketInfo);
 
 	}
 
 
-	protected String updateEntityWithVersion(Map<String,Object> entity, String id, int version){
+	public String updateEntityWithVersion(Map<String,Object> entity, String id, int version){
 
 		return service.updateObjectWithVersion(id, entity, bucketInfo, String.valueOf(version));
 
 	}
 
-	protected <T> String updateEntity(T entity,String id){
+	public <T> String updateEntity(T entity,String id){
 
 		return service.updateObjectWithEntity(id, entity, bucketInfo);
 
 	}
 
 
-	protected <T> String updateEntityWithVersion(T  entity,String id,int version){
+	public <T> String updateEntityWithVersion(T  entity,String id,int version){
 
 		return service.updateObjectWithVersionWithEntity(id, entity, bucketInfo, String.valueOf(version));
 
 	}
 
-	protected List<T> query(QueryParam queryParam){
+	public List<T> query(QueryParam queryParam){
 
 		return service.query(queryParam, typeCls, bucketInfo);
 
 	}
 
-	protected List<T> fullQuery(QueryParam queryParam){
+	public List<T> fullQuery(QueryParam queryParam){
 
 		List<T>  result=new ArrayList<T>();
 
@@ -144,7 +144,7 @@ public abstract class AbstractDataAccess<T> {
 
 	}
 
-	protected List<T> getEntitys(String[] ids){
+	public List<T> getEntitys(String[] ids){
 
 		QueryParam query= ConditionBuilder.newCondition().In("_id",ids).getFinalCondition().build();
 
@@ -153,7 +153,7 @@ public abstract class AbstractDataAccess<T> {
 
 	}
 
-	protected List<T> getAll(){
+	public List<T> getAll(){
 
 		QueryParam query= ConditionBuilder.getAll().getFinalCondition().build();
 

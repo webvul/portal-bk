@@ -74,7 +74,7 @@ X-Kii-AppKey: <slaveAppKey>
 	}
 
 	private ApiAccessBuilder getBuilder(AppInfo info) {
-		bindToolResolver.setAppInfoDrectly(info);
+//		bindToolResolver.setAppInfoDrectly(info);
 
 		return new ApiAccessBuilder(info).bindToken(tool.getToken());
 	}
