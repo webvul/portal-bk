@@ -47,4 +47,6 @@ dependencies {
 	compile "org.springframework:spring-context:${springVersion}"
 
 	compile "com.zaxxer:HikariCP:2.4.1"
+
+	compile project(":commons")
 }

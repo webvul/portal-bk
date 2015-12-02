@@ -20,7 +20,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import com.kii.beehive.portal.jdbc.annotation.JdbcField;
 import com.kii.beehive.portal.jdbc.annotation.JdbcFieldType;
 
-public class BeanPropertyWithAnnationSqlParameterSource extends AbstractSqlParameterSource {
+public class AnnationBeanSqlParameterSource extends AbstractSqlParameterSource {
 
 
 
@@ -31,7 +31,7 @@ public class BeanPropertyWithAnnationSqlParameterSource extends AbstractSqlParam
 	private final Map<String,JdbcFieldType> sqlTypeMapper;
 
 
-	public BeanPropertyWithAnnationSqlParameterSource(Object object) {
+	public AnnationBeanSqlParameterSource(Object object) {
 		this.beanWrapper = PropertyAccessorFactory.forBeanPropertyAccess(object);
 
 		Map<String,String> searchMap=new HashMap<>();
