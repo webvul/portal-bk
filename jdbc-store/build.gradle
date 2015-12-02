@@ -1,0 +1,50 @@
+
+
+buildscript {
+
+	ext{
+		mysqlVersion = "5.1.37"
+	}
+
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath "mysql:mysql-connector-java:${mysqlVersion}"
+		classpath 'org.flywaydb:flyway-gradle-plugin:3.1'
+	}
+
+}
+
+apply plugin: 'flyway'
+
+Properties props = new Properties()
+if ( project.hasProperty("profile") ) {
+	project.ext.set("profile",Eval.me("profile"))
+}else{
+	project.ext.set("profile","test")
+}
+
+props.load(new FileInputStream("${sourceSets.test.resources.srcDirs[0]}/com/kii/beehive/portal/jdbc/jdbc.${profile}.properties"))
+flyway.url=props.getProperty("beehive.jdbc.url")
+flyway.user=props.getProperty("beehive.jdbc.username")
+flyway.password=props.getProperty("beehive.jdbc.password")
+
+
+flyway{
+
+	encoding = 'UTF-8'
+
+}
+
+dependencies {
+	compile "mysql:mysql-connector-java:${mysqlVersion}"
+
+	compile "org.springframework:spring-jdbc:${springVersion}"
+
+	compile "org.springframework:spring-tx:${springVersion}"
+
+	compile "org.springframework:spring-context:${springVersion}"
+
+	compile "com.zaxxer:HikariCP:2.4.1"
+}
