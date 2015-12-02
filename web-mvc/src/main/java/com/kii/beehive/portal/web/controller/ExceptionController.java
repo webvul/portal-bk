@@ -1,10 +1,17 @@
 package com.kii.beehive.portal.web.controller;
 
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.PropertyAccessorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +21,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.kii.beehive.portal.common.utils.CollectUtils;
 import com.kii.beehive.portal.exception.StoreException;
 import com.kii.beehive.portal.web.help.PortalException;
 import com.kii.extension.sdk.exception.KiiCloudException;
@@ -43,17 +51,44 @@ public class ExceptionController {
 		return resp;
 	}
 
+	private List<String> filter= CollectUtils.createList("status","suppressed","stackTrace","class");
+
+	private String convertExeptionToJson(RuntimeException ex){
+
+		Map<String,Object> error=new HashMap<>();
+
+		for(PropertyDescriptor desc:BeanUtils.getPropertyDescriptors(ex.getClass()) ){
+
+			if(!filter.contains(desc.getDisplayName()) ){
+				try {
+					Object val=desc.getReadMethod().invoke(ex,null);
+					if(val==null){
+						continue;
+					}
+					error.put(desc.getDisplayName(),val);
+				} catch (IllegalAccessException|InvocationTargetException e) {
+					log.error("exception convert to json fail",e);
+					throw new IllegalArgumentException(e);
+				}
+			}
+		}
+
+		try {
+			return mapper.writeValueAsString(error);
+		} catch (JsonProcessingException e) {
+			log.error("exception convert to json fail",e);
+			throw new IllegalArgumentException(e);
+		}
+	}
+
+
+
 	@ExceptionHandler(StoreException.class)
 	public ResponseEntity<String> handleStoreServiceException(StoreException ex) {
 
 		log.error("store exception ",ex);
 
-		String error= null;
-		try {
-			error = mapper.writeValueAsString(ex);
-		} catch (JsonProcessingException e) {
-			throw new IllegalArgumentException(e);
-		}
+		String error= convertExeptionToJson(ex);
 
 		ResponseEntity<String> resp=new ResponseEntity(error,HttpStatus.valueOf(ex.getStatusCode()));
 
@@ -65,10 +100,9 @@ public class ExceptionController {
 
 		log.error("portal exception ",ex);
 
+		String error= convertExeptionToJson(ex);
 
-		String error=ex.getErrorCode().toString();
-
-		ResponseEntity<String> resp=new ResponseEntity(error,ex.getHttpStatus());
+		ResponseEntity<String> resp=new ResponseEntity(error,ex.getStatus());
 		return resp;
 	}
 
@@ -77,12 +111,7 @@ public class ExceptionController {
 
 		log.error("kiicloud exception ",ex);
 
-		String error= null;
-		try {
-			error = mapper.writeValueAsString(ex);
-		} catch (JsonProcessingException e) {
-			throw new IllegalArgumentException(e);
-		}
+		String error= convertExeptionToJson(ex);
 
 		HttpStatus status=HttpStatus.valueOf(ex.getStatusCode());
 
