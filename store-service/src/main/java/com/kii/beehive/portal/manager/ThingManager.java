@@ -41,7 +41,9 @@ public class ThingManager {
 	private TagIndexDao tagIndexDao;
 
 	public String createThing(GlobalThingInfo thingInfo, Collection<String> tagList) {
-
+		
+		appInfoDao.getAppInfoByID(thingInfo.getKiiAppID());
+		
 		Set<TagIndex> tagSet=new HashSet<>();
 
 		tagList.forEach((str)->{
