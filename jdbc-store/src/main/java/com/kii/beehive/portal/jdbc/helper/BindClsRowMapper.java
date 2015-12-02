@@ -44,6 +44,9 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 
 			JdbcField fieldDesc=descriptor.getReadMethod().getDeclaredAnnotation(JdbcField.class);
 
+			if(fieldDesc==null){
+				continue;
+			}
 			searchMap.put(fieldDesc.column(),descriptor.getDisplayName());
 
 			typeMap.put(fieldDesc.column(),fieldDesc.type());
@@ -73,6 +76,7 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 			Object fieldInst=null;
 			switch (type){
 				case Auto:
+//					if(propCls instanceof )
 					fieldInst=rs.getObject(field,propCls);
 					break;
 				case EnumInt:
@@ -85,6 +89,9 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 					break;
 				case Json:
 					Blob blob=rs.getBlob(field);
+					if(blob==null){
+						break;
+					}
 					try {
 						fieldInst=StreamUtils.copyToString(blob.getBinaryStream(), StandardCharsets.UTF_8);
 					} catch (IOException e) {

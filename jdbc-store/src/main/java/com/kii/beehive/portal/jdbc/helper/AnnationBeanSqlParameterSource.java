@@ -42,6 +42,9 @@ public class AnnationBeanSqlParameterSource extends AbstractSqlParameterSource {
 
 			JdbcField fieldDesc=descriptor.getReadMethod().getDeclaredAnnotation(JdbcField.class);
 
+			if(fieldDesc==null){
+				continue;
+			}
 			searchMap.put(fieldDesc.column(),descriptor.getDisplayName());
 
 			typeMap.put(fieldDesc.column(),fieldDesc.type());
@@ -94,7 +97,8 @@ public class AnnationBeanSqlParameterSource extends AbstractSqlParameterSource {
 		if (sqlType != TYPE_UNKNOWN) {
 			return sqlType;
 		}
-		Class<?> propType = this.beanWrapper.getPropertyType(paramName);
+		String fieldName=this.fieldMapper.get(paramName);
+		Class<?> propType = this.beanWrapper.getPropertyType(fieldName);
 		sqlType= StatementCreatorUtils.javaTypeToSqlParameterType(propType);
 
 		if(sqlType!=TYPE_UNKNOWN){

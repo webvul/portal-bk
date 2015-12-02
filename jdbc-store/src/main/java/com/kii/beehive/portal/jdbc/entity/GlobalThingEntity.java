@@ -16,6 +16,11 @@ public class GlobalThingEntity extends DBEntity{
 	private String custom;
 
 
+	@Override
+	@JdbcField(column="id_global_thing")
+	public long getId(){
+		return super.getId();
+	}
 
 	@JdbcField(column="vendor_thing_id")
 	public String getVendorThingID() {
@@ -35,7 +40,7 @@ public class GlobalThingEntity extends DBEntity{
 		this.kiiAppID = kiiAppID;
 	}
 
-	@JdbcField(column="type")
+	@JdbcField(column="thing_type")
 	public String getType() {
 		return type;
 	}
@@ -53,7 +58,7 @@ public class GlobalThingEntity extends DBEntity{
 		this.status = status;
 	}
 
-	@JdbcField(column = "custom",type= JdbcFieldType.Json)
+	@JdbcField(column = "custom_info",type= JdbcFieldType.Json)
 	public String getCustom() {
 		return custom;
 	}

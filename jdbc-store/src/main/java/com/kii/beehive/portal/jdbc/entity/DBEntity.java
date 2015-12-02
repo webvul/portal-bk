@@ -2,9 +2,11 @@ package com.kii.beehive.portal.jdbc.entity;
 
 import java.util.Date;
 
+import com.kii.beehive.portal.jdbc.annotation.JdbcField;
+
 public class DBEntity {
 
-	private String id;
+	private long id;
 
 	private Date createDate;
 
@@ -14,14 +16,16 @@ public class DBEntity {
 
 	private String modifyBy;
 
-	public String getId() {
+
+	public long getId() {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 
+	@JdbcField(column="create_date")
 	public Date getCreateDate() {
 		return createDate;
 	}
@@ -30,6 +34,7 @@ public class DBEntity {
 		this.createDate = createDate;
 	}
 
+	@JdbcField(column="modify_date")
 	public Date getModifyDate() {
 		return modifyDate;
 	}
@@ -38,6 +43,7 @@ public class DBEntity {
 		this.modifyDate = modifyDate;
 	}
 
+	@JdbcField(column="create_by")
 	public String getCreateBy() {
 		return createBy;
 	}
@@ -46,6 +52,7 @@ public class DBEntity {
 		this.createBy = createBy;
 	}
 
+	@JdbcField(column="modify_by")
 	public String getModifyBy() {
 		return modifyBy;
 	}

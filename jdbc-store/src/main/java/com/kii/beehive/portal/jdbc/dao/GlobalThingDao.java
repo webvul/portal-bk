@@ -27,7 +27,7 @@ import com.kii.beehive.portal.jdbc.helper.BindClsRowMapper;
 public class GlobalThingDao {
 
 
-	public static final String TABLE_NAME = "t_global_thing";
+	public static final String TABLE_NAME = "global_thing";
 	private JdbcTemplate jdbcTemplate;
 
 
@@ -63,12 +63,12 @@ public class GlobalThingDao {
 
 	}
 
-	private String getByIDTemplate="select * from {0} where {1} = ? ";
+	private String getByIDTemplate="select * from ${0} where ${1} = ? ";
 	public GlobalThingEntity getThingByID(long id){
 
-		String sql= StrTemplate.gener(getByIDTemplate,TABLE_NAME,"thing_id");
+		String sql= StrTemplate.gener(getByIDTemplate,TABLE_NAME,"id_global_thing");
 
-		List<GlobalThingEntity> list= jdbcTemplate.query("select * from ",new Object[]{id},rowMapper);
+		List<GlobalThingEntity> list= jdbcTemplate.query(sql,new Object[]{id},rowMapper);
 
 		if(list.size()==0){
 			return null;
