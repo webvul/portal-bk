@@ -1,20 +1,25 @@
 package com.kii.beehive.portal.jdbc.entity;
 
+import com.kii.beehive.portal.jdbc.annotation.JdbcField;
+import com.kii.beehive.portal.jdbc.annotation.JdbcFieldType;
+
 public class TagIndex extends DBEntity {
 
 
-	private String tagType;
+	private TagType tagType;
 
 	private String displayName;
 
-	public String getTagType() {
+	@JdbcField(column = "tag_type",type= JdbcFieldType.EnumStr)
+	public TagType getTagType() {
 		return tagType;
 	}
 
-	public void setTagType(String tagType) {
+	public void setTagType(TagType tagType) {
 		this.tagType = tagType;
 	}
 
+	@JdbcField(column="display_name")
 	public String getDisplayName() {
 		return displayName;
 	}
