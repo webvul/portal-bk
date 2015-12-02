@@ -28,11 +28,11 @@ public class ThingInput extends GlobalThingInfo {
 
 	public void verifyInput(){
 
-		if(StringUtils.isEmpty(this.getVendorThingID())){
+		if(!StringUtils.hasText(this.getVendorThingID())){
 			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"VendorThingID is empty", HttpStatus.BAD_REQUEST);
 		}
 
-		if(StringUtils.isEmpty(this.getKiiAppID())){
+		if(!StringUtils.hasText(this.getKiiAppID())){
 			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"KiiAppID is empty", HttpStatus.BAD_REQUEST);
 		}
 	}
