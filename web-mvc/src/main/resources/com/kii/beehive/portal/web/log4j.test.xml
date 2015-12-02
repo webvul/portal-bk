@@ -12,7 +12,7 @@
         <level value="info" />
     </logger>
 
-    <logger name="org.apache.http">
+    <logger name="org.apache.http.wire">
         <level value="debug" />
     </logger>
 
@@ -20,8 +20,12 @@
         <level value="debug" />
     </logger>
 
+    <logger name="com.kii" >
+        <level value="debug" />
+    </logger>
+
     <root>
-        <priority value="debug" />
+        <priority value="info" />
         <appender-ref ref="console" />
     </root>
 </log4j:configuration>

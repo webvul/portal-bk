@@ -20,9 +20,9 @@ public class GlobalThingInfo extends KiiEntity {
 
 	private String defaultOwnerID;
 
-	private String password;
+//	private String password;
 
-	private String status;
+	private Map<String,Object> status;
 
 	private Set<String> tags=new HashSet<>();
 
@@ -31,6 +31,10 @@ public class GlobalThingInfo extends KiiEntity {
 	private Date statusUpdatetime;
 
 	private Map<String,Object> custom=new HashMap<>();
+
+//	public void generGlobalThingID(){
+//		this.globalThingID= kiiAppID + "-" + vendorThingID;
+//	}
 
 	@Override
 	public String getId() {
@@ -90,11 +94,11 @@ public class GlobalThingInfo extends KiiEntity {
 		this.globalThingID = globalThingID;
 	}
 
-	public String getStatus() {
+	public Map<String,Object> getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(Map<String,Object> status) {
 		this.status = status;
 	}
 
@@ -113,17 +117,9 @@ public class GlobalThingInfo extends KiiEntity {
 	public void setCustom(Map<String, Object> custom) {
 		this.custom = custom;
 	}
-	
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
 
 	@JsonAnySetter
-	public void setCustom(String key,Object val){
+	public void setCustomProp(String key,Object val){
 		this.custom.put(key,val);
 	}
 

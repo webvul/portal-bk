@@ -82,10 +82,7 @@ public class BeehiveUserDao extends AbstractDataAccess<BeehiveUser> {
 
 
 	public List<BeehiveUser> getUserByIDs(List<String> beehiveUserIDList) {
-
-
-		return super.getEntitys(beehiveUserIDList.toArray(new String[0]));
-
+		return super.getEntitys(beehiveUserIDList.toArray(new String[beehiveUserIDList.size()]));
 	}
 
 	public BeehiveUser  getUserByID(String userID){

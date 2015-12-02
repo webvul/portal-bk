@@ -13,6 +13,8 @@ import com.kii.beehive.portal.annotation.BindAppByName;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.extension.sdk.entity.KiiUser;
 import com.kii.extension.sdk.entity.LoginInfo;
+import com.kii.extension.sdk.exception.KiiCloudException;
+import com.kii.extension.sdk.exception.UserAlreadyExistsException;
 import com.kii.extension.sdk.service.UserService;
 
 
@@ -33,7 +35,6 @@ public class KiiUserSyncDao {
 
 		KiiUser user=new KiiUser();
 
-
 		user.setDisplayName(beehiveUser.getUserName());
 
 		if(!StringUtils.isEmpty(beehiveUser.getAliUserID())) {
@@ -45,7 +46,8 @@ public class KiiUserSyncDao {
 
 		String pwd=DigestUtils.sha1Hex(user.getLoginName()+"_beehive");
 		user.setPassword(pwd);
-		String kiiUserID= userService.createUser(user);
+
+		String kiiUserID = userService.createUser(user);
 
 		beehiveUser.setKiiUserID(kiiUserID);
 		beehiveUser.setKiiLoginName(user.getLoginName());
@@ -79,4 +81,8 @@ public class KiiUserSyncDao {
 	}
 
 
+	public void enableUser(String kiiUserID) {
+
+		userService.enableUser(kiiUserID);
+	}
 }

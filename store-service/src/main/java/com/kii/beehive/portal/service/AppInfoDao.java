@@ -57,11 +57,17 @@ public class AppInfoDao extends AbstractDataAccess<KiiAppInfo> {
 		return map;
 	}
 
-	@CacheEvict(cacheNames={"appInfo-map"},key="'map'")
+
+	@CacheEvict(cacheNames={"appInfo-map,appInfo_id"},key="'map'")
 	@CachePut(cacheNames={"appInfo"},key="#appInfo.appName")
 	public void addAppInfo(KiiAppInfo appInfo) {
 
 		super.addEntity(appInfo, appInfo.getAppInfo().getAppID());
+	}
+
+	@Cacheable(cacheNames={"appInfo_id"})
+	public KiiAppInfo getAppInfoByID(String id){
+		return super.getObjectByID(id);
 	}
 
 	@Cacheable(cacheNames={"appInfo"})

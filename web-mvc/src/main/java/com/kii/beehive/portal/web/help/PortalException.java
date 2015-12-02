@@ -2,6 +2,8 @@ package com.kii.beehive.portal.web.help;
 
 import org.springframework.http.HttpStatus;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class PortalException extends RuntimeException {
 
 	private static final long serialVersionUID = -2799530582371715829L;
@@ -22,6 +24,12 @@ public class PortalException extends RuntimeException {
 		this.status=status;
 	}
 
+	@JsonIgnore
+	@Override
+	public StackTraceElement[] getStackTrace(){
+		return this.getStackTrace();
+	}
+
 	public void setErrorCode(String errorCode) {
 		this.errorCode = errorCode;
 	}
@@ -34,6 +42,7 @@ public class PortalException extends RuntimeException {
 		this.errorMessage = errorMessage;
 	}
 
+	@JsonIgnore
 	public HttpStatus getStatus() {
 		return status;
 	}
@@ -43,11 +52,8 @@ public class PortalException extends RuntimeException {
 	}
 
 	public String getErrorCode(){
-		return null;
+		return errorCode;
 	}
 
-	public HttpStatus getHttpStatus() {
-		return status;
-	}
 
 }

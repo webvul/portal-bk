@@ -79,9 +79,11 @@ public class UserGroupController {
             throw new PortalException("DataNotFound", "userGroupID not found", HttpStatus.NOT_FOUND);
         }
 
+        // if userGroupName is set in request, check whether the user group with the same userGroupName already existing
         String userGroupName = userGroup.getUserGroupName();
         if(!Strings.isBlank(userGroupName)) {
-            if(userGroupManager.checkUserGroupNameExist(userGroupName)) {
+            BeehiveUserGroup tempUserGroup = userGroupManager.getUserGroupByName(userGroupName);
+            if(tempUserGroup != null && !userGroupID.equals(tempUserGroup.getUserGroupID())) {
                 throw new PortalException("DuplicatedData", "userGroupName already exists", HttpStatus.CONFLICT);
             }
         }
@@ -115,9 +117,7 @@ public class UserGroupController {
         // delete user group
         userGroupManager.deleteUserGroup(userGroupID, null);
 
-        Map<String,String> resultMap = new HashMap<>();
-        resultMap.put("userGroupID", userGroupID);
-        return new ResponseEntity<>(resultMap, HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**

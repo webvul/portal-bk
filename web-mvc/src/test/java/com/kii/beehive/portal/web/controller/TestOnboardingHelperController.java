@@ -141,7 +141,6 @@ public class TestOnboardingHelperController extends WebTestTemplate {
         assertEquals("da0b6a25-vendor.id.for.test", thingInfo.getGlobalThingID());
         assertEquals("vendor.id.for.test", thingInfo.getVendorThingID());
         assertEquals("da0b6a25", thingInfo.getKiiAppID());
-        assertEquals("456", thingInfo.getPassword());
         assertEquals("on", thingInfo.getStatus());
         assertEquals("LED", thingInfo.getType());
 

@@ -236,6 +236,22 @@ public class ApiAccessBuilder {
 	//user relation
 	//=================
 
+	public ApiAccessBuilder setUserStatus(String userID,boolean status){
+
+		request=new HttpPut(appInfo.getAppSubUrl()+"/users/"+userID+"/status");
+
+		this.setContentType("application/vnd.kii.UserStatusUpdateRequest+json");
+
+
+		Map<String,Object> map=new HashMap<>();
+
+		map.put("disabled",status);
+
+		this.ctxObj=map;
+
+		return this;
+	}
+
 
 	public ApiAccessBuilder createUser(KiiUser user) {
 
@@ -310,6 +326,7 @@ public class ApiAccessBuilder {
 
 		return this;
 	}
+
 
 
 
