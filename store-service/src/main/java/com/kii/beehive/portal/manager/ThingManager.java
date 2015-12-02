@@ -57,8 +57,9 @@ public class ThingManager {
 		for(TagIndex tag:tagSet){
 			if(!StringUtils.isEmpty(tag.getDisplayName()) && !StringUtils.isEmpty(tag.getTagType())){
 				if(!tagIndexDao.isTagIndexExist(tag.getId())) {
-					tagNameSet.add(tag.getId());
+					tagIndexDao.addTagIndex(tag);
 				}
+				tagNameSet.add(tag.getId());
 			}
 		}
 		this.bindTagToThing(tagNameSet, Collections.singleton(thingInfo.getId()));

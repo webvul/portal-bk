@@ -1,17 +1,13 @@
 package com.kii.beehive.portal.web.controller;
 
 
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.portal.manager.ThingManager;
 import com.kii.beehive.portal.service.TagIndexDao;
-import com.kii.beehive.portal.store.entity.GlobalThingInfo;
 import com.kii.beehive.portal.store.entity.TagIndex;
 import com.kii.beehive.portal.store.entity.TagType;
 import com.kii.beehive.portal.web.constant.ErrorCode;
@@ -66,7 +61,11 @@ public class TagController {
      */
 	@RequestMapping(path="/custom",method={RequestMethod.POST})
 	public Map<String,String> createTag(@RequestBody TagIndex tag){
-
+		
+		if(!StringUtils.hasText(tag.getDisplayName())){
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"DisplayName is empty", HttpStatus.BAD_REQUEST);
+		}
+		
 		tag.setTagType(TagType.Custom);
 		tag.fillID();
 
