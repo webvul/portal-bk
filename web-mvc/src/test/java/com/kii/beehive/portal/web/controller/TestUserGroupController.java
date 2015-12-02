@@ -249,11 +249,6 @@ public class TestUserGroupController extends WebTestTemplate {
             assertTrue(userIDListForTest.contains(id));
             assertEquals("username.for." + id, name);
         }
-// TODO to check custom field issue
-//        assertEquals(3, ((Map)map.get("custom")).size());
-//        assertEquals(123.45, ((Map)map.get("custom")).get("birthday"));
-//        assertEquals("male", ((Map)map.get("custom")).get("gender"));
-//        assertEquals("new field during update", ((Map)map.get("custom")).get("nationality"));
 
     }
 
@@ -270,11 +265,6 @@ public class TestUserGroupController extends WebTestTemplate {
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
-
-        Map<String,Object> map=mapper.readValue(result, Map.class);
-
-        // assert http reture
-        assertEquals(userGroupID, map.get("userGroupID"));
 
         BeehiveUserGroup userGroup = userGroupDao.getUserGroupByID(userGroupID);
         assertNull(userGroup);
