@@ -53,7 +53,7 @@ public class ExceptionController {
 		return resp;
 	}
 
-	private List<String> filter= CollectUtils.createList("status","suppressed","stackTrace","class");
+	private List<String> filter= CollectUtils.createList("status","suppressed","stackTrace","class","localizedMessage");
 
 	private String convertExeptionToJson(RuntimeException ex){
 
