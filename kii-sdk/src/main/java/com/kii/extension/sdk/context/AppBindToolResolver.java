@@ -59,12 +59,6 @@ public class AppBindToolResolver  {
 
 	public AppInfo getAppInfo(){
 
-//		AppInfo directInfo=directAppInfoLocal.get();
-//
-//		if(directInfo!=null){
-//			return directInfo;
-//		}
-
 		AppChoice choice=appChoiceLocal.get();
 
 		if(choice.getBindName()!=null) {
@@ -91,8 +85,6 @@ public class AppBindToolResolver  {
 	public void clean(){
 
 		appChoiceLocal.remove();
-
-//		directAppInfoLocal.remove();
 
 	}
 
