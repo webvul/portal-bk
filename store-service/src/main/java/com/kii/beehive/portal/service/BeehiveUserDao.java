@@ -20,7 +20,7 @@ import com.kii.extension.sdk.query.QueryParam;
 import com.kii.extension.sdk.service.AbstractDataAccess;
 
 
-@BindAppByName(appName="portal")
+@BindAppByName(appName="portal",appBindSource="propAppBindTool")
 @Component
 public class BeehiveUserDao extends AbstractDataAccess<BeehiveUser> {
 
@@ -82,10 +82,7 @@ public class BeehiveUserDao extends AbstractDataAccess<BeehiveUser> {
 
 
 	public List<BeehiveUser> getUserByIDs(List<String> beehiveUserIDList) {
-
-
-		return super.getEntitys(beehiveUserIDList.toArray(new String[0]));
-
+		return super.getEntitys(beehiveUserIDList.toArray(new String[beehiveUserIDList.size()]));
 	}
 
 	public BeehiveUser  getUserByID(String userID){

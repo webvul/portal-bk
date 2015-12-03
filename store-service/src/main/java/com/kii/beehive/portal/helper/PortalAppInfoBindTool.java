@@ -21,6 +21,7 @@ public class PortalAppInfoBindTool implements AppBindTool {
 		if(appName.equals("master")){
 			return appDao.getMasterAppInfo().getAppInfo();
 		}else{
+
 			KiiAppInfo kiiAppInfo=appDao.getAppInfoByID(appName);
 			if(kiiAppInfo==null){
 				return null;

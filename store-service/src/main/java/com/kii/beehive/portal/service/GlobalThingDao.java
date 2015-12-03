@@ -21,7 +21,7 @@ import com.kii.extension.sdk.query.ConditionBuilder;
 import com.kii.extension.sdk.query.QueryParam;
 import com.kii.extension.sdk.service.AbstractDataAccess;
 
-@BindAppByName(appName="portal")
+@BindAppByName(appName="portal",appBindSource="propAppBindTool")
 @Component
 public class GlobalThingDao extends AbstractDataAccess<GlobalThingInfo>{
 
@@ -83,7 +83,7 @@ public class GlobalThingDao extends AbstractDataAccess<GlobalThingInfo>{
 	}
 
 	public List<GlobalThingInfo> getThingsByIDs(Collection<String> ids){
-		return super.getEntitys(ids.toArray(new String[0]));
+		return super.getEntitys(ids.toArray(new String[ids.size()]));
 	}
 
 	public void addThingInfo(GlobalThingInfo thing){

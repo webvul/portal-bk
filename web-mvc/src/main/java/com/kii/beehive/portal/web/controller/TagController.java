@@ -1,17 +1,13 @@
 package com.kii.beehive.portal.web.controller;
 
 
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -49,6 +45,7 @@ public class TagController {
 	 *
 	 * @return
      */
+
 	@RequestMapping(path="/all",method={RequestMethod.GET})
 	public List<TagIndex> getAllTag(){
 		List<TagIndex> list = tagIndexDao.getAllTag();
@@ -57,18 +54,21 @@ public class TagController {
 
 	/**
 	 * 创建tag
-	 * POST /tags
+	 * POST /tags/custom
 	 *
 	 * refer to doc "Beehive API - Thing API" for request/response details
 	 * refer to doc "Tech Design - Beehive API", section "Create/Update Tag (创建/更新tag)" for more details
 	 *
-	 * @param tagName
      */
-	@RequestMapping(path="/custom/{tagName}",method={RequestMethod.PUT})
-	public Map<String,String> createTag(@RequestBody TagIndex tag,@PathVariable("tagName") String tagName){
-
-		tag.setDisplayName(tagName);
+	@RequestMapping(path="/custom",method={RequestMethod.POST})
+	public Map<String,String> createTag(@RequestBody TagIndex tag){
+		
+		if(!StringUtils.hasText(tag.getDisplayName())){
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"DisplayName is empty", HttpStatus.BAD_REQUEST);
+		}
+		
 		tag.setTagType(TagType.Custom);
+		tag.fillID();
 
 		String  id=tagIndexDao.addTagIndex(tag);
 		Map<String,String> map=new HashMap<>();
@@ -135,5 +135,6 @@ public class TagController {
 
 		return list;
 	}
+
 
 }

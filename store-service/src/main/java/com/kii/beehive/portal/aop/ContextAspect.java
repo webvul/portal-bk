@@ -5,6 +5,7 @@ import java.util.Map;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.kii.beehive.portal.helper.PortalTokenService;
@@ -16,7 +17,12 @@ public class ContextAspect {
 	@Autowired
 	private PortalTokenService tokenService;
 
-	@Before("execution (*  com.kii.extension.sdk.service.AbstractDataAccess+.add*(..) )")
+	@Pointcut("execution (*  com.kii.extension.sdk.service.AbstractDataAccess+.add*(..) )")
+	private void bindDataService(){
+
+	}
+
+	@Before("bindDataService()")
 	public void beforeCallCreateFun(JoinPoint joinPoint){
 
 
@@ -32,7 +38,7 @@ public class ContextAspect {
 
 	}
 
-	@Before("execution (* com.kii.extension.sdk.service.AbstractDataAccess+.update*(..) ) ")
+	@Before("bindDataService()")
 	public void beforeCallUpdateFun(JoinPoint joinPoint){
 
 		Object[] args=joinPoint.getArgs();

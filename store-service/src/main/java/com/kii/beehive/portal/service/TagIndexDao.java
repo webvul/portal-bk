@@ -18,7 +18,7 @@ import com.kii.extension.sdk.query.ConditionBuilder;
 import com.kii.extension.sdk.query.QueryParam;
 import com.kii.extension.sdk.service.AbstractDataAccess;
 
-@BindAppByName(appName="portal")
+@BindAppByName(appName="portal",appBindSource="propAppBindTool")
 @Component
 public class TagIndexDao extends AbstractDataAccess<TagIndex> {
 
@@ -78,7 +78,7 @@ public class TagIndexDao extends AbstractDataAccess<TagIndex> {
 
 		Set<String> newApps=things.stream().map(GlobalThingInfo::getKiiAppID).collect(Collectors.toSet());
 
-		Set<String> thingIDs=tagIdx.getGlobalThings();
+		Set<String> thingIDs=tagIdx.getThings();
 		thingIDs.addAll(newThings);
 
 		Set<String> appIDs=tagIdx.getKiiAppIDs();
@@ -86,7 +86,7 @@ public class TagIndexDao extends AbstractDataAccess<TagIndex> {
 
 		TagIndex update=new TagIndex();
 		update.setKiiAppIDs(appIDs);
-		update.setGlobalThings(thingIDs);
+		update.setThings(thingIDs);
 
 		super.updateEntityWithVersion(update,tagIdx.getId(),tagIdx.getVersion());
 
@@ -99,7 +99,7 @@ public class TagIndexDao extends AbstractDataAccess<TagIndex> {
 		Set<String> removeApps=things.stream().map(GlobalThingInfo::getKiiAppID).collect(Collectors.toSet());
 
 
-		Set<String> currThings=tagIdx.getGlobalThings();
+		Set<String> currThings=tagIdx.getThings();
 		currThings.removeAll(removeThings);
 		
 		Set<String> curraAppIDs=tagIdx.getKiiAppIDs();
@@ -107,7 +107,7 @@ public class TagIndexDao extends AbstractDataAccess<TagIndex> {
 
 		TagIndex update=new TagIndex();
 		update.setKiiAppIDs(curraAppIDs);
-		update.setGlobalThings(currThings);
+		update.setThings(currThings);
 
 		super.updateEntityWithVersion(update,tagIdx.getId(),tagIdx.getVersion());
 

@@ -61,7 +61,7 @@ public class OnboardingHelperController {
 	@Autowired
 	private AppInfoManager  appManager;
 
-	@RequestMapping(path="/{vendorThingID}",method={RequestMethod.GET},consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+	@RequestMapping(path="/appinit",method={RequestMethod.POST},consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
 	public void initAppContext(@RequestBody Map<String,Object>  paramMap){
 
 		String userName= (String) paramMap.getOrDefault("portal.username",portalUserName);

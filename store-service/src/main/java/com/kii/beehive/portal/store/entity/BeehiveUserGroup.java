@@ -2,14 +2,13 @@ package com.kii.beehive.portal.store.entity;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
-
 import com.kii.extension.sdk.entity.KiiEntity;
 
 
@@ -25,6 +24,8 @@ public class BeehiveUserGroup extends PortalEntity {
     private Set<String> users;
 
     private Map<String, Object> customFields = new HashMap<>();
+    
+    private List<BeehiveUser> beehiveUserList;
 
     public String getUserGroupID() {
         return getId();
@@ -81,4 +82,11 @@ public class BeehiveUserGroup extends PortalEntity {
         this.customFields.put(key, value);
     }
 
+	public List<BeehiveUser> getBeehiveUserList() {
+		return beehiveUserList;
+	}
+
+	public void setBeehiveUserList(List<BeehiveUser> beehiveUserList) {
+		this.beehiveUserList = beehiveUserList;
+	}
 }

@@ -105,6 +105,7 @@ public class AppBindToolResolver  {
 		if(choice.getAppName()!=null) {
 			info = bindTool.getAppInfo(choice.getAppName());
 		}
+		this.setAppChoice(choice);
 
 		return info;
 

@@ -15,6 +15,7 @@ import com.kii.beehive.portal.store.entity.KiiAppInfo;
 import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.entity.AppInfo;
 import com.kii.extension.sdk.entity.BucketInfo;
+import com.kii.extension.sdk.exception.ObjectNotFoundException;
 import com.kii.extension.sdk.query.ConditionBuilder;
 import com.kii.extension.sdk.service.AbstractDataAccess;
 
@@ -52,7 +53,11 @@ public class AppInfoDao extends AbstractDataAccess<KiiAppInfo> {
 
 	@Cacheable(cacheNames={"appInfo"})
 	public KiiAppInfo getAppInfoByID(String id){
-		return super.getObjectByID(id);
+		try {
+			return super.getObjectByID(id);
+		}catch(ObjectNotFoundException e){
+			return null;
+		}
 	}
 
 	@Cacheable(cacheNames="appInfo",key="'master-app'")

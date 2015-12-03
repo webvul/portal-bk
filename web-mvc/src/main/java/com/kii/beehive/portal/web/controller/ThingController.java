@@ -73,7 +73,6 @@ public class ThingController {
 	public Map<String,String> createThing(@RequestBody ThingInput input){
 
 		input.verifyInput();
-
 		
 		GlobalThingInfo thingInfo = new GlobalThingInfo();
 
@@ -139,6 +138,24 @@ public class ThingController {
 		return;
 	}
 
+
+	/**
+	 * 查询tag下的设备
+	 * GET /things/tag/{tagName...}/operation/{operation}
+	 *
+	 * refer to doc "Beehive API - Thing API" for request/response details
+	 *
+	 * @param tagName
+	 * @param operation
+     * @return
+     */
+	@RequestMapping(path = "/tag/{tagName}/operation/{operation}", method = {RequestMethod.GET})
+	public ResponseEntity<List<GlobalThingInfo>> getThingsByTagExpress(@PathVariable("tagName") String tagName, @PathVariable("operation") String operation) {
+
+		List<GlobalThingInfo> list = this.thingManager.findThingByTagName(tagName.split(","), operation);
+
+		return new ResponseEntity<>(list, HttpStatus.OK);
+	}
 
 
 }

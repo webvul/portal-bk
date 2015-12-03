@@ -68,7 +68,6 @@ public class AppBindAspect {
 
 	}
 
-
 	@After("bindWithParam()")
 	public void  afterCallBindParam(JoinPoint joinPoint ){
 		bindTool.clean();
@@ -114,6 +113,7 @@ public class AppBindAspect {
 		bindTool.setAppChoice(choice);
 
 	}
+
 
 
 }

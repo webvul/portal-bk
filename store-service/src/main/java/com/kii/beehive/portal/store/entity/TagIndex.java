@@ -20,7 +20,7 @@ public class TagIndex extends PortalEntity {
 	
 	private String description;
 
-	private Set<String> globalThings=new HashSet<>();
+	private Set<String> things=new HashSet<>();
 
 	private Set<String> kiiAppIDs=new HashSet<>();
 
@@ -55,12 +55,12 @@ public class TagIndex extends PortalEntity {
 		return getId();
 	}
 
-	public Set<String> getGlobalThings() {
-		return globalThings;
+	public Set<String> getThings() {
+		return things;
 	}
 
-	public void setGlobalThings(Set<String> globalThings) {
-		this.globalThings = globalThings;
+	public void setThings(Set<String> things) {
+		this.things = things;
 	}
 
 	public Set<String> getKiiAppIDs() {
