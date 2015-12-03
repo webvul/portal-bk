@@ -8,6 +8,7 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
@@ -26,7 +27,25 @@ public class AppBindAspect {
 	private AppBindToolResolver  bindTool;
 
 
-	@Before("execution (* com.kii.extension.sdk.service.AbstractDataAccess+.*(..)  ) ")
+	@Pointcut("execution (* com.kii.extension.sdk.service.AbstractDataAccess+.*(..)  ) ")
+	private void commDataAccess(){
+
+	}
+
+	@Pointcut("within (@com.kii.beehive.portal.annotation.BindAppByName  com.kii.beehive.portal.service..* ) ")
+	private void appBindWithAnnotation(){
+
+
+	}
+
+
+	@Pointcut("execution (*  com.kii.beehive.portal.service..*(@com.kii.beehive.portal.annotation.AppBindParam (*) , .. ))")
+	private void bindWithParam(){
+
+	}
+
+
+	@Before("commDataAccess()  ||  appBindWithAnnotation() ")
 	public void beforeCallDataAccess(JoinPoint joinPoint){
 
 		BindAppByName  appByName=joinPoint.getTarget().getClass().getAnnotation(BindAppByName.class);
@@ -42,21 +61,20 @@ public class AppBindAspect {
 	}
 
 
-
-	@After("execution (* com.kii.extension.sdk.service.AbstractDataAccess+.*(..)  ) ")
+	@After("commDataAccess() || appBindWithAnnotation() ")
 	public void afterCallDataAccess(JoinPoint joinPoint){
 
 		bindTool.clean();
 
 	}
 
-	@After("execution (*  com.kii.beehive.portal.service..*(@com.kii.beehive.portal.annotation.AppBindParam (*) , .. ))")
+
+	@After("bindWithParam()")
 	public void  afterCallBindParam(JoinPoint joinPoint ){
 		bindTool.clean();
 	}
 
-
-		@Before("execution (*  com.kii.beehive.portal.service..*(@com.kii.beehive.portal.annotation.AppBindParam (*) , .. ))")
+	@Before("bindWithParam()")
 	public void  beforeCallBindParam(JoinPoint joinPoint ){
 		MethodSignature signature = (MethodSignature) joinPoint.getSignature();
 		Method method = signature.getMethod();
