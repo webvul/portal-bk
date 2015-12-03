@@ -73,9 +73,6 @@ public class UserSyncMsgDao extends AbstractDataAccess<SupplierPushMsgTask>{
 
 		Map<String,Integer> retryRecord=task.getRetryRecord();
 
-
-
-
 		int successNum=0;
 		int failNum=0;
 
@@ -87,6 +84,10 @@ public class UserSyncMsgDao extends AbstractDataAccess<SupplierPushMsgTask>{
 			if(val>=100){
 				successNum++;
 				continue;
+			}
+			//Fix source supplier bug,still don't why .
+			if(entry.getKey().equals(task.getSourceSupplier())){
+				successNum++;
 			}
 			if(val<=0){
 				failNum++;

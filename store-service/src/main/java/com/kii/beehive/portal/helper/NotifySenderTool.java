@@ -73,9 +73,6 @@ public class NotifySenderTool {
 				})
 				.collect(Collectors.toCollection(ArrayList<String>::new));
 
-
-
-
 		final CountDownLatch latch = new CountDownLatch(supplierList.size());
 
 		supplierList.parallelStream().forEach((name) -> {
