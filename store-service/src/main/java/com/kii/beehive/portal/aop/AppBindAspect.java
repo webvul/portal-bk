@@ -68,10 +68,12 @@ public class AppBindAspect {
 
 	}
 
+
 	@After("bindWithParam()")
 	public void  afterCallBindParam(JoinPoint joinPoint ){
 		bindTool.clean();
 	}
+
 
 	@Before("bindWithParam()")
 	public void  beforeCallBindParam(JoinPoint joinPoint ){
