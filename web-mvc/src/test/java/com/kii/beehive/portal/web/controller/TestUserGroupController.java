@@ -253,6 +253,34 @@ public class TestUserGroupController extends WebTestTemplate {
     }
 
     @Test
+    public void testQueryUserGroupNoResult() throws Exception {
+
+        // create user group info
+        testUpdateUserGroup();
+
+        // test query
+
+        Map<String, Object> request = new HashMap<>();
+        request.put("userGroupID", "nonExistingUserGroupID");
+        request.put("includeUserData", "1");
+
+        String ctx= mapper.writeValueAsString(request);
+
+        String result=this.mockMvc.perform(
+                post("/usergroup/simplequery").content(ctx)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("UTF-8")
+        )
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        System.out.println(result);
+        // assert http reture
+        assertTrue(result.length() == 0);
+
+    }
+
+    @Test
     public void testDeleteUserGroup() throws Exception {
 
         // create user group info

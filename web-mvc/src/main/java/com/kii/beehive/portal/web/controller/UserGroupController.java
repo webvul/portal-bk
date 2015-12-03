@@ -143,7 +143,10 @@ public class UserGroupController {
         boolean isIncludeUserData = "1".equals(includeUserData);
         BeehiveUserGroup userGroup = userGroupManager.getUserGroupBySimpleQuery(queryMap, isIncludeUserData);
 
-        OutputUserGroup output = new OutputUserGroup(userGroup, isIncludeUserData);
+        OutputUserGroup output = null;
+        if(userGroup != null) {
+            output = new OutputUserGroup(userGroup, isIncludeUserData);
+        }
 
         return new ResponseEntity<>(output, HttpStatus.OK);
     }
