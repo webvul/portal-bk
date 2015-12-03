@@ -8,6 +8,7 @@ import java.sql.Blob;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -76,8 +77,7 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 			Object fieldInst=null;
 			switch (type){
 				case Auto:
-//					if(propCls instanceof )
-					fieldInst=rs.getObject(field,propCls);
+					fieldInst=autoConvert(rs,field,propCls);
 					break;
 				case EnumInt:
 					int val=rs.getInt(field);
@@ -88,15 +88,19 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 					fieldInst=Enum.valueOf(propCls,strVal);
 					break;
 				case Json:
-					Blob blob=rs.getBlob(field);
-					if(blob==null){
-						break;
-					}
-					try {
-						fieldInst=StreamUtils.copyToString(blob.getBinaryStream(), StandardCharsets.UTF_8);
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
+//					byte[] bytes=rs.getBytes(field);
+//					fieldInst=new String(bytes,StandardCharsets.UTF_8);
+
+					fieldInst=rs.getString(field);
+//					Blob blob=rs.getBlob(field);
+//					if(blob==null){
+//						break;
+//					}
+//					try {
+//						fieldInst=StreamUtils.copyToString(blob.getBinaryStream(), StandardCharsets.UTF_8);
+//					} catch (IOException e) {
+//						e.printStackTrace();
+//					}
 					break;
 				default:
 					fieldInst=rs.getObject(field);
@@ -108,5 +112,21 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 
 
 		return (T)beanWrapper.getWrappedInstance();
+	}
+
+	private Object autoConvert(ResultSet rs,String key,Class target) throws SQLException {
+
+		Object result=null;
+		if(target.equals(Date.class)){
+				java.sql.Date date=rs.getDate(key);
+				if(date!=null) {
+					result = new Date(date.getTime());
+				}
+		}else if(target.isPrimitive()){
+			result=rs.getObject(key,target);
+		}else if(target.equals(String.class)){
+			result=rs.getString(key);
+		}
+		return result;
 	}
 }

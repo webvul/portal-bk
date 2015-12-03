@@ -1,7 +1,9 @@
 package com.kii.beehive.portal.jdbc.helper;
 
 import java.beans.PropertyDescriptor;
+import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
+import java.sql.Blob;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,6 +18,8 @@ import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.jdbc.core.StatementCreatorUtils;
 import org.springframework.jdbc.core.namedparam.AbstractSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.support.lob.DefaultLobHandler;
+import org.springframework.jdbc.support.lob.LobHandler;
 
 import com.kii.beehive.portal.jdbc.annotation.JdbcField;
 import com.kii.beehive.portal.jdbc.annotation.JdbcFieldType;
@@ -77,7 +81,10 @@ public class AnnationBeanSqlParameterSource extends AbstractSqlParameterSource {
 
 			switch(sqlTypeMapper.get(paramName)){
 				case Auto:return value;
-				case Json:return ((String)value).getBytes(StandardCharsets.UTF_8);
+				case Json:
+					return value;
+//					byte[] bytes=((String)value).getBytes(StandardCharsets.UTF_8);
+//					return new ByteArrayInputStream(bytes);
 				case EnumInt:return ((Enum)value).ordinal();
 				case EnumStr:return ((Enum)value).name();
 				default:return value;
@@ -110,7 +117,7 @@ public class AnnationBeanSqlParameterSource extends AbstractSqlParameterSource {
 
 		switch(type){
 			case Json:
-				return Types.BLOB;
+				return Types.LONGVARCHAR;
 			case EnumInt:
 				return Types.INTEGER;
 			case EnumStr:

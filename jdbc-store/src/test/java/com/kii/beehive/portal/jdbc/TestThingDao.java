@@ -37,7 +37,7 @@ public class TestThingDao extends TestTemplate{
 		GlobalThingEntity  thing=new GlobalThingEntity();
 		thing.setVendorThingID("demo_vendor_thing_id");
 		thing.setKiiAppID("appID");
-		thing.setStatus("this is a test about long text,we don't know the final required,so....");
+		thing.setStatus("this is a test about long text,we don't know the final required,so....加点中文为了测试国际化");
 
 		long id=dao.insertThing(thing);
 
