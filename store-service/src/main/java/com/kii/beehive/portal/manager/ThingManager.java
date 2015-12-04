@@ -9,7 +9,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,12 +16,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import com.kii.beehive.portal.exception.EntryNotFoundException;
+import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.service.GlobalThingDao;
 import com.kii.beehive.portal.service.TagIndexDao;
 import com.kii.beehive.portal.store.entity.GlobalThingInfo;
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
 import com.kii.beehive.portal.store.entity.TagIndex;
-import com.kii.beehive.portal.service.AppInfoDao;
 
 @Component
 public class ThingManager {
@@ -42,7 +41,13 @@ public class ThingManager {
 
 	public String createThing(GlobalThingInfo thingInfo, Collection<String> tagList) {
 		
-		appInfoDao.getAppInfoByID(thingInfo.getKiiAppID());
+		KiiAppInfo kiiAppInfo = appInfoDao.getAppInfoByID(thingInfo.getKiiAppID());
+		
+		if(kiiAppInfo == null){
+			EntryNotFoundException ex= new EntryNotFoundException(thingInfo.getKiiAppID());
+			ex.setMessage("AppID not exist");
+			throw ex;
+		}
 		
 		Set<TagIndex> tagSet=new HashSet<>();
 

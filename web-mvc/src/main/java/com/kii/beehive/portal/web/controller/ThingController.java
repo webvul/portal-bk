@@ -1,13 +1,11 @@
 package com.kii.beehive.portal.web.controller;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,9 +22,7 @@ import com.kii.beehive.portal.manager.ThingManager;
 import com.kii.beehive.portal.service.GlobalThingDao;
 import com.kii.beehive.portal.store.entity.GlobalThingInfo;
 import com.kii.beehive.portal.store.entity.TagType;
-import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.entity.ThingInput;
-import com.kii.beehive.portal.web.help.PortalException;
 
 /**
  * Beehive API - Thing API
