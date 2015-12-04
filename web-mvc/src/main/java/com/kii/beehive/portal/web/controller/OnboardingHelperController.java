@@ -31,8 +31,10 @@ import com.kii.extension.sdk.context.AppBindTool;
 import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.entity.AppChoice;
 import com.kii.extension.sdk.entity.AppInfo;
+import com.kii.extension.sdk.entity.FederatedAuthResult;
 import com.kii.extension.sdk.service.AppMasterSalveService;
 import com.kii.extension.sdk.service.DevPortalService;
+import com.kii.extension.sdk.service.FederatedAuthService;
 
 /**
  * Beehive API - Thing API
@@ -58,6 +60,7 @@ public class OnboardingHelperController {
 	private String masterAppID;
 
 
+
 	@Autowired
 	private AppInfoManager  appManager;
 
@@ -71,7 +74,10 @@ public class OnboardingHelperController {
 
 		appManager.initAppInfos(userName,pwd,masterID);
 
+		return;
+
 	}
+
 
     /**
      * 查询设备（vendorThingID）
@@ -92,7 +98,11 @@ public class OnboardingHelperController {
 		map.put("kiiAppID",appInfo.getAppInfo().getAppID());
 		map.put("kiiAppKey",appInfo.getAppInfo().getAppKey());
 		map.put("kiiSiteUrl",appInfo.getAppInfo().getSiteUrl());
-		map.put("ownerID",appInfo.getDefaultThingOwnerID());
+
+		FederatedAuthResult  result=appManager.getDefaultOwer(appInfo.getAppInfo().getAppID());
+
+		map.put("ownerID",result.getUserID());
+		map.put("ownerToken",result.getAppAuthToken());
 
 		return map;
 

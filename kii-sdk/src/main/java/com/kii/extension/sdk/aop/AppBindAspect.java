@@ -1,4 +1,4 @@
-package com.kii.beehive.portal.aop;
+package com.kii.extension.sdk.aop;
 
 
 import java.lang.annotation.Annotation;
@@ -13,10 +13,11 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
-import com.kii.beehive.portal.annotation.AppBindParam;
-import com.kii.beehive.portal.annotation.BindAppByName;
+import com.kii.extension.sdk.annotation.AppBindParam;
+import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.entity.AppChoice;
+import com.kii.extension.sdk.entity.AppInfo;
 
 
 @Aspect
@@ -32,14 +33,14 @@ public class AppBindAspect {
 
 	}
 
-	@Pointcut("within (@com.kii.beehive.portal.annotation.BindAppByName  com.kii.beehive.portal.service..* ) ")
+	@Pointcut("within (@com.kii.extension.sdk.annotation.BindAppByName  com.kii..* ) ")
 	private void appBindWithAnnotation(){
 
 
 	}
 
 
-	@Pointcut("execution (*  com.kii.beehive.portal.service..*(@com.kii.beehive.portal.annotation.AppBindParam (*) , .. ))")
+	@Pointcut("execution (*  com.kii..*(@com.kii.extension.sdk.annotation.AppBindParam (*) , .. ))")
 	private void bindWithParam(){
 
 	}
@@ -90,8 +91,14 @@ public class AppBindAspect {
 			for(Annotation anno:methodAnnotations[i]){
 				if(anno instanceof AppBindParam){
 
-					param=String.valueOf(args[i]);
-					annotation= (AppBindParam) anno;
+					Object arg=args[i];
+					if(arg instanceof AppInfo){
+						bindTool.setAppInfoDirectly((AppInfo)arg);
+						return;
+					}else if(arg instanceof  String) {
+						param = String.valueOf(args[i]);
+					}
+					annotation=(AppBindParam)anno;
 					break;
 				}
 			}

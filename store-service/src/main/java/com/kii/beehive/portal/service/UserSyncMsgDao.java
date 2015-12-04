@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
-import com.kii.beehive.portal.annotation.BindAppByName;
+import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.beehive.portal.store.entity.usersync.ExecuteResult;
 import com.kii.beehive.portal.store.entity.usersync.SupplierPushMsgTask;
 import com.kii.extension.sdk.entity.BucketInfo;

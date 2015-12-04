@@ -1,4 +1,4 @@
-package com.kii.beehive.portal.annotation;
+package com.kii.extension.sdk.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

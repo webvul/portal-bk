@@ -167,15 +167,18 @@ public class ThingManager {
 	}
 
 	public  GlobalThingInfo findThingByVendorThingID(String vendorThingID) {
-		GlobalThingInfo info= globalThingDao.getThingByVendorThingID(vendorThingID);
 
-		if(info == null) {
-			EntryNotFoundException ex= new EntryNotFoundException(vendorThingID);
-			ex.setMessage(" vendor thingID not exist ");
-			throw ex;
+		return globalThingDao.getThingInfoByID(vendorThingID);
 
-		}
-		return info;
+//		GlobalThingInfo info= globalThingDao.getThingByVendorThingID(vendorThingID);
+//
+//		if(info == null) {
+//			EntryNotFoundException ex= new EntryNotFoundException(vendorThingID);
+//			ex.setMessage(" vendor thingID not exist ");
+//			throw ex;
+//
+//		}
+//		return info;
 	}
 
 

@@ -2,7 +2,6 @@ package com.kii.beehive.portal.service;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.kii.beehive.portal.annotation.BindAppByName;
+import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.beehive.portal.helper.SimpleQueryTool;
 import com.kii.beehive.portal.store.entity.GlobalThingInfo;
 import com.kii.extension.sdk.entity.BucketInfo;

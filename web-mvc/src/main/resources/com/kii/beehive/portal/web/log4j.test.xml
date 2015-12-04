@@ -20,6 +20,10 @@
         <level value="debug" />
     </logger>
 
+    <logger name="org.springframework.cache" >
+        <level value="debug" />
+    </logger>
+
     <logger name="com.kii" >
         <level value="debug" />
     </logger>

@@ -10,7 +10,7 @@ public class KiiAppInfo extends KiiEntity{
 
 	private AppInfo appInfo;
 
-	private String defaultThingOwnerID;
+//	private String defaultThingOwnerID;
 
 	private boolean isMasterApp=false;
 
@@ -40,11 +40,11 @@ public class KiiAppInfo extends KiiEntity{
 		this.appInfo = appInfo;
 	}
 
-	public String getDefaultThingOwnerID() {
-		return defaultThingOwnerID;
-	}
+//	public String getDefaultThingOwnerID() {
+//		return defaultThingOwnerID;
+//	}
 
-	public void setDefaultThingOwnerID(String defaultThingOwnerID) {
-		this.defaultThingOwnerID = defaultThingOwnerID;
-	}
+//	public void setDefaultThingOwnerID(String defaultThingOwnerID) {
+//		this.defaultThingOwnerID = defaultThingOwnerID;
+//	}
 }

@@ -9,6 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.service.AppInfoDao;
@@ -54,13 +56,32 @@ public class AppInfoManager {
 	private AppBindToolResolver resolver;
 
 
-	private String DEFAULT_NAME="default_owner_id";
 
 
+	private static  String DEFAULT_NAME="default_owner_id";
+
+
+	@Cacheable(cacheNames="ttl_cache")
+	public FederatedAuthResult getDefaultOwer(String appID){
+
+
+		FederatedAuthResult  result=federatedAuthService.loginSalveApp(appID,DEFAULT_NAME,getDefaultUserPwd());
+
+		return result;
+	}
+
+	private String getDefaultUserPwd(){
+
+		return  DigestUtils.sha1Hex(DEFAULT_NAME+"_default_owner_beehive");
+
+	}
+
+
+	@Async
 	public void initAppInfos(String userName,String pwd,String masterID){
 
 
-		String defaultOwnerName=DEFAULT_NAME;
+//		String defaultOwnerName=DEFAULT_NAME;
 
 		Map<String,AppInfo> appInfoMap=new HashMap<>();
 
@@ -70,23 +91,29 @@ public class AppInfoManager {
 		String portalAppID=appBindTool.getAppInfo("portal").getAppID();
 		appInfoMap.remove(portalAppID);
 
+
+
 		AppInfo  master=appInfoMap.remove(masterID);
 
 		if(!masterSalveService.isMaster(master)) {
 			masterSalveService.setMaster(master);
 		}
-		String defaultOwnerPwd= DigestUtils.sha1Hex(defaultOwnerName+"_default_owner_beehive");
 
-		String id=userDao.addDefaultOwner(defaultOwnerName,defaultOwnerPwd);
+		userDao.addDefaultOwner(DEFAULT_NAME,getDefaultUserPwd());
 
 		KiiAppInfo masterAppInfo=new KiiAppInfo();
 		masterAppInfo.setAppInfo(master);
 		masterAppInfo.setMasterApp(true);
-		masterAppInfo.setDefaultThingOwnerID(id);
 
 		appDao.addAppInfo(masterAppInfo);
 
 		appInfoMap.values().forEach((app)->{
+
+			KiiAppInfo appInfo=new KiiAppInfo();
+			appInfo.setMasterApp(false);
+			appInfo.setAppInfo(app);
+
+			appDao.addAppInfo(appInfo);
 
 			String currMaster=masterSalveService.checkMaster(app);
 			if(!masterID.equals(currMaster)){
@@ -94,15 +121,6 @@ public class AppInfoManager {
 				masterSalveService.addSalveAppToMaster(app,master);
 			}
 
-			FederatedAuthResult  result=federatedAuthService.loginSalveApp(app.getAppID(),defaultOwnerName,defaultOwnerPwd);
-
-			String slaveUserID=result.getUserID();
-
-			KiiAppInfo appInfo=new KiiAppInfo();
-			appInfo.setDefaultThingOwnerID(slaveUserID);
-			appInfo.setMasterApp(false);
-
-			appDao.addAppInfo(appInfo);
 
 		});
 
