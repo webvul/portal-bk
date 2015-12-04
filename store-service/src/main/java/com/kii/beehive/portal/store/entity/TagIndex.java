@@ -3,13 +3,9 @@ package com.kii.beehive.portal.store.entity;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.logging.log4j.util.Strings;
 import org.springframework.util.StringUtils;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import com.kii.beehive.portal.exception.TagFormatInvalidException;
-import com.kii.extension.sdk.entity.KiiEntity;
 
 
 public class TagIndex extends PortalEntity {

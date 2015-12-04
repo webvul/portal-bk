@@ -64,13 +64,6 @@ public class SyncMsgService {
 		msg.setType(type);
 		msg.setRetryCount(0);
 
-//		String msgJson=null;
-//		try {
-//			 msgJson=mapper.writeValueAsString(msg);
-//		} catch (JsonProcessingException e) {
-//			throw new IllegalArgumentException(e);
-//		}
-
 		SupplierPushMsgTask entity=new SupplierPushMsgTask();
 
 		entity.setMsgContent(msg);
@@ -80,7 +73,7 @@ public class SyncMsgService {
 
 //		if("production".equals(profile)) {
 
-			notifyTool.doMsgSendTask(entity, supplierDao.getUrlMap());
+		notifyTool.doMsgSendTask(entity, supplierDao.getUrlMap());
 //		}
 	}
 

@@ -157,6 +157,12 @@ public class DevPortalService {
 			secret.fillAppInfo(info);
 
 			infoList.add(info);
+
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				break;
+			}
 		}
 
 		return infoList;

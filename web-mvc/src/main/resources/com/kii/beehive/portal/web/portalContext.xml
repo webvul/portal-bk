@@ -38,7 +38,7 @@
 
 
     <!-- aop -->
-    <bean id="appBindAspect"  class="com.kii.beehive.portal.aop.AppBindAspect" />
+    <bean id="appBindAspect"  class="com.kii.extension.sdk.aop.AppBindAspect" />
 
     <bean id="appLogAspect" class="com.kii.beehive.portal.aop.LogAspect" />
 

@@ -14,8 +14,6 @@ import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.context.TokenBindToolResolver;
 import com.kii.extension.sdk.entity.AppInfo;
 import com.kii.extension.sdk.entity.BucketInfo;
-import com.kii.extension.sdk.entity.FederatedAuthResult;
-import com.kii.extension.sdk.entity.SiteType;
 import com.kii.extension.sdk.service.AppMasterSalveService;
 import com.kii.extension.sdk.service.DataService;
 import com.kii.extension.sdk.service.FederatedAuthService;

@@ -7,8 +7,6 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
-import com.kii.extension.sdk.entity.KiiEntity;
-
 public class BeehiveGuestLog extends PortalEntity{
 
 	private Date createTime;

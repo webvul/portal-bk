@@ -1,7 +1,6 @@
 package com.kii.extension.sdk.context;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -18,6 +17,12 @@ public class AppBindToolResolver  {
 
 
 	private ThreadLocal<AppChoice>  appChoiceLocal;
+
+	private ThreadLocal<AppInfo> appInfoDirectly=new ThreadLocal<>();
+
+	public void setAppInfoDirectly(AppInfo appInfo){
+		appInfoDirectly.set(appInfo);
+	}
 
 	private String[] getBeanNameArray(){
 
@@ -59,11 +64,10 @@ public class AppBindToolResolver  {
 
 	public AppInfo getAppInfo(){
 
-//		AppInfo directInfo=directAppInfoLocal.get();
-//
-//		if(directInfo!=null){
-//			return directInfo;
-//		}
+		AppInfo appInfo=appInfoDirectly.get();
+		if(appInfo!=null){
+			return appInfo;
+		}
 
 		AppChoice choice=appChoiceLocal.get();
 
@@ -92,7 +96,7 @@ public class AppBindToolResolver  {
 
 		appChoiceLocal.remove();
 
-//		directAppInfoLocal.remove();
+		appInfoDirectly.remove();
 
 	}
 

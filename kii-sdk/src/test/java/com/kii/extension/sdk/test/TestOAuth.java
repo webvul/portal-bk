@@ -14,7 +14,6 @@ import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.context.TokenBindToolResolver;
 import com.kii.extension.sdk.context.UserTokenBindTool;
 import com.kii.extension.sdk.entity.BucketInfo;
-import com.kii.extension.sdk.entity.KiiUser;
 import com.kii.extension.sdk.service.DataService;
 import com.kii.extension.sdk.service.UserService;
 

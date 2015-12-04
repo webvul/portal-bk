@@ -9,7 +9,6 @@ import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
-import com.kii.extension.sdk.entity.KiiEntity;
 
 
 public class BeehiveUserGroup extends PortalEntity {

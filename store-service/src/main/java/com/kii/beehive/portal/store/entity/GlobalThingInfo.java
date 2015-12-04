@@ -8,8 +8,6 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 
-import com.kii.extension.sdk.entity.KiiEntity;
-
 public class GlobalThingInfo extends PortalEntity {
 
 	private String globalThingID;

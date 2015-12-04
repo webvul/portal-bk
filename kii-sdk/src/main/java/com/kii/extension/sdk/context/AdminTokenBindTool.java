@@ -36,7 +36,7 @@ public class AdminTokenBindTool implements TokenBindTool {
 		}
 		String appID=appInfo.getAppID();
 
-		LoginInfo info= infoMap.putIfAbsent(appID, userService.adminLogin());
+		LoginInfo info= infoMap.computeIfAbsent(appID, (id)->userService.adminLogin());
 		if(info==null){
 			info= infoMap.get(appID);
 		}

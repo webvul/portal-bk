@@ -1,8 +1,5 @@
 package com.kii.beehive.portal.store.entity;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import com.kii.extension.sdk.entity.AppInfo;
 import com.kii.extension.sdk.entity.KiiEntity;
 
@@ -10,7 +7,7 @@ public class KiiAppInfo extends KiiEntity{
 
 	private AppInfo appInfo;
 
-	private String defaultThingOwnerID;
+//	private String defaultThingOwnerID;
 
 	private boolean isMasterApp=false;
 
@@ -40,11 +37,11 @@ public class KiiAppInfo extends KiiEntity{
 		this.appInfo = appInfo;
 	}
 
-	public String getDefaultThingOwnerID() {
-		return defaultThingOwnerID;
-	}
+//	public String getDefaultThingOwnerID() {
+//		return defaultThingOwnerID;
+//	}
 
-	public void setDefaultThingOwnerID(String defaultThingOwnerID) {
-		this.defaultThingOwnerID = defaultThingOwnerID;
-	}
+//	public void setDefaultThingOwnerID(String defaultThingOwnerID) {
+//		this.defaultThingOwnerID = defaultThingOwnerID;
+//	}
 }
