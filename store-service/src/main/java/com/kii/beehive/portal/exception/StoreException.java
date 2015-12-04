@@ -2,8 +2,6 @@ package com.kii.beehive.portal.exception;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import com.kii.extension.sdk.exception.KiiCloudException;
-
 public class StoreException extends RuntimeException {
 
 

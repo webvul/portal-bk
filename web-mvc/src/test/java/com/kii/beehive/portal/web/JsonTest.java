@@ -2,16 +2,13 @@ package com.kii.beehive.portal.web;
 
 
 import static junit.framework.TestCase.assertEquals;
-import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.jasper.tagplugins.jstl.core.Out;
 import org.junit.Test;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.beehive.portal.store.entity.BeehiveUser;

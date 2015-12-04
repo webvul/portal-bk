@@ -1,6 +1,5 @@
 package com.kii.beehive.portal.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -11,8 +10,8 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.config.CacheConfig;
-import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
+import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.entity.AppInfo;
 import com.kii.extension.sdk.entity.BucketInfo;

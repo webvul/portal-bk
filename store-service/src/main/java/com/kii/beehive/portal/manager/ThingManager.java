@@ -110,7 +110,6 @@ public class ThingManager {
 		GlobalThingInfo thing=globalThingDao.getThingInfoByID(thingID);
 		globalThingDao.removeTagsFromThing(thing, new String[]{tagID});
 		
-//		TagIndex tag = tagIndexDao.getTagIndexByID(tagID);
 		tagIndexDao.unbindThingFromTag(Collections.singletonList(tagID), Arrays.asList(thing));
 	}
 	
@@ -128,11 +127,8 @@ public class ThingManager {
 	
 	public void removeThings(GlobalThingInfo orig) {
 		Collection<String> tagSet = orig.getTags();
-//		for(String tagID:tagSet){
-//			TagIndex tag = tagIndexDao.getTagIndexByID(tagID);
 		tagIndexDao.unbindThingFromTag(tagSet, Arrays.asList(orig));
-//		}
-		
+
 		globalThingDao.removeGlobalThingByID(orig.getId());
 	}
 	
@@ -159,31 +155,12 @@ public class ThingManager {
 
 		return  globalThingDao.getThingsByIDs(thingsSet);
 
-		
-//		if(operation.equals("and")){
-//			Set<String> tagSet = new HashSet<String>(Arrays.asList(tagArray));
-//			for(int i=0; i< list.size() ;i++){
-//				if(!list.get(i).getTags().containsAll(tagSet)){//include part of
-//					list.remove(i);
-//				}
-//			}
-//		}
-//		return list;
 	}
 
 	public  GlobalThingInfo findThingByVendorThingID(String vendorThingID) {
 
 		return globalThingDao.getThingInfoByID(vendorThingID);
 
-//		GlobalThingInfo info= globalThingDao.getThingByVendorThingID(vendorThingID);
-//
-//		if(info == null) {
-//			EntryNotFoundException ex= new EntryNotFoundException(vendorThingID);
-//			ex.setMessage(" vendor thingID not exist ");
-//			throw ex;
-//
-//		}
-//		return info;
 	}
 
 

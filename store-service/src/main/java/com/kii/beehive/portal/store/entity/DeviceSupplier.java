@@ -1,7 +1,5 @@
 package com.kii.beehive.portal.store.entity;
 
-import com.kii.extension.sdk.entity.KiiEntity;
-
 public class DeviceSupplier extends PortalEntity {
 
 

@@ -1,7 +1,6 @@
 package com.kii.beehive.portal.manager;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.codec.digest.DigestUtils;
@@ -20,7 +19,6 @@ import com.kii.extension.sdk.context.AppBindTool;
 import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.entity.AppInfo;
 import com.kii.extension.sdk.entity.FederatedAuthResult;
-import com.kii.extension.sdk.exception.ObjectNotFoundException;
 import com.kii.extension.sdk.service.AppMasterSalveService;
 import com.kii.extension.sdk.service.DevPortalService;
 import com.kii.extension.sdk.service.FederatedAuthService;

@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
+import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.entity.KiiUser;
 import com.kii.extension.sdk.entity.LoginInfo;
 import com.kii.extension.sdk.exception.UserAlreadyExistsException;

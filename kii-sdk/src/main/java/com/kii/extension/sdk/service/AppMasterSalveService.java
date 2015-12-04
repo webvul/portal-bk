@@ -13,7 +13,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kii.beehive.portal.common.utils.StrTemplate;
 import com.kii.extension.sdk.annotation.AppBindParam;
 import com.kii.extension.sdk.context.AdminTokenBindTool;
-import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.entity.AppInfo;
 import com.kii.extension.sdk.exception.KiiCloudException;
 import com.kii.extension.sdk.impl.ApiAccessBuilder;
