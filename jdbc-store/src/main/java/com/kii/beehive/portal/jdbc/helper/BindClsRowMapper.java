@@ -88,19 +88,9 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 					fieldInst=Enum.valueOf(propCls,strVal);
 					break;
 				case Json:
-//					byte[] bytes=rs.getBytes(field);
-//					fieldInst=new String(bytes,StandardCharsets.UTF_8);
 
 					fieldInst=rs.getString(field);
-//					Blob blob=rs.getBlob(field);
-//					if(blob==null){
-//						break;
-//					}
-//					try {
-//						fieldInst=StreamUtils.copyToString(blob.getBinaryStream(), StandardCharsets.UTF_8);
-//					} catch (IOException e) {
-//						e.printStackTrace();
-//					}
+
 					break;
 				default:
 					fieldInst=rs.getObject(field);

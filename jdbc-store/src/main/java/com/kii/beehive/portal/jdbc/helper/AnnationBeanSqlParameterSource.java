@@ -83,8 +83,6 @@ public class AnnationBeanSqlParameterSource extends AbstractSqlParameterSource {
 				case Auto:return value;
 				case Json:
 					return value;
-//					byte[] bytes=((String)value).getBytes(StandardCharsets.UTF_8);
-//					return new ByteArrayInputStream(bytes);
 				case EnumInt:return ((Enum)value).ordinal();
 				case EnumStr:return ((Enum)value).name();
 				default:return value;
