@@ -25,6 +25,10 @@ import com.kii.extension.sdk.service.AbstractDataAccess;
 public class AppInfoDao extends AbstractDataAccess<KiiAppInfo> {
 
 
+	public static final String APP_LIST_CACHE="'app_list'";
+
+	public static final String MASTER_CACHE="'master'";
+
 
 	@Autowired
 	private AppBindToolResolver resolver;
@@ -46,7 +50,7 @@ public class AppInfoDao extends AbstractDataAccess<KiiAppInfo> {
 		return resolver.getAppInfo().getAppID();
 	}
 
-	@CacheEvict(cacheNames = CacheConfig.LONGLIVE_CACHE,key="app_list")
+	@CacheEvict(cacheNames = CacheConfig.LONGLIVE_CACHE,key=APP_LIST_CACHE)
 	@CachePut(cacheNames={CacheConfig.LONGLIVE_CACHE},key="#appInfo.id")
 	public void addAppInfo(KiiAppInfo appInfo) {
 
@@ -63,7 +67,7 @@ public class AppInfoDao extends AbstractDataAccess<KiiAppInfo> {
 	}
 
 
-	@Cacheable(cacheNames={CacheConfig.LONGLIVE_CACHE},key="app_list")
+	@Cacheable(cacheNames={CacheConfig.LONGLIVE_CACHE},key=APP_LIST_CACHE)
 	public List<AppInfo> getSalveAppList(){
 
 		QueryParam query=ConditionBuilder.notCondition().equal("masterApp",true).getFinalQueryParam();
@@ -73,7 +77,7 @@ public class AppInfoDao extends AbstractDataAccess<KiiAppInfo> {
 		return infoList.stream().map((kiiApp)->kiiApp.getAppInfo()).collect(Collectors.toList());
 	}
 
-	@Cacheable(cacheNames= CacheConfig.LONGLIVE_CACHE,key="'master-app'")
+	@Cacheable(cacheNames= CacheConfig.LONGLIVE_CACHE,key=MASTER_CACHE)
 	public KiiAppInfo getMasterAppInfo(){
 
 
@@ -86,7 +90,7 @@ public class AppInfoDao extends AbstractDataAccess<KiiAppInfo> {
 
 	}
 
-	@CacheEvict(cacheNames=CacheConfig.LONGLIVE_CACHE,key="'master-app'")
+	@CacheEvict(cacheNames=CacheConfig.LONGLIVE_CACHE,key=MASTER_CACHE)
 	public void setMasterAppInfo(String id){
 
 
