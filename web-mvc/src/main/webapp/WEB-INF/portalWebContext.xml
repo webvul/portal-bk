@@ -18,22 +18,8 @@
     </context:component-scan>
 
     <!--
-    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
-        <property name="messageConverters">
-            <util:list id="beanList">
-                <ref bean="stringHttpMessageConverter"/>
-                <ref bean="marshallingHttpMessageConverter"/>
-            </util:list>
-        </property>
-    </bean>
-
-    <bean id="marshallingHttpMessageConverter"
-          class="org.springframework.http.converter.xml.MarshallingHttpMessageConverter">
-        <property name="marshaller" ref="castorMarshaller"/>
-        <property name="unmarshaller" ref="castorMarshaller"/>
-    </bean>
-    -->
-
+MappingJackson2HttpMessageConverter
+  -->
     <bean id="jsonViewResolver" class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
         <property name="defaultViews">
             <list>
