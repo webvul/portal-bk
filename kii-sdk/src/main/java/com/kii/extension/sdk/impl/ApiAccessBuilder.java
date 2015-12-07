@@ -18,6 +18,7 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicNameValuePair;
+import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,6 +27,7 @@ import com.kii.extension.sdk.entity.AppInfo;
 import com.kii.extension.sdk.entity.BucketInfo;
 import com.kii.extension.sdk.entity.KiiUser;
 import com.kii.extension.sdk.entity.ScopeType;
+import com.kii.extension.sdk.entity.thingif.ThingCommand;
 import com.kii.extension.sdk.query.QueryParam;
 
 
@@ -34,174 +36,170 @@ public class ApiAccessBuilder {
 
 	private final AppInfo appInfo;
 
-	public ApiAccessBuilder(AppInfo info){
+	public ApiAccessBuilder(AppInfo info) {
 
 		setContentType("application/json");
-		this.appInfo=info;
+		this.appInfo = info;
 	}
 
-	private ApiAccessBuilder(ApiAccessBuilder outer){
+	private ApiAccessBuilder(ApiAccessBuilder outer) {
 		this(new AppInfo(outer.appInfo));
 	}
 
 	private String token;
-	public ApiAccessBuilder bindToken(String token){
-		this.token=token;
+
+	public ApiAccessBuilder bindToken(String token) {
+		this.token = token;
 		return this;
 	}
 
 	private String scopeSubUrl;
 
-	private Map<String,String> optionalHeader=new HashMap<>();
+	private Map<String, String> optionalHeader = new HashMap<>();
 
-	private Object ctxObj=null;
+	private Object ctxObj = null;
 
 	private String bucketUrl;
 
 	private HttpUriRequest request;
 
 
-
-	public  ApiAccessBuilder setContentType(String value){
-		optionalHeader.put("Content-Type",value);
+	public ApiAccessBuilder setContentType(String value) {
+		optionalHeader.put("Content-Type", value);
 		return this;
 	}
 
 	private String subUrl;
 
-	public  void setConsumeHeader(String name,String value){
-		optionalHeader.put(name,value);
+	public void setConsumeHeader(String name, String value) {
+		optionalHeader.put(name, value);
 	}
 
 
-	public ApiAccessBuilder  addSubUrl(String url){
+	public ApiAccessBuilder addSubUrl(String url) {
 
-		this.subUrl=url;
+		this.subUrl = url;
 
 		return this;
 	}
 
-	public ApiAccessBuilder buildCustomCall(String type,Object obj){
+	public ApiAccessBuilder buildCustomCall(String type, Object obj) {
 
-		this.ctxObj=obj;
-		switch(type.toLowerCase()){
+		this.ctxObj = obj;
+		switch (type.toLowerCase()) {
 			case "post":
-				request=new HttpPost(appInfo.getAppSubUrl()+subUrl);
+				request = new HttpPost(appInfo.getAppSubUrl() + subUrl);
 				break;
 			case "get":
-				request=new HttpGet(appInfo.getAppSubUrl()+subUrl);
+				request = new HttpGet(appInfo.getAppSubUrl() + subUrl);
 				break;
 			case "put":
-				request=new HttpPut(appInfo.getAppSubUrl()+subUrl);
+				request = new HttpPut(appInfo.getAppSubUrl() + subUrl);
 				break;
 			case "delete":
-				request=new HttpDelete(appInfo.getAppSubUrl()+subUrl);
+				request = new HttpDelete(appInfo.getAppSubUrl() + subUrl);
 				break;
 
 		}
 
 
-
 		return this;
 	}
 
 
-
-
-	public ApiAccessBuilder bindBucketInfo(BucketInfo bucketInfo){
-		return this.bindBucket(bucketInfo.getBucketName()).bindScope(bucketInfo.getScopeType(),bucketInfo.getScopeName());
+	public ApiAccessBuilder bindBucketInfo(BucketInfo bucketInfo) {
+		return this.bindBucket(bucketInfo.getBucketName()).bindScope(bucketInfo.getScopeType(), bucketInfo.getScopeName());
 	}
 
-	public ApiAccessBuilder bindScope(ScopeType scope,String scopeVal){
-		this.scopeSubUrl=scope.getSubUrl(scopeVal);
+	public ApiAccessBuilder bindScope(ScopeType scope, String scopeVal) {
+		this.scopeSubUrl = scope.getSubUrl(scopeVal);
 		return this;
 	}
 
 
-	public ApiAccessBuilder  bindBucket(String bucketName){
-		this.bucketUrl="/buckets/"+bucketName;
+	public ApiAccessBuilder bindBucket(String bucketName) {
+		this.bucketUrl = "/buckets/" + bucketName;
 		return this;
 	}
 
-	public ApiAccessBuilder create(Object entity){
+	public ApiAccessBuilder create(Object entity) {
 
-		request=new HttpPost(appInfo.getAppSubUrl()+scopeSubUrl+bucketUrl+"/objects");
+		request = new HttpPost(appInfo.getAppSubUrl() + scopeSubUrl + bucketUrl + "/objects");
 
-		this.ctxObj=entity;
+		this.ctxObj = entity;
 
 		return this;
 	}
 
-	public ApiAccessBuilder createWithID(Object entity,String id){
+	public ApiAccessBuilder createWithID(Object entity, String id) {
 
-		request=new HttpPut(appInfo.getAppSubUrl()+scopeSubUrl+bucketUrl+"/objects/"+id);
+		request = new HttpPut(appInfo.getAppSubUrl() + scopeSubUrl + bucketUrl + "/objects/" + id);
 
-		this.ctxObj=entity;
+		this.ctxObj = entity;
 
 		return this;
 
 	}
 
-	public ApiAccessBuilder  getObjectByID(String id){
+	public ApiAccessBuilder getObjectByID(String id) {
 
-		request=new HttpGet(appInfo.getAppSubUrl()+scopeSubUrl+bucketUrl+"/objects/"+id);
+		request = new HttpGet(appInfo.getAppSubUrl() + scopeSubUrl + bucketUrl + "/objects/" + id);
 
 		return this;
 	}
 
 
-	public ApiAccessBuilder query(QueryParam query){
+	public ApiAccessBuilder query(QueryParam query) {
 
-		request=new HttpPost(appInfo.getAppSubUrl()+scopeSubUrl+bucketUrl+"/query");
+		request = new HttpPost(appInfo.getAppSubUrl() + scopeSubUrl + bucketUrl + "/query");
 
 		this.setContentType("application/vnd.kii.QueryRequest+json");
 
-		ctxObj=query;
+		ctxObj = query;
 
 		return this;
 	}
 
 
+	public ApiAccessBuilder delete(String id) {
 
-	public ApiAccessBuilder delete(String id){
-
-		request=new HttpDelete(appInfo.getAppSubUrl()+scopeSubUrl+bucketUrl+"/objects/"+id);
+		request = new HttpDelete(appInfo.getAppSubUrl() + scopeSubUrl + bucketUrl + "/objects/" + id);
 
 		return this;
 	}
 
-	public ApiAccessBuilder delete(String id,String version){
+	public ApiAccessBuilder delete(String id, String version) {
 
 		delete(id);
 
-		this.optionalHeader.put("If-Match",version);
+		this.optionalHeader.put("If-Match", version);
 
 		return this;
 	}
 
-	public ApiAccessBuilder updateAll(String id,Object entity){
+	public ApiAccessBuilder updateAll(String id, Object entity) {
 
 
-		request=new HttpPut(appInfo.getAppSubUrl()+scopeSubUrl+bucketUrl+"/objects/"+id);
+		request = new HttpPut(appInfo.getAppSubUrl() + scopeSubUrl + bucketUrl + "/objects/" + id);
 
 		this.setContentType("application/vnd." + appInfo.getAppID() + ".mydata+json");
 
-		ctxObj=entity;
+		ctxObj = entity;
 
 		return this;
 	}
 
-	public ApiAccessBuilder updateAllWithVersion(String id,Object entity,String version){
+	public ApiAccessBuilder updateAllWithVersion(String id, Object entity, String version) {
 
 		updateAll(id, entity);
 
-		this.optionalHeader.put("If-Match",version);
+		this.optionalHeader.put("If-Match", version);
 
 		return this;
 	}
 
-	public ApiAccessBuilder header(String id){
-		request=new HttpHead(appInfo.getAppSubUrl()+scopeSubUrl+bucketUrl+"/objects/"+id);
+	public ApiAccessBuilder header(String id) {
+		request = new HttpHead(appInfo.getAppSubUrl() + scopeSubUrl + bucketUrl + "/objects/" + id);
 
 //		this.setContentType("application/vnd."+appInfo.getAppID()+".mydata+json");
 
@@ -212,22 +210,22 @@ public class ApiAccessBuilder {
 		return this;
 	}
 
-	public ApiAccessBuilder update(String id,Object entity){
-		request=new HttpPost(appInfo.getAppSubUrl()+scopeSubUrl+bucketUrl+"/objects/"+id);
+	public ApiAccessBuilder update(String id, Object entity) {
+		request = new HttpPost(appInfo.getAppSubUrl() + scopeSubUrl + bucketUrl + "/objects/" + id);
 
-		this.setContentType("application/vnd."+appInfo.getAppID()+".mydata+json");
+		this.setContentType("application/vnd." + appInfo.getAppID() + ".mydata+json");
 
 		this.optionalHeader.put("X-HTTP-Method-Override", "PATCH");
 
-		ctxObj=entity;
+		ctxObj = entity;
 
 		return this;
 	}
 
-	public ApiAccessBuilder updateWithVersion(String id,Object entity,String version){
+	public ApiAccessBuilder updateWithVersion(String id, Object entity, String version) {
 		update(id, entity);
 
-		this.optionalHeader.put("If-Match",version);
+		this.optionalHeader.put("If-Match", version);
 
 		return this;
 	}
@@ -236,18 +234,18 @@ public class ApiAccessBuilder {
 	//user relation
 	//=================
 
-	public ApiAccessBuilder setUserStatus(String userID,boolean status){
+	public ApiAccessBuilder setUserStatus(String userID, boolean status) {
 
-		request=new HttpPut(appInfo.getAppSubUrl()+"/users/"+userID+"/status");
+		request = new HttpPut(appInfo.getAppSubUrl() + "/users/" + userID + "/status");
 
 		this.setContentType("application/vnd.kii.UserStatusUpdateRequest+json");
 
 
-		Map<String,Object> map=new HashMap<>();
+		Map<String, Object> map = new HashMap<>();
 
-		map.put("disabled",status);
+		map.put("disabled", status);
 
-		this.ctxObj=map;
+		this.ctxObj = map;
 
 		return this;
 	}
@@ -256,33 +254,33 @@ public class ApiAccessBuilder {
 	public ApiAccessBuilder createUser(KiiUser user) {
 
 
-		request=new HttpPost(appInfo.getAppSubUrl()+"/users");
+		request = new HttpPost(appInfo.getAppSubUrl() + "/users");
 
 		this.setContentType("application/vnd.kii.RegistrationRequest+json");
-		ctxObj=user;
+		ctxObj = user;
 
 		return this;
 	}
 
 	public ApiAccessBuilder deleteUser(String userInfo, String type) {
 
-		if(type==null){
+		if (type == null) {
 			request = new HttpDelete(appInfo.getAppSubUrl() + "/users/" + userInfo);
 
-		}else {
+		} else {
 			request = new HttpDelete(appInfo.getAppSubUrl() + "/users/" + type + ":" + userInfo);
 		}
 		return this;
 	}
 
-	public ApiAccessBuilder  loginWithCode(String code,String clientID){
+	public ApiAccessBuilder loginWithCode(String code, String clientID) {
 
-		request=new HttpPost(appInfo.getSiteUrl()+("/api/oauth2/token"));
+		request = new HttpPost(appInfo.getSiteUrl() + ("/api/oauth2/token"));
 
-		List<NameValuePair> postParameters=new ArrayList<>();
-		postParameters.add(new BasicNameValuePair("grant_type","code"));
-		postParameters.add(new BasicNameValuePair("code",code));
-		postParameters.add(new BasicNameValuePair("client_id",clientID));
+		List<NameValuePair> postParameters = new ArrayList<>();
+		postParameters.add(new BasicNameValuePair("grant_type", "code"));
+		postParameters.add(new BasicNameValuePair("code", code));
+		postParameters.add(new BasicNameValuePair("client_id", clientID));
 //		postParameters.add(new BasicNameValuePair("grant_type","code"));
 
 		/*
@@ -293,85 +291,111 @@ public class ApiAccessBuilder {
 		map.put("redirect_uri","foo");
 		*/
 		try {
-			((HttpEntityEnclosingRequestBase)request).setEntity(new UrlEncodedFormEntity(postParameters));
+			((HttpEntityEnclosingRequestBase) request).setEntity(new UrlEncodedFormEntity(postParameters));
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
-		ctxObj=null;
+		ctxObj = null;
 		return this;
 	}
 
 
+	public ApiAccessBuilder login(String user, String pwd) {
+		request = new HttpPost(appInfo.getSiteUrl() + ("/api/oauth2/token"));
 
-	public ApiAccessBuilder login(String user,String pwd){
-		request=new HttpPost(appInfo.getSiteUrl()+("/api/oauth2/token"));
-
-		Map<String,String> map=new HashMap<>();
+		Map<String, String> map = new HashMap<>();
 		map.put("username", user);
 		map.put("password", pwd);
 
-		ctxObj=map;
+		ctxObj = map;
 
 		return this;
 	}
 
-	public ApiAccessBuilder adminLogin(String user,String pwd){
-		request=new HttpPost(appInfo.getSiteUrl()+("/api/oauth2/token"));
+	public ApiAccessBuilder adminLogin(String user, String pwd) {
+		request = new HttpPost(appInfo.getSiteUrl() + ("/api/oauth2/token"));
 
-		Map<String,String> map=new HashMap<>();
+		Map<String, String> map = new HashMap<>();
 		map.put("client_id", user);
-		map.put("client_secret",pwd);
+		map.put("client_secret", pwd);
 
-		ctxObj=map;
+		ctxObj = map;
 
 		return this;
 	}
 
 
+	/**
+	 * ==================
+	 * thing if
+	 * ==================
+	 */
 
 
+	public ApiAccessBuilder sendCommand(String thingID, ThingCommand command){
 
-	public HttpUriRequest generRequest(ObjectMapper mapper){
+		request=new HttpPost(appInfo.getThingIfSubUrl()+"/targets/THING:"+thingID+"/commands");
 
-		request.setHeader("X-Kii-AppID",appInfo.getAppID());
+		this.ctxObj=command;
+
+		return this;
+	}
+
+	public ApiAccessBuilder getCommand(String thingID,String commandID){
+		request=new HttpGet(appInfo.getThingIfSubUrl()+"/targets/THING:"+thingID+"/commands/"+commandID);
+
+		return this;
+	}
+
+	public ApiAccessBuilder queryCommands(String thingID, int bestLimit,String pageKey){
+//> GET /thing-if/apps/{appID}/targets/{targetType:targetID}/commands?paginationKey=XXXXX?bestEffortLimit=XXXXX
+
+		String subUrl=appInfo.getThingIfSubUrl()+"/targets/THING:"+thingID+"/commands?";
+		subUrl+="bestEffortLimit="+bestLimit+"&";
+		if(!StringUtils.isEmpty(pageKey)){
+			subUrl+="paginationKey="+pageKey;
+		}
+		request=new HttpPost(subUrl);
+
+		return this;
+	}
+
+
+	public HttpUriRequest generRequest(ObjectMapper mapper) {
+
+		request.setHeader("X-Kii-AppID", appInfo.getAppID());
 		request.setHeader("X-Kii-AppKey", appInfo.getAppKey());
 
 
-		if(token!=null){
-			request.setHeader("Authorization","Bearer "+token);
+		if (token != null) {
+			request.setHeader("Authorization", "Bearer " + token);
 		}
-		for(Map.Entry<String,String> entry:optionalHeader.entrySet()){
-			request.setHeader(entry.getKey(),entry.getValue());
+		for (Map.Entry<String, String> entry : optionalHeader.entrySet()) {
+			request.setHeader(entry.getKey(), entry.getValue());
 		}
 
-//		String contentType=request.getHeaders("Content-Type")[0].getValue()+"; charset=UTF-8";
-//		request.setHeader("Content-Type",contentType);
+		if (request instanceof HttpEntityEnclosingRequestBase && ctxObj != null) {
 
+			if (ctxObj instanceof String) {
+				((HttpEntityEnclosingRequestBase) request).setEntity(new StringEntity((String) ctxObj, Charsets.UTF_8));
+			} else {
+				try {
+					String context = mapper.writeValueAsString(ctxObj);
+					((HttpEntityEnclosingRequestBase) request).setEntity(new StringEntity(context, Charsets.UTF_8));
 
-			if(request instanceof HttpEntityEnclosingRequestBase  && ctxObj!= null){
-
-			 	if(ctxObj instanceof String ) {
-					((HttpEntityEnclosingRequestBase)request).setEntity(new StringEntity((String)ctxObj, Charsets.UTF_8));
-				}else{
-					try {
-						String context = mapper.writeValueAsString(ctxObj);
-						((HttpEntityEnclosingRequestBase)request).setEntity(new StringEntity(context,Charsets.UTF_8));
-
-					} catch (JsonProcessingException e) {
-						throw new IllegalArgumentException(e);
-					}
-
+				} catch (JsonProcessingException e) {
+					throw new IllegalArgumentException(e);
 				}
+
 			}
+		}
 
 
-
-		ctxObj=null;
+		ctxObj = null;
 		optionalHeader.clear();
 
 		return request;
 	}
-
 
 
 }

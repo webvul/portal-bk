@@ -14,6 +14,8 @@ public class GlobalThingInfo extends PortalEntity {
 
 	private String vendorThingID;
 
+	private String kiiThingID;
+
 	private String type;
 
 	private Map<String,Object> status;
@@ -98,6 +100,14 @@ public class GlobalThingInfo extends PortalEntity {
 
 	public void setCustom(Map<String, Object> custom) {
 		this.custom = custom;
+	}
+
+	public String getKiiThingID() {
+		return kiiThingID;
+	}
+
+	public void setKiiThingID(String kiiThingID) {
+		this.kiiThingID = kiiThingID;
 	}
 
 	@JsonAnySetter

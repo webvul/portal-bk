@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Command {
+public class ThingCommand {
 
 	/*
 
@@ -14,7 +14,7 @@ public class Command {
 
 	private String issuer;
 
-	private List<Action> actions=new ArrayList<>();
+	private Map<String,Action> actions=new HashMap<>();
 
 	private String schema;
 
@@ -34,11 +34,11 @@ public class Command {
 		this.issuer = issuer;
 	}
 
-	public List<Action> getActions() {
+	public Map<String,Action>  getActions() {
 		return actions;
 	}
 
-	public void setActions(List<Action> actions) {
+	public void setActions(Map<String,Action>  actions) {
 		this.actions = actions;
 	}
 

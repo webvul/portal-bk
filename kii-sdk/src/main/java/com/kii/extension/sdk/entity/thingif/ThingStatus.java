@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class Status {
+public class ThingStatus {
 
 	private Map<String,Object> fields=new HashMap<>();
 
