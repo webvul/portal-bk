@@ -1,9 +1,12 @@
 package com.kii.extension.sdk.entity.thingif;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class ThingCommand {
 
@@ -14,7 +17,7 @@ public class ThingCommand {
 
 	private String issuer;
 
-	private Map<String,Action> actions=new HashMap<>();
+	private List<Map<String,Action>> actions=new ArrayList<>();
 
 	private String schema;
 
@@ -34,12 +37,19 @@ public class ThingCommand {
 		this.issuer = issuer;
 	}
 
-	public Map<String,Action>  getActions() {
+	@JsonIgnore
+	public void setUserID(String userID){
+		setIssuer("USER:"+userID);
+	}
+
+	public List<Map<String,Action>>  getActions() {
 		return actions;
 	}
 
-	public void setActions(Map<String,Action>  actions) {
-		this.actions = actions;
+	@JsonIgnore
+	public void addAction(String name,Action action){
+		Map<String,Action> map= Collections.singletonMap(name,action);
+		this.actions.add(map);
 	}
 
 	public String getSchema() {
@@ -64,6 +74,11 @@ public class ThingCommand {
 
 	public void setMetadata(Map<String, Object> metadata) {
 		this.metadata = metadata;
+	}
+
+	@JsonIgnore
+	public void addMetadata(String key,Object value){
+		this.metadata.put(key,value);
 	}
 
 	public String getTitle() {

@@ -343,7 +343,7 @@ public class ApiAccessBuilder {
 {
 
 		 */
-		request=new HttpPost(appInfo.getAppSubUrl()+"/onboardings");
+		request=new HttpPost(appInfo.getThingIfSubUrl()+"/onboardings");
 
 		this.ctxObj=onboardParam;
 

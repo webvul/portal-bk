@@ -99,7 +99,7 @@ public class AppInfo {
 	}
 
 	public String getThingIfSubUrl(){
-		return siteUrl+"/thing-if/apps"+appID;
+		return siteUrl+"/thing-if/apps/"+appID;
 	}
 
 	public String getSiteUrl(){

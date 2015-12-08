@@ -10,7 +10,7 @@ public class CommandDetail extends ThingCommand {
 
 	private CommandState state;
 
-	private Map<String,ActionResult> actionResults=new HashMap<>();
+	private List<Map<String,ActionResult>> actionResults=new ArrayList<>();
 
 	private String firedByTriggerID;
 
@@ -26,11 +26,11 @@ public class CommandDetail extends ThingCommand {
 		this.state = state;
 	}
 
-	public Map<String, ActionResult> getActionResults() {
+	public List<Map<String,ActionResult>> getActionResults() {
 		return actionResults;
 	}
 
-	public void setActionResults(Map<String, ActionResult> actionResults) {
+	public void setActionResults(List<Map<String,ActionResult>> actionResults) {
 		this.actionResults = actionResults;
 	}
 
