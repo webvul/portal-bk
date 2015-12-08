@@ -173,6 +173,14 @@ public class ConditionBuilder {
 		}
 	}
 
+	public Condition getConditionInstance() {
+		if (clauses==null) {
+			return condition;
+		} else {
+			return clauses;
+		}
+	}
+
 	public QueryParam getFinalQueryParam(){
 		return this.getFinalCondition().build();
 	}

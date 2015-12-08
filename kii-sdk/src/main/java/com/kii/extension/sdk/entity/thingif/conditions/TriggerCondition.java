@@ -1,8 +1,11 @@
 package com.kii.extension.sdk.entity.thingif.conditions;
 
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -26,7 +29,18 @@ public abstract  class TriggerCondition {
 	}
 
 
+	@JsonIgnore
+	public Map<String,Object> getConditionJson() {
 
+		if (this instanceof LogicTriggerCondition) {
+			return Collections.singletonMap(this.getType().getValue(), ((LogicTriggerCondition) this).getClauses()
+					.stream()
+					.map(TriggerCondition::getConditionJson)
+					.collect(Collectors.toCollection(ArrayList::new)));
+		} else {
+			return Collections.singletonMap(this.getType().getValue(), this);
+		}
+	}
 
 
 }

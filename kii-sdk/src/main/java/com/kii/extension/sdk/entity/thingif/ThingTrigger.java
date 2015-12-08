@@ -25,7 +25,7 @@ public class ThingTrigger {
 
 	private Map<String,Object> metadata=new HashMap<>();
 
-	@JsonProperty("triggersWhat")
+	@JsonIgnore
 	public TriggerTarget getTarget() {
 		return target;
 	}

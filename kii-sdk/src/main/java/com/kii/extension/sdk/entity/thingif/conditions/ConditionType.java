@@ -17,23 +17,26 @@ public enum ConditionType {
 		this.value=val;
 	}
 
-
-	private static Map<String,ConditionType> valueMap=new HashMap<>();
-
-	static{
-
-		for(ConditionType type:ConditionType.values()){
-			valueMap.put(type.toValue(),type);
-		}
-	}
-
-	@JsonCreator
-	public static ConditionType forValue(String value) {
-		return valueMap.get(value);
-	}
-
-	@JsonValue
-	public String toValue() {
+	public String getValue(){
 		return value;
 	}
+
+//	private static Map<String,ConditionType> valueMap=new HashMap<>();
+//
+//	static{
+//
+//		for(ConditionType type:ConditionType.values()){
+//			valueMap.put(type.toValue(),type);
+//		}
+//	}
+
+//	@JsonCreator
+//	public static ConditionType forValue(String value) {
+//		return valueMap.get(value);
+//	}
+//
+//	@JsonValue
+//	public String toValue() {
+//		return value;
+//	}
 }

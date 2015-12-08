@@ -15,10 +15,13 @@ import com.kii.extension.sdk.entity.thingif.Predicate;
 import com.kii.extension.sdk.entity.thingif.StatePredicate;
 import com.kii.extension.sdk.entity.thingif.TargetCommand;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
+import com.kii.extension.sdk.entity.thingif.ThingStatus;
 import com.kii.extension.sdk.entity.thingif.ThingTrigger;
 import com.kii.extension.sdk.entity.thingif.TriggerTarget;
 import com.kii.extension.sdk.entity.thingif.TriggerWhen;
 import com.kii.extension.sdk.entity.thingif.conditions.EqualTriggerCondition;
+import com.kii.extension.sdk.query.Condition;
+import com.kii.extension.sdk.query.ConditionBuilder;
 import com.kii.extension.sdk.service.ThingIFService;
 import com.kii.extension.sdk.service.TriggerService;
 import com.kii.extension.sdk.test.TestTemplate;
@@ -100,16 +103,15 @@ public class TestThing extends TestTemplate {
 		action.setField("lightness",99);
 		command.addAction("trigger",action);
 		command.addMetadata("source","trigger");
+		command.setSchema("demo");
 
 		trigger.setCommand(command);
 
 		StatePredicate predicate =new StatePredicate();
 		predicate.setTriggersWhen(TriggerWhen.CONDITION_CHANGED);
 
-		EqualTriggerCondition  equ=new EqualTriggerCondition();
-		equ.setField("temperature");
-		equ.setValue(100);
-		predicate.setCondition(equ);
+		Condition condition=ConditionBuilder.newCondition().great("temperature",100).getConditionInstance();
+		predicate.setCondition(condition);
 
 		trigger.setPredicate(predicate);
 
@@ -118,5 +120,22 @@ public class TestThing extends TestTemplate {
 
 	}
 
+	private String triggerID="9ff1ed50-9d8d-11e5-9cc2-00163e02138f";
+
+	@Test
+	public void fireTrigger(){
+
+
+		ThingStatus status=new ThingStatus();
+		for(int i=0;i<10;i++) {
+			if(i%2==0) {
+				status.setField("temperature", 100 + i);
+			}else{
+				status.setField("temperature", 100 - i);
+
+			}
+			service.putStatus(thingID2, status);
+		}
+	}
 
 }

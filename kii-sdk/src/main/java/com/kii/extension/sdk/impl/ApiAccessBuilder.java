@@ -404,14 +404,14 @@ public class ApiAccessBuilder {
 	public ApiAccessBuilder getThingStatus(String thingID){
 //		> GET /thing-if/apps/{appID}/targets/{targetType:targetID}/states/
 
-		request=new HttpGet(appInfo.getThingIfSubUrl()+"/targets/THING:"+thingID+"/status");
+		request=new HttpGet(appInfo.getThingIfSubUrl()+"/targets/THING:"+thingID+"/states");
 
 		return this;
 	}
 
 	public ApiAccessBuilder  setThingStatus(String thingID,ThingStatus status){
 
-		request=new HttpPut(appInfo.getThingIfSubUrl()+"/targets/THING:"+thingID+"/status");
+		request=new HttpPut(appInfo.getThingIfSubUrl()+"/targets/THING:"+thingID+"/states");
 
 		ctxObj=status;
 		return this;

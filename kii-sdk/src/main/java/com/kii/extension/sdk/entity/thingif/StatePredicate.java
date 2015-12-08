@@ -12,12 +12,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import com.kii.extension.sdk.entity.thingif.conditions.LogicTriggerCondition;
 import com.kii.extension.sdk.entity.thingif.conditions.TriggerCondition;
+import com.kii.extension.sdk.query.Condition;
 
 public class StatePredicate extends Predicate {
 
 	private TriggerWhen triggersWhen;
 
-	private TriggerCondition condition;
+	private Condition condition;
 
 	@Override
 	public EventSourceType getEventSource() {
@@ -32,23 +33,11 @@ public class StatePredicate extends Predicate {
 		this.triggersWhen = triggersWhen;
 	}
 
-	@JsonIgnore
-	public TriggerCondition getCondition() {
+	public Condition getCondition() {
 		return condition;
 	}
 
-	@JsonProperty("condition")
-	public Map<String,Object>  getConditionForJson(){
-
-		if(condition instanceof LogicTriggerCondition){
-			return Collections.singletonMap(condition.getType().name(),((LogicTriggerCondition)condition).getClauses());
-		}else{
-			return Collections.singletonMap(condition.getType().name(),condition);
-		}
-
-	}
-
-	public void setCondition(TriggerCondition condition) {
+	public void setCondition(Condition condition) {
 		this.condition = condition;
 	}
 }
