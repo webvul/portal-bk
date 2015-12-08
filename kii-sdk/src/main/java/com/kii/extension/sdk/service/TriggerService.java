@@ -54,4 +54,12 @@ public class TriggerService {
 
 		return trigger;
 	}
+
+	public void updateTrigger(String thingID,String triggerID,ThingTrigger trigger){
+		HttpUriRequest request=getBuilder().updateTrigger(thingID,triggerID,trigger).generRequest(mapper);
+
+		client.executeRequest(request);
+
+		return;
+	}
 }

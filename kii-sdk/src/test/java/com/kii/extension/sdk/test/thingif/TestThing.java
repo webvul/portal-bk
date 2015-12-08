@@ -1,5 +1,7 @@
 package com.kii.extension.sdk.test.thingif;
 
+import static junit.framework.TestCase.assertEquals;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +21,6 @@ import com.kii.extension.sdk.entity.thingif.ThingStatus;
 import com.kii.extension.sdk.entity.thingif.ThingTrigger;
 import com.kii.extension.sdk.entity.thingif.TriggerTarget;
 import com.kii.extension.sdk.entity.thingif.TriggerWhen;
-import com.kii.extension.sdk.entity.thingif.conditions.EqualTriggerCondition;
 import com.kii.extension.sdk.query.Condition;
 import com.kii.extension.sdk.query.ConditionBuilder;
 import com.kii.extension.sdk.service.ThingIFService;
@@ -117,7 +118,6 @@ public class TestThing extends TestTemplate {
 
 		triggerService.createTrigger(thingID2,trigger);
 
-
 	}
 
 	private String triggerID="9ff1ed50-9d8d-11e5-9cc2-00163e02138f";
@@ -136,6 +136,23 @@ public class TestThing extends TestTemplate {
 			}
 			service.putStatus(thingID2, status);
 		}
+	}
+
+	@Test
+	public void getTrigger(){
+
+
+		ThingTrigger trigger=triggerService.getTrigger(thingID2,triggerID);
+
+
+		trigger.getCommand().setThingID(thingID);
+
+		triggerService.updateTrigger(thingID2,triggerID,trigger);
+
+		trigger=triggerService.getTrigger(thingID2,triggerID);
+
+		assertEquals(trigger.getCommand().getTarget(),thingID);
+
 	}
 
 }

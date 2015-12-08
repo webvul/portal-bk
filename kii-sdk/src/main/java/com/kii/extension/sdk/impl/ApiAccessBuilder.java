@@ -13,6 +13,7 @@ import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
+import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -425,6 +426,17 @@ public class ApiAccessBuilder {
 	public ApiAccessBuilder createTrigger(String thingID,ThingTrigger trigger){
 
 		request=new HttpPost(appInfo.getThingIfSubUrl()+"/targets/THING:"+thingID+"/triggers");
+
+		ctxObj=trigger;
+
+		return this;
+
+
+	}
+
+	public ApiAccessBuilder updateTrigger(String thingID,String triggerID,ThingTrigger trigger){
+
+		request=new HttpPatch(appInfo.getThingIfSubUrl()+"/targets/THING:"+thingID+"/triggers/"+triggerID);
 
 		ctxObj=trigger;
 

@@ -87,6 +87,7 @@ public class ThingTrigger {
 		this.metadata.put(key,value);
 	}
 
+	@JsonIgnore
 	public String getTriggerID() {
 		return triggerID;
 	}
