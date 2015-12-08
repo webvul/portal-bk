@@ -107,7 +107,7 @@ public class UserGroupController {
      *
      * @param userGroupID
      */
-    @RequestMapping(path="/{userGroupID}",method={RequestMethod.DELETE})
+    @RequestMapping(path="/{userGroupID}",method={RequestMethod.DELETE},consumes={"*"})
     public ResponseEntity deleteUserGroup(@PathVariable("userGroupID") String userGroupID){
 
         // check whether userGroupID existing

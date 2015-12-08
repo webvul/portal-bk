@@ -114,7 +114,7 @@ public class UserManager {
 		BeehiveUser user = userDao.getUserByID(userID);
 		archiveUserDao.archive(user);
 
-		kiiUserDao.disableBeehiveUser(user);
+		kiiUserDao.removeBeehiveUser(userID);
 
 //		userGroupDao.checkUserGroupsChange(user,null);
 

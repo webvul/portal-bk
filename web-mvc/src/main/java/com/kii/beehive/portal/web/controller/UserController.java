@@ -77,7 +77,7 @@ public class UserController {
     }
 
 
-	@RequestMapping(path="/{userID}",method={RequestMethod.DELETE})
+	@RequestMapping(path="/{userID}",method={RequestMethod.DELETE},consumes={"*"})
 	public void deleteUser(@PathVariable("userID") String userID){
 
 		userManager.deleteUser(userID);

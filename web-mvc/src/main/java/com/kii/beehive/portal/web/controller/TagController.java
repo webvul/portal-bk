@@ -85,7 +85,7 @@ public class TagController {
 	 *
 	 * @param tagName
      */
-	@RequestMapping(path="/custom/{tagName}",method={RequestMethod.DELETE})
+	@RequestMapping(path="/custom/{tagName}",method={RequestMethod.DELETE},consumes={"*"})
 	public void removeTag(@PathVariable("tagName") String tagName){
 		
 		TagIndex orig =  tagIndexDao.getTagIndexByID(TagType.Custom.getTagName(tagName));
