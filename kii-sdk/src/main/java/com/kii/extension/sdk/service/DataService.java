@@ -51,10 +51,10 @@ public class DataService {
 		HttpUriRequest request=getBuilder().bindBucketInfo(bucketInfo).query(query).generRequest(mapper);
 
 
-		HttpResponse  response= client.doRequest(request);
+		String result= client.executeRequest(request);
 
 		try {
-			JsonNode node=mapper.readValue(HttpUtils.getResponseBody(response),JsonNode.class);
+			JsonNode node=mapper.readValue(result,JsonNode.class);
 
 			JsonNode pageKey=node.get("nextPaginationKey");
 			if (pageKey != null) {

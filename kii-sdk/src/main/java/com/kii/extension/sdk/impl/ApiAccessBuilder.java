@@ -27,7 +27,10 @@ import com.kii.extension.sdk.entity.AppInfo;
 import com.kii.extension.sdk.entity.BucketInfo;
 import com.kii.extension.sdk.entity.KiiUser;
 import com.kii.extension.sdk.entity.ScopeType;
+import com.kii.extension.sdk.entity.thingif.OnBoardingParam;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
+import com.kii.extension.sdk.entity.thingif.ThingTrigger;
+import com.kii.extension.sdk.exception.KiiCloudException;
 import com.kii.extension.sdk.query.QueryParam;
 
 
@@ -331,6 +334,33 @@ public class ApiAccessBuilder {
 	 * ==================
 	 */
 
+	public ApiAccessBuilder thingOnboarding(OnBoardingParam onboardParam){
+
+		/*
+		> POST /apps/<appid>/onboardings
+"Content-Type:application/vnd.kii.onboardingWithThingIDByOwner+json"
+
+{
+
+		 */
+		request=new HttpPost(appInfo.getAppSubUrl()+"/onboardings");
+
+		this.ctxObj=onboardParam;
+
+		if(!StringUtils.isEmpty(onboardParam.getThingID())){
+
+			this.setContentType("application/vnd.kii.onboardingWithThingIDByOwner+json");
+
+		}else if(!StringUtils.isEmpty(onboardParam.getVendorThingID())){
+			this.setContentType("application/vnd.kii.onboardingWithVendorThingIDByThing+json");
+
+		}else{
+			throw new KiiCloudException();
+		}
+
+		return this;
+	}
+
 
 	public ApiAccessBuilder sendCommand(String thingID, ThingCommand command){
 
@@ -360,6 +390,41 @@ public class ApiAccessBuilder {
 		return this;
 	}
 
+	public ApiAccessBuilder getThingStatus(String thingID){
+//		> GET /thing-if/apps/{appID}/targets/{targetType:targetID}/states/
+
+		request=new HttpGet(appInfo.getThingIfSubUrl()+"/targets/THING:"+thingID+"/status");
+
+		return this;
+	}
+
+	//================================
+	//trigger relation
+	//================================
+
+	public ApiAccessBuilder createTrigger(String thingID,ThingTrigger trigger){
+
+		request=new HttpPost(appInfo.getThingIfSubUrl()+"/targets/THING:"+thingID+"/triggers");
+
+		ctxObj=trigger;
+
+		return this;
+
+
+	}
+
+	public ApiAccessBuilder getTrigger(String thingID,String triggerID){
+
+
+		request=new HttpGet(appInfo.getThingIfSubUrl()+"/targets/THING:"+thingID+"/triggers/"+triggerID);
+
+		return this;
+	}
+
+
+	//==============================
+	//
+	//==============================
 
 	public HttpUriRequest generRequest(ObjectMapper mapper) {
 
