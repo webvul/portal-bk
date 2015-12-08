@@ -1,10 +1,9 @@
 package com.kii.extension.sdk.entity.thingif.conditions;
 
-public class AndCondition extends LogicCondition {
+public class OrTriggerCondition extends LogicTriggerCondition {
 
 	@Override
 	public ConditionType getType(){
-		return ConditionType.And;
+		return ConditionType.Or;
 	}
-
 }

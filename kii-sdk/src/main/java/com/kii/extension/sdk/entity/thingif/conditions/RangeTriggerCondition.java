@@ -1,6 +1,6 @@
 package com.kii.extension.sdk.entity.thingif.conditions;
 
-public class RangeCondition extends Condition{
+public abstract class RangeTriggerCondition extends TriggerCondition {
 
 
 	private String field;

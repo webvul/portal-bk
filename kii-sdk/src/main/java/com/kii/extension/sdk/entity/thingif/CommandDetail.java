@@ -2,13 +2,12 @@ package com.kii.extension.sdk.entity.thingif;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class CommandDetail extends ThingCommand {
 
-	private CommandState state;
+	private CommandStateType state;
 
 	private List<Map<String,ActionResult>> actionResults=new ArrayList<>();
 
@@ -18,11 +17,11 @@ public class CommandDetail extends ThingCommand {
 
 	private Date modified;
 
-	public CommandState getState() {
+	public CommandStateType getState() {
 		return state;
 	}
 
-	public void setState(CommandState state) {
+	public void setState(CommandStateType state) {
 		this.state = state;
 	}
 

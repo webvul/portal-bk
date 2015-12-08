@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.context.TokenBindToolResolver;
 import com.kii.extension.sdk.entity.AppInfo;
+import com.kii.extension.sdk.entity.thingif.ActionResult;
 import com.kii.extension.sdk.entity.thingif.CommandDetail;
 import com.kii.extension.sdk.entity.thingif.CommandQuery;
 import com.kii.extension.sdk.entity.thingif.OnBoardingParam;
@@ -117,5 +118,20 @@ public class ThingIFService {
 
 	}
 
+	public void submitActionResult(String thingID,String commandID,List<Map<String,ActionResult>> resultList){
+
+		HttpUriRequest request=	getBuilder().submitCommand(thingID,commandID,resultList).generRequest(mapper);
+
+		client.executeRequest(request);
+	}
+
+	public void putStatus(String thingID,ThingStatus status){
+
+		HttpUriRequest request=	getBuilder().setThingStatus(thingID,status).generRequest(mapper);
+
+		client.executeRequest(request);
+
+
+	}
 
 }

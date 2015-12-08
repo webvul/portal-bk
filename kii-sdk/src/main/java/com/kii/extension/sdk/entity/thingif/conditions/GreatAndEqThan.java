@@ -1,6 +1,6 @@
 package com.kii.extension.sdk.entity.thingif.conditions;
 
-public class GreatAndEqThan extends RangeCondition{
+public class GreatAndEqThan extends RangeTriggerCondition {
 
 
 	private Object upperLimit;

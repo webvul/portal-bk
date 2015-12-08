@@ -27,8 +27,10 @@ import com.kii.extension.sdk.entity.AppInfo;
 import com.kii.extension.sdk.entity.BucketInfo;
 import com.kii.extension.sdk.entity.KiiUser;
 import com.kii.extension.sdk.entity.ScopeType;
+import com.kii.extension.sdk.entity.thingif.ActionResult;
 import com.kii.extension.sdk.entity.thingif.OnBoardingParam;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
+import com.kii.extension.sdk.entity.thingif.ThingStatus;
 import com.kii.extension.sdk.entity.thingif.ThingTrigger;
 import com.kii.extension.sdk.exception.KiiCloudException;
 import com.kii.extension.sdk.query.QueryParam;
@@ -390,12 +392,30 @@ public class ApiAccessBuilder {
 		return this;
 	}
 
+	public ApiAccessBuilder submitCommand(String thingID,String commandID, List<Map<String,ActionResult>>  results){
+//		> GET targetID}/commands/{commandID}/action-results
+
+		request=new HttpPut(appInfo.getThingIfSubUrl()+"/targets/THING:"+thingID+"/commands/"+commandID+"/action-results");
+
+		ctxObj=results;
+		return this;
+	}
+
 	public ApiAccessBuilder getThingStatus(String thingID){
 //		> GET /thing-if/apps/{appID}/targets/{targetType:targetID}/states/
 
 		request=new HttpGet(appInfo.getThingIfSubUrl()+"/targets/THING:"+thingID+"/status");
 
 		return this;
+	}
+
+	public ApiAccessBuilder  setThingStatus(String thingID,ThingStatus status){
+
+		request=new HttpPut(appInfo.getThingIfSubUrl()+"/targets/THING:"+thingID+"/status");
+
+		ctxObj=status;
+		return this;
+
 	}
 
 	//================================

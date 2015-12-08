@@ -8,6 +8,7 @@ public class ActionResult {
 	   	{"turnPower":{"result":true,"errorMessage":"","data":{"voltage":"125"}},
 
 	 */
+	private boolean succeeded;
 
 	private String result;
 
@@ -37,5 +38,13 @@ public class ActionResult {
 
 	public void setData(Action data) {
 		this.data = data;
+	}
+
+	public boolean isSucceeded() {
+		return succeeded;
+	}
+
+	public void setSucceeded(boolean succeeded) {
+		this.succeeded = succeeded;
 	}
 }

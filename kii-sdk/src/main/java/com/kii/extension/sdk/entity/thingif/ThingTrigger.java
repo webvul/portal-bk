@@ -3,16 +3,19 @@ package com.kii.extension.sdk.entity.thingif;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 
 public class ThingTrigger {
 
+	private String triggerID;
+
 	private TriggerTarget target;
 
 	private Predicate  predicate;
 
-	private ThingCommand command;
+	private TargetCommand command;
 
 	private ServiceCode  serviceCode;
 
@@ -39,11 +42,11 @@ public class ThingTrigger {
 		this.predicate = predicate;
 	}
 
-	public ThingCommand getCommand() {
+	public TargetCommand getCommand() {
 		return command;
 	}
 
-	public void setCommand(ThingCommand command) {
+	public void setCommand(TargetCommand command) {
 		this.command = command;
 	}
 
@@ -79,8 +82,19 @@ public class ThingTrigger {
 		this.metadata = metadata;
 	}
 
+	@JsonIgnore
+	public void addMetadata(String key, Object value) {
+		this.metadata.put(key,value);
+	}
 
-	/*
+	public String getTriggerID() {
+		return triggerID;
+	}
+
+	public void setTriggerID(String triggerID) {
+		this.triggerID = triggerID;
+	}
+/*
 	{"triggersWhat":"COMMAND",
  "predicate":{
 

@@ -1,6 +1,6 @@
 package com.kii.extension.sdk.entity.thingif.conditions;
 
-public class LessAndEqThan extends RangeCondition{
+public class LessAndEqThan extends RangeTriggerCondition {
 
 	private Object lowerLimit;
 

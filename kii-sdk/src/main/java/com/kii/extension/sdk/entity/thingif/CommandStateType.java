@@ -1,6 +1,6 @@
 package com.kii.extension.sdk.entity.thingif;
 
-public enum CommandState {
+public enum CommandStateType {
 
 	SENT,SEND_FAILED,DONE,INCOMPLETE;
 }
