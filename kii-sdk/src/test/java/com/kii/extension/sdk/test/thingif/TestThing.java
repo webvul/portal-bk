@@ -98,7 +98,7 @@ public class TestThing extends TestTemplate {
 
 		TargetCommand command=new TargetCommand();
 		command.setUserID(userID);
-		command.setThingID(thingID);
+//		command.setThingID(thingID);
 		Action action=new Action();
 		action.setField("power",true);
 		action.setField("lightness",99);
