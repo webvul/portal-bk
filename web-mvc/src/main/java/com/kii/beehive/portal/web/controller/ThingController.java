@@ -89,7 +89,7 @@ public class ThingController {
 	 *
 	 * @param globalThingID
      */
-	@RequestMapping(path="/{globalThingID}",method={RequestMethod.DELETE})
+	@RequestMapping(path="/{globalThingID}",method={RequestMethod.DELETE},consumes={"*"})
 	public void removeThing(@PathVariable("globalThingID") String globalThingID){
 		
 		GlobalThingInfo orig =  globalThingDao.getThingInfoByID(globalThingID);
@@ -128,7 +128,7 @@ public class ThingController {
 	 * @param globalThingID
 	 * @param tagName
      */
-	@RequestMapping(path="/{globalThingID}/tags/custom/{tagName}",method={RequestMethod.DELETE})
+	@RequestMapping(path="/{globalThingID}/tags/custom/{tagName}",method={RequestMethod.DELETE},consumes={"*"})
 	public void removeThingTag(@PathVariable("globalThingID") String globalThingID,@PathVariable("tagName") String tagName){
 		thingManager.unbindTagToThing(TagType.Custom.getTagName(tagName),globalThingID);
 		return;

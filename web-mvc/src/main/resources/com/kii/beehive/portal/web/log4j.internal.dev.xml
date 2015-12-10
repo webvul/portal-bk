@@ -7,21 +7,21 @@
 			<param name="ConversionPattern" value="%d %-5p %C{3}.%M(%L) - %m%n" />
 		</layout>
 	</appender>
-	
+
 	<appender name="file" class="org.apache.log4j.DailyRollingFileAppender" >
-	   <param name="file" value="${user.home}/.beehive/log/beehive/beehive.log" />
-	   <param name="DatePattern" value="'.'yyyy-MM-dd" />
-	   <layout class="org.apache.log4j.PatternLayout">
+		<param name="file" value="/data/log/beehive/beehive.log" />
+		<param name="DatePattern" value="'.'yyyy-MM-dd" />
+		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%d %-5p %C{3}.%M(%L) - %m%n" />
-	   </layout>
+		</layout>
 	</appender>
-	
+
 	<appender name="op-file" class="org.apache.log4j.DailyRollingFileAppender">
-	   <param name="file" value="${user.home}/.beehive/data/log/beehive/op-log.csv" />
-	   <param name="DatePattern" value="'.'yyyy-MM-dd" />
-	   <layout class="org.apache.log4j.PatternLayout">
+		<param name="file" value="/data/log/beehive/op-log.csv" />
+		<param name="DatePattern" value="'.'yyyy-MM-dd" />
+		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%d{yyyyMMddHHmmss},%m%n" />
-	   </layout>
+		</layout>
 	</appender>
 
 
@@ -51,8 +51,7 @@
     </logger>
 
 	<root>
-		<priority value="info" />
-        <appender-ref ref="console" />
+		<priority value="debug" />
         <appender-ref ref="file" />
 	</root>
 </log4j:configuration>

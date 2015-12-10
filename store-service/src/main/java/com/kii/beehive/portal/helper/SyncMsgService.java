@@ -52,7 +52,7 @@ public class SyncMsgService {
 
 
 	public void addInsertMsg(String userID,BeehiveUser user){
-		addSyncMsg(user.getId(), UserSyncMsgType.Create,user);
+		addSyncMsg(userID, UserSyncMsgType.Create,user);
 
 	}
 
