@@ -11,10 +11,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 
-import com.kii.beehive.portal.jdbc.entity.DBEntity;
 import com.kii.beehive.portal.jdbc.helper.AnnationBeanSqlParameterSource;
 
-public abstract class BaseDao<T extends DBEntity> {
+public abstract class BaseDao<T> {
 
 
 	protected JdbcTemplate jdbcTemplate;
@@ -88,7 +87,7 @@ public abstract class BaseDao<T extends DBEntity> {
 	public boolean IsIdExist(Serializable id){
 		boolean result = false;
 		String sql = "SELECT count(1) FROM " + this.getTableName() + " WHERE "+ getKey() +"=?";  
-		Long count =  jdbcTemplate.queryForObject(sql, Long.class);
+		Long count =  jdbcTemplate.queryForObject(sql,new Object[]{id}, Long.class);
         if (count > 0) {
     		result = true;
     	}

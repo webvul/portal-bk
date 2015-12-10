@@ -23,12 +23,15 @@ CREATE TABLE `beehive`.`tag_index` (
   `create_date` DATETIME NULL COMMENT '',
   `modify_by` VARCHAR(45) NULL COMMENT '',
   `modify_date` DATETIME NULL COMMENT '',
-  PRIMARY KEY (`tag_id`)
-  COMMENT '') ENGINE=InnoDB AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8mb4;
+  PRIMARY KEY (`tag_id`) COMMENT ''
+  ) ENGINE=InnoDB AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8mb4;
 
 
 CREATE TABLE `beehive`.`rel_thing_tag` (
-  `thing_id` INT NOT NULL AUTO_INCREMENT COMMENT '',
+  `id` INT NOT NULL AUTO_INCREMENT COMMENT '',
+  `thing_id` INT NOT NULL COMMENT '',
   `tag_id` INT NOT NULL COMMENT '',
-  PRIMARY KEY (`thing_id`, `tag_id`)  COMMENT '')
-  ENGINE=InnoDB AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8mb4;
+  PRIMARY KEY (id)  COMMENT '',
+  FOREIGN KEY (thing_id) REFERENCES global_thing(id_global_thing),
+  FOREIGN KEY (tag_id) REFERENCES tag_index(tag_id)
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

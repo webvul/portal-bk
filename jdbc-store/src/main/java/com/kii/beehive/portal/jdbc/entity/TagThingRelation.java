@@ -1,29 +1,43 @@
 package com.kii.beehive.portal.jdbc.entity;
 
 import com.kii.beehive.portal.jdbc.annotation.JdbcField;
-import com.kii.beehive.portal.jdbc.annotation.JdbcFieldType;
 
 public class TagThingRelation {
+	
+	private long id;
+	
+	private long tagID;
 
-	private int tagID;
+	private long thingID;
+	
+	public final static String ID = "id";
+	public final static String TAG_ID = "tag_id";
+	public final static String THING_ID = "thing_id";
+	
+	@JdbcField(column="id")
+	public long getId() {
+		return id;
+	}
 
-	private int thingID;
-
-	@JdbcField(column = "tag_id")
-	public int getTagID() {
+	public void setId(long id) {
+		this.id = id;
+	}
+	
+	@JdbcField(column = TAG_ID)
+	public long getTagID() {
 		return tagID;
 	}
 
-	public void setTagID(int tagID) {
+	public void setTagID(long tagID) {
 		this.tagID = tagID;
 	}
 
-	@JdbcField(column = "thing_id")
-	public int getThingID() {
+	@JdbcField(column = THING_ID)
+	public long getThingID() {
 		return thingID;
 	}
 
-	public void setThingID(int thingID) {
+	public void setThingID(long thingID) {
 		this.thingID = thingID;
 	}
 }

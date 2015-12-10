@@ -7,10 +7,21 @@ public class TagIndex extends DBEntity {
 
 
 	private TagType tagType;
-
 	private String displayName;
-
-	@JdbcField(column = "tag_type",type= JdbcFieldType.EnumStr)
+	private String description;
+	
+	public final static String TAG_ID = "tag_id";
+	public final static String TAG_TYPE = "tag_type";
+	public final static String DISPLAY_NAME = "display_name";
+	public final static String DESCRIPTION = "description";
+	
+	@Override
+	@JdbcField(column="tag_id")
+	public long getId(){
+		return super.getId();
+	}
+	
+	@JdbcField(column = TAG_TYPE,type= JdbcFieldType.EnumStr)
 	public TagType getTagType() {
 		return tagType;
 	}
@@ -19,7 +30,7 @@ public class TagIndex extends DBEntity {
 		this.tagType = tagType;
 	}
 
-	@JdbcField(column="display_name")
+	@JdbcField(column=DISPLAY_NAME)
 	public String getDisplayName() {
 		return displayName;
 	}
@@ -27,4 +38,15 @@ public class TagIndex extends DBEntity {
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;
 	}
+	
+	@JdbcField(column=DESCRIPTION)
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	
+	
 }
