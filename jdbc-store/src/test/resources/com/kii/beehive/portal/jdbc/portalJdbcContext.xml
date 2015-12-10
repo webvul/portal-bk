@@ -20,7 +20,7 @@
 
 
     <bean   class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="locations" value="classpath:com/kii/beehive/portal/jdbc/jdbc.${spring.profile}.properties"/>
+        <property name="locations" value="classpath:com/kii/beehive/portal/jdbc/jdbc.test.properties"/>
     </bean>
 
     <bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">

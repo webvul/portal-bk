@@ -2,6 +2,8 @@ package com.kii.beehive.portal.jdbc;
 
 import static junit.framework.TestCase.assertEquals;
 
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,4 +57,14 @@ public class TestTagThingRelationDao extends TestTemplate{
 		assertEquals(rel.getTagID(),entity.getTagID());
 		assertEquals(rel.getThingID(),entity.getThingID());
 	}
+	
+	@Test
+	public void testFindThingByTag(){
+		List<GlobalThingInfo> gList = globalThingDao.findThingByTag(TagType.Custom.toString(), "DisplayName");
+		System.out.println(gList.get(0));
+		assertEquals(1,gList.size());
+		
+	}
+	
+	
 }

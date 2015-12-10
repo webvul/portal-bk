@@ -74,4 +74,23 @@ public class GlobalThingInfo extends DBEntity{
 	public void setCustom(String custom) {
 		this.custom = custom;
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("GlobalThingInfo [vendorThingID=");
+		builder.append(vendorThingID);
+		builder.append(", kiiAppID=");
+		builder.append(kiiAppID);
+		builder.append(", type=");
+		builder.append(type);
+		builder.append(", status=");
+		builder.append(status);
+		builder.append(", custom=");
+		builder.append(custom);
+		builder.append("]");
+		return builder.toString();
+	}
+	
+	
 }

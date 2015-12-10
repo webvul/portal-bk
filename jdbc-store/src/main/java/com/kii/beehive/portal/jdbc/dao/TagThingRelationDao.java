@@ -18,6 +18,28 @@ public class TagThingRelationDao extends BaseDao<TagThingRelation> {
 	public static final String TABLE_NAME = "rel_thing_tag";
 	public static final String KEY = "id";
 	
+	public void delete(Long thingID, Long tagID){
+		String sql = "DELETE FROM " + this.getTableName() + " WHERE ";
+		
+		StringBuilder where = new StringBuilder();
+		List<Object> params = new ArrayList<Object>();
+		if(thingID != null){
+			where.append(TagThingRelation.TAG_ID + " = ? "); 
+			params.add(thingID);
+		}
+		
+		if(tagID != null){
+			if(where.length() > 0){
+				where.append(" AND ");
+			}
+			where.append(TagThingRelation.TAG_ID+" = ? ");
+			params.add(tagID);
+		}
+		Object[] paramArr = new String[params.size()];
+		paramArr = params.toArray(paramArr);
+		
+        jdbcTemplate.update(sql,paramArr);
+	}
 
 	@Override
 	public String getTableName() {

@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Repository;
 
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
@@ -26,6 +27,33 @@ public class GlobalThingDao extends BaseDao<GlobalThingInfo>{
 		}else{
 			return null;
 		}
+	}
+	
+	public List<GlobalThingInfo> findThingByTag(String tagType,String displayName) {
+		String sql = "SELECT g.id_global_thing,g.vendor_thing_id,g.kii_app_id,g.thing_type,g.custom_info,g.status,g.create_by,g.create_date,g.modify_by,g.modify_date "
+					+ "FROM " + this.getTableName() +" g "
+					+ "INNER JOIN rel_thing_tag r ON g.id_global_thing=r.thing_id " 
+					+ "INNER JOIN tag_index t ON t.tag_id=r.tag_id "
+					+ " WHERE ";
+		
+		StringBuilder where = new StringBuilder();
+		List<Object> params = new ArrayList<Object>();
+		if(!Strings.isBlank(tagType)){
+			where.append(" t.tag_type = ? "); 
+			params.add(tagType);
+		}
+		
+		if(!Strings.isBlank(displayName)){
+			if(where.length() > 0){
+				where.append("AND");
+			}
+			where.append(" t.display_name = ? ");
+			params.add(displayName);
+		}
+		Object[] paramArr = new String[params.size()];
+		paramArr = params.toArray(paramArr);
+		List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql+where.toString(), paramArr);
+	    return mapToList(rows);
 	}
 
 	@Override
