@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import com.kii.beehive.portal.helper.SyncMsgService;
 import com.kii.beehive.portal.service.ArchiveBeehiveUserDao;
@@ -112,11 +113,9 @@ public class UserManager {
 
 
 		BeehiveUser user = userDao.getUserByID(userID);
+
+		kiiUserDao.removeBeehiveUser(user.getKiiUserID());
 		archiveUserDao.archive(user);
-
-		kiiUserDao.removeBeehiveUser(userID);
-
-//		userGroupDao.checkUserGroupsChange(user,null);
 
 		userDao.deleteUser(userID);
 
