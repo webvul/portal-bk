@@ -1,8 +1,7 @@
 package com.kii.beehive.portal.service;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -10,18 +9,25 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
-import com.kii.beehive.portal.annotation.BindAppByName;
+import com.kii.beehive.portal.config.CacheConfig;
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
+import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.entity.AppInfo;
 import com.kii.extension.sdk.entity.BucketInfo;
+import com.kii.extension.sdk.exception.ObjectNotFoundException;
 import com.kii.extension.sdk.query.ConditionBuilder;
+import com.kii.extension.sdk.query.QueryParam;
 import com.kii.extension.sdk.service.AbstractDataAccess;
 
 @BindAppByName(appName="portal",appBindSource="propAppBindTool" )
 @Component
 public class AppInfoDao extends AbstractDataAccess<KiiAppInfo> {
 
+
+	public static final String APP_LIST_CACHE="'app_list'";
+
+	public static final String MASTER_CACHE="'master'";
 
 
 	@Autowired
@@ -43,46 +49,35 @@ public class AppInfoDao extends AbstractDataAccess<KiiAppInfo> {
 	public String getPortalAppID(){
 		return resolver.getAppInfo().getAppID();
 	}
-//
-	@Cacheable(cacheNames="appInfo-map",key="'map'")
-	public Map<String,AppInfo> getAllAppInfo() {
 
-
-		List<KiiAppInfo>  list=super.getAll();
-
-		Map<String,AppInfo> map=new HashMap<>();
-
-		list.forEach((app)->map.put(app.getAppName(),app.getAppInfo()));
-
-		return map;
-	}
-
-
-	@CacheEvict(cacheNames={"appInfo-map,appInfo_id"},key="'map'")
-	@CachePut(cacheNames={"appInfo"},key="#appInfo.appName")
+	@CacheEvict(cacheNames = CacheConfig.LONGLIVE_CACHE,key=APP_LIST_CACHE)
+	@CachePut(cacheNames={CacheConfig.LONGLIVE_CACHE},key="#appInfo.id")
 	public void addAppInfo(KiiAppInfo appInfo) {
 
 		super.addEntity(appInfo, appInfo.getAppInfo().getAppID());
 	}
 
-	@Cacheable(cacheNames={"appInfo_id"})
+	@Cacheable(cacheNames={CacheConfig.LONGLIVE_CACHE})
 	public KiiAppInfo getAppInfoByID(String id){
-		return super.getObjectByID(id);
-	}
-
-	@Cacheable(cacheNames={"appInfo"})
-	public KiiAppInfo getAppInfoByName(String appName){
-		List<KiiAppInfo>  infoList=super.query(ConditionBuilder.newCondition().equal("appName", appName).getFinalCondition().build());
-
-		if(infoList.size()==0){
+		try {
+			return super.getObjectByID(id);
+		}catch(ObjectNotFoundException e){
 			return null;
-		}else{
-			return infoList.get(0);
 		}
-
 	}
 
-	@Cacheable(cacheNames="appInfo",key="'master-app'")
+
+	@Cacheable(cacheNames={CacheConfig.LONGLIVE_CACHE},key=APP_LIST_CACHE)
+	public List<AppInfo> getSalveAppList(){
+
+		QueryParam query=ConditionBuilder.notCondition().equal("masterApp",true).getFinalQueryParam();
+
+		List<KiiAppInfo> infoList=super.query(query);
+
+		return infoList.stream().map((kiiApp)->kiiApp.getAppInfo()).collect(Collectors.toList());
+	}
+
+	@Cacheable(cacheNames= CacheConfig.LONGLIVE_CACHE,key=MASTER_CACHE)
 	public KiiAppInfo getMasterAppInfo(){
 
 
@@ -95,7 +90,7 @@ public class AppInfoDao extends AbstractDataAccess<KiiAppInfo> {
 
 	}
 
-	@CacheEvict(cacheNames="appInfo",key="'master-app'")
+	@CacheEvict(cacheNames=CacheConfig.LONGLIVE_CACHE,key=MASTER_CACHE)
 	public void setMasterAppInfo(String id){
 
 

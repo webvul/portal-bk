@@ -14,17 +14,19 @@ public class AppChoice implements Serializable{
 		return bindName;
 	}
 
-	public void setBindName(String bindName) {
+	public AppChoice setBindName(String bindName) {
 		this.bindName = bindName;
+		return this;
 	}
 
 	public String getAppName() {
 		return appName;
 	}
 
-	public void setAppName(String appName) {
+	public AppChoice setAppName(String appName) {
 		if(!StringUtils.isEmpty(appName)) {
 			this.appName = appName;
 		}
+		return this;
 	}
 }

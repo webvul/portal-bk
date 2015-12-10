@@ -24,7 +24,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.beehive.portal.common.utils.StrTemplate;
 import com.kii.extension.sdk.context.AppBindToolResolver;
+import com.kii.extension.sdk.context.TokenBindToolResolver;
 import com.kii.extension.sdk.entity.AppInfo;
+import com.kii.extension.sdk.entity.FederatedAuthResult;
 import com.kii.extension.sdk.entity.SiteType;
 import com.kii.extension.sdk.impl.KiiCloudClient;
 
@@ -47,9 +49,32 @@ public class FederatedAuthService {
 	private String authInitUrl="http://$(0).$(1).kiiapps.com/api/apps/$(0)/integration/webauth/connect?id=kii";
 
 
+	@Autowired
+	private AppBindToolResolver resolver;
+
+	@Autowired
+	private TokenBindToolResolver tokenResolver;
 
 
-	public String getAuthUrl(AppInfo salveInfo){
+
+	public FederatedAuthResult loginSalveApp(String appID,String userName,String pwd){
+
+		bindToolResolver.setAppName(appID);
+
+		AppInfo salve=bindToolResolver.getAppInfo();
+
+		String url=getAuthUrl(salve);
+		FederatedAuthResult result=generAuthRequest(url, salve.getSiteType(), userName, pwd);
+
+		resolver.setAppName(appID);
+
+		tokenResolver.bindToken(result.getAppAuthToken());
+
+		return result;
+
+	}
+
+	private String getAuthUrl(AppInfo salveInfo){
 
 		/*
 GET https://<slaveAppId>.<kiiapps-domain>/api/apps/<slaveAppId>/integration/webauth/connect?id=kii
@@ -66,10 +91,11 @@ GET https://<slaveAppId>.<kiiapps-domain>/api/apps/<slaveAppId>/integration/weba
 
 		HttpUriRequest currentReq = (HttpUriRequest) context.getAttribute(
 				HttpCoreContext.HTTP_REQUEST);
+
 		HttpHost currentHost = (HttpHost)  context.getAttribute(
 				HttpCoreContext.HTTP_TARGET_HOST);
 
-		String currentUrl = (currentReq.getURI().isAbsolute()) ? currentReq.getURI().toString() : (currentHost.toURI() + currentReq.getURI());
+		String currentUrl =  currentHost.toURI()+currentReq.getURI();
 
 		log.info(currentUrl);
 
@@ -86,7 +112,7 @@ GET https://<slaveAppId>.<kiiapps-domain>/api/apps/<slaveAppId>/integration/weba
 
 	private static String authUrl="http://$(0).$(1).kiiapps.com/api/apps/$(0)/oauth2/login";
 
-	public  String  generAuthRequest(String fullUrl,SiteType site,String user,String pwd)  {
+	private  FederatedAuthResult  generAuthRequest(String fullUrl,SiteType site,String user,String pwd)  {
 
 		int idx=fullUrl.indexOf("?");
 
@@ -129,29 +155,20 @@ GET https://<slaveAppId>.<kiiapps-domain>/api/apps/<slaveAppId>/integration/weba
 
 		HttpResponse response=client.doRequest(post,context);
 
+		if(response.getStatusLine().getStatusCode()!=200){
+			throw new IllegalArgumentException();
+		}
 
 		HttpUriRequest currentReq = (HttpUriRequest) context.getAttribute(
 				HttpCoreContext.HTTP_REQUEST);
-		HttpHost currentHost = (HttpHost)  context.getAttribute(
-				HttpCoreContext.HTTP_TARGET_HOST);
 
-		String currentUrl = (currentReq.getURI().isAbsolute()) ? currentReq.getURI().toString() : (currentHost.toURI() + currentReq.getURI());
-//
-//		String  redirectUrl=response.getFirstHeader("Location").getValue();
-//
-//		int codeIdx=redirectUrl.indexOf("code=");
-//		int codeEnd=redirectUrl.indexOf("&",codeIdx+1);
-//
-//		String code=redirectUrl.substring(codeIdx+5,codeEnd);
-//
-//		log.info(currentUrl);
-/*
-http://c1744915.development-beehivecn3.internal.kiiapps.com/api/apps/c1744915/integration/webauth/callback
-?code=c4jlvok2jr6222tiumrkfgpponp6p2m2nferlf4hes0uoseuqtq8sbst51mlvlrj&state=
- */
+		FederatedAuthResult result=new FederatedAuthResult(currentReq.getURI().getQuery());
 
-		return  null;
+
+		return  result;
 	}
 
 
 }
+
+

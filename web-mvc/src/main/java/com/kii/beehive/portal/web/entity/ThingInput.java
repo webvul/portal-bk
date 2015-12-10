@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import com.kii.beehive.portal.store.entity.GlobalThingInfo;
 import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.help.PortalException;
@@ -28,11 +29,11 @@ public class ThingInput extends GlobalThingInfo {
 
 	public void verifyInput(){
 
-		if(StringUtils.isEmpty(this.getVendorThingID())){
+		if(!StringUtils.hasText(this.getVendorThingID())){
 			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"VendorThingID is empty", HttpStatus.BAD_REQUEST);
 		}
 
-		if(StringUtils.isEmpty(this.getKiiAppID())){
+		if(!StringUtils.hasText(this.getKiiAppID())){
 			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"KiiAppID is empty", HttpStatus.BAD_REQUEST);
 		}
 	}

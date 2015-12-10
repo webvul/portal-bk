@@ -1,11 +1,8 @@
 package com.kii.beehive.portal.manager;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,10 +12,8 @@ import org.springframework.stereotype.Component;
 import com.kii.beehive.portal.helper.SyncMsgService;
 import com.kii.beehive.portal.service.ArchiveBeehiveUserDao;
 import com.kii.beehive.portal.service.BeehiveUserDao;
-import com.kii.beehive.portal.service.BeehiveUserGroupDao;
 import com.kii.beehive.portal.service.KiiUserSyncDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
-import com.kii.beehive.portal.store.entity.BeehiveUserGroup;
 import com.kii.beehive.portal.store.entity.CustomProperty;
 
 

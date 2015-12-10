@@ -12,15 +12,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.kii.beehive.portal.annotation.BindAppByName;
 import com.kii.beehive.portal.helper.SimpleQueryTool;
 import com.kii.beehive.portal.store.entity.GlobalThingInfo;
+import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.entity.BucketInfo;
 import com.kii.extension.sdk.query.ConditionBuilder;
 import com.kii.extension.sdk.query.QueryParam;
 import com.kii.extension.sdk.service.AbstractDataAccess;
 
-@BindAppByName(appName="portal")
+@BindAppByName(appName="portal",appBindSource="propAppBindTool")
 @Component
 public class GlobalThingDao extends AbstractDataAccess<GlobalThingInfo>{
 

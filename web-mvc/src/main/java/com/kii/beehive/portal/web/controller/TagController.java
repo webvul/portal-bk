@@ -1,17 +1,13 @@
 package com.kii.beehive.portal.web.controller;
 
 
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -49,6 +45,7 @@ public class TagController {
 	 *
 	 * @return
      */
+
 	@RequestMapping(path="/all",method={RequestMethod.GET})
 	public List<TagIndex> getAllTag(){
 		List<TagIndex> list = tagIndexDao.getAllTag();
@@ -65,7 +62,11 @@ public class TagController {
      */
 	@RequestMapping(path="/custom",method={RequestMethod.POST})
 	public Map<String,String> createTag(@RequestBody TagIndex tag){
-
+		
+		if(!StringUtils.hasText(tag.getDisplayName())){
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"DisplayName is empty", HttpStatus.BAD_REQUEST);
+		}
+		
 		tag.setTagType(TagType.Custom);
 		tag.fillID();
 
@@ -115,7 +116,6 @@ public class TagController {
 	@RequestMapping(path = "/{type}/{tagName}", method = {RequestMethod.GET})
 	public List<TagIndex> getThingsByTag(@PathVariable("type")String type,@PathVariable("tagName") String tagName) {
 
-//		Collection<String> tagCol=new HashSet<String>();
 		String[] tags=tagName.split(",");
 		TagType t=TagType.valueOf(StringUtils.capitalize(type));
 
@@ -126,6 +126,14 @@ public class TagController {
 		List<TagIndex> list = tagIndexDao.findTagIndexByTagNameArray(tags);
 		return list;
 
+	}
+
+	@RequestMapping(path = "/{tagName}/operation/{operation}", method = {RequestMethod.GET})
+	public List<GlobalThingInfo> getThingsByTagExpress(@PathVariable("tagName") String tagName, @PathVariable("operation") String operation) {
+
+		List<GlobalThingInfo> list = this.thingManager.findThingByTagName(tagName.split(","), operation);
+
+		return list;
 	}
 
 

@@ -1,7 +1,5 @@
 package com.kii.beehive.portal.service;
 
-import java.util.Base64;
-
 import org.apache.commons.codec.Charsets;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -9,11 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import com.kii.beehive.portal.annotation.BindAppByName;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
+import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.entity.KiiUser;
 import com.kii.extension.sdk.entity.LoginInfo;
-import com.kii.extension.sdk.exception.KiiCloudException;
 import com.kii.extension.sdk.exception.UserAlreadyExistsException;
 import com.kii.extension.sdk.service.UserService;
 
@@ -30,6 +27,24 @@ public class KiiUserSyncDao {
 
 	@Autowired
 	private UserService userService;
+
+	public String addDefaultOwner(String name,String pwd){
+
+		KiiUser user=new KiiUser();
+
+		user.setLoginName(name);
+		user.setPassword(pwd);
+
+		try {
+			return userService.createUser(user);
+		}catch (UserAlreadyExistsException e){
+
+			userService.removeUserByLoginName(name);
+
+			return userService.createUser(user);
+
+		}
+	}
 
 	public void addBeehiveUser(BeehiveUser beehiveUser){
 

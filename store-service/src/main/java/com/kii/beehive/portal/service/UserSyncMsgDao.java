@@ -7,15 +7,15 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
-import com.kii.beehive.portal.annotation.BindAppByName;
 import com.kii.beehive.portal.store.entity.usersync.ExecuteResult;
 import com.kii.beehive.portal.store.entity.usersync.SupplierPushMsgTask;
+import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.entity.BucketInfo;
 import com.kii.extension.sdk.query.ConditionBuilder;
 import com.kii.extension.sdk.query.QueryParam;
 import com.kii.extension.sdk.service.AbstractDataAccess;
 
-@BindAppByName(appName="portal")
+@BindAppByName(appName="portal",appBindSource="propAppBindTool")
 @Component
 public class UserSyncMsgDao extends AbstractDataAccess<SupplierPushMsgTask>{
 
@@ -73,9 +73,6 @@ public class UserSyncMsgDao extends AbstractDataAccess<SupplierPushMsgTask>{
 
 		Map<String,Integer> retryRecord=task.getRetryRecord();
 
-
-
-
 		int successNum=0;
 		int failNum=0;
 
@@ -87,6 +84,10 @@ public class UserSyncMsgDao extends AbstractDataAccess<SupplierPushMsgTask>{
 			if(val>=100){
 				successNum++;
 				continue;
+			}
+			//Fix source supplier bug,still don't why .
+			if(entry.getKey().equals(task.getSourceSupplier())){
+				successNum++;
 			}
 			if(val<=0){
 				failNum++;

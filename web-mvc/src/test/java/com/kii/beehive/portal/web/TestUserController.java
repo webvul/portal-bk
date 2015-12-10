@@ -1,6 +1,7 @@
 package com.kii.beehive.portal.web;
 
 import static junit.framework.TestCase.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -8,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,8 @@ import org.springframework.http.MediaType;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.kii.beehive.portal.service.BeehiveUserDao;
+import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.controller.UserController;
 
 public class TestUserController extends WebTestTemplate{
@@ -25,7 +29,8 @@ public class TestUserController extends WebTestTemplate{
 	@Autowired
 	private ObjectMapper mapper;
 
-
+	@Autowired
+	private BeehiveUserDao beehiveUserDao;
 
 
 	@Test
@@ -110,5 +115,39 @@ public class TestUserController extends WebTestTemplate{
 
 
 //				.andExpect(content().contentType("application/json"));
+	}
+
+	@Test
+	public void testUpdateUser() throws Exception {
+
+		// change this id for each run
+		String userID = "21110219490909" + new Random(10000).nextInt();
+
+		BeehiveUser user = new BeehiveUser();
+		user.setAliUserID(userID);
+		user.setUserName("user name");
+		beehiveUserDao.createUser(user);
+
+		Map<String, Object> request = new HashMap<>();
+		request.put("userName", "new name");
+
+		String ctx= mapper.writeValueAsString(request);
+
+		String result=this.mockMvc.perform(
+				patch("/users/" + userID).content(ctx)
+						.contentType(MediaType.APPLICATION_JSON)
+						.characterEncoding("UTF-8")
+						.header("Authorization", "Bearer d31032a0-8ebf-11e5-9560-00163e02138f")
+		)
+				.andExpect(status().isOk())
+				.andReturn().getResponse().getContentAsString();
+
+		Map<String,Object> map=mapper.readValue(result, Map.class);
+
+		// assert http reture
+		String resultUserID = (String)map.get("userID");
+
+		assertEquals(userID, resultUserID);
+
 	}
 }

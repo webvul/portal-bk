@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.portal.manager.UserGroupManager;
 import com.kii.beehive.portal.store.entity.BeehiveUserGroup;
+import com.kii.beehive.portal.store.entity.OutputUserGroup;
 import com.kii.beehive.portal.web.help.PortalException;
 
 /**
@@ -132,11 +133,22 @@ public class UserGroupController {
     @RequestMapping(path="/simplequery",method={RequestMethod.POST})
     public ResponseEntity queryUserGroup(@RequestBody Map<String,Object> queryMap){
 
-        String includeUserDate = (String)queryMap.remove("includeUserData");
+        String includeUserData = (String)queryMap.remove("includeUserData");
 
-        BeehiveUserGroup userGroup = userGroupManager.getUserGroupBySimpleQuery(queryMap, "1".equals(includeUserDate));
+        if(queryMap.containsKey("userGroupID")) {
+            Object userGroupID = queryMap.remove("userGroupID");
+            queryMap.put("_id", userGroupID);
+        }
 
-        return new ResponseEntity<>(userGroup, HttpStatus.OK);
+        boolean isIncludeUserData = "1".equals(includeUserData);
+        BeehiveUserGroup userGroup = userGroupManager.getUserGroupBySimpleQuery(queryMap, isIncludeUserData);
+
+        OutputUserGroup output = null;
+        if(userGroup != null) {
+            output = new OutputUserGroup(userGroup, isIncludeUserData);
+        }
+
+        return new ResponseEntity<>(output, HttpStatus.OK);
     }
 
 }

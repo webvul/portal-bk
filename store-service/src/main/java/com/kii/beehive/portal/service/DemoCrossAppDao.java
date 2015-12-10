@@ -3,7 +3,7 @@ package com.kii.beehive.portal.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.kii.beehive.portal.annotation.AppBindParam;
+import com.kii.extension.sdk.annotation.AppBindParam;
 import com.kii.extension.sdk.entity.BucketInfo;
 import com.kii.extension.sdk.entity.CreateResponse;
 import com.kii.extension.sdk.service.DataService;

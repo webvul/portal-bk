@@ -8,9 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
-import com.kii.extension.sdk.entity.KiiEntity;
-
-public class BeehiveUser extends KiiEntity {
+public class BeehiveUser extends PortalEntity {
 
 
 	public static final String PREFIX = "custom-";

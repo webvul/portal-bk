@@ -1,8 +1,5 @@
 package com.kii.beehive.portal.store.entity;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import com.kii.extension.sdk.entity.AppInfo;
 import com.kii.extension.sdk.entity.KiiEntity;
 
@@ -10,19 +7,22 @@ public class KiiAppInfo extends KiiEntity{
 
 	private AppInfo appInfo;
 
-	private String appName;
-
-	private String defaultThingOwnerID;
-
-	private Set<String> relThingIDs =new HashSet<String>();
-
-	private String thingIDPrefix;
-
+//	private String defaultThingOwnerID;
 
 	private boolean isMasterApp=false;
 
 	public boolean getMasterApp() {
 		return isMasterApp;
+	}
+
+	@Override
+	public String getId(){
+		return appInfo.getAppID();
+	}
+
+	@Override
+	public void setId(String id){
+
 	}
 
 	public void setMasterApp(boolean isMasterApp) {
@@ -37,35 +37,11 @@ public class KiiAppInfo extends KiiEntity{
 		this.appInfo = appInfo;
 	}
 
-	public String getAppName() {
-		return appName;
-	}
+//	public String getDefaultThingOwnerID() {
+//		return defaultThingOwnerID;
+//	}
 
-	public void setAppName(String appName) {
-		this.appName = appName;
-	}
-
-	public Set<String> getRelThingIDs() {
-		return relThingIDs;
-	}
-
-	public void setRelThingIDs(Set<String> relThingIDs) {
-		this.relThingIDs = relThingIDs;
-	}
-
-	public String getThingIDPrefix() {
-		return thingIDPrefix;
-	}
-
-	public void setThingIDPrefix(String thingIDPrefix) {
-		this.thingIDPrefix = thingIDPrefix;
-	}
-
-	public String getDefaultThingOwnerID() {
-		return defaultThingOwnerID;
-	}
-
-	public void setDefaultThingOwnerID(String defaultThingOwnerID) {
-		this.defaultThingOwnerID = defaultThingOwnerID;
-	}
+//	public void setDefaultThingOwnerID(String defaultThingOwnerID) {
+//		this.defaultThingOwnerID = defaultThingOwnerID;
+//	}
 }

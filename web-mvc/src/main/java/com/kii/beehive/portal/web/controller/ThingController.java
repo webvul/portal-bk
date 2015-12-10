@@ -1,13 +1,11 @@
 package com.kii.beehive.portal.web.controller;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,9 +22,7 @@ import com.kii.beehive.portal.manager.ThingManager;
 import com.kii.beehive.portal.service.GlobalThingDao;
 import com.kii.beehive.portal.store.entity.GlobalThingInfo;
 import com.kii.beehive.portal.store.entity.TagType;
-import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.entity.ThingInput;
-import com.kii.beehive.portal.web.help.PortalException;
 
 /**
  * Beehive API - Thing API
@@ -54,25 +50,12 @@ public class ThingController {
 	 * @return
 	 */
 	@RequestMapping(path = "/{globalThingID}", method = {RequestMethod.GET})
-	public ResponseEntity<GlobalThingInfo> getThingByGlobalID(@PathVariable("globalThingID") String globalThingID) {
+	public GlobalThingInfo getThingByGlobalID(@PathVariable("globalThingID") String globalThingID) {
 		
 		GlobalThingInfo thing =  globalThingDao.getThingInfoByID(globalThingID);
-		return new ResponseEntity<>(thing, HttpStatus.OK);
+		return thing;
 	}
 
-	/**
-	 * 列出所有设备
-	 * GET /things/all
-	 *
-	 * refer to doc "Beehive API - Thing API" for request/response details
-	 *
-	 * @return
-     */
-//	@RequestMapping(path="/all",method={RequestMethod.GET})
-//	public ResponseEntity<List<GlobalThingInfo>> getAllThing(){
-//		List<GlobalThingInfo> list =  globalThingDao.getAllThing();
-//		return new ResponseEntity<>(list, HttpStatus.OK);
-//	}
 
 	/**
 	 * 创建/更新设备信息
@@ -84,7 +67,7 @@ public class ThingController {
      */
 	@RequestMapping(path="",method={RequestMethod.POST})
 	public Map<String,String> createThing(@RequestBody ThingInput input){
-		
+
 		input.verifyInput();
 		
 		GlobalThingInfo thingInfo = new GlobalThingInfo();
@@ -107,12 +90,12 @@ public class ThingController {
 	 * @param globalThingID
      */
 	@RequestMapping(path="/{globalThingID}",method={RequestMethod.DELETE})
-	public ResponseEntity<String> removeThing(@PathVariable("globalThingID") String globalThingID){
+	public void removeThing(@PathVariable("globalThingID") String globalThingID){
 		
 		GlobalThingInfo orig =  globalThingDao.getThingInfoByID(globalThingID);
 		
 		thingManager.removeThings(orig);
-		return new ResponseEntity<>(HttpStatus.OK);
+		return;
 	}
 
 	/**
@@ -125,7 +108,7 @@ public class ThingController {
 	 * @param tagName
      */
 	@RequestMapping(path="/{globalThingID}/tags/custom/{tagName}",method={RequestMethod.PUT})
-	public ResponseEntity<String> addThingTag(@PathVariable("globalThingID") String globalThingID,@PathVariable("tagName") String tagName){
+	public void addThingTag(@PathVariable("globalThingID") String globalThingID,@PathVariable("tagName") String tagName){
 		
 		String[] thingIDs = globalThingID.split(",");
 		List<String> tagIDs = CollectionUtils.arrayToList(tagName.split(","));
@@ -133,7 +116,7 @@ public class ThingController {
 		List<String> tags=tagIDs.stream().map((s)-> TagType.Custom.getTagName(s)).collect(Collectors.toList());
 
 		thingManager.bindTagToThing(tags, Arrays.asList(thingIDs));
-		return new ResponseEntity<>(HttpStatus.OK);
+		return ;
 	}
 
 	/**
@@ -150,6 +133,7 @@ public class ThingController {
 		thingManager.unbindTagToThing(TagType.Custom.getTagName(tagName),globalThingID);
 		return;
 	}
+
 
 	/**
 	 * 查询tag下的设备
@@ -168,5 +152,6 @@ public class ThingController {
 
 		return new ResponseEntity<>(list, HttpStatus.OK);
 	}
+
 
 }

@@ -37,7 +37,7 @@ public class UserController {
     @RequestMapping(path="",method={RequestMethod.POST})
     public Map<String,String> createUser(@RequestBody OutputUser user){
 
-		if(StringUtils.isEmpty(user.getUserName())&&StringUtils.isEmpty(user.getAliUserID())){
+		if(StringUtils.isEmpty(user.getUserName()) && StringUtils.isEmpty(user.getAliUserID())){
 			throw new PortalException("RequiredFieldsMissing","username or userID cannot been null", HttpStatus.BAD_REQUEST);
 		}
 
@@ -52,12 +52,14 @@ public class UserController {
     }
 
     @RequestMapping(path="/{userID}",method={RequestMethod.PATCH})
-    public void updateUser(@PathVariable("userID") String userID,@RequestBody OutputUser user){
+    public Map<String,String> updateUser(@PathVariable("userID") String userID,@RequestBody OutputUser user){
 
 		userManager.updateUser(user.getBeehiveUser(),userID);
 
 
-
+		Map<String,String> map=new HashMap<>();
+		map.put("userID",userID);
+		return map;
     }
 
 	@RequestMapping(path="/{userID}",method={RequestMethod.GET})

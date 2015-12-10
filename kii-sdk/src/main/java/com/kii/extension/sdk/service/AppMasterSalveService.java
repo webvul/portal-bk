@@ -11,8 +11,8 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.beehive.portal.common.utils.StrTemplate;
+import com.kii.extension.sdk.annotation.AppBindParam;
 import com.kii.extension.sdk.context.AdminTokenBindTool;
-import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.entity.AppInfo;
 import com.kii.extension.sdk.exception.KiiCloudException;
 import com.kii.extension.sdk.impl.ApiAccessBuilder;
@@ -28,16 +28,12 @@ public class AppMasterSalveService {
 	private KiiCloudClient client;
 
 	@Autowired
-	private AppBindToolResolver bindToolResolver;
-
-	@Autowired
 	private AdminTokenBindTool tool;
 
 
 
 
-	public boolean isMaster(AppInfo info){
-
+	public boolean isMaster(@AppBindParam AppInfo info){
 
 		/*
 
@@ -56,7 +52,7 @@ X-Kii-AppKey: <appKey>
 		return Boolean.parseBoolean(result);
 	}
 
-	public String checkMaster(AppInfo info){
+	public String checkMaster(@AppBindParam  AppInfo info){
 		/*
 
 GET /apps/<slaveAppID>/configuration/parameters/kii.master_app_id
@@ -74,13 +70,13 @@ X-Kii-AppKey: <slaveAppKey>
 	}
 
 	private ApiAccessBuilder getBuilder(AppInfo info) {
-		bindToolResolver.setAppInfoDrectly(info);
+//		bindToolResolver.setAppInfoDrectly(info);
 
 		return new ApiAccessBuilder(info).bindToken(tool.getToken());
 	}
 
 
-	public void setMaster(AppInfo info){
+	public void setMaster(@AppBindParam AppInfo info){
 
 		/*
 		PUT /apps/<masterAppID>/configuration/parameters/isMasterApp
@@ -117,7 +113,7 @@ X-Kii-AppKey: <masterAppKey>
 
 
 
-	public void addSalveAppToMaster(AppInfo  masterApp,AppInfo  salveAppInfo){
+	public void addSalveAppToMaster(@AppBindParam AppInfo  masterApp,AppInfo  salveAppInfo){
 
 
 		ClientInfo info=addSalveApp(masterApp, salveAppInfo);
@@ -200,7 +196,7 @@ http://api-development-jp.internal.kii.com/api/apps/<slaveAppId> -d \
 
 	}
 
-	public void delete(AppInfo masterApp,AppInfo salveApp,ClientInfo clientInfo){
+	public void delete(@AppBindParam AppInfo masterApp,AppInfo salveApp,ClientInfo clientInfo){
 
 		/*
 		DELETE /apps/<masterAppID>/oauth2/clients/<clientID>

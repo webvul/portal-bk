@@ -4,15 +4,15 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import com.kii.beehive.portal.annotation.BindAppByName;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
+import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.entity.BucketInfo;
 import com.kii.extension.sdk.query.ConditionBuilder;
 import com.kii.extension.sdk.query.QueryParam;
 import com.kii.extension.sdk.service.AbstractDataAccess;
 
 
-@BindAppByName(appName="portal")
+@BindAppByName(appName="portal",appBindSource="propAppBindTool")
 @Component
 public class ArchiveBeehiveUserDao extends AbstractDataAccess<BeehiveUser> {
 

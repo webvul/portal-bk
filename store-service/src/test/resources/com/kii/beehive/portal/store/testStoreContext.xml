@@ -26,9 +26,11 @@
 
     <bean class="com.kii.extension.factory.KiiCloudSDKConfig" />
 
-    <bean id="appBindAspect"  class="com.kii.beehive.portal.aop.AppBindAspect" />
+    <bean id="appBindAspect"  class="com.kii.extension.sdk.aop.AppBindAspect" />
 
     <bean id="logAspect" class="com.kii.beehive.portal.aop.LogAspect" />
+
+    <bean id="contextAspect" class="com.kii.beehive.portal.aop.ContextAspect" />
 
     <bean class="com.kii.extension.sdk.service.DevPortalService" >
         <property name="devPortalUrl"  value="${beehive.kiicloud.dev-portal.url}" />

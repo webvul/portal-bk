@@ -7,6 +7,7 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,8 +25,13 @@ public class LogAspect {
 
 	private Logger log= LoggerFactory.getLogger("manager-log");
 
+	@Pointcut("within ( com.kii.beehive.portal.manager.* ) ")
+	private void bindManager(){
 
-	@Before("within ( com.kii.beehive.portal.manager.* ) ")
+	};
+
+
+	@Before("bindManager()")
 	public void beforeCallBusinessFun(JoinPoint joinPoint){
 
 		try {
@@ -39,7 +45,7 @@ public class LogAspect {
 				Object val = joinPoint.getArgs()[i];
 				sb.append(name).append(":").append(safeToString(val)).append("\n");
 			}
-			log.debug(sb.toString());
+			log.info(sb.toString());
 		}catch(Throwable ex){
 			ex.printStackTrace();
 			return;
@@ -57,7 +63,7 @@ public class LogAspect {
 		return method;
 	}
 
-	@AfterReturning(pointcut = "within ( com.kii.beehive.portal.manager.* )",   returning = "result" )
+	@AfterReturning(pointcut = "bindManager()",   returning = "result" )
 	public void afterCallBusinessFun(JoinPoint joinPoint,Object result){
 
 		try {
@@ -65,10 +71,10 @@ public class LogAspect {
 
 		log.debug(" result:"+ safeToString(result));
 
-	}catch(Throwable ex){
-		ex.printStackTrace();
-		return;
-	}
+		}catch(Throwable ex){
+			ex.printStackTrace();
+			return;
+		}
 	}
 
 	private String safeToString(Object obj){

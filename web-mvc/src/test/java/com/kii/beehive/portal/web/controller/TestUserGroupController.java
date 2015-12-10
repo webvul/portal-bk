@@ -15,15 +15,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.databind.cfg.PackageVersion;
-import org.junit.After;
 import org.junit.Before;
-import org.junit.FixMethodOrder;
 import org.junit.Test;
-import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -249,11 +244,34 @@ public class TestUserGroupController extends WebTestTemplate {
             assertTrue(userIDListForTest.contains(id));
             assertEquals("username.for." + id, name);
         }
-// TODO to check custom field issue
-//        assertEquals(3, ((Map)map.get("custom")).size());
-//        assertEquals(123.45, ((Map)map.get("custom")).get("birthday"));
-//        assertEquals("male", ((Map)map.get("custom")).get("gender"));
-//        assertEquals("new field during update", ((Map)map.get("custom")).get("nationality"));
+
+    }
+
+    @Test
+    public void testQueryUserGroupNoResult() throws Exception {
+
+        // create user group info
+        testUpdateUserGroup();
+
+        // test query
+
+        Map<String, Object> request = new HashMap<>();
+        request.put("userGroupID", "nonExistingUserGroupID");
+        request.put("includeUserData", "1");
+
+        String ctx= mapper.writeValueAsString(request);
+
+        String result=this.mockMvc.perform(
+                post("/usergroup/simplequery").content(ctx)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("UTF-8")
+        )
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        System.out.println(result);
+        // assert http reture
+        assertTrue(result.length() == 0);
 
     }
 
@@ -270,11 +288,6 @@ public class TestUserGroupController extends WebTestTemplate {
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
-
-        Map<String,Object> map=mapper.readValue(result, Map.class);
-
-        // assert http reture
-        assertEquals(userGroupID, map.get("userGroupID"));
 
         BeehiveUserGroup userGroup = userGroupDao.getUserGroupByID(userGroupID);
         assertNull(userGroup);

@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.kii.extension.sdk.entity.AppInfo;
 import com.kii.extension.sdk.entity.LoginInfo;
 import com.kii.extension.sdk.service.UserService;
 
@@ -28,9 +29,14 @@ public class AdminTokenBindTool implements TokenBindTool {
 	@Override
 	public String getToken() {
 
-		String appID=bindToolResolver.getAppInfo().getAppID();
+		AppInfo appInfo=bindToolResolver.getAppInfo();
 
-		LoginInfo info= infoMap.putIfAbsent(appID, userService.adminLogin());
+		if(appInfo==null){
+			return null;
+		}
+		String appID=appInfo.getAppID();
+
+		LoginInfo info= infoMap.computeIfAbsent(appID, (id)->userService.adminLogin());
 		if(info==null){
 			info= infoMap.get(appID);
 		}

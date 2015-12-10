@@ -13,6 +13,7 @@ import com.kii.beehive.portal.helper.NotifySenderTool;
 import com.kii.beehive.portal.helper.PortalTokenService;
 import com.kii.beehive.portal.service.DeviceSupplierDao;
 import com.kii.beehive.portal.service.UserSyncMsgDao;
+import com.kii.beehive.portal.store.entity.Token.PortalTokenType;
 import com.kii.beehive.portal.store.entity.usersync.SupplierPushMsgTask;
 import com.kii.beehive.portal.store.entity.usersync.UserSyncMsg;
 import com.kii.beehive.portal.store.entity.usersync.UserSyncMsgType;
@@ -37,7 +38,7 @@ public class TestNotifyTool extends TestInit {
 	@Before
 	public void before(){
 
-		tokenService.setToken("d31032a0-8ebf-11e5-9560-00163e02138f", PortalTokenService.PortalTokenType.UserSync);
+		tokenService.setToken("d31032a0-8ebf-11e5-9560-00163e02138f", PortalTokenType.UserSync);
 
 	}
 
