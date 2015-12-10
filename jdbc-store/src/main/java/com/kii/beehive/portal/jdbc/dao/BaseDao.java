@@ -1,6 +1,7 @@
 package com.kii.beehive.portal.jdbc.dao;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -11,9 +12,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 
+import com.kii.beehive.portal.jdbc.entity.DBEntity;
 import com.kii.beehive.portal.jdbc.helper.AnnationBeanSqlParameterSource;
 
-public abstract class BaseDao<T> {
+public abstract class BaseDao<T extends DBEntity> {
 
 
 	protected JdbcTemplate jdbcTemplate;
@@ -28,12 +30,20 @@ public abstract class BaseDao<T> {
 	public abstract String getKey();
 	
 	public abstract List<T> mapToList(List<Map<String, Object>> rows);
-	
+
+	protected T mapToListForDBEntity(T entity, Map<String, Object> row) {
+		entity.setCreateBy((String)row.get(DBEntity.CREATE_BY));
+		entity.setCreateDate((Date)row.get(DBEntity.CREATE_DATE));
+		entity.setModifyBy((String)row.get(DBEntity.MODIFY_BY));
+		entity.setModifyDate((Date)row.get(DBEntity.CREATE_DATE));
+		return entity;
+	}
+
 	@Autowired
 	public void setDataSource(DataSource dataSource) {
 		//ParameterizedType type = (ParameterizedType) getClass().getGenericSuperclass();  
         //entityClass = (Class<T>) type.getActualTypeArguments()[0];  
-        
+
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
 		this.insertTool=new SimpleJdbcInsert(dataSource)
 				.withTableName(getTableName())

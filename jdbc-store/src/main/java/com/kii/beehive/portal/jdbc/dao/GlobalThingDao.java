@@ -19,7 +19,15 @@ public class GlobalThingDao extends BaseDao<GlobalThingInfo>{
 	public void test(){
 		jdbcTemplate.execute("select sysdate() from dual");
 	}
-	
+
+	public List<String> findAllThingTypes() {
+		String sql = "SELECT DISTINCT thing_type FROM " + this.getTableName();
+
+		List<String> rows = jdbcTemplate.queryForList(sql, null, String.class);
+
+		return rows;
+	}
+
 	public GlobalThingInfo getThingByVendorThingID(String vendorThingID) {
 		List<GlobalThingInfo> list = super.findBySingleField(GlobalThingInfo.VANDOR_THING_ID, vendorThingID);
 		if(list.size() > 0){
@@ -28,7 +36,7 @@ public class GlobalThingDao extends BaseDao<GlobalThingInfo>{
 			return null;
 		}
 	}
-	
+
 	public List<GlobalThingInfo> findThingByTag(String tagType,String displayName) {
 		String sql = "SELECT g.id_global_thing,g.vendor_thing_id,g.kii_app_id,g.thing_type,g.custom_info,g.status,g.create_by,g.create_date,g.modify_by,g.modify_date "
 					+ "FROM " + this.getTableName() +" g "
@@ -73,19 +81,19 @@ public class GlobalThingDao extends BaseDao<GlobalThingInfo>{
 		List<GlobalThingInfo> list = new ArrayList<GlobalThingInfo>();
 		for (Map<String, Object> row : rows) {
 			GlobalThingInfo globalThingInfo = new GlobalThingInfo();
-			globalThingInfo.setId((int)row.get(GlobalThingInfo.ID_GLOBAL_THING));
+			globalThingInfo.setId((Integer)row.get(GlobalThingInfo.ID_GLOBAL_THING));
 			globalThingInfo.setVendorThingID((String)row.get(GlobalThingInfo.VANDOR_THING_ID));
 			globalThingInfo.setKiiAppID((String)row.get(GlobalThingInfo.KII_APP_ID));
 			globalThingInfo.setType((String)row.get(GlobalThingInfo.THING_TYPE));
 			globalThingInfo.setStatus((String)row.get(GlobalThingInfo.STATUS));
 			globalThingInfo.setCustom((String)row.get(GlobalThingInfo.CUSTOM_INFO));
-			globalThingInfo.setCreateBy((String)row.get(GlobalThingInfo.CREATE_BY));
-			globalThingInfo.setCreateDate((Date)row.get(GlobalThingInfo.CREATE_DATE));
-			globalThingInfo.setModifyBy((String)row.get(GlobalThingInfo.MODIFY_BY));
-			globalThingInfo.setModifyDate((Date)row.get(GlobalThingInfo.CREATE_DATE));
+
+			mapToListForDBEntity(globalThingInfo, row);
+
 			list.add(globalThingInfo);
 		}
 		return list;
+
 	}
 
 
