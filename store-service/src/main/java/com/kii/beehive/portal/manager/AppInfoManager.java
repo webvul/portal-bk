@@ -58,22 +58,17 @@ public class AppInfoManager {
 
 	private static  String DEFAULT_NAME="default_owner_id";
 
+	private static String DEFAULT_PWD=DigestUtils.sha1Hex(DEFAULT_NAME+"_default_owner_beehive");
+
 
 	@Cacheable(cacheNames="ttl_cache")
 	public FederatedAuthResult getDefaultOwer(String appID){
 
 
-		FederatedAuthResult  result=federatedAuthService.loginSalveApp(appID,DEFAULT_NAME,getDefaultUserPwd());
+		FederatedAuthResult  result=federatedAuthService.loginSalveApp(appID,DEFAULT_NAME,DEFAULT_PWD);
 
 		return result;
 	}
-
-	private String getDefaultUserPwd(){
-
-		return  DigestUtils.sha1Hex(DEFAULT_NAME+"_default_owner_beehive");
-
-	}
-
 
 	@Async
 	public void initAppInfos(String userName,String pwd,String masterID){
@@ -97,7 +92,7 @@ public class AppInfoManager {
 			masterSalveService.setMaster(master);
 		}
 
-		userDao.addDefaultOwner(DEFAULT_NAME,getDefaultUserPwd());
+		userDao.addDefaultOwner(DEFAULT_NAME,DEFAULT_PWD);
 
 		KiiAppInfo masterAppInfo=new KiiAppInfo();
 		masterAppInfo.setAppInfo(master);

@@ -4,16 +4,20 @@ package com.kii.extension.sdk.test;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.codec.digest.DigestUtils;
+import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 
 import com.kii.extension.factory.LocalPropertyBindTool;
 import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.context.TokenBindToolResolver;
 import com.kii.extension.sdk.entity.AppInfo;
 import com.kii.extension.sdk.entity.BucketInfo;
+import com.kii.extension.sdk.entity.FederatedAuthResult;
 import com.kii.extension.sdk.service.AppMasterSalveService;
 import com.kii.extension.sdk.service.DataService;
 import com.kii.extension.sdk.service.FederatedAuthService;
@@ -44,6 +48,9 @@ public class TestFederate extends TestTemplate {
 
 	@Autowired
 	private AppMasterSalveService  masterSalveService;
+
+
+
 
 	@Test
 	public void testRegist(){
@@ -79,7 +86,8 @@ public class TestFederate extends TestTemplate {
 //
 //		tokenResolver.bindToken(result.getAppAuthToken());
 
-		service.loginSalveApp(slaveApp,"demo","qwerty");
+		FederatedAuthResult result=service.loginSalveApp(slaveApp,"demo","qwerty");
+
 
 		Map<String,String> obj=new HashMap<>();
 		obj.put("foo","bar");

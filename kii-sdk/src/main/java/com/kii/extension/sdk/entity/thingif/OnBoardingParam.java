@@ -3,17 +3,11 @@ package com.kii.extension.sdk.entity.thingif;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class OnBoardingParam {
 
-	/*
-	  "thingPassword" : "xxxxx",
-  "owner" : "user:1576cc4f512b-9e8b-5e11-b966-0e713954",
-  "vendorThingID" : "dummy",
-  "thingType" : "LIGHT",
-  "thingProperties" : {
-    "_vendor":"Phillips"
-  }
-	 */
+
 
 	private String vendorThingID;
 
@@ -61,6 +55,11 @@ public class OnBoardingParam {
 		this.owner = owner;
 	}
 
+	@JsonIgnore
+	public void setUserID(String userID) {
+		this.owner = "USER:"+userID;
+	}
+
 	public String getThingID() {
 		return thingID;
 	}
@@ -84,4 +83,10 @@ public class OnBoardingParam {
 	public void setThingProperties(Map<String, Object> thingProperties) {
 		this.thingProperties = thingProperties;
 	}
+
+	public void addThingProperty(String key, Object val) {
+		this.thingProperties.put(key,val);
+	}
+
+
 }

@@ -355,7 +355,7 @@ public class ApiAccessBuilder {
 			this.setContentType("application/vnd.kii.onboardingWithThingIDByOwner+json");
 
 		}else if(!StringUtils.isEmpty(onboardParam.getVendorThingID())){
-			this.setContentType("application/vnd.kii.onboardingWithVendorThingIDByThing+json");
+			this.setContentType("application/vnd.kii.onboardingWithVendorThingIDByOwner+json");
 
 		}else{
 			throw new KiiCloudException();
@@ -454,6 +454,42 @@ public class ApiAccessBuilder {
 	}
 
 
+	//=============================
+	//server extension
+	//=============================
+
+	public ApiAccessBuilder deployServiceCode(String codeCtx){
+
+		request =new HttpPost(appInfo.getAppSubUrl()+"/server-code");
+
+		this.ctxObj=codeCtx;
+
+		return this;
+	}
+
+	public ApiAccessBuilder deployHook(String hookCtx,String version){
+		request =new HttpPut(appInfo.getAppSubUrl()+"/hooks/versions/"+version);
+
+		this.setContentType("application/vnd.kii.HooksDeploymentRequest+json");
+		this.ctxObj=hookCtx;
+		return this;
+	}
+
+	public ApiAccessBuilder setCurrentVersion(String version){
+		request =new HttpPut(appInfo.getAppSubUrl()+"/server-code/versions/current");
+
+		this.setContentType("text/plain");
+		this.ctxObj=version;
+		return this;
+	}
+
+	public ApiAccessBuilder callServiceExtension(String serviceName,Object param){
+		///apps/{appID}/server-code/versions/current/{ENDPOINT_NAME}
+		request =new HttpPost(appInfo.getAppSubUrl()+"/server-code/versions/current/"+serviceName);
+
+		this.ctxObj=param;
+		return this;
+	}
 	//==============================
 	//
 	//==============================
