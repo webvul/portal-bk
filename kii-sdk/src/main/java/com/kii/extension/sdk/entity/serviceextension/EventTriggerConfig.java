@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.kii.beehive.portal.common.utils.StrTemplate;
 
-public class EventTriggerConfig<E extends Enum> extends  TriggerConfig {
+public class EventTriggerConfig<E extends Enum>  {
 
 
 	private E when;
@@ -18,10 +18,26 @@ public class EventTriggerConfig<E extends Enum> extends  TriggerConfig {
 	private String url;
 
 
+	private TriggerWhatType what=TriggerWhatType.EXECUTE_SERVER_CODE;
+
+
+	public TriggerWhatType getWhat() {
+		return what;
+	}
+
+	public void setWhat(TriggerWhatType what) {
+		this.what = what;
+	}
+
+
 
 	public String  getUrl(){
 
 		return url;
+	}
+
+	public void setUrl(String url){
+		this.url=url;
 	}
 
 	public E getWhen() {
@@ -40,52 +56,5 @@ public class EventTriggerConfig<E extends Enum> extends  TriggerConfig {
 
 	public void setEndpoint(String endpoint) {
 		this.endpoint = endpoint;
-	}
-
-
-	private static String urlTemplate="kiicloud://${0}s/*/buckets/${1}";
-
-	@JsonIgnore
-	public static EventTriggerConfig<BucketWhenType> getBucketInstance(String bucketName, TriggerScopeType scope) {
-
-		EventTriggerConfig config=new EventTriggerConfig<BucketWhenType>();
-
-		if(scope==TriggerScopeType.App){
-			config.url = StrTemplate.gener(urlTemplate,"", bucketName);
-		}else {
-			config.url = StrTemplate.gener(urlTemplate, scope.name().toLowerCase(), bucketName);
-		}
-
-		return config;
-	}
-
-	@JsonIgnore
-	public static EventTriggerConfig<UserWhenType> getUserInstance() {
-
-		EventTriggerConfig config=new EventTriggerConfig<UserWhenType>();
-
-		config.url = "kiicloud://users";
-
-		return config;
-	}
-
-	@JsonIgnore
-	public static EventTriggerConfig<GroupWhenType> getGroupInstance() {
-
-		EventTriggerConfig config=new EventTriggerConfig<GroupWhenType>();
-
-		config.url = "kiicloud://groups";
-
-		return config;
-	}
-
-	@JsonIgnore
-	public static EventTriggerConfig<ThingWhenType> getThingInstance() {
-
-		EventTriggerConfig config=new EventTriggerConfig<BucketWhenType>();
-
-		config.url = "kiicloud://things";
-
-		return config;
 	}
 }

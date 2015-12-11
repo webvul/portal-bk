@@ -10,7 +10,7 @@ import org.springframework.util.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
-public class ScheduleTriggerEntry extends  TriggerConfig {
+public class ScheduleTriggerConfig {
 
 	/*
 	      "cron": "<cron_expression>",
@@ -30,7 +30,8 @@ public class ScheduleTriggerEntry extends  TriggerConfig {
 
 	private String cron;
 
-	private String url;
+
+
 
 	@JsonIgnore
 	public String   getJobName(){
@@ -39,11 +40,6 @@ public class ScheduleTriggerEntry extends  TriggerConfig {
 		return jobName;
 	}
 
-
-	public String getUrl(){
-
-		return "kiicloud://scheduler";
-	}
 
 
 	public TriggerWhatType getWhat() {
