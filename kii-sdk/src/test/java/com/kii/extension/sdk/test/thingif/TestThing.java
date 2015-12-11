@@ -82,7 +82,7 @@ public class TestThing extends TestTemplate {
 
 		OnBoardingParam param=new OnBoardingParam();
 
-		param.setVendorThingID("test-trigger-id-00001");
+		param.setVendorThingID("test-business-id-00001");
 
 		param.setLayoutPosition(LayoutPosition.STANDALONE);
 
@@ -173,8 +173,8 @@ public class TestThing extends TestTemplate {
 		Action action=new Action();
 		action.setField("power",true);
 		action.setField("lightness",99);
-		command.addAction("trigger",action);
-		command.addMetadata("source","trigger");
+		command.addAction("business",action);
+		command.addMetadata("source","business");
 		command.setSchema("demo");
 
 		return command;

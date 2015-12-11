@@ -420,7 +420,7 @@ public class ApiAccessBuilder {
 	}
 
 	//================================
-	//trigger relation
+	//business relation
 	//================================
 
 	public ApiAccessBuilder createTrigger(String thingID,ThingTrigger trigger){

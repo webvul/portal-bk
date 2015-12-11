@@ -102,7 +102,7 @@ public class ThingTrigger {
  },
  "command":{
    "issuer":"USER:92803ea00022-a488-4e11-d7c1-018317e4",
-   "actions":[{"lightness":50,"from":"trigger"}],
+   "actions":[{"lightness":50,"from":"business"}],
    "schema":"demo",
    "schemaVersion":0,
    "metadata":{"foo":"bar"},
