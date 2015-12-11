@@ -1,7 +1,6 @@
 package com.kii.beehive.portal.service;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -12,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.kii.beehive.portal.exception.StoreException;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.dao.TagThingRelationDao;
@@ -64,14 +64,43 @@ public class ThingTagService {
 					tagID = list.get(0).getId();
 				}
 				
-				TagThingRelation tagThingRelation = new TagThingRelation();
-				tagThingRelation.setTagID(tagID);
-				tagThingRelation.setThingID(thingID);
-				tagThingRelationDao.saveOrUpdate(tagThingRelation);
+				tagThingRelationDao.saveOrUpdate(new TagThingRelation(tagID,thingID));
 			}
 		}
 
 		return thingID;
+	}
+	
+	public void bindTagToThing(Collection<String> tagIDs,Long thingID) {
+		GlobalThingInfo thing = globalThingDao.findByID(thingID);
+		if(thing == null){
+			throw new StoreException("thing not found");
+		}
+		
+		for(String tagID:tagIDs){
+			TagIndex tag = tagIndexDao.findByID(tagID);
+			if(tag != null){
+				tagThingRelationDao.saveOrUpdate(new TagThingRelation(tag.getId(),thing.getId()));
+			}else{
+				log.warn("Tag is null, TagId = " + tagID);
+			}
+		}
+	}
+	
+	public void unbindTagToThing(Collection<String> tagIDs,Long thingID) {
+		GlobalThingInfo thing = globalThingDao.findByID(thingID);
+		if(thing == null){
+			throw new StoreException("thing not found");
+		}
+		
+		for(String tagID:tagIDs){
+			TagIndex tag = tagIndexDao.findByID(tagID);
+			if(tag != null){
+				tagThingRelationDao.delete(tag.getId(),thing.getId());
+			}else{
+				log.warn("Tag is null, TagId = " + tagID);
+			}
+		}
 	}
 
 	public void removeTag(TagIndex tag) {

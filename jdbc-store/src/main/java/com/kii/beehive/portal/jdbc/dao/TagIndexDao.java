@@ -27,8 +27,7 @@ public class TagIndexDao extends BaseDao<TagIndex> {
 	
 	public List<TagIndex> findTagByTagTypeAndName(String tagType,String displayName) {
 		String sql = "SELECT * "
-					+ "FROM " + this.getTableName() 
-					+ " WHERE ";
+					+ "FROM " + this.getTableName();
 		
 		StringBuilder where = new StringBuilder();
 		List<Object> params = new ArrayList<Object>();
@@ -44,6 +43,11 @@ public class TagIndexDao extends BaseDao<TagIndex> {
 			where.append(TagIndex.DISPLAY_NAME).append(" = ? ");
 			params.add(displayName);
 		}
+		
+		if(where.length() > 0){
+			where.insert(0, " WHERE ");
+		}
+		
 		Object[] paramArr = new String[params.size()];
 		paramArr = params.toArray(paramArr);
 		List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql+where.toString(), paramArr);

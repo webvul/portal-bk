@@ -14,6 +14,14 @@ public class TagThingRelation extends DBEntity {
 	public final static String TAG_ID = "tag_id";
 	public final static String THING_ID = "thing_id";
 	
+	public TagThingRelation() {}
+	
+	public TagThingRelation(long tagID, long thingID) {
+		super();
+		this.tagID = tagID;
+		this.thingID = thingID;
+	}
+
 	@JdbcField(column="id")
 	public long getId() {
 		return id;

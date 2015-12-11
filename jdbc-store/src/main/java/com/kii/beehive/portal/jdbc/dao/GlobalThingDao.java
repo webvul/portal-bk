@@ -57,7 +57,7 @@ public class GlobalThingDao extends BaseDao<GlobalThingInfo>{
 			where.append(" t.display_name = ? ");
 			params.add(displayName);
 		}
-		Object[] paramArr = new String[params.size()];
+		Object[] paramArr = new Object[params.size()];
 		paramArr = params.toArray(paramArr);
 		List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql+where.toString(), paramArr);
 	    return mapToList(rows);

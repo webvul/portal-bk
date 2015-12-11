@@ -18,13 +18,13 @@ public class TagThingRelationDao extends BaseDao<TagThingRelation> {
 	public static final String TABLE_NAME = "rel_thing_tag";
 	public static final String KEY = "id";
 	
-	public void delete(Long thingID, Long tagID){
+	public void delete( Long tagID, Long thingID){
 		String sql = "DELETE FROM " + this.getTableName() + " WHERE ";
 		
 		StringBuilder where = new StringBuilder();
 		List<Object> params = new ArrayList<Object>();
 		if(thingID != null){
-			where.append(TagThingRelation.TAG_ID + " = ? "); 
+			where.append(TagThingRelation.THING_ID + " = ? "); 
 			params.add(thingID);
 		}
 		
@@ -35,10 +35,10 @@ public class TagThingRelationDao extends BaseDao<TagThingRelation> {
 			where.append(TagThingRelation.TAG_ID+" = ? ");
 			params.add(tagID);
 		}
-		Object[] paramArr = new String[params.size()];
+		Object[] paramArr = new Object[params.size()];
 		paramArr = params.toArray(paramArr);
 		
-        jdbcTemplate.update(sql,paramArr);
+        jdbcTemplate.update(sql+where.toString(),paramArr);
 	}
 
 	@Override

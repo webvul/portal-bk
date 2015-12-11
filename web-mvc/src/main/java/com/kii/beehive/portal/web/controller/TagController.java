@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
@@ -102,7 +103,7 @@ public class TagController {
 	}
 
 	/**
-	 * 查询tag GET /tags/tag/{tagName ...}
+	 * 查询tag GET /{type}/{displayName}
 	 *
 	 * refer to doc "Beehive API - Thing API" for request/response details refer
 	 * to doc "Tech Design - Beehive API", section "Inquire Tag (查询tag)" for
@@ -111,25 +112,11 @@ public class TagController {
 	 * @param tagName
 	 * @return
 	 */
-
-	/*@RequestMapping(path = "/{tagName}", method = { RequestMethod.GET })
-	public List<TagIndex> getThingsByTagArray(@PathVariable("tagName") String tagName) {
-
-		List<TagIndex> list = tagIndexDao.findTagIndexByTagNameArray(tagName.split(","));
-		return list;
-
-	}*/
-
-	@RequestMapping(path = "/{type}/{displayName}", method = { RequestMethod.GET })
-	public List<TagIndex> getThingsByTag(@PathVariable("type") String type, @PathVariable("displayName") String displayName) {
-		if(type.equals("*")){
-			type = null;
-		}
+	@RequestMapping(path = "/search", method = { RequestMethod.GET })
+	public List<TagIndex> getThingsByTag(@RequestParam(value="tagType", required = false) String tagType, 
+										@RequestParam(value="displayName", required = false) String displayName) {
 		
-		if(displayName.equals("*")){
-			displayName = null;
-		}
-		List<TagIndex> list = tagIndexDao.findTagByTagTypeAndName(StringUtils.capitalize(type), displayName);
+		List<TagIndex> list = tagIndexDao.findTagByTagTypeAndName(StringUtils.capitalize(tagType), displayName);
 		return list;
 
 	}
