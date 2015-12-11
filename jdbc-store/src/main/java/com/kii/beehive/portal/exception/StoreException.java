@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class StoreException extends RuntimeException {
 
-
+	private static final long serialVersionUID = -5828561870661219029L;
 
 	private String errorCode;
 

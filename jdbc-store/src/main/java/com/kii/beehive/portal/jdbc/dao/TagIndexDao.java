@@ -48,10 +48,7 @@ public class TagIndexDao extends BaseDao<TagIndex> {
 			tagIndex.setDisplayName((String)row.get(TagIndex.DISPLAY_NAME));
 			tagIndex.setTagType(TagType.valueOf((String) row.get(TagIndex.TAG_TYPE)));
 			tagIndex.setDescription((String)row.get(TagIndex.DESCRIPTION));
-			tagIndex.setCreateBy((String)row.get(TagIndex.CREATE_BY));
-			tagIndex.setCreateDate((Date)row.get(TagIndex.CREATE_DATE));
-			tagIndex.setModifyBy((String)row.get(TagIndex.MODIFY_BY));
-			tagIndex.setModifyDate((Date)row.get(TagIndex.CREATE_DATE));
+			mapToListForDBEntity(tagIndex, row);
 			list.add(tagIndex);
 		}
 		return list;

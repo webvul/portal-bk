@@ -47,6 +47,10 @@ dependencies {
 	compile "org.springframework:spring-context:${springVersion}"
 
 	compile "com.zaxxer:HikariCP:2.4.1"
+	
+	compile "com.fasterxml.jackson.core:jackson-core:2.6.3"
+	
+	compile "com.fasterxml.jackson.core:jackson-annotations:2.6.3"
 
 	compile project(":commons")
 }
