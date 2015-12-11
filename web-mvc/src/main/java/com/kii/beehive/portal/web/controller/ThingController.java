@@ -18,11 +18,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kii.beehive.portal.manager.ThingManager;
-import com.kii.beehive.portal.service.GlobalThingDao;
-import com.kii.beehive.portal.store.entity.GlobalThingInfo;
-import com.kii.beehive.portal.store.entity.TagType;
+import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
+import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
+import com.kii.beehive.portal.jdbc.entity.TagType;
+import com.kii.beehive.portal.service.ThingTagService;
 import com.kii.beehive.portal.web.entity.ThingInput;
+import com.kii.beehive.portal.web.help.PortalException;
 
 /**
  * Beehive API - Thing API
@@ -35,7 +36,7 @@ public class ThingController {
 
 
 	@Autowired
-	private ThingManager thingManager;
+	private ThingTagService thingTagService;
 	
 	@Autowired
 	private GlobalThingDao globalThingDao;
@@ -52,7 +53,7 @@ public class ThingController {
 	@RequestMapping(path = "/{globalThingID}", method = {RequestMethod.GET})
 	public GlobalThingInfo getThingByGlobalID(@PathVariable("globalThingID") String globalThingID) {
 		
-		GlobalThingInfo thing =  globalThingDao.getThingInfoByID(globalThingID);
+		GlobalThingInfo thing =  globalThingDao.findByID(globalThingID);
 		return thing;
 	}
 
@@ -66,7 +67,7 @@ public class ThingController {
 	 * @param input
      */
 	@RequestMapping(path="",method={RequestMethod.POST})
-	public Map<String,String> createThing(@RequestBody ThingInput input){
+	public Map<String,Long> createThing(@RequestBody ThingInput input){
 
 		input.verifyInput();
 		
@@ -74,9 +75,9 @@ public class ThingController {
 
 		BeanUtils.copyProperties(input,thingInfo);
 
-		String thingID=thingManager.createThing(thingInfo,input.getInputTags());
+		Long thingID = thingTagService.createThing(thingInfo,input.getInputTags());
 		
-		Map<String,String> map=new HashMap<>();
+		Map<String,Long> map=new HashMap<>();
 		map.put("globalThingID",thingID);
 		return map;
 	}
@@ -90,12 +91,15 @@ public class ThingController {
 	 * @param globalThingID
      */
 	@RequestMapping(path="/{globalThingID}",method={RequestMethod.DELETE},consumes={"*"})
-	public void removeThing(@PathVariable("globalThingID") String globalThingID){
+	public void removeThing(@PathVariable("globalThingID") Long globalThingID){
 		
-		GlobalThingInfo orig =  globalThingDao.getThingInfoByID(globalThingID);
+		GlobalThingInfo orig =  globalThingDao.findByID(globalThingID);
 		
-		thingManager.removeThings(orig);
-		return;
+		if(orig == null){
+			throw new PortalException("no body", "no body", HttpStatus.BAD_REQUEST);
+		}
+		
+		thingTagService.removeThing(orig);
 	}
 
 	/**
@@ -110,13 +114,12 @@ public class ThingController {
 	@RequestMapping(path="/{globalThingID}/tags/custom/{tagName}",method={RequestMethod.PUT})
 	public void addThingTag(@PathVariable("globalThingID") String globalThingID,@PathVariable("tagName") String tagName){
 		
-		String[] thingIDs = globalThingID.split(",");
+		/*String[] thingIDs = globalThingID.split(",");
 		List<String> tagIDs = CollectionUtils.arrayToList(tagName.split(","));
 
 		List<String> tags=tagIDs.stream().map((s)-> TagType.Custom.getTagName(s)).collect(Collectors.toList());
 
-		thingManager.bindTagToThing(tags, Arrays.asList(thingIDs));
-		return ;
+		thingManager.bindTagToThing(tags, Arrays.asList(thingIDs));*/
 	}
 
 	/**
@@ -130,8 +133,7 @@ public class ThingController {
      */
 	@RequestMapping(path="/{globalThingID}/tags/custom/{tagName}",method={RequestMethod.DELETE},consumes={"*"})
 	public void removeThingTag(@PathVariable("globalThingID") String globalThingID,@PathVariable("tagName") String tagName){
-		thingManager.unbindTagToThing(TagType.Custom.getTagName(tagName),globalThingID);
-		return;
+		//thingManager.unbindTagToThing(TagType.Custom.getTagName(tagName),globalThingID);
 	}
 
 
@@ -145,13 +147,13 @@ public class ThingController {
 	 * @param operation
      * @return
      */
-	@RequestMapping(path = "/tag/{tagName}/operation/{operation}", method = {RequestMethod.GET})
+	/*@RequestMapping(path = "/tag/{tagName}/operation/{operation}", method = {RequestMethod.GET})
 	public ResponseEntity<List<GlobalThingInfo>> getThingsByTagExpress(@PathVariable("tagName") String tagName, @PathVariable("operation") String operation) {
 
 		List<GlobalThingInfo> list = this.thingManager.findThingByTagName(tagName.split(","), operation);
 
 		return new ResponseEntity<>(list, HttpStatus.OK);
-	}
+	}*/
 
 
 }

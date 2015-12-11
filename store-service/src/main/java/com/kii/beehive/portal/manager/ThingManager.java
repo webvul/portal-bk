@@ -28,14 +28,14 @@ public class ThingManager {
 
 	private Logger log= LoggerFactory.getLogger(ThingManager.class);
 
-	@Autowired
+	//@Autowired
 	private GlobalThingDao globalThingDao;
 
 
-	@Autowired
+	//@Autowired
 	private TagIndexDao tagIndexDao;
 
-	@Autowired
+	//@Autowired
 	private AppInfoDao appInfoDao;
 
 

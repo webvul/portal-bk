@@ -21,7 +21,7 @@ import com.kii.extension.sdk.query.QueryParam;
 import com.kii.extension.sdk.service.AbstractDataAccess;
 
 @BindAppByName(appName="portal",appBindSource="propAppBindTool")
-@Component
+//@Component
 public class GlobalThingDao extends AbstractDataAccess<GlobalThingInfo>{
 
 

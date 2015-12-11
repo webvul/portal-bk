@@ -48,5 +48,11 @@ public class TagIndex extends DBEntity {
 		this.description = description;
 	}
 	
+	public static TagIndex generCustomTagIndex(String name){
+		TagIndex tag=new TagIndex();
+		tag.tagType=TagType.Custom;
+		tag.displayName=name;
+		return tag;
+	}
 	
 }

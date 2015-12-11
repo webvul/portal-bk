@@ -1,10 +1,10 @@
 package com.kii.beehive.portal.jdbc.dao;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
@@ -25,7 +25,30 @@ public class TagIndexDao extends BaseDao<TagIndex> {
 		return tagIndexList;
 	}*/
 	
-
+	public List<TagIndex> findTagByTagTypeAndName(String tagType,String displayName) {
+		String sql = "SELECT * "
+					+ "FROM " + this.getTableName() 
+					+ " WHERE ";
+		
+		StringBuilder where = new StringBuilder();
+		List<Object> params = new ArrayList<Object>();
+		if(!Strings.isBlank(tagType)){
+			where.append(TagIndex.TAG_TYPE).append(" = ? "); 
+			params.add(tagType);
+		}
+		
+		if(!Strings.isBlank(displayName)){
+			if(where.length() > 0){
+				where.append(" AND ");
+			}
+			where.append(TagIndex.DISPLAY_NAME).append(" = ? ");
+			params.add(displayName);
+		}
+		Object[] paramArr = new String[params.size()];
+		paramArr = params.toArray(paramArr);
+		List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql+where.toString(), paramArr);
+	    return mapToList(rows);
+	}
 
 
 	@Override

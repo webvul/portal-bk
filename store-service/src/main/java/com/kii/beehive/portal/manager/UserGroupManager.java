@@ -26,10 +26,10 @@ public class UserGroupManager {
 
     private Logger logger= LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
+    //@Autowired
     private BeehiveUserGroupDao beehiveUserGroupDao;
 
-    @Autowired
+    //@Autowired
     private BeehiveUserDao beehiveUserDao;
 
     @Autowired

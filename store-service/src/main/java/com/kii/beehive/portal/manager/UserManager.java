@@ -26,7 +26,7 @@ public class UserManager {
 	@Autowired
 	private ArchiveBeehiveUserDao archiveUserDao;
 
-	@Autowired
+	//@Autowired
 	private BeehiveUserDao userDao;
 
 //	@Autowired
