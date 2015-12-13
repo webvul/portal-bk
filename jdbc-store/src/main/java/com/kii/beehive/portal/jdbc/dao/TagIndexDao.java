@@ -54,6 +54,17 @@ public class TagIndexDao extends BaseDao<TagIndex> {
 	    return mapToList(rows);
 	}
 
+	public List<String> findLocations(String parentLocation) {
+
+		String sql = "SELECT display_name FROM " + this.getTableName()
+				+ " WHERE tag_type='" + TagType.Location + "' AND display_name like ? " +
+				"ORDER BY display_name";
+
+		Object[] params = new String[] {parentLocation + "%"};
+		List<String> rows = jdbcTemplate.queryForList(sql, params, String.class);
+
+		return rows;
+	}
 
 	@Override
 	public String getTableName() {

@@ -1,6 +1,6 @@
 package com.kii.beehive.portal.exception;
 
-public class TagFormatInvalidException extends StoreException {
+public class TagFormatInvalidException extends StoreServiceException {
 
 	public TagFormatInvalidException(String name){
 

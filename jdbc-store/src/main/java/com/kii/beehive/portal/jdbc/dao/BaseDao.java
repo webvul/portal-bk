@@ -61,6 +61,11 @@ public abstract class BaseDao<T extends DBEntity> {
         List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql, value);
         return mapToList(rows);
     }
+
+	public List<T> query(String sql, Object... values) {
+		List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql, values);
+		return mapToList(rows);
+	}
 	
 	public T findByID(Serializable id){
 		String sql = "SELECT * FROM " + this.getTableName() + " WHERE "+ getKey() +"=?";  
@@ -107,6 +112,7 @@ public abstract class BaseDao<T extends DBEntity> {
 
 	public long saveOrUpdate(T entity){
 		SqlParameterSource parameters = new AnnationBeanSqlParameterSource(entity);
+		// TODO method "executeAndReturnKey" is partial update or full update? seems update doesn't work
 		Number id=insertTool.executeAndReturnKey(parameters);
 		return id.longValue();
 	}

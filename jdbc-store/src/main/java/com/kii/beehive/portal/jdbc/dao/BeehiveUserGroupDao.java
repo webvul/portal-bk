@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository;
 
 import com.kii.beehive.portal.exception.StoreException;
 import com.kii.beehive.portal.jdbc.entity.BeehiveUserGroup;
-import com.kii.beehive.portal.jdbc.entity.TagType;
 
 @Repository
 public class BeehiveUserGroupDao extends BaseDao<BeehiveUserGroup>{
@@ -31,7 +30,7 @@ public class BeehiveUserGroupDao extends BaseDao<BeehiveUserGroup>{
 		for (Map<String, Object> row : rows) {
 
 			BeehiveUserGroup beehiveUserGroup = new BeehiveUserGroup();
-			beehiveUserGroup.setUserGroupID((String)row.get(BeehiveUserGroup.USER_GROUP_ID));
+			beehiveUserGroup.setId((Integer)row.get(BeehiveUserGroup.USER_GROUP_ID));
 			beehiveUserGroup.setUserGroupName((String)row.get(BeehiveUserGroup.USER_GROUP_NAME));
 			beehiveUserGroup.setDescription((String)row.get(BeehiveUserGroup.DESCRIPTION));
 
@@ -42,28 +41,22 @@ public class BeehiveUserGroupDao extends BaseDao<BeehiveUserGroup>{
 		return list;
 	}
 
-	public String createUserGroup(BeehiveUserGroup userGroup) {
+	public long createUserGroup(BeehiveUserGroup userGroup) {
 
-
-		String userGroupID = userGroup.getUserGroupID();
-		boolean isExist = super.IsIdExist(userGroupID);
-		if (isExist) {
-			throw new StoreException(userGroupID);
-		} else {
-			super.saveOrUpdate(userGroup);
-		}
+		long userGroupID = super.saveOrUpdate(userGroup);
+		userGroup.setId(userGroupID);
 
 		return userGroupID;
 	}
 
-	public void updateUserGroup(String userGroupID, BeehiveUserGroup userGroup) {
+	public void updateUserGroup(long userGroupID, BeehiveUserGroup userGroup) {
 
 
 		boolean isExist = super.IsIdExist(userGroupID);
 		if (isExist) {
 			super.saveOrUpdate(userGroup);
 		} else {
-			throw new StoreException(userGroupID);
+			throw new StoreException(userGroupID + " not found");
 		}
 
 	}
@@ -88,9 +81,19 @@ public class BeehiveUserGroupDao extends BaseDao<BeehiveUserGroup>{
 
 	public List<BeehiveUserGroup> findUserGroupByUserGroupName(String userGroupName) {
 
-		String sql = "SELECT * FROM " + this.getTableName() + " WHERE user_group_name like '%?%'";
+		String sql = "SELECT * FROM " + this.getTableName() + " WHERE user_group_name = ?";
 
 		Object[] params = new String[] {userGroupName};
+		List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql, params);
+		return mapToList(rows);
+
+	}
+
+	public List<BeehiveUserGroup> findUserGroupByUserGroupNameLike(String userGroupName) {
+
+		String sql = "SELECT * FROM " + this.getTableName() + " WHERE user_group_name like ?";
+
+		Object[] params = new String[] {"%" + userGroupName + "%"};
 		List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql, params);
 		return mapToList(rows);
 

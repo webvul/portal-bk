@@ -8,6 +8,7 @@ import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -84,7 +85,6 @@ public class TagController {
 	 * to doc "Tech Design - Beehive API", section "Delete Tag (移除tag)" for more
 	 * details
 	 *
-	 * @param tagName
 	 */
 	@RequestMapping(path = "/custom/{displayName}", method = { RequestMethod.DELETE }, consumes = { "*" })
 	public void removeTag(@PathVariable("displayName") String displayName) {
@@ -109,7 +109,6 @@ public class TagController {
 	 * to doc "Tech Design - Beehive API", section "Inquire Tag (查询tag)" for
 	 * more details
 	 *
-	 * @param tagName
 	 * @return
 	 */
 	@RequestMapping(path = "/search", method = { RequestMethod.GET })
@@ -129,5 +128,13 @@ public class TagController {
 
 		return list;
 	}*/
+
+	@RequestMapping(path = "/locations/{parentLocation}", method = { RequestMethod.GET }, consumes = { "*" })
+	public ResponseEntity<List<String>> findLocations(@PathVariable("parentLocation") String parentLocation) {
+// TODO new interface, need to add in document
+		List<String> locations = thingTagService.findLocations(parentLocation);
+
+		return new ResponseEntity<>(locations, HttpStatus.OK);
+	}
 
 }

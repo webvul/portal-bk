@@ -1,6 +1,6 @@
 package com.kii.beehive.portal.exception;
 
-public class UserNotExistException extends StoreException{
+public class UserNotExistException extends StoreServiceException{
 
 
 	public UserNotExistException(String userID){

@@ -21,7 +21,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.beehive.portal.common.utils.CollectUtils;
-import com.kii.beehive.portal.exception.StoreException;
+import com.kii.beehive.portal.exception.StoreServiceException;
 import com.kii.beehive.portal.web.help.PortalException;
 import com.kii.extension.sdk.exception.KiiCloudException;
 
@@ -86,8 +86,8 @@ public class ExceptionController {
 
 
 
-	@ExceptionHandler(StoreException.class)
-	public ResponseEntity<String> handleStoreServiceException(StoreException ex) {
+	@ExceptionHandler(StoreServiceException.class)
+	public ResponseEntity<String> handleStoreServiceException(StoreServiceException ex) {
 
 		log.error("store exception ",ex);
 

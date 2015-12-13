@@ -112,4 +112,10 @@ public class ThingTagService {
 		tagThingRelationDao.delete(thing.getId(), null);
 		globalThingDao.deleteByID(thing.getId());
 	}
+
+	public List<String> findLocations(String parentLocation) {
+
+		return tagIndexDao.findLocations(parentLocation);
+
+	}
 }

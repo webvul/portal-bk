@@ -5,8 +5,6 @@ import com.kii.beehive.portal.jdbc.annotation.JdbcFieldType;
 
 public class BeehiveUserGroup extends DBEntity{
 
-	private String userGroupID;
-
 	private String userGroupName;
 
 	private String description;
@@ -15,13 +13,11 @@ public class BeehiveUserGroup extends DBEntity{
 	public final static String USER_GROUP_NAME = "user_group_name";
 	public final static String DESCRIPTION = "description";
 
-	@JdbcField(column=USER_GROUP_ID)
-	public String getUserGroupID() {
-		return userGroupID;
-	}
 
-	public void setUserGroupID(String userGroupID) {
-		this.userGroupID = userGroupID;
+	@Override
+	@JdbcField(column=USER_GROUP_ID)
+	public long getId(){
+		return super.getId();
 	}
 
 	@JdbcField(column=USER_GROUP_NAME)

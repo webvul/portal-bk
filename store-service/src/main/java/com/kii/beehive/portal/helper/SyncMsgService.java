@@ -11,11 +11,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.beehive.portal.service.DeviceSupplierDao;
 import com.kii.beehive.portal.service.UserSyncMsgDao;
-import com.kii.beehive.portal.store.entity.BeehiveUser;
+import com.kii.beehive.portal.jdbc.entity.BeehiveUser;
 import com.kii.beehive.portal.store.entity.usersync.SupplierPushMsgTask;
 import com.kii.beehive.portal.store.entity.usersync.UserSyncMsg;
 import com.kii.beehive.portal.store.entity.usersync.UserSyncMsgType;
 
+// TODO need to change userID from String to long
 @Component
 public class SyncMsgService {
 

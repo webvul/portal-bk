@@ -1,6 +1,6 @@
 package com.kii.beehive.portal.exception;
 
-public class EntryNotFoundException extends StoreException{
+public class EntryNotFoundException extends StoreServiceException{
 
 
 	public EntryNotFoundException(String objectID){
