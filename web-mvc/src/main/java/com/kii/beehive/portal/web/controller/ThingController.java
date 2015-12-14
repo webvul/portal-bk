@@ -1,28 +1,29 @@
 package com.kii.beehive.portal.web.controller;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kii.beehive.portal.manager.ThingManager;
-import com.kii.beehive.portal.service.GlobalThingDao;
-import com.kii.beehive.portal.store.entity.GlobalThingInfo;
-import com.kii.beehive.portal.store.entity.TagType;
+import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
+import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
+import com.kii.beehive.portal.service.ThingTagService;
 import com.kii.beehive.portal.web.entity.ThingInput;
+import com.kii.beehive.portal.web.help.PortalException;
 
 /**
  * Beehive API - Thing API
@@ -35,11 +36,11 @@ public class ThingController {
 
 
 	@Autowired
-	private ThingManager thingManager;
+	private ThingTagService thingTagService;
 	
 	@Autowired
 	private GlobalThingDao globalThingDao;
-
+	
 	/**
 	 * 查询设备
 	 * GET /things/{globalThingID}
@@ -52,7 +53,7 @@ public class ThingController {
 	@RequestMapping(path = "/{globalThingID}", method = {RequestMethod.GET})
 	public GlobalThingInfo getThingByGlobalID(@PathVariable("globalThingID") String globalThingID) {
 		
-		GlobalThingInfo thing =  globalThingDao.getThingInfoByID(globalThingID);
+		GlobalThingInfo thing =  globalThingDao.findByID(globalThingID);
 		return thing;
 	}
 
@@ -66,7 +67,7 @@ public class ThingController {
 	 * @param input
      */
 	@RequestMapping(path="",method={RequestMethod.POST})
-	public Map<String,String> createThing(@RequestBody ThingInput input){
+	public Map<String,Long> createThing(@RequestBody ThingInput input){
 
 		input.verifyInput();
 		
@@ -74,9 +75,9 @@ public class ThingController {
 
 		BeanUtils.copyProperties(input,thingInfo);
 
-		String thingID=thingManager.createThing(thingInfo,input.getInputTags());
+		Long thingID = thingTagService.createThing(thingInfo,input.getInputTags());
 		
-		Map<String,String> map=new HashMap<>();
+		Map<String,Long> map=new HashMap<>();
 		map.put("globalThingID",thingID);
 		return map;
 	}
@@ -89,16 +90,19 @@ public class ThingController {
 	 *
 	 * @param globalThingID
      */
-	@RequestMapping(path="/{globalThingID}",method={RequestMethod.DELETE})
-	public void removeThing(@PathVariable("globalThingID") String globalThingID){
+	@RequestMapping(path="/{globalThingID}",method={RequestMethod.DELETE},consumes={"*"})
+	public void removeThing(@PathVariable("globalThingID") Long globalThingID){
 		
-		GlobalThingInfo orig =  globalThingDao.getThingInfoByID(globalThingID);
+		GlobalThingInfo orig =  globalThingDao.findByID(globalThingID);
 		
-		thingManager.removeThings(orig);
-		return;
+		if(orig == null){
+			throw new PortalException("no body", "no body", HttpStatus.BAD_REQUEST);
+		}
+		
+		thingTagService.removeThing(orig);
 	}
 
-	/**
+	/**1043  1014,1022
 	 * 绑定设备及tag
 	 * PUT /things/{globalThingID...}/tags/{tagName ...}
 	 *
@@ -107,16 +111,11 @@ public class ThingController {
 	 * @param globalThingID
 	 * @param tagName
      */
-	@RequestMapping(path="/{globalThingID}/tags/custom/{tagName}",method={RequestMethod.PUT})
-	public void addThingTag(@PathVariable("globalThingID") String globalThingID,@PathVariable("tagName") String tagName){
+	@RequestMapping(path="/{globalThingID}/tags/{tagIDs}",method={RequestMethod.PUT})
+	public void addThingTag(@PathVariable("globalThingID") Long globalThingID,@PathVariable("tagIDs") String tagIDs){
 		
-		String[] thingIDs = globalThingID.split(",");
-		List<String> tagIDs = CollectionUtils.arrayToList(tagName.split(","));
-
-		List<String> tags=tagIDs.stream().map((s)-> TagType.Custom.getTagName(s)).collect(Collectors.toList());
-
-		thingManager.bindTagToThing(tags, Arrays.asList(thingIDs));
-		return ;
+		List<String> tagIDList = CollectionUtils.arrayToList(tagIDs.split(","));
+		thingTagService.bindTagToThing(tagIDList, globalThingID);
 	}
 
 	/**
@@ -128,10 +127,10 @@ public class ThingController {
 	 * @param globalThingID
 	 * @param tagName
      */
-	@RequestMapping(path="/{globalThingID}/tags/custom/{tagName}",method={RequestMethod.DELETE})
-	public void removeThingTag(@PathVariable("globalThingID") String globalThingID,@PathVariable("tagName") String tagName){
-		thingManager.unbindTagToThing(TagType.Custom.getTagName(tagName),globalThingID);
-		return;
+	@RequestMapping(path="/{globalThingID}/tags/{tagIDs}",method={RequestMethod.DELETE},consumes={"*"})
+	public void removeThingTag(@PathVariable("globalThingID") Long globalThingID,@PathVariable("tagIDs") String tagIDs){
+		List<String> tagIDList = CollectionUtils.arrayToList(tagIDs.split(","));
+		thingTagService.unbindTagToThing(tagIDList, globalThingID);
 	}
 
 
@@ -145,11 +144,17 @@ public class ThingController {
 	 * @param operation
      * @return
      */
-	@RequestMapping(path = "/tag/{tagName}/operation/{operation}", method = {RequestMethod.GET})
-	public ResponseEntity<List<GlobalThingInfo>> getThingsByTagExpress(@PathVariable("tagName") String tagName, @PathVariable("operation") String operation) {
-
-		List<GlobalThingInfo> list = this.thingManager.findThingByTagName(tagName.split(","), operation);
-
+	@RequestMapping(path = "/search", method = {RequestMethod.GET})
+	public ResponseEntity<List<GlobalThingInfo>> getThingsByTagExpress(@RequestParam(value="tagType", required = false) String tagType, 
+																		@RequestParam(value="displayName", required = false) String displayName) {
+		List<GlobalThingInfo> list = null;
+		
+		if(Strings.isBlank(tagType) && Strings.isBlank(displayName)){
+			list = globalThingDao.findAll();
+		}else{
+			list = globalThingDao.findThingByTag(StringUtils.capitalize(tagType), displayName);
+		}
+		
 		return new ResponseEntity<>(list, HttpStatus.OK);
 	}
 

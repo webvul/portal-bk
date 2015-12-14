@@ -45,7 +45,7 @@ public class LogAspect {
 				Object val = joinPoint.getArgs()[i];
 				sb.append(name).append(":").append(safeToString(val)).append("\n");
 			}
-			log.debug(sb.toString());
+			log.info(sb.toString());
 		}catch(Throwable ex){
 			ex.printStackTrace();
 			return;

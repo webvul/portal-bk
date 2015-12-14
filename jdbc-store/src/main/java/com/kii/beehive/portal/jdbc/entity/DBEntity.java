@@ -15,7 +15,11 @@ public class DBEntity {
 	private String createBy;
 
 	private String modifyBy;
-
+	
+	public final static String CREATE_DATE = "create_date";
+	public final static String CREATE_BY = "create_by";
+	public final static String MODIFY_DATE = "modify_date";
+	public final static String MODIFY_BY = "modify_by";
 
 	public long getId() {
 		return id;
@@ -25,7 +29,7 @@ public class DBEntity {
 		this.id = id;
 	}
 
-	@JdbcField(column="create_date")
+	@JdbcField(column=CREATE_DATE)
 	public Date getCreateDate() {
 		return createDate;
 	}
@@ -34,7 +38,7 @@ public class DBEntity {
 		this.createDate = createDate;
 	}
 
-	@JdbcField(column="modify_date")
+	@JdbcField(column=MODIFY_DATE)
 	public Date getModifyDate() {
 		return modifyDate;
 	}
@@ -43,7 +47,7 @@ public class DBEntity {
 		this.modifyDate = modifyDate;
 	}
 
-	@JdbcField(column="create_by")
+	@JdbcField(column=CREATE_BY)
 	public String getCreateBy() {
 		return createBy;
 	}
@@ -52,7 +56,7 @@ public class DBEntity {
 		this.createBy = createBy;
 	}
 
-	@JdbcField(column="modify_by")
+	@JdbcField(column=MODIFY_BY)
 	public String getModifyBy() {
 		return modifyBy;
 	}

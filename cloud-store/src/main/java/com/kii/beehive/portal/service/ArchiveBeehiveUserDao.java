@@ -13,7 +13,7 @@ import com.kii.extension.sdk.service.AbstractDataAccess;
 
 
 @BindAppByName(appName="portal",appBindSource="propAppBindTool")
-@Component
+//@Component
 public class ArchiveBeehiveUserDao extends AbstractDataAccess<BeehiveUser> {
 
 	public void archive(BeehiveUser user){

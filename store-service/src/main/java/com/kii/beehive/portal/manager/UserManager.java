@@ -19,13 +19,13 @@ import com.kii.beehive.portal.store.entity.CustomProperty;
 
 @Component
 public class UserManager {
-
+// TODO comment out for compile error
 	private Logger logger= LoggerFactory.getLogger(UserManager.class);
 
-	@Autowired
+	//@Autowired
 	private ArchiveBeehiveUserDao archiveUserDao;
 
-	@Autowired
+	//@Autowired
 	private BeehiveUserDao userDao;
 
 //	@Autowired
@@ -50,15 +50,15 @@ public class UserManager {
 			kiiUserDao.enableUser(archiveUser.getKiiUserID());
 
 		}else {
-
-			kiiUserDao.addBeehiveUser(user);
+// TODO comment out for compile error
+//			kiiUserDao.addBeehiveUser(user);
 
 		}
 		logger.debug("kiiUserID:" + user.getKiiUserID());
 
 		String id=userDao.createUser(user);
-
-		msgService.addInsertMsg(id,user);
+// TODO comment out for compile error
+//		msgService.addInsertMsg(id,user);
 		return id;
 	}
 
@@ -69,8 +69,8 @@ public class UserManager {
 
 
 		userDao.updateUser(user,userID);
-
-		msgService.addUpdateMsg(userID, user);
+// TODO comment out for compile error
+//		msgService.addUpdateMsg(userID, user);
 
 
 	}
@@ -81,8 +81,8 @@ public class UserManager {
 		user.setCustomFields(new CustomProperty(customProps));
 
 		userDao.updateUser(user, userID);
-
-		msgService.addUpdateMsg(userID, user);
+// TODO comment out for compile error
+//		msgService.addUpdateMsg(userID, user);
 
 	}
 
@@ -112,11 +112,9 @@ public class UserManager {
 
 
 		BeehiveUser user = userDao.getUserByID(userID);
+
+		kiiUserDao.removeBeehiveUser(user.getKiiUserID());
 		archiveUserDao.archive(user);
-
-		kiiUserDao.disableBeehiveUser(user);
-
-//		userGroupDao.checkUserGroupsChange(user,null);
 
 		userDao.deleteUser(userID);
 

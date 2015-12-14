@@ -3,7 +3,7 @@ package com.kii.beehive.portal.jdbc.entity;
 import com.kii.beehive.portal.jdbc.annotation.JdbcField;
 import com.kii.beehive.portal.jdbc.annotation.JdbcFieldType;
 
-public class GlobalThingEntity extends DBEntity{
+public class GlobalThingInfo extends DBEntity{
 
 	private String vendorThingID;
 
@@ -14,6 +14,14 @@ public class GlobalThingEntity extends DBEntity{
 	private String status;
 
 	private String custom;
+	
+	public final static String ID_GLOBAL_THING = "id_global_thing";
+	public final static String VANDOR_THING_ID = "vendor_thing_id";
+	public final static String KII_APP_ID = "kii_app_id";
+	public final static String THING_TYPE = "thing_type";
+	public final static String STATUS = "status";
+	public final static String CUSTOM_INFO = "custom_info";
+	
 
 
 	@Override
@@ -22,7 +30,7 @@ public class GlobalThingEntity extends DBEntity{
 		return super.getId();
 	}
 
-	@JdbcField(column="vendor_thing_id")
+	@JdbcField(column=VANDOR_THING_ID)
 	public String getVendorThingID() {
 		return vendorThingID;
 	}
@@ -31,7 +39,7 @@ public class GlobalThingEntity extends DBEntity{
 		this.vendorThingID = vendorThingID;
 	}
 
-	@JdbcField(column="kii_app_id")
+	@JdbcField(column=KII_APP_ID)
 	public String getKiiAppID() {
 		return kiiAppID;
 	}
@@ -40,7 +48,7 @@ public class GlobalThingEntity extends DBEntity{
 		this.kiiAppID = kiiAppID;
 	}
 
-	@JdbcField(column="thing_type")
+	@JdbcField(column=THING_TYPE)
 	public String getType() {
 		return type;
 	}
@@ -66,4 +74,23 @@ public class GlobalThingEntity extends DBEntity{
 	public void setCustom(String custom) {
 		this.custom = custom;
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("GlobalThingInfo [vendorThingID=");
+		builder.append(vendorThingID);
+		builder.append(", kiiAppID=");
+		builder.append(kiiAppID);
+		builder.append(", type=");
+		builder.append(type);
+		builder.append(", status=");
+		builder.append(status);
+		builder.append(", custom=");
+		builder.append(custom);
+		builder.append("]");
+		return builder.toString();
+	}
+	
+	
 }

@@ -1,81 +1,104 @@
 package com.kii.beehive.portal.jdbc.dao;
 
-import javax.sql.DataSource;
-
-import java.beans.PropertyDescriptor;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Repository;
 
-import com.kii.beehive.portal.common.utils.StrTemplate;
-import com.kii.beehive.portal.jdbc.entity.GlobalThingEntity;
-import com.kii.beehive.portal.jdbc.helper.AnnationBeanSqlParameterSource;
-import com.kii.beehive.portal.jdbc.helper.BindClsRowMapper;
+import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 
 @Repository
-public class GlobalThingDao {
+public class GlobalThingDao extends BaseDao<GlobalThingInfo>{
 
 
 	public static final String TABLE_NAME = "global_thing";
-	private JdbcTemplate jdbcTemplate;
-
-
-	private SimpleJdbcInsert insertTool;
-
-
-	private BindClsRowMapper  rowMapper=new BindClsRowMapper(GlobalThingEntity.class);
-
-	@Autowired
-	public void setDataSource(DataSource dataSource) {
-
-		this.jdbcTemplate = new JdbcTemplate(dataSource);
-		this.insertTool=new SimpleJdbcInsert(dataSource)
-				.withTableName(TABLE_NAME)
-				.usingGeneratedKeyColumns("id");
-	}
-
 
 	public void test(){
-
 		jdbcTemplate.execute("select sysdate() from dual");
-
 	}
 
-	public long insertThing(GlobalThingEntity entity){
+	public List<String> findAllThingTypes() {
+		String sql = "SELECT DISTINCT thing_type FROM " + this.getTableName();
 
-		SqlParameterSource parameters = new AnnationBeanSqlParameterSource(entity);
+		List<String> rows = jdbcTemplate.queryForList(sql, null, String.class);
 
-
-		Number id=insertTool.executeAndReturnKey(parameters);
-
-		return id.longValue();
-
+		return rows;
 	}
 
-	private String getByIDTemplate="select * from ${0} where ${1} = ? ";
-	public GlobalThingEntity getThingByID(long id){
-
-		String sql= StrTemplate.gener(getByIDTemplate,TABLE_NAME,"id_global_thing");
-
-		List<GlobalThingEntity> list= jdbcTemplate.query(sql,new Object[]{id},rowMapper);
-
-		if(list.size()==0){
-			return null;
-		}else{
+	public GlobalThingInfo getThingByVendorThingID(String vendorThingID) {
+		List<GlobalThingInfo> list = super.findBySingleField(GlobalThingInfo.VANDOR_THING_ID, vendorThingID);
+		if(list.size() > 0){
 			return list.get(0);
+		}else{
+			return null;
 		}
 	}
 
+	public List<GlobalThingInfo> findThingByTag(String tagType,String displayName) {
+		String sql = "SELECT g.id_global_thing,g.vendor_thing_id,g.kii_app_id,g.thing_type,g.custom_info,g.status,g.create_by,g.create_date,g.modify_by,g.modify_date "
+					+ "FROM " + this.getTableName() +" g "
+					+ "INNER JOIN rel_thing_tag r ON g.id_global_thing=r.thing_id " 
+					+ "INNER JOIN tag_index t ON t.tag_id=r.tag_id "
+					+ " WHERE ";
+		
+		StringBuilder where = new StringBuilder();
+		List<Object> params = new ArrayList<Object>();
+		if(!Strings.isBlank(tagType)){
+			where.append(" t.tag_type = ? "); 
+			params.add(tagType);
+		}
+		
+		if(!Strings.isBlank(displayName)){
+			if(where.length() > 0){
+				where.append("AND");
+			}
+			where.append(" t.display_name = ? ");
+			params.add(displayName);
+		}
+		Object[] paramArr = new Object[params.size()];
+		paramArr = params.toArray(paramArr);
+		List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql+where.toString(), paramArr);
+	    return mapToList(rows);
+	}
+
+	@Override
+	public String getTableName() {
+		return TABLE_NAME;
+	}
+
+
+	@Override
+	public String getKey() {
+		return GlobalThingInfo.ID_GLOBAL_THING;
+	}
+
+
+	@Override
+	public List<GlobalThingInfo> mapToList(List<Map<String, Object>> rows) {
+		List<GlobalThingInfo> list = new ArrayList<GlobalThingInfo>();
+		for (Map<String, Object> row : rows) {
+			GlobalThingInfo globalThingInfo = new GlobalThingInfo();
+			globalThingInfo.setId((Integer)row.get(GlobalThingInfo.ID_GLOBAL_THING));
+			globalThingInfo.setVendorThingID((String)row.get(GlobalThingInfo.VANDOR_THING_ID));
+			globalThingInfo.setKiiAppID((String)row.get(GlobalThingInfo.KII_APP_ID));
+			globalThingInfo.setType((String)row.get(GlobalThingInfo.THING_TYPE));
+			globalThingInfo.setStatus((String)row.get(GlobalThingInfo.STATUS));
+			globalThingInfo.setCustom((String)row.get(GlobalThingInfo.CUSTOM_INFO));
+
+			mapToListForDBEntity(globalThingInfo, row);
+
+			list.add(globalThingInfo);
+		}
+		return list;
+
+	}
+	
+	@Override
+	public long update(GlobalThingInfo entity) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 
 }

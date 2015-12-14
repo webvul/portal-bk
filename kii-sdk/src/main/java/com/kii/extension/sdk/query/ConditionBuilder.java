@@ -36,9 +36,10 @@ public class ConditionBuilder {
 	
 	
 	public ConditionBuilder equal(String field, Object value) {
-		Equal eq = new Equal(field,value);
-
-		fill(eq);
+		if(value!=null) {
+			Equal eq = new Equal(field, value);
+			fill(eq);
+		}
 		return this;
 	}
 

@@ -15,12 +15,14 @@ import com.kii.extension.sdk.entity.BucketInfo;
 import com.kii.extension.sdk.service.AbstractDataAccess;
 
 @BindAppByName(appName="portal",appBindSource="propAppBindTool")
-@Component
+//@Component
 public class DeviceSupplierDao extends AbstractDataAccess<DeviceSupplier>{
 
 
+	public static final String CACHE_NAME="'all_supplier'";
 
-	@Cacheable(cacheNames = CacheConfig.LONGLIVE_CACHE , key="all_supplier")
+
+	@Cacheable(cacheNames = CacheConfig.LONGLIVE_CACHE , key=CACHE_NAME)
 	public  Map<String,String> getUrlMap(){
 		Map<String,String> urlMap=new HashMap<>();
 
@@ -32,18 +34,18 @@ public class DeviceSupplierDao extends AbstractDataAccess<DeviceSupplier>{
 		return urlMap;
 	}
 
-	@CacheEvict(cacheNames = CacheConfig.LONGLIVE_CACHE , key="all_supplier")
+	@CacheEvict(cacheNames = CacheConfig.LONGLIVE_CACHE , key=CACHE_NAME)
 	public String addDeviceSupplier(DeviceSupplier entity){
 		return  super.addKiiEntity(entity);
 	}
 
-	@CacheEvict(cacheNames = CacheConfig.LONGLIVE_CACHE , key="all_supplier")
+	@CacheEvict(cacheNames = CacheConfig.LONGLIVE_CACHE , key=CACHE_NAME)
 	public void updateSupplier(DeviceSupplier supplier){
 
 		super.updateEntity(supplier, supplier.getId());
 	}
 
-	@CacheEvict(cacheNames = CacheConfig.LONGLIVE_CACHE , key="all_supplier")
+	@CacheEvict(cacheNames = CacheConfig.LONGLIVE_CACHE , key=CACHE_NAME)
 	public void removeDeviceSupplier(String party3rdID){
 
 		super.removeEntity(party3rdID);

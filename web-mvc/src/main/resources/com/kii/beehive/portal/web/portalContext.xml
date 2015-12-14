@@ -12,7 +12,12 @@
          http://www.springframework.org/schema/task/spring-task.xsd
          http://www.springframework.org/schema/context
          http://www.springframework.org/schema/context/spring-context.xsd">
-
+    <!--
+    below config files for different env are specified in this config file, by reading the jvm para "spring.profile"
+        - beehive.portal.store.xxx.properties
+        - config.xxx.properties
+        - log4j.xxx.xml
+    -->
 
     <bean   class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="locations" value="classpath:com/kii/beehive/portal/web/config.${spring.profile}.properties"/>
@@ -63,6 +68,16 @@
                 <value>classpath:com/kii/beehive/portal/web/log4j.${spring.profile}.xml</value>
             </list>
         </property>
+    </bean>
+    
+     <bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+        <property name="jdbcUrl" value="${beehive.jdbc.url}" />
+        <property name="username" value="${beehive.jdbc.username}"/>
+        <property name="password" value="${beehive.jdbc.password}"/>
+    </bean>
+
+    <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
     </bean>
 
 </beans>

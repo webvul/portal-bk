@@ -18,7 +18,7 @@ import com.kii.extension.sdk.query.ConditionBuilder;
 import com.kii.extension.sdk.service.AbstractDataAccess;
 
 @BindAppByName(appName="portal",appBindSource="propAppBindTool")
-@Component
+//@Component
 public class TagIndexDao extends AbstractDataAccess<TagIndex> {
 
 	private Logger log= LoggerFactory.getLogger(TagIndexDao.class);
