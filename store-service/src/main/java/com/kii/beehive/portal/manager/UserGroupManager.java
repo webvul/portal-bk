@@ -88,7 +88,7 @@ public class UserGroupManager {
 
         // if includeUserData is true, get the user entities and add into user group
         Set<String> userIDs = userGroup.getUsers();
-        if(userIDs != null && !userIDs.isEmpty() && includeUserData) {
+        if(includeUserData && userIDs != null && !userIDs.isEmpty()) {
 
             // get user entities
             List<String> userIDList = new ArrayList<>();
@@ -103,6 +103,14 @@ public class UserGroupManager {
         logger.debug("End getUserGroupBySimpleQuery(Map<String,Object> queryMap, boolean includeUserData): " + userGroup);
 
         return userGroup;
+    }
+
+    /**
+     * get all the user groups
+     * @return
+     */
+    public List<BeehiveUserGroup> getUserGroupAll() {
+        return beehiveUserGroupDao.getAll();
     }
 
     /**

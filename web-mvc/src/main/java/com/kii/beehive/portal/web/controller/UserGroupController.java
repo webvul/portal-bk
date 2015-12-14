@@ -2,6 +2,7 @@ package com.kii.beehive.portal.web.controller;
 
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.logging.log4j.util.Strings;
@@ -133,6 +134,13 @@ public class UserGroupController {
     @RequestMapping(path="/simplequery",method={RequestMethod.POST})
     public ResponseEntity queryUserGroup(@RequestBody Map<String,Object> queryMap){
 
+        // if query condition is empty, return all the user groups
+        if(queryMap == null || queryMap.isEmpty()) {
+            List<BeehiveUserGroup> userGroupList = userGroupManager.getUserGroupAll();
+            return new ResponseEntity<>(userGroupList, HttpStatus.OK);
+        }
+
+        // if query condition is specified, query the user group
         String includeUserData = (String)queryMap.remove("includeUserData");
 
         if(queryMap.containsKey("userGroupID")) {

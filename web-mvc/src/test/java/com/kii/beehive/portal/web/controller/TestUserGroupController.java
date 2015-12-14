@@ -357,6 +357,34 @@ public class TestUserGroupController extends WebTestTemplate {
 
     }
 
+
+    @Test
+    public void testQueryUserGroupAll() throws Exception {
+
+        // test query
+
+        Map<String, Object> request = new HashMap<>();
+
+        String ctx= mapper.writeValueAsString(request);
+
+        String result=this.mockMvc.perform(
+                post("/usergroup/simplequery").content(ctx)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("UTF-8")
+        )
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        List<Map<String,Object>> map=mapper.readValue(result, List.class);
+
+        // assert http reture
+        assertTrue(map.size() > 0);
+        for(Map<String, Object> group : map) {
+            System.out.println("user group: " + group);
+        }
+
+    }
+
     @Test
     public void testDeleteUserGroup() throws Exception {
 
