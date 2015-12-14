@@ -51,6 +51,7 @@ public class TestUserGroupController extends WebTestTemplate {
 
         userGroupNameListForTest.add("test.usergroupname");
         userGroupNameListForTest.add("test.usergroupname.new");
+        userGroupNameListForTest.add("test.usergroupname.withoutuser");
 
         System.out.println("before to delete user group");
         clear();
@@ -272,6 +273,87 @@ public class TestUserGroupController extends WebTestTemplate {
         System.out.println(result);
         // assert http reture
         assertTrue(result.length() == 0);
+
+    }
+
+    @Test
+    public void testQueryUserGroupNoUser() throws Exception {
+
+        String userGroupName = "test.usergroupname.withoutuser";
+
+        Map<String, Object> request = new HashMap<>();
+        request.put("userGroupName", userGroupName);
+        request.put("description", "some description");
+
+        String ctx= mapper.writeValueAsString(request);
+
+        String result=this.mockMvc.perform(
+                post("/usergroup/").content(ctx)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("UTF-8")
+        )
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        Map<String,Object> map=mapper.readValue(result, Map.class);
+
+        // assert http return
+        userGroupID = (String)map.get("userGroupID");
+        assertNotNull((String)map.get("userGroupID"));
+
+        // test query
+
+        // includeUserData == 1
+        request = new HashMap<>();
+        request.put("userGroupName", userGroupName);
+        request.put("includeUserData", "1");
+
+        ctx= mapper.writeValueAsString(request);
+
+        result=this.mockMvc.perform(
+                post("/usergroup/simplequery").content(ctx)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("UTF-8")
+        )
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        map=mapper.readValue(result, Map.class);
+
+        // assert http return
+        String expectedUserGroupID = userGroupID;
+        userGroupID = (String)map.get("userGroupID");
+        assertEquals(expectedUserGroupID, userGroupID);
+
+        assertEquals(userGroupName, map.get("userGroupName"));
+
+        assertTrue(((List)map.get("users")).size() == 0);
+
+        // includeUserData == 0
+        request = new HashMap<>();
+        request.put("userGroupName", userGroupName);
+        request.put("includeUserData", "0");
+
+        ctx= mapper.writeValueAsString(request);
+
+        result=this.mockMvc.perform(
+                post("/usergroup/simplequery").content(ctx)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("UTF-8")
+        )
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        map=mapper.readValue(result, Map.class);
+
+        // assert http return
+        expectedUserGroupID = userGroupID;
+        userGroupID = (String)map.get("userGroupID");
+        assertEquals(expectedUserGroupID, userGroupID);
+
+        assertEquals(userGroupName, map.get("userGroupName"));
+
+        assertTrue(((List)map.get("users")).size() == 0);
 
     }
 

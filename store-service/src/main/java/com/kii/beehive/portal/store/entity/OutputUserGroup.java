@@ -1,7 +1,9 @@
 package com.kii.beehive.portal.store.entity;
 
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.BeanUtils;
@@ -16,9 +18,20 @@ public class OutputUserGroup extends BeehiveUserGroup {
         BeanUtils.copyProperties(userGroup, this, "users", "customFields", "beehiveUserList");
 
         if(includeUserData) {
-            this.users.addAll(userGroup.getBeehiveUserList());
+            List<BeehiveUser> beehiveUserList = userGroup.getBeehiveUserList();
+            if(beehiveUserList == null) {
+                this.users.addAll(new ArrayList<BeehiveUser>());
+            } else {
+                this.users.addAll(beehiveUserList);
+            }
+
         } else {
-            this.users.addAll(userGroup.getUsers());
+            Set<String> users = userGroup.getUsers();
+            if(users == null) {
+                this.users.addAll(new HashSet<String>());
+            } else {
+                this.users.addAll(users);
+            }
         }
     }
 
