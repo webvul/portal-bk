@@ -16,6 +16,8 @@ public class CommandService {
 
 	public void sendCmdToThing(String globalThingID,ThingCommand command){
 
+
+
 	}
 
 	public void sendCmdToTag(String  tagName,ThingCommand command){
