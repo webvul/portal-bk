@@ -29,6 +29,8 @@ public abstract class BaseDao<T extends DBEntity> {
 	
 	public abstract String getKey();
 	
+	public abstract long update(T entity);
+	
 	public abstract List<T> mapToList(List<Map<String, Object>> rows);
 
 	protected T mapToListForDBEntity(T entity, Map<String, Object> row) {
@@ -111,11 +113,14 @@ public abstract class BaseDao<T extends DBEntity> {
 	}
 
 	public long saveOrUpdate(T entity){
-		SqlParameterSource parameters = new AnnationBeanSqlParameterSource(entity);
-		// TODO method "executeAndReturnKey" is partial update or full update? seems update doesn't work
-		Number id=insertTool.executeAndReturnKey(parameters);
-		return id.longValue();
+		if(entity.getId() == 0){
+			SqlParameterSource parameters = new AnnationBeanSqlParameterSource(entity);
+			Number id=insertTool.executeAndReturnKey(parameters);
+			return id.longValue();
+		}else{
+			this.update(entity);
+			return entity.getId()
+		}
 	}
-	
 	
 }

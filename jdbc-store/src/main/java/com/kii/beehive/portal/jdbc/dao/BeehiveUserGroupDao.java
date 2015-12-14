@@ -98,4 +98,12 @@ public class BeehiveUserGroupDao extends BaseDao<BeehiveUserGroup>{
 		return mapToList(rows);
 
 	}
+	
+
+
+	@Override
+	public long update(BeehiveUserGroup entity) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

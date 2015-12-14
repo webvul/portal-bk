@@ -44,5 +44,11 @@ public class DeviceSupplierDao extends BaseDao<DeviceSupplier>{
 		return list;
 
 	}
+	
+	@Override
+	public long update(DeviceSupplier entity) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 
 }

@@ -66,4 +66,11 @@ public class ArchiveBeehiveUserDao extends BaseDao<ArchiveBeehiveUser> {
         // TODO
     }
 
+
+	@Override
+	public long update(ArchiveBeehiveUser entity) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }

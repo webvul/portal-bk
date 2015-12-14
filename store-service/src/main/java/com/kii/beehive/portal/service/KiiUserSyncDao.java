@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import com.kii.beehive.portal.jdbc.entity.BeehiveUser;
+import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.entity.KiiUser;
 import com.kii.extension.sdk.entity.LoginInfo;
@@ -46,16 +46,16 @@ public class KiiUserSyncDao {
 		}
 	}
 
-	public void addBeehiveUser(BeehiveUser beehiveUser){
+	public String addBeehiveUser(String userName, Long userID){
 
 		KiiUser user=new KiiUser();
 
-		user.setDisplayName(beehiveUser.getUserName());
+		user.setDisplayName(userName);
 
-		if(!StringUtils.isEmpty(beehiveUser.getId())) {
-			user.setLoginName(String.valueOf(beehiveUser.getId()));
+		if(!StringUtils.isEmpty(userID)) {
+			user.setLoginName(String.valueOf(userID));
 		}else{
-			String loginName= new String(Hex.encodeHex(beehiveUser.getUserName().getBytes(Charsets.UTF_8)));
+			String loginName= new String(Hex.encodeHex(userName.getBytes(Charsets.UTF_8)));
 			user.setLoginName(loginName);
 		}
 
@@ -63,13 +63,13 @@ public class KiiUserSyncDao {
 		user.setPassword(pwd);
 
 		String kiiUserID = userService.createUser(user);
+		return kiiUserID;
+		//beehiveUser.setKiiUserID(kiiUserID);
+		//beehiveUser.setKiiLoginName(user.getLoginName());
 
-		beehiveUser.setKiiUserID(kiiUserID);
-		beehiveUser.setKiiLoginName(user.getLoginName());
-
-		if(StringUtils.isEmpty(beehiveUser.getId())){
-			beehiveUser.setId(Long.valueOf(kiiUserID));
-		}
+		//if(StringUtils.isEmpty(beehiveUser.getId())){
+		//	beehiveUser.setId(Long.valueOf(kiiUserID));
+		//}
 	}
 
 	public String bindToUser(BeehiveUser user){

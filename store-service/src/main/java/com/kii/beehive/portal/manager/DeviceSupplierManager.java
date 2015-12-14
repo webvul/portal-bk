@@ -12,7 +12,7 @@ public class DeviceSupplierManager {
 
 //	private Map<String,DeviceSupplier> deviceInfoMap=new ConcurrentHashMap<>();
 
-	@Autowired
+	//@Autowired
 	private DeviceSupplierDao  supplierDao;
 
 //	@PostConstruct

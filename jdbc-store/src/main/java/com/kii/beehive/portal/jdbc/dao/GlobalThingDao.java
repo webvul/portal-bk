@@ -94,6 +94,11 @@ public class GlobalThingDao extends BaseDao<GlobalThingInfo>{
 		return list;
 
 	}
-
+	
+	@Override
+	public long update(GlobalThingInfo entity) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 
 }

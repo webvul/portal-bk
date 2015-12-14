@@ -65,12 +65,18 @@ public class TagController {
 	@RequestMapping(path = "/custom", method = { RequestMethod.POST })
 	public Map<String, Long> createTag(@RequestBody TagIndex tag) {
 
-		if (!StringUtils.hasText(tag.getDisplayName())) {
+		if (Strings.isBlank(tag.getDisplayName())) {
 			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "DisplayName is empty",
 					HttpStatus.BAD_REQUEST);
 		}
 
 		tag.setTagType(TagType.Custom);
+		
+		if(tag.getId() != 0){//update
+			TagIndex old = tagIndexDao.findByID(tag.getId());
+			old.setDisplayName(tag.getDisplayName());
+			old.setDescription(tag.getDescription());
+		}
 
 		long tagID = tagIndexDao.saveOrUpdate(tag);
 		Map<String, Long> map = new HashMap<>();

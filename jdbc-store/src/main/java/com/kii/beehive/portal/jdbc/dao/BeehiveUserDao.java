@@ -76,4 +76,11 @@ public class BeehiveUserDao extends BaseDao<BeehiveUser> {
         }
     }
 
+
+	@Override
+	public long update(BeehiveUser entity) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }

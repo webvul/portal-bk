@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kii.beehive.portal.service.BeehiveUserService;
 import com.kii.beehive.portal.jdbc.entity.BeehiveUser;
-import com.kii.beehive.portal.store.entity.OutputUser;
+import com.kii.beehive.portal.service.BeehiveUserService;
+import com.kii.beehive.portal.web.entity.OutputUser;
 import com.kii.beehive.portal.web.help.PortalException;
 
 /**
@@ -66,8 +66,6 @@ public class UserController {
 
 	@RequestMapping(path="/{userID}",method={RequestMethod.GET})
 	public OutputUser getUser(@PathVariable("userID") long userID){
-
-
 		return new OutputUser(userService.getUserByID(userID));
 	}
 

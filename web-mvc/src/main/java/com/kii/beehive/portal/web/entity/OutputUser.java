@@ -1,4 +1,4 @@
-package com.kii.beehive.portal.store.entity;
+package com.kii.beehive.portal.web.entity;
 
 
 import java.util.Map;
@@ -7,8 +7,8 @@ import org.springframework.beans.BeanUtils;
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import com.kii.beehive.portal.jdbc.entity.BeehiveUser;
+import com.kii.beehive.portal.store.entity.CustomProperty;
 
 public class OutputUser  extends BeehiveUser{
 

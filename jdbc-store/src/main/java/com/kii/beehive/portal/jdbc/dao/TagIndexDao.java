@@ -65,6 +65,18 @@ public class TagIndexDao extends BaseDao<TagIndex> {
 
 		return rows;
 	}
+	
+	public long update(TagIndex tag) {
+        String sql = "UPDATE "+ this.getTableName() +" SET tag_type=?, display_name=?, description=?, create_date=?, create_by=?, modify_date=?, modify_by=?  WHERE tag_id=?";
+        return jdbcTemplate.update(sql, tag.getTagType().toString(),
+        								tag.getDisplayName(),
+        								tag.getDescription(),
+        								tag.getCreateDate(),
+        								tag.getCreateBy(),
+        								tag.getModifyDate(),
+        								tag.getModifyBy(),
+        								tag.getId());
+    }
 
 	@Override
 	public String getTableName() {
@@ -91,6 +103,4 @@ public class TagIndexDao extends BaseDao<TagIndex> {
 		}
 		return list;
 	}
-	
-
 }

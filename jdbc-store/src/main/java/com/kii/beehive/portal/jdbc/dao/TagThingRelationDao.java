@@ -65,5 +65,9 @@ public class TagThingRelationDao extends BaseDao<TagThingRelation> {
 		return list;
 	}
 	
-
+	@Override
+	public long update(TagThingRelation entity) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

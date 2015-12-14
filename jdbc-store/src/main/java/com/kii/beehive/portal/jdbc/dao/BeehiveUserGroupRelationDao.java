@@ -65,5 +65,9 @@ public class BeehiveUserGroupRelationDao extends BaseDao<BeehiveUserGroupRelatio
 		return list;
 	}
 	
-
+	@Override
+	public long update(BeehiveUserGroupRelation entity) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }
