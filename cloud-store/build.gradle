@@ -1,0 +1,13 @@
+dependencies {
+
+	compile project(":kii-sdk")
+
+	compile "org.springframework:spring-context:${springVersion}"
+
+
+	compile "org.springframework:spring-context-support:${springVersion}"
+
+	compile "com.google.guava:guava:18.0"
+
+
+}

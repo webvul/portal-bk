@@ -5,4 +5,5 @@ include 'kii-sdk'
 include 'commons'
 include 'business-logic'
 include 'jdbc-store'
+include 'cloud-store'
 
