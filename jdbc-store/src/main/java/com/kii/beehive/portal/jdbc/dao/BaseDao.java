@@ -119,7 +119,7 @@ public abstract class BaseDao<T extends DBEntity> {
 			return id.longValue();
 		}else{
 			this.update(entity);
-			return entity.getId()
+			return entity.getId();
 		}
 	}
 	
