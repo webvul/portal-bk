@@ -67,8 +67,18 @@ public class TagIndexDao extends BaseDao<TagIndex> {
 	}
 	
 	public long update(TagIndex tag) {
-        String sql = "UPDATE "+ this.getTableName() +" SET tag_type=?, display_name=?, description=?, create_date=?, create_by=?, modify_date=?, modify_by=?  WHERE tag_id=?";
-        return jdbcTemplate.update(sql, tag.getTagType().toString(),
+		StringBuilder sql = new StringBuilder();
+		sql.append("UPDATE ").append(this.getTableName()).append(" SET ");
+		sql.append(TagIndex.TAG_TYPE).append("=?, ");
+		sql.append(TagIndex.DISPLAY_NAME).append("=?, ");
+		sql.append(TagIndex.DESCRIPTION).append("=?, ");
+		sql.append(TagIndex.CREATE_DATE).append("=?, ");
+		sql.append(TagIndex.CREATE_BY).append("=?, ");
+		sql.append(TagIndex.MODIFY_DATE).append("=?, ");
+		sql.append(TagIndex.MODIFY_BY).append("=? ");
+		sql.append("WHERE ").append(TagIndex.TAG_ID).append("=? ");
+		
+        return jdbcTemplate.update(sql.toString(), tag.getTagType().toString(),
         								tag.getDisplayName(),
         								tag.getDescription(),
         								tag.getCreateDate(),

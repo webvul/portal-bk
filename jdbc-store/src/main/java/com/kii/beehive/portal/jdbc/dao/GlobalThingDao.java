@@ -111,8 +111,29 @@ public class GlobalThingDao extends BaseDao<GlobalThingInfo>{
 	
 	@Override
 	public long update(GlobalThingInfo entity) {
-		// TODO Auto-generated method stub
-		return 0;
+		StringBuilder sql = new StringBuilder();
+		sql.append("UPDATE ").append(this.getTableName()).append(" SET ");
+		sql.append(GlobalThingInfo.VANDOR_THING_ID).append("=?, ");
+		sql.append(GlobalThingInfo.KII_APP_ID).append("=?, ");
+		sql.append(GlobalThingInfo.THING_TYPE).append("=?, ");
+		sql.append(GlobalThingInfo.STATUS).append("=?, ");
+		sql.append(GlobalThingInfo.CUSTOM_INFO).append("=?, ");
+		sql.append(GlobalThingInfo.CREATE_DATE).append("=?, ");
+		sql.append(GlobalThingInfo.CREATE_BY).append("=?, ");
+		sql.append(GlobalThingInfo.MODIFY_DATE).append("=?, ");
+		sql.append(GlobalThingInfo.MODIFY_BY).append("=? ");
+		sql.append("WHERE ").append(GlobalThingInfo.ID_GLOBAL_THING).append("=? ");
+		
+        return jdbcTemplate.update(sql.toString(), entity.getVendorThingID(),
+		        		entity.getKiiAppID(),
+		        		entity.getType(),
+		        		entity.getStatus(),
+		        		entity.getCustom(),
+		        		entity.getCreateDate(),
+		        		entity.getCreateBy(),
+		        		entity.getModifyDate(),
+		        		entity.getModifyBy(),
+		        		entity.getId());
 	}
 
 }
