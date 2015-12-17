@@ -8,6 +8,7 @@ import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Repository;
 
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
+import com.kii.beehive.portal.jdbc.entity.TagIndex;
 
 @Repository
 public class GlobalThingDao extends BaseDao<GlobalThingInfo>{
@@ -36,31 +37,44 @@ public class GlobalThingDao extends BaseDao<GlobalThingInfo>{
 		}
 	}
 
-	public List<GlobalThingInfo> findThingByTag(String tagType,String displayName) {
-		String sql = "SELECT g.id_global_thing,g.vendor_thing_id,g.kii_app_id,g.thing_type,g.custom_info,g.status,g.create_by,g.create_date,g.modify_by,g.modify_date "
+	public List<GlobalThingInfo>  queryThingByUnionTags(List<String> tagCollect){
+
+		String sql = "SELECT g.* "
+				+ "FROM " + this.getTableName() +" g "
+				+ "INNER JOIN rel_thing_tag r ON g.id_global_thing=r.thing_id "
+				+ "INNER JOIN tag_index t ON t.tag_id=r.tag_id "
+				+ " WHERE t.full_tag_name in (?) ";
+
+		return jdbcTemplate.query(sql,new Object[]{tagCollect},getRowMapper());
+
+	}
+
+	public List<GlobalThingInfo>  queryThingByIntersectionTags(List<String> tagCollect){
+
+		String sql = "SELECT g.vendor_thing_id,g.kii_app_id "
+				+ "FROM " + this.getTableName() +" g "
+				+ "INNER JOIN rel_thing_tag r ON g.id_global_thing=r.thing_id "
+				+ "INNER JOIN tag_index t ON t.tag_id=r.tag_id "
+				+ " WHERE t.full_tag_name in (?) group by g.thing_id having  count(r.tag_id) = ? ";
+
+		return jdbcTemplate.query(sql,new Object[]{tagCollect,tagCollect.size()},getRowMapper());
+
+	}
+
+	public List<GlobalThingInfo> findThingByTag(String tagName) {
+		String sql = "SELECT g.*  "
 					+ "FROM " + this.getTableName() +" g "
 					+ "INNER JOIN rel_thing_tag r ON g.id_global_thing=r.thing_id " 
 					+ "INNER JOIN tag_index t ON t.tag_id=r.tag_id "
-					+ " WHERE ";
-		
-		StringBuilder where = new StringBuilder();
-		List<Object> params = new ArrayList<Object>();
-		if(!Strings.isBlank(tagType)){
-			where.append(" t.tag_type = ? "); 
-			params.add(tagType);
-		}
-		
-		if(!Strings.isBlank(displayName)){
-			if(where.length() > 0){
-				where.append("AND");
-			}
-			where.append(" t.display_name = ? ");
-			params.add(displayName);
-		}
-		Object[] paramArr = new Object[params.size()];
-		paramArr = params.toArray(paramArr);
-		List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql+where.toString(), paramArr);
+					+ " WHERE t.full_tag_name= ? ";
+
+		List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql, tagName );
 	    return mapToList(rows);
+	}
+
+	@Override
+	protected Class<GlobalThingInfo> getEntityCls() {
+		return GlobalThingInfo.class;
 	}
 
 	@Override

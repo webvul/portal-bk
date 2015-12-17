@@ -112,18 +112,7 @@ public class AnnationBeanSqlParameterSource extends AbstractSqlParameterSource {
 
 		JdbcFieldType type=sqlTypeMapper.get(paramName);
 
-
-		switch(type){
-			case Json:
-				return Types.LONGVARCHAR;
-			case EnumInt:
-				return Types.INTEGER;
-			case EnumStr:
-				return Types.VARCHAR;
-			default:
-				return TYPE_UNKNOWN;
-		}
-
+		return type.getSqlType();
 
 	}
 

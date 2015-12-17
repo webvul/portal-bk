@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kii.beehive.portal.exception.StoreException;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
@@ -20,6 +21,7 @@ import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
 
 @Component
+@Transactional
 public class ThingTagService {
 	private Logger log= LoggerFactory.getLogger(ThingTagService.class);
 
@@ -117,5 +119,25 @@ public class ThingTagService {
 
 		return tagIndexDao.findLocations(parentLocation);
 
+	}
+
+	public GlobalThingInfo getThingByVendorThingID(String vendorThingID){
+
+		return globalThingDao.getThingByVendorThingID(vendorThingID);
+	}
+
+	public List<GlobalThingInfo> getThingsByTag(String tagName){
+
+		TagIndex tagIndex=new TagIndex(tagName);
+		return globalThingDao.findThingByTag(tagIndex.getFullTagName());
+	}
+
+
+	public List<GlobalThingInfo> queryThingByTagExpress(boolean b, List<String> tagList) {
+		if(b){
+			return globalThingDao.queryThingByIntersectionTags(tagList);
+		}else {
+			return globalThingDao.queryThingByUnionTags(tagList);
+		}
 	}
 }

@@ -32,6 +32,10 @@ public class ServiceCode {
 		return parameters;
 	}
 
+	public void addParameter(String key,Object value){
+		parameters.put(key,value);
+	}
+
 	public void setParameters(Map<String, Object> parameters) {
 		this.parameters = parameters;
 	}
@@ -51,4 +55,6 @@ public class ServiceCode {
 	public void setExecutorAccessToken(String executorAccessToken) {
 		this.executorAccessToken = executorAccessToken;
 	}
+
+
 }

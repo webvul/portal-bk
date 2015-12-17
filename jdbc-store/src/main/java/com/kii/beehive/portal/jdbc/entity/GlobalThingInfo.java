@@ -14,6 +14,8 @@ public class GlobalThingInfo extends DBEntity{
 	private String status;
 
 	private String custom;
+
+	private String kiiThingID;
 	
 	public final static String ID_GLOBAL_THING = "id_global_thing";
 	public final static String VANDOR_THING_ID = "vendor_thing_id";
@@ -73,6 +75,14 @@ public class GlobalThingInfo extends DBEntity{
 
 	public void setCustom(String custom) {
 		this.custom = custom;
+	}
+
+	public String getKiiThingID() {
+		return kiiThingID;
+	}
+
+	public void setKiiThingID(String kiiThingID) {
+		this.kiiThingID = kiiThingID;
 	}
 
 	@Override

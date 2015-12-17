@@ -42,6 +42,11 @@ public class BeehiveUserGroupRelationDao extends BaseDao<BeehiveUserGroupRelatio
 	}
 
 	@Override
+	protected Class<BeehiveUserGroupRelation> getEntityCls() {
+		return BeehiveUserGroupRelation.class;
+	}
+
+	@Override
 	public String getTableName() {
 		return TABLE_NAME;
 	}

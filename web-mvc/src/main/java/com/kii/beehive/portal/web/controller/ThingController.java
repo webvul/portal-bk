@@ -149,11 +149,11 @@ public class ThingController {
 																		@RequestParam(value="displayName", required = false) String displayName) {
 		List<GlobalThingInfo> list = null;
 		
-		if(Strings.isBlank(tagType) && Strings.isBlank(displayName)){
-			list = globalThingDao.findAll();
-		}else{
-			list = globalThingDao.findThingByTag(StringUtils.capitalize(tagType), displayName);
-		}
+//		if(Strings.isBlank(tagType) && Strings.isBlank(displayName)){
+//			list = globalThingDao.findAll();
+//		}else{
+//			list = globalThingDao.findThingByTag(StringUtils.capitalize(tagType), displayName);
+//		}
 		
 		return new ResponseEntity<>(list, HttpStatus.OK);
 	}

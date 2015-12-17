@@ -163,12 +163,18 @@ public class ConditionBuilder {
 	 * create a conition with not oper
 	 * @return
 	 */
+	public static ConditionBuilder notCondition(Condition subCond) {
+		ConditionBuilder cb=new ConditionBuilder();
+		cb.clauses=new NotLogic();
+		cb.clauses.addClause(subCond);
+		return cb;
+	}
+
 	public static ConditionBuilder notCondition() {
 		ConditionBuilder cb=new ConditionBuilder();
 		cb.clauses=new NotLogic();
 		return cb;
 	}
-
 	
 	public QueryBuilder getFinalCondition() {
 		if (clauses==null) {

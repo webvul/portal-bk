@@ -79,6 +79,11 @@ public class TagIndexDao extends BaseDao<TagIndex> {
     }
 
 	@Override
+	protected Class<TagIndex> getEntityCls() {
+		return TagIndex.class;
+	}
+
+	@Override
 	public String getTableName() {
 		return TABLE_NAME;
 	}

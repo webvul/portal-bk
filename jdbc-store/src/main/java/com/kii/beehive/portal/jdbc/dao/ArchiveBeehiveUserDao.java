@@ -15,7 +15,12 @@ public class ArchiveBeehiveUserDao extends BaseDao<ArchiveBeehiveUser> {
 
     public static final String TABLE_NAME = "archive_beehive_user";
 
-    @Override
+	@Override
+	protected Class<ArchiveBeehiveUser> getEntityCls() {
+		return ArchiveBeehiveUser.class;
+	}
+
+	@Override
     public String getTableName() {
         return TABLE_NAME;
     }

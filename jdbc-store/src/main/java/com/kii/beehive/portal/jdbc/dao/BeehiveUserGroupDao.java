@@ -14,6 +14,11 @@ public class BeehiveUserGroupDao extends BaseDao<BeehiveUserGroup>{
 	public static final String TABLE_NAME = "beehive_user_group";
 
 	@Override
+	protected Class<BeehiveUserGroup> getEntityCls() {
+		return BeehiveUserGroup.class;
+	}
+
+	@Override
 	public String getTableName() {
 		return TABLE_NAME;
 	}

@@ -16,6 +16,11 @@ public class DeviceSupplierDao extends BaseDao<DeviceSupplier>{
 
 
 	@Override
+	protected Class<DeviceSupplier> getEntityCls() {
+		return DeviceSupplier.class;
+	}
+
+	@Override
 	public String getTableName() {
 		return TABLE_NAME;
 	}

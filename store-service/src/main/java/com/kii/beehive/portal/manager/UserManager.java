@@ -22,10 +22,10 @@ public class UserManager {
 // TODO comment out for compile error
 	private Logger logger= LoggerFactory.getLogger(UserManager.class);
 
-	//@Autowired
+	@Autowired
 	private ArchiveBeehiveUserDao archiveUserDao;
 
-	//@Autowired
+	@Autowired
 	private BeehiveUserDao userDao;
 
 //	@Autowired

@@ -18,6 +18,7 @@ CREATE TABLE `beehive`.`tag_index` (
   `tag_id` INT NOT NULL AUTO_INCREMENT COMMENT '',
   `display_name` VARCHAR(45) NOT NULL COMMENT '',
   `tag_type` VARCHAR(45) NOT NULL COMMENT '',
+  `tag_full_name` VARCHAR(100) NOT NULL COMMENT '';
   `description` VARCHAR(450) NULL COMMENT '',
   `create_by` VARCHAR(45) NULL COMMENT '',
   `create_date` DATETIME NULL COMMENT '',

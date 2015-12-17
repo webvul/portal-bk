@@ -42,6 +42,11 @@ public class TagThingRelationDao extends BaseDao<TagThingRelation> {
 	}
 
 	@Override
+	protected Class<TagThingRelation> getEntityCls() {
+		return TagThingRelation.class;
+	}
+
+	@Override
 	public String getTableName() {
 		return TABLE_NAME;
 	}
