@@ -134,6 +134,14 @@ public class UserGroupController {
     public ResponseEntity queryUserGroup(@RequestBody Map<String,Object> queryMap){
 // TODO input param "includeUserData" and "userGroupID" are not supported any more, only "userGroupName" is supported, need to update document accordingly
 
+        // if query condition is empty, return all the user groups
+        if(queryMap == null || queryMap.isEmpty()) {
+            List<BeehiveUserGroup> userGroupList = userGroupManager.getUserGroupAll();
+            return new ResponseEntity<>(userGroupList, HttpStatus.OK);
+        }
+
+        // if query condition is specified, query the user group
+        String includeUserData = (String)queryMap.remove("includeUserData");
 
         String userGroupName = (String)queryMap.get("userGroupName");
 

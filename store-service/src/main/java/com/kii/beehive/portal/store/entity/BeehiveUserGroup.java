@@ -81,6 +81,7 @@ public class BeehiveUserGroup extends PortalEntity {
         this.customFields.put(key, value);
     }
 
+    @JsonIgnore
 	public List<BeehiveUser> getBeehiveUserList() {
 		return beehiveUserList;
 	}
