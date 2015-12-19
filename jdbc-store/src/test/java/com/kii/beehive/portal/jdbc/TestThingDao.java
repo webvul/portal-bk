@@ -50,10 +50,11 @@ public class TestThingDao extends TestTemplate{
 	
 	@Test
 	public void testFindByIDs(){
-		thing.setVendorThingID("demo_vendor_thing_id2");
-		thing.setKiiAppID("appID2");
-		thing.setStatus("1");
-		long id2=dao.saveOrUpdate(thing);
+		GlobalThingInfo thing2 = new GlobalThingInfo();
+		thing2.setVendorThingID("demo_vendor_thing_id2");
+		thing2.setKiiAppID("appID2");
+		thing2.setStatus("1");
+		long id2=dao.saveOrUpdate(thing2);
 		
 		List<GlobalThingInfo>  list=dao.findByIDs(new Object[]{thing.getId(),id2});
 		assertEquals(2,list.size());
