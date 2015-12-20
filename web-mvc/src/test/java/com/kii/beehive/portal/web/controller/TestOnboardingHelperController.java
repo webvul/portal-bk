@@ -2,14 +2,9 @@ package com.kii.beehive.portal.web.controller;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
-import static junit.framework.TestCase.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.junit.After;
@@ -20,9 +15,8 @@ import org.springframework.http.MediaType;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.kii.beehive.portal.service.GlobalThingDao;
-import com.kii.beehive.portal.service.TagIndexDao;
-import com.kii.beehive.portal.store.entity.GlobalThingInfo;
+import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
+import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.web.WebTestTemplate;
 
 
@@ -32,131 +26,57 @@ public class TestOnboardingHelperController extends WebTestTemplate {
     private GlobalThingDao thingDao;
 
     @Autowired
-    private TagIndexDao indexDao;
-
-    @Autowired
     private ObjectMapper mapper;
 
-    private static List<String> vendorThingIDList = new ArrayList<>();
+    private String vendorThingIDForTest;
 
-    private static List<String> globalThingIDList = new ArrayList<>();
+    private String globalThingIDForTest;
 
-    private static List<String> tagNameList = new ArrayList<>();
+    private final static String KII_APP_ID = "0af7a7e7";
 
     @Before
     public void before(){
-
         super.before();
 
-        vendorThingIDList.add("vendor.id.for.test");
-        globalThingIDList.add("global.id.for.test");
+        after();
 
-        tagNameList.add("location-lobby");
-        tagNameList.add("location-baseroom-1F");
+        vendorThingIDForTest = "vendor_id_for_test";
+        globalThingIDForTest = "global_id_for_test";
+
     }
 
     @After
     public void after() {
 
-        for (String s : vendorThingIDList) {
-            GlobalThingInfo thingInfo = thingDao.getThingByVendorThingID(s);
-            if(thingInfo == null) {
-                try {
-                    thingDao.removeGlobalThingByID(thingInfo.getVendorThingID());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-            }
-        }
-
-        for (String s: globalThingIDList) {
+        GlobalThingInfo thingInfo = thingDao.getThingByVendorThingID(vendorThingIDForTest);
+        if(thingInfo != null) {
             try {
-                thingDao.removeGlobalThingByID(s);
+                thingDao.deleteByID(thingInfo.getId());
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
         }
 
-        for(String s : tagNameList) {
-            try {
-                indexDao.removeTagByID(s);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        try {
+            thingDao.deleteByID(globalThingIDForTest);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
     }
 
-    @Test
-    public void testSetOnboardingInfo() throws Exception {
-
-        Map<String, Object> request = new HashMap<>();
-        request.put("vendorThingID", "vendor.id.for.test");
-        request.put("kiiAppID", "da0b6a25");
-        request.put("password", "456");
-        request.put("status", "on");
-        request.put("type", "LED");
-
-        // set tag
-        List<Map> tagList = new ArrayList<>();
-
-        Map<String, Object> tag = new HashMap<>();
-        tag.put("tagType", "location");
-        tag.put("displayName", "lobby");
-        tagList.add(tag);
-
-        tag = new HashMap<>();
-        tag.put("tagType", "location");
-        tag.put("displayName", "baseroom-1F");
-        tagList.add(tag);
-
-        request.put("tags", tagList);
-
-        // set custom
-        Map<String, Object> custom = new HashMap<>();
-        custom.put("dateOfProduce", "20001230");
-        custom.put("license", 1234567.89);
-        request.put("custom", custom);
-
-        String ctx= mapper.writeValueAsString(request);
-
-        String result=this.mockMvc.perform(
-                post("/onboardinghelper").content(ctx)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .characterEncoding("UTF-8")
-        )
-                .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString();
-
-        Map<String,Object> map=mapper.readValue(result, Map.class);
-
-        // assert http reture
-        assertEquals("da0b6a25-vendor.id.for.test", map.get("globalThingID"));
-
-        // assert DB
-        GlobalThingInfo thingInfo = thingDao.getThingInfoByID("da0b6a25-vendor.id.for.test");
-        assertEquals("da0b6a25-vendor.id.for.test", thingInfo.getGlobalThingID());
-        assertEquals("vendor.id.for.test", thingInfo.getVendorThingID());
-        assertEquals("da0b6a25", thingInfo.getKiiAppID());
-        assertEquals("on", thingInfo.getStatus());
-        assertEquals("LED", thingInfo.getType());
-
-        assertEquals(2, thingInfo.getTags().size());
-        assertTrue(thingInfo.getTags().contains("location-lobby"));
-        assertTrue(thingInfo.getTags().contains("location-baseroom-1F"));
-
-        assertEquals(2, thingInfo.getCustom().size());
-        assertEquals("20001230", thingInfo.getCustom().get("dateOfProduce"));
-        assertEquals(1234567.89, thingInfo.getCustom().get("license"));
-
-    }
-
+    // TODO need to check, the execution time is too long, and TestUserGroupController will get wrong token exception while running togther
     @Test
     public void testGetOnboardingInfo() throws Exception {
 
+        GlobalThingInfo thingInfo = new GlobalThingInfo();
+        thingInfo.setVendorThingID(vendorThingIDForTest);
+        thingInfo.setKiiAppID(KII_APP_ID);
+        thingDao.saveOrUpdate(thingInfo);
+
         String result=this.mockMvc.perform(
-                get("/onboardinghelper/vendor.id.for.test/")
+                get("/onboardinghelper/" + vendorThingIDForTest)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
         )
@@ -165,22 +85,29 @@ public class TestOnboardingHelperController extends WebTestTemplate {
 
         Map<String,Object> map=mapper.readValue(result, Map.class);
 
+        System.out.println(map);
+
         // assert http return
-        assertEquals("da0b6a25-vendor.id.for.test", map.get("globalThingID"));
-        assertEquals("vendor.id.for.test", map.get("vendorThingID"));
-        assertEquals("da0b6a25", map.get("kiiAppID"));
-        assertEquals("456", map.get("password"));
-        assertEquals("on", map.get("status"));
-        assertEquals("LED", map.get("type"));
-        assertNotNull(map.get("defaultOwnerID"));
+        assertEquals(KII_APP_ID, map.get("kiiAppID"));
+        assertEquals("f973edcaaec9aeac36dd01ebe1c3bc49", map.get("kiiAppKey"));
+        assertEquals("https://api-development-beehivecn3.internal.kii.com", map.get("kiiSiteUrl"));
+        assertEquals("f83120e36100-2cc9-5e11-0cc9-01a61a9a", map.get("ownerID"));
+        assertNotNull(map.get("ownerToken"));
 
-        assertEquals(2, ((List)map.get("tags")).size());
-        assertTrue(((List)map.get("tags")).contains("location-lobby"));
-        assertTrue(((List)map.get("tags")).contains("location-baseroom-1F"));
+    }
 
-        assertEquals(2, ((Map)map.get("custom")).size());
-        assertEquals("20001230", ((Map)map.get("custom")).get("dateOfProduce"));
-        assertEquals(1234567.89, ((Map)map.get("custom")).get("license"));
+    @Test
+    public void testGetOnboardingInfoException() throws Exception {
+
+        String result=this.mockMvc.perform(
+                get("/onboardinghelper/" + "some_non_existing_vendorThingID")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("UTF-8")
+        )
+                .andExpect(status().isNotFound())
+                .andReturn().getResponse().getContentAsString();
+
+
     }
 
 }

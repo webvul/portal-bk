@@ -5,18 +5,21 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.manager.AppInfoManager;
-import com.kii.beehive.portal.manager.ThingManager;
+import com.kii.beehive.portal.service.ThingTagService;
 import com.kii.beehive.portal.service.AppInfoDao;
-import com.kii.beehive.portal.store.entity.GlobalThingInfo;
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
+import com.kii.beehive.portal.web.help.PortalException;
 import com.kii.extension.sdk.entity.FederatedAuthResult;
 
 /**
@@ -28,7 +31,7 @@ import com.kii.extension.sdk.entity.FederatedAuthResult;
 public class OnboardingHelperController {
 
     @Autowired
-    private ThingManager thingManager;
+    private ThingTagService thingTagService;
 
 	@Autowired
 	private AppInfoDao appInfoDao;
@@ -47,6 +50,7 @@ public class OnboardingHelperController {
 	@Autowired
 	private AppInfoManager  appManager;
 
+	// TODO is this method used for bucket KiiAppInfo initialization? each partner may have his own app
 	@RequestMapping(path="/appinit",method={RequestMethod.POST},consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
 	public void initAppContext(@RequestBody Map<String,Object>  paramMap){
 
@@ -73,7 +77,11 @@ public class OnboardingHelperController {
     @RequestMapping(path="/onboardinghelper/{vendorThingID}",method={RequestMethod.GET},consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
     public Map<String,Object> getOnboardingInfo(@PathVariable("vendorThingID") String vendorThingID){
 
-        GlobalThingInfo globalThingInfo = thingManager.findThingByVendorThingID(vendorThingID);
+        GlobalThingInfo globalThingInfo = thingTagService.findThingByVendorThingID(vendorThingID);
+
+		if(globalThingInfo == null) {
+			throw new PortalException("vendorThingID not found", "vendorThingID " + vendorThingID + " is not found", HttpStatus.NOT_FOUND);
+		}
 
 		KiiAppInfo appInfo=appInfoDao.getAppInfoByID(globalThingInfo.getKiiAppID());
 

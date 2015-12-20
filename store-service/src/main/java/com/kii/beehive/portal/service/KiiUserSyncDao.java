@@ -38,7 +38,7 @@ public class KiiUserSyncDao {
 		try {
 			return userService.createUser(user);
 		}catch (UserAlreadyExistsException e){
-
+			// TODO would it be dangerous if the existing default owner got deleted while some things were still owned by him?
 			userService.removeUserByLoginName(name);
 
 			return userService.createUser(user);
@@ -46,16 +46,16 @@ public class KiiUserSyncDao {
 		}
 	}
 
-	public String addBeehiveUser(String userName, Long userID){
+	public void addBeehiveUser(BeehiveUser beehiveUser){
 
 		KiiUser user=new KiiUser();
 
-		user.setDisplayName(userName);
+		user.setDisplayName(beehiveUser.getUserName());
 
-		if(!StringUtils.isEmpty(userID)) {
-			user.setLoginName(String.valueOf(userID));
+		if(!StringUtils.isEmpty(beehiveUser.getAliUserID())) {
+			user.setLoginName(beehiveUser.getAliUserID());
 		}else{
-			String loginName= new String(Hex.encodeHex(userName.getBytes(Charsets.UTF_8)));
+			String loginName= new String(Hex.encodeHex(beehiveUser.getUserName().getBytes(Charsets.UTF_8)));
 			user.setLoginName(loginName);
 		}
 
@@ -63,13 +63,13 @@ public class KiiUserSyncDao {
 		user.setPassword(pwd);
 
 		String kiiUserID = userService.createUser(user);
-		return kiiUserID;
-		//beehiveUser.setKiiUserID(kiiUserID);
-		//beehiveUser.setKiiLoginName(user.getLoginName());
 
-		//if(StringUtils.isEmpty(beehiveUser.getId())){
-		//	beehiveUser.setId(Long.valueOf(kiiUserID));
-		//}
+		beehiveUser.setKiiUserID(kiiUserID);
+		beehiveUser.setKiiLoginName(user.getLoginName());
+
+		if(StringUtils.isEmpty(beehiveUser.getAliUserID())){
+			beehiveUser.setAliUserID(kiiUserID);
+		}
 	}
 
 	public String bindToUser(BeehiveUser user){

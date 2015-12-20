@@ -69,7 +69,7 @@
             </list>
         </property>
     </bean>
-    
+
      <bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="jdbcUrl" value="${beehive.jdbc.url}" />
         <property name="username" value="${beehive.jdbc.username}"/>

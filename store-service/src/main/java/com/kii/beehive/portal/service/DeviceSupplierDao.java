@@ -15,7 +15,7 @@ import com.kii.extension.sdk.entity.BucketInfo;
 import com.kii.extension.sdk.service.AbstractDataAccess;
 
 @BindAppByName(appName="portal",appBindSource="propAppBindTool")
-//@Component
+@Component
 public class DeviceSupplierDao extends AbstractDataAccess<DeviceSupplier>{
 
 

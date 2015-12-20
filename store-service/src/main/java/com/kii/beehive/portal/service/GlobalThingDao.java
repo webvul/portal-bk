@@ -20,6 +20,9 @@ import com.kii.extension.sdk.query.ConditionBuilder;
 import com.kii.extension.sdk.query.QueryParam;
 import com.kii.extension.sdk.service.AbstractDataAccess;
 
+/**
+ * @deprecated replaced with GlobalThingDao
+ */
 @BindAppByName(appName="portal",appBindSource="propAppBindTool")
 //@Component
 public class GlobalThingDao extends AbstractDataAccess<GlobalThingInfo>{

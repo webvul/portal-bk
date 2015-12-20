@@ -23,19 +23,22 @@ import com.kii.beehive.portal.store.entity.GlobalThingInfo;
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
 import com.kii.beehive.portal.store.entity.TagIndex;
 
-@Component
+/**
+ * @deprecated replaced with ThingTagService
+ */
+//@Component
 public class ThingManager {
 
 	private Logger log= LoggerFactory.getLogger(ThingManager.class);
 
-	//@Autowired
+	@Autowired
 	private GlobalThingDao globalThingDao;
 
 
-	//@Autowired
+	@Autowired
 	private TagIndexDao tagIndexDao;
 
-	//@Autowired
+	@Autowired
 	private AppInfoDao appInfoDao;
 
 

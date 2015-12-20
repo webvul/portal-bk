@@ -15,7 +15,7 @@ public class PortalTokenService {
 	private ThreadLocal<TokenInfo> tokenLocal=ThreadLocal.withInitial(()->new TokenInfo("",PortalTokenType.Admin));
 
 
-	//@Autowired
+	@Autowired
 	private DeviceSupplierDao supplierDao;
 
 	public DeviceSupplier getSupplierInfo(){

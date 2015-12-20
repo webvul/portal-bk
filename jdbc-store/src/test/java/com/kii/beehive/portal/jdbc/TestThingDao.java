@@ -57,6 +57,7 @@ public class TestThingDao extends TestTemplate{
 		long id2=dao.saveOrUpdate(thing2);
 		
 		List<GlobalThingInfo>  list=dao.findByIDs(new Object[]{thing.getId(),id2});
+		// TODO why 2 is expected below?
 		assertEquals(2,list.size());
 	}
 	

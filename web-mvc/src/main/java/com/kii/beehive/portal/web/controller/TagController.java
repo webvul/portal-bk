@@ -44,15 +44,14 @@ public class TagController {
 	 * 列出所有tag GET /tags/all
 	 *
 	 * refer to doc "Beehive API - Thing API" for request/response details
-	 *
+	 * // TODO need to update document to declare that not global thing id will be returned in this API
 	 * @return
 	 */
-
-	/*@RequestMapping(path = "/all", method = { RequestMethod.GET })
+	@RequestMapping(path = "/all", method = { RequestMethod.GET })
 	public List<TagIndex> getAllTag() {
 		List<TagIndex> list = tagIndexDao.findAll();
 		return list;
-	}*/
+	}
 
 	/**
 	 * 创建tag POST /tags/custom
@@ -60,10 +59,10 @@ public class TagController {
 	 * refer to doc "Beehive API - Thing API" for request/response details refer
 	 * to doc "Tech Design - Beehive API", section
 	 * "Create/Update Tag (创建/更新tag)" for more details
-	 *
+	 * // TODO need to discuss whether allowing multiple tags with same tag type and display name
 	 */
 	@RequestMapping(path = "/custom", method = { RequestMethod.POST })
-	public Map<String, Long> createTag(@RequestBody TagIndex tag) {
+	public Map<String, Object> createTag(@RequestBody TagIndex tag) {
 
 		if (Strings.isBlank(tag.getDisplayName())) {
 			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "DisplayName is empty",
@@ -79,8 +78,9 @@ public class TagController {
 		}
 
 		long tagID = tagIndexDao.saveOrUpdate(tag);
-		Map<String, Long> map = new HashMap<>();
+		Map<String, Object> map = new HashMap<>();
 		map.put("id", tagID);
+		map.put("tagName", TagType.Custom.getTagName(tag.getDisplayName()));
 		return map;
 	}
 
@@ -96,13 +96,13 @@ public class TagController {
 	public void removeTag(@PathVariable("displayName") String displayName) {
 
 		if (Strings.isBlank(displayName)) {
-			throw new PortalException("RequiredFieldsMissing", "tagName is empty", HttpStatus.BAD_REQUEST);
+			throw new PortalException("RequiredFieldsMissing", "displayName is empty", HttpStatus.BAD_REQUEST);
 		}
 
 		List<TagIndex> orig = tagIndexDao.findTagByTagTypeAndName(TagType.Custom.toString(), displayName);
 		
 		if(orig.size() == 0){
-			throw new PortalException("no body", "no body", HttpStatus.BAD_REQUEST);
+			throw new PortalException("no body", "no body", HttpStatus.NOT_FOUND);
 		}
 
 		thingTagService.removeTag(orig.get(0));
@@ -114,7 +114,7 @@ public class TagController {
 	 * refer to doc "Beehive API - Thing API" for request/response details refer
 	 * to doc "Tech Design - Beehive API", section "Inquire Tag (查询tag)" for
 	 * more details
-	 *
+	 * // TODO need to discuss whether allowing multiple tags with same tag type and display name
 	 * @return
 	 */
 	@RequestMapping(path = "/search", method = { RequestMethod.GET })

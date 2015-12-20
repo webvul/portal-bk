@@ -1,4 +1,4 @@
-package com.kii.beehive.portal.web.entity;
+package com.kii.beehive.portal.store.entity;
 
 
 import java.util.Map;
@@ -7,10 +7,8 @@ import org.springframework.beans.BeanUtils;
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.kii.beehive.portal.store.entity.BeehiveUser;
-import com.kii.beehive.portal.store.entity.CustomProperty;
 
-public class OutputUser  extends BeehiveUser {
+public class OutputUser  extends BeehiveUser{
 
 	public OutputUser(){
 
@@ -24,19 +22,16 @@ public class OutputUser  extends BeehiveUser {
 
 
 	public Map<String,Object> getCustom() {
-
 		return super.getCustomFields().getOriginFields();
 	}
 
 
 	@JsonIgnore
 	public CustomProperty getCustomFields() {
-
 		return super.getCustomFields();
 	}
 
 	public void setCustomFields(CustomProperty properties) {
-
 		super.setCustomFields(properties);
 	}
 

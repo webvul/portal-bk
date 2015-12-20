@@ -49,6 +49,7 @@ public class TestTagIndexDao extends TestTemplate{
 		long id2=dao.saveOrUpdate(tag2);
 		
 		List<TagIndex>  list=dao.findByIDs(new Object[]{tag.getId(),id2});
+		// TODO why 2 is expected below?
 		assertEquals(2,list.size());
 	}
 	
