@@ -19,7 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
-import com.kii.beehive.portal.store.entity.TagType;
+import com.kii.beehive.portal.jdbc.entity.TagType;
 import com.kii.beehive.portal.web.WebTestTemplate;
 
 /**
@@ -214,6 +214,80 @@ public class TestTagController extends WebTestTemplate {
             assertTrue(map.get("tagType").equals(TagType.Custom.toString()) || map.get("tagType").equals(TagType.Location.toString()));
             assertTrue(displayNames.contains(map.get("displayName")));
         }
+
+    }
+
+    @Test
+    public void testFindLocations() throws Exception {
+
+        // create location
+        List<String> displayNames = new ArrayList<>();
+        displayNames.add("floor1-lobby");
+        displayNames.add("floor1-room1-counter1");
+        displayNames.add("floor1-room1-counter2");
+        displayNames.add("floor2-room1");
+        displayNames.add("floor2-room2");
+        List<Long> tagIDs = new ArrayList<>();
+
+        // create tag
+        for(int i=0;i<displayNames.size();i++){
+            TagIndex tagIndex = new TagIndex();
+            tagIndex.setTagType(TagType.Location);
+            tagIndex.setDisplayName(displayNames.get(i));
+            tagIndexDao.saveOrUpdate(tagIndex);
+        }
+
+        // find location floor1
+        String result=this.mockMvc.perform(
+                get("/tags/locations/" + "floor1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("UTF-8")
+        )
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        List<String> list = mapper.readValue(result, List.class);
+
+        // assert http return
+        assertEquals(3, list.size());
+        assertEquals(displayNames.get(0), list.get(0));
+        assertEquals(displayNames.get(1), list.get(1));
+        assertEquals(displayNames.get(2), list.get(2));
+
+        // find location floor1-room1
+        result=this.mockMvc.perform(
+                get("/tags/locations/" + "floor1-room1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("UTF-8")
+        )
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        list = mapper.readValue(result, List.class);
+
+        // assert http return
+        assertEquals(2, list.size());
+        assertEquals(displayNames.get(1), list.get(0));
+        assertEquals(displayNames.get(2), list.get(1));
+
+        // find all locations
+        result=this.mockMvc.perform(
+                get("/tags/locations/")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("UTF-8")
+        )
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        list = mapper.readValue(result, List.class);
+
+        // assert http return
+        assertEquals(5, list.size());
+        assertEquals(displayNames.get(0), list.get(0));
+        assertEquals(displayNames.get(1), list.get(1));
+        assertEquals(displayNames.get(2), list.get(2));
+        assertEquals(displayNames.get(3), list.get(3));
+        assertEquals(displayNames.get(4), list.get(4));
 
     }
 

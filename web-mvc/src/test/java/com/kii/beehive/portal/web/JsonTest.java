@@ -38,8 +38,7 @@ public class JsonTest {
 
 		BeehiveUser bUser=user.getBeehiveUser();
 
-		// TODO comment out for compile error
-//		assertEquals("123",bUser.getCustom().get("No"));
+		assertEquals("123",bUser.getCustomFields().getValueByKey("No"));
 
 //
 //		user.setKiiLoginName("abc");

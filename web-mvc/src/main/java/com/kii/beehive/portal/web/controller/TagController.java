@@ -27,7 +27,7 @@ import com.kii.beehive.portal.web.help.PortalException;
 /**
  * Beehive API - Thing API
  *
- * refer to doc "Tech Design - Beehive API" section "Thing API" for details
+ * refer to doc "Beehive API - Tech Design" section "Thing API" for details
  */
 @RestController
 @RequestMapping(path = "/tags", consumes = { MediaType.APPLICATION_JSON_UTF8_VALUE }, produces = {
@@ -41,10 +41,11 @@ public class TagController {
 	private ThingTagService thingTagService;
 
 	/**
-	 * 列出所有tag GET /tags/all
+	 * 列出所有tag
+	 * GET /tags/all
 	 *
 	 * refer to doc "Beehive API - Thing API" for request/response details
-	 * // TODO need to update document to declare that not global thing id will be returned in this API
+	 *
 	 * @return
 	 */
 	@RequestMapping(path = "/all", method = { RequestMethod.GET })
@@ -54,7 +55,8 @@ public class TagController {
 	}
 
 	/**
-	 * 创建tag POST /tags/custom
+	 * 创建tag
+	 * POST /tags/custom
 	 *
 	 * refer to doc "Beehive API - Thing API" for request/response details refer
 	 * to doc "Tech Design - Beehive API", section
@@ -85,7 +87,8 @@ public class TagController {
 	}
 
 	/**
-	 * 移除tag DELETE /tags/{tagName}
+	 * 移除tag
+	 * DELETE /tags/custom/{displayName}
 	 *
 	 * refer to doc "Beehive API - Thing API" for request/response details refer
 	 * to doc "Tech Design - Beehive API", section "Delete Tag (移除tag)" for more
@@ -109,7 +112,8 @@ public class TagController {
 	}
 
 	/**
-	 * 查询tag GET /{type}/{displayName}
+	 * 查询tag
+	 * GET /tag/search?tagType={tagType}&displayName={displayName}
 	 *
 	 * refer to doc "Beehive API - Thing API" for request/response details refer
 	 * to doc "Tech Design - Beehive API", section "Inquire Tag (查询tag)" for
@@ -135,12 +139,33 @@ public class TagController {
 		return list;
 	}*/
 
+	/**
+	 * 查询位置信息
+	 * GET /tags/locations/{parentLocation}
+	 *
+	 * refer to doc "Beehive API - Thing API" for request/response details
+	 *
+	 * @return
+	 */
 	@RequestMapping(path = "/locations/{parentLocation}", method = { RequestMethod.GET }, consumes = { "*" })
 	public ResponseEntity<List<String>> findLocations(@PathVariable("parentLocation") String parentLocation) {
-// TODO new interface, need to add in document
+
 		List<String> locations = thingTagService.findLocations(parentLocation);
 
 		return new ResponseEntity<>(locations, HttpStatus.OK);
+	}
+
+	/**
+	 * 查询位置信息(所有)
+	 * GET /tags/locations/{parentLocation}
+	 *
+	 * refer to doc "Beehive API - Thing API" for request/response details
+	 *
+	 * @return
+	 */
+	@RequestMapping(path = "/locations/", method = { RequestMethod.GET }, consumes = { "*" })
+	public ResponseEntity<List<String>> findAllLocations() {
+		return findLocations("");
 	}
 
 }

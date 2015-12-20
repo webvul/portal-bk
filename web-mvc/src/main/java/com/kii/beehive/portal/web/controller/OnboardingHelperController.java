@@ -25,7 +25,7 @@ import com.kii.extension.sdk.entity.FederatedAuthResult;
 /**
  * Beehive API - Thing API
  *
- * refer to doc "Tech Design - Beehive API" section "Thing API" for details
+ * refer to doc "Beehive API - Tech Design" section "Thing API" for details
  */
 @RestController
 public class OnboardingHelperController {
@@ -67,7 +67,7 @@ public class OnboardingHelperController {
 
 
     /**
-     * 查询设备（vendorThingID）
+     * 查询关联KiiApp信息
      * GET /onboardinghelper/{vendorThingID}
      *
      * refer to doc "Beehive API - Thing API" for request/response details

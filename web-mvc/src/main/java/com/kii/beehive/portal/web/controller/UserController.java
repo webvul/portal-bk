@@ -35,6 +35,14 @@ public class UserController {
 	@Autowired
 	private UserManager userManager;
 
+	/**
+	 * 创建用户
+	 * POST /users
+	 *
+	 * refer to doc "Beehive API - User API" for request/response details
+	 *
+	 * @param user
+	 */
 	@RequestMapping(path="",method={RequestMethod.POST})
 	public Map<String,String> createUser(@RequestBody OutputUser user){
 
@@ -53,6 +61,14 @@ public class UserController {
 		return map;
 	}
 
+	/**
+	 * 更新用户
+	 * PATCH /users/{userID}
+	 *
+	 * refer to doc "Beehive API - User API" for request/response details
+	 *
+	 * @param user
+	 */
 	@RequestMapping(path="/{userID}",method={RequestMethod.PATCH})
 	public Map<String,String> updateUser(@PathVariable("userID") String userID,@RequestBody OutputUser user){
 
@@ -64,6 +80,14 @@ public class UserController {
 		return map;
 	}
 
+	/**
+	 * 通过userID查询用户
+	 * GET /users/{userID}
+	 *
+	 * refer to doc "Beehive API - User API" for request/response details
+	 *
+	 * @param userID
+	 */
 	@RequestMapping(path="/{userID}",method={RequestMethod.GET})
 	public OutputUser getUser(@PathVariable("userID") String userID){
 
@@ -71,7 +95,14 @@ public class UserController {
 		return new OutputUser(userManager.getUserByID(userID));
 	}
 
-
+	/**
+	 * 更新用户（第三方）
+	 * PATCH /users/<userID>/custom
+	 *
+	 * refer to doc "Beehive API - User API" for request/response details
+	 *
+	 * @param userID
+	 */
 	@RequestMapping(path="/{userID}/custom",method={RequestMethod.PATCH})
 	public Map<String,String> updateCustomProp(@PathVariable("userID") String userID,@RequestBody Map<String,Object> props){
 
@@ -82,7 +113,14 @@ public class UserController {
 		return map;
 	}
 
-
+	/**
+	 * 删除用户
+	 * DELETE /users/<userID>
+	 *
+	 * refer to doc "Beehive API - User API" for request/response details
+	 *
+	 * @param userID
+	 */
 	@RequestMapping(path="/{userID}",method={RequestMethod.DELETE},consumes={"*"})
 	public void deleteUser(@PathVariable("userID") String userID){
 
@@ -90,7 +128,14 @@ public class UserController {
 
 	}
 
-
+	/**
+	 * 查询用户
+	 * POST /users/simplequery
+	 *
+	 * refer to doc "Beehive API - User API" for request/response details
+	 *
+	 * @param queryMap
+	 */
 	@RequestMapping(path="/simplequery",method={RequestMethod.POST})
 	public List<OutputUser> queryUserByProps(@RequestBody Map<String,Object> queryMap){
 

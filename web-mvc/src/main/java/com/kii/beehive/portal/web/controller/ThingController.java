@@ -28,7 +28,7 @@ import com.kii.beehive.portal.web.help.PortalException;
 /**
  * Beehive API - Thing API
  *
- * refer to doc "Tech Design - Beehive API" section "Thing API" for details
+ * refer to doc "Beehive API - Tech Design" section "Thing API" for details
  */
 @RestController
 @RequestMapping(path="/things",consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
@@ -43,7 +43,7 @@ public class ThingController {
 	private GlobalThingDao globalThingDao;
 	
 	/**
-	 * 查询设备
+	 * 查询设备（globalThingID）
 	 * GET /things/{globalThingID}
 	 *
 	 * refer to doc "Beehive API - Thing API" for request/response details
@@ -131,7 +131,7 @@ public class ThingController {
 
 	/**
 	 * 绑定设备及tag
-	 * PUT /things/{globalThingID}/tags/{tagName ...}
+	 * PUT /things/{globalThingID}/tags/{tagID...}
 	 *
 	 * refer to doc "Beehive API - Thing API" for request/response details
 	 *
@@ -146,7 +146,7 @@ public class ThingController {
 
 	/**
 	 * 解除绑定设备及tag
-	 * DELETE /things/{globalThingID}/tags/{tagName}
+	 * DELETE /things/{globalThingID}/tags/{tagID...}
 	 *
 	 * refer to doc "Beehive API - Thing API" for request/response details
 	 *
@@ -192,8 +192,8 @@ public class ThingController {
 
 	/**
 	 * 查询tag下的设备
-	 * GET /things/tag/{tagName...}/operation/{operation}
-	 * // TODO need to update the document to declare that loction and tags information will not be returned in this API
+	 * GET /things/search?tagType={tagType}&displayName={displayName}
+	 * tags和location信息不会被返回
 	 *
 	 * refer to doc "Beehive API - Thing API" for request/response details
 	 *
