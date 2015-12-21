@@ -71,6 +71,7 @@
     </bean>
 
      <bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
         <property name="jdbcUrl" value="${beehive.jdbc.url}" />
         <property name="username" value="${beehive.jdbc.username}"/>
         <property name="password" value="${beehive.jdbc.password}"/>
