@@ -237,6 +237,44 @@ public class TestUserController extends WebTestTemplate{
 		System.out.println();
 		System.out.println("Http Response: " + result);
 		System.out.println();
+
+		// test 400
+		request.remove("userID");
+
+		ctx = mapper.writeValueAsString(request);
+
+		result=this.mockMvc.perform(
+				post("/users/").content("{}")
+						.contentType(MediaType.APPLICATION_JSON)
+						.characterEncoding("UTF-8")
+						.header("Authorization", "Bearer d31032a0-8ebf-11e5-9560-00163e02138f")
+		)
+				.andExpect(status().isBadRequest())
+				.andReturn().getResponse().getContentAsString();
+
+		System.out.println();
+		System.out.println("Http Response: " + result);
+		System.out.println();
+
+		// test 400
+		request.remove("userName");
+		request.put("userID", userIDForTest);
+
+		ctx = mapper.writeValueAsString(request);
+
+		result=this.mockMvc.perform(
+				post("/users/").content("{}")
+						.contentType(MediaType.APPLICATION_JSON)
+						.characterEncoding("UTF-8")
+						.header("Authorization", "Bearer d31032a0-8ebf-11e5-9560-00163e02138f")
+		)
+				.andExpect(status().isBadRequest())
+				.andReturn().getResponse().getContentAsString();
+
+		System.out.println();
+		System.out.println("Http Response: " + result);
+		System.out.println();
+
 	}
 
 
