@@ -55,8 +55,16 @@ public class FederatedAuthService {
 	@Autowired
 	private TokenBindToolResolver tokenResolver;
 
-
-
+	/**
+	 * important:
+	 * this method will update the token in ThreadLocal of current thread if login success
+	 * please take care of the other handling related to Kii Cloud access (such as query bucket in Kii Portal App)
+	 *
+	 * @param appID
+	 * @param userName
+	 * @param pwd
+     * @return
+     */
 	public FederatedAuthResult loginSalveApp(String appID,String userName,String pwd){
 
 		bindToolResolver.setAppName(appID);

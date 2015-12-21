@@ -29,6 +29,12 @@ import com.kii.beehive.portal.web.help.PortalException;
  * Beehive API - Thing API
  *
  * refer to doc "Beehive API - Tech Design" section "Thing API" for details
+ *
+ * TODO we may need to sync the logic of handling non-existing tag when we get clear requirement
+ * current logic is as below, we leave the logic as it is with the assumption that frontend(web, mobile, etc) would ensure tag existing
+ * 	createThing() => create the tag directly
+ * 	addThingTag() => skip the tag
+ *
  */
 @RestController
 @RequestMapping(path="/things",consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
