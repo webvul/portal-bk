@@ -19,9 +19,9 @@ import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.help.PortalException;
 
-public class ThingInput extends GlobalThingInfo {
+public class ThingRestBean extends GlobalThingInfo {
 
-	private Logger log= LoggerFactory.getLogger(ThingInput.class);
+	private Logger log= LoggerFactory.getLogger(ThingRestBean.class);
 
 	private ObjectMapper mapper = new ObjectMapper();
 

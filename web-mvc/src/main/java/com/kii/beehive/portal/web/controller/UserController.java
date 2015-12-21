@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.portal.manager.UserManager;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
-import com.kii.beehive.portal.web.entity.OutputUser;
+import com.kii.beehive.portal.web.entity.UserRestBean;
 import com.kii.beehive.portal.web.help.PortalException;
 
 /**
@@ -44,7 +44,7 @@ public class UserController {
 	 * @param user
 	 */
 	@RequestMapping(path="",method={RequestMethod.POST})
-	public Map<String,String> createUser(@RequestBody OutputUser user){
+	public Map<String,String> createUser(@RequestBody UserRestBean user){
 
 		if(StringUtils.isEmpty(user.getUserName()) && StringUtils.isEmpty(user.getAliUserID())){
 			throw new PortalException("RequiredFieldsMissing","username or userID cannot been null", HttpStatus.BAD_REQUEST);
@@ -70,7 +70,7 @@ public class UserController {
 	 * @param user
 	 */
 	@RequestMapping(path="/{userID}",method={RequestMethod.PATCH})
-	public Map<String,String> updateUser(@PathVariable("userID") String userID,@RequestBody OutputUser user){
+	public Map<String,String> updateUser(@PathVariable("userID") String userID,@RequestBody UserRestBean user){
 
 		userManager.updateUser(user.getBeehiveUser(),userID);
 
@@ -89,10 +89,10 @@ public class UserController {
 	 * @param userID
 	 */
 	@RequestMapping(path="/{userID}",method={RequestMethod.GET})
-	public OutputUser getUser(@PathVariable("userID") String userID){
+	public UserRestBean getUser(@PathVariable("userID") String userID){
 
 
-		return new OutputUser(userManager.getUserByID(userID));
+		return new UserRestBean(userManager.getUserByID(userID));
 	}
 
 	/**
@@ -137,10 +137,10 @@ public class UserController {
 	 * @param queryMap
 	 */
 	@RequestMapping(path="/simplequery",method={RequestMethod.POST})
-	public List<OutputUser> queryUserByProps(@RequestBody Map<String,Object> queryMap){
+	public List<UserRestBean> queryUserByProps(@RequestBody Map<String,Object> queryMap){
 
 		return  userManager.simpleQueryUser(queryMap).stream()
-				.map((e) -> new OutputUser(e))
+				.map((e) -> new UserRestBean(e))
 				.collect(Collectors.toCollection(ArrayList::new));
 
 	}

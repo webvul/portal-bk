@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.manager.AppInfoManager;
-import com.kii.beehive.portal.service.ThingTagService;
+import com.kii.beehive.portal.manager.TagThingManager;
 import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
 import com.kii.beehive.portal.web.help.PortalException;
@@ -31,7 +30,7 @@ import com.kii.extension.sdk.entity.FederatedAuthResult;
 public class OnboardingHelperController {
 
     @Autowired
-    private ThingTagService thingTagService;
+    private TagThingManager tagThingManager;
 
 	@Autowired
 	private AppInfoDao appInfoDao;
@@ -76,7 +75,7 @@ public class OnboardingHelperController {
     @RequestMapping(path="/onboardinghelper/{vendorThingID}",method={RequestMethod.GET},consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
     public Map<String,Object> getOnboardingInfo(@PathVariable("vendorThingID") String vendorThingID){
 
-        GlobalThingInfo globalThingInfo = thingTagService.findThingByVendorThingID(vendorThingID);
+        GlobalThingInfo globalThingInfo = tagThingManager.findThingByVendorThingID(vendorThingID);
 
 		if(globalThingInfo == null) {
 			throw new PortalException("vendorThingID not found", "vendorThingID " + vendorThingID + " is not found", HttpStatus.NOT_FOUND);

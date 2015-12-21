@@ -3,12 +3,10 @@ package com.kii.beehive.portal.helper;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.kii.beehive.portal.service.DeviceSupplierDao;
 import com.kii.beehive.portal.service.UserSyncMsgDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
@@ -19,8 +17,8 @@ import com.kii.beehive.portal.store.entity.usersync.UserSyncMsgType;
 @Component
 public class SyncMsgService {
 
-	@Value("${spring.profile}")
-	private String profile;
+	//@Value("${spring.profile}")
+	//private String profile;
 
 	@Autowired
 	private UserSyncMsgDao msgDao;

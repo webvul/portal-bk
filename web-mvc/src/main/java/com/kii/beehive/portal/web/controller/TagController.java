@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagType;
-import com.kii.beehive.portal.service.ThingTagService;
+import com.kii.beehive.portal.manager.TagThingManager;
 import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.help.PortalException;
 
@@ -38,7 +38,7 @@ public class TagController {
 	private TagIndexDao tagIndexDao;
 
 	@Autowired
-	private ThingTagService thingTagService;
+	private TagThingManager thingTagManager;
 
 	/**
 	 * 列出所有tag
@@ -72,11 +72,11 @@ public class TagController {
 		}
 
 		tag.setTagType(TagType.Custom);
-		
-		if(tag.getId() != 0){//update
-			TagIndex old = tagIndexDao.findByID(tag.getId());
-			old.setDisplayName(tag.getDisplayName());
+		List<TagIndex> tagList = tagIndexDao.findTagByTagTypeAndName(tag.getTagType().name(), tag.getDisplayName());
+		if(tagList.size() > 0){//update
+			TagIndex old = tagList.get(0);
 			old.setDescription(tag.getDescription());
+			tag = old;
 		}
 
 		long tagID = tagIndexDao.saveOrUpdate(tag);
@@ -108,7 +108,7 @@ public class TagController {
 			throw new PortalException("no body", "no body", HttpStatus.NOT_FOUND);
 		}
 
-		thingTagService.removeTag(orig.get(0));
+		thingTagManager.removeTag(orig.get(0));
 	}
 
 	/**
@@ -150,7 +150,7 @@ public class TagController {
 	@RequestMapping(path = "/locations/{parentLocation}", method = { RequestMethod.GET }, consumes = { "*" })
 	public ResponseEntity<List<String>> findLocations(@PathVariable("parentLocation") String parentLocation) {
 
-		List<String> locations = thingTagService.findLocations(parentLocation);
+		List<String> locations = thingTagManager.findLocations(parentLocation);
 
 		return new ResponseEntity<>(locations, HttpStatus.OK);
 	}
