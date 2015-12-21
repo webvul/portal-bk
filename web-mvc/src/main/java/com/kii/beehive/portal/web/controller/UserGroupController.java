@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.portal.manager.UserGroupManager;
 import com.kii.beehive.portal.store.entity.BeehiveUserGroup;
-import com.kii.beehive.portal.web.entity.OutputUserGroup;
+import com.kii.beehive.portal.web.entity.UserGroupRestBean;
 import com.kii.beehive.portal.web.help.PortalException;
 
 /**
@@ -151,9 +151,9 @@ public class UserGroupController {
         boolean isIncludeUserData = "1".equals(includeUserData);
         BeehiveUserGroup userGroup = userGroupManager.getUserGroupBySimpleQuery(queryMap, isIncludeUserData);
 
-        OutputUserGroup output = null;
+        UserGroupRestBean output = null;
         if(userGroup != null) {
-            output = new OutputUserGroup(userGroup, isIncludeUserData);
+            output = new UserGroupRestBean(userGroup, isIncludeUserData);
         }
 
         return new ResponseEntity<>(output, HttpStatus.OK);

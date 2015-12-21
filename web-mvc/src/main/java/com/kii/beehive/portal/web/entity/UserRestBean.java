@@ -10,13 +10,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.store.entity.CustomProperty;
 
-public class OutputUser  extends BeehiveUser {
+public class UserRestBean  extends BeehiveUser {
 
-	public OutputUser(){
+	public UserRestBean(){
 
 	}
 
-	public OutputUser(BeehiveUser user){
+	public UserRestBean(BeehiveUser user){
 		BeanUtils.copyProperties(user, this, "customFields", "customField");
 
 		this.setCustomFields(user.getCustomFields());

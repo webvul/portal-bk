@@ -1,6 +1,11 @@
 package com.kii.beehive.portal.web.controller;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.BeanUtils;
@@ -21,8 +26,8 @@ import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagType;
-import com.kii.beehive.portal.service.ThingTagService;
-import com.kii.beehive.portal.web.entity.ThingInput;
+import com.kii.beehive.portal.manager.TagThingManager;
+import com.kii.beehive.portal.web.entity.ThingRestBean;
 import com.kii.beehive.portal.web.help.PortalException;
 
 /**
@@ -37,7 +42,7 @@ public class ThingController {
 	// TODO do we need entity for url output? such as ThingInput, OutputUser etc
 
 	@Autowired
-	private ThingTagService thingTagService;
+	private TagThingManager thingTagManager;
 	
 	@Autowired
 	private GlobalThingDao globalThingDao;
@@ -52,7 +57,7 @@ public class ThingController {
 	 * @return
 	 */
 	@RequestMapping(path = "/{globalThingID}", method = {RequestMethod.GET})
-	public ThingInput getThingByGlobalID(@PathVariable("globalThingID") String globalThingID) {
+	public ThingRestBean getThingByGlobalID(@PathVariable("globalThingID") String globalThingID) {
 
 		// get thing
 		GlobalThingInfo thing =  globalThingDao.findByID(globalThingID);
@@ -61,11 +66,11 @@ public class ThingController {
 		}
 
 		// get tag
-		List<TagIndex> tagIndexList = thingTagService.findTagIndexByGlobalThingID(globalThingID);
+		List<TagIndex> tagIndexList = thingTagManager.findTagIndexByGlobalThingID(globalThingID);
 
 		// set thing into output
-		ThingInput thingInput = new ThingInput();
-		BeanUtils.copyProperties(thing, thingInput);
+		ThingRestBean thingRestBean = new ThingRestBean();
+		BeanUtils.copyProperties(thing, thingRestBean);
 
 		// set location and custom tags into output
 		String location = null;
@@ -78,10 +83,10 @@ public class ThingController {
 				customDisplayNameList.add(tag.getDisplayName());
 			}
 		}
-		thingInput.setLocation(location);
-		thingInput.setInputTags(customDisplayNameList);
+		thingRestBean.setLocation(location);
+		thingRestBean.setInputTags(customDisplayNameList);
 
-		return thingInput;
+		return thingRestBean;
 	}
 
 
@@ -94,7 +99,7 @@ public class ThingController {
 	 * @param input
      */
 	@RequestMapping(path="",method={RequestMethod.POST})
-	public Map<String,Long> createThing(@RequestBody ThingInput input){
+	public Map<String,Long> createThing(@RequestBody ThingRestBean input){
 
 		input.verifyInput();
 		
@@ -102,7 +107,7 @@ public class ThingController {
 
 		BeanUtils.copyProperties(input,thingInfo);
 
-		Long thingID = thingTagService.createThing(thingInfo, input.getLocation(), input.getInputTags());
+		Long thingID = thingTagManager.createThing(thingInfo, input.getLocation(), input.getInputTags());
 
 		Map<String,Long> map=new HashMap<>();
 		map.put("globalThingID",thingID);
@@ -126,7 +131,7 @@ public class ThingController {
 			throw new PortalException("no body", "no body", HttpStatus.NOT_FOUND);
 		}
 		
-		thingTagService.removeThing(orig);
+		thingTagManager.removeThing(orig);
 	}
 
 	/**
@@ -141,7 +146,7 @@ public class ThingController {
 	public void addThingTag(@PathVariable("globalThingID") Long globalThingID,@PathVariable("tagIDs") String tagIDs){
 		
 		List<String> tagIDList = CollectionUtils.arrayToList(tagIDs.split(","));
-		thingTagService.bindTagToThing(tagIDList, globalThingID);
+		thingTagManager.bindTagToThing(tagIDList, globalThingID);
 	}
 
 	/**
@@ -155,7 +160,7 @@ public class ThingController {
 	@RequestMapping(path="/{globalThingID}/tags/{tagIDs}",method={RequestMethod.DELETE},consumes={"*"})
 	public void removeThingTag(@PathVariable("globalThingID") Long globalThingID,@PathVariable("tagIDs") String tagIDs){
 		List<String> tagIDList = CollectionUtils.arrayToList(tagIDs.split(","));
-		thingTagService.unbindTagToThing(tagIDList, globalThingID);
+		thingTagManager.unbindTagToThing(tagIDList, globalThingID);
 	}
 
 	/**
@@ -171,7 +176,7 @@ public class ThingController {
 	public void addThingCustomTag(@PathVariable("globalThingID") Long globalThingID,@PathVariable("displayNames") String displayNames){
 
 		List<String> displayNameList = CollectionUtils.arrayToList(displayNames.split(","));
-		thingTagService.bindCustomTagToThing(displayNameList, globalThingID);
+		thingTagManager.bindCustomTagToThing(displayNameList, globalThingID);
 	}
 
 	/**
@@ -186,7 +191,7 @@ public class ThingController {
 	@RequestMapping(path="/{globalThingID}/tags/custom/{displayNames}",method={RequestMethod.DELETE},consumes={"*"})
 	public void removeThingCustomTag(@PathVariable("globalThingID") Long globalThingID,@PathVariable("displayNames") String displayNames){
 		List<String> displayNameList = CollectionUtils.arrayToList(displayNames.split(","));
-		thingTagService.unbindCustomTagToThing(displayNameList, globalThingID);
+		thingTagManager.unbindCustomTagToThing(displayNameList, globalThingID);
 	}
 
 
@@ -200,7 +205,7 @@ public class ThingController {
      * @return
      */
 	@RequestMapping(path = "/search", method = {RequestMethod.GET})
-	public ResponseEntity<List<ThingInput>> getThingsByTagExpress(@RequestParam(value="tagType", required = false) String tagType,
+	public ResponseEntity<List<ThingRestBean>> getThingsByTagExpress(@RequestParam(value="tagType", required = false) String tagType,
 																		@RequestParam(value="displayName", required = false) String displayName) {
 		List<GlobalThingInfo> list = null;
 		if(Strings.isBlank(tagType) && Strings.isBlank(displayName)){
@@ -209,10 +214,10 @@ public class ThingController {
 			list = globalThingDao.findThingByTag(StringUtils.capitalize(tagType), displayName);
 		}
 
-		List<ThingInput> resultList = new ArrayList<>();
+		List<ThingRestBean> resultList = new ArrayList<>();
 		if(list != null) {
 			for (GlobalThingInfo thingInfo : list) {
-				ThingInput input = new ThingInput();
+				ThingRestBean input = new ThingRestBean();
 				BeanUtils.copyProperties(thingInfo,input);
 				resultList.add(input);
 			}

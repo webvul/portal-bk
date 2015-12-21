@@ -1,4 +1,4 @@
-package com.kii.beehive.portal.service;
+package com.kii.beehive.portal.manager;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -22,8 +22,8 @@ import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
 import com.kii.beehive.portal.jdbc.entity.TagType;
 
 @Component
-public class ThingTagService {
-	private Logger log= LoggerFactory.getLogger(ThingTagService.class);
+public class TagThingManager {
+	private Logger log= LoggerFactory.getLogger(TagThingManager.class);
 
 	@Autowired
 	private GlobalThingDao globalThingDao;
