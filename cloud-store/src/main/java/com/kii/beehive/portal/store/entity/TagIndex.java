@@ -7,7 +7,9 @@ import org.springframework.util.StringUtils;
 
 import com.kii.beehive.portal.exception.TagFormatInvalidException;
 
-
+/**
+ * @deprecated replaced with jdbc TagIndex
+ */
 public class TagIndex extends PortalEntity {
 
 	private TagType tagType;

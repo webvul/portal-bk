@@ -22,7 +22,7 @@ public class BeehiveUserGroup extends PortalEntity {
 
     private Set<String> users;
 
-    private Map<String, Object> customFields = new HashMap<>();
+    private Map<String, Object> custom = new HashMap<>();
     
     private List<BeehiveUser> beehiveUserList;
 
@@ -68,19 +68,20 @@ public class BeehiveUserGroup extends PortalEntity {
     }
 
     @JsonUnwrapped(prefix = PREFIX)
-    public Map<String, Object> getCustomFields() {
-        return customFields;
+    public Map<String, Object> getCustom() {
+        return custom;
     }
 
-    public void setCustomFields(Map<String, Object> customFields) {
-        this.customFields = customFields;
+    public void setCustom(Map<String, Object> customFields) {
+        this.custom = customFields;
     }
 
     @JsonAnySetter
-    public void setCustomField(String key, Object value) {
-        this.customFields.put(key, value);
+    public void setCustom(String key, Object value) {
+        this.custom.put(key, value);
     }
 
+    @JsonIgnore
 	public List<BeehiveUser> getBeehiveUserList() {
 		return beehiveUserList;
 	}

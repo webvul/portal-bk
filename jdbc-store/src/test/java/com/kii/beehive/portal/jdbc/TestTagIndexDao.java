@@ -42,12 +42,14 @@ public class TestTagIndexDao extends TestTemplate{
 	
 	@Test
 	public void testFindByIDs(){
-		tag.setDisplayName("DisplayName2");
-		tag.setTagType(TagType.Location);
-		tag.setDescription("Description2");
-		long id2=dao.saveOrUpdate(tag);
+		TagIndex  tag2 =new TagIndex();
+		tag2.setDisplayName("DisplayName2");
+		tag2.setTagType(TagType.Location);
+		tag2.setDescription("Description2");
+		long id2=dao.saveOrUpdate(tag2);
 		
 		List<TagIndex>  list=dao.findByIDs(new Object[]{tag.getId(),id2});
+
 		assertEquals(2,list.size());
 	}
 	

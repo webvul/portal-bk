@@ -1,6 +1,5 @@
 
 apply plugin: 'war'
-//apply plugin: 'jetty'
 
 ext {
 	tomcatVersion = "8.0.1"
@@ -9,7 +8,6 @@ dependencies {
 
 	compile project(":commons")
 	compile project(":store-service")
-	compile project(":cloud-store")
 	compile "org.springframework:spring-webmvc:${springVersion}"
 
 

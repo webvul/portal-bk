@@ -3,7 +3,6 @@ package com.kii.beehive.portal.helper;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -15,12 +14,11 @@ import com.kii.beehive.portal.store.entity.usersync.SupplierPushMsgTask;
 import com.kii.beehive.portal.store.entity.usersync.UserSyncMsg;
 import com.kii.beehive.portal.store.entity.usersync.UserSyncMsgType;
 
-// TODO need to change userID from String to long
 @Component
 public class SyncMsgService {
 
-	@Value("${spring.profile}")
-	private String profile;
+	//@Value("${spring.profile}")
+	//private String profile;
 
 	@Autowired
 	private UserSyncMsgDao msgDao;
@@ -29,7 +27,7 @@ public class SyncMsgService {
 	private ObjectMapper mapper;
 
 
-	//@Autowired
+	@Autowired
 	private DeviceSupplierDao  supplierDao;
 
 	@Autowired
@@ -39,24 +37,24 @@ public class SyncMsgService {
 	private NotifySenderTool notifyTool;
 
 
-	public void addUpdateMsg(String userID){
-		addSyncMsg(userID, UserSyncMsgType.Update);
+	public void addUpdateMsg(String userID,BeehiveUser user){
+		addSyncMsg(userID, UserSyncMsgType.Update,user);
 	}
 
 
 
 	public void addDeleteMsg(String userID){
-		addSyncMsg(userID, UserSyncMsgType.Delete);
+		addSyncMsg(userID, UserSyncMsgType.Delete,null);
 
 	}
 
 
-	public void addInsertMsg(String userID){
-		addSyncMsg(userID, UserSyncMsgType.Create);
+	public void addInsertMsg(String userID,BeehiveUser user){
+		addSyncMsg(userID, UserSyncMsgType.Create,user);
 
 	}
 
-	private void addSyncMsg(String userID,UserSyncMsgType type){
+	private void addSyncMsg(String userID,UserSyncMsgType type,BeehiveUser user){
 
 		UserSyncMsg  msg=new UserSyncMsg();
 

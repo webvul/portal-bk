@@ -17,6 +17,9 @@ import com.kii.extension.sdk.entity.BucketInfo;
 import com.kii.extension.sdk.query.ConditionBuilder;
 import com.kii.extension.sdk.service.AbstractDataAccess;
 
+/**
+ * @deprecated replaced with jdbc TagIndexDao
+ */
 @BindAppByName(appName="portal",appBindSource="propAppBindTool")
 //@Component
 public class TagIndexDao extends AbstractDataAccess<TagIndex> {

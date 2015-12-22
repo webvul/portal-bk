@@ -5,7 +5,7 @@ public class ActionResult {
 
 
 	/*
-	   	{"turnPower":{"result":true,"errorMessage":"","data":{"voltage":"125"}},
+	   	{"turnPower":{"result":true,"errorMessage":"","transaction":{"voltage":"125"}},
 
 	 */
 	private boolean succeeded;

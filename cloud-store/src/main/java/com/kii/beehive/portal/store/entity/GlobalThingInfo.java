@@ -8,6 +8,9 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 
+/**
+ * @deprecated replaced with jdbc GlobalThingInfo
+ */
 public class GlobalThingInfo extends PortalEntity {
 
 	private String globalThingID;

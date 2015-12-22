@@ -4,11 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
+import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
+import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
+import com.kii.beehive.portal.jdbc.entity.TagType;
 
 @Repository
 public class TagThingRelationDao extends BaseDao<TagThingRelation> {
@@ -72,7 +76,42 @@ public class TagThingRelationDao extends BaseDao<TagThingRelation> {
 	
 	@Override
 	public long update(TagThingRelation entity) {
-		// TODO Auto-generated method stub
-		return 0;
+		StringBuilder sql = new StringBuilder();
+		sql.append("UPDATE ").append(this.getTableName()).append(" SET ");
+		sql.append(TagThingRelation.TAG_ID).append("=?, ");
+		sql.append(TagThingRelation.THING_ID).append("=?, ");
+		sql.append("WHERE ").append(TagThingRelation.ID).append("=? ");
+
+		return jdbcTemplate.update(sql.toString(),
+				entity.getTagID(),
+				entity.getThingID(),
+				entity.getId());
+
+	}
+
+	public List<TagThingRelation> find(Long globalThingID, TagType tagType, String tagDisplayName) {
+
+		List<Object> params = new ArrayList<>();
+
+		StringBuffer sql = new StringBuffer();
+		sql.append("SELECT r_").append(TagThingRelation.ID).append(" AS ").append(TagThingRelation.ID)
+				.append(", t_").append(TagIndex.TAG_ID).append(" AS ").append(TagThingRelation.TAG_ID)
+				.append(", g_").append(GlobalThingInfo.ID_GLOBAL_THING).append(" AS ").append(TagThingRelation.THING_ID)
+				.append(" FROM v_").append(getTableName())
+				.append(" WHERE g_").append(GlobalThingInfo.ID_GLOBAL_THING).append("=?");
+		params.add(globalThingID);
+
+		if(tagType != null) {
+			sql.append(" AND t_").append(TagIndex.TAG_TYPE).append("=?");
+			params.add(tagType);
+		}
+		if(!Strings.isBlank(tagDisplayName)){
+			sql.append(" AND t_").append(TagIndex.DISPLAY_NAME).append("=?");
+			params.add(tagDisplayName);
+		}
+
+		List<Map<String, Object>> result = jdbcTemplate.queryForList(sql.toString(), params.toArray(new Object[params.size()]));
+
+		return mapToList(result);
 	}
 }

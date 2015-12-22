@@ -13,7 +13,7 @@ import com.kii.extension.sdk.service.AbstractDataAccess;
 
 
 @BindAppByName(appName="portal",appBindSource="propAppBindTool")
-//@Component
+@Component
 public class ArchiveBeehiveUserDao extends AbstractDataAccess<BeehiveUser> {
 
 	public void archive(BeehiveUser user){
@@ -25,7 +25,7 @@ public class ArchiveBeehiveUserDao extends AbstractDataAccess<BeehiveUser> {
 
 	public BeehiveUser queryInArchive(BeehiveUser user){
 
-		QueryParam param= ConditionBuilder.orCondition().equal("userName",user.getUserName()).equal("aliUserID",user.getAliUserID()).getFinalQueryParam();
+		QueryParam param= ConditionBuilder.newCondition().equal("userID",user.getAliUserID()).getFinalQueryParam();
 
 
 		List<BeehiveUser> list=super.query(param);

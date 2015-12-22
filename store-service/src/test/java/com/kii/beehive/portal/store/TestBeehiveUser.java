@@ -36,8 +36,7 @@ public class TestBeehiveUser extends TestInit{
 		user.setCustomField("id", "1234567");
 		user.setCustomField("no", "abcdef");
 
-		// TODO comment out for compile error
-//		userMang.addUser(user);
+		userMang.addUser(user);
 //		String json=mapper.writeValueAsString(user);
 //
 //System.out.println(json);

@@ -22,7 +22,7 @@ import com.kii.extension.sdk.service.AbstractDataAccess;
 
 
 @BindAppByName(appName = "portal",appBindSource="propAppBindTool")
-//@Component
+@Component
 public class BeehiveUserGroupDao extends AbstractDataAccess<BeehiveUserGroup> {
 
 	private Logger logger= LoggerFactory.getLogger(BeehiveUserGroupDao.class);

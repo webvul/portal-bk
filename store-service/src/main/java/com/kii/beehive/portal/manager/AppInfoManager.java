@@ -70,6 +70,17 @@ public class AppInfoManager {
 		return result;
 	}
 
+
+	private String getDefaultUserPwd(){
+
+		return  DigestUtils.sha1Hex(DEFAULT_NAME+"_default_owner_beehive");
+
+	}
+
+	/**
+	 * important:
+	 * this API is supposed to be called only when initialize the environment
+	 */
 	@Async
 	public void initAppInfos(String userName,String pwd,String masterID){
 
@@ -118,63 +129,6 @@ public class AppInfoManager {
 		});
 
 	}
-
-
-//	private  void initDataWithDevPortal(String userName,String pwd){
-//
-//		service.login(userName, pwd);
-//
-//		List<AppInfo> appInfoList=service.getAppInfoList();
-//		appInfoList.forEach((app) -> {
-//
-//			if (app.getAppID().equals(appDao.getPortalAppID())) {
-//				return;
-//			}
-//
-//			KiiAppInfo info = new KiiAppInfo();
-//			info.setAppInfo(app);
-//
-//			appDao.addAppInfo(info);
-//
-//		});
-//
-//	}
-//
-//
-//	private void setMasterSalve(String masterName){
-//
-//
-//		KiiAppInfo masterInfo=appDao.getAppInfoByID(masterName);
-//
-//		if(masterInfo==null){
-//			throw new ObjectNotFoundException();
-//		}
-//		boolean isMaster=masterSalveService.isMaster(masterInfo.getAppInfo());
-//
-//		if(!isMaster){
-//
-//			masterSalveService.setMaster(masterInfo.getAppInfo());
-//
-//		}
-//		appDao.setMasterAppInfo(masterInfo.getId());
-//
-//		Map<String,AppInfo> appMap=appDao.getAllAppInfo();
-//
-//		appMap.values().stream()
-//				.filter(info -> !info.getAppID().equals(appDao.getPortalAppID()))
-//				.forEach(info -> {
-//
-//					masterSalveService.addSalveAppToMaster(masterInfo.getAppInfo(), info);
-//
-//					String master = masterSalveService.checkMaster(info);
-//					if (master.equals(info.getAppID())) {
-//						log.info("salve create success:");
-//					}
-//				});
-//
-//
-//	}
-//
 
 
 }

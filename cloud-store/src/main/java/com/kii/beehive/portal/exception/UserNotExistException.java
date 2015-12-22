@@ -9,7 +9,7 @@ public class UserNotExistException extends StoreException{
 
 		super.setStatusCode(404);
 
-		super.setMessage(" user with userID is "+userID+" not exist in beehive");
+		super.setMessage(" user with userID "+userID+" not existing in beehive");
 
 	}
 }

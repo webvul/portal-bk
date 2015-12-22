@@ -49,7 +49,7 @@ public abstract class BaseDao<T extends DBEntity> {
 		entity.setCreateBy((String)row.get(DBEntity.CREATE_BY));
 		entity.setCreateDate((Date)row.get(DBEntity.CREATE_DATE));
 		entity.setModifyBy((String)row.get(DBEntity.MODIFY_BY));
-		entity.setModifyDate((Date)row.get(DBEntity.CREATE_DATE));
+		entity.setModifyDate((Date)row.get(DBEntity.MODIFY_DATE));
 		return entity;
 	}
 

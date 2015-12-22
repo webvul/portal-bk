@@ -1,8 +1,8 @@
 dependencies {
 
 	compile project(":kii-sdk")
-
 	compile project(":cloud-store")
+	compile project(":jdbc-store")
 
 	compile "org.springframework:spring-context:${springVersion}"
 

@@ -14,6 +14,8 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.concurrent.FutureCallback;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -29,6 +31,7 @@ import com.kii.extension.sdk.impl.KiiCloudClient;
 @Component
 public class NotifySenderTool {
 
+	private Logger log= LoggerFactory.getLogger(NotifySenderTool.class);
 
 	@Autowired
 	private KiiCloudClient client;
@@ -121,6 +124,8 @@ public class NotifySenderTool {
 
 		private void onSuccess(int retry) {
 
+			log.debug("notify success: " + supplierID + " task id: " + task.getId() + " url: " + url);
+
 			msgDao.successSupplier(supplierID, retry, task.getId());
 
 			latch.countDown();
@@ -129,6 +134,8 @@ public class NotifySenderTool {
 
 
 		private void onFail(int retry) {
+
+			log.debug("notify success: " + supplierID + " task id: " + task.getId() + " url: " + url);
 
 			final int newRetry = retry - 1;
 

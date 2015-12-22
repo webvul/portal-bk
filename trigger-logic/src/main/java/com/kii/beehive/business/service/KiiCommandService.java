@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.service.ClientTriggerResultDao;
-import com.kii.beehive.portal.service.ThingTagService;
+import com.kii.beehive.business.transaction.ThingTagService;
 import com.kii.beehive.portal.store.entity.trigger.ClientTriggerResult;
 import com.kii.beehive.portal.store.entity.trigger.TargetAction;
 import com.kii.beehive.portal.store.entity.trigger.TriggerTarget;
@@ -43,7 +43,7 @@ public class KiiCommandService {
 	@Autowired
 	private ClientTriggerResultDao  resultDao;
 
-	private  void sendCmdToThing(String globalThingID,TargetAction target,String triggerID){
+	public  void sendCmdToThing(String globalThingID,TargetAction target,String triggerID){
 
 
 		GlobalThingInfo thingInfo=thingTagService.getThingByVendorThingID(globalThingID);

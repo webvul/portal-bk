@@ -16,8 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kii.beehive.portal.service.BeehiveUserGroupService;
-import com.kii.beehive.portal.jdbc.entity.BeehiveUserGroup;
+import com.kii.beehive.portal.manager.UserGroupManager;
+import com.kii.beehive.portal.store.entity.BeehiveUserGroup;
+import com.kii.beehive.portal.web.entity.UserGroupRestBean;
 import com.kii.beehive.portal.web.help.PortalException;
 
 /**
@@ -30,7 +31,7 @@ import com.kii.beehive.portal.web.help.PortalException;
 public class UserGroupController {
 
     @Autowired
-    private BeehiveUserGroupService userGroupService;
+    private UserGroupManager userGroupManager;
 
     /**
      * 创建用户群组
@@ -51,14 +52,14 @@ public class UserGroupController {
         }
 
         // check whether userGroupName existing
-        if(userGroupService.checkUserGroupNameExist(userGroupName)) {
+        if(userGroupManager.checkUserGroupNameExist(userGroupName)) {
             throw new PortalException("DuplicatedData", "userGroupName already exists", HttpStatus.CONFLICT);
         }
 
         // creat user group
-        long userGroupID = userGroupService.createUserGroup(userGroup);
+        String userGroupID = userGroupManager.createUserGroup(userGroup, null);
 
-        Map<String, Object> resultMap = new HashMap<>();
+        Map<String,String> resultMap = new HashMap<>();
         resultMap.put("userGroupID", userGroupID);
         return new ResponseEntity<>(resultMap, HttpStatus.OK);
     }
@@ -73,27 +74,27 @@ public class UserGroupController {
      * @param userGroupID
      */
     @RequestMapping(path="/{userGroupID}",method={RequestMethod.PATCH})
-    public ResponseEntity updateUserGroup(@PathVariable("userGroupID") long userGroupID, @RequestBody BeehiveUserGroup userGroup){
+    public ResponseEntity updateUserGroup(@PathVariable("userGroupID") String userGroupID, @RequestBody BeehiveUserGroup userGroup){
 
         // check whether userGroupID existing
-        if(userGroupService.checkUserGroupIDExist(userGroupID) == false) {
+        if(userGroupManager.checkUserGroupIDExist(userGroupID) == false) {
             throw new PortalException("DataNotFound", "userGroupID not found", HttpStatus.NOT_FOUND);
         }
 
         // if userGroupName is set in request, check whether the user group with the same userGroupName already existing
         String userGroupName = userGroup.getUserGroupName();
         if(!Strings.isBlank(userGroupName)) {
-            BeehiveUserGroup tempUserGroup = userGroupService.getUserGroupByName(userGroupName);
-            if(tempUserGroup != null && userGroupID != tempUserGroup.getId()) {
+            BeehiveUserGroup tempUserGroup = userGroupManager.getUserGroupByName(userGroupName);
+            if(tempUserGroup != null && !userGroupID.equals(tempUserGroup.getUserGroupID())) {
                 throw new PortalException("DuplicatedData", "userGroupName already exists", HttpStatus.CONFLICT);
             }
         }
 
         // update user group
-        userGroup.setId(userGroupID);
-        userGroupService.updateUserGroup(userGroup);
+        userGroup.setUserGroupID(userGroupID);
+        userGroupManager.updateUserGroup(userGroup, null);
 
-        Map<String, Object> resultMap = new HashMap<>();
+        Map<String,String> resultMap = new HashMap<>();
         resultMap.put("userGroupID", userGroupID);
         return new ResponseEntity<>(resultMap, HttpStatus.OK);
     }
@@ -108,15 +109,15 @@ public class UserGroupController {
      * @param userGroupID
      */
     @RequestMapping(path="/{userGroupID}",method={RequestMethod.DELETE},consumes={"*"})
-    public ResponseEntity deleteUserGroup(@PathVariable("userGroupID") long userGroupID){
+    public ResponseEntity deleteUserGroup(@PathVariable("userGroupID") String userGroupID){
 
         // check whether userGroupID existing
-        if(userGroupService.checkUserGroupIDExist(userGroupID) == false) {
+        if(userGroupManager.checkUserGroupIDExist(userGroupID) == false) {
             throw new PortalException("DataNotFound", "userGroupID not found", HttpStatus.NOT_FOUND);
         }
 
         // delete user group
-        userGroupService.deleteUserGroup(userGroupID);
+        userGroupManager.deleteUserGroup(userGroupID, null);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -132,40 +133,30 @@ public class UserGroupController {
      */
     @RequestMapping(path="/simplequery",method={RequestMethod.POST})
     public ResponseEntity queryUserGroup(@RequestBody Map<String,Object> queryMap){
-// TODO input param "includeUserData" and "userGroupID" are not supported any more, only "userGroupName" is supported, need to update document accordingly
 
-
-        String userGroupName = (String)queryMap.get("userGroupName");
-
-        List<BeehiveUserGroup> userGroupList = userGroupService.findUserGroupsByNameLike(userGroupName);
-
-        return new ResponseEntity<>(userGroupList, HttpStatus.OK);
-    }
-
-    @RequestMapping(path="/{userGroupID}/addusers",method={RequestMethod.PUT})
-    public ResponseEntity addUsers(@PathVariable("userGroupID") long userGroupID, @RequestBody List<Long> userIDList){
-    // TODO new interface, need to add to document
-
-        if(!userGroupService.checkUserGroupIDExist(userGroupID)) {
-            throw new PortalException("DataNotFound", "userGroupID not found", HttpStatus.NOT_FOUND);
+        // if query condition is empty, return all the user groups
+        if(queryMap == null || queryMap.isEmpty()) {
+            List<BeehiveUserGroup> userGroupList = userGroupManager.getUserGroupAll();
+            return new ResponseEntity<>(userGroupList, HttpStatus.OK);
         }
 
-        userGroupService.addUsers(userGroupID, userIDList);
+        // if query condition is specified, query the user group
+        String includeUserData = (String)queryMap.remove("includeUserData");
 
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @RequestMapping(path="/{userGroupID}/removeusers",method={RequestMethod.PUT})
-    public ResponseEntity removeUsers(@PathVariable("userGroupID") long userGroupID, @RequestBody List<Long> userIDList){
-        // TODO new interface, need to add to document
-
-        if(!userGroupService.checkUserGroupIDExist(userGroupID)) {
-            throw new PortalException("DataNotFound", "userGroupID not found", HttpStatus.NOT_FOUND);
+        if(queryMap.containsKey("userGroupID")) {
+            Object userGroupID = queryMap.remove("userGroupID");
+            queryMap.put("_id", userGroupID);
         }
 
-        userGroupService.removeUsers(userGroupID, userIDList);
+        boolean isIncludeUserData = "1".equals(includeUserData);
+        BeehiveUserGroup userGroup = userGroupManager.getUserGroupBySimpleQuery(queryMap, isIncludeUserData);
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        UserGroupRestBean output = null;
+        if(userGroup != null) {
+            output = new UserGroupRestBean(userGroup, isIncludeUserData);
+        }
+
+        return new ResponseEntity<>(output, HttpStatus.OK);
     }
 
 }

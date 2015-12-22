@@ -28,6 +28,11 @@ public class KiiUserSyncDao {
 	@Autowired
 	private UserService userService;
 
+	/**
+	 * important:
+	 * as the existing user with the same login name will be removed,
+	 * this API is supposed to be called only when initialize the environment
+	 */
 	public String addDefaultOwner(String name,String pwd){
 
 		KiiUser user=new KiiUser();
@@ -46,16 +51,16 @@ public class KiiUserSyncDao {
 		}
 	}
 
-	public String addBeehiveUser(String userName, Long userID){
+	public void addBeehiveUser(BeehiveUser beehiveUser){
 
 		KiiUser user=new KiiUser();
 
-		user.setDisplayName(userName);
+		user.setDisplayName(beehiveUser.getUserName());
 
-		if(!StringUtils.isEmpty(userID)) {
-			user.setLoginName(String.valueOf(userID));
+		if(!StringUtils.isEmpty(beehiveUser.getAliUserID())) {
+			user.setLoginName(beehiveUser.getAliUserID());
 		}else{
-			String loginName= new String(Hex.encodeHex(userName.getBytes(Charsets.UTF_8)));
+			String loginName= new String(Hex.encodeHex(beehiveUser.getUserName().getBytes(Charsets.UTF_8)));
 			user.setLoginName(loginName);
 		}
 
@@ -63,13 +68,13 @@ public class KiiUserSyncDao {
 		user.setPassword(pwd);
 
 		String kiiUserID = userService.createUser(user);
-		return kiiUserID;
-		//beehiveUser.setKiiUserID(kiiUserID);
-		//beehiveUser.setKiiLoginName(user.getLoginName());
 
-		//if(StringUtils.isEmpty(beehiveUser.getId())){
-		//	beehiveUser.setId(Long.valueOf(kiiUserID));
-		//}
+		beehiveUser.setKiiUserID(kiiUserID);
+		beehiveUser.setKiiLoginName(user.getLoginName());
+
+		if(StringUtils.isEmpty(beehiveUser.getAliUserID())){
+			beehiveUser.setAliUserID(kiiUserID);
+		}
 	}
 
 	public String bindToUser(BeehiveUser user){

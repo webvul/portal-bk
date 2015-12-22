@@ -8,8 +8,12 @@ import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
+import com.kii.beehive.portal.common.utils.CollectUtils;
+import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
+import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
 import com.kii.beehive.portal.jdbc.entity.TagType;
 
 @Repository
@@ -54,16 +58,46 @@ public class TagIndexDao extends BaseDao<TagIndex> {
 	    return mapToList(rows);
 	}
 
+	public TagIndex findOneTagByTagTypeAndName(TagType tagType,String displayName) {
+		String type = (tagType == null)? null : tagType.toString();
+		List<TagIndex> tagIndexList = findTagByTagTypeAndName(type, displayName);
+
+		return CollectUtils.getFirst(tagIndexList);
+	}
+
 	public List<String> findLocations(String parentLocation) {
 
-		String sql = "SELECT display_name FROM " + this.getTableName()
-				+ " WHERE tag_type='" + TagType.Location + "' AND display_name like ? " +
-				"ORDER BY display_name";
+		StringBuffer sql = new StringBuffer();
+		sql.append("SELECT ").append(TagIndex.DISPLAY_NAME)
+				.append(" FROM ").append(this.getTableName())
+				.append(" WHERE ").append(TagIndex.TAG_TYPE).append("='").append(TagType.Location)
+				.append("' AND ").append(TagIndex.DISPLAY_NAME).append(" like ? ")
+				.append(" ORDER BY ").append(TagIndex.DISPLAY_NAME);
 
 		Object[] params = new String[] {parentLocation + "%"};
-		List<String> rows = jdbcTemplate.queryForList(sql, params, String.class);
+		List<String> rows = jdbcTemplate.queryForList(sql.toString(), params, String.class);
 
 		return rows;
+	}
+
+
+	public List<TagIndex> findTagByGlobalThingID(String globalThingID) {
+		StringBuffer sql = new StringBuffer();
+		sql.append("SELECT t_").append(TagIndex.TAG_ID).append(" AS ").append(TagIndex.TAG_ID)
+				.append(", t_").append(TagIndex.TAG_TYPE).append(" AS ").append(TagIndex.TAG_TYPE)
+				.append(", t_").append(TagIndex.DISPLAY_NAME).append(" AS ").append(TagIndex.DISPLAY_NAME)
+				.append(", t_").append(TagIndex.DESCRIPTION).append(" AS ").append(TagIndex.DESCRIPTION)
+				.append(", t_").append(TagIndex.CREATE_DATE).append(" AS ").append(TagIndex.CREATE_DATE)
+				.append(", t_").append(TagIndex.CREATE_BY).append(" AS ").append(TagIndex.CREATE_BY)
+				.append(", t_").append(TagIndex.MODIFY_DATE).append(" AS ").append(TagIndex.MODIFY_DATE)
+				.append(", t_").append(TagIndex.MODIFY_BY).append(" AS ").append(TagIndex.MODIFY_BY)
+				.append(" FROM v_").append(TagThingRelationDao.TABLE_NAME)
+				.append(" WHERE g_").append(GlobalThingInfo.ID_GLOBAL_THING).append("=?")
+				.append(" ORDER BY ").append(TagIndex.TAG_TYPE).append(",").append(TagIndex.DISPLAY_NAME);
+
+		Object[] paramArr = new Object[] {globalThingID};
+		List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql.toString(), paramArr);
+		return mapToList(rows);
 	}
 	
 	public long update(TagIndex tag) {

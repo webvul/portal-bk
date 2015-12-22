@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.service.AppInfoDao;
-import com.kii.beehive.portal.service.ThingTagService;
+import com.kii.beehive.business.transaction.ThingTagService;
 import com.kii.beehive.portal.store.entity.trigger.TriggerRecord;
 import com.kii.extension.sdk.entity.AppInfo;
 import com.kii.extension.sdk.entity.thingif.ServiceCode;

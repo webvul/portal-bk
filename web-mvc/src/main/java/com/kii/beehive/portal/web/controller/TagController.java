@@ -20,14 +20,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagType;
-import com.kii.beehive.portal.service.ThingTagService;
+import com.kii.beehive.portal.manager.TagThingManager;
 import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.help.PortalException;
 
 /**
  * Beehive API - Thing API
  *
- * refer to doc "Tech Design - Beehive API" section "Thing API" for details
+ * refer to doc "Beehive API - Tech Design" section "Thing API" for details
  */
 @RestController
 @RequestMapping(path = "/tags", consumes = { MediaType.APPLICATION_JSON_UTF8_VALUE }, produces = {
@@ -38,24 +38,25 @@ public class TagController {
 	private TagIndexDao tagIndexDao;
 
 	@Autowired
-	private ThingTagService thingTagService;
+	private TagThingManager thingTagManager;
 
 	/**
-	 * 列出所有tag GET /tags/all
+	 * 列出所有tag
+	 * GET /tags/all
 	 *
 	 * refer to doc "Beehive API - Thing API" for request/response details
 	 *
 	 * @return
 	 */
-
-	/*@RequestMapping(path = "/all", method = { RequestMethod.GET })
+	@RequestMapping(path = "/all", method = { RequestMethod.GET })
 	public List<TagIndex> getAllTag() {
 		List<TagIndex> list = tagIndexDao.findAll();
 		return list;
-	}*/
+	}
 
 	/**
-	 * 创建tag POST /tags/custom
+	 * 创建tag
+	 * POST /tags/custom
 	 *
 	 * refer to doc "Beehive API - Thing API" for request/response details refer
 	 * to doc "Tech Design - Beehive API", section
@@ -63,7 +64,7 @@ public class TagController {
 	 *
 	 */
 	@RequestMapping(path = "/custom", method = { RequestMethod.POST })
-	public Map<String, Long> createTag(@RequestBody TagIndex tag) {
+	public Map<String, Object> createTag(@RequestBody TagIndex tag) {
 
 		if (Strings.isBlank(tag.getDisplayName())) {
 			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "DisplayName is empty",
@@ -71,21 +72,23 @@ public class TagController {
 		}
 
 		tag.setTagType(TagType.Custom);
-		
-		if(tag.getId() != 0){//update
-			TagIndex old = tagIndexDao.findByID(tag.getId());
-			old.setDisplayName(tag.getDisplayName());
+		List<TagIndex> tagList = tagIndexDao.findTagByTagTypeAndName(tag.getTagType().name(), tag.getDisplayName());
+		if(tagList.size() > 0){//update
+			TagIndex old = tagList.get(0);
 			old.setDescription(tag.getDescription());
+			tag = old;
 		}
 
 		long tagID = tagIndexDao.saveOrUpdate(tag);
-		Map<String, Long> map = new HashMap<>();
+		Map<String, Object> map = new HashMap<>();
 		map.put("id", tagID);
+		map.put("tagName", TagType.Custom.getTagName(tag.getDisplayName()));
 		return map;
 	}
 
 	/**
-	 * 移除tag DELETE /tags/{tagName}
+	 * 移除tag
+	 * DELETE /tags/custom/{displayName}
 	 *
 	 * refer to doc "Beehive API - Thing API" for request/response details refer
 	 * to doc "Tech Design - Beehive API", section "Delete Tag (移除tag)" for more
@@ -96,20 +99,21 @@ public class TagController {
 	public void removeTag(@PathVariable("displayName") String displayName) {
 
 		if (Strings.isBlank(displayName)) {
-			throw new PortalException("RequiredFieldsMissing", "tagName is empty", HttpStatus.BAD_REQUEST);
+			throw new PortalException("RequiredFieldsMissing", "displayName is empty", HttpStatus.BAD_REQUEST);
 		}
 
 		List<TagIndex> orig = tagIndexDao.findTagByTagTypeAndName(TagType.Custom.toString(), displayName);
 		
 		if(orig.size() == 0){
-			throw new PortalException("no body", "no body", HttpStatus.BAD_REQUEST);
+			throw new PortalException("no body", "no body", HttpStatus.NOT_FOUND);
 		}
 
-		thingTagService.removeTag(orig.get(0));
+		thingTagManager.removeTag(orig.get(0));
 	}
 
 	/**
-	 * 查询tag GET /{type}/{displayName}
+	 * 查询tag
+	 * GET /tag/search?tagType={tagType}&displayName={displayName}
 	 *
 	 * refer to doc "Beehive API - Thing API" for request/response details refer
 	 * to doc "Tech Design - Beehive API", section "Inquire Tag (查询tag)" for
@@ -135,12 +139,33 @@ public class TagController {
 		return list;
 	}*/
 
+	/**
+	 * 查询位置信息
+	 * GET /tags/locations/{parentLocation}
+	 *
+	 * refer to doc "Beehive API - Thing API" for request/response details
+	 *
+	 * @return
+	 */
 	@RequestMapping(path = "/locations/{parentLocation}", method = { RequestMethod.GET }, consumes = { "*" })
 	public ResponseEntity<List<String>> findLocations(@PathVariable("parentLocation") String parentLocation) {
-// TODO new interface, need to add in document
-		List<String> locations = thingTagService.findLocations(parentLocation);
+
+		List<String> locations = thingTagManager.findLocations(parentLocation);
 
 		return new ResponseEntity<>(locations, HttpStatus.OK);
+	}
+
+	/**
+	 * 查询位置信息(所有)
+	 * GET /tags/locations/{parentLocation}
+	 *
+	 * refer to doc "Beehive API - Thing API" for request/response details
+	 *
+	 * @return
+	 */
+	@RequestMapping(path = "/locations/", method = { RequestMethod.GET }, consumes = { "*" })
+	public ResponseEntity<List<String>> findAllLocations() {
+		return findLocations("");
 	}
 
 }

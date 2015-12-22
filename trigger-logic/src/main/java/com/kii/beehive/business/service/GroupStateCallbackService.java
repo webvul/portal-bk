@@ -47,14 +47,14 @@ public class GroupStateCallbackService {
 
 				target.getThingList().forEach(thingID->{
 
-					commandService.sendCmdToThing(thingID,action);
+					commandService.sendCmdToThing(thingID,action,triggerID);
 				});
 				return;
 			}
 
 			if(target.getTagList()!=null){
 
-				commandService.sendCmdToTagExpress(target.isAnd(),target.getTagList(),action);
+				commandService.sendCmdToTagExpress(target.isAnd(),target.getTagList(),action,triggerID);
 
 			}
 		});

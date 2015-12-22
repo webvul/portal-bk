@@ -1,4 +1,4 @@
-package com.kii.beehive.portal.service;
+package com.kii.beehive.portal.manager;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kii.beehive.portal.common.utils.CollectUtils;
 import com.kii.beehive.portal.exception.StoreException;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
@@ -19,11 +20,11 @@ import com.kii.beehive.portal.jdbc.dao.TagThingRelationDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
+import com.kii.beehive.portal.jdbc.entity.TagType;
 
 @Component
-@Transactional
-public class ThingTagService {
-	private Logger log= LoggerFactory.getLogger(ThingTagService.class);
+public class TagThingManager {
+	private Logger log= LoggerFactory.getLogger(TagThingManager.class);
 
 	@Autowired
 	private GlobalThingDao globalThingDao;
@@ -38,7 +39,7 @@ public class ThingTagService {
 	//private AppInfoDao appInfoDao;
 
 
-	public Long createThing(GlobalThingInfo thingInfo, Collection<String> tagList) {
+	public Long createThing(GlobalThingInfo thingInfo, String location, Collection<String> tagList) {
 		
 		/*KiiAppInfo kiiAppInfo = appInfoDao.getAppInfoByID(thingInfo.getKiiAppID());
 		
@@ -47,7 +48,8 @@ public class ThingTagService {
 			ex.setMessage("AppID not exist");
 			throw ex;
 		}*/
-		
+
+
 		Set<TagIndex> tagSet=new HashSet<>();
 
 		tagList.forEach((str)->{
@@ -55,6 +57,11 @@ public class ThingTagService {
 		});
 
 		long thingID = globalThingDao.saveOrUpdate(thingInfo);
+
+		// set location tag and location tag-thing relation
+		if(location != null) {
+			this.saveOrUpdateThingLocation(thingID, location);
+		}
 
 		for(TagIndex tag:tagSet){
 			if(!Strings.isBlank(tag.getDisplayName())){
@@ -111,7 +118,7 @@ public class ThingTagService {
 	}
 	
 	public void removeThing(GlobalThingInfo thing) {
-		tagThingRelationDao.delete(thing.getId(), null);
+		tagThingRelationDao.delete(null, thing.getId());
 		globalThingDao.deleteByID(thing.getId());
 	}
 
@@ -121,23 +128,85 @@ public class ThingTagService {
 
 	}
 
-	public GlobalThingInfo getThingByVendorThingID(String vendorThingID){
 
-		return globalThingDao.getThingByVendorThingID(vendorThingID);
+	private void saveOrUpdateThingLocation(Long globalThingID, String location) {
+
+		// get location tag
+		TagIndex tagIndex = tagIndexDao.findOneTagByTagTypeAndName(TagType.Location, location);
+
+		if(tagIndex == null) {
+			tagIndex = TagIndex.generTagIndex(TagType.Location, location, null);
+			long tagID = tagIndexDao.saveOrUpdate(tagIndex);
+			tagIndex.setId(tagID);
+		}
+
+		// get tag-thing relation
+		List<TagThingRelation> relationList = tagThingRelationDao.find(globalThingID, TagType.Location, null);
+
+		TagThingRelation relation = CollectUtils.getFirst(relationList);
+		if(relation == null) {
+			relation = new TagThingRelation(tagIndex.getId(), globalThingID);
+		} else {
+			relation.setTagID(tagIndex.getId());
+		}
+
+		// update tag-thing relation
+		tagThingRelationDao.saveOrUpdate(relation);
 	}
 
-	public List<GlobalThingInfo> getThingsByTag(String tagName){
-
-		TagIndex tagIndex=new TagIndex(tagName);
-		return globalThingDao.findThingByTag(tagIndex.getFullTagName());
+	public GlobalThingInfo findThingByVendorThingID(String vendorThingID) {
+		List<GlobalThingInfo> list = globalThingDao.findBySingleField(GlobalThingInfo.VANDOR_THING_ID, vendorThingID);
+		if(list == null || list.isEmpty()) {
+			return null;
+		}
+		return list.get(0);
 	}
 
+	public void bindCustomTagToThing(Collection<String> displayNames,Long thingID) {
+		GlobalThingInfo thing = globalThingDao.findByID(thingID);
+		if(thing == null){
+			throw new StoreException("thing not found");
+		}
 
-	public List<GlobalThingInfo> queryThingByTagExpress(boolean b, List<String> tagList) {
-		if(b){
-			return globalThingDao.queryThingByIntersectionTags(tagList);
-		}else {
-			return globalThingDao.queryThingByUnionTags(tagList);
+		for(String displayName:displayNames){
+			TagIndex tag = this.findCustomTag(displayName);
+			if(tag != null){
+				tagThingRelationDao.saveOrUpdate(new TagThingRelation(tag.getId(),thing.getId()));
+			}else{
+				log.warn("Custom Tag is null, displayName = " + displayName);
+			}
 		}
 	}
+
+	public void unbindCustomTagToThing(Collection<String> displayNames,Long thingID) {
+		GlobalThingInfo thing = globalThingDao.findByID(thingID);
+		if(thing == null){
+			throw new StoreException("thing not found");
+		}
+
+		for(String displayName:displayNames){
+			TagIndex tag = this.findCustomTag(displayName);
+			if(tag != null){
+				tagThingRelationDao.delete(tag.getId(),thing.getId());
+			}else{
+				log.warn("Custom Tag is null, displayName = " + displayName);
+			}
+		}
+	}
+
+	private TagIndex findCustomTag(String displayName) {
+		List<TagIndex> tagIndexList = tagIndexDao.findTagByTagTypeAndName(TagType.Custom.toString(), displayName);
+
+		if(tagIndexList == null || tagIndexList.isEmpty()) {
+			return null;
+		}
+		return tagIndexList.get(0);
+	}
+
+	public List<TagIndex> findTagIndexByGlobalThingID(String globalThingID) {
+
+		return tagIndexDao.findTagByGlobalThingID(globalThingID);
+	}
+
+
 }
