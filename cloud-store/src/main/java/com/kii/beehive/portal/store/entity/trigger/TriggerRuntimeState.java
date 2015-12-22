@@ -92,6 +92,8 @@ public class TriggerRuntimeState extends KiiEntity{
 				return accessNum>0;
 			case Some:
 				return accessNum>criticalNumber;
+			case Percent:
+				return (100.0*accessNum/sumNum)>criticalNumber;
 			default:
 				return false;
 		}

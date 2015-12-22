@@ -3,6 +3,8 @@ package com.kii.beehive.portal.store.entity.trigger;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
+
 
 public class TriggerTarget {
 
@@ -38,6 +40,7 @@ public class TriggerTarget {
 		isAnd = and;
 	}
 
+	@JsonUnwrapped
 	public TargetAction getCommand() {
 		return command;
 	}

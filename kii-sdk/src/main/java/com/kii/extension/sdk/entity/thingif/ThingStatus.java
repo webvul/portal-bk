@@ -25,4 +25,13 @@ public class ThingStatus {
 	@JsonAnySetter
 	public void setField(String key,Object value){
 		this.fields.put(key,value);
-	}}
+	}
+
+	@JsonIgnore
+	public Object getField(String key){
+		return this.fields.get(key);
+	}
+
+
+}
+

@@ -12,9 +12,19 @@ public class TriggerRecord extends KiiEntity {
 
 	private TriggerSource  source;
 
+	private List<SummaryExpress>  summaryExpress=new ArrayList<>();
+
 	private StatePredicate  perdicate;
 
-	private TriggerTarget  target;
+	private List<TriggerTarget>  targets=new ArrayList<>();
+
+	public List<SummaryExpress> getSummaryExpress() {
+		return summaryExpress;
+	}
+
+	public void setSummaryExpress(List<SummaryExpress> summarExpress) {
+		this.summaryExpress = summarExpress;
+	}
 
 	public TriggerSource getSource() {
 		return source;
@@ -32,11 +42,11 @@ public class TriggerRecord extends KiiEntity {
 		this.perdicate = perdicate;
 	}
 
-	public TriggerTarget getTarget() {
-		return target;
+	public List<TriggerTarget> getTargets() {
+		return targets;
 	}
 
-	public void setTarget(TriggerTarget target) {
-		this.target = target;
+	public void setTarget(List<TriggerTarget> target) {
+		this.targets = target;
 	}
 }

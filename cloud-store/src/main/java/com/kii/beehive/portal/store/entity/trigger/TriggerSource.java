@@ -9,12 +9,31 @@ public class TriggerSource {
 
 	private List<String> thingList=new ArrayList<>();
 
+	private List<String> tagCollect=new ArrayList<>();
+
+	private boolean isAndExpress;
+
 	private Map<String,Boolean> relationTag=new HashMap<>();
 
 	private TriggerGroupPolicy groupPolicy=TriggerGroupPolicy.All;
 
 	private int criticalNumber=0;
 
+	public List<String> getTagCollect() {
+		return tagCollect;
+	}
+
+	public void setTagCollect(List<String> tagCollect) {
+		this.tagCollect = tagCollect;
+	}
+
+	public boolean isAndExpress() {
+		return isAndExpress;
+	}
+
+	public void setAndExpress(boolean andExpress) {
+		isAndExpress = andExpress;
+	}
 
 	public int getCriticalNumber() {
 		return criticalNumber;

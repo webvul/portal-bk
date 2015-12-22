@@ -1,9 +1,15 @@
 package com.kii.beehive.business.service;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.service.TriggerStatusDao;
@@ -53,6 +59,31 @@ public class ThingGroupStateService {
 
 		initGroupState(thingList);
 
+	}
+
+	public void updateThingGroup(List<GlobalThingInfo>  thingList,String triggerID){
+
+		Map<String,Boolean> updateMap=new HashMap<>();
+
+
+		TriggerRuntimeState state=statusDao.getObjectByID(triggerID);
+
+		Map<String,Boolean> stateMap=state.getMemberStatusMap();
+
+		Set<String> oldIDs=stateMap.keySet();
+		Set<String> thingIDs=thingList.stream().map(thing->thing.getKiiThingID()).collect(Collectors.toSet());
+
+		oldIDs.removeAll(thingIDs);
+
+		oldIDs.forEach(id->{
+			updateMap.put(id,null);
+		});
+
+		statusDao.updateEntityWithVersion(updateMap,triggerID,state.getVersion());
+
+		thingList.removeIf(thing-> stateMap.containsKey(thing.getKiiThingID()));
+
+		initGroupState(thingList);
 	}
 
 }

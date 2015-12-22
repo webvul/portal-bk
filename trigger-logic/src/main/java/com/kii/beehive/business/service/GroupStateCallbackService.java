@@ -11,7 +11,9 @@ import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.service.TriggerRecordDao;
 import com.kii.beehive.portal.service.TriggerStatusDao;
+import com.kii.beehive.portal.store.entity.trigger.TargetAction;
 import com.kii.beehive.portal.store.entity.trigger.TriggerRuntimeState;
+import com.kii.beehive.portal.store.entity.trigger.TriggerTarget;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 import com.kii.extension.sdk.exception.StaleVersionedObjectException;
 import com.kii.extension.sdk.service.ThingIFService;
@@ -19,6 +21,7 @@ import com.kii.extension.sdk.service.ThingIFService;
 @Component
 public class GroupStateCallbackService {
 
+	public static final int MAX_RETRY = 5;
 	@Autowired
 	private TriggerRecordDao  triggerDao;
 
@@ -28,23 +31,67 @@ public class GroupStateCallbackService {
 	@Autowired
 	private TriggerStatusDao statusDao;
 
+	@Autowired
+	private KiiCommandService commandService;
+
+
+	private void doCommand(String triggerID){
+
+		List<TriggerTarget>  targets=triggerDao.getObjectByID(triggerID).getTargets();
+
+		targets.forEach(target->{
+
+			TargetAction action=target.getCommand();
+
+			if(target.getThingList()!=null){
+
+				target.getThingList().forEach(thingID->{
+
+					commandService.sendCmdToThing(thingID,action);
+				});
+				return;
+			}
+
+			if(target.getTagList()!=null){
+
+				commandService.sendCmdToTagExpress(target.isAnd(),target.getTagList(),action);
+
+			}
+		});
+
+	}
+
+	public void onSummaryTriggerArrive(String triggerID){
+
+		doCommand(triggerID);
+
+	}
 
 	public void onPositiveArrive(String thingID,String triggerID){
 
-		doSaveOperate(triggerID,thingID,true);
+		boolean sign=doSaveOperate(triggerID,thingID,true);
+
+		if(sign){
+			doCommand(triggerID);
+		}
 	}
 
 
 	public void onNegitiveArrive(String thingID,String triggerID){
 
-		doSaveOperate(triggerID,thingID,false);
+		boolean sign=doSaveOperate(triggerID,thingID,false);
+
+
+		if(sign){
+			doCommand(triggerID);
+		}
 
 	}
 
 
 	private boolean doSaveOperate(String triggerID,String thingID,boolean sign){
 
-		int count=5;
+		int count= MAX_RETRY;
 
 		while(count>0){
 

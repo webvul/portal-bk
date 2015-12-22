@@ -37,6 +37,16 @@ public class GlobalThingDao extends BaseDao<GlobalThingInfo>{
 		}
 	}
 
+	public List<GlobalThingInfo> getThingsByIDArray(List<String> thingIDs){
+
+		String sql = "SELECT g.* "
+				+ "FROM " + this.getTableName() +" g "
+				+ " WHERE g.thing_id in (?) ";
+
+		return jdbcTemplate.query(sql,new Object[]{thingIDs},getRowMapper());
+
+	}
+
 	public List<GlobalThingInfo>  queryThingByUnionTags(List<String> tagCollect){
 
 		String sql = "SELECT g.* "

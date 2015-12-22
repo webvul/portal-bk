@@ -81,6 +81,8 @@ public class KiiTriggerRegistService {
 
 	}
 
+
+
 	public void registDoubleTrigger(String thingID, Condition condition, String triggerID){
 
 		StatePredicate positivePredicate=new StatePredicate();
