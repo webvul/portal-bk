@@ -66,7 +66,6 @@ public class TestOnboardingHelperController extends WebTestTemplate {
 
     }
 
-    // TODO need to check, the execution time is too long, and TestUserGroupController will get wrong token exception while running togther
     @Test
     public void testGetOnboardingInfo() throws Exception {
 

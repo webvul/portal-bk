@@ -45,8 +45,6 @@ import com.kii.beehive.portal.web.help.PortalException;
 @RequestMapping(path="/things",consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
 public class ThingController {
 
-	// TODO do we need entity for url output? such as ThingInput, OutputUser etc
-
 	@Autowired
 	private TagThingManager thingTagManager;
 	

@@ -74,7 +74,10 @@ public class AppInfoManager {
 
 	}
 
-
+	/**
+	 * important:
+	 * this API is supposed to be called only when initialize the environment
+	 */
 	@Async
 	public void initAppInfos(String userName,String pwd,String masterID){
 
