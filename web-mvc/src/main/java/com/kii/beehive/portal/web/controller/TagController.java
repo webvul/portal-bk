@@ -105,7 +105,7 @@ public class TagController {
 		List<TagIndex> orig = tagIndexDao.findTagByTagTypeAndName(TagType.Custom.toString(), displayName);
 		
 		if(orig.size() == 0){
-			throw new PortalException("no body", "no body", HttpStatus.NOT_FOUND);
+			throw new PortalException("Tag Not Found", "Tag with displayName:" + displayName + " Not Found", HttpStatus.NOT_FOUND);
 		}
 
 		thingTagManager.removeTag(orig.get(0));

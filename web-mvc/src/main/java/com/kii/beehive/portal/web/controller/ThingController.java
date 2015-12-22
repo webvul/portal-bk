@@ -195,7 +195,7 @@ public class ThingController {
 		GlobalThingInfo orig =  globalThingDao.findByID(globalThingID);
 		
 		if(orig == null){
-			throw new PortalException("no body", "no body", HttpStatus.NOT_FOUND);
+			throw new PortalException("Thing Not Found", "Thing with globalThingID:" + globalThingID + " Not Found", HttpStatus.NOT_FOUND);
 		}
 		
 		thingTagManager.removeThing(orig);
