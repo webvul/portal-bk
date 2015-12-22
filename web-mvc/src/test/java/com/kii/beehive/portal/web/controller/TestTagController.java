@@ -1,15 +1,18 @@
 package com.kii.beehive.portal.web.controller;
 
-import static junit.framework.TestCase.assertTrue;
 import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertNull;
 import static junit.framework.TestCase.assertNotNull;
+import static junit.framework.TestCase.assertNull;
+import static junit.framework.TestCase.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +59,8 @@ public class TestTagController extends WebTestTemplate {
 
         Map<String,Object> map=mapper.readValue(result, Map.class);
 
+        System.out.println("Response:" + result);
+
         tagIDForTest = Long.valueOf((int)map.get("id"));
 
         // assert http return
@@ -69,9 +74,9 @@ public class TestTagController extends WebTestTemplate {
 
         this.testCreateTag();
 
+        // update the tag
         Map<String, Object> request = new HashMap<>();
-        request.put("id", tagIDForTest);
-        request.put("displayName", displayName+"_new");
+        request.put("displayName", displayName);
         request.put("description", "some description new");
 
         String ctx= mapper.writeValueAsString(request);
@@ -86,14 +91,48 @@ public class TestTagController extends WebTestTemplate {
 
         Map<String,Object> map=mapper.readValue(result, Map.class);
 
+        System.out.println("Response:" + result);
+
         // assert http return
         Long tagID = Long.valueOf((int)map.get("id"));
         assertEquals(tagIDForTest, tagID);
 
         String tagName = (String)map.get("tagName");
-        assertEquals(TagType.Custom + "-" + displayName+"_new", tagName);
+        assertEquals(TagType.Custom + "-" + displayName, tagName);
 
         TagIndex tagIndex = tagIndexDao.findByID(tagID);
+        assertEquals(tagIDForTest, (Long)tagIndex.getId());
+        assertEquals(displayName, tagIndex.getDisplayName());
+        assertEquals("some description new", tagIndex.getDescription());
+
+
+        // create another tag as displayName changed
+        request = new HashMap<>();
+        request.put("displayName", displayName+"_new");
+        request.put("description", "some description new");
+
+        ctx= mapper.writeValueAsString(request);
+
+        result=this.mockMvc.perform(
+                post("/tags/custom").content(ctx)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("UTF-8")
+        )
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        map=mapper.readValue(result, Map.class);
+
+        System.out.println("Response:" + result);
+
+        // assert http return
+        tagID = Long.valueOf((int)map.get("id"));
+        assertEquals(tagIDForTest, tagID);
+
+        tagName = (String)map.get("tagName");
+        assertEquals(TagType.Custom + "-" + displayName+"_new", tagName);
+
+        tagIndex = tagIndexDao.findByID(tagID);
         assertEquals(tagIDForTest, (Long)tagIndex.getId());
         assertEquals(displayName+"_new", tagIndex.getDisplayName());
         assertEquals("some description new", tagIndex.getDescription());

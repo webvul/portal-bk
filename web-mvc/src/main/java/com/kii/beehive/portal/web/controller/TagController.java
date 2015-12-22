@@ -61,7 +61,7 @@ public class TagController {
 	 * refer to doc "Beehive API - Thing API" for request/response details refer
 	 * to doc "Tech Design - Beehive API", section
 	 * "Create/Update Tag (创建/更新tag)" for more details
-	 * // TODO need to discuss whether allowing multiple tags with same tag type and display name
+	 *
 	 */
 	@RequestMapping(path = "/custom", method = { RequestMethod.POST })
 	public Map<String, Object> createTag(@RequestBody TagIndex tag) {
@@ -118,7 +118,7 @@ public class TagController {
 	 * refer to doc "Beehive API - Thing API" for request/response details refer
 	 * to doc "Tech Design - Beehive API", section "Inquire Tag (查询tag)" for
 	 * more details
-	 * // TODO need to discuss whether allowing multiple tags with same tag type and display name
+	 *
 	 * @return
 	 */
 	@RequestMapping(path = "/search", method = { RequestMethod.GET })

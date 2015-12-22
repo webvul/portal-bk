@@ -1,15 +1,16 @@
 package com.kii.beehive.portal.web;
 
-import static junit.framework.TestCase.fail;
-import static junit.framework.TestCase.assertTrue;
 import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertTrue;
+import static junit.framework.TestCase.fail;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
@@ -24,9 +25,7 @@ import com.kii.beehive.portal.service.BeehiveUserDao;
 import com.kii.beehive.portal.service.KiiUserSyncDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.controller.UserController;
-import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.exception.UserAlreadyExistsException;
-import com.kii.extension.sdk.service.UserService;
 
 
 public class TestUserController extends WebTestTemplate{
@@ -237,6 +236,44 @@ public class TestUserController extends WebTestTemplate{
 		System.out.println();
 		System.out.println("Http Response: " + result);
 		System.out.println();
+
+		// test 400
+		request.remove("userID");
+
+		ctx = mapper.writeValueAsString(request);
+
+		result=this.mockMvc.perform(
+				post("/users/").content("{}")
+						.contentType(MediaType.APPLICATION_JSON)
+						.characterEncoding("UTF-8")
+						.header("Authorization", "Bearer d31032a0-8ebf-11e5-9560-00163e02138f")
+		)
+				.andExpect(status().isBadRequest())
+				.andReturn().getResponse().getContentAsString();
+
+		System.out.println();
+		System.out.println("Http Response: " + result);
+		System.out.println();
+
+		// test 400
+		request.remove("userName");
+		request.put("userID", userIDForTest);
+
+		ctx = mapper.writeValueAsString(request);
+
+		result=this.mockMvc.perform(
+				post("/users/").content("{}")
+						.contentType(MediaType.APPLICATION_JSON)
+						.characterEncoding("UTF-8")
+						.header("Authorization", "Bearer d31032a0-8ebf-11e5-9560-00163e02138f")
+		)
+				.andExpect(status().isBadRequest())
+				.andReturn().getResponse().getContentAsString();
+
+		System.out.println();
+		System.out.println("Http Response: " + result);
+		System.out.println();
+
 	}
 
 

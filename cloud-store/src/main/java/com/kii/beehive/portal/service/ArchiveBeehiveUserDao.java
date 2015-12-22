@@ -25,8 +25,7 @@ public class ArchiveBeehiveUserDao extends AbstractDataAccess<BeehiveUser> {
 
 	public BeehiveUser queryInArchive(BeehiveUser user){
 
-		// TODO: need to consider the case of both persons with the same name
-		QueryParam param= ConditionBuilder.orCondition().equal("userName",user.getUserName()).equal("userID",user.getAliUserID()).getFinalQueryParam();
+		QueryParam param= ConditionBuilder.newCondition().equal("userID",user.getAliUserID()).getFinalQueryParam();
 
 
 		List<BeehiveUser> list=super.query(param);

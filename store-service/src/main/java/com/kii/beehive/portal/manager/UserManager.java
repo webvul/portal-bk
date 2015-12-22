@@ -8,15 +8,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
+import com.kii.beehive.portal.exception.UserNotExistException;
 import com.kii.beehive.portal.helper.SyncMsgService;
 import com.kii.beehive.portal.service.ArchiveBeehiveUserDao;
 import com.kii.beehive.portal.service.BeehiveUserDao;
 import com.kii.beehive.portal.service.KiiUserSyncDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.store.entity.CustomProperty;
-
+import com.kii.extension.sdk.exception.ObjectNotFoundException;
 
 @Component
 public class UserManager {
@@ -68,8 +68,12 @@ public class UserManager {
 
 
 
-		userDao.updateUser(user,userID);
+		try {
+			userDao.updateUser(user, userID);
 
+		}catch(ObjectNotFoundException e){
+			throw new UserNotExistException(userID);
+		}
 		msgService.addUpdateMsg(userID, user);
 
 
@@ -79,9 +83,12 @@ public class UserManager {
 
 		BeehiveUser user=new BeehiveUser();
 		user.setCustomFields(new CustomProperty(customProps));
+		try{
+			userDao.updateUser(user, userID);
 
-		userDao.updateUser(user, userID);
-
+		}catch(ObjectNotFoundException e){
+			throw new UserNotExistException(userID);
+		}
 		msgService.addUpdateMsg(userID, user);
 
 	}

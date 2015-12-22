@@ -4,7 +4,6 @@ import com.kii.beehive.portal.jdbc.annotation.JdbcField;
 
 public class TagThingRelation extends DBEntity {
 
-	// TODO is "id" duplicated with DBEntity?
 	private long id;
 	
 	private long tagID;

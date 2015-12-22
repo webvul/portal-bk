@@ -66,7 +66,6 @@ public class TestOnboardingHelperController extends WebTestTemplate {
 
     }
 
-    // TODO need to check, the execution time is too long, and TestUserGroupController will get wrong token exception while running togther
     @Test
     public void testGetOnboardingInfo() throws Exception {
 
@@ -91,7 +90,7 @@ public class TestOnboardingHelperController extends WebTestTemplate {
         assertEquals(KII_APP_ID, map.get("kiiAppID"));
         assertEquals("f973edcaaec9aeac36dd01ebe1c3bc49", map.get("kiiAppKey"));
         assertEquals("https://api-development-beehivecn3.internal.kii.com", map.get("kiiSiteUrl"));
-        assertEquals("f83120e36100-2cc9-5e11-0cc9-01a61a9a", map.get("ownerID"));
+        assertNotNull(map.get("ownerID"));
         assertNotNull(map.get("ownerToken"));
 
     }
