@@ -1,6 +1,6 @@
 package com.kii.beehive.portal.web;
 
-import static junit.framework.Assert.assertTrue;
+import static junit.framework.TestCase.assertTrue;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertNull;
@@ -28,6 +28,7 @@ import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
 import com.kii.beehive.portal.jdbc.entity.TagType;
+import com.kii.beehive.portal.manager.TagThingManager;
 import com.kii.beehive.portal.web.controller.ThingController;
 
 public class TestThingControll extends WebTestTemplate{
@@ -94,6 +95,50 @@ public class TestThingControll extends WebTestTemplate{
 		globalThingIDForTest = Long.valueOf((int)map.get("globalThingID"));
 		assertNotNull(globalThingIDForTest);
 		assertTrue(globalThingIDForTest > 0);
+
+	}
+
+	@Test
+	public void testCreatThingWithoutLocation() throws Exception {
+
+		// create without tag and custom field
+		Map<String, Object> request = new HashMap<>();
+		request.put("vendorThingID", vendorThingIDsForTest[0]);
+		request.put("kiiAppID", KII_APP_ID);
+		request.put("type", "some type");
+
+		String ctx= mapper.writeValueAsString(request);
+
+		String result=this.mockMvc.perform(
+				post("/things").content(ctx)
+						.contentType(MediaType.APPLICATION_JSON)
+						.characterEncoding("UTF-8")
+		)
+				.andExpect(status().isOk())
+				.andReturn().getResponse().getContentAsString();
+
+		Map<String,Object> map=mapper.readValue(result, Map.class);
+
+		// assert http reture
+		globalThingIDForTest = Long.valueOf((int)map.get("globalThingID"));
+		assertNotNull(globalThingIDForTest);
+		assertTrue(globalThingIDForTest > 0);
+
+		// query thing
+		result=this.mockMvc.perform(
+				get("/things/" + globalThingIDForTest)
+						.contentType(MediaType.APPLICATION_JSON)
+						.characterEncoding("UTF-8")
+		)
+				.andExpect(status().isOk())
+				.andReturn().getResponse().getContentAsString();
+
+		map=mapper.readValue(result, Map.class);
+
+		System.out.println(map);
+
+		assertEquals(globalThingIDForTest, Long.valueOf((Integer)map.get("globalThingID")));
+		assertEquals(TagThingManager.DEFAULT_LOCATION, map.get("location"));
 
 	}
 

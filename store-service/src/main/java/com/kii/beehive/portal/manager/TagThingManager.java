@@ -25,6 +25,8 @@ import com.kii.beehive.portal.jdbc.entity.TagType;
 public class TagThingManager {
 	private Logger log= LoggerFactory.getLogger(TagThingManager.class);
 
+	public final static String DEFAULT_LOCATION = "Unknown";
+
 	@Autowired
 	private GlobalThingDao globalThingDao;
 
@@ -38,6 +40,13 @@ public class TagThingManager {
 	//private AppInfoDao appInfoDao;
 
 
+	/**
+	 * create or update the thing including the location and custom tags
+	 * @param thingInfo
+	 * @param location
+	 * @param tagList
+     * @return
+     */
 	public Long createThing(GlobalThingInfo thingInfo, String location, Collection<String> tagList) {
 		
 		/*KiiAppInfo kiiAppInfo = appInfoDao.getAppInfoByID(thingInfo.getKiiAppID());
@@ -58,10 +67,12 @@ public class TagThingManager {
 		long thingID = globalThingDao.saveOrUpdate(thingInfo);
 
 		// set location tag and location tag-thing relation
-		if(location != null) {
-			this.saveOrUpdateThingLocation(thingID, location);
+		if(location == null) {
+			location = DEFAULT_LOCATION;
 		}
+		this.saveOrUpdateThingLocation(thingID, location);
 
+		// set custom tag and custom tag-thing relation
 		for(TagIndex tag:tagSet){
 			if(!Strings.isBlank(tag.getDisplayName())){
 				Long tagID = null;
@@ -127,6 +138,15 @@ public class TagThingManager {
 
 	}
 
+	/**
+	 * save the thing-location relation
+	 * - if location not existing, create it
+	 * - if thing doesn't have location, create the thing-location relation
+	 * - if thing already has location, update the thing-location relation (only one location is allowed for one thing)
+	 *
+	 * @param globalThingID
+	 * @param location
+     */
 	private void saveOrUpdateThingLocation(Long globalThingID, String location) {
 
 		// get location tag
