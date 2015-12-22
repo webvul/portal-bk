@@ -83,14 +83,18 @@ public class KiiCommandService {
 	}
 
 
-	public void sendCmdToTagExpress(boolean isAnd, List<String>  tagCollect, TargetAction command){
+	public void sendCmdToTagExpress(boolean isAnd, List<String>  tagCollect, TargetAction action,String triggerID){
 
 
 		List<GlobalThingInfo>  thingList=thingTagService.queryThingByTagExpress(isAnd,tagCollect);
 
 		thingList.forEach(thing->{
 
-
+			if(action.getCommand()!=null){
+				sendCmd(action.getCommand(),thing);
+			}else if(action.getServiceCode()!=null){
+				callServiceCode(action.getServiceCode(),triggerID);
+			}
 
 		});
 	}
