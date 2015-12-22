@@ -77,6 +77,44 @@ public class ThingController {
 	}
 	
 	/**
+	 * type下的所有设备
+	 * GET /things/type/{type}
+	 *
+	 * refer to doc "Beehive API - Thing API" for request/response details
+	 *
+     * @return
+     */
+	@RequestMapping(path = "/type/{type}", method = {RequestMethod.GET})
+	public ResponseEntity<List<ThingRestBean>> getThingsByAll(@PathVariable("type") String type) {
+		List<GlobalThingInfo> list = globalThingDao.getThingByType(type);
+		List<ThingRestBean> resultList = new ArrayList<>();
+		if(list != null) {
+			for (GlobalThingInfo thingInfo : list) {
+				ThingRestBean input = new ThingRestBean();
+				BeanUtils.copyProperties(thingInfo,input);
+				resultList.add(input);
+			}
+		}
+
+		return new ResponseEntity<>(resultList, HttpStatus.OK);
+	}
+	
+	/**
+	 * 所有设备的type
+	 * GET /things/type
+	 *
+	 * refer to doc "Beehive API - Thing API" for request/response details
+	 *
+     * @return
+     */
+	@RequestMapping(path = "/type", method = {RequestMethod.GET})
+	public ResponseEntity<List<String>> getAllType() {
+		List<String> list = globalThingDao.findAllThingTypes();
+
+		return new ResponseEntity<>(list, HttpStatus.OK);
+	}
+	
+	/**
 	 * 查询设备（globalThingID）
 	 * GET /things/{globalThingID}
 	 *

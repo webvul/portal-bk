@@ -20,11 +20,16 @@ public class GlobalThingDao extends BaseDao<GlobalThingInfo>{
 	}
 
 	public List<String> findAllThingTypes() {
-		String sql = "SELECT DISTINCT thing_type FROM " + this.getTableName();
+		String sql = "SELECT DISTINCT "+ GlobalThingInfo.THING_TYPE +" FROM " + this.getTableName();
 
 		List<String> rows = jdbcTemplate.queryForList(sql, null, String.class);
 
 		return rows;
+	}
+	
+	public List<GlobalThingInfo> getThingByType(String type) {
+		List<GlobalThingInfo> list = super.findBySingleField(GlobalThingInfo.THING_TYPE, type);
+			return list;
 	}
 
 	public GlobalThingInfo getThingByVendorThingID(String vendorThingID) {

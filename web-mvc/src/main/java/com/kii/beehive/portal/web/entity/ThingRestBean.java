@@ -100,7 +100,7 @@ public class ThingRestBean extends GlobalThingInfo {
 				return mapper.readValue(status, Map.class);
 			}
 		} catch (Exception e) {
-			log.error("Excetpion in getStatusJson()", e);
+			log.error("Excetpion in getStatusJson(), status = "+ this.getStatus(), e);
 		}
 		return null;
 	}
