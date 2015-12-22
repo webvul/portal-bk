@@ -28,6 +28,11 @@ public class KiiUserSyncDao {
 	@Autowired
 	private UserService userService;
 
+	/**
+	 * important:
+	 * as the existing user with the same login name will be removed,
+	 * this API is supposed to be called only when initialize the environment
+	 */
 	public String addDefaultOwner(String name,String pwd){
 
 		KiiUser user=new KiiUser();
@@ -38,7 +43,7 @@ public class KiiUserSyncDao {
 		try {
 			return userService.createUser(user);
 		}catch (UserAlreadyExistsException e){
-			// TODO would it be dangerous if the existing default owner got deleted while some things were still owned by him?
+
 			userService.removeUserByLoginName(name);
 
 			return userService.createUser(user);

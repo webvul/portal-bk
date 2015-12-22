@@ -49,7 +49,12 @@ public class OnboardingHelperController {
 	@Autowired
 	private AppInfoManager  appManager;
 
-	// TODO is this method used for bucket KiiAppInfo initialization? each partner may have his own app
+	/**
+	 * important:
+	 * this API is supposed to be called only when initialize the environment
+	 *
+	 * @param paramMap
+     */
 	@RequestMapping(path="/appinit",method={RequestMethod.POST},consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
 	public void initAppContext(@RequestBody Map<String,Object>  paramMap){
 

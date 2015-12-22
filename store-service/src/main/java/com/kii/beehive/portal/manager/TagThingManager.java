@@ -61,7 +61,7 @@ public class TagThingManager {
 		if(location != null) {
 			this.saveOrUpdateThingLocation(thingID, location);
 		}
-// TODO what should be the logic in case of tag not existing? tag is created below, while tag is ignored in bindTagToThing, should we make the logic the same?
+
 		for(TagIndex tag:tagSet){
 			if(!Strings.isBlank(tag.getDisplayName())){
 				Long tagID = null;

@@ -47,7 +47,7 @@ public class LogAspect {
 			}
 			log.info(sb.toString());
 		}catch(Throwable ex){
-			ex.printStackTrace();
+			log.error("Exception in beforeCallBusinessFun", ex);
 			return;
 		}
 
@@ -72,7 +72,7 @@ public class LogAspect {
 		log.debug(" result:"+ safeToString(result));
 
 		}catch(Throwable ex){
-			ex.printStackTrace();
+			log.error("Exception in afterCallBusinessFun", ex);
 			return;
 		}
 	}

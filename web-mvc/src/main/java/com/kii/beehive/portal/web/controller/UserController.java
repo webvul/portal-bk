@@ -46,7 +46,7 @@ public class UserController {
 	@RequestMapping(path="",method={RequestMethod.POST})
 	public Map<String,String> createUser(@RequestBody UserRestBean user){
 
-		if(StringUtils.isEmpty(user.getUserName()) && StringUtils.isEmpty(user.getAliUserID())){
+		if(StringUtils.isEmpty(user.getUserName()) || StringUtils.isEmpty(user.getAliUserID())){
 			throw new PortalException("RequiredFieldsMissing","username or userID cannot been null", HttpStatus.BAD_REQUEST);
 		}
 
