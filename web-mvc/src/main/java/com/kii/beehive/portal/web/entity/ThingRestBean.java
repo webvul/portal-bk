@@ -3,6 +3,8 @@ package com.kii.beehive.portal.web.entity;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
@@ -20,6 +22,8 @@ import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.help.PortalException;
 
 public class ThingRestBean extends GlobalThingInfo {
+
+	private final static Pattern validVendorThingIDPattern = Pattern.compile("([0-9a-zA-Z]|-)+");
 
 	private Logger log= LoggerFactory.getLogger(ThingRestBean.class);
 
@@ -112,13 +116,27 @@ public class ThingRestBean extends GlobalThingInfo {
 
 	public void verifyInput(){
 
-		if(Strings.isBlank(this.getVendorThingID())){
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"VendorThingID is empty", HttpStatus.BAD_REQUEST);
-		}
+		this.verifyVendorThingID();
 
 		if(Strings.isBlank(this.getKiiAppID())){
 			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"KiiAppID is empty", HttpStatus.BAD_REQUEST);
 		}
+	}
+
+	private void verifyVendorThingID() {
+
+		String vendorThingID = this.getVendorThingID();
+
+		if(Strings.isBlank(vendorThingID)){
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"VendorThingID is empty", HttpStatus.BAD_REQUEST);
+		}
+
+		Matcher matcher = validVendorThingIDPattern.matcher(vendorThingID);
+
+		if(!matcher.matches()) {
+			throw new PortalException(ErrorCode.INVALID_INPUT, "VendorThingID:" + vendorThingID + " is invalid", HttpStatus.BAD_REQUEST);
+		}
+
 	}
 
 }

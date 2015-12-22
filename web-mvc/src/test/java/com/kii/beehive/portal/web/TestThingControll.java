@@ -52,7 +52,7 @@ public class TestThingControll extends WebTestTemplate{
 
 	private Long globalThingIDForTest;
 
-	private String[] vendorThingIDsForTest = new String[]{"someVendorThingID", "someVendorThingID_new"};
+	private String[] vendorThingIDsForTest = new String[]{"someVendorThingID", "someVendorThingID-new"};
 
 	private String[] displayNames = new String[]{"A", "B"};
 
@@ -246,6 +246,23 @@ public class TestThingControll extends WebTestTemplate{
 		String ctx= mapper.writeValueAsString(request);
 
 		String result=this.mockMvc.perform(
+				post("/things").content(ctx)
+						.contentType(MediaType.APPLICATION_JSON)
+						.characterEncoding("UTF-8")
+		)
+				.andExpect(status().isBadRequest())
+				.andReturn().getResponse().getContentAsString();
+
+		// invalid vendorThingID
+		request = new HashMap<>();
+		request.put("vendorThingID", "qwe.rty");
+		request.put("kiiAppID", KII_APP_ID);
+		request.put("type", "some type");
+		request.put("location", "some location");
+
+		ctx= mapper.writeValueAsString(request);
+
+		result=this.mockMvc.perform(
 				post("/things").content(ctx)
 						.contentType(MediaType.APPLICATION_JSON)
 						.characterEncoding("UTF-8")

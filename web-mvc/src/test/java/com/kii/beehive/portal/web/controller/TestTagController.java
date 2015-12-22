@@ -127,13 +127,13 @@ public class TestTagController extends WebTestTemplate {
 
         // assert http return
         tagID = Long.valueOf((int)map.get("id"));
-        assertEquals(tagIDForTest, tagID);
+        assertEquals(Long.valueOf(tagIDForTest + 1), tagID);
 
         tagName = (String)map.get("tagName");
         assertEquals(TagType.Custom + "-" + displayName+"_new", tagName);
 
         tagIndex = tagIndexDao.findByID(tagID);
-        assertEquals(tagIDForTest, (Long)tagIndex.getId());
+        assertEquals(Long.valueOf(tagIDForTest + 1), (Long)tagIndex.getId());
         assertEquals(displayName+"_new", tagIndex.getDisplayName());
         assertEquals("some description new", tagIndex.getDescription());
 
