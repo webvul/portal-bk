@@ -47,6 +47,31 @@ public class ThingController {
 	@Autowired
 	private GlobalThingDao globalThingDao;
 	
+	
+	
+	/**
+	 * 查询所有设备
+	 * GET /things/all
+	 *
+	 * refer to doc "Beehive API - Thing API" for request/response details
+	 *
+     * @return
+     */
+	@RequestMapping(path = "/all", method = {RequestMethod.GET})
+	public ResponseEntity<List<ThingRestBean>> getThingsByAll() {
+		List<GlobalThingInfo> list = globalThingDao.findAll();
+		List<ThingRestBean> resultList = new ArrayList<>();
+		if(list != null) {
+			for (GlobalThingInfo thingInfo : list) {
+				ThingRestBean input = new ThingRestBean();
+				BeanUtils.copyProperties(thingInfo,input);
+				resultList.add(input);
+			}
+		}
+
+		return new ResponseEntity<>(resultList, HttpStatus.OK);
+	}
+	
 	/**
 	 * 查询设备（globalThingID）
 	 * GET /things/{globalThingID}
