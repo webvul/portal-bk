@@ -86,6 +86,8 @@ public class BeehiveTriggerManager {
 
 
 		try {
+			initCommon();
+
 			initOnStateChange();
 
 			initStateUpload();
@@ -102,14 +104,17 @@ public class BeehiveTriggerManager {
 
 	}
 
+
+
 	private void initOnStateChange() throws IOException {
-		String jsStatusChange= StreamUtils.copyToString(loader.getResource("classpath:com/kii/beehive/business/trigger/script/onThingStatusChange.js").getInputStream(), Charsets.UTF_8);
+		String jsStatusChange= StreamUtils.copyToString(loader.getResource("classpath:com/kii/beehive/business/trigger/script/onTriggerBeenFired.js").getInputStream(), Charsets.UTF_8);
 
 		ExtensionCodeEntity entity=new ExtensionCodeEntity();
-		entity.setFunctionName("thing_status_change");
+		entity.setFunctionName("trigger_been_fire");
 
-		EventTriggerConfig<BucketWhenType> trigger= TriggerFactory.getBucketInstance("_state", TriggerScopeType.App);
+		EventTriggerConfig<BucketWhenType> trigger= TriggerFactory.getBucketInstance("_states", TriggerScopeType.App);
 		trigger.setWhen(BucketWhenType.DATA_OBJECT_UPDATED);
+		trigger.setEndpoint("global_on_thing_state_change");
 		entity.setEventTrigger(trigger);
 
 		entity.setJsBody(jsStatusChange);
@@ -121,6 +126,16 @@ public class BeehiveTriggerManager {
 		String jsStateUpload= StreamUtils.copyToString(loader.getResource("classpath:com/kii/beehive/business/trigger/script/stateUpload.js").getInputStream(), Charsets.UTF_8);
 		ExtensionCodeEntity uploadEntity=new ExtensionCodeEntity();
 		uploadEntity.setFunctionName("state_upload_for_group");
+
+		uploadEntity.setJsBody(jsStateUpload);
+
+		extensionDao.addGlobalExtensionCode(uploadEntity);
+	}
+
+	private void initCommon() throws IOException {
+		String jsStateUpload= StreamUtils.copyToString(loader.getResource("classpath:com/kii/beehive/business/trigger/script/common.js").getInputStream(), Charsets.UTF_8);
+		ExtensionCodeEntity uploadEntity=new ExtensionCodeEntity();
+		uploadEntity.setFunctionName("common_utils");
 
 		uploadEntity.setJsBody(jsStateUpload);
 
