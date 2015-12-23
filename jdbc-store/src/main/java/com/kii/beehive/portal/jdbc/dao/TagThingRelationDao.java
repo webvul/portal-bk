@@ -83,6 +83,16 @@ public class TagThingRelationDao extends BaseDao<TagThingRelation> {
 				entity.getId());
 
 	}
+	
+	public TagThingRelation findByThingIDAndTagID(Long thingID, Long tagID) {  
+		String sql = "SELECT * FROM " + this.getTableName() + " WHERE "+ TagThingRelation.THING_ID +"=? AND "+ TagThingRelation.TAG_ID + "=?";
+        List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql, thingID,tagID);
+        List<TagThingRelation> list = mapToList(rows);
+        if(list.size() > 0){
+        	return list.get(0);
+        }
+        return null;
+    }
 
 	public List<TagThingRelation> find(Long globalThingID, TagType tagType, String tagDisplayName) {
 

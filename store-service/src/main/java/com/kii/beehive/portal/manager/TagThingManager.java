@@ -99,9 +99,31 @@ public class TagThingManager {
 		for(String tagID:tagIDs){
 			TagIndex tag = tagIndexDao.findByID(tagID);
 			if(tag != null){
-				tagThingRelationDao.saveOrUpdate(new TagThingRelation(tag.getId(),thing.getId()));
+				TagThingRelation ttr = tagThingRelationDao.findByThingIDAndTagID(thing.getId(), tag.getId());
+				if(ttr != null){
+					tagThingRelationDao.saveOrUpdate(new TagThingRelation(tag.getId(),thing.getId()));
+				}
 			}else{
 				log.warn("Tag is null, TagId = " + tagID);
+			}
+		}
+	}
+	
+	public void bindCustomTagToThing(Collection<String> displayNames,Long thingID) {
+		GlobalThingInfo thing = globalThingDao.findByID(thingID);
+		if(thing == null){
+			throw new ThingNotExistException(thingID);
+		}
+
+		for(String displayName:displayNames){
+			TagIndex tag = this.findCustomTag(displayName);
+			if(tag != null){
+				TagThingRelation ttr = tagThingRelationDao.findByThingIDAndTagID(thing.getId(), tag.getId());
+				if(ttr != null){
+					tagThingRelationDao.saveOrUpdate(new TagThingRelation(tag.getId(),thing.getId()));
+				}
+			}else{
+				log.warn("Custom Tag is null, displayName = " + displayName);
 			}
 		}
 	}
@@ -118,6 +140,22 @@ public class TagThingManager {
 				tagThingRelationDao.delete(tag.getId(),thing.getId());
 			}else{
 				log.warn("Tag is null, TagId = " + tagID);
+			}
+		}
+	}
+	
+	public void unbindCustomTagToThing(Collection<String> displayNames,Long thingID) {
+		GlobalThingInfo thing = globalThingDao.findByID(thingID);
+		if(thing == null){
+			throw new ThingNotExistException(thingID);
+		}
+
+		for(String displayName:displayNames){
+			TagIndex tag = this.findCustomTag(displayName);
+			if(tag != null){
+				tagThingRelationDao.delete(tag.getId(),thing.getId());
+			}else{
+				log.warn("Custom Tag is null, displayName = " + displayName);
 			}
 		}
 	}
@@ -178,38 +216,6 @@ public class TagThingManager {
 			return null;
 		}
 		return list.get(0);
-	}
-
-	public void bindCustomTagToThing(Collection<String> displayNames,Long thingID) {
-		GlobalThingInfo thing = globalThingDao.findByID(thingID);
-		if(thing == null){
-			throw new ThingNotExistException(thingID);
-		}
-
-		for(String displayName:displayNames){
-			TagIndex tag = this.findCustomTag(displayName);
-			if(tag != null){
-				tagThingRelationDao.saveOrUpdate(new TagThingRelation(tag.getId(),thing.getId()));
-			}else{
-				log.warn("Custom Tag is null, displayName = " + displayName);
-			}
-		}
-	}
-
-	public void unbindCustomTagToThing(Collection<String> displayNames,Long thingID) {
-		GlobalThingInfo thing = globalThingDao.findByID(thingID);
-		if(thing == null){
-			throw new ThingNotExistException(thingID);
-		}
-
-		for(String displayName:displayNames){
-			TagIndex tag = this.findCustomTag(displayName);
-			if(tag != null){
-				tagThingRelationDao.delete(tag.getId(),thing.getId());
-			}else{
-				log.warn("Custom Tag is null, displayName = " + displayName);
-			}
-		}
 	}
 
 	private TagIndex findCustomTag(String displayName) {
