@@ -50,7 +50,7 @@ public class EventListener extends KiiEntity {
 	}
 
 	@JsonIgnore
-	public void addBindKey(List<String> bindKeys) {
+	public void addBindKeys(List<String> bindKeys) {
 		bindKeys.forEach(key->{
 			bindKeyMap.put(key,true);
 		});

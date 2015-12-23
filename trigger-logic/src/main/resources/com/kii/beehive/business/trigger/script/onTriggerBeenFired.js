@@ -21,7 +21,11 @@ function global_onPositiveTriggerArrive(params,context,done){
 
 }
 
+function global_onSummaryTriggerArrive(params,context,done){
 
+	global_onTriggerArrive(params,"summary",context,done);
+
+}
 
 
 function global_onNegitiveTriggerArrive(params,context,done){

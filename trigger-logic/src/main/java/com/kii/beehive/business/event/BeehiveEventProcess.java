@@ -2,8 +2,8 @@ package com.kii.beehive.business.event;
 
 import com.kii.beehive.portal.event.EventParam;
 
-public interface EventProcess {
+public interface BeehiveEventProcess {
 
-	public void onEventFire(String eventKey, EventParam param);
+	 void onEventFire(String eventKey, EventParam param);
 
 }

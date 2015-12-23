@@ -1,6 +1,8 @@
 package com.kii.beehive.portal.service;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
@@ -26,7 +28,20 @@ public class EventListenerDao extends AbstractDataAccess<EventListener>{
 	public List<EventListener> getEventListenerByTypeAndKey(EventType type, String bindKey){
 
 
-		QueryParam query= ConditionBuilder.andCondition().equal("type",type).equal("bindKeys."+bindKey,true).equal("enable",true).getFinalQueryParam();
+		QueryParam query= ConditionBuilder.andCondition()
+				.equal("type",type)
+				.equal("bindKeys."+bindKey,true)
+				.equal("enable",true).getFinalQueryParam();
+
+		return super.fullQuery(query);
+	}
+
+	public List<EventListener> getEventListenerByTargetKey(String targetKey) {
+
+
+		QueryParam query= ConditionBuilder.andCondition()
+				.equal("targetKey",targetKey)
+				.equal("enable",true).getFinalQueryParam();
 
 		return super.fullQuery(query);
 	}
@@ -39,5 +54,22 @@ public class EventListenerDao extends AbstractDataAccess<EventListener>{
 	@Override
 	protected BucketInfo getBucketInfo() {
 		return new BucketInfo("eventListener");
+	}
+
+
+	public void disableListener(String id) {
+
+		Map<String,Object> param= Collections.singletonMap("enable",false);
+
+		super.updateEntity(param,id);
+	}
+
+
+	public void enableListener(String id) {
+
+		Map<String,Object> param= Collections.singletonMap("enable",true);
+
+		super.updateEntity(param,id);
+
 	}
 }

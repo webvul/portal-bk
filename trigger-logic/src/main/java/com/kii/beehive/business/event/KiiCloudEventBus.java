@@ -15,7 +15,7 @@ import com.kii.beehive.portal.service.EventListenerDao;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
 @Component
-public class EventBus {
+public class KiiCloudEventBus {
 
 
 	@Autowired
@@ -37,7 +37,7 @@ public class EventBus {
 
 			String relationBeanName=listener.getRelationBeanName();
 
-			EventProcess process=context.getBean(relationBeanName,EventProcess.class);
+			BeehiveEventProcess process=context.getBean(relationBeanName,BeehiveEventProcess.class);
 
 			EventParam param=new EventParam();
 			param.setParamMap("thingIDs",relationThingID);
@@ -58,7 +58,7 @@ public class EventBus {
 
 			String relationBeanName=listener.getRelationBeanName();
 
-			EventProcess process=context.getBean(relationBeanName,EventProcess.class);
+			BeehiveEventProcess process=context.getBean(relationBeanName,BeehiveEventProcess.class);
 
 			EventParam param=new EventParam();
 			param.setParamMap("status",status);

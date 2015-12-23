@@ -5,14 +5,15 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.kii.beehive.business.event.EventProcess;
+import com.kii.beehive.business.event.KiicloudEventListenerService;
+import com.kii.beehive.business.event.BeehiveEventProcess;
 import com.kii.beehive.business.service.ThingGroupStateService;
 import com.kii.beehive.portal.event.EventParam;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 
-@Component
-public class TagChangeProcess implements EventProcess {
+@Component(KiicloudEventListenerService.TAG_CHANGE)
+public class TagChangeProcess implements BeehiveEventProcess {
 
 
 	@Autowired
