@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class HookGeneral {
 
 
-	Map<String,List<EventTriggerConfig>> eventMap=new HashMap<>();
+	private Map<String,List<EventTriggerConfig>> eventMap=new HashMap<>();
 
 	private Map<String,ScheduleTriggerConfig> triggerMap=new HashMap<>();
 
@@ -21,7 +21,7 @@ public class HookGeneral {
 		return new HookGeneral();
 	}
 
-	public HookGeneral addTrggerConfig(EventTriggerConfig trigger){
+	public HookGeneral addTriggerConfig(EventTriggerConfig trigger){
 
 		List<EventTriggerConfig> list=eventMap.getOrDefault(trigger.getUrl(),new ArrayList<EventTriggerConfig>());
 
@@ -53,6 +53,11 @@ public class HookGeneral {
 	}
 
 	public String generJson(ObjectMapper mapper) {
+
+		if(triggerMap.isEmpty()&&eventMap.isEmpty()){
+			return null;
+		}
+
 		try {
 			return mapper.writeValueAsString(getHookContext());
 		} catch (JsonProcessingException e) {
