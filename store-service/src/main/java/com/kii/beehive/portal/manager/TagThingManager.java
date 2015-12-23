@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.common.utils.CollectUtils;
-import com.kii.beehive.portal.exception.StoreException;
+import com.kii.beehive.portal.exception.ThingNotExistException;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.dao.TagThingRelationDao;
@@ -93,7 +93,7 @@ public class TagThingManager {
 	public void bindTagToThing(Collection<String> tagIDs,Long thingID) {
 		GlobalThingInfo thing = globalThingDao.findByID(thingID);
 		if(thing == null){
-			throw new StoreException("thing not found");
+			throw new ThingNotExistException(thingID);
 		}
 		
 		for(String tagID:tagIDs){
@@ -109,7 +109,7 @@ public class TagThingManager {
 	public void unbindTagToThing(Collection<String> tagIDs,Long thingID) {
 		GlobalThingInfo thing = globalThingDao.findByID(thingID);
 		if(thing == null){
-			throw new StoreException("thing not found");
+			throw new ThingNotExistException(thingID);
 		}
 		
 		for(String tagID:tagIDs){
@@ -183,7 +183,7 @@ public class TagThingManager {
 	public void bindCustomTagToThing(Collection<String> displayNames,Long thingID) {
 		GlobalThingInfo thing = globalThingDao.findByID(thingID);
 		if(thing == null){
-			throw new StoreException("thing not found");
+			throw new ThingNotExistException(thingID);
 		}
 
 		for(String displayName:displayNames){
@@ -199,7 +199,7 @@ public class TagThingManager {
 	public void unbindCustomTagToThing(Collection<String> displayNames,Long thingID) {
 		GlobalThingInfo thing = globalThingDao.findByID(thingID);
 		if(thing == null){
-			throw new StoreException("thing not found");
+			throw new ThingNotExistException(thingID);
 		}
 
 		for(String displayName:displayNames){
