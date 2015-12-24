@@ -8,7 +8,7 @@ function global_onThingStateChange(params,context,done){
 
 	var object=bucket.createObjectWithID(params.objectID);
 
-	object.refresh(){
+	object.refresh({
 
 	      success: function(theObject) {
 
@@ -22,7 +22,7 @@ function global_onThingStateChange(params,context,done){
              console.log("get state object fail:"+params.objectID);
              done(params);
           }
-	}
+	});
 
 
 }

@@ -12,12 +12,7 @@
          http://www.springframework.org/schema/task/spring-task.xsd
          http://www.springframework.org/schema/context
          http://www.springframework.org/schema/context/spring-context.xsd">
-    <!--
-    below config files for different env are specified in this config file, by reading the jvm para "spring.profile"
-        - beehive.portal.store.xxx.properties
-        - config.xxx.properties
-        - log4j.xxx.xml
-    -->
+
 
     <bean   class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="locations" value="classpath:com/kii/beehive/business/beehive.portal.store.properties"/>
@@ -34,8 +29,6 @@
     <bean id="cacheManager"
           class="org.springframework.cache.guava.GuavaCacheManager"/>
 
-
-
     <!-- aop -->
     <bean id="appBindAspect"  class="com.kii.extension.sdk.aop.AppBindAspect" />
 
@@ -43,15 +36,9 @@
     <!-- kiicloud connect -->
     <bean class="com.kii.extension.factory.KiiCloudSDKConfig" />
 
-    <bean class="com.kii.extension.sdk.service.DevPortalService" >
-        <property name="devPortalUrl"  value="${beehive.kiicloud.dev-portal.url}" />
-    </bean>
-
     <bean name="propAppBindTool" class="com.kii.extension.factory.LocalPropertyBindTool" >
         <property name="propFileName" value="classpath:com/kii/beehive/business/beehive.portal.store.properties" />
     </bean>
-
-    <!-- log4j    -->
 
 
     <bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">

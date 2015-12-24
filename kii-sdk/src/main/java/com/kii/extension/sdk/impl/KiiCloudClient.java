@@ -77,7 +77,7 @@ public class KiiCloudClient {
 	public void init() throws IOReactorException {
 
 		ConnectingIOReactor ioReactor= new DefaultConnectingIOReactor(IOReactorConfig.custom()
-				.setIoThreadCount(50)
+				.setIoThreadCount(10)
 				.build());
 
 		final PoolingNHttpClientConnectionManager connManager = new PoolingNHttpClientConnectionManager(

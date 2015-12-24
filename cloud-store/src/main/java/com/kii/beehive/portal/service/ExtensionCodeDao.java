@@ -144,6 +144,17 @@ public class ExtensionCodeDao extends AbstractDataAccess<ExtensionCodeEntity> {
 		super.addEntity(entity,id);
 	}
 
+	public ScriptCombine getServiceCodeByVersion(String version){
+
+		ScriptCombine  combine=new ScriptCombine();
+
+		combine.script=service.getServiceExtension(version);
+
+		combine.hookConfig=service.getHookConfig(version);
+
+		return combine;
+	}
+
 	public static class ScriptCombine{
 
 		private String script;

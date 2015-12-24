@@ -490,6 +490,27 @@ public class ApiAccessBuilder {
 		this.ctxObj=param;
 		return this;
 	}
+
+	public ApiAccessBuilder listCurrentVersions(){
+		request =new HttpPut(appInfo.getAppSubUrl()+"/server-code/versions/current");
+
+		return this;
+	}
+
+	public ApiAccessBuilder getServiceCode(String version){
+
+		request =new HttpGet(appInfo.getAppSubUrl()+"/server-code/versions/"+version);
+
+		return this;
+	}
+
+	public ApiAccessBuilder getHookConfig(String version){
+
+		request =new HttpGet(appInfo.getAppSubUrl()+"/hooks/versions/"+version);
+
+		return this;
+	}
+
 	//==============================
 	//
 	//==============================

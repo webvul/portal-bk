@@ -7,10 +7,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.kii.beehive.portal.common.utils.StrTemplate;
 
-public class EventTriggerConfig<E extends Enum>  {
+public class EventTriggerConfig {
 
 
-	private E when;
+	private WhenType when;
 
 
 	private String endpoint;
@@ -40,11 +40,11 @@ public class EventTriggerConfig<E extends Enum>  {
 		this.url=url;
 	}
 
-	public E getWhen() {
+	public WhenType getWhen() {
 		return when;
 	}
 
-	public void setWhen(E when) {
+	public void setWhen(WhenType when) {
 		this.when = when;
 	}
 

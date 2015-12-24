@@ -28,7 +28,7 @@ public class TagChangeProcess implements BeehiveEventProcess {
 		List<String> relationThings= (List<String>) param.getParam("thingIDs");
 
 
-		List<GlobalThingInfo>  things=thingDao.getThingsByIDArray(relationThings);
+		List<GlobalThingInfo>  things=thingDao.getThingsByVendorIDArray(relationThings);
 
 
 		triggerService.updateThingGroup(things,triggerID);

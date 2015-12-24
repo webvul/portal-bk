@@ -79,24 +79,21 @@ public class TestServerExten extends TestTemplate{
 //	}
 //
 
-		EventTriggerConfig<BucketWhenType>  trigger1= TriggerFactory.getBucketInstance("lights", TriggerScopeType.Thing);
-		trigger1.setWhen(BucketWhenType.DATA_OBJECT_CREATED);
+		EventTriggerConfig  trigger1= TriggerFactory.getBucketInstance("lights",BucketWhenType.DATA_OBJECT_CREATED, TriggerScopeType.Thing);
 		trigger1.setEndpoint("onLampAdded");
 
-		EventTriggerConfig<BucketWhenType>  trigger2= TriggerFactory.getBucketInstance("schedules", TriggerScopeType.User);
+		EventTriggerConfig  trigger2= TriggerFactory.getBucketInstance("schedules", BucketWhenType.DATA_OBJECT_UPDATED,TriggerScopeType.User);
 		trigger2.setEndpoint("onScheduleAdd");
-		trigger2.setWhen(BucketWhenType.DATA_OBJECT_UPDATED);
 
-		EventTriggerConfig<BucketWhenType>  trigger3= TriggerFactory.getBucketInstance("schedules", TriggerScopeType.User);
+		EventTriggerConfig  trigger3= TriggerFactory.getBucketInstance("schedules",BucketWhenType.DATA_OBJECT_CREATED, TriggerScopeType.User);
 		trigger3.setEndpoint("onScheduleUpdate");
-		trigger3.setWhen(BucketWhenType.DATA_OBJECT_CREATED);
 
 		ScheduleTriggerConfig schedule1=new ScheduleTriggerConfig();
 
 		String json=HookGeneral.getInstance()
-				.addTrggerConfig(trigger1)
-				.addTrggerConfig(trigger2)
-				.addTrggerConfig(trigger3)
+				.addTriggerConfig(trigger1)
+				.addTriggerConfig(trigger2)
+				.addTriggerConfig(trigger3)
 				.addTriggerConfig(TriggerFactory.getScheduleInstance("0/1 * * * *","onEveryMinute"))
 				.addTriggerConfig(TriggerFactory.getScheduleInstance("0 0/6 * * *","onSixlyHour"))
 				.generJson(mapper);

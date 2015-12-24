@@ -70,7 +70,7 @@ public class BeehiveTriggerManager {
 			registService.registSingleTrigger(thing.getKiiThingID(),record.getPerdicate(),triggerID);
 
 		}else {
-			List<GlobalThingInfo> things = thingDao.getThingsByIDArray(source.getThingList());
+			List<GlobalThingInfo> things = thingDao.getThingsByVendorIDArray(source.getThingList());
 
 			things.forEach(thing->{
 				registService.registDoubleTrigger(thing.getKiiThingID(),record.getPerdicate().getCondition(),triggerID);
@@ -81,6 +81,8 @@ public class BeehiveTriggerManager {
 
 		return triggerID;
 	}
+
+
 
 	public void initAppForTrigger(){
 
@@ -112,8 +114,7 @@ public class BeehiveTriggerManager {
 		ExtensionCodeEntity entity=new ExtensionCodeEntity();
 		entity.setFunctionName("trigger_been_fire");
 
-		EventTriggerConfig<BucketWhenType> trigger= TriggerFactory.getBucketInstance("_states", TriggerScopeType.App);
-		trigger.setWhen(BucketWhenType.DATA_OBJECT_UPDATED);
+		EventTriggerConfig trigger= TriggerFactory.getBucketInstance("_states", BucketWhenType.DATA_OBJECT_UPDATED,TriggerScopeType.App);
 		trigger.setEndpoint("global_on_thing_state_change");
 		entity.setEventTrigger(trigger);
 

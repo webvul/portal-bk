@@ -1,6 +1,7 @@
 package com.kii.extension.sdk.service;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.http.HttpResponse;
@@ -9,6 +10,7 @@ import org.apache.http.concurrent.FutureCallback;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.extension.sdk.commons.HttpUtils;
@@ -58,6 +60,30 @@ public class ServiceExtensionService {
 		Map<String,Object> result=client.executeRequestWithCls(request,Map.class);
 
 		return (String) result.get("versionID");
+	}
+
+	public String getServiceExtension(String version){
+
+		HttpUriRequest request=getBuilder().getServiceCode(version).generRequest(mapper);
+
+		return client.executeRequest(request);
+
+	}
+
+	public String getHookConfig(String version){
+
+		HttpUriRequest request=getBuilder().getHookConfig(version).generRequest(mapper);
+
+		return client.executeRequest(request);
+
+
+	}
+
+	public String getVersionList(){
+
+		HttpUriRequest request=getBuilder().listCurrentVersions().generRequest(mapper);
+
+		return client.executeRequest(request);
 	}
 
 

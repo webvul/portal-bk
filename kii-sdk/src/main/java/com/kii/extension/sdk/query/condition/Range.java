@@ -4,7 +4,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import com.kii.extension.sdk.query.ConditionType;
 
-@XmlRootElement
+
 public class Range extends SimpleCondition {
 	
 	

@@ -52,6 +52,19 @@ public class GlobalThingDao extends BaseDao<GlobalThingInfo>{
 
 	}
 
+	public List<GlobalThingInfo> getThingsByVendorIDArray(List<String> vendorIDs){
+
+		String sql = "SELECT g.* "
+				+ "FROM global_thing g "
+				+ " WHERE g.vendor_thing_id in (:ids) ";
+
+		Map<String,Object> params=new HashMap<>();
+		params.put("ids",vendorIDs);
+
+		return namedJdbcTemplate.query(sql,params,getRowMapper());
+
+	}
+
 	public List<GlobalThingInfo>  queryThingByUnionTags(List<String> tagCollect){
 
 		String sql = "SELECT g.* "
