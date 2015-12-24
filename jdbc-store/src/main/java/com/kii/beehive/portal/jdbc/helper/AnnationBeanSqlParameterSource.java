@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.NotReadablePropertyException;
 import org.springframework.beans.PropertyAccessor;
@@ -27,6 +29,7 @@ import com.kii.beehive.portal.jdbc.annotation.JdbcFieldType;
 public class AnnationBeanSqlParameterSource extends AbstractSqlParameterSource {
 
 
+	private Logger log= LoggerFactory.getLogger(AnnationBeanSqlParameterSource.class);
 
 	private final BeanWrapper beanWrapper;
 
@@ -75,9 +78,13 @@ public class AnnationBeanSqlParameterSource extends AbstractSqlParameterSource {
 
 			Object value= this.beanWrapper.getPropertyValue(fieldName);
 
+
+			log.debug(" bind param value:"+value+" to "+paramName);
+
 			if(value==null){
 				return null;
 			}
+
 
 			switch(sqlTypeMapper.get(paramName)){
 				case Auto:return value;
@@ -87,6 +94,7 @@ public class AnnationBeanSqlParameterSource extends AbstractSqlParameterSource {
 				case EnumStr:return ((Enum)value).name();
 				default:return value;
 			}
+
 
 		}
 		catch (NotReadablePropertyException ex) {

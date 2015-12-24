@@ -31,4 +31,9 @@ public class ThingTagService {
 
 		return globalThingDao.getThingByVendorThingID(globalThingID);
 	}
+
+	public GlobalThingInfo getThingByKiiThingID(String kiiThingID) {
+
+		return globalThingDao.getThingByKiiThingID(kiiThingID);
+	}
 }

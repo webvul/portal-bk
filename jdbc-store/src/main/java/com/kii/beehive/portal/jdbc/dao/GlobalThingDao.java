@@ -1,6 +1,8 @@
 package com.kii.beehive.portal.jdbc.dao;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,53 +30,91 @@ public class GlobalThingDao extends BaseDao<GlobalThingInfo>{
 		return rows;
 	}
 
-	public GlobalThingInfo getThingByVendorThingID(String vendorThingID) {
-		List<GlobalThingInfo> list = super.findBySingleField(GlobalThingInfo.VANDOR_THING_ID, vendorThingID);
-		if(list.size() > 0){
-			return list.get(0);
-		}else{
-			return null;
-		}
-	}
+//	public GlobalThingInfo getThingByVendorThingID(String vendorThingID) {
+//		List<GlobalThingInfo> list = super.findBySingleField(GlobalThingInfo.VANDOR_THING_ID, vendorThingID);
+//		if(list.size() > 0){
+//			return list.get(0);
+//		}else{
+//			return null;
+//		}
+//	}
 
-	public List<GlobalThingInfo> getThingsByIDArray(List<String> thingIDs){
+	public List<GlobalThingInfo> getThingsByIDArray(List<Long> thingIDs){
 
 		String sql = "SELECT g.* "
-				+ "FROM " + this.getTableName() +" g "
-				+ " WHERE g.thing_id in (?) ";
+				+ "FROM global_thing g "
+				+ " WHERE g.id_global_thing in (:ids) ";
 
-		return jdbcTemplate.query(sql,new Object[]{thingIDs},getRowMapper());
+		Map<String,Object> params=new HashMap<>();
+		params.put("ids",thingIDs);
+
+		return namedJdbcTemplate.query(sql,params,getRowMapper());
 
 	}
 
 	public List<GlobalThingInfo>  queryThingByUnionTags(List<String> tagCollect){
 
 		String sql = "SELECT g.* "
-				+ "FROM " + this.getTableName() +" g "
+				+ "FROM global_thing g "
 				+ "INNER JOIN rel_thing_tag r ON g.id_global_thing=r.thing_id "
 				+ "INNER JOIN tag_index t ON t.tag_id=r.tag_id "
-				+ " WHERE t.full_tag_name in (?) ";
+				+ " WHERE t.full_tag_name in (:names) ";
 
-		return jdbcTemplate.query(sql,new Object[]{tagCollect},getRowMapper());
+		return namedJdbcTemplate.query(sql, Collections.singletonMap("names",tagCollect),getRowMapper());
 
 	}
 
 	public List<GlobalThingInfo>  queryThingByIntersectionTags(List<String> tagCollect){
 
-		String sql = "SELECT g.vendor_thing_id,g.kii_app_id "
-				+ "FROM " + this.getTableName() +" g "
+		String sql = "select * from global_thing th where th.id_global_thing in  " +
+				  "  (SELECT g.id_global_thing "
+				+ "FROM global_thing g "
 				+ "INNER JOIN rel_thing_tag r ON g.id_global_thing=r.thing_id "
 				+ "INNER JOIN tag_index t ON t.tag_id=r.tag_id "
-				+ " WHERE t.full_tag_name in (?) group by g.thing_id having  count(r.tag_id) = ? ";
+				+ " WHERE t.full_tag_name in (:names) group by g.id_global_thing having  count(r.tag_id) = :count )";
+        Map<String,Object> params=new HashMap<>();
+		params.put("names",tagCollect);
+		params.put("count",tagCollect.size());
 
-		return jdbcTemplate.query(sql,new Object[]{tagCollect,tagCollect.size()},getRowMapper());
+		return namedJdbcTemplate.query(sql,params,getRowMapper());
+
+	}
+
+	public GlobalThingInfo getThingByKiiThingID(String kiiThingID) {
+
+		String sql = "SELECT g.* "
+				+ "FROM global_thing g "
+				+ " WHERE g.kii_app_id  = ? ";
+
+		List<GlobalThingInfo> list= jdbcTemplate.query(sql,new Object[]{kiiThingID},getRowMapper());
+
+		if(list.size()==0){
+			return null;
+		}else{
+			return list.get(0);
+		}
+
+	}
+
+	public GlobalThingInfo getThingByVendorThingID(String vendorThingID) {
+
+		String sql = "SELECT g.* "
+				+ "FROM global_thing g "
+				+ " WHERE g.vendor_thing_id  = ? ";
+
+		List<GlobalThingInfo> list= jdbcTemplate.query(sql,new Object[]{vendorThingID},getRowMapper());
+
+		if(list.size()==0){
+			return null;
+		}else{
+			return list.get(0);
+		}
 
 	}
 
 	public List<GlobalThingInfo> findThingByTag(String tagName) {
-		String sql = "SELECT g.*  "
-					+ "FROM " + this.getTableName() +" g "
-					+ "INNER JOIN rel_thing_tag r ON g.id_global_thing=r.thing_id " 
+		String sql = "SELECT g.* from global_thing  "
+					+ "INNER JOIN rel_thing_tag r ON g.id_global_thing=r.thing_id "
 					+ "INNER JOIN tag_index t ON t.tag_id=r.tag_id "
 					+ " WHERE t.full_tag_name= ? ";
 
@@ -145,5 +185,6 @@ public class GlobalThingDao extends BaseDao<GlobalThingInfo>{
 		        		entity.getModifyBy(),
 		        		entity.getId());
 	}
+
 
 }

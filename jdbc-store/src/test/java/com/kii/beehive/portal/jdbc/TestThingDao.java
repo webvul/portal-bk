@@ -83,4 +83,7 @@ public class TestThingDao extends TestTemplate{
 		assertEquals(thing.getType(),entity.getType());
 		assertEquals(thing.getStatus(),entity.getStatus());
 	}
+
+
+
 }

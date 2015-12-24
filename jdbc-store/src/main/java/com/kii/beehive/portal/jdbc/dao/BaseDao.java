@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.SqlParameter;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.object.SqlUpdate;
@@ -30,7 +31,9 @@ public abstract class BaseDao<T extends DBEntity> {
 
 
 	protected JdbcTemplate jdbcTemplate;
-	
+
+	protected NamedParameterJdbcTemplate  namedJdbcTemplate;
+
 	private SimpleJdbcInsert insertTool;
 
 	private RowMapper<T> rowMapper;
@@ -55,10 +58,10 @@ public abstract class BaseDao<T extends DBEntity> {
 
 	@Autowired
 	public void setDataSource(DataSource dataSource) {
-		//ParameterizedType type = (ParameterizedType) getClass().getGenericSuperclass();  
-        //entityClass = (Class<T>) type.getActualTypeArguments()[0];  
 
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
+		this.namedJdbcTemplate=new NamedParameterJdbcTemplate(dataSource);
+
 		this.insertTool=new SimpleJdbcInsert(dataSource)
 				.withTableName(getTableName())
 				.usingGeneratedKeyColumns(getKey());

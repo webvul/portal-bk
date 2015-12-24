@@ -77,6 +77,7 @@ public class GlobalThingInfo extends DBEntity{
 		this.custom = custom;
 	}
 
+	@JdbcField(column="kii_thing_id")
 	public String getKiiThingID() {
 		return kiiThingID;
 	}

@@ -6,6 +6,8 @@ import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
@@ -20,6 +22,8 @@ import com.kii.beehive.portal.jdbc.entity.DBEntity;
 
 public  class BindClsFullUpdateTool extends SqlUpdate {
 
+
+	private Logger log= LoggerFactory.getLogger(BindClsFullUpdateTool.class);
 
 	private static final String updateSqlTemplate="update ${0} set  ${1} where ${2}  =  ? ";
 
@@ -106,6 +110,7 @@ public  class BindClsFullUpdateTool extends SqlUpdate {
 
 				fields.append(fieldDesc.column()).append(" =  ?, ");
 
+				log.debug(" fill update param "+fieldDesc.column()+ " with "+val);
 			}
 
 			String fullSql= StrTemplate.gener(updateSqlTemplate,tableName,fields.toString(),pk);

@@ -12,6 +12,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
@@ -22,6 +24,9 @@ import com.kii.beehive.portal.jdbc.annotation.JdbcField;
 import com.kii.beehive.portal.jdbc.annotation.JdbcFieldType;
 
 public class BindClsRowMapper<T> implements RowMapper<T> {
+
+	private Logger log= LoggerFactory.getLogger(BindClsRowMapper.class);
+
 
 	private final Map<String,String> fieldMapper;
 
@@ -51,6 +56,7 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 			searchMap.put(fieldDesc.column(),descriptor.getDisplayName());
 
 			typeMap.put(fieldDesc.column(),fieldDesc.type());
+
 		}
 
 		fieldMapper= Collections.unmodifiableMap(searchMap);
@@ -96,6 +102,9 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 					fieldInst=rs.getObject(field);
 
 			}
+
+			log.debug(" fill row result "+fieldInst+" to field "+field);
+
 			beanWrapper.setPropertyValue(fieldMapper.get(field),fieldInst);
 
 		}
