@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.common.utils.CollectUtils;
+import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.beehive.portal.exception.ThingNotExistException;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
@@ -20,6 +21,8 @@ import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
 import com.kii.beehive.portal.jdbc.entity.TagType;
+import com.kii.beehive.portal.service.AppInfoDao;
+import com.kii.beehive.portal.store.entity.KiiAppInfo;
 
 @Component
 public class TagThingManager {
@@ -36,8 +39,8 @@ public class TagThingManager {
 	@Autowired
 	private TagThingRelationDao tagThingRelationDao;
 	
-	//@Autowired
-	//private AppInfoDao appInfoDao;
+	@Autowired
+	private AppInfoDao appInfoDao;
 
 
 	/**
@@ -49,13 +52,13 @@ public class TagThingManager {
      */
 	public Long createThing(GlobalThingInfo thingInfo, String location, Collection<String> tagList) {
 		
-		/*KiiAppInfo kiiAppInfo = appInfoDao.getAppInfoByID(thingInfo.getKiiAppID());
+		KiiAppInfo kiiAppInfo = appInfoDao.getAppInfoByID(thingInfo.getKiiAppID());
 		
 		if(kiiAppInfo == null){
 			EntryNotFoundException ex= new EntryNotFoundException(thingInfo.getKiiAppID());
 			ex.setMessage("AppID not exist");
 			throw ex;
-		}*/
+		}
 
 
 		Set<TagIndex> tagSet=new HashSet<>();
@@ -100,7 +103,7 @@ public class TagThingManager {
 			TagIndex tag = tagIndexDao.findByID(tagID);
 			if(tag != null){
 				TagThingRelation ttr = tagThingRelationDao.findByThingIDAndTagID(thing.getId(), tag.getId());
-				if(ttr != null){
+				if(ttr == null){
 					tagThingRelationDao.saveOrUpdate(new TagThingRelation(tag.getId(),thing.getId()));
 				}
 			}else{
@@ -119,7 +122,7 @@ public class TagThingManager {
 			TagIndex tag = this.findCustomTag(displayName);
 			if(tag != null){
 				TagThingRelation ttr = tagThingRelationDao.findByThingIDAndTagID(thing.getId(), tag.getId());
-				if(ttr != null){
+				if(ttr == null){
 					tagThingRelationDao.saveOrUpdate(new TagThingRelation(tag.getId(),thing.getId()));
 				}
 			}else{
