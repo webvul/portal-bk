@@ -76,6 +76,7 @@ public class DevPortalService {
 		for(Cookie cookie:cookieStore.getCookies()){
 			if(cookie.getName().equals("devportal_session")){
 				session=cookie.getValue();
+				break;
 			}
 		}
 

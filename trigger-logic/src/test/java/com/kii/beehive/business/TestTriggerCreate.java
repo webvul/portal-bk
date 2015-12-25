@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,12 +60,16 @@ public class TestTriggerCreate extends TestTemplate  {
 	@Test
 	public void addTrigger(){
 
-		triggerManager.initAppForTrigger();
+//		triggerManager.initAppForTrigger();
+
 
 	}
 
+//	@Ignore
 	@Test
 	public void registerExtension() throws InterruptedException, IOException {
+
+		triggerManager.initAppForTrigger();
 
 		extensionDao.deployScriptToApp(APP_NAME);
 
@@ -83,6 +88,7 @@ public class TestTriggerCreate extends TestTemplate  {
 	}
 
 
+	@Test
 	public void callStateChange(){
 //		resolver.setAppName(APP_NAME);
 
@@ -96,9 +102,12 @@ public class TestTriggerCreate extends TestTemplate  {
 		map.put("state",status);
 
 		JsonNode node=service.callServiceExtension("global_onThingStateChange",map,JsonNode.class);
+
+		log.info("json:"+node);
 	}
 
 
+	@Test
 	public void callTrigger(){
 //		resolver.setAppName("thingif");
 

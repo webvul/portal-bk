@@ -1,15 +1,15 @@
 
 function global_onTriggerArrive(params,endpoint,context,done){
- var triggerID=params.get("triggerID");
+ var triggerID=params["triggerID"];
 
- var thingID=params.get("thingID");
+ var thingID=params["thingID"];
 
  var output={};
 
  output["triggerID"]=triggerID;
  output["thingID"]=thingID;
 
- var request=new Global_RemoteKiiRequest(endpoint,context.getAppAdminContext(),done);
+ var request=new Global_RemoteKiiRequest(endpoint,context,done);
 
  request.execute(output,function(){done();});
 

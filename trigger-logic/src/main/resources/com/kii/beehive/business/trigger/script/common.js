@@ -2,10 +2,7 @@ Global_RemoteKiiRequest = (function(){
 
 	function Global_RemoteKiiRequest(endpoint,context,done){
 
-
-		this.entry=entry;
-
-		this.adminCtx=context;
+		this.adminCtx=context.getAppAdminContext();
 		this.done=done;
 
 	    this.path =endpoint;
@@ -69,6 +66,8 @@ Global_RemoteKiiRequest = (function(){
 		var object = bucket.createObject();
 
 		object.set("param",param);
+		object.set("endpoint",this.path);
+
 
 		var _this=this;
 		object.save({

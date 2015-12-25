@@ -3,7 +3,7 @@
 function global_onThingStateChange(params,context,done){
 
 
-	var adminCtx=context.getAppAdminContext;
+	var adminCtx=context.getAppAdminContext();
 	var bucket=	adminCtx.bucketWithName(params.bucketID);
 
 	var object=bucket.createObjectWithID(params.objectID);
