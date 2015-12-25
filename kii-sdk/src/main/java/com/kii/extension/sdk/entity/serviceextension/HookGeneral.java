@@ -21,7 +21,19 @@ public class HookGeneral {
 		return new HookGeneral();
 	}
 
-	public HookGeneral addTriggerConfig(EventTriggerConfig trigger){
+	public HookGeneral addEventTriggerConfigs(List<EventTriggerConfig> triggerList){
+		triggerList.forEach(trigger->addTriggerConfig(trigger));
+
+		return this;
+	}
+
+	public HookGeneral addScheduleTriggerConfigs(List<ScheduleTriggerConfig> triggerList){
+		triggerList.forEach(trigger->addTriggerConfig(trigger));
+
+		return this;
+	}
+
+	public  HookGeneral addTriggerConfig(EventTriggerConfig trigger){
 
 		List<EventTriggerConfig> list=eventMap.getOrDefault(trigger.getUrl(),new ArrayList<EventTriggerConfig>());
 

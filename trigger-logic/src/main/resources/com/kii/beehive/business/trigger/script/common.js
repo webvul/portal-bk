@@ -115,6 +115,10 @@ function global_recordLog(done,log,type) {
 
     console.log("log:"+log+" type:"+type);
 
+    var result={};
+    result["log"]=log;
+    result["type"]=type;
+
     if(typeof(done)=="function"){
         done(result);
     }

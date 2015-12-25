@@ -3,26 +3,24 @@
 function global_onThingStateChange(params,context,done){
 
 
-	var adminCtx=context.getAppAdminContext();
-	var bucket=	adminCtx.bucketWithName(params.bucketID);
+	var bucket=context.getAppAdminContext().bucketWithName("_states");
 
-	var object=bucket.createObjectWithID(params.objectID);
+			var obj=bucket.createObjectWithID(params.objectID);
 
-	object.refresh({
+			obj.refresh({
 
-	      success: function(theObject) {
+	      		success: function(theObject) {
 
-              var request=new Global_RemoteKiiRequest("stateChange",context,done);
+              		var request=new Global_RemoteKiiRequest("stateChange",context,done);
 
-              request.execute(theObject,function(){done();});
+              		request.execute(theObject._customInfo,function(){done(theObject);});
 
           },
 
-          failure: function(theObject, anErrorString) {
-             console.log("get state object fail:"+params.objectID);
-             done(params);
-          }
-	});
-
+          		failure: function(theObject, anErrorString) {
+            		 console.log("get state object fail:"+params.objectID);
+             		done(anErrorString);
+         		 }
+			});
 
 }

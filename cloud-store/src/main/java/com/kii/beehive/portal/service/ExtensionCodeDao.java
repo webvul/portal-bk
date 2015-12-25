@@ -82,10 +82,10 @@ public class ExtensionCodeDao extends AbstractDataAccess<ExtensionCodeEntity> {
 			sb.append("\n").append(entity.getJsBody()).append("\n");
 
 			if(entity.getEventTrigger()!=null) {
-				hookGeneral.addTriggerConfig(entity.getEventTrigger());
+				hookGeneral.addEventTriggerConfigs(entity.getEventTrigger());
 			}
 			if(entity.getScheduleTrigger()!=null){
-				hookGeneral.addTriggerConfig(entity.getScheduleTrigger());
+				hookGeneral.addScheduleTriggerConfigs(entity.getScheduleTrigger());
 			}
 		});
 

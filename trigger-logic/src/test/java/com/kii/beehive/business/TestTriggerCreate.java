@@ -21,8 +21,11 @@ import com.kii.beehive.business.manager.BeehiveTriggerManager;
 import com.kii.beehive.portal.service.ExtensionCodeDao;
 import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.context.TokenBindToolResolver;
+import com.kii.extension.sdk.entity.thingif.OnBoardingParam;
+import com.kii.extension.sdk.entity.thingif.OnBoardingResult;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 import com.kii.extension.sdk.service.ServiceExtensionService;
+import com.kii.extension.sdk.service.ThingIFService;
 
 public class TestTriggerCreate extends TestTemplate  {
 
@@ -51,19 +54,16 @@ public class TestTriggerCreate extends TestTemplate  {
 	@Autowired
 	private TokenBindToolResolver token;
 
+	@Autowired
+	private ThingIFService  thingIFService;
+
 	@Before
 	public void init(){
 		token.bindToken("qv8pBJBwDM2Tjg8fIu4jTUGwhqVsMACvtcl2Cv_teV0");
 		resolver.setAppName(APP_NAME);
 	}
 
-	@Test
-	public void addTrigger(){
 
-//		triggerManager.initAppForTrigger();
-
-
-	}
 
 //	@Ignore
 	@Test
@@ -89,21 +89,45 @@ public class TestTriggerCreate extends TestTemplate  {
 
 
 	@Test
-	public void callStateChange(){
-//		resolver.setAppName(APP_NAME);
+	public void callStateChange() {
+
+
+		OnBoardingParam param = new OnBoardingParam();
+		param.setVendorThingID("thing-test-demo-001");
+		param.setUserID("f83120e36100-a83b-5e11-1eaa-026cdf52");
+		param.setThingType("demo");
+		param.setThingPassword("qwerty");
+
+		OnBoardingResult result = thingIFService.onBoarding(param);
+
+		String thingID = result.getThingID();
+
+	}
+
+	String  thingID="th.f83120e36100-a83b-5e11-2eaa-035b1f86";
+
+	@Test
+	public void putStatus(){
+
+		ThingStatus status=new ThingStatus();
+		status.setField("lightness",99);
+		status.setField("power",true);
+
+		thingIFService.putStatus(thingID,status);
+
+
+	}
+
+	@Test
+	public void fireStateChange(){
+
 
 		Map<String,Object> map=new HashMap<>();
-//		map.put("triggerID","demo");
-		map.put("target","demo");
+		map.put("bucketID","_states");
+		map.put("objectID","69d73330-aae2-11e5-b38a-00163e02138f");
 
-		ThingStatus  status=new ThingStatus();
-		status.setField("brightness",100);
+		JsonNode node = service.callServiceExtension("global_onThingStateChange", map, JsonNode.class);
 
-		map.put("state",status);
-
-		JsonNode node=service.callServiceExtension("global_onThingStateChange",map,JsonNode.class);
-
-		log.info("json:"+node);
 	}
 
 

@@ -2,6 +2,7 @@ package com.kii.beehive.business.manager;
 
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,6 @@ import org.springframework.util.StreamUtils;
 
 import com.google.common.base.Charsets;
 
-import com.kii.beehive.business.service.GroupStateCallbackService;
 import com.kii.beehive.business.service.KiiTriggerRegistService;
 import com.kii.beehive.business.service.ThingGroupStateService;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
@@ -25,10 +25,8 @@ import com.kii.beehive.portal.store.entity.trigger.TriggerRecord;
 import com.kii.beehive.portal.store.entity.trigger.TriggerSource;
 import com.kii.extension.sdk.entity.serviceextension.BucketWhenType;
 import com.kii.extension.sdk.entity.serviceextension.EventTriggerConfig;
-import com.kii.extension.sdk.entity.serviceextension.ThingWhenType;
 import com.kii.extension.sdk.entity.serviceextension.TriggerFactory;
 import com.kii.extension.sdk.entity.serviceextension.TriggerScopeType;
-import com.kii.extension.sdk.entity.thingif.ThingTrigger;
 
 @Component
 @Transactional
@@ -90,7 +88,7 @@ public class BeehiveTriggerManager {
 		try {
 			initCommon();
 
-			initOnStateChange();
+			initOnTriggerFire();
 
 			initStateUpload();
 
@@ -113,7 +111,7 @@ public class BeehiveTriggerManager {
 
 
 
-	private void initOnStateChange() throws IOException {
+	private void initOnTriggerFire() throws IOException {
 		String jsStatusChange= StreamUtils.copyToString(loader.getResource("classpath:com/kii/beehive/business/trigger/script/onTriggerBeenFired.js").getInputStream(), Charsets.UTF_8);
 
 		ExtensionCodeEntity entity=new ExtensionCodeEntity();
@@ -126,17 +124,31 @@ public class BeehiveTriggerManager {
 	}
 
 	private void initStateUpload() throws IOException {
+
 		String jsStateUpload= StreamUtils.copyToString(loader.getResource("classpath:com/kii/beehive/business/trigger/script/stateUpload.js").getInputStream(), Charsets.UTF_8);
 		ExtensionCodeEntity uploadEntity=new ExtensionCodeEntity();
 		uploadEntity.setFunctionName("state_upload_for_group");
 
-		EventTriggerConfig trigger= TriggerFactory.getBucketInstance("_states", BucketWhenType.DATA_OBJECT_UPDATED,TriggerScopeType.App);
-		trigger.setEndpoint("global_on_thing_state_change");
-		uploadEntity.setEventTrigger(trigger);
+		List<EventTriggerConfig> list = getTriggerEndpoint();
+
+		uploadEntity.setEventTrigger(list);
 
 		uploadEntity.setJsBody(jsStateUpload);
 
 		extensionDao.addGlobalExtensionCode(uploadEntity);
+	}
+
+	private List<EventTriggerConfig> getTriggerEndpoint() {
+		List<EventTriggerConfig> list=new ArrayList<>();
+
+		EventTriggerConfig trigger1= TriggerFactory.getBucketInstance("_states", BucketWhenType.DATA_OBJECT_UPDATED, TriggerScopeType.App);
+		trigger1.setEndpoint("global_onThingStateChange");
+		list.add(trigger1);
+
+		EventTriggerConfig trigger2= TriggerFactory.getBucketInstance("_states", BucketWhenType.DATA_OBJECT_CREATED,TriggerScopeType.App);
+		trigger2.setEndpoint("global_onThingStateChange");
+		list.add(trigger2);
+		return list;
 	}
 
 	private void initCommon() throws IOException {

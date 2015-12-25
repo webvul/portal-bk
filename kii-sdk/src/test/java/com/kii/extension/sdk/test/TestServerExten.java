@@ -1,5 +1,8 @@
 package com.kii.extension.sdk.test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,6 +92,7 @@ public class TestServerExten extends TestTemplate{
 		trigger3.setEndpoint("onScheduleUpdate");
 
 		ScheduleTriggerConfig schedule1=new ScheduleTriggerConfig();
+
 
 		String json=HookGeneral.getInstance()
 				.addTriggerConfig(trigger1)

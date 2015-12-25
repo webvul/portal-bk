@@ -1,5 +1,8 @@
 package com.kii.beehive.portal.store.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.kii.extension.sdk.entity.KiiEntity;
 import com.kii.extension.sdk.entity.serviceextension.EventTriggerConfig;
 import com.kii.extension.sdk.entity.serviceextension.ScheduleTriggerConfig;
@@ -8,9 +11,9 @@ public class ExtensionCodeEntity extends KiiEntity{
 
 	private String functionName;
 
-	private EventTriggerConfig eventTrigger;
+	private List<EventTriggerConfig> eventTrigger=new ArrayList<>();
 
-	private ScheduleTriggerConfig  scheduleTrigger;
+	private List<ScheduleTriggerConfig> scheduleTrigger=new ArrayList<>();
 
 	private String jsBody;
 
@@ -32,20 +35,28 @@ public class ExtensionCodeEntity extends KiiEntity{
 		this.functionName = functionName;
 	}
 
-	public EventTriggerConfig getEventTrigger() {
+	public List<EventTriggerConfig> getEventTrigger() {
 		return eventTrigger;
 	}
 
-	public void setEventTrigger(EventTriggerConfig eventTrigger) {
+	public void setEventTrigger(List<EventTriggerConfig> eventTrigger) {
 		this.eventTrigger = eventTrigger;
 	}
 
-	public ScheduleTriggerConfig getScheduleTrigger() {
+	public void addEventTrigger(EventTriggerConfig  eventTriggerConfig){
+		this.eventTrigger.add(eventTriggerConfig);
+	}
+
+	public List<ScheduleTriggerConfig> getScheduleTrigger() {
 		return scheduleTrigger;
 	}
 
-	public void setScheduleTrigger(ScheduleTriggerConfig scheduleTrigger) {
+	public void setScheduleTrigger(List<ScheduleTriggerConfig> scheduleTrigger) {
 		this.scheduleTrigger = scheduleTrigger;
+	}
+
+	public void addScheduleTrgger(ScheduleTriggerConfig  config){
+		this.scheduleTrigger.add(config);
 	}
 
 	public String getJsBody() {
