@@ -1,16 +1,16 @@
 package com.kii.extension.sdk.service;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.concurrent.FutureCallback;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.extension.sdk.commons.HttpUtils;
@@ -23,6 +23,7 @@ import com.kii.extension.sdk.impl.KiiCloudClient;
 @Component
 public class ServiceExtensionService {
 
+	private Logger log= LoggerFactory.getLogger(ServiceExtensionService.class);
 
 	@Autowired
 	private ObjectMapper mapper;
@@ -79,9 +80,9 @@ public class ServiceExtensionService {
 
 	}
 
-	public String getVersionList(){
+	public String getCurrentVersion(){
 
-		HttpUriRequest request=getBuilder().listCurrentVersions().generRequest(mapper);
+		HttpUriRequest request=getBuilder().getCurrentVersion().generRequest(mapper);
 
 		return client.executeRequest(request);
 	}
@@ -93,11 +94,19 @@ public class ServiceExtensionService {
 
 		HttpUriRequest request=getBuilder().deployServiceCode(serviceCtx).generRequest(mapper);
 
-		client.syncExecuteRequest(request, new FutureCallback<HttpResponse>() {
+		String adminToken=tool.getToken();
+
+		client.asyncExecuteRequest(request, new FutureCallback<HttpResponse>() {
 			@Override
 			public void completed(HttpResponse httpResponse) {
 
+				int status=httpResponse.getStatusLine().getStatusCode();
+				if(status!=201){
+					throw new IllegalArgumentException();
+				}
+
 				bindToolResolver.setAppInfoDirectly(appInfo);
+				tool.bindToken(adminToken);
 
 				String response= HttpUtils.getResponseBody(httpResponse);
 
@@ -111,14 +120,31 @@ public class ServiceExtensionService {
 
 				HttpUriRequest hookRequest=getBuilder().deployHook(hookDescription,version).generRequest(mapper);
 
-				client.syncExecuteRequest(hookRequest, new FutureCallback<HttpResponse>() {
+				client.asyncExecuteRequest(hookRequest, new FutureCallback<HttpResponse>() {
 					@Override
 					public void completed(HttpResponse httpResponse) {
 						bindToolResolver.setAppInfoDirectly(appInfo);
+						tool.bindToken(adminToken);
+
 
 						HttpUriRequest setVerRequest=getBuilder().setCurrentVersion(version).generRequest(mapper);
 
-						client.executeRequest(setVerRequest);
+						client.asyncExecuteRequest(setVerRequest, new FutureCallback<HttpResponse>() {
+							@Override
+							public void completed(HttpResponse httpResponse) {
+								log.info("finish ");
+							}
+
+							@Override
+							public void failed(Exception e) {
+
+							}
+
+							@Override
+							public void cancelled() {
+
+							}
+						});
 					}
 
 					@Override

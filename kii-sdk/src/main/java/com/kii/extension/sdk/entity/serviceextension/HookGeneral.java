@@ -44,9 +44,24 @@ public class HookGeneral {
 
 		Map<String,Object> map=new HashMap<>();
 
-		map.putAll(eventMap);
+		eventMap.replaceAll((k,v)->{
 
-		map.put("kiicloud://scheduler",triggerMap);
+			List<EventTriggerConfig>  list=(List<EventTriggerConfig>)v;
+
+			for (EventTriggerConfig c:list) {
+				c.setUrl(null);
+			}
+			return list;
+		});
+
+		if(!eventMap.isEmpty()) {
+			map.putAll(eventMap);
+		}
+
+		if(!triggerMap.isEmpty()) {
+			map.put("kiicloud://scheduler", triggerMap);
+		}
+
 
 		return map;
 

@@ -94,16 +94,21 @@ public class BeehiveTriggerManager {
 
 			initStateUpload();
 
-			appInfoDao.getSalveAppList().forEach(appInfo->{
 
-				extensionDao.deployScriptToApp(appInfo.getAppID());
-
-			});
 
 		} catch (IOException e) {
 			throw new IllegalArgumentException(e);
 		}
 
+	}
+
+	public void deployTriggerToAll(){
+
+		appInfoDao.getSalveAppList().forEach(appInfo->{
+
+			extensionDao.deployScriptToApp(appInfo.getAppID());
+
+		});
 	}
 
 
@@ -114,9 +119,6 @@ public class BeehiveTriggerManager {
 		ExtensionCodeEntity entity=new ExtensionCodeEntity();
 		entity.setFunctionName("trigger_been_fire");
 
-		EventTriggerConfig trigger= TriggerFactory.getBucketInstance("_states", BucketWhenType.DATA_OBJECT_UPDATED,TriggerScopeType.App);
-		trigger.setEndpoint("global_on_thing_state_change");
-		entity.setEventTrigger(trigger);
 
 		entity.setJsBody(jsStatusChange);
 
@@ -127,6 +129,10 @@ public class BeehiveTriggerManager {
 		String jsStateUpload= StreamUtils.copyToString(loader.getResource("classpath:com/kii/beehive/business/trigger/script/stateUpload.js").getInputStream(), Charsets.UTF_8);
 		ExtensionCodeEntity uploadEntity=new ExtensionCodeEntity();
 		uploadEntity.setFunctionName("state_upload_for_group");
+
+		EventTriggerConfig trigger= TriggerFactory.getBucketInstance("_states", BucketWhenType.DATA_OBJECT_UPDATED,TriggerScopeType.App);
+		trigger.setEndpoint("global_on_thing_state_change");
+		uploadEntity.setEventTrigger(trigger);
 
 		uploadEntity.setJsBody(jsStateUpload);
 

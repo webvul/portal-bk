@@ -79,7 +79,7 @@ public class ExtensionCodeDao extends AbstractDataAccess<ExtensionCodeEntity> {
 
 		list.forEach(entity->{
 
-			sb.append("\\n").append(entity.getJsBody()).append("\\n");
+			sb.append("\n").append(entity.getJsBody()).append("\n");
 
 			if(entity.getEventTrigger()!=null) {
 				hookGeneral.addTriggerConfig(entity.getEventTrigger());
@@ -144,10 +144,11 @@ public class ExtensionCodeDao extends AbstractDataAccess<ExtensionCodeEntity> {
 		super.addEntity(entity,id);
 	}
 
-	public ScriptCombine getServiceCodeByVersion(String version){
+	public ScriptCombine getCurrentServiceCodeByVersion(){
 
 		ScriptCombine  combine=new ScriptCombine();
 
+		String version=service.getCurrentVersion();
 		combine.script=service.getServiceExtension(version);
 
 		combine.hookConfig=service.getHookConfig(version);

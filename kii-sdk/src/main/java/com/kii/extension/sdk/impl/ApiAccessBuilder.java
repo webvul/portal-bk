@@ -75,6 +75,8 @@ public class ApiAccessBuilder {
 		return this;
 	}
 
+
+
 	private String subUrl;
 
 	public void setConsumeHeader(String name, String value) {
@@ -462,6 +464,8 @@ public class ApiAccessBuilder {
 
 		request =new HttpPost(appInfo.getAppSubUrl()+"/server-code");
 
+//		this.setConsumeHeader("Accept","application/vnd.kii.ServerCodeDeploymentResponse+json");
+		this.setContentType("application/javascript");
 		this.ctxObj=codeCtx;
 
 		return this;
@@ -491,8 +495,8 @@ public class ApiAccessBuilder {
 		return this;
 	}
 
-	public ApiAccessBuilder listCurrentVersions(){
-		request =new HttpPut(appInfo.getAppSubUrl()+"/server-code/versions/current");
+	public ApiAccessBuilder getCurrentVersion(){
+		request =new HttpGet(appInfo.getAppSubUrl()+"/server-code/versions/current");
 
 		return this;
 	}

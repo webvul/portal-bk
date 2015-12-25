@@ -14,6 +14,15 @@
         <level value="debug" />
     </logger>
 
+    <logger name="org.springframework.context" >
+        <level value="debug" />
+    </logger>
+
+
+    <logger name="org.apache.http.wire">
+        <level value="debug" />
+    </logger>
+
     <logger name="com.kii">
         <level value="debug" />
     </logger>

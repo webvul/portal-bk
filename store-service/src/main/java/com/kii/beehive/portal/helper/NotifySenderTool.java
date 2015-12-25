@@ -166,7 +166,7 @@ public class NotifySenderTool {
 
 
 
-			client.syncExecuteRequest(request, new FutureCallback<HttpResponse>() {
+			client.asyncExecuteRequest(request, new FutureCallback<HttpResponse>() {
 				@Override
 				public void completed(HttpResponse httpResponse) {
 					int status = httpResponse.getStatusLine().getStatusCode();

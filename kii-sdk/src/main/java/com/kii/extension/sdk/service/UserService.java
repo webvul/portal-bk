@@ -66,8 +66,9 @@ public class UserService {
 	}
 	public LoginInfo  adminLogin(){
 
+		AppInfo appInfo=bindToolResolver.getAppInfo();
 
-		HttpUriRequest request= getNonTokenBuilder().adminLogin(bindToolResolver.getAppInfo().getClientID(), bindToolResolver.getAppInfo().getClientSecret()).generRequest(mapper);
+		HttpUriRequest request= getNonTokenBuilder().adminLogin(appInfo.getClientID(), appInfo.getClientSecret()).generRequest(mapper);
 
 
 		LoginInfo login= client.executeRequestWithCls(request, LoginInfo.class);
