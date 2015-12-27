@@ -61,3 +61,15 @@ FROM beehive.rel_thing_tag r, beehive.tag_index t, beehive.global_thing g
 WHERE r.thing_id=g.id_global_thing AND r.tag_id=t.tag_id
 
 
+CREATE TABLE beehive.auth_info (
+  id INT NOT NULL AUTO_INCREMENT COMMENT '',
+  user_id VARCHAR(45) NOT NULL COMMENT '',
+  token VARCHAR(45) NULL COMMENT '',
+  expire_time DATETIME NULL COMMENT '',
+  create_by VARCHAR(45) NULL COMMENT '',
+  create_date DATETIME NULL COMMENT '',
+  modify_by VARCHAR(45) NULL COMMENT '',
+  modify_date DATETIME NULL COMMENT '',
+  PRIMARY KEY (id) COMMENT ''
+  ) ENGINE=InnoDB AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8mb4;
+

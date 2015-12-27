@@ -28,6 +28,7 @@ import com.kii.beehive.portal.service.BeehiveUserGroupDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.store.entity.BeehiveUserGroup;
 import com.kii.beehive.portal.web.WebTestTemplate;
+import com.kii.beehive.portal.web.help.AuthInterceptor;
 
 public class TestUserGroupController extends WebTestTemplate {
 
@@ -45,6 +46,8 @@ public class TestUserGroupController extends WebTestTemplate {
     private String userGroupID;
 
     private List<String> userGroupNameListForTest = new ArrayList<>();
+
+    private String tokenForTest = "Bearer " + AuthInterceptor.SUPER_TOKEN;
 
     @Before
     public void before() {
@@ -121,6 +124,7 @@ public class TestUserGroupController extends WebTestTemplate {
                 post("/usergroup/").content(ctx)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
+                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -176,6 +180,7 @@ public class TestUserGroupController extends WebTestTemplate {
                 patch("/usergroup/" + userGroupID).content(ctx)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
+                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -222,6 +227,7 @@ public class TestUserGroupController extends WebTestTemplate {
                 post("/usergroup/simplequery").content(ctx)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
+                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -267,6 +273,7 @@ public class TestUserGroupController extends WebTestTemplate {
                 post("/usergroup/simplequery").content(ctx)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
+                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -292,6 +299,7 @@ public class TestUserGroupController extends WebTestTemplate {
                 post("/usergroup/").content(ctx)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
+                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -315,6 +323,7 @@ public class TestUserGroupController extends WebTestTemplate {
                 post("/usergroup/simplequery").content(ctx)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
+                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -341,6 +350,7 @@ public class TestUserGroupController extends WebTestTemplate {
                 post("/usergroup/simplequery").content(ctx)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
+                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -372,6 +382,7 @@ public class TestUserGroupController extends WebTestTemplate {
                 post("/usergroup/simplequery").content(ctx)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
+                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -396,6 +407,7 @@ public class TestUserGroupController extends WebTestTemplate {
                 delete("/usergroup/" + userGroupID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
+                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();

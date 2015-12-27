@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.kii.extension.sdk.entity.AppInfo;
 import com.kii.extension.sdk.entity.LoginInfo;
 import com.kii.extension.sdk.service.UserService;
 
@@ -28,7 +29,9 @@ public class UserTokenBindTool implements TokenBindTool {
 
 	private void setUserInfo(UserInfo userInfo){
 
-		userLocal.get().put(bindToolResolver.getAppInfo().getAppID(), userInfo);
+		AppInfo appInfo =  bindToolResolver.getAppInfo();
+
+		userLocal.get().put(appInfo.getAppID(), userInfo);
 	}
 
 
@@ -56,7 +59,9 @@ public class UserTokenBindTool implements TokenBindTool {
 	@Override
 	public String getToken() {
 
-		UserInfo info=userLocal.get().get(bindToolResolver.getAppInfo().getAppID());
+		AppInfo appInfo = bindToolResolver.getAppInfo();
+
+		UserInfo info=userLocal.get().get(appInfo.getAppID());
 		if(info==null){
 			return null;
 		}

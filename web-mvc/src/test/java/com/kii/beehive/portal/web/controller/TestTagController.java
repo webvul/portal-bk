@@ -24,6 +24,7 @@ import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagType;
 import com.kii.beehive.portal.web.WebTestTemplate;
+import com.kii.beehive.portal.web.help.AuthInterceptor;
 
 /**
  * Created by USER on 12/1/15.
@@ -40,6 +41,8 @@ public class TestTagController extends WebTestTemplate {
 
     private Long tagIDForTest;
 
+    private String tokenForTest = "Bearer " + AuthInterceptor.SUPER_TOKEN;
+
     @Test
     public void testCreateTag() throws Exception {
 
@@ -53,6 +56,7 @@ public class TestTagController extends WebTestTemplate {
                 post("/tags/custom").content(ctx)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
+                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -85,6 +89,7 @@ public class TestTagController extends WebTestTemplate {
                 post("/tags/custom").content(ctx)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
+                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -117,6 +122,7 @@ public class TestTagController extends WebTestTemplate {
                 post("/tags/custom").content(ctx)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
+                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -151,6 +157,7 @@ public class TestTagController extends WebTestTemplate {
                 post("/tags/custom").content(ctx)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
+                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isBadRequest())
                 .andReturn().getResponse().getContentAsString();
@@ -169,6 +176,7 @@ public class TestTagController extends WebTestTemplate {
                 delete("/tags/custom/" + displayName)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
+                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -185,6 +193,7 @@ public class TestTagController extends WebTestTemplate {
                 delete("/tags/custom/" + "some_non_existing_displayName")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
+                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isNotFound())
                 .andReturn().getResponse().getContentAsString();
@@ -199,6 +208,7 @@ public class TestTagController extends WebTestTemplate {
                 get("/tags/all")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
+                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -237,6 +247,7 @@ public class TestTagController extends WebTestTemplate {
                 get("/tags/all")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
+                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -281,6 +292,7 @@ public class TestTagController extends WebTestTemplate {
                 get("/tags/locations/" + "floor1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
+                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -298,6 +310,7 @@ public class TestTagController extends WebTestTemplate {
                 get("/tags/locations/" + "floor1-room1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
+                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -314,6 +327,7 @@ public class TestTagController extends WebTestTemplate {
                 get("/tags/locations/")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
+                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();

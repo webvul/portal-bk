@@ -327,7 +327,22 @@ public class ApiAccessBuilder {
 		return this;
 	}
 
+	public ApiAccessBuilder changePassword(String oldPassword,String newPassword){
 
+		request=new HttpPut(appInfo.getAppSubUrl()+"/users/me/password");
+
+		this.setContentType("application/vnd.kii.ChangePasswordRequest+json");
+
+
+		Map<String,Object> map=new HashMap<>();
+
+		map.put("oldPassword",oldPassword);
+		map.put("newPassword",newPassword);
+
+		this.ctxObj=map;
+
+		return this;
+	}
 
 
 

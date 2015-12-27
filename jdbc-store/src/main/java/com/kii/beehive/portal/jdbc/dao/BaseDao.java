@@ -3,6 +3,7 @@ package com.kii.beehive.portal.jdbc.dao;
 import javax.sql.DataSource;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -112,6 +113,22 @@ public abstract class BaseDao<T extends DBEntity> {
     	return result;
 	}
 
+	public int execute(String sql, List<Object> values) {
+
+		Object[] params = null;
+		if(values != null) {
+			params = values.toArray(new Object[values.size()]);
+		} else {
+			params = new Object[0];
+		}
+
+		return execute(sql, params);
+	}
+
+	public int execute(String sql, Object[] params) {
+		return jdbcTemplate.update(sql, params);
+	}
+
 	public long saveOrUpdate(T entity){
 		if(entity.getId() == 0){
 			SqlParameterSource parameters = new AnnationBeanSqlParameterSource(entity);
@@ -121,6 +138,40 @@ public abstract class BaseDao<T extends DBEntity> {
 			this.update(entity);
 			return entity.getId();
 		}
+	}
+
+	protected int update(T entity, String[] columns) {
+
+		// get column info by reflection
+		SqlParameterSource parameters = new AnnationBeanSqlParameterSource(entity);
+
+		List<Object> fieldValues = new ArrayList<>();
+		StringBuffer update = new StringBuffer();
+
+		// append each column and value
+		for(String column : columns) {
+			Object value = parameters.getValue(column);
+
+			if(value != null) {
+				update.append(column).append("=?, ");
+				fieldValues.add(value);
+			}
+		}
+
+		// combine sql string
+		String updateString = update.toString();
+		if(updateString.length() > 0) {
+			updateString = updateString.substring(0, updateString.length() - 2);
+		}
+
+		StringBuffer sql = new StringBuffer("UPDATE ").append(getTableName()).append(" SET ");
+		sql.append(updateString).append(" WHERE ").append(getKey()).append("=?");
+		fieldValues.add(entity.getId());
+
+		// update
+		int updateResult = jdbcTemplate.update(sql.toString(), fieldValues.toArray(new Object[fieldValues.size()]));
+
+		return updateResult;
 	}
 	
 }
