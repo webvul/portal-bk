@@ -75,6 +75,7 @@
 			<!--change password-->
 			<mvc:mapping path="/oauth2/changepassword" />
 			<!-- exclude login API-->
+			<mvc:exclude-mapping path="/oauth2/register"/>
 			<mvc:exclude-mapping path="/oauth2/login"/>
 			<mvc:exclude-mapping path="/oauth2/logout"/>
 

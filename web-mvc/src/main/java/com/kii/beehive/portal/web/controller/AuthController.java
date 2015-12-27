@@ -37,6 +37,32 @@ public class AuthController {
     private AuthManager authManager;
 
     /**
+     * 用户注册
+     * POST /oauth2/register
+     *
+     * refer to doc "Beehive API - User API" for request/response details
+     *
+     * @return
+     */
+    @RequestMapping(path = "/register", method = { RequestMethod.POST })
+    public void register(@RequestBody Map<String, Object> request) {
+
+        String userID = (String)request.get("userID");
+        String password = (String)request.get("password");
+
+        if(CollectUtils.containsBlank(userID, password)) {
+            throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "userID or password empty", HttpStatus.BAD_REQUEST);
+        }
+
+        boolean result = authManager.register(userID, password);
+
+        if(result == false) {
+            throw new PortalException(ErrorCode.AUTH_FAIL, "userID incorrect or already registered", HttpStatus.BAD_REQUEST);
+        }
+
+    }
+
+    /**
      * 用户登录
      * POST /oauth2/login
      *

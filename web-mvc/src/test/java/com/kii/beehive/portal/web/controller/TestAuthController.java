@@ -3,6 +3,7 @@ package com.kii.beehive.portal.web.controller;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,7 +33,7 @@ public class TestAuthController extends WebTestTemplate {
 
     private String userIDForTest = "userIDForTestAuth";
 
-    private String passwordForTest = "passwordForTest";
+    private String passwordForTest = DigestUtils.sha1Hex(userIDForTest+"_beehive");
 
     private String accessToken;
 
@@ -63,6 +64,73 @@ public class TestAuthController extends WebTestTemplate {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+    }
+
+    /**
+     * must run in new thread
+     * @throws Exception
+     */
+    @Test
+    public void testRegister() throws Exception {
+
+        Map<String, Object> request = new HashMap<>();
+        request.put("userID", userIDForTest);
+        request.put("password", "newpassword");
+
+        String ctx= mapper.writeValueAsString(request);
+
+        this.mockMvc.perform(
+                post("/oauth2/register").content(ctx)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("UTF-8")
+        )
+                .andExpect(status().isOk());
+
+    }
+
+    /**
+     * must run in new thread
+     * @throws Exception
+     */
+    @Test
+    public void testRegisterException() throws Exception {
+
+        this.testRegister();
+
+        // registered already
+        Map<String, Object> request = new HashMap<>();
+        request.put("userID", userIDForTest);
+        request.put("password", "newpassword");
+
+        String ctx= mapper.writeValueAsString(request);
+
+        String result = this.mockMvc.perform(
+                post("/oauth2/register").content(ctx)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("UTF-8")
+        )
+                .andExpect(status().isBadRequest())
+                .andReturn().getResponse().getContentAsString();
+
+        System.out.println("Response:" + result);
+
+        // wrong userID
+        request = new HashMap<>();
+        request.put("userID", "some_non_existing_userID");
+        request.put("password", "newpassword");
+
+        ctx= mapper.writeValueAsString(request);
+
+        result = this.mockMvc.perform(
+                post("/oauth2/register").content(ctx)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("UTF-8")
+        )
+                .andExpect(status().isBadRequest())
+                .andReturn().getResponse().getContentAsString();
+
+        System.out.println("Response:" + result);
 
     }
 
