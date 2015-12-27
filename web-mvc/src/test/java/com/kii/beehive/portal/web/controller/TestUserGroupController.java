@@ -131,11 +131,11 @@ public class TestUserGroupController extends WebTestTemplate {
 
         Map<String,Object> map=mapper.readValue(result, Map.class);
 
-        // assert http reture
+        // assert http return
         userGroupID = (String)map.get("userGroupID");
         assertNotNull(userGroupID);
 
-        // assert DB
+        // assert user group in DB
         BeehiveUserGroup userGroup = userGroupDao.getUserGroupByID(userGroupID);
         assertEquals(userGroupID, userGroup.getUserGroupID());
         assertEquals("test_usergroupname", userGroup.getUserGroupName());
@@ -147,6 +147,12 @@ public class TestUserGroupController extends WebTestTemplate {
         assertEquals(2, userGroup.getCustom().size());
         assertEquals("20001230", userGroup.getCustom().get("birthday"));
         assertEquals("male", userGroup.getCustom().get("gender"));
+
+        // assert user in DB
+        List<BeehiveUser> beehiveUserList = userDao.getUserByIDs(userIDListForTest);
+        for(BeehiveUser beehiveUser : beehiveUserList) {
+            assertTrue(beehiveUser.getGroups().contains(userGroupID));
+        }
 
     }
 
@@ -243,6 +249,15 @@ public class TestUserGroupController extends WebTestTemplate {
         assertEquals(123.45, userGroup.getCustom().get("birthday"));
         assertEquals("male", userGroup.getCustom().get("gender"));
         assertEquals("new field during update", userGroup.getCustom().get("nationality"));
+
+        // assert user in DB
+        List<BeehiveUser> beehiveUserList = userDao.getUserByIDs(userIDList);
+        for(BeehiveUser beehiveUser : beehiveUserList) {
+            assertTrue(beehiveUser.getGroups().contains(userGroupID));
+        }
+
+        BeehiveUser beehiveUser = userDao.getUserByID(userIDListForTest.get(0));
+        assertTrue(!beehiveUser.getGroups().contains(userGroupID));
 
     }
 
@@ -496,6 +511,11 @@ public class TestUserGroupController extends WebTestTemplate {
         BeehiveUserGroup userGroup = userGroupDao.getUserGroupByID(userGroupID);
         assertNull(userGroup);
 
+        // assert user in DB
+        List<BeehiveUser> beehiveUserList = userDao.getUserByIDs(userIDListForTest);
+        for(BeehiveUser beehiveUser : beehiveUserList) {
+            assertTrue(!beehiveUser.getGroups().contains(userGroupID));
+        }
     }
 
 }
