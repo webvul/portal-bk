@@ -16,8 +16,10 @@ import com.kii.beehive.portal.exception.UserNotExistException;
 import com.kii.beehive.portal.helper.SyncMsgService;
 import com.kii.beehive.portal.service.ArchiveBeehiveUserDao;
 import com.kii.beehive.portal.service.BeehiveUserDao;
+import com.kii.beehive.portal.service.BeehiveUserGroupDao;
 import com.kii.beehive.portal.service.KiiUserSyncDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
+import com.kii.beehive.portal.store.entity.BeehiveUserGroup;
 import com.kii.beehive.portal.store.entity.CustomProperty;
 import com.kii.extension.sdk.exception.ObjectNotFoundException;
 
@@ -32,8 +34,8 @@ public class UserManager {
 	@Autowired
 	private BeehiveUserDao userDao;
 
-//	@Autowired
-//	private BeehiveUserGroupDao userGroupDao;
+	@Autowired
+	private BeehiveUserGroupDao userGroupDao;
 
 	@Autowired
 	private KiiUserSyncDao kiiUserDao;
@@ -119,9 +121,9 @@ public class UserManager {
 
 	public void deleteUser(String userID) {
 
-
-
 		BeehiveUser user = userDao.getUserByID(userID);
+
+		this.removeUserFromUserGroup(userID, user.getGroups());
 
 		kiiUserDao.disableBeehiveUser(user);
 		archiveUserDao.archive(user);
@@ -130,10 +132,32 @@ public class UserManager {
 
 		msgService.addDeleteMsg(userID);
 
-
 	}
 
+	/**
+	 * remove the userID from the user groups specified by the param "userGroupIDs"
+	 * @param userID
+	 * @param userGroupIDs
+     */
+	private void removeUserFromUserGroup(String userID, Set<String> userGroupIDs) {
 
+		if(userGroupIDs == null) {
+			return;
+		}
+
+		List<BeehiveUserGroup> beehiveUserGroupList = userGroupDao.getUserGroupByIDs(new ArrayList<>(userGroupIDs));
+
+		if(beehiveUserGroupList != null) {
+			// remove the user from each group
+			for(BeehiveUserGroup beehiveUserGroup : beehiveUserGroupList) {
+				Set<String> users = beehiveUserGroup.getUsers();
+				if(users != null) {
+					users.remove(userID);
+					userGroupDao.updateUsers(beehiveUserGroup.getUserGroupID(), users);
+				}
+			}
+		}
+	}
 
 	public BeehiveUser getUserByID(String userID) {
 		return userDao.getUserByID(userID);

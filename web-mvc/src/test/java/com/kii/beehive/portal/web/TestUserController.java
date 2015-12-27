@@ -2,6 +2,7 @@ package com.kii.beehive.portal.web;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
+import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.fail;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -9,9 +10,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.After;
 import org.junit.Before;
@@ -23,8 +26,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.beehive.portal.service.ArchiveBeehiveUserDao;
 import com.kii.beehive.portal.service.BeehiveUserDao;
+import com.kii.beehive.portal.service.BeehiveUserGroupDao;
 import com.kii.beehive.portal.service.KiiUserSyncDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
+import com.kii.beehive.portal.store.entity.BeehiveUserGroup;
 import com.kii.beehive.portal.web.controller.UserController;
 import com.kii.beehive.portal.web.help.AuthInterceptor;
 import com.kii.extension.sdk.exception.UserAlreadyExistsException;
@@ -47,9 +52,16 @@ public class TestUserController extends WebTestTemplate{
 	@Autowired
 	private ArchiveBeehiveUserDao archiveBeehiveUserDao;
 
+	@Autowired
+	private BeehiveUserGroupDao beehiveUserGroupDao;
+
 	private String userIDForTest;
 
 	private String kiiUserIDForTest;
+
+	private String userGroupIDForTest;
+
+	private String userGroupNameForTest;
 
 	private String tokenForTest = "Bearer " + AuthInterceptor.SUPER_TOKEN;
 
@@ -62,6 +74,7 @@ public class TestUserController extends WebTestTemplate{
 		System.out.println("*******************************************************************");
 
 		userIDForTest = "some_userid_for_test";
+		userGroupNameForTest = "some_usergroup_name_for_test";
 
 		clear();
 
@@ -107,6 +120,17 @@ public class TestUserController extends WebTestTemplate{
 		// remove from beehive user
 		try {
 			beehiveUserDao.deleteUser(userIDForTest);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+
+		// remove user group
+		try {
+			Map<String, Object> param = new HashMap<>();
+			param.put("userGroupName", userGroupNameForTest);
+			userGroupIDForTest = beehiveUserGroupDao.getUserGroupsBySimpleQuery(param).get(0).getUserGroupID();
+			beehiveUserGroupDao.deleteUserGroup(userGroupIDForTest);
+			System.out.println("success to delete user group:" + userGroupIDForTest);
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -591,6 +615,76 @@ public class TestUserController extends WebTestTemplate{
 
 		mapList=mapper.readValue(result, List.class);
 		assertEquals(0, mapList.size());
+
+	}
+
+	@Test
+	public void testDeleteUserFromGroup() throws Exception {
+
+		// create userID1
+		String userID1 = userIDForTest;
+		this.testUserAdd();
+
+		// creat userID2
+		userIDForTest = userIDForTest + "2";
+		String userID2 = userIDForTest;
+		this.testUserAdd();
+
+		Map<String, Object> request = new HashMap<>();
+		request.put("userGroupName", userGroupNameForTest);
+		request.put("description", "some description");
+
+		// create user group
+		// set users
+		List<String> userIDList = new ArrayList<>();
+		userIDList.add(userID1);
+		userIDList.add(userID2);
+
+		request.put("users", userIDList);
+
+		String ctx= mapper.writeValueAsString(request);
+
+		String result=this.mockMvc.perform(
+				post("/usergroup/").content(ctx)
+						.contentType(MediaType.APPLICATION_JSON)
+						.characterEncoding("UTF-8")
+						.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+		)
+				.andExpect(status().isOk())
+				.andReturn().getResponse().getContentAsString();
+
+		Map<String,Object> map=mapper.readValue(result, Map.class);
+
+		// assert http return
+		userGroupIDForTest = (String)map.get("userGroupID");
+		assertNotNull(userGroupIDForTest);
+
+		// query user group
+		BeehiveUserGroup userGroup = beehiveUserGroupDao.getUserGroupByID(userGroupIDForTest);
+		// assert both userID1 and userID2 existing
+		Set<String> users = userGroup.getUsers();
+		assertTrue(users.containsAll(userIDList));
+
+		// delete
+		result=this.mockMvc.perform(
+				delete("/users/" + userID1)
+						.header("Authorization", "Bearer d31032a0-8ebf-11e5-9560-00163e02138f")
+						.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+		)
+				.andExpect(status().isOk())
+				.andReturn().getResponse().getContentAsString();
+
+		System.out.println();
+		System.out.println("Http Response: " + result);
+		System.out.println();
+
+		// query
+		// query user group
+		userGroup = beehiveUserGroupDao.getUserGroupByID(userGroupIDForTest);
+		// assert only userID2 existing in user group
+		users = userGroup.getUsers();
+		assertTrue(!users.contains(userID1));
+		assertTrue(users.contains(userID2));
 
 	}
 
