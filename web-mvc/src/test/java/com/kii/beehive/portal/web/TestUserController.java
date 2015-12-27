@@ -4,6 +4,7 @@ import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
 import static junit.framework.TestCase.fail;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -320,6 +321,55 @@ public class TestUserController extends WebTestTemplate{
 
 		// assert http return
 		String resultUserID = (String)map.get("userID");
+
+		assertEquals(userIDForTest, resultUserID);
+
+	}
+
+	@Test
+	public void testUpdateUser2() throws Exception {
+
+		this.testUserAdd();
+
+		Map<String, Object> request = new HashMap<>();
+		request.put("userName", "张三.new");
+		request.put("company", "IBM.new");
+		request.put("userID", "another_user_id");
+
+		String ctx= mapper.writeValueAsString(request);
+
+		String result=this.mockMvc.perform(
+				patch("/users/" + userIDForTest).content(ctx)
+						.contentType(MediaType.APPLICATION_JSON)
+						.characterEncoding("UTF-8")
+						.header("Authorization", "Bearer d31032a0-8ebf-11e5-9560-00163e02138f")
+						.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+		)
+				.andExpect(status().isOk())
+				.andReturn().getResponse().getContentAsString();
+
+		Map<String,Object> map=mapper.readValue(result, Map.class);
+
+		// assert http return
+		String resultUserID = (String)map.get("userID");
+
+		assertEquals(userIDForTest, resultUserID);
+
+		// query
+		result=this.mockMvc.perform(
+				get("/users/" + userIDForTest).content(ctx)
+						.contentType(MediaType.APPLICATION_JSON)
+						.characterEncoding("UTF-8")
+						.header("Authorization", "Bearer d31032a0-8ebf-11e5-9560-00163e02138f")
+						.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+		)
+				.andExpect(status().isOk())
+				.andReturn().getResponse().getContentAsString();
+
+		map=mapper.readValue(result, Map.class);
+		resultUserID = (String)map.get("userID");
+
+		System.out.println("Response: " + result);
 
 		assertEquals(userIDForTest, resultUserID);
 
