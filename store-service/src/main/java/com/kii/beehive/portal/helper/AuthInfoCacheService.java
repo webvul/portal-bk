@@ -30,14 +30,10 @@ public class AuthInfoCacheService {
 
     // token expiration will be "TOKEN_VALID_TIME_IN_MILLISECOND" million seconds later
     // 1 hour
-//    private static final long TOKEN_VALID_TIME_IN_MILLISECOND = 60 * 60 * 1000;
-    // below for testing only
-    private static final long TOKEN_VALID_TIME_IN_MILLISECOND = 15 * 1000;
+    private static final long TOKEN_VALID_TIME_IN_MILLISECOND = 60 * 60 * 1000;
 
     // 1 hour
-//    private static final long CHECK_CACHE_INTERVAL_IN_MILLISECOND = 60 * 60 * 1000;
-    // below for testing only
-    private static final long CHECK_CACHE_INTERVAL_IN_MILLISECOND = 15 * 1000;
+    private static final long CHECK_CACHE_INTERVAL_IN_MILLISECOND = 60 * 60 * 1000;
 
     @Autowired
     private AuthInfoDao authInfoDao;
