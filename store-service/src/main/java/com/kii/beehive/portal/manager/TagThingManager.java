@@ -164,7 +164,7 @@ public class TagThingManager {
 	}
 
 	public void removeTag(TagIndex tag) {
-		tagThingRelationDao.delete(null, tag.getId());
+		tagThingRelationDao.delete(tag.getId(), null);
 		tagIndexDao.deleteByID(tag.getId());
 	}
 	
