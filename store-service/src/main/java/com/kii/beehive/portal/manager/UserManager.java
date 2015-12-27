@@ -1,8 +1,11 @@
 package com.kii.beehive.portal.manager;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -134,5 +137,54 @@ public class UserManager {
 
 	public BeehiveUser getUserByID(String userID) {
 		return userDao.getUserByID(userID);
+	}
+
+	/**
+	 * return the non existing userIDs
+	 * @param userIDs
+	 * @return
+     */
+	public Set<String> checkNonExistingUserID(Set<String> userIDs) {
+
+		if(userIDs == null) {
+			return new HashSet<String>();
+		}
+
+		// get the existing user IDs
+		List<BeehiveUser> beehiveUserList = userDao.getUserByIDs(new ArrayList<>(userIDs));
+		Set<String> existingUserIDList = new HashSet<>();
+		for(BeehiveUser user : beehiveUserList) {
+			existingUserIDList.add(user.getAliUserID());
+		}
+
+		// get the non existing user IDs
+		Set<String> nonExistingUserIDs = new HashSet<>();
+		nonExistingUserIDs.addAll(userIDs);
+		nonExistingUserIDs.removeAll(existingUserIDList);
+
+		return nonExistingUserIDs;
+	}
+
+	/**
+	 * validate whether the userIDs in param "userIDList" existing
+	 * if any userID not existing, throw UserNotExistException
+	 * @param userIDs
+     */
+	public void validateUserIDExisting(Set<String> userIDs) {
+
+		Set<String> nonExistingUserIDList = this.checkNonExistingUserID(userIDs);
+
+		if(nonExistingUserIDList != null && !nonExistingUserIDList.isEmpty()) {
+			StringBuffer buffer = new StringBuffer();
+
+			for (String nonExistingUserID : nonExistingUserIDList) {
+				buffer.append(nonExistingUserID).append(",");
+
+			}
+			buffer.deleteCharAt(buffer.length() - 1);
+
+			throw new UserNotExistException(buffer.toString());
+		}
+
 	}
 }

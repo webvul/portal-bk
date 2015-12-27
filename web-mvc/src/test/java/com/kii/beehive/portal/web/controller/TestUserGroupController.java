@@ -151,6 +151,44 @@ public class TestUserGroupController extends WebTestTemplate {
     }
 
     @Test
+    public void testCreateUserGroupException() throws Exception {
+
+        Map<String, Object> request = new HashMap<>();
+        request.put("userGroupName", "test_usergroupname");
+        request.put("description", "some description");
+
+        // set users
+        List<String> userIDList = new ArrayList<>();
+        userIDList.addAll(userIDListForTest);
+        userIDList.add("non_existing_userid1");
+        userIDList.add("non_existing_userid2");
+
+        request.put("users", userIDList);
+
+        // set custom
+        Map<String, Object> custom = new HashMap<>();
+        custom.put("birthday", "20001230");
+        custom.put("gender", "male");
+        request.put("custom", custom);
+
+        String ctx= mapper.writeValueAsString(request);
+
+        String result=this.mockMvc.perform(
+                post("/usergroup/").content(ctx)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("UTF-8")
+                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+        )
+                .andExpect(status().isNotFound())
+                .andReturn().getResponse().getContentAsString();
+
+        System.out.println("Response: " + result);
+        assertTrue(result.indexOf("non_existing_userid1") > -1);
+        assertTrue(result.indexOf("non_existing_userid2") > -1);
+
+    }
+
+    @Test
     public void testUpdateUserGroup() throws Exception {
 
         // create user group info
@@ -205,6 +243,49 @@ public class TestUserGroupController extends WebTestTemplate {
         assertEquals(123.45, userGroup.getCustom().get("birthday"));
         assertEquals("male", userGroup.getCustom().get("gender"));
         assertEquals("new field during update", userGroup.getCustom().get("nationality"));
+
+    }
+
+    @Test
+    public void testUpdateUserGroupException() throws Exception {
+
+        // create user group info
+        testCreateUserGroup();
+
+        // update user group info
+        Map<String, Object> request = new HashMap<>();
+        request.put("userGroupName", "test_usergroupname_new");
+        request.put("description", "some description.new");
+
+        // set users
+        List<String> userIDList = new ArrayList<>();
+        userIDList.add("non_existing_userid1");
+        userIDList.add("non_existing_userid2");
+        userIDList.addAll(userIDListForTest);
+        userIDList.remove(userIDList.size() - 1);
+
+        request.put("users", userIDList);
+
+        // set custom
+        Map<String, Object> custom = new HashMap<>();
+        custom.put("birthday", 123.45);
+        custom.put("nationality", "new field during update");
+        request.put("custom", custom);
+
+        String ctx= mapper.writeValueAsString(request);
+
+        String result=this.mockMvc.perform(
+                patch("/usergroup/" + userGroupID).content(ctx)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("UTF-8")
+                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+        )
+                .andExpect(status().isNotFound())
+                .andReturn().getResponse().getContentAsString();
+
+        System.out.println("Response: " + result);
+        assertTrue(result.indexOf("non_existing_userid1") > -1);
+        assertTrue(result.indexOf("non_existing_userid2") > -1);
 
     }
 
