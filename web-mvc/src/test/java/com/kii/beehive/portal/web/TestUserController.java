@@ -231,6 +231,7 @@ public class TestUserController extends WebTestTemplate{
 		System.out.println();
 
 		// test 400
+		// no userName/userID/role
 		result=this.mockMvc.perform(
 				post("/users/").content("{}")
 						.contentType(MediaType.APPLICATION_JSON)
@@ -246,32 +247,59 @@ public class TestUserController extends WebTestTemplate{
 		System.out.println();
 
 		// test 400
-		request.remove("userID");
-
-		ctx = mapper.writeValueAsString(request);
-
-		result=this.mockMvc.perform(
-				post("/users/").content("{}")
-						.contentType(MediaType.APPLICATION_JSON)
-						.characterEncoding("UTF-8")
-						.header("Authorization", "Bearer d31032a0-8ebf-11e5-9560-00163e02138f")
-						.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
-		)
-				.andExpect(status().isBadRequest())
-				.andReturn().getResponse().getContentAsString();
-
-		System.out.println();
-		System.out.println("Http Response: " + result);
-		System.out.println();
-
-		// test 400
-		request.remove("userName");
+		// no userName
+		request = new HashMap<>();
 		request.put("userID", userIDForTest);
+		request.put("role", "2");
 
 		ctx = mapper.writeValueAsString(request);
 
 		result=this.mockMvc.perform(
-				post("/users/").content("{}")
+				post("/users/").content(ctx)
+						.contentType(MediaType.APPLICATION_JSON)
+						.characterEncoding("UTF-8")
+						.header("Authorization", "Bearer d31032a0-8ebf-11e5-9560-00163e02138f")
+						.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+		)
+				.andExpect(status().isBadRequest())
+				.andReturn().getResponse().getContentAsString();
+
+		System.out.println();
+		System.out.println("Http Response: " + result);
+		System.out.println();
+
+		// test 400
+		// no userID
+		request = new HashMap<>();
+		request.put("userName", "张三");
+		request.put("role", "2");
+
+		ctx = mapper.writeValueAsString(request);
+
+		result=this.mockMvc.perform(
+				post("/users/").content(ctx)
+						.contentType(MediaType.APPLICATION_JSON)
+						.characterEncoding("UTF-8")
+						.header("Authorization", "Bearer d31032a0-8ebf-11e5-9560-00163e02138f")
+						.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+		)
+				.andExpect(status().isBadRequest())
+				.andReturn().getResponse().getContentAsString();
+
+		System.out.println();
+		System.out.println("Http Response: " + result);
+		System.out.println();
+
+		// test 400
+		// no role
+		request = new HashMap<>();
+		request.put("userID", userIDForTest);
+		request.put("userName", "张三");
+
+		ctx = mapper.writeValueAsString(request);
+
+		result=this.mockMvc.perform(
+				post("/users/").content(ctx)
 						.contentType(MediaType.APPLICATION_JSON)
 						.characterEncoding("UTF-8")
 						.header("Authorization", "Bearer d31032a0-8ebf-11e5-9560-00163e02138f")
