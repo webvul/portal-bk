@@ -50,38 +50,58 @@
 			<mvc:mapping path="/**" />
 			<bean class="com.kii.beehive.portal.web.help.OperatorLogInterceptor"></bean>
 		</mvc:interceptor>
-
-		<!--intercept all API related to users-->
 		<mvc:interceptor>
 			<mvc:mapping path="/users" />
+			<bean class="com.kii.beehive.portal.web.help.TokenInterceptor" />
+		</mvc:interceptor>
+		<mvc:interceptor>
 			<mvc:mapping path="/users/**" />
 			<bean class="com.kii.beehive.portal.web.help.TokenInterceptor" />
 		</mvc:interceptor>
 
 		<!--intercept all API related to users/usergroup/things/tags-->
+		<!--User API-->
 		<mvc:interceptor>
-			<!--users-->
 			<mvc:mapping path="/users" />
-			<mvc:mapping path="/users/**" />
-			<!--usergroup-->
-			<mvc:mapping path="/usergroup" />
-			<mvc:mapping path="/usergroup/**" />
-			<!--things-->
-			<mvc:mapping path="/things" />
-			<mvc:mapping path="/things/**" />
-			<!--tags-->
-			<mvc:mapping path="/tags" />
-			<mvc:mapping path="/tags/**" />
-			<!--change password-->
-			<mvc:mapping path="/oauth2/changepassword" />
-			<!-- exclude login API-->
-			<mvc:exclude-mapping path="/oauth2/register"/>
-			<mvc:exclude-mapping path="/oauth2/login"/>
-			<mvc:exclude-mapping path="/oauth2/logout"/>
-
 			<bean class="com.kii.beehive.portal.web.help.AuthInterceptor" />
 		</mvc:interceptor>
-
+		<mvc:interceptor>
+			<mvc:mapping path="/users/**" />
+			<bean class="com.kii.beehive.portal.web.help.AuthInterceptor" />
+		</mvc:interceptor>
+		<!--User Group API-->
+		<mvc:interceptor>
+			<mvc:mapping path="/usergroup" />
+			<bean class="com.kii.beehive.portal.web.help.AuthInterceptor" />
+		</mvc:interceptor>
+		<mvc:interceptor>
+			<mvc:mapping path="/usergroup/**" />
+			<bean class="com.kii.beehive.portal.web.help.AuthInterceptor" />
+		</mvc:interceptor>
+		<!--Thing API-->
+		<mvc:interceptor>
+			<mvc:mapping path="/things" />
+			<bean class="com.kii.beehive.portal.web.help.AuthInterceptor" />
+		</mvc:interceptor>
+		<mvc:interceptor>
+			<mvc:mapping path="/things/**" />
+			<bean class="com.kii.beehive.portal.web.help.AuthInterceptor" />
+		</mvc:interceptor>
+		<!--Tag API-->
+		<mvc:interceptor>
+			<mvc:mapping path="/tags" />
+			<bean class="com.kii.beehive.portal.web.help.AuthInterceptor" />
+		</mvc:interceptor>
+		<mvc:interceptor>
+			<mvc:mapping path="/tags/**" />
+			<bean class="com.kii.beehive.portal.web.help.AuthInterceptor" />
+		</mvc:interceptor>
+		<!--Other API-->
+		<mvc:interceptor>
+			<mvc:mapping path="/oauth2/changepassword" />
+			<bean class="com.kii.beehive.portal.web.help.AuthInterceptor" />
+		</mvc:interceptor>
 	</mvc:interceptors>
+	<!--TODO multiple interceptor with the same bean can't be merged into one, need to investigate-->
 
 </beans>
