@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.common.utils.CollectUtils;
 import com.kii.beehive.portal.exception.EntryNotFoundException;
-import com.kii.beehive.portal.exception.ThingNotExistException;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.dao.TagThingRelationDao;
@@ -68,11 +67,11 @@ public class TagThingManager {
 		long thingID = globalThingDao.saveOrUpdate(thingInfo);
 
 		// set location tag and location tag-thing relation
-		/*if(location == null) {
+		if(location == null) {
 			location = DEFAULT_LOCATION;
 		}
 		this.saveOrUpdateThingLocation(thingID, location);
-		 */
+
 		// set custom tag and custom tag-thing relation
 		/*for(TagIndex tag:tagSet){
 			if(!Strings.isBlank(tag.getDisplayName())){
@@ -109,21 +108,21 @@ public class TagThingManager {
 		}
 	}
 	
-	public void bindCustomTagToThing(Collection<String> displayNames,Long thingID) {
-		GlobalThingInfo thing = globalThingDao.findByID(thingID);
-		if(thing == null){
-			throw new ThingNotExistException(thingID);
-		}
+	public void bindCustomTagToThing(Collection<String> displayNames, Collection<Long> globalThingIDs) {
 
-		for(String displayName:displayNames){
-			TagIndex tag = this.findCustomTag(displayName);
-			if(tag != null){
-				TagThingRelation ttr = tagThingRelationDao.findByThingIDAndTagID(thing.getId(), tag.getId());
-				if(ttr == null){
-					tagThingRelationDao.saveOrUpdate(new TagThingRelation(tag.getId(),thing.getId()));
-				}
+		List<TagIndex> tagIndexList = this.findCustomTagList(displayNames);
+
+		for(Long globalThingID : globalThingIDs){
+			GlobalThingInfo thing = globalThingDao.findByID(globalThingID);
+			if(thing == null){
+				log.warn("Thing is null, ThingId = " + globalThingID);
 			}else{
-				log.warn("Custom Tag is null, displayName = " + displayName);
+				for(TagIndex tag : tagIndexList){
+					TagThingRelation ttr = tagThingRelationDao.findByThingIDAndTagID(globalThingID, tag.getId());
+					if(ttr == null){
+						tagThingRelationDao.saveOrUpdate(new TagThingRelation(tag.getId(), globalThingID));
+					}
+				}
 			}
 		}
 	}
@@ -143,18 +142,18 @@ public class TagThingManager {
 		}
 	}
 	
-	public void unbindCustomTagToThing(Collection<String> displayNames,Long thingID) {
-		GlobalThingInfo thing = globalThingDao.findByID(thingID);
-		if(thing == null){
-			throw new ThingNotExistException(thingID);
-		}
+	public void unbindCustomTagToThing(Collection<String> displayNames, Collection<Long> globalThingIDs) {
 
-		for(String displayName:displayNames){
-			TagIndex tag = this.findCustomTag(displayName);
-			if(tag != null){
-				tagThingRelationDao.delete(tag.getId(),thing.getId());
+		List<TagIndex> tagIndexList = this.findCustomTagList(displayNames);
+
+		for(Long globalThingID : globalThingIDs){
+			GlobalThingInfo thing = globalThingDao.findByID(globalThingID);
+			if(thing == null){
+				log.warn("Thing is null, ThingId = " + globalThingID);
 			}else{
-				log.warn("Custom Tag is null, displayName = " + displayName);
+				for(TagIndex tag : tagIndexList){
+					tagThingRelationDao.delete(tag.getId(), globalThingID);
+				}
 			}
 		}
 	}
@@ -243,4 +242,18 @@ public class TagThingManager {
 		}
 		return tagList;
 	}
+
+	private List<TagIndex> findCustomTagList(Collection<String> displayNames) {
+		List<TagIndex> tagList = new ArrayList<TagIndex>();
+		for(String displayName : displayNames){
+			TagIndex tag = tagIndexDao.findOneTagByTagTypeAndName(TagType.Custom, displayName);
+			if(tag != null){
+				tagList.add(tag);
+			}else{
+				log.warn("Custom Tag is null, displayName = " + displayName);
+			}
+		}
+		return tagList;
+	}
+
 }

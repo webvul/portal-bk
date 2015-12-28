@@ -203,7 +203,7 @@ public class ThingController {
 
 	/**
 	 * 绑定设备及tag
-	 * PUT /things/{globalThingID}/tags/{tagID...}
+	 * PUT /things/{globalThingIDs}/tags/{tagID...}
 	 *
 	 * refer to doc "Beehive API - Thing API" for request/response details
 	 *
@@ -219,7 +219,7 @@ public class ThingController {
 
 	/**
 	 * 解除绑定设备及tag
-	 * DELETE /things/{globalThingID}/tags/{tagID...}
+	 * DELETE /things/{globalThingIDs}/tags/{tagID...}
 	 *
 	 * refer to doc "Beehive API - Thing API" for request/response details
 	 *
@@ -234,35 +234,47 @@ public class ThingController {
 
 	/**
 	 * 绑定设备及custom tag
-	 * PUT /things/{globalThingID}/tags/{tagName ...}
+	 * PUT /things/{globalThingID ...}/tags/custom/{tagName ...}
 	 *
 	 * refer to doc "Beehive API - Thing API" for request/response details
 	 *
-	 * @param globalThingID
+	 * @param globalThingIDs
 	 * @param displayNames
 	 */
-	@RequestMapping(path="/{globalThingID}/tags/custom/{displayNames}",method={RequestMethod.PUT})
-	public void addThingCustomTag(@PathVariable("globalThingID") Long globalThingID,@PathVariable("displayNames") String displayNames){
+	@RequestMapping(path="/{globalThingIDs}/tags/custom/{displayNames}",method={RequestMethod.PUT})
+	public void addThingCustomTag(@PathVariable("globalThingIDs") String globalThingIDs,@PathVariable("displayNames") String displayNames){
+
+		List<String> list = CollectionUtils.arrayToList(globalThingIDs.split(","));
+		List<Long> globalThingIDList = new ArrayList<>();
+		for(String id : list) {
+			globalThingIDList.add(Long.valueOf(id));
+		}
 
 		List<String> displayNameList = CollectionUtils.arrayToList(displayNames.split(","));
-		thingTagManager.bindCustomTagToThing(displayNameList, globalThingID);
+		thingTagManager.bindCustomTagToThing(displayNameList, globalThingIDList);
 	}
 
 	/**
 	 * 解除绑定设备及custom tag
-	 * DELETE /things/{globalThingID}/tags/{tagName}
+	 * DELETE /things/{globalThingID ...}/tags/custom/{tagName ...}
 	 *
 	 * refer to doc "Beehive API - Thing API" for request/response details
 	 *
-	 * @param globalThingID
+	 * @param globalThingIDs
 	 * @param displayNames
 	 */
-	@RequestMapping(path="/{globalThingID}/tags/custom/{displayNames}",method={RequestMethod.DELETE},consumes={"*"})
-	public void removeThingCustomTag(@PathVariable("globalThingID") Long globalThingID,@PathVariable("displayNames") String displayNames){
-		List<String> displayNameList = CollectionUtils.arrayToList(displayNames.split(","));
-		thingTagManager.unbindCustomTagToThing(displayNameList, globalThingID);
-	}
+	@RequestMapping(path="/{globalThingIDs}/tags/custom/{displayNames}",method={RequestMethod.DELETE},consumes={"*"})
+	public void removeThingCustomTag(@PathVariable("globalThingIDs") String globalThingIDs,@PathVariable("displayNames") String displayNames){
 
+		List<String> list = CollectionUtils.arrayToList(globalThingIDs.split(","));
+		List<Long> globalThingIDList = new ArrayList<>();
+		for(String id : list) {
+			globalThingIDList.add(Long.valueOf(id));
+		}
+
+		List<String> displayNameList = CollectionUtils.arrayToList(displayNames.split(","));
+		thingTagManager.unbindCustomTagToThing(displayNameList, globalThingIDList);
+	}
 
 	/**
 	 * 查询tag下的设备

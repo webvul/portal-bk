@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +57,8 @@ public class TestThingControll extends WebTestTemplate{
 	private Long globalThingIDForTest;
 
 	private String[] vendorThingIDsForTest = new String[]{"someVendorThingID", "someVendorThingID-new"};
+
+	private List<Long> globalThingIDListForTets = new ArrayList<>();
 
 	private String[] displayNames = new String[]{"A", "B"};
 
@@ -160,8 +163,6 @@ public class TestThingControll extends WebTestTemplate{
 		request.put("type", "some type");
 		request.put("location", "some location");
 
-		request.put("tags", displayNames);
-
 		// set status
 		Map<String, Object> status = new HashMap<>();
 		status.put("brightness", "80");
@@ -202,9 +203,6 @@ public class TestThingControll extends WebTestTemplate{
 		request.put("kiiAppID", KII_APP_ID_NEW);
 		request.put("type", "some_type_new");
 		request.put("location", "some_location_new");
-
-		String[] displayNamesNew = new String[]{displayNames[0], displayNames[1]+"_new"};
-		request.put("tags", displayNamesNew);
 
 		// set status
 		status = new HashMap<>();
@@ -328,13 +326,6 @@ public class TestThingControll extends WebTestTemplate{
 		assertEquals("some_type_new", map.get("type"));
 		assertEquals("some_location_new", map.get("location"));
 
-		// assert tags
-		List<String> displayNames = (List<String>)map.get("tags");
-		assertEquals(3, displayNames.size());
-		assertTrue(displayNames.contains(this.displayNames[0]));
-		assertTrue(displayNames.contains(this.displayNames[1]));
-		assertTrue(displayNames.contains(this.displayNames[1]+"_new"));
-
 		// assert status
 		Map<String, Object> status = (Map<String, Object>)map.get("status");
 		assertEquals(2, status.keySet().size());
@@ -399,7 +390,7 @@ public class TestThingControll extends WebTestTemplate{
 	}
 
 	@Test
-	public void testThingBind() throws Exception {
+	public void testOneThingBindMultiTags() throws Exception {
 
 		this.testCreatThing();
 
@@ -479,9 +470,9 @@ public class TestThingControll extends WebTestTemplate{
 	}
 
 	@Test
-	public void testThingUnBind() throws Exception {
+	public void testOneThingUnBindMultiTags() throws Exception {
 
-		this.testThingBind();
+		this.testOneThingBindMultiTags();
 
 		// unbind tags from thing
 		String displayName=displayNames[0];
@@ -540,6 +531,180 @@ public class TestThingControll extends WebTestTemplate{
 
 		assertEquals(1, tagList.size());
 		assertTrue(tagList.contains(displayNames[1]));
+
+	}
+
+	private List<Long> createThings(String[] vendorThingIDList) throws Exception {
+
+		List<Long> globalThingIDList = new ArrayList<>();
+
+		for(String vendorThingID : vendorThingIDList) {
+
+			Map<String, Object> request = new HashMap<>();
+			request.put("vendorThingID", vendorThingID);
+			request.put("kiiAppID", KII_APP_ID);
+			request.put("type", "some type");
+			request.put("location", "some location");
+
+			String ctx= mapper.writeValueAsString(request);
+
+			String result=this.mockMvc.perform(
+					post("/things").content(ctx)
+							.contentType(MediaType.APPLICATION_JSON)
+							.characterEncoding("UTF-8")
+							.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+			)
+					.andExpect(status().isOk())
+					.andReturn().getResponse().getContentAsString();
+
+			Map<String,Object> map=mapper.readValue(result, Map.class);
+
+			// assert http reture
+			long globalThingID = Long.valueOf((int)map.get("globalThingID"));
+			assertNotNull(globalThingID);
+			assertTrue(globalThingID > 0);
+
+			globalThingIDList.add(globalThingID);
+		}
+
+		return globalThingIDList;
+	}
+
+	@Test
+	public void testMultiThingsBindOneTag() throws Exception {
+
+		globalThingIDListForTets = this.createThings(vendorThingIDsForTest);
+
+		StringBuffer globalThingIDs = new StringBuffer();
+		for(Long globalThingID : globalThingIDListForTets) {
+			globalThingIDs.append(",").append(globalThingID);
+		}
+		globalThingIDs.deleteCharAt(0);
+
+		// bind tag to things
+
+		String url="/things/"+globalThingIDs.toString()+"/tags/custom/"+displayNames[0];
+
+		this.mockMvc.perform(put(url).content("{}")
+				.contentType(MediaType.APPLICATION_JSON)
+				.characterEncoding("UTF-8")
+				.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+		)
+				.andExpect(status().isOk());
+
+		// assert things existing
+		String result=this.mockMvc.perform(
+				get("/things/search?tagType=Custom&displayName=" + displayNames[0])
+						.contentType(MediaType.APPLICATION_JSON)
+						.characterEncoding("UTF-8")
+						.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+		)
+				.andExpect(status().isOk())
+				.andReturn().getResponse().getContentAsString();
+
+		List<Map<String, Object>> list=mapper.readValue(result, List.class);
+		assertEquals(2, list.size());
+
+		for(Map<String, Object> map : list) {
+			Long globalThingID = Long.valueOf((int)map.get("globalThingID"));
+			assertTrue(globalThingIDListForTets.contains(globalThingID));
+		}
+
+		// bind tag to non existing thing
+		globalThingIDs.append(",9999");
+
+		url="/things/"+globalThingIDs.toString()+"/tags/custom/"+displayNames[0];
+
+		this.mockMvc.perform(put(url).content("{}")
+				.contentType(MediaType.APPLICATION_JSON)
+				.characterEncoding("UTF-8")
+				.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+		)
+				.andExpect(status().isOk());
+
+		// assert the non existing tag not bound to thing
+		result=this.mockMvc.perform(
+				get("/things/search?tagType=Custom&displayName=" + displayNames[0])
+						.contentType(MediaType.APPLICATION_JSON)
+						.characterEncoding("UTF-8")
+						.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+		)
+				.andExpect(status().isOk())
+				.andReturn().getResponse().getContentAsString();
+
+		list=mapper.readValue(result, List.class);
+		assertEquals(2, list.size());
+
+		for(Map<String, Object> map : list) {
+			Long globalThingID = Long.valueOf((int)map.get("globalThingID"));
+			assertTrue(globalThingIDListForTets.contains(globalThingID));
+		}
+
+	}
+
+	@Test
+	public void testMultiThingsUnBindOneTag() throws Exception {
+
+		this.testMultiThingsBindOneTag();
+
+		// unbind thing from tag
+		String url="/things/"+globalThingIDListForTets.get(0)+"/tags/custom/"+displayNames[0];
+
+		this.mockMvc.perform(delete(url).content("{}")
+				.contentType(MediaType.APPLICATION_JSON)
+				.characterEncoding("UTF-8")
+				.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+		)
+
+				.andExpect(status().isOk());
+
+		// assert thing existing
+		String result=this.mockMvc.perform(
+				get("/things/search?tagType=Custom&displayName=" + displayNames[0])
+						.contentType(MediaType.APPLICATION_JSON)
+						.characterEncoding("UTF-8")
+						.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+		)
+				.andExpect(status().isOk())
+				.andReturn().getResponse().getContentAsString();
+
+		List<Map<String, Object>> list=mapper.readValue(result, List.class);
+		assertEquals(1, list.size());
+
+		Map<String, Object> map = list.get(0);
+		Long globalThingID = Long.valueOf((int)map.get("globalThingID"));
+		assertEquals(globalThingIDListForTets.get(1), globalThingID);
+
+
+		// unbind non existing tag from thing
+		StringBuffer globalThingIDs = new StringBuffer();
+		globalThingIDs.append(globalThingIDListForTets.get(0)).append(",").append("9999");
+		url="/things/"+globalThingIDs.toString()+"/tags/custom/"+displayNames[0];
+
+		this.mockMvc.perform(delete(url).content("{}")
+				.contentType(MediaType.APPLICATION_JSON)
+				.characterEncoding("UTF-8")
+				.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+		)
+
+				.andExpect(status().isOk());
+
+		// assert thing existing
+		result=this.mockMvc.perform(
+				get("/things/search?tagType=Custom&displayName=" + displayNames[0])
+						.contentType(MediaType.APPLICATION_JSON)
+						.characterEncoding("UTF-8")
+						.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+		)
+				.andExpect(status().isOk())
+				.andReturn().getResponse().getContentAsString();
+
+		list=mapper.readValue(result, List.class);
+		assertEquals(1, list.size());
+
+		map = list.get(0);
+		globalThingID = Long.valueOf((int)map.get("globalThingID"));
+		assertEquals(globalThingIDListForTets.get(1), globalThingID);
 
 	}
 
