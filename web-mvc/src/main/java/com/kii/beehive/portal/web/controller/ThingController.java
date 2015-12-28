@@ -209,11 +209,12 @@ public class ThingController {
 	 *
 	 * @param globalThingID
      */
-	@RequestMapping(path="/{globalThingID}/tags/{tagIDs}",method={RequestMethod.PUT})
-	public void addThingTag(@PathVariable("globalThingID") Long globalThingID,@PathVariable("tagIDs") String tagIDs){
+	@RequestMapping(path="/{globalThingIDs}/tags/{tagIDs}",method={RequestMethod.PUT})
+	public void addThingTag(@PathVariable("globalThingIDs") String thingIDs,@PathVariable("tagIDs") String tagIDs){
 		
+		List<String> thingIDList = CollectionUtils.arrayToList(thingIDs.split(","));
 		List<String> tagIDList = CollectionUtils.arrayToList(tagIDs.split(","));
-		thingTagManager.bindTagToThing(tagIDList, globalThingID);
+		thingTagManager.bindTagToThing(tagIDList, thingIDList);
 	}
 
 	/**
@@ -224,10 +225,11 @@ public class ThingController {
 	 *
 	 * @param globalThingID
      */
-	@RequestMapping(path="/{globalThingID}/tags/{tagIDs}",method={RequestMethod.DELETE},consumes={"*"})
-	public void removeThingTag(@PathVariable("globalThingID") Long globalThingID,@PathVariable("tagIDs") String tagIDs){
+	@RequestMapping(path="/{globalThingIDs}/tags/{tagIDs}",method={RequestMethod.DELETE},consumes={"*"})
+	public void removeThingTag(@PathVariable("globalThingIDs") String thingIDs,@PathVariable("tagIDs") String tagIDs){
+		List<String> thingIDList = CollectionUtils.arrayToList(thingIDs.split(","));
 		List<String> tagIDList = CollectionUtils.arrayToList(tagIDs.split(","));
-		thingTagManager.unbindTagToThing(tagIDList, globalThingID);
+		thingTagManager.unbindTagToThing(tagIDList, thingIDList);
 	}
 
 	/**

@@ -1,11 +1,9 @@
 package com.kii.beehive.portal.manager;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,22 +59,22 @@ public class TagThingManager {
 		}
 
 
-		Set<TagIndex> tagSet=new HashSet<>();
+		/*Set<TagIndex> tagSet=new HashSet<>();
 
 		tagList.forEach((str)->{
 			tagSet.add(TagIndex.generCustomTagIndex(str));
-		});
+		});*/
 
 		long thingID = globalThingDao.saveOrUpdate(thingInfo);
 
 		// set location tag and location tag-thing relation
-		if(location == null) {
+		/*if(location == null) {
 			location = DEFAULT_LOCATION;
 		}
 		this.saveOrUpdateThingLocation(thingID, location);
-
+		 */
 		// set custom tag and custom tag-thing relation
-		for(TagIndex tag:tagSet){
+		/*for(TagIndex tag:tagSet){
 			if(!Strings.isBlank(tag.getDisplayName())){
 				Long tagID = null;
 				List<TagIndex>  list = tagIndexDao.findTagByTagTypeAndName(tag.getTagType().toString(), tag.getDisplayName());
@@ -88,26 +86,25 @@ public class TagThingManager {
 				
 				tagThingRelationDao.saveOrUpdate(new TagThingRelation(tagID,thingID));
 			}
-		}
+		}*/
 
 		return thingID;
 	}
 	
-	public void bindTagToThing(Collection<String> tagIDs,Long thingID) {
-		GlobalThingInfo thing = globalThingDao.findByID(thingID);
-		if(thing == null){
-			throw new ThingNotExistException(thingID);
-		}
+	public void bindTagToThing(Collection<String> tagIDs,Collection<String> thingIDs) {
+		List<TagIndex> tagList = this.findTagList(tagIDs);
 		
-		for(String tagID:tagIDs){
-			TagIndex tag = tagIndexDao.findByID(tagID);
-			if(tag != null){
-				TagThingRelation ttr = tagThingRelationDao.findByThingIDAndTagID(thing.getId(), tag.getId());
-				if(ttr == null){
-					tagThingRelationDao.saveOrUpdate(new TagThingRelation(tag.getId(),thing.getId()));
-				}
+		for(String thingID:thingIDs){
+			GlobalThingInfo thing = globalThingDao.findByID(thingID);
+			if(thing == null){
+				log.warn("Thing is null, ThingId = " + thingID);
 			}else{
-				log.warn("Tag is null, TagId = " + tagID);
+				for(TagIndex tag:tagList){
+					TagThingRelation ttr = tagThingRelationDao.findByThingIDAndTagID(thing.getId(), tag.getId());
+					if(ttr == null){
+						tagThingRelationDao.saveOrUpdate(new TagThingRelation(tag.getId(),thing.getId()));
+					}
+				}
 			}
 		}
 	}
@@ -131,18 +128,17 @@ public class TagThingManager {
 		}
 	}
 	
-	public void unbindTagToThing(Collection<String> tagIDs,Long thingID) {
-		GlobalThingInfo thing = globalThingDao.findByID(thingID);
-		if(thing == null){
-			throw new ThingNotExistException(thingID);
-		}
+	public void unbindTagToThing(Collection<String> tagIDs,Collection<String> thingIDs) {
+		List<TagIndex> tagList = this.findTagList(tagIDs);
 		
-		for(String tagID:tagIDs){
-			TagIndex tag = tagIndexDao.findByID(tagID);
-			if(tag != null){
-				tagThingRelationDao.delete(tag.getId(),thing.getId());
+		for(String thingID:thingIDs){
+			GlobalThingInfo thing = globalThingDao.findByID(thingID);
+			if(thing == null){
+				log.warn("Thing is null, ThingId = " + thingID);
 			}else{
-				log.warn("Tag is null, TagId = " + tagID);
+				for(TagIndex tag:tagList){
+					tagThingRelationDao.delete(tag.getId(),thing.getId());
+				}
 			}
 		}
 	}
@@ -233,5 +229,18 @@ public class TagThingManager {
 	public List<TagIndex> findTagIndexByGlobalThingID(String globalThingID) {
 
 		return tagIndexDao.findTagByGlobalThingID(globalThingID);
+	}
+	
+	private List<TagIndex> findTagList(Collection<String> tagIDs){
+		List<TagIndex> tagList = new ArrayList<TagIndex>();
+		for(String tagID:tagIDs){
+			TagIndex tag = tagIndexDao.findByID(tagID);
+			if(tag != null){
+				tagList.add(tag);
+			}else{
+				log.warn("Tag is null, TagId = " + tagID);
+			}
+		}
+		return tagList;
 	}
 }
