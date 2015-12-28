@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.logging.log4j.util.Strings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import com.kii.beehive.portal.common.utils.CollectUtils;
@@ -17,7 +15,7 @@ import com.kii.beehive.portal.jdbc.entity.TagType;
 @Repository
 public class TagIndexDao extends BaseDao<TagIndex> {
 
-	private Logger log= LoggerFactory.getLogger(TagIndexDao.class);
+	//private Logger log= LoggerFactory.getLogger(TagIndexDao.class);
 	
 	public static final String TABLE_NAME = "tag_index";
 	public static final String KEY = "tag_id";
@@ -28,13 +26,16 @@ public class TagIndexDao extends BaseDao<TagIndex> {
 	}*/
 	
 	public List<TagIndex> findTagByTagTypeAndName(String tagType,String displayName) {
-		String sql = "SELECT * "
-					+ "FROM " + this.getTableName();
+		String sql = "SELECT t.*, r.count "
+					+ "FROM " + this.getTableName() +" t, "
+					+ "(SELECT tag_id, count(thing_id) as count FROM rel_thing_tag group by tag_id) r ";
 		
 		StringBuilder where = new StringBuilder();
+		where.append(" r.tag_id = t.tag_id ");
+		
 		List<Object> params = new ArrayList<Object>();
 		if(!Strings.isBlank(tagType)){
-			where.append(TagIndex.TAG_TYPE).append(" = ? "); 
+			where.append("t.").append(TagIndex.TAG_TYPE).append(" = ? "); 
 			params.add(tagType);
 		}
 		
@@ -42,7 +43,7 @@ public class TagIndexDao extends BaseDao<TagIndex> {
 			if(where.length() > 0){
 				where.append(" AND ");
 			}
-			where.append(TagIndex.DISPLAY_NAME).append(" = ? ");
+			where.append("t.").append(TagIndex.DISPLAY_NAME).append(" = ? ");
 			params.add(displayName);
 		}
 		
@@ -140,6 +141,7 @@ public class TagIndexDao extends BaseDao<TagIndex> {
 			tagIndex.setDisplayName((String)row.get(TagIndex.DISPLAY_NAME));
 			tagIndex.setTagType(TagType.valueOf((String) row.get(TagIndex.TAG_TYPE)));
 			tagIndex.setDescription((String)row.get(TagIndex.DESCRIPTION));
+			tagIndex.setCount((Long)row.get(TagIndex.THING_COUNT));
 			mapToListForDBEntity(tagIndex, row);
 			list.add(tagIndex);
 		}
