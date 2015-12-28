@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.logging.log4j.util.Strings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
@@ -17,7 +15,7 @@ import com.kii.beehive.portal.jdbc.entity.TagType;
 @Repository
 public class TagThingRelationDao extends BaseDao<TagThingRelation> {
 
-	private Logger log= LoggerFactory.getLogger(TagThingRelationDao.class);
+	//private Logger log= LoggerFactory.getLogger(TagThingRelationDao.class);
 	
 	public static final String TABLE_NAME = "rel_thing_tag";
 	public static final String KEY = "id";
