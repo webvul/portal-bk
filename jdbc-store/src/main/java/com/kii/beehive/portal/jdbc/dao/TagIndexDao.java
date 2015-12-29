@@ -33,24 +33,31 @@ public class TagIndexDao extends BaseDao<TagIndex> {
      * @return
      */
 	public List<TagIndex> findTagByTagTypeAndName(String tagType,String displayName) {
-		String sql = "SELECT t.*, r.count "
-					+ "FROM " + this.getTableName() +" t, "
-					+ "(SELECT tag_id, count(thing_id) as count FROM rel_thing_tag group by tag_id) r ";
+		String sql = "SELECT t.*, COUNT(r.thing_id) count "
+					+ "FROM " + this.getTableName() +" t "
+					+ "LEFT JOIN rel_thing_tag r ON r.tag_id = t.tag_id ";
 		
 		StringBuilder where = new StringBuilder();
-		where.append(" WHERE r.tag_id = t.tag_id ");
 		
 		List<Object> params = new ArrayList<Object>();
 		if(!Strings.isBlank(tagType)){
-			where.append(" AND ").append("t.").append(TagIndex.TAG_TYPE).append(" = ? ");
+			where.append("t.").append(TagIndex.TAG_TYPE).append(" = ? ");
 			params.add(tagType);
 		}
 		
 		if(!Strings.isBlank(displayName)){
-			where.append(" AND ").append("t.").append(TagIndex.DISPLAY_NAME).append(" = ? ");
+			if(where.length() > 0){
+				where.append(" AND ");
+			}
+			where.append("t.").append(TagIndex.DISPLAY_NAME).append(" = ? ");
 			params.add(displayName);
 		}
-
+		if(where.length() > 0){
+			where.insert(0, " WHERE ");
+		}
+		
+		where.append("GROUP BY t.").append(TagIndex.TAG_ID);
+		
 		Object[] paramArr = new String[params.size()];
 		paramArr = params.toArray(paramArr);
 		List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql+where.toString(), paramArr);

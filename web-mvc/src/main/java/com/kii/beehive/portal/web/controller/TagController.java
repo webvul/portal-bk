@@ -40,19 +40,6 @@ public class TagController {
 	@Autowired
 	private TagThingManager thingTagManager;
 
-	/**
-	 * 列出所有tag
-	 * GET /tags/all
-	 *
-	 * refer to doc "Beehive API - Thing API" for request/response details
-	 *
-	 * @return
-	 */
-	@RequestMapping(path = "/all", method = { RequestMethod.GET })
-	public List<TagIndex> getAllTag() {
-		List<TagIndex> list = tagIndexDao.findAll();
-		return list;
-	}
 
 	/**
 	 * 创建tag
