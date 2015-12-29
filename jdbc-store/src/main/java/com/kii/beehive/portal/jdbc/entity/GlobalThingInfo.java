@@ -1,5 +1,8 @@
 package com.kii.beehive.portal.jdbc.entity;
 
+import org.springframework.util.StringUtils;
+
+import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.jdbc.annotation.JdbcField;
 import com.kii.beehive.portal.jdbc.annotation.JdbcFieldType;
 
@@ -15,7 +18,7 @@ public class GlobalThingInfo extends DBEntity{
 
 	private String custom;
 
-	private String kiiThingID;
+	private String fullKiiThingID;
 	
 	public final static String ID_GLOBAL_THING = "id_global_thing";
 	public final static String VANDOR_THING_ID = "vendor_thing_id";
@@ -77,14 +80,29 @@ public class GlobalThingInfo extends DBEntity{
 		this.custom = custom;
 	}
 
-	@JdbcField(column="kii_thing_id")
-	public String getKiiThingID() {
+	@JdbcField(column="full_kii_thing_id")
+	public String getFullKiiThingID() {
+		return fullKiiThingID;
+	}
+
+	public String getKiiThingID(){
 		return kiiThingID;
 	}
 
-	public void setKiiThingID(String kiiThingID) {
-		this.kiiThingID = kiiThingID;
+	private String kiiThingID;
+
+	public void setFullKiiThingID(String fullkiiThingID) {
+		this.fullKiiThingID = fullkiiThingID;
+
+		String[] param= ThingIDTools.splitFullKiiThingID(fullkiiThingID);
+
+		this.kiiThingID=param[1];
+		this.kiiAppID=param[0];
 	}
+
+
+
+
 
 	@Override
 	public String toString() {

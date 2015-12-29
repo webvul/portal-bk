@@ -1,5 +1,6 @@
 package com.kii.beehive.business.event;
 
+import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.List;
 
@@ -34,15 +35,15 @@ public class KiiCloudEventBus {
 
 		listenerList.forEach(listener->{
 
+			String name=listener.getRelationBeanName();
 
-			String relationBeanName=listener.getRelationBeanName();
+			BeehiveEventProcess process=context.getBean(BeehiveEventProcess.class,name);
 
-			BeehiveEventProcess process=context.getBean(relationBeanName,BeehiveEventProcess.class);
+			EventParam param = new EventParam();
+			param.setParamMap("thingIDs", relationThingID);
 
-			EventParam param=new EventParam();
-			param.setParamMap("thingIDs",relationThingID);
+			process.onEventFire(listener.getTargetKey(), param);
 
-			process.onEventFire(listener.getTargetKey(),param);
 		});
 
 	}

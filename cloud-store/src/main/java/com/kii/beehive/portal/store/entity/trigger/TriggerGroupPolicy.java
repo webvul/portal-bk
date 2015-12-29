@@ -1,7 +1,33 @@
 package com.kii.beehive.portal.store.entity.trigger;
 
-public enum TriggerGroupPolicy {
+public class TriggerGroupPolicy {
 
-	Any,All,Some,Percent,Summary;
+	private TriggerGroupPolicyType groupPolicy=TriggerGroupPolicyType.All;
+
+	private int criticalNumber=0;
+
+	public int getCriticalNumber() {
+		return criticalNumber;
+	}
+
+	public void setCriticalNumber(int criticalNumber) {
+		this.criticalNumber = criticalNumber;
+	}
+
+	public TriggerGroupPolicyType getGroupPolicy() {
+		return groupPolicy;
+	}
+
+	public void setGroupPolicy(TriggerGroupPolicyType groupPolicy) {
+		this.groupPolicy = groupPolicy;
+	}
+
+
+	public static  enum TriggerGroupPolicyType {
+
+		Any,All,Some,Percent;
+
+	}
+
 
 }

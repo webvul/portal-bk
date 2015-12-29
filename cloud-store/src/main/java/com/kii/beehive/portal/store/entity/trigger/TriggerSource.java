@@ -7,17 +7,14 @@ import java.util.Map;
 
 public class TriggerSource {
 
-	private List<String> thingList=new ArrayList<>();
+	private List<Long> thingList=new ArrayList<>();
 
 	private List<String> tagCollect=new ArrayList<>();
 
 	private boolean isAndExpress;
 
-	private Map<String,Boolean> relationTag=new HashMap<>();
+//	private Map<String,Boolean> relationTag=new HashMap<>();
 
-	private TriggerGroupPolicy groupPolicy=TriggerGroupPolicy.All;
-
-	private int criticalNumber=0;
 
 	public List<String> getTagCollect() {
 		return tagCollect;
@@ -35,35 +32,20 @@ public class TriggerSource {
 		isAndExpress = andExpress;
 	}
 
-	public int getCriticalNumber() {
-		return criticalNumber;
-	}
 
-	public void setCriticalNumber(int criticalNumber) {
-		this.criticalNumber = criticalNumber;
-	}
-
-	public TriggerGroupPolicy getGroupPolicy() {
-		return groupPolicy;
-	}
-
-	public void setGroupPolicy(TriggerGroupPolicy groupPolicy) {
-		this.groupPolicy = groupPolicy;
-	}
-
-	public List<String> getThingList() {
+	public List<Long> getThingList() {
 		return thingList;
 	}
 
-	public void setThingList(List<String> thingList) {
+	public void setThingList(List<Long> thingList) {
 		this.thingList = thingList;
 	}
 
-	public Map<String, Boolean> getRelationTag() {
-		return relationTag;
-	}
-
-	public void setRelationTag(Map<String, Boolean> relationTag) {
-		this.relationTag = relationTag;
-	}
+//	public Map<String, Boolean> getRelationTag() {
+//		return relationTag;
+//	}
+//
+//	public void setRelationTag(Map<String, Boolean> relationTag) {
+//		this.relationTag = relationTag;
+//	}
 }

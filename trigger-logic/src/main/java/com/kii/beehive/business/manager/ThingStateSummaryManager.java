@@ -1,0 +1,243 @@
+package com.kii.beehive.business.manager;
+
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.kii.beehive.business.event.KiicloudEventListenerService;
+import com.kii.beehive.business.service.ThingIFInAppService;
+import com.kii.beehive.business.service.ThingTagService;
+import com.kii.beehive.portal.common.utils.ThingIDTools;
+import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
+import com.kii.beehive.portal.service.AppInfoDao;
+import com.kii.beehive.portal.service.TriggerRecordDao;
+import com.kii.beehive.portal.store.entity.KiiAppInfo;
+import com.kii.beehive.portal.store.entity.trigger.SummaryExpress;
+import com.kii.beehive.portal.store.entity.trigger.SummaryFunctionType;
+import com.kii.beehive.portal.store.entity.trigger.SummaryTriggerRecord;
+import com.kii.beehive.portal.store.entity.trigger.TriggerSource;
+import com.kii.extension.sdk.annotation.AppBindParam;
+import com.kii.extension.sdk.entity.thingif.OnBoardingParam;
+import com.kii.extension.sdk.entity.thingif.OnBoardingResult;
+import com.kii.extension.sdk.entity.thingif.Predicate;
+import com.kii.extension.sdk.entity.thingif.ServiceCode;
+import com.kii.extension.sdk.entity.thingif.ThingStatus;
+import com.kii.extension.sdk.entity.thingif.ThingTrigger;
+import com.kii.extension.sdk.entity.thingif.TriggerTarget;
+
+@Component
+public class ThingStateSummaryManager {
+
+
+	@Autowired
+	private ThingIFInAppService thingIFService;
+
+	@Autowired
+	private ThingTagService  thingTagService;
+
+	@Autowired
+	private TriggerRecordDao  triggerDao;
+
+	@Autowired
+	private KiicloudEventListenerService listenerService;
+
+
+	@Autowired
+	private AppInfoDao appDao;
+
+
+	public void initStateSummary(SummaryTriggerRecord record,@AppBindParam  String master){
+
+		String triggerID=triggerDao.addKiiEntity(record);
+
+		KiiAppInfo appInfo=appDao.getMasterAppInfo();
+
+
+		OnBoardingParam param=new OnBoardingParam();
+		param.setThingPassword("demo");
+		param.setUserID(appInfo.getDefaultThingOwnerID());
+
+		OnBoardingResult result=thingIFService.onBoarding(param,"master");
+
+		String summaryID=result.getThingID();
+
+		TriggerSource  source=record.getSource();
+		List<GlobalThingInfo> things=thingTagService.getThingInfos(source);
+
+		List<String> thingIDs=things.stream().map(thing->thing.getFullKiiThingID()).collect(Collectors.toList());
+
+		listenerService.addThingStatusListener(thingIDs,summaryID);
+
+		if(!source.getTagCollect().isEmpty()) {
+
+			listenerService.addSummaryChangeListener(source.getTagCollect(), summaryID);
+		}
+
+		triggerDao.saveCurrThingIDs(thingIDs,triggerID);
+
+		registTrigger(summaryID,master,triggerID,record.getPerdicate());
+
+
+		refreshThingState(thingIDs);
+
+	}
+
+	private void registTrigger(String summaryID, String master, String triggerID, Predicate perdicate){
+
+
+		ThingTrigger triggerInfo=new ThingTrigger();
+		triggerInfo.setTarget(TriggerTarget.SERVER_CODE);
+
+		triggerInfo.setPredicate(perdicate);
+
+		String fullThingID= ThingIDTools.joinFullKiiThingID(summaryID,master);
+
+
+		ServiceCode serviceCode=new ServiceCode();
+
+		serviceCode.setEndpoint(EndPointNameConstant.SummaryTriggerEndPoint);
+		serviceCode.addParameter("thingID",summaryID);
+		serviceCode.addParameter("triggerID",triggerID);
+
+		triggerInfo.setServiceCode(serviceCode);
+
+		thingIFService.createTrigger(fullThingID,triggerInfo);
+
+		return;
+	}
+
+
+
+	private void refreshThingState(List<String> thingList){
+
+		thingList.forEach(thingID->{
+
+
+			ThingStatus status=thingIFService.getStatus(thingID);
+
+			thingIFService.putStatus(thingID,status);
+
+		});
+	}
+
+	public void onTagChanged(String triggerID){
+
+
+		SummaryTriggerRecord  record= (SummaryTriggerRecord) triggerDao.getObjectByID(triggerID);
+
+		TriggerSource source=record.getSource();
+
+
+		List<GlobalThingInfo> thingList=thingTagService.queryThingByTagExpress(source.isAndExpress(),source.getTagCollect());
+
+		List<String> thingIDList=thingList.stream().map(thing->thing.getFullKiiThingID()).collect(Collectors.toList());
+
+		refreshThingState(thingIDList);
+	}
+
+
+	public void computeStateSummary(String  summaryID,ThingStatus status){
+
+
+
+		String thingID=summaryID;
+
+		ThingStatus summaryState=thingIFService.getStatus(thingID);
+
+		String triggerID= (String) summaryState.getField("_triggerID");
+
+		SummaryTriggerRecord  trigger= (SummaryTriggerRecord) triggerDao.getObjectByID(triggerID);
+
+		List<SummaryExpress> expressList=trigger.getSummaryExpress();
+
+		expressList.forEach(express->{
+
+			String summaryField=express.getSummaryAlias();
+
+			String fieldName=express.getStateName();
+
+			Object summary=summaryState.getField(summaryField);
+
+			Object delta=status.getField(fieldName);
+
+
+			try {
+				switch (express.getFunction()) {
+					case Count:
+						summaryState.setField(summaryField, ((Long) summary) + 1);
+						break;
+					case Max:
+						if (!isInteger(delta) || !isInteger(summary)) {
+							boolean sign = ((Number) summary).doubleValue() >= ((Number) delta).doubleValue();
+							if (!sign) {
+								summary = delta;
+							}
+						} else {
+							summary = Math.max(((Number) summary).longValue(), ((Number) delta).longValue());
+						}
+						summaryState.setField(summaryField, summary);
+						break;
+					case Min:
+						if (!isInteger(delta) || !isInteger(summary)) {
+							boolean sign = ((Number) summary).doubleValue() <= ((Number) delta).doubleValue();
+							if (!sign) {
+								summary = delta;
+							}
+						} else {
+							summary = Math.min(((Number) summary).longValue(), ((Number) delta).longValue());
+						}
+						summaryState.setField(summaryField, summary);
+
+						break;
+					case Sum:
+						if (!isInteger(delta) || !isInteger(summary)) {
+							summary = ((Number) summary).doubleValue() + ((Number) delta).doubleValue();
+						} else {
+							summary = ((Number) summary).longValue() + ((Number) delta).longValue();
+						}
+						summaryState.setField(summaryField, summary);
+
+						break;
+				}
+			}catch(NumberFormatException e){
+				summaryState.setField(summaryField,summary);
+			}
+
+		});
+
+		expressList.stream().filter(expresss-> expresss.getFunction()!=SummaryFunctionType.Avg).forEach(express->{
+
+			String sumField=express.getSumField();
+			String countField=express.getCountField();
+
+			Number sum= (Number) summaryState.getField(sumField);
+
+			Number count= (Number) summaryState.getField(countField);
+
+			double avg=sum.doubleValue()/count.longValue();
+
+			summaryState.setField(express.getSummaryAlias(),avg);
+		});
+
+
+		thingIFService.putStatus(thingID,summaryState);
+	}
+
+
+
+
+	private boolean isInteger(Object val) {
+
+		if( val instanceof Integer || val instanceof  Long || val instanceof  Boolean ){
+			return true;
+		}else if(val instanceof Float || val instanceof  Double){
+			return false;
+		}else{
+			throw new NumberFormatException();
+		}
+
+	}
+}

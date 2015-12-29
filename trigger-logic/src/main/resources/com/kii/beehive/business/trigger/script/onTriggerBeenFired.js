@@ -15,6 +15,12 @@ function global_onTriggerArrive(params,endpoint,context,done){
 
 }
 
+function global_onSimpleTriggerArrive(params,context,done){
+
+	global_onSimpleTriggerArrive(params,"simple",context,done);
+
+}
+
 function global_onPositiveTriggerArrive(params,context,done){
 
 	global_onTriggerArrive(params,"positive",context,done);

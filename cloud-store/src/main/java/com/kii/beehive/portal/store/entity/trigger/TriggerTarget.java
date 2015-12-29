@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 public class TriggerTarget {
 
-	private List<String> thingList=new ArrayList<>();
+	private List<Long> thingList=new ArrayList<>();
 
 	private List<String> tagList=new ArrayList<>();
 
@@ -16,11 +16,11 @@ public class TriggerTarget {
 
 	private TargetAction command;
 
-	public List<String> getThingList() {
+	public List<Long> getThingList() {
 		return thingList;
 	}
 
-	public void setThingList(List<String> thingList) {
+	public void setThingList(List<Long> thingList) {
 		this.thingList = thingList;
 	}
 

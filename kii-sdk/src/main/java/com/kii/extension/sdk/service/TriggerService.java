@@ -62,4 +62,12 @@ public class TriggerService {
 
 		return;
 	}
+
+	public void deleteTrigger(String thingID,String triggerID){
+		HttpUriRequest request=getBuilder().deleteTrigger(thingID,triggerID).generRequest(mapper);
+
+		client.executeRequest(request);
+
+		return;
+	}
 }

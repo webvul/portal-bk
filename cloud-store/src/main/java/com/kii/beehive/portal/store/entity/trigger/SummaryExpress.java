@@ -6,6 +6,8 @@ public class SummaryExpress {
 
 	private SummaryFunctionType function;
 
+	private String summaryAlias;
+
 	private String sumField;
 
 	private String countField;
@@ -40,5 +42,15 @@ public class SummaryExpress {
 
 	public void setFunction(SummaryFunctionType function) {
 		this.function = function;
+	}
+
+
+
+	public String getSummaryAlias() {
+		return summaryAlias;
+	}
+
+	public void setSummaryAlias(String summaryAlias) {
+		this.summaryAlias = summaryAlias;
 	}
 }

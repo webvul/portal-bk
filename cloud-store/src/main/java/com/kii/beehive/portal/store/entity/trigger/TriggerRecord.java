@@ -1,38 +1,35 @@
 package com.kii.beehive.portal.store.entity.trigger;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import com.kii.extension.sdk.entity.KiiEntity;
 import com.kii.extension.sdk.entity.thingif.StatePredicate;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
 
+
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME,
+		include = JsonTypeInfo.As.PROPERTY,
+		property = "type")
+@JsonSubTypes({
+		@JsonSubTypes.Type(value = SimpleTriggerRecord.class,name="Simple"),
+		@JsonSubTypes.Type(value = GroupTriggerRecord.class,name="Group"),
+		@JsonSubTypes.Type(value = SummaryTriggerRecord.class,name="Summary"),
+})
 public class TriggerRecord extends KiiEntity {
-
-
-	private TriggerSource  source;
-
-	private List<SummaryExpress>  summaryExpress=new ArrayList<>();
 
 	private StatePredicate  perdicate;
 
 	private List<TriggerTarget>  targets=new ArrayList<>();
 
-	public List<SummaryExpress> getSummaryExpress() {
-		return summaryExpress;
-	}
+	private TriggerType type;
 
-	public void setSummaryExpress(List<SummaryExpress> summarExpress) {
-		this.summaryExpress = summarExpress;
-	}
 
-	public TriggerSource getSource() {
-		return source;
-	}
-
-	public void setSource(TriggerSource source) {
-		this.source = source;
-	}
 
 	public StatePredicate getPerdicate() {
 		return perdicate;
@@ -49,4 +46,15 @@ public class TriggerRecord extends KiiEntity {
 	public void setTarget(List<TriggerTarget> target) {
 		this.targets = target;
 	}
+
+
+
+	public void setType(TriggerType type) {
+		this.type = type;
+	}
+
+	public static enum TriggerType{
+		Simple,Group,Summary;
+	}
+
 }

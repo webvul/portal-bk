@@ -8,18 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
-import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.service.TriggerRecordDao;
-import com.kii.beehive.portal.service.TriggerStatusDao;
+import com.kii.beehive.portal.service.GroupTriggerStatusDao;
 import com.kii.beehive.portal.store.entity.trigger.TargetAction;
-import com.kii.beehive.portal.store.entity.trigger.TriggerRuntimeState;
+import com.kii.beehive.portal.store.entity.trigger.GroupTriggerRuntimeState;
 import com.kii.beehive.portal.store.entity.trigger.TriggerTarget;
-import com.kii.extension.sdk.entity.thingif.ThingStatus;
 import com.kii.extension.sdk.exception.StaleVersionedObjectException;
-import com.kii.extension.sdk.service.ThingIFService;
 
 @Component
-public class GroupStateCallbackService {
+public class TriggerFireCallbackService {
 
 	public static final int MAX_RETRY = 5;
 	@Autowired
@@ -29,7 +26,7 @@ public class GroupStateCallbackService {
 	private GlobalThingDao thingDao;
 
 	@Autowired
-	private TriggerStatusDao statusDao;
+	private GroupTriggerStatusDao statusDao;
 
 	@Autowired
 	private KiiCommandService commandService;
@@ -59,6 +56,10 @@ public class GroupStateCallbackService {
 			}
 		});
 
+	}
+
+	public void onSimpleArrive(String triggerID){
+		doCommand(triggerID);
 	}
 
 	public void onSummaryTriggerArrive(String triggerID){
@@ -107,7 +108,7 @@ public class GroupStateCallbackService {
 	private boolean checkAndSaveStatus(String triggerID,String thingID,boolean sign){
 
 
-		TriggerRuntimeState  state=statusDao.getObjectByID(triggerID);
+		GroupTriggerRuntimeState state=statusDao.getObjectByID(triggerID);
 		boolean oldState=state.isCurrentStatus();
 
 		state.setMemberStatus(thingID,sign);

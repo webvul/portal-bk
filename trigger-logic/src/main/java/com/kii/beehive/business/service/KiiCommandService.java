@@ -10,10 +10,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.service.ClientTriggerResultDao;
-import com.kii.beehive.business.transaction.ThingTagService;
 import com.kii.beehive.portal.store.entity.trigger.ClientTriggerResult;
 import com.kii.beehive.portal.store.entity.trigger.TargetAction;
-import com.kii.beehive.portal.store.entity.trigger.TriggerTarget;
 import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.entity.thingif.ServiceCode;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
@@ -23,9 +21,8 @@ import com.kii.extension.sdk.service.ThingIFService;
 @Component
 public class KiiCommandService {
 
-
 	@Autowired
-	private ThingIFService  service;
+	private ThingIFInAppService thingIFService;
 
 
 	@Autowired
@@ -43,10 +40,10 @@ public class KiiCommandService {
 	@Autowired
 	private ClientTriggerResultDao  resultDao;
 
-	public  void sendCmdToThing(String globalThingID,TargetAction target,String triggerID){
+	public  void sendCmdToThing(long globalThingID,TargetAction target,String triggerID){
 
 
-		GlobalThingInfo thingInfo=thingTagService.getThingByVendorThingID(globalThingID);
+		GlobalThingInfo thingInfo=thingTagService.getThingByID(globalThingID);
 
 		if(target.getCommand()!=null) {
 			sendCmd(target.getCommand(), thingInfo);
@@ -79,7 +76,7 @@ public class KiiCommandService {
 
 		resolver.setAppInfoDirectly(appInfoDao.getAppInfoByID(appID).getAppInfo());
 
-		service.sendCommand(thingInfo.getKiiThingID(),command);
+		thingIFService.sendCommand(command,thingInfo.getFullKiiThingID());
 	}
 
 

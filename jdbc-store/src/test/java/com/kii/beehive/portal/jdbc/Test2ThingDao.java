@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.dao.TagThingRelationDao;
@@ -56,9 +57,11 @@ public class Test2ThingDao extends TestTemplate {
 
 
 			GlobalThingInfo info=new GlobalThingInfo();
-			info.setKiiThingID("kiiID"+i);
+			String fullKiiThingID= ThingIDTools.joinFullKiiThingID("app"+i%5,"kiiID"+i);
+
+			info.setFullKiiThingID(fullKiiThingID);
+
 			info.setVendorThingID("vendorID"+i);
-			info.setKiiAppID("app"+i%5);
 			info.setType(String.valueOf(i));
 
 			long id=thingDao.saveOrUpdate(info);
@@ -88,7 +91,7 @@ public class Test2ThingDao extends TestTemplate {
 
 			GlobalThingInfo thing=thingDao.getThingByVendorThingID("vendorID"+i);
 
-			assertEquals(thing.getKiiThingID(),"kiiID"+i);
+			assertEquals(thing.getFullKiiThingID(),"app"+i%5+"-kiiID"+i);
 			assertEquals("vendorID"+i,thing.getVendorThingID());
 
 			assertEquals("app"+i%5,thing.getKiiAppID());
@@ -103,7 +106,7 @@ public class Test2ThingDao extends TestTemplate {
 
 			GlobalThingInfo thing=thingDao.getThingByVendorThingID("vendorID"+i);
 
-			assertEquals(thing.getKiiThingID(),"kiiID"+i);
+			assertEquals(thing.getFullKiiThingID(),"app"+i%5+"-kiiID"+i);
 			assertEquals("vendorID"+i,thing.getVendorThingID());
 
 			assertEquals("app"+i%5,thing.getKiiAppID());

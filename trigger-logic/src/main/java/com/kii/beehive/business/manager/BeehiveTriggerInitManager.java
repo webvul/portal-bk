@@ -13,72 +13,29 @@ import org.springframework.util.StreamUtils;
 
 import com.google.common.base.Charsets;
 
-import com.kii.beehive.business.service.KiiTriggerRegistService;
-import com.kii.beehive.business.service.ThingGroupStateService;
-import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
-import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.service.ExtensionCodeDao;
-import com.kii.beehive.portal.service.TriggerRecordDao;
 import com.kii.beehive.portal.store.entity.ExtensionCodeEntity;
-import com.kii.beehive.portal.store.entity.trigger.TriggerRecord;
-import com.kii.beehive.portal.store.entity.trigger.TriggerSource;
 import com.kii.extension.sdk.entity.serviceextension.BucketWhenType;
 import com.kii.extension.sdk.entity.serviceextension.EventTriggerConfig;
 import com.kii.extension.sdk.entity.serviceextension.TriggerFactory;
 import com.kii.extension.sdk.entity.serviceextension.TriggerScopeType;
 
 @Component
-@Transactional
-public class BeehiveTriggerManager {
+public class BeehiveTriggerInitManager {
 
 
-	@Autowired
-	private TriggerRecordDao triggerDao;
 
 	@Autowired
 	private AppInfoDao appInfoDao;
 
-	@Autowired
-	private KiiTriggerRegistService  registService;
-
-	@Autowired
-	private ThingGroupStateService groupService;
-
-	@Autowired
-	private GlobalThingDao thingDao;
 
 	@Autowired
 	private ExtensionCodeDao  extensionDao;
 
+
 	@Autowired
 	private ResourceLoader loader;
-
-
-	public String  createTrigger(TriggerRecord record){
-
-
-		String triggerID=triggerDao.addEntity(record).getObjectID();
-
-
-		TriggerSource source=record.getSource();
-
-		if(source.getThingList().size()==1) {
-			GlobalThingInfo thing=thingDao.getThingByVendorThingID(source.getThingList().iterator().next());
-			registService.registSingleTrigger(thing.getKiiThingID(),record.getPerdicate(),triggerID);
-
-		}else {
-			List<GlobalThingInfo> things = thingDao.getThingsByVendorIDArray(source.getThingList());
-
-			things.forEach(thing->{
-				registService.registDoubleTrigger(thing.getKiiThingID(),record.getPerdicate().getCondition(),triggerID);
-			});
-
-			groupService.createThingGroup(things,record.getPerdicate().getTriggersWhen(),triggerID,source);
-		}
-
-		return triggerID;
-	}
 
 
 
@@ -142,11 +99,11 @@ public class BeehiveTriggerManager {
 		List<EventTriggerConfig> list=new ArrayList<>();
 
 		EventTriggerConfig trigger1= TriggerFactory.getBucketInstance("_states", BucketWhenType.DATA_OBJECT_UPDATED, TriggerScopeType.App);
-		trigger1.setEndpoint("global_onThingStateChange");
+		trigger1.setEndpoint(EndPointNameConstant.OnThingStateChange);
 		list.add(trigger1);
 
 		EventTriggerConfig trigger2= TriggerFactory.getBucketInstance("_states", BucketWhenType.DATA_OBJECT_CREATED,TriggerScopeType.App);
-		trigger2.setEndpoint("global_onThingStateChange");
+		trigger2.setEndpoint(EndPointNameConstant.OnThingStateChange);
 		list.add(trigger2);
 		return list;
 	}

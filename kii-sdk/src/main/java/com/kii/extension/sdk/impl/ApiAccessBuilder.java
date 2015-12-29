@@ -447,6 +447,14 @@ public class ApiAccessBuilder {
 
 	}
 
+	public ApiAccessBuilder deleteTrigger(String thingID,String triggerID){
+
+		request=new HttpDelete(appInfo.getThingIfSubUrl()+"/targets/THING:"+thingID+"/triggers/"+triggerID);
+
+		return this;
+
+	}
+
 	public ApiAccessBuilder getTrigger(String thingID,String triggerID){
 
 

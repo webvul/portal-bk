@@ -3,12 +3,10 @@ package com.kii.beehive.business;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +15,7 @@ import org.springframework.core.io.ResourceLoader;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import com.kii.beehive.business.manager.BeehiveTriggerManager;
+import com.kii.beehive.business.manager.BeehiveTriggerInitManager;
 import com.kii.beehive.portal.service.ExtensionCodeDao;
 import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.context.TokenBindToolResolver;
@@ -33,7 +31,7 @@ public class TestTriggerCreate extends TestTemplate  {
 
 
 	@Autowired
-	private BeehiveTriggerManager triggerManager;
+	private BeehiveTriggerInitManager triggerManager;
 
 
 	@Autowired

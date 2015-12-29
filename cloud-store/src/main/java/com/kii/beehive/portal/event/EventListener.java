@@ -73,6 +73,7 @@ public class EventListener extends KiiEntity {
 		return relationBeanName;
 	}
 
+
 	public void setRelationBeanName(String relationBeanName) {
 		this.relationBeanName = relationBeanName;
 	}

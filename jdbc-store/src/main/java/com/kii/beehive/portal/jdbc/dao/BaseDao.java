@@ -25,6 +25,7 @@ import com.kii.beehive.portal.common.utils.StrTemplate;
 import com.kii.beehive.portal.jdbc.annotation.JdbcField;
 import com.kii.beehive.portal.jdbc.entity.DBEntity;
 import com.kii.beehive.portal.jdbc.helper.AnnationBeanSqlParameterSource;
+import com.kii.beehive.portal.jdbc.helper.BindClsFullUpdateTool;
 import com.kii.beehive.portal.jdbc.helper.BindClsRowMapper;
 
 public abstract class BaseDao<T extends DBEntity> {
@@ -38,6 +39,9 @@ public abstract class BaseDao<T extends DBEntity> {
 
 	private RowMapper<T> rowMapper;
 
+	private BindClsFullUpdateTool updateTool;
+
+
 	protected abstract  Class<T> getEntityCls();
 
 	public abstract String getTableName();
@@ -47,6 +51,7 @@ public abstract class BaseDao<T extends DBEntity> {
 	public abstract long update(T entity);
 	
 	public abstract List<T> mapToList(List<Map<String, Object>> rows);
+
 
 	protected T mapToListForDBEntity(T entity, Map<String, Object> row) {
 		entity.setCreateBy((String)row.get(DBEntity.CREATE_BY));
@@ -65,6 +70,8 @@ public abstract class BaseDao<T extends DBEntity> {
 		this.insertTool=new SimpleJdbcInsert(dataSource)
 				.withTableName(getTableName())
 				.usingGeneratedKeyColumns(getKey());
+
+		this.updateTool=new BindClsFullUpdateTool(dataSource,getTableName());
 
 		this.rowMapper=new BindClsRowMapper<T>(getEntityCls());
 	}
@@ -133,12 +140,33 @@ public abstract class BaseDao<T extends DBEntity> {
     	return result;
 	}
 
+	public long insert(T entity){
+
+		entity.setCreateBy("");
+		entity.setCreateDate(new Date());
+		entity.setModifyBy("");
+		entity.setModifyDate(new Date());
+		SqlParameterSource parameters = new AnnationBeanSqlParameterSource(entity);
+		Number id=insertTool.executeAndReturnKey(parameters);
+		return id.longValue();
+	}
+
+	public int updateEntity(T entity){
+
+		entity.setModifyDate(new Date());
+		entity.setModifyBy("");
+
+
+		return updateTool.executeUpdate(entity);
+
+	}
+
 	public long saveOrUpdate(T entity){
 		if(entity.getId() == 0){
-			SqlParameterSource parameters = new AnnationBeanSqlParameterSource(entity);
-			Number id=insertTool.executeAndReturnKey(parameters);
-			return id.longValue();
+			return insert(entity);
 		}else{
+			entity.setModifyDate(new Date());
+			entity.setModifyBy("");
 			this.update(entity);
 			return entity.getId();
 		}

@@ -1,21 +1,24 @@
 package com.kii.beehive.portal.store.entity.trigger;
 
+import java.lang.reflect.Member;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 import com.kii.extension.sdk.entity.KiiEntity;
 import com.kii.extension.sdk.entity.thingif.TriggerWhen;
 
-public class TriggerRuntimeState extends KiiEntity{
+public class GroupTriggerRuntimeState extends KiiEntity{
 
 
-	private Map<String,Boolean> memberStatusMap=new HashMap<>();
 
-	private TriggerGroupPolicy policy;
+	private MemberState  memberState=new MemberState();
+
+	private TriggerGroupPolicy.TriggerGroupPolicyType policy;
 
 	private int criticalNumber;
 
@@ -25,6 +28,21 @@ public class TriggerRuntimeState extends KiiEntity{
 
 	private TriggerWhen whenType=TriggerWhen.CONDITION_TRUE;
 
+
+	private Map<String,KiiTriggerCol> currThingTriggerMap=new HashMap<>();
+
+	public Map<String, KiiTriggerCol> getCurrThingTriggerMap() {
+		return currThingTriggerMap;
+	}
+
+	public void setCurrThingTriggerMap(Map<String,KiiTriggerCol> currThingTriggerMap) {
+		this.currThingTriggerMap = currThingTriggerMap;
+	}
+
+	public void addThingTriggerInfo(String thingID,KiiTriggerCol triggerCol){
+		this.currThingTriggerMap.put(thingID,triggerCol);
+	}
+
 	public String getRelationTriggerID() {
 		return relationTriggerID;
 	}
@@ -33,11 +51,11 @@ public class TriggerRuntimeState extends KiiEntity{
 		this.relationTriggerID = relationTriggerID;
 	}
 
-	public TriggerGroupPolicy getPolicy() {
+	public TriggerGroupPolicy.TriggerGroupPolicyType getPolicy() {
 		return policy;
 	}
 
-	public void setPolicy(TriggerGroupPolicy policy) {
+	public void setPolicy(TriggerGroupPolicy.TriggerGroupPolicyType policy) {
 		this.policy = policy;
 	}
 
@@ -65,38 +83,19 @@ public class TriggerRuntimeState extends KiiEntity{
 		this.currentStatus = currentStatus;
 	}
 
-	@JsonAnySetter
-	public void setMemberStatus(String thingID,boolean sign){
-
-		memberStatusMap.put(thingID,sign);
+	@JsonUnwrapped(prefix="member-")
+	public MemberState getMemberState() {
+		return memberState;
 	}
 
-	@JsonAnyGetter
-	public Map<String,Boolean> getMemberStatusMap(){
-		return memberStatusMap;
+	public void setMemberState(MemberState memberState) {
+		this.memberState = memberState;
 	}
-
 
 	@JsonIgnore
 	public boolean checkPolicy(){
 
-
-		long accessNum=memberStatusMap.values().stream().filter(v->v).count();
-
-		long sumNum=memberStatusMap.size();
-
-		switch(policy){
-			case All:
-				return sumNum==accessNum;
-			case Any:
-				return accessNum>0;
-			case Some:
-				return accessNum>criticalNumber;
-			case Percent:
-				return (100.0*accessNum/sumNum)>criticalNumber;
-			default:
-				return false;
-		}
+		return memberState.checkPolicy(policy,criticalNumber);
 
 	}
 

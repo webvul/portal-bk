@@ -9,6 +9,7 @@ import java.util.Map;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Repository;
 
+import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 
@@ -38,6 +39,7 @@ public class GlobalThingDao extends BaseDao<GlobalThingInfo>{
 //			return null;
 //		}
 //	}
+
 
 	public List<GlobalThingInfo> getThingsByIDArray(List<Long> thingIDs){
 
@@ -93,19 +95,29 @@ public class GlobalThingDao extends BaseDao<GlobalThingInfo>{
 
 	}
 
-	public GlobalThingInfo getThingByKiiThingID(String kiiThingID) {
+	public GlobalThingInfo getThingByFullKiiThingID(String kiiAppID,String kiiThingID) {
 
 		String sql = "SELECT g.* "
 				+ "FROM global_thing g "
-				+ " WHERE g.kii_app_id  = ? ";
+				+ " WHERE g.full_kii_thing_id  = ? ";
 
-		List<GlobalThingInfo> list= jdbcTemplate.query(sql,new Object[]{kiiThingID},getRowMapper());
+		String fullKiiThingID= ThingIDTools.joinFullKiiThingID(kiiAppID,kiiThingID);
+
+		List<GlobalThingInfo> list= jdbcTemplate.query(sql,new Object[]{fullKiiThingID},getRowMapper());
 
 		if(list.size()==0){
 			return null;
 		}else{
 			return list.get(0);
 		}
+
+	}
+
+
+	public GlobalThingInfo getThingByID(long globalThingID) {
+
+
+		return super.findByID(globalThingID);
 
 	}
 
@@ -134,6 +146,7 @@ public class GlobalThingDao extends BaseDao<GlobalThingInfo>{
 		List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql, tagName );
 	    return mapToList(rows);
 	}
+
 
 	@Override
 	protected Class<GlobalThingInfo> getEntityCls() {
