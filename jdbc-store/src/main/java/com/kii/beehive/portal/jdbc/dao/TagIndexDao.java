@@ -24,33 +24,33 @@ public class TagIndexDao extends BaseDao<TagIndex> {
 		List<TagIndex> tagIndexList = super.findByIDs(tagNameArray);
 		return tagIndexList;
 	}*/
-	
+
+	/**
+	 * find tag list by tagType and displayName
+	 *
+	 * @param tagType
+	 * @param displayName if it's null or empty, will query all displayName under the tagType
+     * @return
+     */
 	public List<TagIndex> findTagByTagTypeAndName(String tagType,String displayName) {
 		String sql = "SELECT t.*, r.count "
 					+ "FROM " + this.getTableName() +" t, "
 					+ "(SELECT tag_id, count(thing_id) as count FROM rel_thing_tag group by tag_id) r ";
 		
 		StringBuilder where = new StringBuilder();
-		where.append(" r.tag_id = t.tag_id ");
+		where.append(" WHERE r.tag_id = t.tag_id ");
 		
 		List<Object> params = new ArrayList<Object>();
 		if(!Strings.isBlank(tagType)){
-			where.append("t.").append(TagIndex.TAG_TYPE).append(" = ? "); 
+			where.append(" AND ").append("t.").append(TagIndex.TAG_TYPE).append(" = ? ");
 			params.add(tagType);
 		}
 		
 		if(!Strings.isBlank(displayName)){
-			if(where.length() > 0){
-				where.append(" AND ");
-			}
-			where.append("t.").append(TagIndex.DISPLAY_NAME).append(" = ? ");
+			where.append(" AND ").append("t.").append(TagIndex.DISPLAY_NAME).append(" = ? ");
 			params.add(displayName);
 		}
-		
-		if(where.length() > 0){
-			where.insert(0, " WHERE ");
-		}
-		
+
 		Object[] paramArr = new String[params.size()];
 		paramArr = params.toArray(paramArr);
 		List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql+where.toString(), paramArr);

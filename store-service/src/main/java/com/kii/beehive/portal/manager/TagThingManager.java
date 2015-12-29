@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,7 +68,7 @@ public class TagThingManager {
 		long thingID = globalThingDao.saveOrUpdate(thingInfo);
 
 		// set location tag and location tag-thing relation
-		if(location == null) {
+		if(Strings.isBlank(location)) {
 			location = DEFAULT_LOCATION;
 		}
 		this.saveOrUpdateThingLocation(thingID, location);
