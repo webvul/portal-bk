@@ -19,8 +19,8 @@ import com.kii.extension.sdk.service.AbstractDataAccess;
 public class EventListenerDao extends AbstractDataAccess<EventListener>{
 
 
-	public void addEventListener(EventListener listener){
-		super.addEntity(listener);
+	public String addEventListener(EventListener listener){
+		return super.addEntity(listener).getObjectID();
 	}
 
 

@@ -51,10 +51,8 @@ public class ThingStateSummaryManager {
 
 	public void initStateSummary(SummaryTriggerRecord record,@AppBindParam  String master){
 
-		String triggerID=triggerDao.addKiiEntity(record);
 
 		KiiAppInfo appInfo=appDao.getMasterAppInfo();
-
 
 		OnBoardingParam param=new OnBoardingParam();
 		param.setThingPassword("demo");
@@ -63,23 +61,26 @@ public class ThingStateSummaryManager {
 		OnBoardingResult result=thingIFService.onBoarding(param,"master");
 
 		String summaryID=result.getThingID();
+		record.setSummaryThingID(summaryID);
 
 		TriggerSource  source=record.getSource();
 		List<GlobalThingInfo> things=thingTagService.getThingInfos(source);
 
 		List<String> thingIDs=things.stream().map(thing->thing.getFullKiiThingID()).collect(Collectors.toList());
 
-		listenerService.addThingStatusListener(thingIDs,summaryID);
+		String listenerID=listenerService.addThingStatusListener(thingIDs,summaryID);
+		record.setListenerID(listenerID);
 
 		if(!source.getTagCollect().isEmpty()) {
 
 			listenerService.addSummaryChangeListener(source.getTagCollect(), summaryID);
+
 		}
 
-		triggerDao.saveCurrThingIDs(thingIDs,triggerID);
+		String triggerID=triggerDao.addKiiEntity(record);
+
 
 		registTrigger(summaryID,master,triggerID,record.getPerdicate());
-
 
 		refreshThingState(thingIDs);
 
@@ -130,10 +131,11 @@ public class ThingStateSummaryManager {
 
 		TriggerSource source=record.getSource();
 
-
 		List<GlobalThingInfo> thingList=thingTagService.queryThingByTagExpress(source.isAndExpress(),source.getTagCollect());
 
 		List<String> thingIDList=thingList.stream().map(thing->thing.getFullKiiThingID()).collect(Collectors.toList());
+
+		listenerService.updateThingStatusListener(thingIDList,record.getListenerID());
 
 		refreshThingState(thingIDList);
 	}

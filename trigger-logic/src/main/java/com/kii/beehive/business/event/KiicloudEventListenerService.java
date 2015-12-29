@@ -1,6 +1,7 @@
 package com.kii.beehive.business.event;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -35,7 +36,7 @@ public class KiicloudEventListenerService {
 
 	}
 
-	public void addSummaryChangeListener(List<String> tagNames,String summaryThingID){
+	public String addSummaryChangeListener(List<String> tagNames,String summaryThingID){
 
 
 		EventListener  listener=new EventListener();
@@ -44,12 +45,12 @@ public class KiicloudEventListenerService {
 		listener.addBindKeys(tagNames);
 		listener.setRelationBeanName(REFRESH_SUMMARY_GROUP);
 
-		eventListenerDao.addEventListener(listener);
+		return eventListenerDao.addEventListener(listener);
 
 	}
 
 
-	public void addThingStatusListener(List<String> thingIDs,String summaryThingID){
+	public String addThingStatusListener(List<String> thingIDs,String summaryThingID){
 
 		EventListener  listener=new EventListener();
 		listener.setTargetKey(summaryThingID);
@@ -57,7 +58,25 @@ public class KiicloudEventListenerService {
 
 		listener.setRelationBeanName(COMPUTE_SUMMARY_STATE);
 
-		eventListenerDao.addEventListener(listener);
+		return eventListenerDao.addEventListener(listener);
+
+	}
+
+	public void updateThingStatusListener(List<String> thingIDs,String listenerID){
+
+//		EventListener  listener=new EventListener();
+//		listener.setTargetKey(summaryThingID);
+//		listener.addBindKeys(thingIDs.stream().map(v->String.valueOf(v)).collect(Collectors.toList()));
+//
+//		listener.setRelationBeanName(COMPUTE_SUMMARY_STATE);
+
+		Map<String,Boolean>  thingMap=new HashMap<>();
+		thingIDs.forEach(id->{
+			thingMap.put(id,true);
+		});
+		Map<String,Object> param=Collections.singletonMap("bindKeys",thingMap);
+
+		 eventListenerDao.updateEntity(param,listenerID);
 
 	}
 

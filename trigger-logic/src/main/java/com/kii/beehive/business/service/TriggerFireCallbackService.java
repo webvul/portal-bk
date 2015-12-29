@@ -111,7 +111,7 @@ public class TriggerFireCallbackService {
 		GroupTriggerRuntimeState state=statusDao.getObjectByID(triggerID);
 		boolean oldState=state.isCurrentStatus();
 
-		state.setMemberStatus(thingID,sign);
+		state.getMemberState().setMemberStatus(thingID,sign);
 
 		boolean result=state.checkPolicy();
 
