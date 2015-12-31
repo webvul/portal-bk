@@ -128,6 +128,7 @@ public class AppInfoManager {
 			KiiAppInfo appInfo=new KiiAppInfo();
 			appInfo.setMasterApp(false);
 			appInfo.setAppInfo(app);
+			appInfo.setId(app.getAppID());
 
 			String currMaster=masterSalveService.checkMaster(app);
 

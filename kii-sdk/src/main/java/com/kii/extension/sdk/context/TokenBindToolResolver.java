@@ -4,6 +4,7 @@ package com.kii.extension.sdk.context;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 
 @Component
@@ -36,7 +37,7 @@ public class TokenBindToolResolver {
 	public String getToken(){
 
 		String token=tokenDirectLocal.get();
-		if(token!=null){
+		if(!StringUtils.isEmpty(token)){
 			return token;
 		}
 
@@ -50,6 +51,11 @@ public class TokenBindToolResolver {
 
 
 	}
+
+	public void reset(){
+		tokenDirectLocal.remove();
+	}
+
 
 	public void clean(){
 

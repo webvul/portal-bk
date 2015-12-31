@@ -16,12 +16,18 @@ public class AppBindToolResolver  {
 	private ApplicationContext context;
 
 
+	@Autowired
+	private TokenBindToolResolver  tokenResolver;
+
 	private ThreadLocal<AppChoice>  appChoiceLocal;
+
+
 
 	private ThreadLocal<AppInfo> appInfoDirectly=new ThreadLocal<>();
 
 	public void setAppInfoDirectly(AppInfo appInfo){
 		appInfoDirectly.set(appInfo);
+		this.tokenResolver.reset();
 	}
 
 	private String[] getBeanNameArray(){
@@ -46,6 +52,10 @@ public class AppBindToolResolver  {
 
 	public void setAppChoice(AppChoice choice){
 
+		this.appInfoDirectly.remove();
+
+		this.tokenResolver.reset();
+
 		this.appChoiceLocal.set(choice);
 	}
 
@@ -58,7 +68,7 @@ public class AppBindToolResolver  {
 
 		choice.setAppName(appName);
 
-		appChoiceLocal.set(choice);
+		setAppChoice(choice);
 
 	}
 

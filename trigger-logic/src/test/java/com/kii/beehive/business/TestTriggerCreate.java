@@ -25,6 +25,7 @@ import com.kii.extension.sdk.entity.thingif.OnBoardingParam;
 import com.kii.extension.sdk.entity.thingif.ServiceCode;
 import com.kii.extension.sdk.entity.thingif.StatePredicate;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
+import com.kii.extension.sdk.entity.thingif.TriggerWhen;
 import com.kii.extension.sdk.query.Condition;
 import com.kii.extension.sdk.query.ConditionBuilder;
 
@@ -135,7 +136,7 @@ public class TestTriggerCreate extends TestTemplate {
 		StatePredicate preidcate=new StatePredicate();
 		Condition condition= ConditionBuilder.newCondition().great("foo",0).getConditionInstance();
 		preidcate.setCondition(condition);
-//		preidcate.setTriggersWhen(TriggerWhen.CONDITION_TRUE);
+		preidcate.setTriggersWhen(TriggerWhen.CONDITION_TRUE);
 
 		record.setPerdicate(preidcate);
 
