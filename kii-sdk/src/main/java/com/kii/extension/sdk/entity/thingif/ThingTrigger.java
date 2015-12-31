@@ -26,6 +26,7 @@ public class ThingTrigger {
 	private Map<String,Object> metadata=new HashMap<>();
 
 
+	@JsonProperty("triggersWhat")
 	public TriggerTarget getTarget() {
 		return target;
 	}
@@ -50,6 +51,7 @@ public class ThingTrigger {
 		this.command = command;
 	}
 
+	@JsonProperty("serverCode")
 	public ServiceCode getServiceCode() {
 		return serviceCode;
 	}
@@ -95,20 +97,5 @@ public class ThingTrigger {
 	public void setTriggerID(String triggerID) {
 		this.triggerID = triggerID;
 	}
-/*
-	{"triggersWhat":"COMMAND",
- "predicate":{
 
- },
- "command":{
-   "issuer":"USER:92803ea00022-a488-4e11-d7c1-018317e4",
-   "actions":[{"lightness":50,"from":"business"}],
-   "schema":"demo",
-   "schemaVersion":0,
-   "metadata":{"foo":"bar"},
- },
- "title":"testLight",
-
-}
-	 */
 }

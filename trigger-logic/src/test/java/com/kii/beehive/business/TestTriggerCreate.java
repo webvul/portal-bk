@@ -1,148 +1,193 @@
 package com.kii.beehive.business;
 
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ResourceLoader;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
-import com.kii.beehive.business.manager.BeehiveTriggerInitManager;
-import com.kii.beehive.portal.service.ExtensionCodeDao;
-import com.kii.extension.sdk.context.AppBindToolResolver;
-import com.kii.extension.sdk.context.TokenBindToolResolver;
+import com.kii.beehive.business.manager.SimpleThingTriggerManager;
+import com.kii.beehive.business.service.ThingIFInAppService;
+import com.kii.beehive.business.service.ThingTagService;
+import com.kii.beehive.portal.common.utils.ThingIDTools;
+import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
+import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
+import com.kii.beehive.portal.jdbc.dao.TagThingRelationDao;
+import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
+import com.kii.beehive.portal.jdbc.entity.TagIndex;
+import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
+import com.kii.beehive.portal.jdbc.entity.TagType;
+import com.kii.beehive.portal.store.entity.trigger.SimpleTriggerRecord;
+import com.kii.beehive.portal.store.entity.trigger.TargetAction;
+import com.kii.beehive.portal.store.entity.trigger.TriggerTarget;
+import com.kii.extension.sdk.entity.thingif.Action;
 import com.kii.extension.sdk.entity.thingif.OnBoardingParam;
-import com.kii.extension.sdk.entity.thingif.OnBoardingResult;
-import com.kii.extension.sdk.entity.thingif.ThingStatus;
-import com.kii.extension.sdk.service.ServiceExtensionService;
-import com.kii.extension.sdk.service.ThingIFService;
+import com.kii.extension.sdk.entity.thingif.ServiceCode;
+import com.kii.extension.sdk.entity.thingif.StatePredicate;
+import com.kii.extension.sdk.entity.thingif.ThingCommand;
+import com.kii.extension.sdk.query.Condition;
+import com.kii.extension.sdk.query.ConditionBuilder;
 
-public class TestTriggerCreate extends TestTemplate  {
+@Transactional
+public class TestTriggerCreate extends TestTemplate {
 
 	private Logger log= LoggerFactory.getLogger(TestTriggerCreate.class);
 
 
-	@Autowired
-	private BeehiveTriggerInitManager triggerManager;
 
 
 	@Autowired
-	private ExtensionCodeDao extensionDao;
+	private ThingIFInAppService  thingIFService;
 
 
 	@Autowired
-	private ServiceExtensionService service;
+	private ThingTagService  thingTagService;
 
 	@Autowired
-	private AppBindToolResolver resolver;
+	private GlobalThingDao thingDao;
+
 
 	@Autowired
-	private ResourceLoader loader;
-
-	private String APP_NAME="portal";
+	private TagIndexDao tagDao;
 
 	@Autowired
-	private TokenBindToolResolver token;
+	private TagThingRelationDao relationDao;
 
-	@Autowired
-	private ThingIFService  thingIFService;
+	private Long[] thingIDs={575l,576l,577l,578l,579l,580l,581l,582l,583l,584l};
 
-	@Before
-	public void init(){
-		token.bindToken("qv8pBJBwDM2Tjg8fIu4jTUGwhqVsMACvtcl2Cv_teV0");
-		resolver.setAppName(APP_NAME);
-	}
+	private String appName="b8ca23d0";
 
+	private Long[] tags={311l,312l,313l,314l,315l};
 
+	private String[] tagNames={"Custom-name0","Custom-name1","Custom-name2","Custom-name3","Custom-name4"};
 
-//	@Ignore
-	@Test
-	public void registerExtension() throws InterruptedException, IOException {
+//	@Test
+//	@Commit
+	public void createThings(){
 
-		triggerManager.initAppForTrigger();
+		for(int i=0;i<10;i++) {
 
-		extensionDao.deployScriptToApp(APP_NAME);
+			OnBoardingParam param = new OnBoardingParam();
+			String vendorThingID="vendorThing"+i;
+			param.setVendorThingID(vendorThingID);
+			param.setThingPassword("password");
 
-		InputStream reader=System.in;
-
-		int ch=reader.read();
-
-	}
-
-	@Test
-	public void getExtension(){
-		ExtensionCodeDao.ScriptCombine json=extensionDao.getCurrentServiceCodeByVersion();
-
-		log.info(json.getScript());
-
-	}
+			String thingID=thingIFService.onBoarding(param,appName).getThingID();
 
 
-	@Test
-	public void callStateChange() {
+			GlobalThingInfo info=new GlobalThingInfo();
+			String fullKiiThingID= ThingIDTools.joinFullKiiThingID(thingID,appName);
+
+			info.setFullKiiThingID(fullKiiThingID);
+
+			info.setVendorThingID(vendorThingID);
+			info.setType("demo");
+
+			long id=thingDao.saveOrUpdate(info);
+
+			TagThingRelation relation=new TagThingRelation();
+			relation.setThingID(id);
+			relation.setTagID(tags[i%5]);
+
+			relationDao.saveOrUpdate(relation);
 
 
-		OnBoardingParam param = new OnBoardingParam();
-		param.setVendorThingID("thing-test-demo-001");
-		param.setUserID("f83120e36100-a83b-5e11-1eaa-026cdf52");
-		param.setThingType("demo");
-		param.setThingPassword("qwerty");
+			TagThingRelation  relation2=new TagThingRelation();
+			relation2.setThingID(id);
+			relation2.setTagID(tags[(i+1)%5]);
 
-		OnBoardingResult result = thingIFService.onBoarding(param);
+			relationDao.saveOrUpdate(relation2);
 
-		String thingID = result.getThingID();
-
-	}
-
-	String  thingID="th.f83120e36100-a83b-5e11-2eaa-035b1f86";
-
-	@Test
-	public void putStatus(){
-
-		ThingStatus status=new ThingStatus();
-		status.setField("lightness",99);
-		status.setField("power",true);
-
-		thingIFService.putStatus(thingID,status);
-
-
-	}
-
-	@Test
-	public void fireStateChange(){
-
-
-		Map<String,Object> map=new HashMap<>();
-		map.put("bucketID","_states");
-		map.put("objectID","69d73330-aae2-11e5-b38a-00163e02138f");
-
-		JsonNode node = service.callServiceExtension("global_onThingStateChange", map, JsonNode.class);
-
-	}
-
-
-	@Test
-	public void callTrigger(){
-//		resolver.setAppName("thingif");
-
-		Map<String,Object> map=new HashMap<>();
-		map.put("thingID","foo");
-		map.put("triggerID","demo");
-
-
-		String[] endpoints={"global_onPositiveTriggerArrive","global_onSummaryTriggerArrive","global_onNegitiveTriggerArrive"};
-
-		for(String endpoint:endpoints) {
-			JsonNode node = service.callServiceExtension(endpoint, map, JsonNode.class);
+//			thingIDs.add(id);
 		}
+	}
+
+//	@Commit
+//	@Test
+	public void init() {
+
+
+		for (int i = 0; i < 5; i++) {
+
+			TagIndex tag = new TagIndex();
+			tag.setDisplayName("name" + i);
+			tag.setTagType(TagType.Custom);
+			tag.setFullTagName(TagType.Custom.getTagName("name" + i));
+
+			long id = tagDao.saveOrUpdate(tag);
+
+			log.info("tagID:"+id);
+		}
+	}
+
+
+	@Autowired
+	private SimpleThingTriggerManager simpleMang;
+
+	@Test
+	public void testTriggerCreate(){
+
+
+		SimpleTriggerRecord record=new SimpleTriggerRecord();
+
+		record.setThingID(thingIDs[0]);
+
+		StatePredicate preidcate=new StatePredicate();
+		Condition condition= ConditionBuilder.newCondition().great("foo",0).getConditionInstance();
+		preidcate.setCondition(condition);
+//		preidcate.setTriggersWhen(TriggerWhen.CONDITION_TRUE);
+
+		record.setPerdicate(preidcate);
+
+		TriggerTarget target = getTagCmdTarget();
+
+		record.addTarget(target);
+
+
+		TriggerTarget target2=getServiceCodeTarget();
+		record.addTarget(target2);
+
+		simpleMang.createSimpleTrigger(record);
+
+	}
+
+	private TriggerTarget getServiceCodeTarget() {
+		TriggerTarget target=new TriggerTarget();
+
+
+		TargetAction action = new TargetAction();
+
+		ServiceCode service=new ServiceCode();
+		service.setEndpoint("hello");
+		service.setTargetAppID("master");
+		service.addParameter("name","world");
+
+		action.setServiceCode(service);
+		target.setCommand(action);
+		return target;
+	}
+
+	private TriggerTarget getTagCmdTarget() {
+		TriggerTarget target=new TriggerTarget();
+		target.addTag(tagNames[2]);
+		target.addTag(tagNames[3]);
+		target.setAnd(true);
+
+		TargetAction action = getTargetAction("powerOn","power",true);
+		target.setCommand(action);
+		return target;
+	}
+
+	private TargetAction getTargetAction(String name,String actName,Object value) {
+		TargetAction action=new TargetAction();
+		ThingCommand cmd=new ThingCommand();
+
+		Action act=new Action();
+		act.setField(actName,value);
+
+		cmd.addAction(name,act);
+		action.setCommand(cmd);
+		return action;
 	}
 
 

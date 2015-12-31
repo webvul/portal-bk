@@ -2,6 +2,8 @@ package com.kii.extension.sdk.query.condition;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import com.kii.extension.sdk.query.ConditionType;
 
 
@@ -57,6 +59,15 @@ public class Range extends SimpleCondition {
 		return upperIncluded;
 	}
 
+	@JsonIgnore
+	public boolean isExistUpper(){
+		if(upperIncluded==null){
+			return false;
+		}else{
+			return upperIncluded;
+		}
+	}
+
 	public void setUpperIncluded(Boolean upperIncluded) {
 		this.upperIncluded = upperIncluded;
 	}
@@ -65,6 +76,15 @@ public class Range extends SimpleCondition {
 
 	public Boolean isLowerIncluded() {
 		return lowerIncluded;
+	}
+
+	@JsonIgnore
+	public boolean isExistLower(){
+		if(lowerIncluded==null){
+			return false;
+		}else{
+			return lowerIncluded;
+		}
 	}
 
 	public void setLowerIncluded(Boolean lowerIncluded) {

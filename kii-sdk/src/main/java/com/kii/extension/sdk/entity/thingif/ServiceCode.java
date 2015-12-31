@@ -3,6 +3,8 @@ package com.kii.extension.sdk.entity.thingif;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class ServiceCode {
 /*
   endpoint: saveTemperature
@@ -39,6 +41,7 @@ public class ServiceCode {
 	public void setParameters(Map<String, Object> parameters) {
 		this.parameters = parameters;
 	}
+
 
 	public String getTargetAppID() {
 		return targetAppID;

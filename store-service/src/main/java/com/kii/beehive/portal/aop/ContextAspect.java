@@ -8,7 +8,7 @@ import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.kii.beehive.portal.helper.PortalTokenService;
+import com.kii.beehive.business.helper.PortalTokenService;
 import com.kii.beehive.portal.store.entity.PortalEntity;
 
 @Aspect

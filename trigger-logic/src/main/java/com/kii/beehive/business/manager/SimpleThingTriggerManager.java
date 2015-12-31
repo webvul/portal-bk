@@ -5,12 +5,15 @@ import org.springframework.stereotype.Component;
 
 import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.business.service.ThingTagService;
+import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.service.TriggerRecordDao;
 import com.kii.beehive.portal.store.entity.trigger.SimpleTriggerRecord;
+import com.kii.extension.sdk.entity.FederatedAuthResult;
 import com.kii.extension.sdk.entity.thingif.ServiceCode;
 import com.kii.extension.sdk.entity.thingif.StatePredicate;
 import com.kii.extension.sdk.entity.thingif.ThingTrigger;
+import com.kii.extension.sdk.entity.thingif.TriggerTarget;
 
 @Component
 public class SimpleThingTriggerManager {
@@ -26,6 +29,8 @@ public class SimpleThingTriggerManager {
 	@Autowired
 	private ThingIFInAppService thingIFService;
 
+	@Autowired
+	private AppInfoManager appInfoManager;
 
 
 	public String  createSimpleTrigger(SimpleTriggerRecord record){
@@ -36,30 +41,37 @@ public class SimpleThingTriggerManager {
 		SimpleTriggerRecord.ThingID thingID=record.getSource();
 
 		GlobalThingInfo thing=thingTagService.getThingByID(thingID.getThingID());
+
 		registSingleTrigger(thing.getFullKiiThingID(),record.getPerdicate(),triggerID);
 
 		return triggerID;
 	}
 
 
-	private static ServiceCode getSimpleServiceCode(String thingID, String triggerID){
+	private  ServiceCode getSimpleServiceCode(String thingID, String triggerID){
+
+		ThingIDTools.ThingIDCombine  info= ThingIDTools.splitFullKiiThingID(thingID);
 
 		ServiceCode serviceCode=new ServiceCode();
 
 		serviceCode.setEndpoint(EndPointNameConstant.SimpleTriggerEndPoint);
-		serviceCode.addParameter("thingID",thingID);
+		serviceCode.addParameter("thingID",info.kiiThingID);
 		serviceCode.addParameter("triggerID",triggerID);
+//		serviceCode.setTargetAppID(info.kiiAppID);
+
+		FederatedAuthResult result=appInfoManager.getDefaultOwer(info.kiiAppID);
+		serviceCode.setExecutorAccessToken(result.getAppAuthToken());
 
 		return serviceCode;
 	}
 
 	public void registSingleTrigger(String thingID, StatePredicate predicate, String triggerID){
 
-//		GlobalThingInfo thing=thingService.getThingByVendorThingID(thingID);
-
 		ThingTrigger triggerInfo=new ThingTrigger();
 
+		triggerInfo.setTitle(triggerID);
 
+		triggerInfo.setTarget(TriggerTarget.SERVER_CODE);
 		triggerInfo.setPredicate(predicate);
 		triggerInfo.setServiceCode(getSimpleServiceCode(thingID,triggerID));
 

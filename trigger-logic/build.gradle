@@ -2,11 +2,9 @@ dependencies {
 
 	compile project(":commons")
 
-	compile project(":kii-sdk")
-
 	compile project(":jdbc-store")
 
-	compile project(":cloud-store")
+	compile project(":cloud-business")
 
 	compile "org.springframework:spring-context:${springVersion}"
 

@@ -3,6 +3,7 @@ package com.kii.beehive.portal.store.entity.trigger;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 
@@ -24,12 +25,22 @@ public class TriggerTarget {
 		this.thingList = thingList;
 	}
 
+	@JsonIgnore
+	public void addThingList(long thingID){
+		this.thingList.add(thingID);
+	}
+
 	public List<String> getTagList() {
 		return tagList;
 	}
 
 	public void setTagList(List<String> tagList) {
 		this.tagList = tagList;
+	}
+
+	@JsonIgnore
+	public void addTag(String tagName){
+		this.tagList.add(tagName);
 	}
 
 	public boolean isAnd() {

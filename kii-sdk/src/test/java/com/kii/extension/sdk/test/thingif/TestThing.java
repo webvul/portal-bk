@@ -120,6 +120,8 @@ public class TestThing extends TestTemplate {
 
 		ThingTrigger trigger=new ThingTrigger();
 
+		trigger.setDescription("desc");
+
 		trigger.addMetadata("foo","bar");
 		trigger.setTarget(TriggerTarget.COMMAND);
 
@@ -132,7 +134,7 @@ public class TestThing extends TestTemplate {
 		StatePredicate predicate =new StatePredicate();
 		predicate.setTriggersWhen(TriggerWhen.CONDITION_CHANGED);
 
-		Condition condition=ConditionBuilder.newCondition().great(KEY_FIELD,100).getConditionInstance();
+		Condition condition=ConditionBuilder.newCondition().equal(KEY_FIELD,100).getConditionInstance();
 		predicate.setCondition(condition);
 
 		trigger.setPredicate(predicate);

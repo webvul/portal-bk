@@ -94,10 +94,10 @@ public class GlobalThingInfo extends DBEntity{
 	public void setFullKiiThingID(String fullkiiThingID) {
 		this.fullKiiThingID = fullkiiThingID;
 
-		String[] param= ThingIDTools.splitFullKiiThingID(fullkiiThingID);
+		ThingIDTools.ThingIDCombine idCombine = ThingIDTools.splitFullKiiThingID(fullkiiThingID);
 
-		this.kiiThingID=param[1];
-		this.kiiAppID=param[0];
+		this.kiiThingID=idCombine.kiiThingID;
+		this.kiiAppID=idCombine.kiiAppID;
 	}
 
 

@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-import com.kii.beehive.portal.helper.PortalTokenService;
+import com.kii.beehive.business.helper.PortalTokenService;
 import com.kii.beehive.portal.store.entity.Token.PortalTokenType;
 import com.kii.extension.sdk.exception.UnauthorizedAccessException;
 

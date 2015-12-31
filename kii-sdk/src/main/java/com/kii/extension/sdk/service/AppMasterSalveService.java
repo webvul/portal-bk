@@ -14,6 +14,7 @@ import com.kii.beehive.portal.common.utils.StrTemplate;
 import com.kii.extension.sdk.annotation.AppBindParam;
 import com.kii.extension.sdk.context.AdminTokenBindTool;
 import com.kii.extension.sdk.entity.AppInfo;
+import com.kii.extension.sdk.exception.AppParameterCodeNotFoundException;
 import com.kii.extension.sdk.exception.KiiCloudException;
 import com.kii.extension.sdk.impl.ApiAccessBuilder;
 import com.kii.extension.sdk.impl.KiiCloudClient;
@@ -64,8 +65,11 @@ X-Kii-AppKey: <slaveAppKey>
 				.addSubUrl("/configuration/parameters/kii.master_app_id")
 				.buildCustomCall("GET",null).generRequest(mapper);
 
-		return client.executeRequest(request);
-
+		try {
+			return client.executeRequest(request);
+		}catch(AppParameterCodeNotFoundException e){
+			return null;
+		}
 
 	}
 
@@ -113,20 +117,20 @@ X-Kii-AppKey: <masterAppKey>
 
 
 
-	public void addSalveAppToMaster(@AppBindParam AppInfo  masterApp,AppInfo  salveAppInfo){
-
-
-		ClientInfo info=addSalveApp(masterApp, salveAppInfo);
-
-		registInSalve(info,masterApp,salveAppInfo);
-
-	}
+//	public void addSalveAppToMaster(@AppBindParam AppInfo  masterApp,AppInfo  salveAppInfo){
+//
+//
+//		ClientInfo info=addSalveApp(masterApp, salveAppInfo);
+//
+//		registInSalve(info,masterApp,salveAppInfo);
+//
+//	}
 
 
 
 	static String url="http://$(0).$(1).kiiapps.com/api/apps/$(0)/integration/webauth/callback";
 
-	private  ClientInfo addSalveApp(AppInfo  masterApp,AppInfo  salveAppInfo){
+	public  ClientInfo addSalveApp(@AppBindParam AppInfo  masterApp,AppInfo  salveAppInfo){
 		/*
 		POST /apps/<masterAppId>/oauth2/clients
 content-type: application/vnd.kii.Oauth2ClientCreationRequest+json
@@ -156,7 +160,7 @@ Authorization: Bearer xxxyyyzzz (app-admin / sys-admin)
 
 	static String api="http://$(0).$(1).kiiapps.com/api/";
 
-	private void registInSalve(ClientInfo clientInfo,AppInfo masterApp,AppInfo salveApp){
+	public  void registInSalve(ClientInfo clientInfo,AppInfo masterApp,@AppBindParam AppInfo salveApp){
 
 		/*
 
@@ -173,6 +177,7 @@ http://api-development-jp.internal.kii.com/api/apps/<slaveAppId> -d \
   }
 }'
 		 */
+
 		ApiAccessBuilder builder = getBuilder(salveApp);
 
 

@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonSubTypes({
 		@JsonSubTypes.Type(value = SchedulePredicate.class,name="schedule"),
 		@JsonSubTypes.Type(value = StatePredicate.class,name="states"),
-		@JsonSubTypes.Type(value = TaskPredicate.class,name="task"),
+		@JsonSubTypes.Type(value = TaskPredicate.class,name="schedule_once"),
 })
 public abstract  class Predicate {
 

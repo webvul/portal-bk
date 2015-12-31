@@ -109,12 +109,16 @@ public class ConditionBuilder {
 
 	public ConditionBuilder addSubClause(ConditionBuilder...  logic) {
 		for(ConditionBuilder b:logic){
-			fill(b.condition);
+			if(b.clauses!=null){
+				fill(b.clauses);
+			}else {
+				fill(b.condition);
+			}
 		}
 		return this;
 	}
 
-	public <T> ConditionBuilder Less(String field, T value) {
+	public <T> ConditionBuilder less(String field, T value) {
 		return range(field, null, false, value, false);
 
 	}

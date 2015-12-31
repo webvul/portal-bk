@@ -1,13 +1,16 @@
 package com.kii.beehive.portal.store.entity;
 
 import com.kii.extension.sdk.entity.AppInfo;
+import com.kii.extension.sdk.entity.FederatedAuthResult;
 import com.kii.extension.sdk.entity.KiiEntity;
 
 public class KiiAppInfo extends KiiEntity{
 
 	private AppInfo appInfo;
 
-	private String defaultThingOwnerID;
+	private FederatedAuthResult federatedAuthResult;
+
+	private String ownerToken;
 
 	private boolean isMasterApp=false;
 
@@ -25,6 +28,14 @@ public class KiiAppInfo extends KiiEntity{
 
 	}
 
+	public String getOwnerToken() {
+		return ownerToken;
+	}
+
+	public void setOwnerToken(String ownerToken) {
+		this.ownerToken = ownerToken;
+	}
+
 	public void setMasterApp(boolean isMasterApp) {
 		this.isMasterApp = isMasterApp;
 	}
@@ -37,11 +48,11 @@ public class KiiAppInfo extends KiiEntity{
 		this.appInfo = appInfo;
 	}
 
-	public String getDefaultThingOwnerID() {
-		return defaultThingOwnerID;
+	public FederatedAuthResult getFederatedAuthResult() {
+		return federatedAuthResult;
 	}
 
-	public void setDefaultThingOwnerID(String defaultThingOwnerID) {
-		this.defaultThingOwnerID = defaultThingOwnerID;
+	public void setFederatedAuthResult(FederatedAuthResult federatedAuthResult) {
+		this.federatedAuthResult = federatedAuthResult;
 	}
 }

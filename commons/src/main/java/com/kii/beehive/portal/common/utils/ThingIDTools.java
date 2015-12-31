@@ -6,13 +6,25 @@ public class ThingIDTools {
 		return kiiAppID + "-" + kiiThingID;
 	}
 
-	public static final String[]  splitFullKiiThingID(String fullKiiThingID) {
+	public static final ThingIDCombine  splitFullKiiThingID(String fullKiiThingID) {
 
 		int idx=fullKiiThingID.indexOf("-");
 
 		String  kiiThingID=fullKiiThingID.substring(idx+1);
 		String appID=fullKiiThingID.substring(0,idx);
 
-		return new String[]{appID,kiiThingID};
+		return new ThingIDCombine(kiiThingID,appID);
+	}
+
+	public static class ThingIDCombine{
+
+		public  final String kiiThingID;
+
+		public  final String kiiAppID;
+
+		private ThingIDCombine(String thingID,String appID){
+			kiiThingID=thingID;
+			kiiAppID=appID;
+		}
 	}
 }

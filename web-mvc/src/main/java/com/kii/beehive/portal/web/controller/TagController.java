@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagType;
-import com.kii.beehive.portal.manager.TagThingManager;
+import com.kii.beehive.business.manager.TagThingManager;
 import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.help.PortalException;
 

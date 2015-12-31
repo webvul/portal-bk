@@ -16,7 +16,6 @@ import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.entity.thingif.ServiceCode;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
 import com.kii.extension.sdk.service.ServiceExtensionService;
-import com.kii.extension.sdk.service.ThingIFService;
 
 @Component
 public class KiiCommandService {

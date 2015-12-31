@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kii.beehive.portal.manager.UserGroupManager;
+import com.kii.beehive.business.manager.UserGroupManager;
 import com.kii.beehive.portal.store.entity.BeehiveUserGroup;
 import com.kii.beehive.portal.web.entity.UserGroupRestBean;
 import com.kii.beehive.portal.web.help.PortalException;

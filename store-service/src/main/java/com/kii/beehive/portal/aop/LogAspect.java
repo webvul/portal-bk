@@ -25,7 +25,7 @@ public class LogAspect {
 
 	private Logger log= LoggerFactory.getLogger("manager-log");
 
-	@Pointcut("within ( com.kii.beehive.portal.manager.* ) ")
+	@Pointcut("within ( com.kii.beehive.business.business.manager.* ) ")
 	private void bindManager(){
 
 	};

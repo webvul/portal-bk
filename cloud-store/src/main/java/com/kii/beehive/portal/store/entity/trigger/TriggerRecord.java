@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
@@ -21,13 +22,13 @@ import com.kii.extension.sdk.entity.thingif.ThingCommand;
 		@JsonSubTypes.Type(value = GroupTriggerRecord.class,name="Group"),
 		@JsonSubTypes.Type(value = SummaryTriggerRecord.class,name="Summary"),
 })
-public class TriggerRecord extends KiiEntity {
+public abstract  class TriggerRecord extends KiiEntity {
 
 	private StatePredicate  perdicate;
 
 	private List<TriggerTarget>  targets=new ArrayList<>();
 
-	private TriggerType type;
+//	private TriggerType type;
 
 
 
@@ -47,11 +48,14 @@ public class TriggerRecord extends KiiEntity {
 		this.targets = target;
 	}
 
-
-
-	public void setType(TriggerType type) {
-		this.type = type;
+	@JsonIgnore
+	public void addTarget(TriggerTarget  target){
+		this.targets.add(target);
 	}
+
+//	public void setType(TriggerType type) {
+//		this.type = type;
+//	}
 
 	public static enum TriggerType{
 		Simple,Group,Summary;

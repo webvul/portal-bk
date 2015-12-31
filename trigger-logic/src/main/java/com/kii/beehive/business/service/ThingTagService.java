@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
@@ -12,7 +12,7 @@ import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.store.entity.trigger.TriggerSource;
 
 @Transactional
-@Service
+@Component
 public class ThingTagService {
 
 	@Autowired

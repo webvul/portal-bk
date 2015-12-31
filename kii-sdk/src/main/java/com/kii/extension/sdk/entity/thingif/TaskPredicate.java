@@ -6,7 +6,7 @@ public class TaskPredicate extends Predicate{
 
 	@Override
 	public EventSourceType getEventSource() {
-		return EventSourceType.task;
+		return EventSourceType.schedule_once;
 	}
 
 

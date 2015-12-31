@@ -7,9 +7,9 @@ import org.springframework.stereotype.Component;
 
 import com.kii.beehive.business.event.BeehiveEventProcess;
 import com.kii.beehive.business.event.KiicloudEventListenerService;
-import com.kii.beehive.portal.event.annotation.TagChanged;
 import com.kii.beehive.business.manager.ThingGroupStateManager;
 import com.kii.beehive.portal.event.EventParam;
+import com.kii.beehive.portal.event.annotation.TagChanged;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 

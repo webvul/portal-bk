@@ -1,5 +1,8 @@
 package com.kii.beehive.portal.store.entity.trigger;
 
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class SimpleTriggerRecord extends TriggerRecord{
 
 
@@ -13,9 +16,15 @@ public class SimpleTriggerRecord extends TriggerRecord{
 		this.source = source;
 	}
 
-	public TriggerType getType() {
-		return TriggerType.Simple;
+	@JsonIgnore
+	public void setThingID(long thingID){
+		this.source=new ThingID();
+		source.setThingID(thingID);
 	}
+
+//	public TriggerType getType() {
+//		return TriggerType.Simple;
+//	}
 
 	public static class ThingID{
 

@@ -26,6 +26,10 @@
             <property name="locations" value="classpath:com/kii/beehive/portal/web/config.test.properties"/>
         </bean>
 
+    <bean class="com.kii.extension.sdk.service.DevPortalService" >
+        <property name="devPortalUrl"  value="${beehive.kiicloud.dev-portal.url}" />
+    </bean>
+
         <bean class="com.kii.extension.factory.LocalPropertyBindTool" >
             <property name="propFileName" value="classpath:com/kii/beehive/portal/web/beehive.portal.store.test.properties" />
         </bean>

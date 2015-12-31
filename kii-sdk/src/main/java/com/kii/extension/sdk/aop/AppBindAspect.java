@@ -40,7 +40,7 @@ public class AppBindAspect {
 	}
 
 
-	@Pointcut("execution (*  com.kii..*(@com.kii.extension.sdk.annotation.AppBindParam (*) , .. ))")
+	@Pointcut("execution (*  com.kii..*(..,@com.kii.extension.sdk.annotation.AppBindParam (*),.. ))")
 	private void bindWithParam(){
 
 	}

@@ -40,6 +40,10 @@
         <property name="propFileName" value="classpath:com/kii/beehive/business/beehive.portal.store.properties" />
     </bean>
 
+    <bean class="com.kii.extension.sdk.service.DevPortalService" >
+        <property name="devPortalUrl"  value="${beehive.kiicloud.dev-portal.url}" />
+    </bean>
+
 
     <bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="jdbcUrl" value="${beehive.jdbc.url}" />

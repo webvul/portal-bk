@@ -117,7 +117,17 @@ public class GlobalThingDao extends BaseDao<GlobalThingInfo>{
 	public GlobalThingInfo getThingByID(long globalThingID) {
 
 
-		return super.findByID(globalThingID);
+		String sql = "SELECT g.* "
+				+ "FROM global_thing g "
+				+ " WHERE g.id_global_thing  = ? ";
+
+		List<GlobalThingInfo> list= jdbcTemplate.query(sql,new Object[]{globalThingID},getRowMapper());
+
+		if(list.size()==0){
+			return null;
+		}else{
+			return list.get(0);
+		}
 
 	}
 

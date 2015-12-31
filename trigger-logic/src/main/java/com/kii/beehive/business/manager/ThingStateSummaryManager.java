@@ -12,14 +12,11 @@ import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.business.service.ThingTagService;
 import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
-import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.service.TriggerRecordDao;
-import com.kii.beehive.portal.store.entity.KiiAppInfo;
 import com.kii.beehive.portal.store.entity.trigger.SummaryExpress;
 import com.kii.beehive.portal.store.entity.trigger.SummaryFunctionType;
 import com.kii.beehive.portal.store.entity.trigger.SummaryTriggerRecord;
 import com.kii.beehive.portal.store.entity.trigger.TriggerSource;
-import com.kii.extension.sdk.annotation.AppBindParam;
 import com.kii.extension.sdk.entity.thingif.OnBoardingParam;
 import com.kii.extension.sdk.entity.thingif.OnBoardingResult;
 import com.kii.extension.sdk.entity.thingif.Predicate;
@@ -44,19 +41,23 @@ public class ThingStateSummaryManager {
 	@Autowired
 	private KiicloudEventListenerService listenerService;
 
-
 	@Autowired
-	private AppInfoDao appDao;
+	private AppInfoManager appInfoManager;
 
 
-	public void initStateSummary(SummaryTriggerRecord record,@AppBindParam  String master){
+
+//	@Autowired
+//	private AppInfoDao appDao;
 
 
-		KiiAppInfo appInfo=appDao.getMasterAppInfo();
+	public void initStateSummary(SummaryTriggerRecord record){
+
+
+//		KiiAppInfo appInfo=appDao.getMasterAppInfo();
 
 		OnBoardingParam param=new OnBoardingParam();
 		param.setThingPassword("demo");
-		param.setUserID(appInfo.getDefaultThingOwnerID());
+//		param.setUserID(appInfo.getDefaultThingOwnerID());
 
 		OnBoardingResult result=thingIFService.onBoarding(param,"master");
 
@@ -80,13 +81,15 @@ public class ThingStateSummaryManager {
 		String triggerID=triggerDao.addKiiEntity(record);
 
 
-		registTrigger(summaryID,master,triggerID,record.getPerdicate());
+		registTrigger(summaryID,triggerID,record.getPerdicate());
 
 		refreshThingState(thingIDs);
 
 	}
 
-	private void registTrigger(String summaryID, String master, String triggerID, Predicate perdicate){
+	private void registTrigger(String summaryID, String triggerID, Predicate perdicate){
+
+		String masterAppID=appInfoManager.getMasterAppID();
 
 
 		ThingTrigger triggerInfo=new ThingTrigger();
@@ -94,7 +97,7 @@ public class ThingStateSummaryManager {
 
 		triggerInfo.setPredicate(perdicate);
 
-		String fullThingID= ThingIDTools.joinFullKiiThingID(summaryID,master);
+		String fullThingID= ThingIDTools.joinFullKiiThingID(summaryID,masterAppID);
 
 
 		ServiceCode serviceCode=new ServiceCode();
@@ -102,6 +105,9 @@ public class ThingStateSummaryManager {
 		serviceCode.setEndpoint(EndPointNameConstant.SummaryTriggerEndPoint);
 		serviceCode.addParameter("thingID",summaryID);
 		serviceCode.addParameter("triggerID",triggerID);
+
+		serviceCode.setTargetAppID(masterAppID);
+		serviceCode.setExecutorAccessToken(appInfoManager.getDefaultOwer(masterAppID).getMasterAuthToken());
 
 		triggerInfo.setServiceCode(serviceCode);
 
