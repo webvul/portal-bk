@@ -130,13 +130,22 @@ public class AuthInfoCacheService {
         List<AuthInfo> authInfoList = authInfoDao.findBySingleField(AuthInfo.USER_ID, userID);
 
         AuthInfo authInfo = CollectUtils.getFirst(authInfoList);
+        // if the user doesn't have token, create the auth info, then set user id
+        // otherwise, clear the old token from cache
         if(authInfo == null) {
             authInfo = new AuthInfo();
             authInfo.setUserID(userID);
+        } else {
+            String oldToken = authInfo.getToken();
+            if(oldToken != null) {
+                authInfoMap.remove(oldToken);
+            }
         }
+        // set new token and expire time
         authInfo.setToken(token);
         authInfo.setExpireTime(this.calculateExpireTime());
 
+        // save auth into into DB
         long id = authInfoDao.saveOrUpdate(authInfo);
         authInfo.setId(id);
 
