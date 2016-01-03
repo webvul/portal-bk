@@ -380,6 +380,21 @@ public class TestAuthController extends WebTestTemplate {
         )
                 .andExpect(status().isBadRequest());
 
+        // non existing token
+        request = new HashMap<>();
+        request.put("oldPassword", passwordForTest);
+        request.put("newPassword", passwordForTest + "new");
+
+        ctx = mapper.writeValueAsString(request);
+
+        this.mockMvc.perform(
+                post("/oauth2/changepassword").content(ctx)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("UTF-8")
+                        .header("accessToken", "Bearer " + "some_non_existing_token")
+        )
+                .andExpect(status().isUnauthorized());
+
     }
 
     @Test
