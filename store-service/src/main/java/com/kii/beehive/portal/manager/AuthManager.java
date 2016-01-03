@@ -101,12 +101,12 @@ public class AuthManager {
     }
 
     /**
-     * validate token,
+     * validate user token,
      * if token is valid, set it into ThreadLocal
      * @param token
      * @return
      */
-    public boolean validateToken(String token) {
+    public boolean validateAndBindUserToken(String token) {
 
         AuthInfo authInfo = authInfoCacheService.getAvailableAuthInfo(token);
 
@@ -128,6 +128,12 @@ public class AuthManager {
         authInfoCacheService.removeToken(token);
     }
 
+    /**
+     * clean the user token in ThreadLocal
+     */
+    public void unbindUserToken() {
+        userTokenBindTool.clean();
+    }
 
 }
 

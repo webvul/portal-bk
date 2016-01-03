@@ -40,7 +40,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
      * @return
      */
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String auth = request.getHeader(ACCESS_TOKEN);
 
         if (auth == null || !auth.startsWith("Bearer ")) {
@@ -57,14 +57,19 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
             return true;
         }
 
-        boolean valid = authManager.validateToken(token);
+        boolean valid = authManager.validateAndBindUserToken(token);
         if (!valid) {
             throw new UnauthorizedAccessException();
         }
 
-        return true;
+        return super.preHandle(request, response, handler);
 
     }
 
+    @Override
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+        authManager.unbindUserToken();
 
+        super.afterCompletion(request, response, handler, ex);
+    }
 }
