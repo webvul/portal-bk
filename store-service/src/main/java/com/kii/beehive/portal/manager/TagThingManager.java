@@ -51,13 +51,20 @@ public class TagThingManager {
 	public Long createThing(GlobalThingInfo thingInfo, String location, Collection<String> tagList) {
 		
 		KiiAppInfo kiiAppInfo = appInfoDao.getAppInfoByID(thingInfo.getKiiAppID());
-		
+
+		// check whether Kii App ID is existing
 		if(kiiAppInfo == null){
 			EntryNotFoundException ex= new EntryNotFoundException(thingInfo.getKiiAppID());
 			ex.setMessage("AppID not exist");
 			throw ex;
 		}
 
+		// check whether Kii App ID is Master App
+		if(kiiAppInfo.getMasterApp()){
+			EntryNotFoundException ex= new EntryNotFoundException(thingInfo.getKiiAppID());
+			ex.setMessage("Can't user Master AppID");
+			throw ex;
+		}
 
 		/*Set<TagIndex> tagSet=new HashSet<>();
 

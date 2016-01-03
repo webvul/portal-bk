@@ -54,6 +54,8 @@ public class TestThingControll extends WebTestTemplate{
 
 	private final static String KII_APP_ID_NEW = "c1744915";
 
+	private final static String MASTER_KII_APP_ID = "da0b6a25";
+
 	private Long globalThingIDForTest;
 
 	private String[] vendorThingIDsForTest = new String[]{"someVendorThingID", "someVendorThingID-new"};
@@ -295,6 +297,42 @@ public class TestThingControll extends WebTestTemplate{
 						.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
 		)
 				.andExpect(status().isBadRequest())
+				.andReturn().getResponse().getContentAsString();
+
+		// invalid kiiAppID
+		request = new HashMap<>();
+		request.put("vendorThingID", vendorThingIDsForTest[0]);
+		request.put("kiiAppID", "some_non_existing_kii_app_id");
+		request.put("type", "some type");
+		request.put("location", "some location");
+
+		ctx= mapper.writeValueAsString(request);
+
+		result=this.mockMvc.perform(
+				post("/things").content(ctx)
+						.contentType(MediaType.APPLICATION_JSON)
+						.characterEncoding("UTF-8")
+						.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+		)
+				.andExpect(status().isNotFound())
+				.andReturn().getResponse().getContentAsString();
+
+		// master kiiAppID
+		request = new HashMap<>();
+		request.put("vendorThingID", vendorThingIDsForTest[0]);
+		request.put("kiiAppID", MASTER_KII_APP_ID);
+		request.put("type", "some type");
+		request.put("location", "some location");
+
+		ctx= mapper.writeValueAsString(request);
+
+		result=this.mockMvc.perform(
+				post("/things").content(ctx)
+						.contentType(MediaType.APPLICATION_JSON)
+						.characterEncoding("UTF-8")
+						.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+		)
+				.andExpect(status().isNotFound())
 				.andReturn().getResponse().getContentAsString();
 
 
