@@ -41,6 +41,9 @@ public class TagController {
 	private TagThingManager thingTagManager;
 
 	/**
+	 * @deprecated this method should not be exposed to external;<br>
+	 *     if required to get all tags, "查询tag" API should be used to inquiry all the tags under certain tag type
+	 *
 	 * 列出所有tag
 	 * GET /tags/all
 	 *
