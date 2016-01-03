@@ -90,13 +90,18 @@ public class AuthManager {
     }
 
     /**
-     * change the Kii user password in Kii Cloud
+     * change the Kii user password in Kii Cloud;
+     * if success, remove the token
+     *
      * @param oldPassword
      * @param newPassword
      */
     public void changePassword(String oldPassword, String newPassword) {
 
         userService.changePassword(oldPassword, newPassword);
+
+        String token = userTokenBindTool.getToken();
+        authInfoCacheService.removeToken(token);
 
     }
 
