@@ -10,6 +10,7 @@ import com.kii.beehive.business.manager.SimpleThingTriggerManager;
 import com.kii.beehive.business.service.ServiceExtensionDeployService;
 import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.business.service.ThingTagService;
+import com.kii.beehive.business.service.TriggerFireCallbackService;
 import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
@@ -56,6 +57,9 @@ public class TestTriggerCreate extends TestTemplate {
 
 	@Autowired
 	private GlobalThingDao thingDao;
+
+	@Autowired
+	private TriggerFireCallbackService callbackService;
 
 
 	@Autowired
@@ -135,10 +139,21 @@ public class TestTriggerCreate extends TestTemplate {
 	@Autowired
 	private SimpleThingTriggerManager simpleMang;
 
+
+	@Test
+	public void fireCallback(){
+
+		String triggerID="1d08aa50-af80-11e5-962a-00163e02138f";
+		callbackService.onSimpleArrive(triggerID);
+
+
+
+	}
+
 	@Test
 	public void sendState(){
 
-		extensionService.deployScriptToApp("b8ca23d0");
+//		extensionService.deployScriptToApp("b8ca23d0");
 
 
 		long thingID=thingIDs[0];

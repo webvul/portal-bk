@@ -17,7 +17,7 @@ function global_onTriggerArrive(params,endpoint,context,done){
 
 function global_onSimpleTriggerArrive(params,context,done){
 
-	global_onSimpleTriggerArrive(params,"simple",context,done);
+	global_onTriggerArrive(params,"simple",context,done);
 
 }
 

@@ -129,10 +129,10 @@ public class TestExtensionCreate extends TestTemplate  {
 
 
 		Map<String,Object> map=new HashMap<>();
-		map.put("bucketID","_states");
-		map.put("objectID","75bb9560-ae07-11e5-b38a-00163e02138f");
+		map.put("triggerID","4318c680-af80-11e5-962a-00163e02138f");
+		map.put("thingID","th.aba700e36100-b2f8-5e11-70ea-04a2bfe3");
 
-		JsonNode node = extensionService.callServiceExtension(APP_NAME,"global_onThingStateChange", map, JsonNode.class);
+		JsonNode node = extensionService.callServiceExtension(APP_NAME,"global_onSimpleTriggerArrive", map, JsonNode.class);
 
 	}
 
