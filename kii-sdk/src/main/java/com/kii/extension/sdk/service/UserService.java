@@ -54,7 +54,7 @@ public class UserService {
 	private ApiAccessBuilder getBuilder() {
 		AppInfo info= bindToolResolver.getAppInfo();
 
-		return new ApiAccessBuilder(info).bindToken(tool.getToken());
+		return new ApiAccessBuilder(info).bindToken(bindToolResolver.getToken());
 	}
 
 

@@ -18,14 +18,6 @@ public class TokenBindToolResolver {
 
 	private ThreadLocal<Boolean>  appChoiceLocal= ThreadLocal.withInitial(()->true);
 
-	private ThreadLocal<String> tokenDirectLocal=new ThreadLocal<>();
-
-
-
-	public void bindToken(String token){
-		tokenDirectLocal.set(token);
-	}
-
 	public void bindAdmin(){
 		appChoiceLocal.set(true);
 	}
@@ -34,12 +26,8 @@ public class TokenBindToolResolver {
 		appChoiceLocal.set(false);
 	}
 
-	public String getToken(){
+	String getToken(){
 
-		String token=tokenDirectLocal.get();
-		if(!StringUtils.isEmpty(token)){
-			return token;
-		}
 
 		if(appChoiceLocal.get()){
 
@@ -52,16 +40,11 @@ public class TokenBindToolResolver {
 
 	}
 
-	public void reset(){
-		tokenDirectLocal.remove();
-	}
 
 
 	public void clean(){
 
 		appChoiceLocal.remove();
-
-		tokenDirectLocal.remove();
 	}
 
 

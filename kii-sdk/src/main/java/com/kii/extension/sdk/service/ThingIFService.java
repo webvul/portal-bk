@@ -40,14 +40,12 @@ public class ThingIFService {
 	private AppBindToolResolver bindToolResolver;
 
 
-	@Autowired
-	private TokenBindToolResolver tool;
 
 
 	private ApiAccessBuilder getBuilder(){
 		AppInfo info= bindToolResolver.getAppInfo();
 
-		return new ApiAccessBuilder(info).bindToken(tool.getToken());
+		return new ApiAccessBuilder(info).bindToken(bindToolResolver.getToken());
 	}
 
 	public String sendCommand(String thingID,ThingCommand command){

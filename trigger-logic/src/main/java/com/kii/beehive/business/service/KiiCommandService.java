@@ -34,7 +34,7 @@ public class KiiCommandService {
 	private ThingTagService thingTagService;
 
 	@Autowired
-	private ServiceExtensionService extensionService;
+	private ServiceExtensionDeployService extensionService;
 
 	@Autowired
 	private ClientTriggerResultDao  resultDao;
@@ -42,9 +42,10 @@ public class KiiCommandService {
 	public  void sendCmdToThing(long globalThingID,TargetAction target,String triggerID){
 
 
-		GlobalThingInfo thingInfo=thingTagService.getThingByID(globalThingID);
 
 		if(target.getCommand()!=null) {
+			GlobalThingInfo thingInfo=thingTagService.getThingByID(globalThingID);
+
 			sendCmd(target.getCommand(), thingInfo);
 		}
 
@@ -58,7 +59,7 @@ public class KiiCommandService {
 
 		String serviceName=serviceCode.getEndpoint();
 		Object param=serviceCode.getParameters();
-		JsonNode result=extensionService.callServiceExtension(serviceName,param,JsonNode.class);
+		JsonNode result=extensionService.callServiceExtension(serviceCode.getTargetAppID(),serviceName,param,JsonNode.class);
 
 		ClientTriggerResult  clientResult=new ClientTriggerResult();
 

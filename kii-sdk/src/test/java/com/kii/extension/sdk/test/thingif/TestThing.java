@@ -65,10 +65,7 @@ public class TestThing extends TestTemplate {
 	@Before
 	public void before(){
 
-//		result=federService.loginSalveApp(appID,DEFAULT_NAME,DEFAULT_PWD);
-		bindTool.setAppName(appID);
-
-		tokenResolver.bindToken(token);
+		bindTool.setAppName(appID,token);
 	}
 
 	private String triggerThingID="th.f83120e36100-2cc9-5e11-e7d9-08e1b5e9";

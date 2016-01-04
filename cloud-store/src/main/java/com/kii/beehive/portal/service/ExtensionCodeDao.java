@@ -36,13 +36,10 @@ public class ExtensionCodeDao extends AbstractDataAccess<ExtensionCodeEntity> {
 	}
 
 
-	@Autowired
-	private ObjectMapper mapper;
 
-	@Autowired
-	private ServiceExtensionService  service;
 
-	private List<ExtensionCodeEntity> getAllEntityByAppID(String appID){
+
+	public List<ExtensionCodeEntity> getAllEntityByAppID(String appID){
 
 		QueryParam query= ConditionBuilder.orCondition().equal("appID",appID).equal("appID","*").getFinalQueryParam();
 
@@ -51,52 +48,6 @@ public class ExtensionCodeDao extends AbstractDataAccess<ExtensionCodeEntity> {
 	}
 
 
-
-	public void deployScriptToApp(@AppBindParam String appID){
-
-
-		ScriptCombine combine=getScriptContextByAppID(appID);
-
-
-		if(StringUtils.isEmpty(combine.getScript())){
-			return;
-		}
-
-		if(StringUtils.isEmpty(combine.hookConfig)) {
-			service.deployServiceExtension(combine.getScript());
-		}else{
-			service.deployServiceExtension(combine.getScript(),combine.getHookConfig());
-		}
-
-	}
-
-	private ScriptCombine getScriptContextByAppID(String appID){
-
-		List<ExtensionCodeEntity> list=getAllEntityByAppID(appID);
-
-		StringBuilder sb=new StringBuilder();
-		HookGeneral  hookGeneral=HookGeneral.getInstance();
-
-		list.forEach(entity->{
-
-			sb.append("\n").append(entity.getJsBody()).append("\n");
-
-			if(entity.getEventTrigger()!=null) {
-				hookGeneral.addEventTriggerConfigs(entity.getEventTrigger());
-			}
-			if(entity.getScheduleTrigger()!=null){
-				hookGeneral.addScheduleTriggerConfigs(entity.getScheduleTrigger());
-			}
-		});
-
-		ScriptCombine script=new ScriptCombine();
-		script.script=sb.toString();
-		script.hookConfig=hookGeneral.generJson(mapper);
-
-
-		return script;
-
-	}
 
 
 	public boolean checkFunctionExisted(String functionName,String appID){
@@ -144,32 +95,7 @@ public class ExtensionCodeDao extends AbstractDataAccess<ExtensionCodeEntity> {
 		super.addEntity(entity,id);
 	}
 
-	public ScriptCombine getCurrentServiceCodeByVersion(){
-
-		ScriptCombine  combine=new ScriptCombine();
-
-		String version=service.getCurrentVersion();
-		combine.script=service.getServiceExtension(version);
-
-		combine.hookConfig=service.getHookConfig(version);
-
-		return combine;
-	}
-
-	public static class ScriptCombine{
-
-		private String script;
-
-		private String hookConfig;
-
-		public String getScript() {
-			return script;
-		}
 
 
-		public String getHookConfig() {
-			return hookConfig;
-		}
 
-	}
 }

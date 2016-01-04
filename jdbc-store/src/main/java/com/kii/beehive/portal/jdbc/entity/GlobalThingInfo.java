@@ -89,6 +89,7 @@ public class GlobalThingInfo extends DBEntity{
 		return kiiThingID;
 	}
 
+
 	private String kiiThingID;
 
 	public void setFullKiiThingID(String fullkiiThingID) {

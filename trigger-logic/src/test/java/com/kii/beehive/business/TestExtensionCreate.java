@@ -16,6 +16,7 @@ import org.springframework.core.io.ResourceLoader;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import com.kii.beehive.business.manager.BeehiveTriggerInitManager;
+import com.kii.beehive.business.service.ServiceExtensionDeployService;
 import com.kii.beehive.portal.service.ExtensionCodeDao;
 import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.context.TokenBindToolResolver;
@@ -35,11 +36,9 @@ public class TestExtensionCreate extends TestTemplate  {
 
 
 	@Autowired
-	private ExtensionCodeDao extensionDao;
+	private ServiceExtensionDeployService extensionService;
 
 
-	@Autowired
-	private ServiceExtensionService service;
 
 	@Autowired
 	private AppBindToolResolver resolver;
@@ -47,7 +46,7 @@ public class TestExtensionCreate extends TestTemplate  {
 	@Autowired
 	private ResourceLoader loader;
 
-	private String APP_NAME="portal";
+	private String APP_NAME="b8ca23d0";
 
 	@Autowired
 	private TokenBindToolResolver token;
@@ -57,7 +56,6 @@ public class TestExtensionCreate extends TestTemplate  {
 
 	@Before
 	public void init(){
-		token.bindToken("qv8pBJBwDM2Tjg8fIu4jTUGwhqVsMACvtcl2Cv_teV0");
 		resolver.setAppName(APP_NAME);
 	}
 
@@ -69,7 +67,7 @@ public class TestExtensionCreate extends TestTemplate  {
 
 		triggerManager.initAppForTrigger();
 
-		extensionDao.deployScriptToApp(APP_NAME);
+		extensionService.deployScriptToApp(APP_NAME);
 
 		InputStream reader=System.in;
 
@@ -78,8 +76,18 @@ public class TestExtensionCreate extends TestTemplate  {
 	}
 
 	@Test
+	public void deployExtensionToAll() throws IOException {
+
+		triggerManager.deployTriggerToAll();
+
+		InputStream reader=System.in;
+
+		int ch=reader.read();
+	}
+
+	@Test
 	public void getExtension(){
-		ExtensionCodeDao.ScriptCombine json=extensionDao.getCurrentServiceCodeByVersion();
+		ServiceExtensionDeployService.ScriptCombine json=extensionService.getCurrentServiceCodeByVersion(APP_NAME);
 
 		log.info(json.getScript());
 
@@ -122,9 +130,9 @@ public class TestExtensionCreate extends TestTemplate  {
 
 		Map<String,Object> map=new HashMap<>();
 		map.put("bucketID","_states");
-		map.put("objectID","69d73330-aae2-11e5-b38a-00163e02138f");
+		map.put("objectID","75bb9560-ae07-11e5-b38a-00163e02138f");
 
-		JsonNode node = service.callServiceExtension("global_onThingStateChange", map, JsonNode.class);
+		JsonNode node = extensionService.callServiceExtension(APP_NAME,"global_onThingStateChange", map, JsonNode.class);
 
 	}
 
@@ -138,10 +146,10 @@ public class TestExtensionCreate extends TestTemplate  {
 		map.put("triggerID","demo");
 
 
-		String[] endpoints={"global_onPositiveTriggerArrive","global_onSummaryTriggerArrive","global_onNegitiveTriggerArrive"};
+		String[] endpoints={"global_onSimpleTriggerArrive","global_onPositiveTriggerArrive","global_onSummaryTriggerArrive","global_onNegitiveTriggerArrive"};
 
 		for(String endpoint:endpoints) {
-			JsonNode node = service.callServiceExtension(endpoint, map, JsonNode.class);
+			JsonNode node = extensionService.callServiceExtension(APP_NAME,endpoint, map, JsonNode.class);
 		}
 	}
 

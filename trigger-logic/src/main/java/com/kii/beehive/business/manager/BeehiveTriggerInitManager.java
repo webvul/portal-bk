@@ -12,6 +12,7 @@ import org.springframework.util.StreamUtils;
 
 import com.google.common.base.Charsets;
 
+import com.kii.beehive.business.service.ServiceExtensionDeployService;
 import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.service.ExtensionCodeDao;
 import com.kii.beehive.portal.store.entity.ExtensionCodeEntity;
@@ -30,7 +31,11 @@ public class BeehiveTriggerInitManager {
 
 
 	@Autowired
+	private ServiceExtensionDeployService extensionService;
+
+	@Autowired
 	private ExtensionCodeDao  extensionDao;
+
 
 
 	@Autowired
@@ -60,7 +65,7 @@ public class BeehiveTriggerInitManager {
 
 		appInfoDao.getSalveAppList().forEach(appInfo->{
 
-			extensionDao.deployScriptToApp(appInfo.getAppID());
+			extensionService.deployScriptToApp(appInfo.getAppID());
 
 		});
 	}

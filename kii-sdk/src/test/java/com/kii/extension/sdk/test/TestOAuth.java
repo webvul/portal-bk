@@ -35,9 +35,6 @@ public class TestOAuth extends TestTemplate{
 	private AppBindToolResolver appResolver;
 
 	@Autowired
-	private TokenBindToolResolver  tokenResolver;
-
-	@Autowired
 	private UserTokenBindTool  userTool;
 
 	private String master="master-test";
@@ -62,7 +59,7 @@ public class TestOAuth extends TestTemplate{
 
 		userTool.bindUserInfo("demo","qwerty");
 
-		String token=tokenResolver.getToken();
+		String token=appResolver.getToken();
 
 
 		BucketInfo bucket=new BucketInfo("test");

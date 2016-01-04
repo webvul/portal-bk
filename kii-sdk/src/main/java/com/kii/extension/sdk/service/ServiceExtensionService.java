@@ -41,7 +41,7 @@ public class ServiceExtensionService {
 	private ApiAccessBuilder getBuilder(){
 		AppInfo info= bindToolResolver.getAppInfo();
 
-		return new ApiAccessBuilder(info).bindToken(tool.getToken());
+		return new ApiAccessBuilder(info).bindToken(bindToolResolver.getToken());
 	}
 
 
@@ -94,7 +94,7 @@ public class ServiceExtensionService {
 
 		HttpUriRequest request=getBuilder().deployServiceCode(serviceCtx).generRequest(mapper);
 
-		String adminToken=tool.getToken();
+		String adminToken=bindToolResolver.getToken();
 
 		client.asyncExecuteRequest(request, new FutureCallback<HttpResponse>() {
 			@Override
@@ -105,8 +105,7 @@ public class ServiceExtensionService {
 					throw new IllegalArgumentException();
 				}
 
-				bindToolResolver.setAppInfoDirectly(appInfo);
-				tool.bindToken(adminToken);
+				bindToolResolver.setAppInfoDirectly(appInfo,adminToken);
 
 				String response= HttpUtils.getResponseBody(httpResponse);
 
@@ -123,8 +122,7 @@ public class ServiceExtensionService {
 				client.asyncExecuteRequest(hookRequest, new FutureCallback<HttpResponse>() {
 					@Override
 					public void completed(HttpResponse httpResponse) {
-						bindToolResolver.setAppInfoDirectly(appInfo);
-						tool.bindToken(adminToken);
+						bindToolResolver.setAppInfoDirectly(appInfo,adminToken);
 
 
 						HttpUriRequest setVerRequest=getBuilder().setCurrentVersion(version).generRequest(mapper);

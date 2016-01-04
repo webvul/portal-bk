@@ -35,7 +35,7 @@ public class TriggerService {
 	private ApiAccessBuilder getBuilder(){
 		AppInfo info= bindToolResolver.getAppInfo();
 
-		return new ApiAccessBuilder(info).bindToken(tool.getToken());
+		return new ApiAccessBuilder(info).bindToken(bindToolResolver.getToken());
 	}
 
 	public String createTrigger(String thingID, ThingTrigger trigger){

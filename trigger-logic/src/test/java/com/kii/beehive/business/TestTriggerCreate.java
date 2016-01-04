@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kii.beehive.business.manager.SimpleThingTriggerManager;
+import com.kii.beehive.business.service.ServiceExtensionDeployService;
 import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.business.service.ThingTagService;
 import com.kii.beehive.portal.common.utils.ThingIDTools;
@@ -17,6 +18,7 @@ import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
 import com.kii.beehive.portal.jdbc.entity.TagType;
+import com.kii.beehive.portal.service.ExtensionCodeDao;
 import com.kii.beehive.portal.store.entity.trigger.SimpleTriggerRecord;
 import com.kii.beehive.portal.store.entity.trigger.TargetAction;
 import com.kii.beehive.portal.store.entity.trigger.TriggerTarget;
@@ -25,6 +27,7 @@ import com.kii.extension.sdk.entity.thingif.OnBoardingParam;
 import com.kii.extension.sdk.entity.thingif.ServiceCode;
 import com.kii.extension.sdk.entity.thingif.StatePredicate;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
+import com.kii.extension.sdk.entity.thingif.ThingStatus;
 import com.kii.extension.sdk.entity.thingif.TriggerWhen;
 import com.kii.extension.sdk.query.Condition;
 import com.kii.extension.sdk.query.ConditionBuilder;
@@ -36,6 +39,13 @@ public class TestTriggerCreate extends TestTemplate {
 
 
 
+
+//	@Autowired
+//	private ExtensionCodeDao extensionDao;
+
+
+	@Autowired
+	private ServiceExtensionDeployService extensionService;
 
 	@Autowired
 	private ThingIFInAppService  thingIFService;
@@ -124,6 +134,25 @@ public class TestTriggerCreate extends TestTemplate {
 
 	@Autowired
 	private SimpleThingTriggerManager simpleMang;
+
+	@Test
+	public void sendState(){
+
+		extensionService.deployScriptToApp("b8ca23d0");
+
+
+		long thingID=thingIDs[0];
+
+		GlobalThingInfo thingInfo=thingDao.getThingByID(thingID);
+
+
+		ThingStatus status=new ThingStatus();
+		status.setField("foo",99);
+
+		thingIFService.putStatus(thingInfo.getFullKiiThingID(),status);
+
+
+	}
 
 	@Test
 	public void testTriggerCreate(){

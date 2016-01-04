@@ -74,9 +74,7 @@ public class FederatedAuthService {
 		String url=getAuthUrl(salve);
 		FederatedAuthResult result=generAuthRequest(url, salve.getSiteType(), userName, pwd);
 
-		resolver.setAppName(appInfo.getAppID());
-
-		tokenResolver.bindToken(result.getAppAuthToken());
+		resolver.setAppName(appInfo.getAppID(),result.getAppAuthToken());
 
 		return result;
 

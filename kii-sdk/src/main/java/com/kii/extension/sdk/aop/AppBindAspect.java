@@ -28,6 +28,8 @@ public class AppBindAspect {
 	private AppBindToolResolver  bindTool;
 
 
+
+
 	@Pointcut("execution (* com.kii.extension.sdk.service.AbstractDataAccess+.*(..)  ) ")
 	private void commDataAccess(){
 
@@ -94,11 +96,13 @@ public class AppBindAspect {
 					Object arg=args[i];
 					if(arg instanceof AppInfo){
 						bindTool.setAppInfoDirectly((AppInfo)arg);
-						return;
+						break;
 					}else if(arg instanceof  String) {
 						param = String.valueOf(args[i]);
+						bindTool.setAppInfoDirectly(param);
+						break;
 					}
-					annotation=(AppBindParam)anno;
+//					annotation=(AppBindParam)anno;
 					break;
 				}
 			}
@@ -110,16 +114,16 @@ public class AppBindAspect {
 		}
 
 
-		if(param==null){
-			return;
-		}
-
-		AppChoice choice=new AppChoice();
-		choice.setAppName(param);
-		if(!StringUtils.isEmpty(annotation.appBindSource())){
-			choice.setBindName(annotation.appBindSource());
-		}
-		bindTool.setAppChoice(choice);
+//		if(param==null){
+//			return;
+//		}
+//
+//		AppChoice choice=new AppChoice();
+//		choice.setAppName(param);
+//		if(!StringUtils.isEmpty(annotation.appBindSource())){
+//			choice.setBindName(annotation.appBindSource());
+//		}
+//		bindTool.setAppChoice(choice);
 
 	}
 
