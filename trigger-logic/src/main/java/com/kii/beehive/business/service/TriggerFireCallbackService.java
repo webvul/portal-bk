@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
+import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.service.TriggerRecordDao;
 import com.kii.beehive.portal.service.GroupTriggerStatusDao;
 import com.kii.beehive.portal.store.entity.trigger.TargetAction;
@@ -22,11 +23,15 @@ public class TriggerFireCallbackService {
 	@Autowired
 	private TriggerRecordDao  triggerDao;
 
-	@Autowired
-	private GlobalThingDao thingDao;
+//	@Autowired
+//	private GlobalThingDao thingDao;
 
 	@Autowired
 	private GroupTriggerStatusDao statusDao;
+
+	@Autowired
+	private ThingTagService  thingService;
+
 
 	@Autowired
 	private KiiCommandService commandService;
@@ -40,20 +45,14 @@ public class TriggerFireCallbackService {
 
 			TargetAction action=target.getCommand();
 
-			if(target.getThingList()!=null){
 
-				target.getThingList().forEach(thingID->{
+			List<GlobalThingInfo>  thingList=thingService.getThingInfos(target);
 
-					commandService.sendCmdToThing(thingID,action,triggerID);
-				});
-				return;
-			}
+			thingList.forEach(thing->{
 
-			if(target.getTagList()!=null){
+					commandService.sendCmdToThing(thing,action,triggerID);
+			});
 
-				commandService.sendCmdToTagExpress(target.isAnd(),target.getTagList(),action,triggerID);
-
-			}
 		});
 
 	}

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import com.kii.beehive.business.manager.AppInfoManager;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.service.ClientTriggerResultDao;
@@ -25,10 +26,8 @@ public class KiiCommandService {
 
 
 	@Autowired
-	private AppInfoDao appInfoDao;
+	private AppInfoManager appInfoManager;
 
-	@Autowired
-	private AppBindToolResolver resolver;
 
 	@Autowired
 	private ThingTagService thingTagService;
@@ -39,12 +38,11 @@ public class KiiCommandService {
 	@Autowired
 	private ClientTriggerResultDao  resultDao;
 
-	public  void sendCmdToThing(long globalThingID,TargetAction target,String triggerID){
+	public  void sendCmdToThing(GlobalThingInfo thingInfo,TargetAction target,String triggerID){
 
 
 
 		if(target.getCommand()!=null) {
-			GlobalThingInfo thingInfo=thingTagService.getThingByID(globalThingID);
 
 			sendCmd(target.getCommand(), thingInfo);
 		}
@@ -74,25 +72,14 @@ public class KiiCommandService {
 	private void sendCmd(ThingCommand command, GlobalThingInfo thingInfo) {
 		String appID=thingInfo.getKiiAppID();
 
-		resolver.setAppInfoDirectly(appInfoDao.getAppInfoByID(appID).getAppInfo());
+//		resolver.setAppInfoDirectly(appInfoDao.getAppInfoByID(appID).getAppInfo());
+
+		command.setUserID(appInfoManager.getDefaultOwer(appID).getUserID());
+		command.setSchema(thingInfo.getSchema());
+		command.setSchemaVersion(thingInfo.getSchemaVersion());
 
 		thingIFService.sendCommand(command,thingInfo.getFullKiiThingID());
 	}
 
 
-	public void sendCmdToTagExpress(boolean isAnd, List<String>  tagCollect, TargetAction action,String triggerID){
-
-
-		List<GlobalThingInfo>  thingList=thingTagService.queryThingByTagExpress(isAnd,tagCollect);
-
-		thingList.forEach(thing->{
-
-			if(action.getCommand()!=null){
-				sendCmd(action.getCommand(),thing);
-			}else if(action.getServiceCode()!=null){
-				callServiceCode(action.getServiceCode(),triggerID);
-			}
-
-		});
-	}
 }

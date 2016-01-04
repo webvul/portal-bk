@@ -81,7 +81,7 @@ public class GlobalThingDao extends BaseDao<GlobalThingInfo>{
 
 	public List<GlobalThingInfo>  queryThingByIntersectionTags(List<String> tagCollect){
 
-		String sql = "select * from global_thing th where th.id_global_thing in  " +
+		String sql = "select th.* from global_thing th where th.id_global_thing in  " +
 				  "  (SELECT g.id_global_thing "
 				+ "FROM global_thing g "
 				+ "INNER JOIN rel_thing_tag r ON g.id_global_thing=r.thing_id "
@@ -148,7 +148,7 @@ public class GlobalThingDao extends BaseDao<GlobalThingInfo>{
 	}
 
 	public List<GlobalThingInfo> findThingByTag(String tagName) {
-		String sql = "SELECT g.* from global_thing  "
+		String sql = "SELECT g.* from global_thing g  "
 					+ "INNER JOIN rel_thing_tag r ON g.id_global_thing=r.thing_id "
 					+ "INNER JOIN tag_index t ON t.tag_id=r.tag_id "
 					+ " WHERE t.full_tag_name= ? ";

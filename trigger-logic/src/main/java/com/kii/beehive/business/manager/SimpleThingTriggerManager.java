@@ -12,6 +12,7 @@ import com.kii.beehive.portal.store.entity.trigger.SimpleTriggerRecord;
 import com.kii.extension.sdk.entity.FederatedAuthResult;
 import com.kii.extension.sdk.entity.thingif.ServiceCode;
 import com.kii.extension.sdk.entity.thingif.StatePredicate;
+import com.kii.extension.sdk.entity.thingif.ThingCommand;
 import com.kii.extension.sdk.entity.thingif.ThingTrigger;
 import com.kii.extension.sdk.entity.thingif.TriggerTarget;
 
@@ -32,6 +33,13 @@ public class SimpleThingTriggerManager {
 	@Autowired
 	private AppInfoManager appInfoManager;
 
+
+//	private void fillTargetCommand(ThingCommand command){
+//
+//
+//		command.setUserID(appInfoManager.getDefaultOwer());
+//
+//	}
 
 	public String  createSimpleTrigger(SimpleTriggerRecord record){
 

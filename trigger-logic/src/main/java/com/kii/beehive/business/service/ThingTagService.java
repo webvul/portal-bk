@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.store.entity.trigger.TriggerSource;
+import com.kii.beehive.portal.store.entity.trigger.TriggerTarget;
 
 @Transactional
 @Component
@@ -40,10 +41,25 @@ public class ThingTagService {
 		things.addAll(globalThingDao.getThingsByIDArray(source.getThingList()));
 
 		if(source.isAndExpress()) {
-			things.addAll(globalThingDao.queryThingByIntersectionTags(source.getTagCollect()));
+			things.addAll(globalThingDao.queryThingByIntersectionTags(source.getTagList()));
 		}else{
-			things.addAll(globalThingDao.queryThingByUnionTags(source.getTagCollect()));
+			things.addAll(globalThingDao.queryThingByUnionTags(source.getTagList()));
 		}
 		return things;
 	}
+
+	public List<GlobalThingInfo> getThingInfos(TriggerTarget target) {
+		List<GlobalThingInfo> things = new ArrayList<>();
+
+		things.addAll(globalThingDao.getThingsByIDArray(target.getThingList()));
+
+		if(target.isAndExpress()) {
+			things.addAll(globalThingDao.queryThingByIntersectionTags(target.getTagList()));
+		}else{
+			things.addAll(globalThingDao.queryThingByUnionTags(target.getTagList()));
+		}
+		return things;
+	}
+
+
 }

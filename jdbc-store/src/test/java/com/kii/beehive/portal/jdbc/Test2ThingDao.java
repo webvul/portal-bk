@@ -35,7 +35,7 @@ public class Test2ThingDao extends TestTemplate {
 	private List<Long> thingIDs=new ArrayList<>();
 
 
-	@Before
+//	@Before
 	public void init(){
 
 		List<Long> tagIDs=new ArrayList<>();

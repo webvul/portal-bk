@@ -94,8 +94,8 @@ public class ThingGroupStateManager {
 		statusDao.addEntity(state,triggerID);
 		initGroupState(thingIDs);
 
-		if(!record.getSource().getTagCollect().isEmpty()) {
-			listenerService.addTagChangeListener(record.getSource().getTagCollect(),triggerID);
+		if(!record.getSource().getTagList().isEmpty()) {
+			listenerService.addTagChangeListener(record.getSource().getTagList(),triggerID);
 		}
 	}
 

@@ -13,7 +13,7 @@ public class TriggerTarget {
 
 	private List<String> tagList=new ArrayList<>();
 
-	private boolean isAnd=true;
+	private boolean isAndExpress=false;
 
 	private TargetAction command;
 
@@ -43,12 +43,12 @@ public class TriggerTarget {
 		this.tagList.add(tagName);
 	}
 
-	public boolean isAnd() {
-		return isAnd;
+	public boolean isAndExpress() {
+		return isAndExpress;
 	}
 
-	public void setAnd(boolean and) {
-		isAnd = and;
+	public void setAndExpress(boolean isAndExpress) {
+		isAndExpress = isAndExpress;
 	}
 
 	@JsonUnwrapped

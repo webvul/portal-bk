@@ -216,7 +216,7 @@ public class TestTriggerCreate extends TestTemplate {
 		TriggerTarget target=new TriggerTarget();
 		target.addTag(tagNames[2]);
 		target.addTag(tagNames[3]);
-		target.setAnd(true);
+		target.setAndExpress(true);
 
 		TargetAction action = getTargetAction("powerOn","power",true);
 		target.setCommand(action);

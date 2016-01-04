@@ -72,9 +72,9 @@ public class ThingStateSummaryManager {
 		String listenerID=listenerService.addThingStatusListener(thingIDs,summaryID);
 		record.setListenerID(listenerID);
 
-		if(!source.getTagCollect().isEmpty()) {
+		if(!source.getTagList().isEmpty()) {
 
-			listenerService.addSummaryChangeListener(source.getTagCollect(), summaryID);
+			listenerService.addSummaryChangeListener(source.getTagList(), summaryID);
 
 		}
 
@@ -137,7 +137,7 @@ public class ThingStateSummaryManager {
 
 		TriggerSource source=record.getSource();
 
-		List<GlobalThingInfo> thingList=thingTagService.queryThingByTagExpress(source.isAndExpress(),source.getTagCollect());
+		List<GlobalThingInfo> thingList=thingTagService.queryThingByTagExpress(source.isAndExpress(),source.getTagList());
 
 		List<String> thingIDList=thingList.stream().map(thing->thing.getFullKiiThingID()).collect(Collectors.toList());
 

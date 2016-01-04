@@ -9,19 +9,19 @@ public class TriggerSource {
 
 	private List<Long> thingList=new ArrayList<>();
 
-	private List<String> tagCollect=new ArrayList<>();
+	private List<String> tagList=new ArrayList<>();
 
-	private boolean isAndExpress;
+	private boolean isAndExpress=false;
 
 //	private Map<String,Boolean> relationTag=new HashMap<>();
 
 
-	public List<String> getTagCollect() {
-		return tagCollect;
+	public List<String> getTagList() {
+		return tagList;
 	}
 
 	public void setTagCollect(List<String> tagCollect) {
-		this.tagCollect = tagCollect;
+		this.tagList = tagCollect;
 	}
 
 	public boolean isAndExpress() {
