@@ -883,16 +883,30 @@ public class TestThingControll extends WebTestTemplate{
 			Long globalThingID = ((Integer)map.get("globalThingID")).longValue();
 			globalThingIDList.contains(globalThingID);
 		}
+
+		// no result
+		result=this.mockMvc.perform(
+				get("/things/types/some_non_existing_type")
+						.contentType(MediaType.APPLICATION_JSON)
+						.characterEncoding("UTF-8")
+						.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+		)
+				.andExpect(status().isOk())
+				.andReturn().getResponse().getContentAsString();
+
+		list = mapper.readValue(result, List.class);
+
+		System.out.println("Response: " + list);
+
+		// assert
+		assertEquals(0, list.size());
+
 	}
 
 	@Test
 	public void testGetAllType() throws Exception {
 
-		Long[] thingGroup1 = this.creatThingsForTest(3, "vendorThingIDForTest", KII_APP_ID, "LED");
-		Long[] thingGroup2 = this.creatThingsForTest(1, "vendorThingIDForTest", KII_APP_ID, "camera");
-		Long[] thingGroup3 = this.creatThingsForTest(1, "vendorThingIDForTest", KII_APP_ID, null);
-
-		// query
+		// no result
 		String result=this.mockMvc.perform(
 				get("/things/types")
 						.contentType(MediaType.APPLICATION_JSON)
@@ -903,6 +917,27 @@ public class TestThingControll extends WebTestTemplate{
 				.andReturn().getResponse().getContentAsString();
 
 		List<Map<String, Object>> list = mapper.readValue(result, List.class);
+
+		System.out.println("Response: " + list);
+
+		// assert
+		assertEquals(0, list.size());
+
+		Long[] thingGroup1 = this.creatThingsForTest(3, "vendorThingIDForTest", KII_APP_ID, "LED");
+		Long[] thingGroup2 = this.creatThingsForTest(1, "vendorThingIDForTest", KII_APP_ID, "camera");
+		Long[] thingGroup3 = this.creatThingsForTest(1, "vendorThingIDForTest", KII_APP_ID, null);
+
+		// query
+		result=this.mockMvc.perform(
+				get("/things/types")
+						.contentType(MediaType.APPLICATION_JSON)
+						.characterEncoding("UTF-8")
+						.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+		)
+				.andExpect(status().isOk())
+				.andReturn().getResponse().getContentAsString();
+
+		list = mapper.readValue(result, List.class);
 
 		System.out.println("Response: " + list);
 
