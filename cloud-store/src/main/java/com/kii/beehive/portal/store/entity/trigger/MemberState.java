@@ -27,7 +27,7 @@ public class MemberState {
 	@JsonIgnore
 	public Set<String> getDeletedIDs(Collection<String> newIDs){
 
-		Set<String> ids=memberStatusMap.keySet();
+		Set<String> ids=new HashSet<>(memberStatusMap.keySet());
 
 		ids.removeAll(newIDs);
 

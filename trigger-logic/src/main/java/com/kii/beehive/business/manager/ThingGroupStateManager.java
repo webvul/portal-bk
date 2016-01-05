@@ -166,9 +166,13 @@ public class ThingGroupStateManager {
 				result.setField(range.getField());
 				if(range.isUpperIncluded()!=null){
 					result.setLowerIncluded(!range.isUpperIncluded());
+				}else{
+					result.setLowerIncluded(true);
 				}
 				if(range.isLowerIncluded()!=null){
 					result.setUpperIncluded(!range.isLowerIncluded());
+				}else{
+					result.setUpperIncluded(true);
 				}
 
 				result.setLowerLimit(range.getUpperLimit());

@@ -12,7 +12,9 @@ import com.kii.beehive.business.manager.SimpleThingTriggerManager;
 import com.kii.beehive.business.manager.TagThingManager;
 import com.kii.beehive.business.manager.ThingGroupStateManager;
 import com.kii.beehive.business.service.ThingIFInAppService;
+import com.kii.beehive.business.service.ThingTagService;
 import com.kii.beehive.business.service.TriggerFireCallbackService;
+import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.store.entity.trigger.GroupTriggerRecord;
 import com.kii.beehive.portal.store.entity.trigger.TagSelector;
 import com.kii.beehive.portal.store.entity.trigger.TargetAction;
@@ -22,6 +24,7 @@ import com.kii.beehive.portal.store.entity.trigger.TriggerTarget;
 import com.kii.extension.sdk.entity.thingif.Action;
 import com.kii.extension.sdk.entity.thingif.StatePredicate;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
+import com.kii.extension.sdk.entity.thingif.ThingStatus;
 import com.kii.extension.sdk.entity.thingif.TriggerWhen;
 import com.kii.extension.sdk.query.Condition;
 import com.kii.extension.sdk.query.ConditionBuilder;
@@ -56,13 +59,34 @@ public class TestGroupTrigger extends TestTemplate{
 	@Autowired
 	private TagThingManager tagManager;
 
+
+	@Autowired
+	private ThingTagService thingTagService;
+
 	@Test
 	public void fireTagChange(){
 
-		tagManager.bindTagToThing(Collections.singletonList(String.valueOf(tags[3])),thingIDs[0]);
+		tagManager.unbindTagToThing(Collections.singletonList(String.valueOf(tags[3])),thingIDs[0]);
 
 	}
 
+
+	@Test
+	public void sendState(){
+
+
+//		for(long thingID:thingIDs) {
+
+			GlobalThingInfo thingInfo = thingTagService.getThingByID(thingIDs[8]);
+
+
+			ThingStatus status = new ThingStatus();
+			status.setField("foo", -100);
+			status.setField("bar",125);
+
+			thingIFService.putStatus(thingInfo.getFullKiiThingID(), status);
+//		}
+	}
 
 	@Test
 	public void createTrigger(){

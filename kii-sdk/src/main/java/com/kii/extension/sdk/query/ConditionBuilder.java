@@ -93,15 +93,14 @@ public class ConditionBuilder {
 		if (upper != null) {
 			q.setUpperLimit(upper);
 		}
-		if(withUpper) {
-			q.setUpperIncluded(withUpper);
-		}
-		if(withLower) {
-			q.setLowerIncluded(withLower);
-		}
 		if (lower != null) {
 			q.setLowerLimit(lower);
 		}
+
+		q.setUpperIncluded(withUpper);
+		q.setLowerIncluded(withLower);
+
+
 		fill(q);
 
 		return this;
