@@ -46,7 +46,7 @@ public class TriggerFireCallbackService {
 			TargetAction action=target.getCommand();
 
 
-			List<GlobalThingInfo>  thingList=thingService.getThingInfos(target);
+			List<GlobalThingInfo>  thingList=thingService.getThingInfos(target.getSelector());
 
 			thingList.forEach(thing->{
 

@@ -73,7 +73,7 @@ public class ThingGroupStateManager {
 
 		String triggerID=triggerDao.addKiiEntity(record);
 
-		List<GlobalThingInfo>  thingList=thingTagService.getThingInfos(record.getSource());
+		List<GlobalThingInfo>  thingList=thingTagService.getThingInfos(record.getSource().getSelector());
 
 
 		GroupTriggerRuntimeState state=new GroupTriggerRuntimeState();
@@ -94,8 +94,8 @@ public class ThingGroupStateManager {
 		statusDao.addEntity(state,triggerID);
 		initGroupState(thingIDs);
 
-		if(!record.getSource().getTagList().isEmpty()) {
-			listenerService.addTagChangeListener(record.getSource().getTagList(),triggerID);
+		if(!record.getSource().getSelector().getTagList().isEmpty()) {
+			listenerService.addTagChangeListener(record.getSource().getSelector().getTagList(),triggerID);
 		}
 	}
 

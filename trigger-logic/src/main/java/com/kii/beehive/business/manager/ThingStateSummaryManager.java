@@ -16,6 +16,7 @@ import com.kii.beehive.portal.service.TriggerRecordDao;
 import com.kii.beehive.portal.store.entity.trigger.SummaryExpress;
 import com.kii.beehive.portal.store.entity.trigger.SummaryFunctionType;
 import com.kii.beehive.portal.store.entity.trigger.SummaryTriggerRecord;
+import com.kii.beehive.portal.store.entity.trigger.TagSelector;
 import com.kii.beehive.portal.store.entity.trigger.TriggerSource;
 import com.kii.extension.sdk.entity.thingif.OnBoardingParam;
 import com.kii.extension.sdk.entity.thingif.OnBoardingResult;
@@ -65,16 +66,16 @@ public class ThingStateSummaryManager {
 		record.setSummaryThingID(summaryID);
 
 		TriggerSource  source=record.getSource();
-		List<GlobalThingInfo> things=thingTagService.getThingInfos(source);
+		List<GlobalThingInfo> things=thingTagService.getThingInfos(source.getSelector());
 
 		List<String> thingIDs=things.stream().map(thing->thing.getFullKiiThingID()).collect(Collectors.toList());
 
 		String listenerID=listenerService.addThingStatusListener(thingIDs,summaryID);
 		record.setListenerID(listenerID);
 
-		if(!source.getTagList().isEmpty()) {
+		if(!source.getSelector().getTagList().isEmpty()) {
 
-			listenerService.addSummaryChangeListener(source.getTagList(), summaryID);
+			listenerService.addSummaryChangeListener(source.getSelector().getTagList(), summaryID);
 
 		}
 
@@ -135,7 +136,7 @@ public class ThingStateSummaryManager {
 
 		SummaryTriggerRecord  record= (SummaryTriggerRecord) triggerDao.getObjectByID(triggerID);
 
-		TriggerSource source=record.getSource();
+		TagSelector source=record.getSource().getSelector();
 
 		List<GlobalThingInfo> thingList=thingTagService.queryThingByTagExpress(source.isAndExpress(),source.getTagList());
 

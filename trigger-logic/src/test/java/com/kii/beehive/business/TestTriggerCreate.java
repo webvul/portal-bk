@@ -21,6 +21,7 @@ import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
 import com.kii.beehive.portal.jdbc.entity.TagType;
 import com.kii.beehive.portal.service.ExtensionCodeDao;
 import com.kii.beehive.portal.store.entity.trigger.SimpleTriggerRecord;
+import com.kii.beehive.portal.store.entity.trigger.TagSelector;
 import com.kii.beehive.portal.store.entity.trigger.TargetAction;
 import com.kii.beehive.portal.store.entity.trigger.TriggerTarget;
 import com.kii.extension.sdk.entity.thingif.Action;
@@ -214,9 +215,12 @@ public class TestTriggerCreate extends TestTemplate {
 
 	private TriggerTarget getTagCmdTarget() {
 		TriggerTarget target=new TriggerTarget();
-		target.addTag(tagNames[2]);
-		target.addTag(tagNames[3]);
-		target.setAndExpress(true);
+
+		TagSelector selector=new TagSelector();
+
+		selector.addTag(tagNames[2]);
+		selector.addTag(tagNames[3]);
+		selector.setAndExpress(true);
 
 		TargetAction action = getTargetAction("powerOn","power",true);
 		target.setCommand(action);

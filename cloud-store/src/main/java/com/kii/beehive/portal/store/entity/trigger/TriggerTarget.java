@@ -9,47 +9,19 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 public class TriggerTarget {
 
-	private List<Long> thingList=new ArrayList<>();
 
-	private List<String> tagList=new ArrayList<>();
+	private TagSelector  selector;
 
-	private boolean isAndExpress=false;
+	@JsonUnwrapped
+	public TagSelector getSelector() {
+		return selector;
+	}
 
+	public void setSelector(TagSelector selector) {
+		this.selector = selector;
+	}
 	private TargetAction command;
 
-	public List<Long> getThingList() {
-		return thingList;
-	}
-
-	public void setThingList(List<Long> thingList) {
-		this.thingList = thingList;
-	}
-
-	@JsonIgnore
-	public void addThingList(long thingID){
-		this.thingList.add(thingID);
-	}
-
-	public List<String> getTagList() {
-		return tagList;
-	}
-
-	public void setTagList(List<String> tagList) {
-		this.tagList = tagList;
-	}
-
-	@JsonIgnore
-	public void addTag(String tagName){
-		this.tagList.add(tagName);
-	}
-
-	public boolean isAndExpress() {
-		return isAndExpress;
-	}
-
-	public void setAndExpress(boolean isAndExpress) {
-		isAndExpress = isAndExpress;
-	}
 
 	@JsonUnwrapped
 	public TargetAction getCommand() {
