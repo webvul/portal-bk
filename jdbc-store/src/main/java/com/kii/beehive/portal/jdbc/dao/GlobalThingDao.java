@@ -102,29 +102,19 @@ public class GlobalThingDao extends BaseDao<GlobalThingInfo>{
 	
 	@Override
 	public long update(GlobalThingInfo entity) {
-		StringBuilder sql = new StringBuilder();
-		sql.append("UPDATE ").append(this.getTableName()).append(" SET ");
-		sql.append(GlobalThingInfo.VANDOR_THING_ID).append("=?, ");
-		sql.append(GlobalThingInfo.KII_APP_ID).append("=?, ");
-		sql.append(GlobalThingInfo.THING_TYPE).append("=?, ");
-		sql.append(GlobalThingInfo.STATUS).append("=?, ");
-		sql.append(GlobalThingInfo.CUSTOM_INFO).append("=?, ");
-		sql.append(GlobalThingInfo.CREATE_DATE).append("=?, ");
-		sql.append(GlobalThingInfo.CREATE_BY).append("=?, ");
-		sql.append(GlobalThingInfo.MODIFY_DATE).append("=?, ");
-		sql.append(GlobalThingInfo.MODIFY_BY).append("=? ");
-		sql.append("WHERE ").append(GlobalThingInfo.ID_GLOBAL_THING).append("=? ");
-		
-        return jdbcTemplate.update(sql.toString(), entity.getVendorThingID(),
-		        		entity.getKiiAppID(),
-		        		entity.getType(),
-		        		entity.getStatus(),
-		        		entity.getCustom(),
-		        		entity.getCreateDate(),
-		        		entity.getCreateBy(),
-		        		entity.getModifyDate(),
-		        		entity.getModifyBy(),
-		        		entity.getId());
+		String[] columns = new String[]{
+				GlobalThingInfo.ID_GLOBAL_THING,
+				GlobalThingInfo.VANDOR_THING_ID,
+				GlobalThingInfo.KII_APP_ID,
+				GlobalThingInfo.THING_TYPE,
+				GlobalThingInfo.CUSTOM_INFO,
+				GlobalThingInfo.CREATE_DATE,
+				GlobalThingInfo.CREATE_BY,
+				GlobalThingInfo.MODIFY_DATE,
+				GlobalThingInfo.MODIFY_BY,
+		};
+
+        return super.update(entity, columns);
 	}
 
 }

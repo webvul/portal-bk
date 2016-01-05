@@ -69,16 +69,14 @@ public class TagThingRelationDao extends BaseDao<TagThingRelation> {
 	
 	@Override
 	public long update(TagThingRelation entity) {
-		StringBuilder sql = new StringBuilder();
-		sql.append("UPDATE ").append(this.getTableName()).append(" SET ");
-		sql.append(TagThingRelation.TAG_ID).append("=?, ");
-		sql.append(TagThingRelation.THING_ID).append("=?, ");
-		sql.append("WHERE ").append(TagThingRelation.ID).append("=? ");
+		
+		String[] columns = new String[]{
+				TagThingRelation.ID,
+				TagThingRelation.TAG_ID,
+				TagThingRelation.THING_ID
+		};
 
-		return jdbcTemplate.update(sql.toString(),
-				entity.getTagID(),
-				entity.getThingID(),
-				entity.getId());
+        return super.update(entity, columns);
 
 	}
 	
