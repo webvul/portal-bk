@@ -78,14 +78,14 @@ public class ThingController {
 	
 	/**
 	 * type下的所有设备
-	 * GET /things/type/{type}
+	 * GET /things/types/{type}
 	 *
 	 * refer to doc "Beehive API - Thing API" for request/response details
 	 *
      * @return
      */
-	@RequestMapping(path = "/type/{type}", method = {RequestMethod.GET})
-	public ResponseEntity<List<ThingRestBean>> getThingsByAll(@PathVariable("type") String type) {
+	@RequestMapping(path = "/types/{type}", method = {RequestMethod.GET})
+	public ResponseEntity<List<ThingRestBean>> getThingsByType(@PathVariable("type") String type) {
 		List<GlobalThingInfo> list = globalThingDao.getThingByType(type);
 		List<ThingRestBean> resultList = new ArrayList<>();
 		if(list != null) {
@@ -101,15 +101,15 @@ public class ThingController {
 	
 	/**
 	 * 所有设备的type
-	 * GET /things/type
+	 * GET /things/types
 	 *
 	 * refer to doc "Beehive API - Thing API" for request/response details
 	 *
      * @return
      */
-	@RequestMapping(path = "/type", method = {RequestMethod.GET})
-	public ResponseEntity<List<String>> getAllType() {
-		List<String> list = globalThingDao.findAllThingTypes();
+	@RequestMapping(path = "/types", method = {RequestMethod.GET})
+	public ResponseEntity<List<Map<String, Object>>> getAllType() {
+		List<Map<String, Object>> list = globalThingDao.findAllThingTypesWithThingCount();
 
 		return new ResponseEntity<>(list, HttpStatus.OK);
 	}
@@ -207,12 +207,12 @@ public class ThingController {
 	 *
 	 * refer to doc "Beehive API - Thing API" for request/response details
 	 *
-	 * @param globalThingID
+	 * @param globalThingIDs
      */
 	@RequestMapping(path="/{globalThingIDs}/tags/{tagIDs}",method={RequestMethod.PUT})
-	public void addThingTag(@PathVariable("globalThingIDs") String thingIDs,@PathVariable("tagIDs") String tagIDs){
+	public void addThingTag(@PathVariable("globalThingIDs") String globalThingIDs,@PathVariable("tagIDs") String tagIDs){
 		
-		List<String> thingIDList = CollectionUtils.arrayToList(thingIDs.split(","));
+		List<String> thingIDList = CollectionUtils.arrayToList(globalThingIDs.split(","));
 		List<String> tagIDList = CollectionUtils.arrayToList(tagIDs.split(","));
 		thingTagManager.bindTagToThing(tagIDList, thingIDList);
 	}
@@ -223,11 +223,11 @@ public class ThingController {
 	 *
 	 * refer to doc "Beehive API - Thing API" for request/response details
 	 *
-	 * @param globalThingID
+	 * @param globalThingIDs
      */
 	@RequestMapping(path="/{globalThingIDs}/tags/{tagIDs}",method={RequestMethod.DELETE},consumes={"*"})
-	public void removeThingTag(@PathVariable("globalThingIDs") String thingIDs,@PathVariable("tagIDs") String tagIDs){
-		List<String> thingIDList = CollectionUtils.arrayToList(thingIDs.split(","));
+	public void removeThingTag(@PathVariable("globalThingIDs") String globalThingIDs,@PathVariable("tagIDs") String tagIDs){
+		List<String> thingIDList = CollectionUtils.arrayToList(globalThingIDs.split(","));
 		List<String> tagIDList = CollectionUtils.arrayToList(tagIDs.split(","));
 		thingTagManager.unbindTagToThing(tagIDList, thingIDList);
 	}

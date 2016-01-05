@@ -11,9 +11,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -850,6 +852,127 @@ public class TestThingControll extends WebTestTemplate{
 			assertTrue(map.get("vendorThingID").equals(vendorThingIDs[0]) || map.get("vendorThingID").equals(vendorThingIDs[1]) || map.get("vendorThingID").equals(vendorThingIDs[2]));
 		}
 
+	}
+
+	@Test
+	public void testGetThingsByType() throws Exception {
+
+		Long[] thingGroup1 = this.creatThingsForTest(3, "vendorThingIDForTest", KII_APP_ID, "LED");
+		Long[] thingGroup2 = this.creatThingsForTest(1, "vendorThingIDForTest", KII_APP_ID, "camera");
+		Long[] thingGroup3 = this.creatThingsForTest(1, "vendorThingIDForTest", KII_APP_ID, null);
+
+		// query
+		String result=this.mockMvc.perform(
+				get("/things/types/LED")
+						.contentType(MediaType.APPLICATION_JSON)
+						.characterEncoding("UTF-8")
+						.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+		)
+				.andExpect(status().isOk())
+				.andReturn().getResponse().getContentAsString();
+
+		List<Map<String, Object>> list = mapper.readValue(result, List.class);
+
+		System.out.println("Response: " + list);
+
+		// assert
+		assertEquals(3, list.size());
+
+		List<Long> globalThingIDList = Arrays.asList(thingGroup1);
+		for(Map<String, Object> map : list) {
+			Long globalThingID = ((Integer)map.get("globalThingID")).longValue();
+			globalThingIDList.contains(globalThingID);
+		}
+
+		// no result
+		result=this.mockMvc.perform(
+				get("/things/types/some_non_existing_type")
+						.contentType(MediaType.APPLICATION_JSON)
+						.characterEncoding("UTF-8")
+						.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+		)
+				.andExpect(status().isOk())
+				.andReturn().getResponse().getContentAsString();
+
+		list = mapper.readValue(result, List.class);
+
+		System.out.println("Response: " + list);
+
+		// assert
+		assertEquals(0, list.size());
+
+	}
+
+	@Test
+	public void testGetAllType() throws Exception {
+
+		// no result
+		String result=this.mockMvc.perform(
+				get("/things/types")
+						.contentType(MediaType.APPLICATION_JSON)
+						.characterEncoding("UTF-8")
+						.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+		)
+				.andExpect(status().isOk())
+				.andReturn().getResponse().getContentAsString();
+
+		List<Map<String, Object>> list = mapper.readValue(result, List.class);
+
+		System.out.println("Response: " + list);
+
+		// assert
+		assertEquals(0, list.size());
+
+		Long[] thingGroup1 = this.creatThingsForTest(3, "vendorThingIDForTest", KII_APP_ID, "LED");
+		Long[] thingGroup2 = this.creatThingsForTest(1, "vendorThingIDForTest", KII_APP_ID, "camera");
+		Long[] thingGroup3 = this.creatThingsForTest(1, "vendorThingIDForTest", KII_APP_ID, null);
+
+		// query
+		result=this.mockMvc.perform(
+				get("/things/types")
+						.contentType(MediaType.APPLICATION_JSON)
+						.characterEncoding("UTF-8")
+						.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+		)
+				.andExpect(status().isOk())
+				.andReturn().getResponse().getContentAsString();
+
+		list = mapper.readValue(result, List.class);
+
+		System.out.println("Response: " + list);
+
+		// assert
+		assertEquals(3, list.size());
+
+		for(Map<String, Object> map : list) {
+			String type = (String)map.get("type");
+			if("LED".equals(type)) {
+				assertEquals(3, map.get("count"));
+			} else if("camera".equals(type)) {
+				assertEquals(1, map.get("count"));
+			} else if(null == type) {
+				assertEquals(1, map.get("count"));
+			}
+		}
+
+	}
+
+	private Long[] creatThingsForTest(int creatCount, String prefixVendorThingID, String kiiAppID, String type) {
+		// create thing
+
+		Random random = new Random();
+
+		Long[] globalThingIDs = new Long[creatCount];
+
+		for(int i = 0; i<creatCount;i++) {
+			GlobalThingInfo thingInfo = new GlobalThingInfo();
+			thingInfo.setVendorThingID(prefixVendorThingID + random.nextInt(10000));
+			thingInfo.setKiiAppID(kiiAppID);
+			thingInfo.setType(type);
+			globalThingIDs[i] = globalThingDao.saveOrUpdate(thingInfo);
+		}
+
+		return globalThingIDs;
 	}
 
 }
