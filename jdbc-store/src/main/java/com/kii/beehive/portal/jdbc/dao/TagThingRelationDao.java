@@ -92,24 +92,38 @@ public class TagThingRelationDao extends BaseDao<TagThingRelation> {
         return null;
     }
 
+	/**
+	 * get the tag thing relation by global thing id, tag type and tag display name <br>
+	 *     if tag display name is not specified, will get all the relations under the global thing id and tag type
+	 * @param globalThingID
+	 * @param tagType
+	 * @param tagDisplayName
+     * @return
+     */
 	public List<TagThingRelation> find(Long globalThingID, TagType tagType, String tagDisplayName) {
 
 		List<Object> params = new ArrayList<>();
 
 		StringBuffer sql = new StringBuffer();
-		sql.append("SELECT r_").append(TagThingRelation.ID).append(" AS ").append(TagThingRelation.ID)
-				.append(", t_").append(TagIndex.TAG_ID).append(" AS ").append(TagThingRelation.TAG_ID)
-				.append(", g_").append(GlobalThingInfo.ID_GLOBAL_THING).append(" AS ").append(TagThingRelation.THING_ID)
-				.append(" FROM v_").append(getTableName())
-				.append(" WHERE g_").append(GlobalThingInfo.ID_GLOBAL_THING).append("=?");
+		sql.append("SELECT r.").append(TagThingRelation.ID)
+				.append(", r.").append(TagThingRelation.TAG_ID)
+				.append(", r.").append(TagThingRelation.THING_ID)
+				.append(" FROM ")
+				.append(TagIndexDao.TABLE_NAME).append(" t, ")
+				.append(" ( SELECT ").append(TagThingRelation.ID)
+				.append("        , ").append(TagThingRelation.TAG_ID)
+				.append("        , ").append(TagThingRelation.THING_ID)
+				.append("     FROM ").append(TagThingRelationDao.TABLE_NAME)
+				.append("    WHERE ").append(TagThingRelation.THING_ID).append("=? ) r ")
+				.append(" WHERE r.").append(TagThingRelation.TAG_ID).append("=t.").append(TagIndex.TAG_ID);
 		params.add(globalThingID);
 
 		if(tagType != null) {
-			sql.append(" AND t_").append(TagIndex.TAG_TYPE).append("=?");
+			sql.append(" AND t.").append(TagIndex.TAG_TYPE).append("=?");
 			params.add(tagType);
 		}
 		if(!Strings.isBlank(tagDisplayName)){
-			sql.append(" AND t_").append(TagIndex.DISPLAY_NAME).append("=?");
+			sql.append(" AND t.").append(TagIndex.DISPLAY_NAME).append("=?");
 			params.add(tagDisplayName);
 		}
 

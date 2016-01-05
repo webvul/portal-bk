@@ -8,8 +8,8 @@ import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Repository;
 
 import com.kii.beehive.portal.common.utils.CollectUtils;
-import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
+import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
 import com.kii.beehive.portal.jdbc.entity.TagType;
 
 @Repository
@@ -86,20 +86,27 @@ public class TagIndexDao extends BaseDao<TagIndex> {
 		return rows;
 	}
 
-
+	/**
+	 * get the list of tags related to the thing
+	 * @param globalThingID
+	 * @return
+     */
 	public List<TagIndex> findTagByGlobalThingID(String globalThingID) {
 		StringBuffer sql = new StringBuffer();
-		sql.append("SELECT t_").append(TagIndex.TAG_ID).append(" AS ").append(TagIndex.TAG_ID)
-				.append(", t_").append(TagIndex.TAG_TYPE).append(" AS ").append(TagIndex.TAG_TYPE)
-				.append(", t_").append(TagIndex.DISPLAY_NAME).append(" AS ").append(TagIndex.DISPLAY_NAME)
-				.append(", t_").append(TagIndex.DESCRIPTION).append(" AS ").append(TagIndex.DESCRIPTION)
-				.append(", t_").append(TagIndex.CREATE_DATE).append(" AS ").append(TagIndex.CREATE_DATE)
-				.append(", t_").append(TagIndex.CREATE_BY).append(" AS ").append(TagIndex.CREATE_BY)
-				.append(", t_").append(TagIndex.MODIFY_DATE).append(" AS ").append(TagIndex.MODIFY_DATE)
-				.append(", t_").append(TagIndex.MODIFY_BY).append(" AS ").append(TagIndex.MODIFY_BY)
-				.append(" FROM v_").append(TagThingRelationDao.TABLE_NAME)
-				.append(" WHERE g_").append(GlobalThingInfo.ID_GLOBAL_THING).append("=?")
-				.append(" ORDER BY ").append(TagIndex.TAG_TYPE).append(",").append(TagIndex.DISPLAY_NAME);
+		sql.append("SELECT t.").append(TagIndex.TAG_ID)
+				.append(", t.").append(TagIndex.TAG_TYPE)
+				.append(", t.").append(TagIndex.DISPLAY_NAME)
+				.append(", t.").append(TagIndex.DESCRIPTION)
+				.append(", t.").append(TagIndex.CREATE_DATE)
+				.append(", t.").append(TagIndex.CREATE_BY)
+				.append(", t.").append(TagIndex.MODIFY_DATE)
+				.append(", t.").append(TagIndex.MODIFY_BY)
+				.append(" FROM ")
+				.append(TagIndexDao.TABLE_NAME).append(" t, ")
+				.append(" ( SELECT ").append(TagThingRelation.TAG_ID)
+				.append("     FROM ").append(TagThingRelationDao.TABLE_NAME)
+				.append("    WHERE ").append(TagThingRelation.THING_ID).append("=? ) r ")
+				.append(" WHERE r.").append(TagThingRelation.TAG_ID).append("=t.").append(TagIndex.TAG_ID);
 
 		Object[] paramArr = new Object[] {globalThingID};
 		List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql.toString(), paramArr);
