@@ -3,10 +3,14 @@ package com.kii.beehive.portal.jdbc.dao;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.logging.log4j.util.Strings;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 import com.kii.beehive.portal.common.utils.ThingIDTools;
@@ -67,7 +71,7 @@ public class GlobalThingDao extends BaseDao<GlobalThingInfo>{
 
 	}
 
-	public List<GlobalThingInfo>  queryThingByUnionTags(List<String> tagCollect){
+	public Set<GlobalThingInfo> queryThingByUnionTags(List<String> tagCollect){
 
 		String sql = "SELECT g.* "
 				+ "FROM global_thing g "
@@ -75,11 +79,11 @@ public class GlobalThingDao extends BaseDao<GlobalThingInfo>{
 				+ "INNER JOIN tag_index t ON t.tag_id=r.tag_id "
 				+ " WHERE t.full_tag_name in (:names) ";
 
-		return namedJdbcTemplate.query(sql, Collections.singletonMap("names",tagCollect),getRowMapper());
+		return new HashSet<>(namedJdbcTemplate.query(sql, Collections.singletonMap("names",tagCollect),getRowMapper()));
 
 	}
 
-	public List<GlobalThingInfo>  queryThingByIntersectionTags(List<String> tagCollect){
+	public Set<GlobalThingInfo>  queryThingByIntersectionTags(List<String> tagCollect){
 
 		String sql = "select th.* from global_thing th where th.id_global_thing in  " +
 				  "  (SELECT g.id_global_thing "
@@ -91,7 +95,7 @@ public class GlobalThingDao extends BaseDao<GlobalThingInfo>{
 		params.put("names",tagCollect);
 		params.put("count",tagCollect.size());
 
-		return namedJdbcTemplate.query(sql,params,getRowMapper());
+		return new HashSet<>(namedJdbcTemplate.query(sql,params,getRowMapper()));
 
 	}
 

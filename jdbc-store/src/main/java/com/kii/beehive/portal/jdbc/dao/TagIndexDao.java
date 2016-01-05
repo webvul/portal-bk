@@ -28,6 +28,8 @@ public class TagIndexDao extends BaseDao<TagIndex> {
 		List<TagIndex> tagIndexList = super.findByIDs(tagNameArray);
 		return tagIndexList;
 	}*/
+
+
 	
 	public List<TagIndex> findTagByTagTypeAndName(String tagType,String displayName) {
 		String sql = "SELECT * "
@@ -80,7 +82,7 @@ public class TagIndexDao extends BaseDao<TagIndex> {
 		return rows;
 	}
 
-
+//
 	public List<TagIndex> findTagByGlobalThingID(String globalThingID) {
 		StringBuffer sql = new StringBuffer();
 		sql.append("SELECT t_").append(TagIndex.TAG_ID).append(" AS ").append(TagIndex.TAG_ID)
@@ -147,6 +149,7 @@ public class TagIndexDao extends BaseDao<TagIndex> {
 			tagIndex.setDisplayName((String)row.get(TagIndex.DISPLAY_NAME));
 			tagIndex.setTagType(TagType.valueOf((String) row.get(TagIndex.TAG_TYPE)));
 			tagIndex.setDescription((String)row.get(TagIndex.DESCRIPTION));
+			tagIndex.setFullTagName((String)row.get("full_tag_name"));
 			mapToListForDBEntity(tagIndex, row);
 			list.add(tagIndex);
 		}

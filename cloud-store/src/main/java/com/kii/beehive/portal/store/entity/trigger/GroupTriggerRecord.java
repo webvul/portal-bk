@@ -27,8 +27,4 @@ public class GroupTriggerRecord extends TriggerRecord{
 		this.source = source;
 	}
 
-	public TriggerType getType() {
-		return TriggerType.Group;
-	}
-
 }

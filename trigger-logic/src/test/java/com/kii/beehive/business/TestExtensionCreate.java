@@ -61,7 +61,6 @@ public class TestExtensionCreate extends TestTemplate  {
 
 
 
-//	@Ignore
 	@Test
 	public void registerExtension() throws InterruptedException, IOException {
 

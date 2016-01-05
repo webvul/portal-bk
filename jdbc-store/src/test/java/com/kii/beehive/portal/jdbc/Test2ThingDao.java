@@ -5,6 +5,7 @@ import static junit.framework.TestCase.assertEquals;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -128,7 +129,7 @@ public class Test2ThingDao extends TestTemplate {
 
 		String[] tags={"Custom-name1","Custom-name3"};
 
-		List<GlobalThingInfo>   thingList=thingDao.queryThingByUnionTags(Arrays.asList(tags));
+		Set<GlobalThingInfo> thingList=thingDao.queryThingByUnionTags(Arrays.asList(tags));
 
 		assertEquals(8,thingList.size());
 
@@ -141,7 +142,7 @@ public class Test2ThingDao extends TestTemplate {
 	public void testGetThingByTagIne(){
 		String[] tags={"Custom-name1","Custom-name3"};
 
-		List<GlobalThingInfo>   thingList=thingDao.queryThingByIntersectionTags(Arrays.asList(tags));
+		Set<GlobalThingInfo>   thingList=thingDao.queryThingByIntersectionTags(Arrays.asList(tags));
 
 		assertEquals(0,thingList.size());
 

@@ -6,6 +6,8 @@ dependencies {
 
 	compile project(":cloud-business")
 
+	testCompile project(":store-service")
+
 	compile "org.springframework:spring-context:${springVersion}"
 
 	compile "org.springframework:spring-aspects:${springVersion}"

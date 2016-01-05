@@ -43,9 +43,9 @@ public class SummaryTriggerRecord extends TriggerRecord {
 		this.source = source;
 	}
 
-	public TriggerType getType() {
-		return TriggerType.Summary;
-	}
+//	public TriggerType getType() {
+//		return TriggerType.Summary;
+//	}
 
 	public List<SummaryExpress> getSummaryExpress() {
 		return summaryExpress;

@@ -36,6 +36,6 @@ public  interface Condition {
 	
 	public ConditionType getType();
 
-	
+
 	
 }

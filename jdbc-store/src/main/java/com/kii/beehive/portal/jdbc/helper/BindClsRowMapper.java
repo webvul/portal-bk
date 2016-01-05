@@ -32,7 +32,7 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 
 	private final Map<String,JdbcFieldType> sqlTypeMapper;
 
-	private final BeanWrapper beanWrapper;
+//	private final BeanWrapper beanWrapper;
 
 
 	private final Class<T> cls;
@@ -40,7 +40,7 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 
 		this.cls=cls;
 
-		beanWrapper=PropertyAccessorFactory.forBeanPropertyAccess(BeanUtils.instantiate(cls));
+		BeanWrapper beanWrapper=PropertyAccessorFactory.forBeanPropertyAccess(BeanUtils.instantiate(cls));
 
 		Map<String,String> searchMap=new HashMap<>();
 
@@ -71,6 +71,9 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 	public T mapRow(ResultSet rs, int rowNum) throws SQLException {
 
 //		T inst=BeanUtils.instantiate(cls);
+
+		BeanWrapper beanWrapper=PropertyAccessorFactory.forBeanPropertyAccess(BeanUtils.instantiate(cls));
+
 
 		for(String field:fieldMapper.keySet()){
 

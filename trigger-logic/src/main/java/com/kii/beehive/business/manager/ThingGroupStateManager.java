@@ -25,10 +25,15 @@ import com.kii.extension.sdk.entity.thingif.ServiceCode;
 import com.kii.extension.sdk.entity.thingif.StatePredicate;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 import com.kii.extension.sdk.entity.thingif.ThingTrigger;
+import com.kii.extension.sdk.entity.thingif.TriggerTarget;
 import com.kii.extension.sdk.entity.thingif.TriggerWhen;
 import com.kii.extension.sdk.query.Condition;
 import com.kii.extension.sdk.query.ConditionBuilder;
+import com.kii.extension.sdk.query.condition.AndLogic;
+import com.kii.extension.sdk.query.condition.LogicCol;
 import com.kii.extension.sdk.query.condition.NotLogic;
+import com.kii.extension.sdk.query.condition.OrLogic;
+import com.kii.extension.sdk.query.condition.Range;
 
 @Component
 public class ThingGroupStateManager {
@@ -112,19 +117,21 @@ public class ThingGroupStateManager {
 
 		ThingTrigger triggerTrue=new ThingTrigger();
 
+		triggerTrue.setTarget(TriggerTarget.SERVER_CODE);
 		triggerTrue.setPredicate(positivePredicate);
 		triggerTrue.setServiceCode(getPositiveServiceCode(combine,triggerID));
 		String positiveID=thingIFService.createTrigger(thingID,triggerTrue);
 		idCol.setPositiveID(positiveID);
 
+		ThingTrigger triggerFalse=new ThingTrigger();
+
 		StatePredicate negativePredicate=new StatePredicate();
 		negativePredicate.setTriggersWhen(TriggerWhen.CONDITION_TRUE);
 		NotLogic negCond=new NotLogic();
 		negCond.setClause(condition);
-		negativePredicate.setCondition(ConditionBuilder.notCondition(condition).getConditionInstance());
+		negativePredicate.setCondition(getNotCondition(condition));
 
-		ThingTrigger triggerFalse=new ThingTrigger();
-
+		triggerFalse.setTarget(TriggerTarget.SERVER_CODE);
 		triggerFalse.setPredicate(negativePredicate);
 		triggerFalse.setServiceCode(getNegativeServiceCode(combine,triggerID));
 
@@ -132,6 +139,56 @@ public class ThingGroupStateManager {
 		idCol.setNegativeID(negativeID);
 
 		return idCol;
+
+	}
+
+	private Condition getNotCondition(Condition condition){
+
+		switch(condition.getType()){
+
+			case and: {
+				OrLogic result = new OrLogic();
+				for (Condition cond : ((AndLogic) condition).getClauses()) {
+					result.addClause(getNotCondition(cond));
+				}
+				return result;
+			}
+			case or: {
+				AndLogic result = new AndLogic();
+				for (Condition cond : ((OrLogic) condition).getClauses()) {
+					result.addClause(getNotCondition(cond));
+				}
+				return result;
+			}
+			case range:{
+				Range  range=(Range)condition;
+				Range result=new Range();
+				result.setField(range.getField());
+				if(range.isUpperIncluded()!=null){
+					result.setLowerIncluded(!range.isUpperIncluded());
+				}
+				if(range.isLowerIncluded()!=null){
+					result.setUpperIncluded(!range.isLowerIncluded());
+				}
+
+				result.setLowerLimit(range.getUpperLimit());
+				result.setUpperLimit(range.getLowerLimit());
+
+				return result;
+			}
+			case eq:{
+
+				NotLogic result=new NotLogic();
+				result.setClause(condition);
+				return result;
+			}
+			case not: {
+				return ((NotLogic)condition).getClause();
+			}
+			default:
+				throw new IllegalArgumentException("not supported this express:"+condition.getType());
+		}
+
 
 	}
 
@@ -161,13 +218,11 @@ public class ThingGroupStateManager {
 		return serviceCode;
 	}
 
-	public void updateThingGroup(List<GlobalThingInfo>  thingList,String triggerID){
+	public void updateThingGroup(List<GlobalThingInfo>  thingList,GroupTriggerRecord triggerRecord){
 
 		List<String> thingIDs=thingList.stream().map(GlobalThingInfo::getFullKiiThingID).collect(Collectors.toList());
 
-		GroupTriggerRecord  triggerRecord= (GroupTriggerRecord) triggerDao.getObjectByID(triggerID);
-
-		GroupTriggerRuntimeState state=statusDao.getObjectByID(triggerID);
+		GroupTriggerRuntimeState state=statusDao.getObjectByID(triggerRecord.getId());
 
 		MemberState memberMap=state.getMemberState();
 
@@ -186,7 +241,7 @@ public class ThingGroupStateManager {
 		Set<String> newIDs=state.getMemberState().getAddedIDs(thingIDs);
 
 		newIDs.forEach(thingID-> {
-			KiiTriggerCol idCol=registDoubleTrigger(thingID, triggerRecord.getPerdicate().getCondition(),triggerID);
+			KiiTriggerCol idCol=registDoubleTrigger(thingID, triggerRecord.getPerdicate().getCondition(),triggerRecord.getId());
 			map.put(thingID,idCol);
 		});
 

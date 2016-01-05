@@ -112,6 +112,7 @@ public class ThingStateSummaryManager {
 
 		triggerInfo.setServiceCode(serviceCode);
 
+
 		thingIFService.createTrigger(fullThingID,triggerInfo);
 
 		return;
@@ -138,7 +139,7 @@ public class ThingStateSummaryManager {
 
 		TagSelector source=record.getSource().getSelector();
 
-		List<GlobalThingInfo> thingList=thingTagService.queryThingByTagExpress(source.isAndExpress(),source.getTagList());
+		List<GlobalThingInfo> thingList=thingTagService.getThingInfos(source);
 
 		List<String> thingIDList=thingList.stream().map(thing->thing.getFullKiiThingID()).collect(Collectors.toList());
 

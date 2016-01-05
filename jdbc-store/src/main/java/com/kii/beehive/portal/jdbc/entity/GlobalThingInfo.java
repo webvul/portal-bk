@@ -123,7 +123,26 @@ public class GlobalThingInfo extends DBEntity{
 	}
 
 
+	@Override
+	public boolean equals(Object obj){
 
+		if(obj == null){
+			return false;
+		}
+
+		if(obj instanceof GlobalThingInfo){
+			return this.getId()==(((GlobalThingInfo)obj).getId());
+		}else{
+			return false;
+		}
+	}
+
+
+	@Override
+	public int hashCode(){
+		return (int) this.getId();
+
+	}
 
 
 	@Override

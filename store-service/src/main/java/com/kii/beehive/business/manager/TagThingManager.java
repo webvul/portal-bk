@@ -1,6 +1,7 @@
 package com.kii.beehive.business.manager;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kii.beehive.business.event.KiiCloudEventBus;
 import com.kii.beehive.portal.common.utils.CollectUtils;
 import com.kii.beehive.portal.exception.StoreException;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
@@ -35,20 +37,15 @@ public class TagThingManager {
 	
 	@Autowired
 	private TagThingRelationDao tagThingRelationDao;
-	
-	//@Autowired
-	//private AppInfoDao appInfoDao;
+
+
+	@Autowired
+	private KiiCloudEventBus eventBus;
+
 
 
 	public Long createThing(GlobalThingInfo thingInfo, String location, Collection<String> tagList) {
 		
-		/*KiiAppInfo kiiAppInfo = appInfoDao.getAppInfoByID(thingInfo.getKiiAppID());
-		
-		if(kiiAppInfo == null){
-			EntryNotFoundException ex= new EntryNotFoundException(thingInfo.getKiiAppID());
-			ex.setMessage("AppID not exist");
-			throw ex;
-		}*/
 
 
 		Set<TagIndex> tagSet=new HashSet<>();
@@ -73,7 +70,8 @@ public class TagThingManager {
 				}else{
 					tagID = list.get(0).getId();
 				}
-				
+
+				eventBus.onTagChangeFire(tag.getFullTagName(), Collections.singletonList(new Long(thingID)),true);
 				tagThingRelationDao.saveOrUpdate(new TagThingRelation(tagID,thingID));
 			}
 		}
@@ -90,6 +88,8 @@ public class TagThingManager {
 		for(String tagID:tagIDs){
 			TagIndex tag = tagIndexDao.findByID(tagID);
 			if(tag != null){
+				eventBus.onTagChangeFire(tag.getFullTagName(), Collections.singletonList(new Long(thingID)),true);
+
 				tagThingRelationDao.saveOrUpdate(new TagThingRelation(tag.getId(),thing.getId()));
 			}else{
 				log.warn("Tag is null, TagId = " + tagID);
@@ -105,7 +105,10 @@ public class TagThingManager {
 		
 		for(String tagID:tagIDs){
 			TagIndex tag = tagIndexDao.findByID(tagID);
+
 			if(tag != null){
+				eventBus.onTagChangeFire(tag.getFullTagName(), Collections.singletonList(new Long(thingID)),false);
+
 				tagThingRelationDao.delete(tag.getId(),thing.getId());
 			}else{
 				log.warn("Tag is null, TagId = " + tagID);
@@ -150,6 +153,7 @@ public class TagThingManager {
 		} else {
 			relation.setTagID(tagIndex.getId());
 		}
+		eventBus.onTagChangeFire(tagIndex.getFullTagName(), Collections.singletonList(new Long(globalThingID)),true);
 
 		// update tag-thing relation
 		tagThingRelationDao.saveOrUpdate(relation);
@@ -172,6 +176,8 @@ public class TagThingManager {
 		for(String displayName:displayNames){
 			TagIndex tag = this.findCustomTag(displayName);
 			if(tag != null){
+				eventBus.onTagChangeFire(tag.getFullTagName(), Collections.singletonList(new Long(thingID)),true);
+
 				tagThingRelationDao.saveOrUpdate(new TagThingRelation(tag.getId(),thing.getId()));
 			}else{
 				log.warn("Custom Tag is null, displayName = " + displayName);
@@ -188,6 +194,8 @@ public class TagThingManager {
 		for(String displayName:displayNames){
 			TagIndex tag = this.findCustomTag(displayName);
 			if(tag != null){
+				eventBus.onTagChangeFire(tag.getFullTagName(), Collections.singletonList(new Long(thingID)),false);
+
 				tagThingRelationDao.delete(tag.getId(),thing.getId());
 			}else{
 				log.warn("Custom Tag is null, displayName = " + displayName);

@@ -43,12 +43,6 @@ public class TestConditionSerial {
 
 		log.info(json);
 
-		StatePredicate  newPre=mapper.readValue(json,StatePredicate.class);
-
-
-		TriggerConditionEntry express=newPre.getConditionExpress();
-
-		log.info(mapper.writeValueAsString(express));
 
 	}
 }

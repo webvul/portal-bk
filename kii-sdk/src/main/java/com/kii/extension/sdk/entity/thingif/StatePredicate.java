@@ -16,8 +16,6 @@ public class StatePredicate extends Predicate {
 
 	private TriggerWhen triggersWhen;
 
-	private TriggerConditionEntry express;
-
 	private Condition condition;
 
 	@Override
@@ -33,38 +31,12 @@ public class StatePredicate extends Predicate {
 		this.triggersWhen = triggersWhen;
 	}
 
-	@JsonIgnore
-//	@JsonProperty("condition")
-	public TriggerConditionEntry getConditionExpress(){
-
-		return express;
-	}
-
-	public void setConditionExpress(TriggerConditionEntry express){
-		this.express=express;
-	}
-
-
 	public void setCondition(Condition condition) {
-		this.express = ConditionConvert.convert(condition);
 		this.condition=condition;
 	}
 
-//	@JsonIgnore
 	@JsonProperty("condition")
-
 	public Condition getCondition(){
 		return condition;
 	}
 }
-/*
-  "predicate" : {
-    "triggersWhen" : "CONDITION_CHANGED",
-    "condition" : {
-      "type" : "eq",
-      "field" : "power",
-      "value" : true
-    },
-    "eventSource" : "STATES"
-  },
- */

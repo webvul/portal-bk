@@ -6,9 +6,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.event.EventListener;
+import com.kii.beehive.portal.event.EventType;
 import com.kii.beehive.portal.service.EventListenerDao;
 
 @Component
@@ -21,6 +23,7 @@ public class KiicloudEventListenerService {
 
 	public static final String REFRESH_THING_GROUP="refreshThingGroup";
 
+	@Autowired
 	private EventListenerDao  eventListenerDao;
 
 	public void addTagChangeListener(List<String> tagNames,String triggerID){
@@ -31,6 +34,8 @@ public class KiicloudEventListenerService {
 
 		listener.addBindKeys(tagNames);
 		listener.setRelationBeanName(REFRESH_THING_GROUP);
+		listener.setEnable(true);
+		listener.setType(EventType.TagChange);
 
 		eventListenerDao.addEventListener(listener);
 
@@ -43,7 +48,9 @@ public class KiicloudEventListenerService {
 		listener.setTargetKey(summaryThingID);
 
 		listener.addBindKeys(tagNames);
+		listener.setEnable(true);
 		listener.setRelationBeanName(REFRESH_SUMMARY_GROUP);
+		listener.setType(EventType.TagChange);
 
 		return eventListenerDao.addEventListener(listener);
 
@@ -57,6 +64,8 @@ public class KiicloudEventListenerService {
 		listener.addBindKeys(thingIDs.stream().map(v->String.valueOf(v)).collect(Collectors.toList()));
 
 		listener.setRelationBeanName(COMPUTE_SUMMARY_STATE);
+		listener.setType(EventType.ThingStateChange);
+		listener.setEnable(true);
 
 		return eventListenerDao.addEventListener(listener);
 

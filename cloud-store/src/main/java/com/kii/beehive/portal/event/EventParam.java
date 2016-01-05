@@ -9,7 +9,7 @@ public class EventParam {
 
 	private Map<String,Object> paramMap=new HashMap<>();
 
-	public void setParamMap(String key,Object value) {
+	public void setParam(String key,Object value) {
 		this.paramMap.put(key,value);
 	}
 

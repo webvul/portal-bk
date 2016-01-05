@@ -20,16 +20,16 @@ public class ThingTagService {
 	@Autowired
 	private GlobalThingDao globalThingDao;
 
-	public List<GlobalThingInfo> queryThingByTagExpress(boolean isAnd, List<String> tagCollect) {
-
-		if(isAnd){
-			return globalThingDao.queryThingByIntersectionTags(tagCollect);
-		}else{
-			return globalThingDao.queryThingByUnionTags(tagCollect);
-		}
-
-
-	}
+//	public List<GlobalThingInfo> queryThingByTagExpress(boolean isAnd, List<String> tagCollect) {
+//
+//		if(isAnd){
+//			return globalThingDao.queryThingByIntersectionTags(tagCollect);
+//		}else{
+//			return globalThingDao.queryThingByUnionTags(tagCollect);
+//		}
+//
+//
+//	}
 
 	public GlobalThingInfo getThingByID(long globalThingID) {
 

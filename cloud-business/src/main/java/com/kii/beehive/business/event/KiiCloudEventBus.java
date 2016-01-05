@@ -25,7 +25,7 @@ public class KiiCloudEventBus {
 	private EventListenerDao eventDao;
 
 	@Async
-	public void onTagChangeFire(String tagName,Collection<String> relationThingID){
+	public void onTagChangeFire(String tagName,Collection<Long> relationThingID,boolean isAdd){
 
 
 
@@ -33,13 +33,12 @@ public class KiiCloudEventBus {
 
 
 		listenerList.forEach(listener->{
-
 			String name=listener.getRelationBeanName();
 
-			BeehiveEventProcess process=context.getBean(BeehiveEventProcess.class,name);
+			BeehiveEventProcess process= (BeehiveEventProcess) context.getBean(name);
 
 			EventParam param = new EventParam();
-			param.setParamMap("thingIDs", relationThingID);
+			param.setParam("isAdd",isAdd);
 
 			process.onEventFire(listener.getTargetKey(), param);
 
@@ -58,10 +57,10 @@ public class KiiCloudEventBus {
 
 			String relationBeanName=listener.getRelationBeanName();
 
-			BeehiveEventProcess process=context.getBean(relationBeanName,BeehiveEventProcess.class);
+			BeehiveEventProcess process= (BeehiveEventProcess) context.getBean(relationBeanName);
 
 			EventParam param=new EventParam();
-			param.setParamMap("status",status);
+			param.setParam("status",status);
 
 			process.onEventFire(listener.getTargetKey(),param);
 		});
