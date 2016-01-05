@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +21,12 @@ import org.springframework.http.MediaType;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
+import com.kii.beehive.portal.jdbc.dao.TagThingRelationDao;
+import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
+import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
 import com.kii.beehive.portal.jdbc.entity.TagType;
 import com.kii.beehive.portal.web.WebTestTemplate;
 import com.kii.beehive.portal.web.help.AuthInterceptor;
@@ -36,6 +41,14 @@ public class TestTagController extends WebTestTemplate {
 
     @Autowired
     private TagIndexDao tagIndexDao;
+
+    @Autowired
+    private GlobalThingDao globalThingDao;
+
+    @Autowired
+    private TagThingRelationDao tagThingRelationDao;
+
+    private final static String KII_APP_ID = "0af7a7e7";
 
     private String displayName = "someDisplayName";
 
@@ -342,6 +355,108 @@ public class TestTagController extends WebTestTemplate {
         assertEquals(displayNames.get(3), list.get(3));
         assertEquals(displayNames.get(4), list.get(4));
 
+    }
+
+
+    @Test
+    public void testFindTags() throws Exception {
+
+        // create thing
+        String[] vendorThingIDs = new String[]{"vendorThingIDForTest1", "vendorThingIDForTest2", "vendorThingIDForTest3"};
+        Long[] globalThingIDs = this.creatThingsForTest(vendorThingIDs, KII_APP_ID, "LED");
+
+        // create tag
+        String[] displayNames = new String[]{"displayNameForCustom1", "displayNameForCustom2", "displayNameForCustom3"};
+        Long[] tagIDs = this.creatTagsForTest(TagType.Custom, displayNames);
+
+        // create relation
+        TagThingRelation relation = new TagThingRelation();
+        relation.setTagID(tagIDs[0]);
+        relation.setThingID(globalThingIDs[0]);
+        tagThingRelationDao.saveOrUpdate(relation);
+
+        relation = new TagThingRelation();
+        relation.setTagID(tagIDs[0]);
+        relation.setThingID(globalThingIDs[1]);
+        tagThingRelationDao.saveOrUpdate(relation);
+
+        relation = new TagThingRelation();
+        relation.setTagID(tagIDs[1]);
+        relation.setThingID(globalThingIDs[2]);
+        tagThingRelationDao.saveOrUpdate(relation);
+
+
+        // search custom tag
+        String result=this.mockMvc.perform(
+                get("/tags/search?" + "tagType=" + TagType.Custom)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("UTF-8")
+                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+        )
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        List<Map<String, Object>> list = mapper.readValue(result, List.class);
+
+        assertEquals(3, list.size());
+
+        for(Map<String, Object> map : list) {
+            System.out.println("Response Map: " + map);
+            long tagID = ((Integer)map.get("id")).longValue();
+            int count = (Integer) map.get("count");
+            List<Integer> intThings = (List<Integer>)map.get("things");
+            List<Long> things = new ArrayList<>();
+            if(intThings != null) {
+                for (Integer i : intThings) {
+                    things.add(i.longValue());
+                }
+            }
+
+            if(tagID == tagIDs[0]) {
+                assertEquals(2, count);
+                System.out.println(things.contains(globalThingIDs[0]));
+                assertTrue(things.contains(globalThingIDs[0]));
+                assertTrue(things.contains(globalThingIDs[1]));
+            } else if(tagID == tagIDs[1]) {
+                assertEquals(1, count);
+                assertTrue(things.contains(globalThingIDs[2]));
+            } else if(tagID == tagIDs[2]) {
+                assertEquals(0, count);
+                assertTrue(things.isEmpty());
+            }
+        }
+
+    }
+
+    private Long[] creatThingsForTest(String[] vendorThingIDs, String kiiAppID, String type) {
+
+        Long[] globalThingIDs = new Long[vendorThingIDs.length];
+
+        for(int i = 0; i<vendorThingIDs.length;i++) {
+            GlobalThingInfo thingInfo = new GlobalThingInfo();
+            thingInfo.setVendorThingID(vendorThingIDs[i]);
+            thingInfo.setKiiAppID(kiiAppID);
+            thingInfo.setType(type);
+            globalThingIDs[i] = globalThingDao.saveOrUpdate(thingInfo);
+
+            System.out.println("create thing: " + globalThingIDs[i]);
+        }
+
+        return globalThingIDs;
+    }
+
+    private Long[] creatTagsForTest(TagType tagType, String[] displayNames) {
+
+        Long[] tagIDs = new Long[displayNames.length];
+
+        for(int i = 0; i<displayNames.length;i++) {
+            TagIndex tagIndex = TagIndex.generTagIndex(tagType, displayNames[i], null);
+            tagIDs[i] = tagIndexDao.saveOrUpdate(tagIndex);
+
+            System.out.println("create tag: " + tagIDs[i]);
+        }
+
+        return tagIDs;
     }
 
 }

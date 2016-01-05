@@ -125,7 +125,7 @@ public class TagController {
 	 * @return
 	 */
 	@RequestMapping(path = "/search", method = { RequestMethod.GET })
-	public List<TagIndex> getThingsByTag(@RequestParam(value="tagType", required = false) String tagType, 
+	public List<TagIndex> findTags(@RequestParam(value="tagType", required = false) String tagType,
 										@RequestParam(value="displayName", required = false) String displayName) {
 		
 		List<TagIndex> list = tagIndexDao.findTagByTagTypeAndName(StringUtils.capitalize(tagType), displayName);

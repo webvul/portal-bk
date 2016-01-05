@@ -33,7 +33,7 @@ public class TagIndexDao extends BaseDao<TagIndex> {
      * @return
      */
 	public List<TagIndex> findTagByTagTypeAndName(String tagType,String displayName) {
-		String sql = "SELECT t.*, COUNT(r.thing_id) count "
+		String sql = "SELECT t.*, COUNT(r.thing_id) count, GROUP_CONCAT(r.thing_id) things "
 					+ "FROM " + this.getTableName() +" t "
 					+ "LEFT JOIN rel_thing_tag r ON r.tag_id = t.tag_id ";
 		
@@ -149,6 +149,18 @@ public class TagIndexDao extends BaseDao<TagIndex> {
 			tagIndex.setTagType(TagType.valueOf((String) row.get(TagIndex.TAG_TYPE)));
 			tagIndex.setDescription((String)row.get(TagIndex.DESCRIPTION));
 			tagIndex.setCount((Long)row.get(TagIndex.THING_COUNT));
+
+			// set things
+			String strThingID = (String)row.get(TagIndex.THINGS);
+			if(strThingID != null) {
+				String[] strThingIDArr = strThingID.split(",");
+				List<Long> things = new ArrayList<Long>();
+				for(int i = 0; i < strThingIDArr.length; i++) {
+					things.add(Long.valueOf(strThingIDArr[i]));
+				}
+				tagIndex.setThings(things);
+			}
+
 			mapToListForDBEntity(tagIndex, row);
 			list.add(tagIndex);
 		}
