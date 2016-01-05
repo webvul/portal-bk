@@ -23,7 +23,6 @@ import com.kii.extension.sdk.service.UserService;
  */
 @Component
 @BindAppByName(appName="master")
-// TODO do we need to delcare appBindSource="propAppBindTool"?
 public class KiiUserSyncDao {
 
 	@Autowired
