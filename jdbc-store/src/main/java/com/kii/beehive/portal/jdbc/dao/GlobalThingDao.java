@@ -26,6 +26,15 @@ public class GlobalThingDao extends BaseDao<GlobalThingInfo>{
 
 		return rows;
 	}
+
+	public List<Map<String, Object>> findAllThingTypesWithThingCount() {
+		String sql = "SELECT "+ GlobalThingInfo.THING_TYPE +" as type, COUNT(1) as count FROM " + this.getTableName()
+				+ " GROUP BY " + GlobalThingInfo.THING_TYPE;
+
+		List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql, new Object[0]);
+
+		return rows;
+	}
 	
 	public List<GlobalThingInfo> getThingByType(String type) {
 		List<GlobalThingInfo> list = super.findBySingleField(GlobalThingInfo.THING_TYPE, type);
