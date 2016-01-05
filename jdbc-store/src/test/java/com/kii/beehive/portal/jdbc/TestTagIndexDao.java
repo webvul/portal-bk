@@ -41,6 +41,17 @@ public class TestTagIndexDao extends TestTemplate{
 	}
 	
 	@Test
+	public void testUpdate(){
+		tag.setDisplayName("DisplayNameUpdate");
+		dao.update(tag);
+		TagIndex  entity=dao.findByID(tag.getId());
+		assertEquals("DisplayNameUpdate",entity.getDisplayName());
+		assertEquals(tag.getTagType(),entity.getTagType());
+		assertEquals(tag.getDescription(),entity.getDescription());
+
+	}
+	
+	@Test
 	public void testFindByIDs(){
 		TagIndex  tag2 =new TagIndex();
 		tag2.setDisplayName("DisplayName2");
