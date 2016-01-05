@@ -32,13 +32,9 @@ import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
 import com.kii.beehive.portal.jdbc.entity.TagType;
 import com.kii.beehive.portal.manager.TagThingManager;
-import com.kii.beehive.portal.web.controller.ThingController;
 import com.kii.beehive.portal.web.help.AuthInterceptor;
 
 public class TestThingControll extends WebTestTemplate{
-
-	@Autowired
-	private ThingController controller;
 
 	@Autowired
 	private TagIndexDao tagIndexDao;

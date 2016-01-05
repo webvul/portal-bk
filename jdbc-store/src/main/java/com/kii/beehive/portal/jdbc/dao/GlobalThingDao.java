@@ -116,13 +116,14 @@ public class GlobalThingDao extends BaseDao<GlobalThingInfo>{
 				GlobalThingInfo.VANDOR_THING_ID,
 				GlobalThingInfo.KII_APP_ID,
 				GlobalThingInfo.THING_TYPE,
+				GlobalThingInfo.STATUS,
 				GlobalThingInfo.CUSTOM_INFO,
 				GlobalThingInfo.CREATE_DATE,
 				GlobalThingInfo.CREATE_BY,
 				GlobalThingInfo.MODIFY_DATE,
 				GlobalThingInfo.MODIFY_BY,
 		};
-
+		
         return super.update(entity, columns);
 	}
 

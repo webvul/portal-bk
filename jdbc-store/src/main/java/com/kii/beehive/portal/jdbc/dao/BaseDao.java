@@ -8,6 +8,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -18,6 +20,7 @@ import com.kii.beehive.portal.jdbc.helper.AnnationBeanSqlParameterSource;
 
 public abstract class BaseDao<T extends DBEntity> {
 
+	private Logger log= LoggerFactory.getLogger(BaseDao.class);
 
 	protected JdbcTemplate jdbcTemplate;
 	
@@ -170,6 +173,9 @@ public abstract class BaseDao<T extends DBEntity> {
 
 		// update
 		int updateResult = jdbcTemplate.update(sql.toString(), fieldValues.toArray(new Object[fieldValues.size()]));
+
+		log.debug("BaseDao Update SQL: " + sql.toString());
+		log.debug("BaseDao Update Values: " + fieldValues);
 
 		return updateResult;
 	}
