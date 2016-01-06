@@ -98,18 +98,57 @@ Global_RemoteKiiRequest = (function(){
 		ajaxParam["headers"]=this.headers;
 		ajaxParam["data"]=JSON.stringify(param);
 
-		$.ajax("http:///"+this.path,ajaxParam);
+		$.ajax(this.path,ajaxParam);
 
 	}
 
 	Global_RemoteKiiRequest.prototype.execute=function(param,callback){
-       	this.executeToLocal(param,callback);
+
+		if(this.debug==true){
+				this.executeToLocal(param,callback);
+		}else{
+		       	this.executeToRemote(param,callback);
+
+		}
     }
 
 
 	return Global_RemoteKiiRequest;
 })();
 
+
+function doRemoteCall(context,name,param){
+
+	var bucket=context.bucketWithName("beehive_parameters");
+
+	var obj=bucket.createObjectWithID("beehive_callback_url");
+
+	obj.refresh({
+
+	      success: function(theObject) {
+				var baseUrl=theObject.get("baseUrl");
+
+				var method=theObject.get(name);
+
+				var request=new Global_RemoteKiiRequest(baseUrl+"/"+method,context,done);
+
+				var debug=theObject.get("debug");
+				request.debug=debug;
+
+                request.execute(param,
+                 	function(){
+                 		done(theObject);
+                 	}
+                );
+
+          },
+          failure: function(theObject, anErrorString) {
+            	console.log("get state object fail:"+params.objectID);
+             	done(anErrorString);
+          }
+	})
+
+}
 
 function global_recordLog(done,log,type) {
 
