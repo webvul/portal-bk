@@ -115,7 +115,6 @@ public class TagIndexDao extends BaseDao<TagIndex> {
 	
 	public long update(TagIndex tag) {
 		String[] columns = new String[]{
-				TagIndex.TAG_ID,
 				TagIndex.TAG_TYPE,
 				TagIndex.DISPLAY_NAME,
 				TagIndex.DESCRIPTION,

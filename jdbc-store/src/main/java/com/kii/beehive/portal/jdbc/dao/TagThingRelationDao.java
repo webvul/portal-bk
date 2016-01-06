@@ -71,7 +71,6 @@ public class TagThingRelationDao extends BaseDao<TagThingRelation> {
 	public long update(TagThingRelation entity) {
 		
 		String[] columns = new String[]{
-				TagThingRelation.ID,
 				TagThingRelation.TAG_ID,
 				TagThingRelation.THING_ID
 		};

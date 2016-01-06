@@ -20,7 +20,6 @@ public class SourceDao extends BaseDao<Source> {
 	
 	public long update(Source tag) {
 		String[] columns = new String[]{
-				Source.SOURCE_ID,
 				Source.TYPE,
 				Source.NAME,
 				Source.CREATE_DATE,
