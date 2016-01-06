@@ -19,7 +19,6 @@ import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
 import com.kii.beehive.portal.jdbc.entity.TagType;
-import com.kii.beehive.portal.service.ExtensionCodeDao;
 import com.kii.beehive.portal.store.entity.trigger.SimpleTriggerRecord;
 import com.kii.beehive.portal.store.entity.trigger.TagSelector;
 import com.kii.beehive.portal.store.entity.trigger.TargetAction;

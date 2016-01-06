@@ -1,7 +1,6 @@
 package com.kii.beehive.portal.common.utils;
 
 import javax.script.Compilable;
-import javax.script.CompiledScript;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;

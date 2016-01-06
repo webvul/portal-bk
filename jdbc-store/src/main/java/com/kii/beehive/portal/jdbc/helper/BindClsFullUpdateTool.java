@@ -13,7 +13,6 @@ import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.object.SqlUpdate;
-import org.springframework.util.ClassUtils;
 
 import com.kii.beehive.portal.common.utils.StrTemplate;
 import com.kii.beehive.portal.jdbc.annotation.JdbcField;

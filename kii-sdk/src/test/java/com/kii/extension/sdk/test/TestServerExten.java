@@ -1,8 +1,5 @@
 package com.kii.extension.sdk.test;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +13,6 @@ import com.kii.extension.sdk.entity.serviceextension.ScheduleTriggerConfig;
 import com.kii.extension.sdk.entity.serviceextension.TriggerFactory;
 import com.kii.extension.sdk.entity.serviceextension.TriggerScopeType;
 import com.kii.extension.sdk.service.ServiceExtensionService;
-import com.kii.extension.sdk.service.UserService;
 
 public class TestServerExten extends TestTemplate{
 

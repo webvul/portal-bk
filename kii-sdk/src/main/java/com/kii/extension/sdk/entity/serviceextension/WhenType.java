@@ -1,10 +1,6 @@
 package com.kii.extension.sdk.entity.serviceextension;
 
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-
-
 public enum WhenType {
 
 	USER_CREATED,USER_EMAIL_VERIFIED,USER_PHONE_VERIFIED,USER_PASSWORD_RESET_COMPLETED,

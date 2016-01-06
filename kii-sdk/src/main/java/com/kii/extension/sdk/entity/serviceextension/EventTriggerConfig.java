@@ -1,12 +1,5 @@
 package com.kii.extension.sdk.entity.serviceextension;
 
-import java.util.Collections;
-import java.util.Map;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import com.kii.beehive.portal.common.utils.StrTemplate;
-
 public class EventTriggerConfig {
 
 

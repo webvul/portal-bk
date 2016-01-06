@@ -1,8 +1,5 @@
 package com.kii.extension.sdk.entity.serviceextension;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sun.tools.doclint.Messages;
-
 import com.kii.beehive.portal.common.utils.StrTemplate;
 
 public class TriggerFactory {

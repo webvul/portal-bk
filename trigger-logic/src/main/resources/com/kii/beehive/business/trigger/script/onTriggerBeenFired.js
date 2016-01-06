@@ -9,9 +9,12 @@ function global_onTriggerArrive(params,endpoint,context,done){
  output["triggerID"]=triggerID;
  output["thingID"]=thingID;
 
- var request=new Global_RemoteKiiRequest(endpoint,context,done);
 
- request.execute(output,function(){done();});
+ doRemoteCall(context,endpoint,params,done);
+
+// var request=new Global_RemoteKiiRequest(endpoint,context,done);
+//
+// request.execute(output,function(){done();});
 
 }
 

@@ -1,27 +1,17 @@
 package com.kii.beehive.portal.jdbc.helper;
 
 import java.beans.PropertyDescriptor;
-import java.io.ByteArrayInputStream;
-import java.nio.charset.StandardCharsets;
-import java.sql.Blob;
-import java.sql.Types;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.NotReadablePropertyException;
-import org.springframework.beans.PropertyAccessor;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.jdbc.core.StatementCreatorUtils;
 import org.springframework.jdbc.core.namedparam.AbstractSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.springframework.jdbc.support.lob.DefaultLobHandler;
-import org.springframework.jdbc.support.lob.LobHandler;
 
 import com.kii.beehive.portal.jdbc.annotation.JdbcField;
 import com.kii.beehive.portal.jdbc.annotation.JdbcFieldType;

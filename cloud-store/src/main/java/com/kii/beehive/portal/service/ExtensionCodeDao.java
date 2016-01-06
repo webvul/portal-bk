@@ -4,23 +4,17 @@ import javax.script.ScriptException;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.beehive.portal.common.utils.JavaScriptCheck;
 import com.kii.beehive.portal.exception.JSFormatErrorException;
 import com.kii.beehive.portal.store.entity.ExtensionCodeEntity;
-import com.kii.extension.sdk.annotation.AppBindParam;
 import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.entity.BucketInfo;
-import com.kii.extension.sdk.entity.serviceextension.HookGeneral;
 import com.kii.extension.sdk.query.ConditionBuilder;
 import com.kii.extension.sdk.query.QueryParam;
 import com.kii.extension.sdk.service.AbstractDataAccess;
-import com.kii.extension.sdk.service.ServiceExtensionService;
 
 @BindAppByName(appName="portal",appBindSource="propAppBindTool")
 @Component

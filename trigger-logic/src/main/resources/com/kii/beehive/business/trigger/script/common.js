@@ -22,9 +22,11 @@ Global_RemoteKiiRequest = (function(){
 
 		this._success = function(json, status) {
         	console.log("success:"+json+" \n status:"+status);
+        	_this.done(status);
         };
         this._failure = function(errString, status) {
         	console.log("failure:"+errString+" \n status:"+status);
+        	_this.done(status);
         };
 
 	    this.onSuccess=function(anything, textStatus,jqXHR) {
@@ -117,9 +119,9 @@ Global_RemoteKiiRequest = (function(){
 })();
 
 
-function doRemoteCall(context,name,param){
+function doRemoteCall(context,name,param,done){
 
-	var bucket=context.bucketWithName("beehive_parameters");
+	var bucket=context.getAppAdminContext().bucketWithName("beehive_parameters");
 
 	var obj=bucket.createObjectWithID("beehive_callback_url");
 
@@ -136,8 +138,14 @@ function doRemoteCall(context,name,param){
 				request.debug=debug;
 
                 request.execute(param,
-                 	function(){
-                 		done(theObject);
+                 	{
+                 		success:function(){
+                 			done(theObject);
+                 		},
+                 		failure:function(){
+                 			console.log("get state object fail:"+params.objectID);
+                            done(anErrorString);
+                        }
                  	}
                 );
 

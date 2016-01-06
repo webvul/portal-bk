@@ -8,14 +8,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.logging.log4j.util.Strings;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
-import com.kii.beehive.portal.jdbc.entity.TagIndex;
 
 @Repository
 public class GlobalThingDao extends BaseDao<GlobalThingInfo>{

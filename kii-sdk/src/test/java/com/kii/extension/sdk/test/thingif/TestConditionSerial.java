@@ -6,14 +6,9 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.kii.extension.sdk.entity.thingif.ConditionExpress;
-import com.kii.extension.sdk.entity.thingif.EventSourceType;
-import com.kii.extension.sdk.entity.thingif.Predicate;
 import com.kii.extension.sdk.entity.thingif.StatePredicate;
-import com.kii.extension.sdk.entity.thingif.TriggerConditionEntry;
 import com.kii.extension.sdk.query.Condition;
 import com.kii.extension.sdk.query.ConditionBuilder;
 import com.kii.extension.sdk.service.ObjectMapperFactory;

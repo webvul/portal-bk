@@ -1,10 +1,6 @@
 package com.kii.beehive.portal.jdbc.helper;
 
 import java.beans.PropertyDescriptor;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.sql.Blob;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
@@ -18,7 +14,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.util.StreamUtils;
 
 import com.kii.beehive.portal.jdbc.annotation.JdbcField;
 import com.kii.beehive.portal.jdbc.annotation.JdbcFieldType;

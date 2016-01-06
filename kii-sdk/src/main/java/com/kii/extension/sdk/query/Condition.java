@@ -4,9 +4,6 @@ package com.kii.extension.sdk.query;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
-import com.kii.extension.sdk.entity.thingif.SchedulePredicate;
-import com.kii.extension.sdk.entity.thingif.StatePredicate;
-import com.kii.extension.sdk.entity.thingif.TaskPredicate;
 import com.kii.extension.sdk.query.condition.All;
 import com.kii.extension.sdk.query.condition.AndLogic;
 import com.kii.extension.sdk.query.condition.Equal;

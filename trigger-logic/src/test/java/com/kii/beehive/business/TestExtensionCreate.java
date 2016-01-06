@@ -17,13 +17,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import com.kii.beehive.business.manager.BeehiveTriggerInitManager;
 import com.kii.beehive.business.service.ServiceExtensionDeployService;
-import com.kii.beehive.portal.service.ExtensionCodeDao;
+import com.kii.beehive.portal.service.BeehiveParameterDao;
+import com.kii.beehive.portal.store.entity.CallbackUrlParameter;
 import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.context.TokenBindToolResolver;
 import com.kii.extension.sdk.entity.thingif.OnBoardingParam;
 import com.kii.extension.sdk.entity.thingif.OnBoardingResult;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
-import com.kii.extension.sdk.service.ServiceExtensionService;
 import com.kii.extension.sdk.service.ThingIFService;
 
 public class TestExtensionCreate extends TestTemplate  {
@@ -60,6 +60,26 @@ public class TestExtensionCreate extends TestTemplate  {
 	}
 
 
+	@Autowired
+	private BeehiveParameterDao parameterDao;
+
+
+	@Test
+	public void initParameter(){
+
+
+		CallbackUrlParameter param=new CallbackUrlParameter();
+
+		param.setBaseUrl("http://114.215.196.178:7070/api/echo");
+
+		param.setNegitive("negitiveCallback");
+		param.setPositive("positiveCallback");
+		param.setSimple("simpleCallback");
+		param.setSummary("summaryCallback");
+		param.setStateChange("stateChangeCallback");
+
+		parameterDao.saveTriggerCallbackParam(APP_NAME,param);
+	}
 
 	@Test
 	public void registerExtension() throws InterruptedException, IOException {

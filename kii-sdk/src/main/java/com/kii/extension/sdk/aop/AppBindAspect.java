@@ -53,6 +53,9 @@ public class AppBindAspect {
 
 		BindAppByName  appByName=joinPoint.getTarget().getClass().getAnnotation(BindAppByName.class);
 
+		if(appByName==null){
+			return;
+		}
 		AppChoice choice=new AppChoice();
 		if(!StringUtils.isEmpty(appByName.appBindSource())) {
 			choice.setBindName(appByName.appBindSource());
@@ -67,6 +70,10 @@ public class AppBindAspect {
 	@After("commDataAccess() || appBindWithAnnotation() ")
 	public void afterCallDataAccess(JoinPoint joinPoint){
 
+		BindAppByName  appByName=joinPoint.getTarget().getClass().getAnnotation(BindAppByName.class);
+		if(appByName==null){
+			return;
+		}
 		bindTool.clean();
 
 	}

@@ -9,6 +9,7 @@ import java.util.Set;
 import org.springframework.beans.BeanUtils;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.store.entity.BeehiveUserGroup;
 

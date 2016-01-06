@@ -1,7 +1,6 @@
 package com.kii.extension.sdk.context;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 
 import java.util.LinkedList;
 

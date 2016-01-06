@@ -1,15 +1,11 @@
 package com.kii.beehive.portal.store.entity.trigger;
 
-import java.lang.reflect.Member;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
-import com.kii.extension.sdk.entity.KiiEntity;
 import com.kii.extension.sdk.entity.thingif.TriggerWhen;
 
 public class GroupTriggerRuntimeState extends TriggerRuntimeState{

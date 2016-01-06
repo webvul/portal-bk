@@ -11,11 +11,9 @@ import com.kii.beehive.business.manager.ThingGroupStateManager;
 import com.kii.beehive.business.service.ThingTagService;
 import com.kii.beehive.portal.event.EventParam;
 import com.kii.beehive.portal.event.annotation.TagChanged;
-import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.service.TriggerRecordDao;
 import com.kii.beehive.portal.store.entity.trigger.GroupTriggerRecord;
-import com.kii.beehive.portal.store.entity.trigger.TriggerRecord;
 
 @Component(KiicloudEventListenerService.REFRESH_THING_GROUP)
 @TagChanged

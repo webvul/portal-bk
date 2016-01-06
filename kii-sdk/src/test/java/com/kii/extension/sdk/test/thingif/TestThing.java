@@ -7,18 +7,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.kii.extension.factory.LocalPropertyBindTool;
-import com.kii.extension.sdk.context.AdminTokenBindTool;
 import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.context.TokenBindToolResolver;
-import com.kii.extension.sdk.entity.FederatedAuthResult;
 import com.kii.extension.sdk.entity.thingif.Action;
 import com.kii.extension.sdk.entity.thingif.LayoutPosition;
 import com.kii.extension.sdk.entity.thingif.OnBoardingParam;
-import com.kii.extension.sdk.entity.thingif.Predicate;
 import com.kii.extension.sdk.entity.thingif.StatePredicate;
 import com.kii.extension.sdk.entity.thingif.TargetCommand;
-import com.kii.extension.sdk.entity.thingif.ThingCommand;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 import com.kii.extension.sdk.entity.thingif.ThingTrigger;
 import com.kii.extension.sdk.entity.thingif.TriggerTarget;

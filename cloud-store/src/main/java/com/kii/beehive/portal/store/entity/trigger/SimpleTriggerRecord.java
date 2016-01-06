@@ -1,6 +1,5 @@
 package com.kii.beehive.portal.store.entity.trigger;
 
-import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class SimpleTriggerRecord extends TriggerRecord{

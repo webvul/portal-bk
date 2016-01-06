@@ -1,7 +1,5 @@
 package com.kii.beehive.portal.store.entity.trigger;
 
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
-
 import com.kii.extension.sdk.entity.thingif.ServiceCode;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
 

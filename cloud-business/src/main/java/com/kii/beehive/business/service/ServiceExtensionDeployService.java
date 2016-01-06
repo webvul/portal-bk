@@ -2,7 +2,6 @@ package com.kii.beehive.business.service;
 
 import java.util.List;
 
-import org.apache.http.client.methods.HttpUriRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;

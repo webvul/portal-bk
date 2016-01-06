@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kii.beehive.business.manager.SimpleThingTriggerManager;
 import com.kii.beehive.business.manager.TagThingManager;
 import com.kii.beehive.business.manager.ThingGroupStateManager;
 import com.kii.beehive.business.service.ThingIFInAppService;

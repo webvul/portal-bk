@@ -4,7 +4,6 @@ package com.kii.extension.sdk.context;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 
 @Component

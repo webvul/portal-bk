@@ -1,7 +1,5 @@
 package com.kii.extension.sdk.query.condition;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.kii.extension.sdk.query.ConditionType;

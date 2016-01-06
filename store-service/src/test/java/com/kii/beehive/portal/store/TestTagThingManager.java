@@ -8,10 +8,10 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.kii.beehive.business.manager.TagThingManager;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagType;
-import com.kii.beehive.business.manager.TagThingManager;
 
 public class TestTagThingManager extends TestInit {
 

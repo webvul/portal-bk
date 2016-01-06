@@ -19,7 +19,6 @@ import com.kii.beehive.portal.store.entity.trigger.SummaryFunctionType;
 import com.kii.beehive.portal.store.entity.trigger.SummaryTriggerRecord;
 import com.kii.beehive.portal.store.entity.trigger.SummaryTriggerRuntimeState;
 import com.kii.beehive.portal.store.entity.trigger.TagSelector;
-import com.kii.beehive.portal.store.entity.trigger.TriggerRuntimeState;
 import com.kii.beehive.portal.store.entity.trigger.TriggerSource;
 import com.kii.extension.sdk.entity.thingif.OnBoardingParam;
 import com.kii.extension.sdk.entity.thingif.OnBoardingResult;

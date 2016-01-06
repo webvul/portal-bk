@@ -1,28 +1,19 @@
 package com.kii.beehive.portal.jdbc.dao;
 
-import java.beans.PropertyDescriptor;
+import javax.sql.DataSource;
+
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import javax.sql.DataSource;
-
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.jdbc.object.SqlUpdate;
 
-import com.kii.beehive.portal.common.utils.StrTemplate;
-import com.kii.beehive.portal.jdbc.annotation.JdbcField;
 import com.kii.beehive.portal.jdbc.entity.DBEntity;
 import com.kii.beehive.portal.jdbc.helper.AnnationBeanSqlParameterSource;
 import com.kii.beehive.portal.jdbc.helper.BindClsFullUpdateTool;

@@ -1,9 +1,7 @@
 package com.kii.beehive.portal.store.entity.trigger;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -11,7 +9,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import com.kii.extension.sdk.entity.KiiEntity;
 import com.kii.extension.sdk.entity.thingif.StatePredicate;
-import com.kii.extension.sdk.entity.thingif.ThingCommand;
 
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME,

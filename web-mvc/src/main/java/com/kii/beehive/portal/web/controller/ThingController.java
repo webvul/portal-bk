@@ -22,11 +22,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kii.beehive.business.manager.TagThingManager;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagType;
-import com.kii.beehive.business.manager.TagThingManager;
 import com.kii.beehive.portal.web.entity.ThingRestBean;
 import com.kii.beehive.portal.web.help.PortalException;
 

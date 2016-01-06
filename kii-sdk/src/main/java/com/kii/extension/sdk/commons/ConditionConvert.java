@@ -9,7 +9,6 @@ import com.kii.extension.sdk.query.condition.Equal;
 import com.kii.extension.sdk.query.condition.NotLogic;
 import com.kii.extension.sdk.query.condition.OrLogic;
 import com.kii.extension.sdk.query.condition.Range;
-import com.kii.extension.sdk.query.condition.SimpleCondition;
 
 public class ConditionConvert {
 

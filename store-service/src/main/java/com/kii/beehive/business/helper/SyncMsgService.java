@@ -7,6 +7,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.kii.beehive.portal.service.DeviceSupplierDao;
 import com.kii.beehive.portal.service.UserSyncMsgDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;

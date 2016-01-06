@@ -8,13 +8,10 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.extension.sdk.context.AppBindToolResolver;
-import com.kii.extension.sdk.context.TokenBindToolResolver;
 import com.kii.extension.sdk.entity.AppInfo;
 import com.kii.extension.sdk.entity.thingif.ActionResult;
 import com.kii.extension.sdk.entity.thingif.CommandDetail;
@@ -23,7 +20,6 @@ import com.kii.extension.sdk.entity.thingif.OnBoardingParam;
 import com.kii.extension.sdk.entity.thingif.OnBoardingResult;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
-import com.kii.extension.sdk.entity.thingif.ThingTrigger;
 import com.kii.extension.sdk.impl.ApiAccessBuilder;
 import com.kii.extension.sdk.impl.KiiCloudClient;
 

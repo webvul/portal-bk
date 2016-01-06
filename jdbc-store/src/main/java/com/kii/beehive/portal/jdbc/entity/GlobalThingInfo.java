@@ -1,7 +1,5 @@
 package com.kii.beehive.portal.jdbc.entity;
 
-import org.springframework.util.StringUtils;
-
 import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.jdbc.annotation.JdbcField;
 import com.kii.beehive.portal.jdbc.annotation.JdbcFieldType;

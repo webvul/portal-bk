@@ -14,7 +14,6 @@ import com.kii.beehive.portal.store.entity.trigger.SimpleTriggerRuntimeState;
 import com.kii.extension.sdk.entity.FederatedAuthResult;
 import com.kii.extension.sdk.entity.thingif.ServiceCode;
 import com.kii.extension.sdk.entity.thingif.StatePredicate;
-import com.kii.extension.sdk.entity.thingif.ThingCommand;
 import com.kii.extension.sdk.entity.thingif.ThingTrigger;
 import com.kii.extension.sdk.entity.thingif.TriggerTarget;
 

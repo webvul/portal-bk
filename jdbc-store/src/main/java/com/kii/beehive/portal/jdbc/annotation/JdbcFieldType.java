@@ -1,9 +1,9 @@
 package com.kii.beehive.portal.jdbc.annotation;
 
 
-import java.sql.Types;
-
 import static org.springframework.jdbc.core.namedparam.SqlParameterSource.TYPE_UNKNOWN;
+
+import java.sql.Types;
 
 public enum JdbcFieldType {
 

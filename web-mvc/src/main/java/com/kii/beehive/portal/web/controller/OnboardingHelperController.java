@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.business.manager.AppInfoManager;
 import com.kii.beehive.business.manager.TagThingManager;
+import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
 import com.kii.beehive.portal.web.help.PortalException;

@@ -1,10 +1,8 @@
 package com.kii.extension.sdk.entity.serviceextension;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
