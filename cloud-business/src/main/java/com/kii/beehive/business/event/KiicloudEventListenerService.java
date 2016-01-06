@@ -26,7 +26,7 @@ public class KiicloudEventListenerService {
 	@Autowired
 	private EventListenerDao  eventListenerDao;
 
-	public void addTagChangeListener(List<String> tagNames,String triggerID){
+	public String addTagChangeListener(List<String> tagNames,String triggerID){
 
 
 		EventListener  listener=new EventListener();
@@ -37,9 +37,11 @@ public class KiicloudEventListenerService {
 		listener.setEnable(true);
 		listener.setType(EventType.TagChange);
 
-		eventListenerDao.addEventListener(listener);
+		return eventListenerDao.addEventListener(listener);
 
 	}
+
+
 
 	public String addSummaryChangeListener(List<String> tagNames,String summaryThingID){
 
@@ -106,5 +108,10 @@ public class KiicloudEventListenerService {
 		listener.stream().map(EventListener::getId).forEach(eventListenerDao::enableListener);
 
 	}
+	
+	
+	public void removeListener(String listenerID) {
 
+		eventListenerDao.removeEntity(listenerID);
+	}
 }

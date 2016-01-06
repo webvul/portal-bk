@@ -12,26 +12,6 @@ public class SummaryTriggerRecord extends TriggerRecord {
 	private TriggerSource  source;
 
 
-	private String listenerID;
-
-	private String summaryThingID;
-
-
-	public String getListenerID() {
-		return listenerID;
-	}
-
-	public void setListenerID(String listenerID) {
-		this.listenerID = listenerID;
-	}
-
-	public String getSummaryThingID() {
-		return summaryThingID;
-	}
-
-	public void setSummaryThingID(String summaryThingID) {
-		this.summaryThingID = summaryThingID;
-	}
 
 
 
@@ -43,9 +23,6 @@ public class SummaryTriggerRecord extends TriggerRecord {
 		this.source = source;
 	}
 
-//	public TriggerType getType() {
-//		return TriggerType.Summary;
-//	}
 
 	public List<SummaryExpress> getSummaryExpress() {
 		return summaryExpress;

@@ -32,6 +32,10 @@ public class AppMasterSalveService {
 	private AdminTokenBindTool tool;
 
 
+	private ApiAccessBuilder getBuilder(AppInfo info) {
+
+		return new ApiAccessBuilder(info).bindToken(tool.getToken());
+	}
 
 
 	public boolean isMaster(@AppBindParam AppInfo info){
@@ -46,7 +50,7 @@ X-Kii-AppKey: <appKey>
 
 		ApiAccessBuilder builder = getBuilder(info);
 
-		HttpUriRequest request=builder.addSubUrl("/configuration/parameters/isMasterApp").buildCustomCall("GET",null).generRequest(mapper);
+		HttpUriRequest request=builder.getSystemParameter("isMasterApp").generRequest(mapper);
 
 		String result=client.executeRequest(request);
 
@@ -54,16 +58,10 @@ X-Kii-AppKey: <appKey>
 	}
 
 	public String checkMaster(@AppBindParam  AppInfo info){
-		/*
 
-GET /apps/<slaveAppID>/configuration/parameters/kii.master_app_id
-Authorization: Bearer xxxyyyzzz (app-admin / sys-admin)
-X-Kii-AppID: <slaveAppID>
-X-Kii-AppKey: <slaveAppKey>
-		 */
 		HttpUriRequest  request=getBuilder(info).bindToken(tool.getToken())
-				.addSubUrl("/configuration/parameters/kii.master_app_id")
-				.buildCustomCall("GET",null).generRequest(mapper);
+				.getSystemParameter("kii.master_app_id")
+				.generRequest(mapper);
 
 		try {
 			return client.executeRequest(request);
@@ -73,25 +71,14 @@ X-Kii-AppKey: <slaveAppKey>
 
 	}
 
-	private ApiAccessBuilder getBuilder(AppInfo info) {
-//		bindToolResolver.setAppInfoDrectly(info);
-
-		return new ApiAccessBuilder(info).bindToken(tool.getToken());
-	}
 
 
 	public void setMaster(@AppBindParam AppInfo info){
 
-		/*
-		PUT /apps/<masterAppID>/configuration/parameters/isMasterApp
-content-type: text/plain
-Authorization: Bearer xxxyyyzzz (app-admin / sys-admin)
-X-Kii-AppID: <masterAppID>
-X-Kii-AppKey: <masterAppKey>
-		 */
+
 		ApiAccessBuilder builder = getBuilder(info);
 
-		HttpUriRequest request=builder.addSubUrl("/configuration/parameters/isMasterApp").setContentType("text/plain").buildCustomCall("PUT","true").generRequest(mapper);
+		HttpUriRequest request=builder.setSystemParameter("isMasterApp","true").generRequest(mapper);
 
 		HttpResponse response=client.doRequest(request);
 
@@ -99,32 +86,11 @@ X-Kii-AppKey: <masterAppKey>
 			throw new  KiiCloudException(response);
 		}
 
-			/*
-		curl -XPOST \
-  -H'x-kii-appid: f5795cb7' -H'x-kii-appkey: 12c239d31a3c38dcf53c5208a59d2ddd' \
-  -H'authorization: Bearer YM-ke1JasJU9n4G-7zKC5uXPwC6Y_xUWBTaUJdJmeWU' \
-  -H'content-type: application/json' \
-  https://api-development-beehivecn3.internal.kii.com/api/apps/f5795cb7/oauth2/certs -d {}
-
-		 */
-
 		request=builder.addSubUrl("/oauth2/certs").buildCustomCall("POST","{}").setContentType("application/json").generRequest(mapper);
 
 		client.doRequest(request);
 
 	}
-
-
-
-
-//	public void addSalveAppToMaster(@AppBindParam AppInfo  masterApp,AppInfo  salveAppInfo){
-//
-//
-//		ClientInfo info=addSalveApp(masterApp, salveAppInfo);
-//
-//		registInSalve(info,masterApp,salveAppInfo);
-//
-//	}
 
 
 

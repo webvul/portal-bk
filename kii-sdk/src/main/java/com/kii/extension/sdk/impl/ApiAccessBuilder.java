@@ -114,6 +114,24 @@ public class ApiAccessBuilder {
 		return this;
 	}
 
+	public ApiAccessBuilder setSystemParameter(String parameter,String value){
+
+		//"/configuration/parameters/isMasterApp"
+		request=new HttpPut(appInfo.getAppSubUrl()+"/configuration/parameters/"+parameter);
+		this.ctxObj=value;
+		setContentType("text/plain");
+
+		return this;
+	}
+
+	public ApiAccessBuilder getSystemParameter(String parameter){
+
+		//"/configuration/parameters/isMasterApp"
+		request=new HttpGet(appInfo.getAppSubUrl()+"/configuration/parameters/"+parameter);
+
+		return this;
+	}
+
 
 	public ApiAccessBuilder bindBucketInfo(BucketInfo bucketInfo) {
 		return this.bindBucket(bucketInfo.getBucketName()).bindScope(bucketInfo.getScopeType(), bucketInfo.getScopeName());

@@ -145,7 +145,7 @@ public class TestTriggerCreate extends TestTemplate {
 	public void fireCallback(){
 
 		String triggerID="1d08aa50-af80-11e5-962a-00163e02138f";
-		callbackService.onSimpleArrive(triggerID);
+		callbackService.onSimpleArrive("",triggerID);
 
 
 

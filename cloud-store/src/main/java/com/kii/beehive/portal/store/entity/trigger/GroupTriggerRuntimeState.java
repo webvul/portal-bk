@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.kii.extension.sdk.entity.KiiEntity;
 import com.kii.extension.sdk.entity.thingif.TriggerWhen;
 
-public class GroupTriggerRuntimeState extends KiiEntity{
+public class GroupTriggerRuntimeState extends TriggerRuntimeState{
 
 
 
@@ -22,7 +22,7 @@ public class GroupTriggerRuntimeState extends KiiEntity{
 
 	private int criticalNumber;
 
-	private String relationTriggerID;
+//	private String relationTriggerID;
 
 	private boolean currentStatus;
 
@@ -43,13 +43,13 @@ public class GroupTriggerRuntimeState extends KiiEntity{
 		this.currThingTriggerMap.put(thingID,triggerCol);
 	}
 
-	public String getRelationTriggerID() {
-		return relationTriggerID;
-	}
-
-	public void setRelationTriggerID(String relationTriggerID) {
-		this.relationTriggerID = relationTriggerID;
-	}
+//	public String getRelationTriggerID() {
+//		return relationTriggerID;
+//	}
+//
+//	public void setRelationTriggerID(String relationTriggerID) {
+//		this.relationTriggerID = relationTriggerID;
+//	}
 
 	public TriggerGroupPolicy.TriggerGroupPolicyType getPolicy() {
 		return policy;
@@ -99,4 +99,13 @@ public class GroupTriggerRuntimeState extends KiiEntity{
 
 	}
 
+	private String listenerID;
+	
+	public void setListenerID(String listenerID) {
+		this.listenerID = listenerID;
+	}
+
+	public String getListenerID() {
+		return listenerID;
+	}
 }

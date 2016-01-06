@@ -15,7 +15,7 @@ import com.kii.beehive.business.service.ThingTagService;
 import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.service.TriggerRecordDao;
-import com.kii.beehive.portal.service.GroupTriggerStatusDao;
+import com.kii.beehive.portal.service.TriggerRuntimeStatusDao;
 import com.kii.beehive.portal.store.entity.trigger.GroupTriggerRecord;
 import com.kii.beehive.portal.store.entity.trigger.KiiTriggerCol;
 import com.kii.beehive.portal.store.entity.trigger.MemberState;
@@ -28,9 +28,7 @@ import com.kii.extension.sdk.entity.thingif.ThingTrigger;
 import com.kii.extension.sdk.entity.thingif.TriggerTarget;
 import com.kii.extension.sdk.entity.thingif.TriggerWhen;
 import com.kii.extension.sdk.query.Condition;
-import com.kii.extension.sdk.query.ConditionBuilder;
 import com.kii.extension.sdk.query.condition.AndLogic;
-import com.kii.extension.sdk.query.condition.LogicCol;
 import com.kii.extension.sdk.query.condition.NotLogic;
 import com.kii.extension.sdk.query.condition.OrLogic;
 import com.kii.extension.sdk.query.condition.Range;
@@ -43,7 +41,7 @@ public class ThingGroupStateManager {
 	private ThingIFInAppService thingIFService;
 
 	@Autowired
-	private GroupTriggerStatusDao statusDao;
+	private TriggerRuntimeStatusDao statusDao;
 
 	@Autowired
 	private ThingTagService thingTagService;
@@ -72,6 +70,24 @@ public class ThingGroupStateManager {
 
 	}
 
+	public void removeTrigger(String triggerID){
+
+
+		GroupTriggerRuntimeState state=statusDao.getGroupRuntimeState(triggerID);
+
+		for (Map.Entry<String, KiiTriggerCol> entry : state.getCurrThingTriggerMap().entrySet()) {
+
+			String thingID=entry.getKey();
+			KiiTriggerCol col=entry.getValue();
+
+			thingIFService.removeTrigger(thingID,col.getNegativeID());
+			thingIFService.removeTrigger(thingID,col.getPositiveID());
+		}
+
+		listenerService.removeListener(state.getListenerID());
+
+		triggerDao.removeEntity(triggerID);
+	}
 
 
 	public void createThingGroup( GroupTriggerRecord record){
@@ -92,50 +108,33 @@ public class ThingGroupStateManager {
 
 		List<String> thingIDs=thingList.stream().map(GlobalThingInfo::getFullKiiThingID).collect(Collectors.toList());
 		thingIDs.forEach(thingID-> {
+			state.addThingID(thingID);
 			KiiTriggerCol idCol=registDoubleTrigger(thingID, record.getPerdicate().getCondition(),triggerID);
 			state.addThingTriggerInfo(thingID,idCol);
+			state.getMemberState().setMemberStatus(thingID,false);
 		});
+
+		if(!record.getSource().getSelector().getTagList().isEmpty()) {
+			String listenerID=listenerService.addTagChangeListener(record.getSource().getSelector().getTagList(),triggerID);
+			state.setListenerID(listenerID);
+		}
 
 		statusDao.addEntity(state,triggerID);
 		initGroupState(thingIDs);
 
-		if(!record.getSource().getSelector().getTagList().isEmpty()) {
-			listenerService.addTagChangeListener(record.getSource().getSelector().getTagList(),triggerID);
-		}
+
 	}
 
 
 	private KiiTriggerCol registDoubleTrigger(String thingID, Condition condition, String triggerID){
 
-		ThingIDTools.ThingIDCombine combine=ThingIDTools.splitFullKiiThingID(thingID);
 
 		KiiTriggerCol idCol=new KiiTriggerCol();
 
-		StatePredicate positivePredicate=new StatePredicate();
-		positivePredicate.setCondition(condition);
-		positivePredicate.setTriggersWhen(TriggerWhen.CONDITION_TRUE);
-
-		ThingTrigger triggerTrue=new ThingTrigger();
-
-		triggerTrue.setTarget(TriggerTarget.SERVER_CODE);
-		triggerTrue.setPredicate(positivePredicate);
-		triggerTrue.setServiceCode(getPositiveServiceCode(combine,triggerID));
-		String positiveID=thingIFService.createTrigger(thingID,triggerTrue);
+		String positiveID=thingIFService.createTrigger(thingID,getPositiveTrigger(condition,thingID,triggerID));
 		idCol.setPositiveID(positiveID);
 
-		ThingTrigger triggerFalse=new ThingTrigger();
-
-		StatePredicate negativePredicate=new StatePredicate();
-		negativePredicate.setTriggersWhen(TriggerWhen.CONDITION_TRUE);
-		NotLogic negCond=new NotLogic();
-		negCond.setClause(condition);
-		negativePredicate.setCondition(getNotCondition(condition));
-
-		triggerFalse.setTarget(TriggerTarget.SERVER_CODE);
-		triggerFalse.setPredicate(negativePredicate);
-		triggerFalse.setServiceCode(getNegativeServiceCode(combine,triggerID));
-
-		String negativeID=thingIFService.createTrigger(thingID,triggerFalse);
+		String negativeID=thingIFService.createTrigger(thingID,getNegitiveTrigger(condition,thingID,triggerID));
 		idCol.setNegativeID(negativeID);
 
 		return idCol;
@@ -196,37 +195,50 @@ public class ThingGroupStateManager {
 
 	}
 
-	private  ServiceCode getPositiveServiceCode(ThingIDTools.ThingIDCombine combine, String triggerID){
+	private  ThingTrigger getPositiveTrigger(Condition condition,String fullThingID, String triggerID){
 
-		ServiceCode serviceCode=new ServiceCode();
-
-		serviceCode.setEndpoint(EndPointNameConstant.PositiveTriggerEndPoint);
-		serviceCode.addParameter("thingID",combine.kiiThingID);
-		serviceCode.addParameter("triggerID",triggerID);
-		serviceCode.setTargetAppID(combine.kiiAppID);
-		serviceCode.setExecutorAccessToken(appInfoManager.getDefaultOwer(combine.kiiAppID).getAppAuthToken());
-
-		return serviceCode;
+		return getServiceCode(condition,EndPointNameConstant.PositiveTriggerEndPoint,fullThingID,triggerID);
 	}
 
-	private  ServiceCode getNegativeServiceCode(ThingIDTools.ThingIDCombine combine,String triggerID){
+	private  ThingTrigger getNegitiveTrigger(Condition condition,String fullThingID, String triggerID){
 
+		return getServiceCode(getNotCondition(condition),EndPointNameConstant.NegitiveTriggerEndPoint,fullThingID,triggerID);
+	}
+
+	private  ThingTrigger getServiceCode(Condition condition,String endPoint ,String fullThingID,String triggerID){
+
+		ThingTrigger triggerForGroup=new ThingTrigger();
+
+		StatePredicate negativePredicate=new StatePredicate();
+		negativePredicate.setTriggersWhen(TriggerWhen.CONDITION_TRUE);
+		negativePredicate.setCondition(condition);
+
+		triggerForGroup.setTarget(TriggerTarget.SERVER_CODE);
+		triggerForGroup.setPredicate(negativePredicate);
+
+
+		ThingIDTools.ThingIDCombine combine=ThingIDTools.splitFullKiiThingID(fullThingID);
+
+		String appName=combine.kiiAppID;
 		ServiceCode serviceCode=new ServiceCode();
 
-		serviceCode.setEndpoint(EndPointNameConstant.NegitiveTriggerEndPoint);
-		serviceCode.addParameter("thingID",combine.kiiThingID);
-		serviceCode.addParameter("triggerID",triggerID);
-		serviceCode.setTargetAppID(combine.kiiAppID);
-		serviceCode.setExecutorAccessToken(appInfoManager.getDefaultOwer(combine.kiiAppID).getAppAuthToken());
 
-		return serviceCode;
+		serviceCode.setEndpoint(endPoint);
+		serviceCode.addParameter("thingID",fullThingID);
+		serviceCode.addParameter("triggerID",triggerID);
+		serviceCode.setTargetAppID(appName);
+		serviceCode.setExecutorAccessToken(appInfoManager.getDefaultOwer(appName).getAppAuthToken());
+
+		triggerForGroup.setServiceCode(serviceCode);
+
+		return triggerForGroup;
 	}
 
 	public void updateThingGroup(List<GlobalThingInfo>  thingList,GroupTriggerRecord triggerRecord){
 
 		List<String> thingIDs=thingList.stream().map(GlobalThingInfo::getFullKiiThingID).collect(Collectors.toList());
 
-		GroupTriggerRuntimeState state=statusDao.getObjectByID(triggerRecord.getId());
+		GroupTriggerRuntimeState state=statusDao.getGroupRuntimeState(triggerRecord.getId());
 
 		MemberState memberMap=state.getMemberState();
 

@@ -1,6 +1,7 @@
 package com.kii.beehive.business;
 
 import java.util.Collections;
+import java.util.List;
 
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -46,10 +47,6 @@ public class TestGroupTrigger extends TestTemplate{
 
 
 	@Autowired
-	private TriggerFireCallbackService callbackService;
-
-
-	@Autowired
 	private ThingIFInAppService thingIFService;
 
 
@@ -63,6 +60,10 @@ public class TestGroupTrigger extends TestTemplate{
 	@Autowired
 	private ThingTagService thingTagService;
 
+	@Autowired
+	private TriggerFireCallbackService callbackService;
+
+
 	@Test
 	public void fireTagChange(){
 
@@ -75,7 +76,7 @@ public class TestGroupTrigger extends TestTemplate{
 	public void sendState(){
 
 
-//		for(long thingID:thingIDs) {
+		for(long thingID:thingIDs) {
 
 			GlobalThingInfo thingInfo = thingTagService.getThingByID(thingIDs[8]);
 
@@ -85,7 +86,28 @@ public class TestGroupTrigger extends TestTemplate{
 			status.setField("bar",125);
 
 			thingIFService.putStatus(thingInfo.getFullKiiThingID(), status);
-//		}
+		}
+	}
+
+	private String triggerID="6a7337b0-b38b-11e5-8554-00163e007aba";
+	@Test
+	public void callback(){
+
+		TagSelector selector=new TagSelector();
+		selector.addTag(tagNames[1]);
+		selector.addTag(tagNames[2]);
+		selector.addTag(tagNames[3]);
+
+		List<GlobalThingInfo> things=thingTagService.getThingInfos(selector);
+
+
+		for(GlobalThingInfo th:things) {
+			if(Math.random()>0.5f) {
+				callbackService.onNegitiveArrive(th.getFullKiiThingID(),triggerID);
+			}else{
+				callbackService.onPositiveArrive(th.getFullKiiThingID(),triggerID);
+			}
+		}
 	}
 
 	@Test

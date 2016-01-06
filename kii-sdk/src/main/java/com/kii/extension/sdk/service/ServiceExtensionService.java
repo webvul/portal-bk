@@ -17,6 +17,7 @@ import com.kii.extension.sdk.commons.HttpUtils;
 import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.context.TokenBindToolResolver;
 import com.kii.extension.sdk.entity.AppInfo;
+import com.kii.extension.sdk.exception.AppParameterCodeNotFoundException;
 import com.kii.extension.sdk.impl.ApiAccessBuilder;
 import com.kii.extension.sdk.impl.KiiCloudClient;
 
@@ -85,6 +86,29 @@ public class ServiceExtensionService {
 		HttpUriRequest request=getBuilder().getCurrentVersion().generRequest(mapper);
 
 		return client.executeRequest(request);
+	}
+
+	public String getSystemParameter(String name){
+
+		HttpUriRequest  request=getBuilder()
+				.getSystemParameter(name)
+				.generRequest(mapper);
+
+		try {
+			return client.executeRequest(request);
+		}catch(AppParameterCodeNotFoundException e){
+			return null;
+		}
+	}
+
+
+	public void setSystemParameter(String name,String value){
+
+		HttpUriRequest  request=getBuilder()
+				.setSystemParameter(name,value)
+				.generRequest(mapper);
+
+		client.executeRequest(request);
 	}
 
 

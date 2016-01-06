@@ -62,7 +62,7 @@ public class MemberState {
 			case Some:
 				return accessNum>criticalNumber;
 			case Percent:
-				return (100.0*accessNum/sumNum)>criticalNumber;
+				return 100*accessNum>(criticalNumber*sumNum);
 			default:
 				return false;
 		}

@@ -13,10 +13,13 @@ import com.kii.beehive.business.service.ThingTagService;
 import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.service.TriggerRecordDao;
+import com.kii.beehive.portal.service.TriggerRuntimeStatusDao;
 import com.kii.beehive.portal.store.entity.trigger.SummaryExpress;
 import com.kii.beehive.portal.store.entity.trigger.SummaryFunctionType;
 import com.kii.beehive.portal.store.entity.trigger.SummaryTriggerRecord;
+import com.kii.beehive.portal.store.entity.trigger.SummaryTriggerRuntimeState;
 import com.kii.beehive.portal.store.entity.trigger.TagSelector;
+import com.kii.beehive.portal.store.entity.trigger.TriggerRuntimeState;
 import com.kii.beehive.portal.store.entity.trigger.TriggerSource;
 import com.kii.extension.sdk.entity.thingif.OnBoardingParam;
 import com.kii.extension.sdk.entity.thingif.OnBoardingResult;
@@ -45,6 +48,8 @@ public class ThingStateSummaryManager {
 	@Autowired
 	private AppInfoManager appInfoManager;
 
+	@Autowired
+	private TriggerRuntimeStatusDao statusDao;
 
 
 //	@Autowired
@@ -62,8 +67,10 @@ public class ThingStateSummaryManager {
 
 		OnBoardingResult result=thingIFService.onBoarding(param,"master");
 
+		SummaryTriggerRuntimeState state=new SummaryTriggerRuntimeState();
+
 		String summaryID=result.getThingID();
-		record.setSummaryThingID(summaryID);
+		state.setSummaryThingID(summaryID);
 
 		TriggerSource  source=record.getSource();
 		List<GlobalThingInfo> things=thingTagService.getThingInfos(source.getSelector());
@@ -71,7 +78,7 @@ public class ThingStateSummaryManager {
 		List<String> thingIDs=things.stream().map(thing->thing.getFullKiiThingID()).collect(Collectors.toList());
 
 		String listenerID=listenerService.addThingStatusListener(thingIDs,summaryID);
-		record.setListenerID(listenerID);
+		state.setListenerID(listenerID);
 
 		if(!source.getSelector().getTagList().isEmpty()) {
 
@@ -80,7 +87,6 @@ public class ThingStateSummaryManager {
 		}
 
 		String triggerID=triggerDao.addKiiEntity(record);
-
 
 		registTrigger(summaryID,triggerID,record.getPerdicate());
 
@@ -143,7 +149,9 @@ public class ThingStateSummaryManager {
 
 		List<String> thingIDList=thingList.stream().map(thing->thing.getFullKiiThingID()).collect(Collectors.toList());
 
-		listenerService.updateThingStatusListener(thingIDList,record.getListenerID());
+		SummaryTriggerRuntimeState state=statusDao.getSummaryRuntimeState(triggerID);
+
+		listenerService.updateThingStatusListener(thingIDList,state.getListenerID());
 
 		refreshThingState(thingIDList);
 	}
