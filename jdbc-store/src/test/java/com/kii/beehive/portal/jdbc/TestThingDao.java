@@ -53,7 +53,7 @@ public class TestThingDao extends TestTemplate{
 		thing2.setStatus("1");
 		long id2=dao.insert(thing2);
 		
-		List<GlobalThingInfo>  list=dao.findByIDs(new Long[]{thing.getId(),id2});
+		List<GlobalThingInfo>  list=dao.findByIDs(new long[]{thing.getId(),id2});
 
 		assertEquals(2,list.size());
 	}

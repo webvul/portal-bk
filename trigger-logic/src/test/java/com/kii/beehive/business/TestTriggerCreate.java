@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kii.beehive.portal.manager.SimpleThingTriggerManager;
 import com.kii.beehive.business.service.ServiceExtensionDeployService;
 import com.kii.beehive.business.service.ThingIFInAppService;
-import com.kii.beehive.business.service.ThingTagService;
 import com.kii.beehive.business.service.TriggerFireCallbackService;
 import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
@@ -19,6 +18,7 @@ import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
 import com.kii.beehive.portal.jdbc.entity.TagType;
+import com.kii.beehive.portal.manager.ThingTagManager;
 import com.kii.beehive.portal.store.entity.trigger.SimpleTriggerRecord;
 import com.kii.beehive.portal.store.entity.trigger.TagSelector;
 import com.kii.beehive.portal.store.entity.trigger.TargetAction;
@@ -53,7 +53,7 @@ public class TestTriggerCreate extends TestTemplate {
 
 
 	@Autowired
-	private ThingTagService  thingTagService;
+	private ThingTagManager thingTagService;
 
 	@Autowired
 	private GlobalThingDao thingDao;

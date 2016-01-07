@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
+import com.kii.beehive.portal.manager.ThingTagManager;
 import com.kii.beehive.portal.service.TriggerRecordDao;
 import com.kii.beehive.portal.service.TriggerRuntimeStatusDao;
 import com.kii.beehive.portal.store.entity.trigger.GroupTriggerRuntimeState;
@@ -29,7 +30,7 @@ public class TriggerFireCallbackService {
 	private TriggerRuntimeStatusDao statusDao;
 
 	@Autowired
-	private ThingTagService  thingService;
+	private ThingTagManager thingService;
 
 
 	@Autowired

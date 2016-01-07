@@ -219,6 +219,8 @@ public class ThingController {
 		List<String> thingIDList = CollectionUtils.arrayToList(globalThingIDs.split(","));
 		List<String> tagIDList = CollectionUtils.arrayToList(tagIDs.split(","));
 		thingTagManager.bindTagToThing(tagIDList, thingIDList);
+
+		eventBus.onTagIDsChangeFire(tagIDList,true);
 	}
 
 	/**
@@ -234,6 +236,9 @@ public class ThingController {
 		List<String> thingIDList = CollectionUtils.arrayToList(globalThingIDs.split(","));
 		List<String> tagIDList = CollectionUtils.arrayToList(tagIDs.split(","));
 		thingTagManager.unbindTagToThing(tagIDList, thingIDList);
+
+		eventBus.onTagIDsChangeFire(tagIDList,false);
+
 	}
 
 	/**
@@ -256,6 +261,11 @@ public class ThingController {
 
 		List<String> displayNameList = CollectionUtils.arrayToList(displayNames.split(","));
 		thingTagManager.bindCustomTagToThing(displayNameList, globalThingIDList);
+
+		displayNameList.forEach(name->{
+			String fullName=TagType.Custom.getTagName(name);
+			eventBus.onTagChangeFire(fullName,true);
+		});
 	}
 
 	/**
@@ -278,6 +288,11 @@ public class ThingController {
 
 		List<String> displayNameList = CollectionUtils.arrayToList(displayNames.split(","));
 		thingTagManager.unbindCustomTagToThing(displayNameList, globalThingIDList);
+
+		displayNameList.forEach(name->{
+			String fullName=TagType.Custom.getTagName(name);
+			eventBus.onTagChangeFire(fullName,false);
+		});
 	}
 
 	/**

@@ -1,6 +1,5 @@
 package com.kii.beehive.business.event;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +10,7 @@ import org.springframework.stereotype.Component;
 import com.kii.beehive.portal.event.EventListener;
 import com.kii.beehive.portal.event.EventParam;
 import com.kii.beehive.portal.event.EventType;
+import com.kii.beehive.portal.manager.ThingTagManager;
 import com.kii.beehive.portal.service.EventListenerDao;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
@@ -23,6 +23,16 @@ public class KiiCloudEventBus {
 
 	@Autowired
 	private EventListenerDao eventDao;
+
+	@Autowired
+	private ThingTagManager thingTagManager;
+
+
+	@Async
+	public void onTagIDsChangeFire(List<String> tagIDList, boolean b) {
+
+		 thingTagManager.getTagNamesByIDs(tagIDList).forEach(name->onTagChangeFire(name,b));
+	}
 
 	@Async
 	public void onTagChangeFire(String tagName,boolean isAdd){
@@ -66,6 +76,6 @@ public class KiiCloudEventBus {
 		});
 
 	}
-
+	
 
 }

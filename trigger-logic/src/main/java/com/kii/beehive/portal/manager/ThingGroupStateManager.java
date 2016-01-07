@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 
 import com.kii.beehive.business.event.KiicloudEventListenerService;
 import com.kii.beehive.business.service.ThingIFInAppService;
-import com.kii.beehive.business.service.ThingTagService;
 import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.service.TriggerRecordDao;
@@ -48,7 +47,7 @@ public class ThingGroupStateManager {
 	private TriggerRuntimeStatusDao statusDao;
 
 	@Autowired
-	private ThingTagService thingTagService;
+	private ThingTagManager thingTagService;
 
 	@Autowired
 	private TriggerRecordDao triggerDao;

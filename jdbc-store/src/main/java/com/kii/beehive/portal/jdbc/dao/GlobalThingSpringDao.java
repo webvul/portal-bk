@@ -98,24 +98,12 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 
 	}
 
+	public void updateState(String state,String fullKiiThingID){
 
-
-	public GlobalThingInfo getThingByID(long globalThingID) {
-
-
-		String sql = "SELECT g.* "
-				+ "FROM global_thing g "
-				+ " WHERE g.id_global_thing  = ? ";
-
-		List<GlobalThingInfo> list= jdbcTemplate.query(sql,new Object[]{globalThingID},getRowMapper());
-
-		if(list.size()==0){
-			return null;
-		}else{
-			return list.get(0);
-		}
+		super.jdbcTemplate.update("update global_thing set state = ? where full_kii_thing_id = ? ",state,fullKiiThingID);
 
 	}
+
 
 	public GlobalThingInfo getThingByVendorThingID(String vendorThingID) {
 
@@ -132,6 +120,12 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 		}
 
 	}
+	
+	
+	public void updateKiiThingID(String vendorID, String fullKiiThingID) {
+
+		super.jdbcTemplate.update("update global_thing set full_kii_thing_id = ? where vendor_thing_id = ? ",fullKiiThingID,vendorID);
 
 
+	}
 }

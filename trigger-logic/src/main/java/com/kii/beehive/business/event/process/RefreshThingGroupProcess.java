@@ -8,10 +8,10 @@ import org.springframework.stereotype.Component;
 import com.kii.beehive.business.event.BeehiveEventProcess;
 import com.kii.beehive.business.event.KiicloudEventListenerService;
 import com.kii.beehive.portal.manager.ThingGroupStateManager;
-import com.kii.beehive.business.service.ThingTagService;
 import com.kii.beehive.portal.event.EventParam;
 import com.kii.beehive.portal.event.annotation.TagChanged;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
+import com.kii.beehive.portal.manager.ThingTagManager;
 import com.kii.beehive.portal.service.TriggerRecordDao;
 import com.kii.beehive.portal.store.entity.trigger.GroupTriggerRecord;
 
@@ -30,7 +30,7 @@ public class RefreshThingGroupProcess implements BeehiveEventProcess {
 	private TriggerRecordDao  triggerRecordDao;
 
 	@Autowired
-	private ThingTagService  thingService;
+	private ThingTagManager thingService;
 
 	@Override
 	public void onEventFire(String triggerID, EventParam param) {

@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.business.service.ThingIFInAppService;
-import com.kii.beehive.business.service.ThingTagService;
 import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.service.TriggerRecordDao;
@@ -32,7 +31,7 @@ public class SimpleThingTriggerManager {
 	private TriggerRecordDao triggerDao;
 
 	@Autowired
-	private ThingTagService thingTagService;
+	private ThingTagManager thingTagService;
 
 	@Autowired
 	private ThingIFInAppService thingIFService;

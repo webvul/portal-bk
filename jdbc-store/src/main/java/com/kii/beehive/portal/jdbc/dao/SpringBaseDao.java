@@ -82,7 +82,7 @@ public abstract class SpringBaseDao<T extends DBEntity> {
 		return (T) jdbcTemplate.queryForObject(sql, getRowMapper());
 	}
 
-	public List<T> findByIDs(Long[] ids){
+	public List<T> findByIDs(long[] ids){
 
 
 			String sql = "SELECT * FROM " + this.getTableName() + " WHERE "+ getKey() +" IN (:list)";
