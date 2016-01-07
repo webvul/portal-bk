@@ -19,7 +19,6 @@ public class UserGroupDao extends BaseDao<UserGroup> {
 	@Override
 	public long update(UserGroup tag) {
 		String[] columns = new String[]{
-				UserGroup.USER_GROUP_ID,
 				UserGroup.NAME,
 				UserGroup.DESCRIPTION,
 				UserGroup.CREATE_DATE,

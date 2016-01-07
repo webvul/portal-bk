@@ -112,7 +112,6 @@ public class GlobalThingDao extends BaseDao<GlobalThingInfo>{
 	@Override
 	public long update(GlobalThingInfo entity) {
 		String[] columns = new String[]{
-				GlobalThingInfo.ID_GLOBAL_THING,
 				GlobalThingInfo.VANDOR_THING_ID,
 				GlobalThingInfo.KII_APP_ID,
 				GlobalThingInfo.THING_TYPE,

@@ -67,7 +67,6 @@ public class GroupPermissionRelationDao extends BaseDao<GroupPermissionRelation>
 	public long update(GroupPermissionRelation entity) {
 		
 		String[] columns = new String[]{
-				GroupPermissionRelation.ID,
 				GroupPermissionRelation.PERMISSION_ID,
 				GroupPermissionRelation.USER_GROUP_ID
 		};

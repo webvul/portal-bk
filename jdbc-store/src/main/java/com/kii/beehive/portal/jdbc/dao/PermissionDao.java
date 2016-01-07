@@ -19,7 +19,6 @@ public class PermissionDao extends BaseDao<Permission> {
 	@Override
 	public long update(Permission tag) {
 		String[] columns = new String[]{
-				Permission.PERMISSION_ID,
 				Permission.SOURCE_ID,
 				Permission.NAME,
 				Permission.ACTION,

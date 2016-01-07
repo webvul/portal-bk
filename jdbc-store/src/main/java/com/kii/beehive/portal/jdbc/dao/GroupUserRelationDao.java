@@ -68,7 +68,6 @@ public class GroupUserRelationDao extends BaseDao<GroupUserRelation> {
 	public long update(GroupUserRelation entity) {
 		
 		String[] columns = new String[]{
-				GroupUserRelation.ID,
 				GroupUserRelation.USER_ID,
 				GroupUserRelation.USER_GROUP_ID
 		};
