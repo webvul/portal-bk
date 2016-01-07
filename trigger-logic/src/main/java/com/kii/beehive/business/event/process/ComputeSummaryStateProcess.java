@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 import com.kii.beehive.business.event.BeehiveEventProcess;
 import com.kii.beehive.business.event.KiicloudEventListenerService;
-import com.kii.beehive.business.manager.ThingStateSummaryManager;
+import com.kii.beehive.portal.manager.ThingStateSummaryManager;
 import com.kii.beehive.portal.event.EventParam;
 import com.kii.beehive.portal.event.annotation.ThingStateChange;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;

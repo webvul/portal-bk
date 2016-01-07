@@ -15,7 +15,7 @@ import org.springframework.core.io.ResourceLoader;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import com.kii.beehive.business.manager.TriggerMaintainManager;
+import com.kii.beehive.portal.manager.TriggerMaintainManager;
 import com.kii.beehive.business.service.ServiceExtensionDeployService;
 import com.kii.beehive.portal.service.BeehiveParameterDao;
 import com.kii.beehive.portal.store.entity.CallbackUrlParameter;

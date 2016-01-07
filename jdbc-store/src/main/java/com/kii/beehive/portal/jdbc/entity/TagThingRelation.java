@@ -22,7 +22,7 @@ public class TagThingRelation extends DBEntity {
 		this.thingID = thingID;
 	}
 
-	@JdbcField(column="id")
+	@JdbcField(column=ID)
 	public long getId() {
 		return id;
 	}

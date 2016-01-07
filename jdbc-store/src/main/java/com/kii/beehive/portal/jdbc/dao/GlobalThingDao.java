@@ -24,127 +24,36 @@ public class GlobalThingDao extends BaseDao<GlobalThingInfo>{
 	}
 
 	public List<String> findAllThingTypes() {
-		String sql = "SELECT DISTINCT thing_type FROM " + this.getTableName();
+		String sql = "SELECT DISTINCT "+ GlobalThingInfo.THING_TYPE +" FROM " + this.getTableName();
 
 		List<String> rows = jdbcTemplate.queryForList(sql, null, String.class);
 
 		return rows;
 	}
 
-//	public GlobalThingInfo getThingByVendorThingID(String vendorThingID) {
-//		List<GlobalThingInfo> list = super.findBySingleField(GlobalThingInfo.VANDOR_THING_ID, vendorThingID);
-//		if(list.size() > 0){
-//			return list.get(0);
-//		}else{
-//			return null;
-//		}
-//	}
 
 
-	public List<GlobalThingInfo> getThingsByIDArray(List<Long> thingIDs){
+	public List<Map<String, Object>> findAllThingTypesWithThingCount() {
+		String sql = "SELECT "+ GlobalThingInfo.THING_TYPE +" as type, COUNT(1) as count FROM " + this.getTableName()
+				+ " GROUP BY " + GlobalThingInfo.THING_TYPE;
 
-		String sql = "SELECT g.* "
-				+ "FROM global_thing g "
-				+ " WHERE g.id_global_thing in (:ids) ";
+		List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql, new Object[0]);
 
-		Map<String,Object> params=new HashMap<>();
-		params.put("ids",thingIDs);
-
-		return namedJdbcTemplate.query(sql,params,getRowMapper());
-
+		return rows;
 	}
-
-	public List<GlobalThingInfo> getThingsByVendorIDArray(List<String> vendorIDs){
-
-		String sql = "SELECT g.* "
-				+ "FROM global_thing g "
-				+ " WHERE g.vendor_thing_id in (:ids) ";
-
-		Map<String,Object> params=new HashMap<>();
-		params.put("ids",vendorIDs);
-
-		return namedJdbcTemplate.query(sql,params,getRowMapper());
-
-	}
-
-	public Set<GlobalThingInfo> queryThingByUnionTags(List<String> tagCollect){
-
-		String sql = "SELECT g.* "
-				+ "FROM global_thing g "
-				+ "INNER JOIN rel_thing_tag r ON g.id_global_thing=r.thing_id "
-				+ "INNER JOIN tag_index t ON t.tag_id=r.tag_id "
-				+ " WHERE t.full_tag_name in (:names) ";
-
-		return new HashSet<>(namedJdbcTemplate.query(sql, Collections.singletonMap("names",tagCollect),getRowMapper()));
-
-	}
-
-	public Set<GlobalThingInfo>  queryThingByIntersectionTags(List<String> tagCollect){
-
-		String sql = "select th.* from global_thing th where th.id_global_thing in  " +
-				  "  (SELECT g.id_global_thing "
-				+ "FROM global_thing g "
-				+ "INNER JOIN rel_thing_tag r ON g.id_global_thing=r.thing_id "
-				+ "INNER JOIN tag_index t ON t.tag_id=r.tag_id "
-				+ " WHERE t.full_tag_name in (:names) group by g.id_global_thing having  count(r.tag_id) = :count )";
-        Map<String,Object> params=new HashMap<>();
-		params.put("names",tagCollect);
-		params.put("count",tagCollect.size());
-
-		return new HashSet<>(namedJdbcTemplate.query(sql,params,getRowMapper()));
-
-	}
-
-	public GlobalThingInfo getThingByFullKiiThingID(String kiiAppID,String kiiThingID) {
-
-		String sql = "SELECT g.* "
-				+ "FROM global_thing g "
-				+ " WHERE g.full_kii_thing_id  = ? ";
-
-		String fullKiiThingID= ThingIDTools.joinFullKiiThingID(kiiAppID,kiiThingID);
-
-		List<GlobalThingInfo> list= jdbcTemplate.query(sql,new Object[]{fullKiiThingID},getRowMapper());
-
-		if(list.size()==0){
-			return null;
-		}else{
-			return list.get(0);
-		}
-
-	}
-
-
-	public GlobalThingInfo getThingByID(long globalThingID) {
-
-
-		String sql = "SELECT g.* "
-				+ "FROM global_thing g "
-				+ " WHERE g.id_global_thing  = ? ";
-
-		List<GlobalThingInfo> list= jdbcTemplate.query(sql,new Object[]{globalThingID},getRowMapper());
-
-		if(list.size()==0){
-			return null;
-		}else{
-			return list.get(0);
-		}
-
+	
+	public List<GlobalThingInfo> getThingByType(String type) {
+		List<GlobalThingInfo> list = super.findBySingleField(GlobalThingInfo.THING_TYPE, type);
+			return list;
 	}
 
 	public GlobalThingInfo getThingByVendorThingID(String vendorThingID) {
-
-		String sql = "SELECT g.* "
-				+ "FROM global_thing g "
-				+ " WHERE g.vendor_thing_id  = ? ";
-
-		List<GlobalThingInfo> list= jdbcTemplate.query(sql,new Object[]{vendorThingID},getRowMapper());
-
-		if(list.size()==0){
-			return null;
-		}else{
+		List<GlobalThingInfo> list = super.findBySingleField(GlobalThingInfo.VANDOR_THING_ID, vendorThingID);
+		if(list.size() > 0){
 			return list.get(0);
+		}else{
+			return null;
 		}
-
 	}
 
 	public List<GlobalThingInfo> findThingByTag(String tagName) {
@@ -158,10 +67,7 @@ public class GlobalThingDao extends BaseDao<GlobalThingInfo>{
 	}
 
 
-	@Override
-	protected Class<GlobalThingInfo> getEntityCls() {
-		return GlobalThingInfo.class;
-	}
+
 
 	@Override
 	public String getTableName() {
@@ -197,29 +103,19 @@ public class GlobalThingDao extends BaseDao<GlobalThingInfo>{
 	
 	@Override
 	public long update(GlobalThingInfo entity) {
-		StringBuilder sql = new StringBuilder();
-		sql.append("UPDATE ").append(this.getTableName()).append(" SET ");
-		sql.append(GlobalThingInfo.VANDOR_THING_ID).append("=?, ");
-		sql.append(GlobalThingInfo.KII_APP_ID).append("=?, ");
-		sql.append(GlobalThingInfo.THING_TYPE).append("=?, ");
-		sql.append(GlobalThingInfo.STATUS).append("=?, ");
-		sql.append(GlobalThingInfo.CUSTOM_INFO).append("=?, ");
-		sql.append(GlobalThingInfo.CREATE_DATE).append("=?, ");
-		sql.append(GlobalThingInfo.CREATE_BY).append("=?, ");
-		sql.append(GlobalThingInfo.MODIFY_DATE).append("=?, ");
-		sql.append(GlobalThingInfo.MODIFY_BY).append("=? ");
-		sql.append("WHERE ").append(GlobalThingInfo.ID_GLOBAL_THING).append("=? ");
+		String[] columns = new String[]{
+				GlobalThingInfo.VANDOR_THING_ID,
+				GlobalThingInfo.KII_APP_ID,
+				GlobalThingInfo.THING_TYPE,
+				GlobalThingInfo.STATUS,
+				GlobalThingInfo.CUSTOM_INFO,
+				GlobalThingInfo.CREATE_DATE,
+				GlobalThingInfo.CREATE_BY,
+				GlobalThingInfo.MODIFY_DATE,
+				GlobalThingInfo.MODIFY_BY,
+		};
 		
-        return jdbcTemplate.update(sql.toString(), entity.getVendorThingID(),
-		        		entity.getKiiAppID(),
-		        		entity.getType(),
-		        		entity.getStatus(),
-		        		entity.getCustom(),
-		        		entity.getCreateDate(),
-		        		entity.getCreateBy(),
-		        		entity.getModifyDate(),
-		        		entity.getModifyBy(),
-		        		entity.getId());
+        return super.update(entity, columns);
 	}
 
 

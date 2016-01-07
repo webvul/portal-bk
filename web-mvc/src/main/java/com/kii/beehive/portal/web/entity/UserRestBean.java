@@ -3,13 +3,18 @@ package com.kii.beehive.portal.web.entity;
 
 import java.util.Map;
 
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.BeanUtils;
+import org.springframework.http.HttpStatus;
+import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.store.entity.CustomProperty;
+import com.kii.beehive.portal.web.constant.ErrorCode;
+import com.kii.beehive.portal.web.help.PortalException;
 
 public class UserRestBean  extends BeehiveUser {
 
@@ -63,6 +68,22 @@ public class UserRestBean  extends BeehiveUser {
 		user.setCustomFields(this.getCustomFields());
 
 		return user;
+	}
+
+	@JsonIgnore
+	public void verifyInput(){
+		if(StringUtils.isEmpty(this.getUserName())){
+			throw new PortalException("RequiredFieldsMissing","username cannot been null", HttpStatus.BAD_REQUEST);
+		}
+
+		if(StringUtils.isEmpty(this.getAliUserID())){
+			throw new PortalException("RequiredFieldsMissing","userID cannot been null", HttpStatus.BAD_REQUEST);
+		}
+
+		if(StringUtils.isEmpty(this.getRole())){
+			throw new PortalException("RequiredFieldsMissing","role cannot been null", HttpStatus.BAD_REQUEST);
+		}
+
 	}
 
 }

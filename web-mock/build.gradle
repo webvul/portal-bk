@@ -1,0 +1,23 @@
+
+apply plugin: 'war'
+
+ext {
+	jettyVersion = "9.3.2.v20150730"
+}
+dependencies {
+
+	compile project(":kii-sdk")
+
+	compile "org.springframework:spring-webmvc:${springVersion}"
+
+
+	testCompile "org.eclipse.jetty:jetty-server:${jettyVersion}"
+	testCompile "org.eclipse.jetty:jetty-webapp:${jettyVersion}"
+
+
+	providedCompile group: "javax.servlet", name: "servlet-api", version: "3.+"
+	compile "org.apache.logging.log4j:log4j-core:2.3"
+
+}
+
+war.archiveName "beehive-mock.war"

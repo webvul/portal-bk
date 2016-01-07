@@ -1,4 +1,4 @@
-package com.kii.beehive.business.manager;
+package com.kii.beehive.portal.manager;
 
 import java.util.List;
 
@@ -12,7 +12,6 @@ import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.service.TriggerRecordDao;
 import com.kii.beehive.portal.service.TriggerRuntimeStatusDao;
 import com.kii.beehive.portal.store.entity.trigger.BeehiveTriggerType;
-import com.kii.beehive.portal.store.entity.trigger.GroupTriggerRuntimeState;
 import com.kii.beehive.portal.store.entity.trigger.SimpleTriggerRecord;
 import com.kii.beehive.portal.store.entity.trigger.SimpleTriggerRuntimeState;
 import com.kii.beehive.portal.store.entity.trigger.TriggerRecord;

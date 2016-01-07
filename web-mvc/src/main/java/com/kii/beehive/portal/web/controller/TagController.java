@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.business.event.KiiCloudEventBus;
-import com.kii.beehive.business.manager.TagThingManager;
+import com.kii.beehive.portal.manager.TagThingManager;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagType;
@@ -46,6 +46,9 @@ public class TagController {
 
 
 	/**
+	 * @deprecated this method should not be exposed to external;<br>
+	 *     if required to get all tags, "查询tag" API should be used to inquiry all the tags under certain tag type
+	 *
 	 * 列出所有tag
 	 * GET /tags/all
 	 *
@@ -110,7 +113,7 @@ public class TagController {
 		List<TagIndex> orig = tagIndexDao.findTagByTagTypeAndName(TagType.Custom.toString(), displayName);
 		
 		if(orig.size() == 0){
-			throw new PortalException("no body", "no body", HttpStatus.NOT_FOUND);
+			throw new PortalException("Tag Not Found", "Tag with displayName:" + displayName + " Not Found", HttpStatus.NOT_FOUND);
 		}
 
 		thingTagManager.removeTag(orig.get(0));
@@ -129,7 +132,7 @@ public class TagController {
 	 * @return
 	 */
 	@RequestMapping(path = "/search", method = { RequestMethod.GET })
-	public List<TagIndex> getThingsByTag(@RequestParam(value="tagType", required = false) String tagType, 
+	public List<TagIndex> findTags(@RequestParam(value="tagType", required = false) String tagType,
 										@RequestParam(value="displayName", required = false) String displayName) {
 		
 		List<TagIndex> list = tagIndexDao.findTagByTagTypeAndName(StringUtils.capitalize(tagType), displayName);

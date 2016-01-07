@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kii.beehive.business.manager.TriggerMaintainManager;
-import com.kii.beehive.business.manager.SimpleThingTriggerManager;
-import com.kii.beehive.business.manager.ThingGroupStateManager;
-import com.kii.beehive.business.manager.ThingStateSummaryManager;
+import com.kii.beehive.portal.manager.TriggerMaintainManager;
+import com.kii.beehive.portal.manager.SimpleThingTriggerManager;
+import com.kii.beehive.portal.manager.ThingGroupStateManager;
+import com.kii.beehive.portal.manager.ThingStateSummaryManager;
 import com.kii.beehive.portal.store.entity.trigger.GroupTriggerRecord;
 import com.kii.beehive.portal.store.entity.trigger.SimpleTriggerRecord;
 import com.kii.beehive.portal.store.entity.trigger.SummaryTriggerRecord;

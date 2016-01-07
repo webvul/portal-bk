@@ -86,6 +86,17 @@ public class UserService {
 
 	}
 
+	public void changePassword(String oldPassword, String newPassword) {
+
+		// use user token for change password
+		tool.bindUser();
+
+		HttpUriRequest request=getBuilder().changePassword(oldPassword, newPassword).generRequest(mapper);
+
+		client.doRequest(request);
+
+	}
+
 	public void disableUser(String kiiUserID) {
 
 		HttpUriRequest request=getBuilder().setUserStatus(kiiUserID,true).generRequest(mapper);

@@ -1,4 +1,4 @@
-package com.kii.beehive.business.manager;
+package com.kii.beehive.portal.manager;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
+import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.dao.TagThingRelationDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
@@ -22,7 +23,7 @@ import com.kii.beehive.portal.jdbc.entity.TagType;
 public class Test2ThingDao extends TestTemplate {
 
 	@Autowired
-	private GlobalThingDao thingDao;
+	private GlobalThingSpringDao thingDao;
 
 
 	@Autowired
@@ -64,7 +65,7 @@ public class Test2ThingDao extends TestTemplate {
 			info.setVendorThingID("vendorID"+i);
 			info.setType(String.valueOf(i));
 
-			long id=thingDao.saveOrUpdate(info);
+			long id=thingDao.insert(info);
 
 			TagThingRelation  relation=new TagThingRelation();
 			relation.setThingID(id);

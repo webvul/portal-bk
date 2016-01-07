@@ -3,7 +3,7 @@ package com.kii.beehive.business;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.kii.beehive.business.manager.AppInfoManager;
+import com.kii.beehive.portal.manager.AppInfoManager;
 import com.kii.beehive.portal.store.TestInit;
 
 public class TestAppInfoInit extends TestInit {

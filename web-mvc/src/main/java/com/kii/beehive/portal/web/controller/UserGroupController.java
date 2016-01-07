@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kii.beehive.business.manager.UserGroupManager;
+
+import com.kii.beehive.portal.manager.UserGroupManager;
+import com.kii.beehive.portal.manager.UserManager;
 import com.kii.beehive.portal.store.entity.BeehiveUserGroup;
 import com.kii.beehive.portal.web.entity.UserGroupRestBean;
 import com.kii.beehive.portal.web.help.PortalException;
@@ -32,6 +34,9 @@ public class UserGroupController {
 
     @Autowired
     private UserGroupManager userGroupManager;
+
+    @Autowired
+    private UserManager userManager;
 
     /**
      * 创建用户群组
@@ -56,7 +61,10 @@ public class UserGroupController {
             throw new PortalException("DuplicatedData", "userGroupName already exists", HttpStatus.CONFLICT);
         }
 
-        // creat user group
+        // check whether userIDs existing
+        userManager.validateUserIDExisting(userGroup.getUsers());
+
+        // create user group
         String userGroupID = userGroupManager.createUserGroup(userGroup, null);
 
         Map<String,String> resultMap = new HashMap<>();
@@ -89,6 +97,9 @@ public class UserGroupController {
                 throw new PortalException("DuplicatedData", "userGroupName already exists", HttpStatus.CONFLICT);
             }
         }
+
+        // check whether userIDs existing
+        userManager.validateUserIDExisting(userGroup.getUsers());
 
         // update user group
         userGroup.setUserGroupID(userGroupID);

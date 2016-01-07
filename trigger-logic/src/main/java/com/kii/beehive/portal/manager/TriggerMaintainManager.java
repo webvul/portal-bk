@@ -1,4 +1,4 @@
-package com.kii.beehive.business.manager;
+package com.kii.beehive.portal.manager;
 
 
 import java.io.IOException;
@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
-import org.springframework.util.StringUtils;
 
 import com.google.common.base.Charsets;
 
@@ -27,7 +26,6 @@ import com.kii.extension.sdk.entity.serviceextension.EventTriggerConfig;
 import com.kii.extension.sdk.entity.serviceextension.ThingWhenType;
 import com.kii.extension.sdk.entity.serviceextension.TriggerFactory;
 import com.kii.extension.sdk.entity.serviceextension.TriggerScopeType;
-import com.kii.extension.sdk.exception.ObjectNotFoundException;
 
 @Component
 public class TriggerMaintainManager {

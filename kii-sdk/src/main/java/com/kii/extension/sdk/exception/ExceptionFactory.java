@@ -39,11 +39,13 @@ public class ExceptionFactory {
 		bucketClsMap.put(401, UnauthorizedAccessException.class);
 		bucketClsMap.put(409, StaleVersionedObjectException.class);
 		bucketClsMap.put(404, ObjectNotFoundException.class);
+		bucketClsMap.put(403, ForbiddenException.class);
 
 		userClsMap.put(409, UserAlreadyExistsException.class);
 		userClsMap.put(400,BadUserNameException.class);
 		userClsMap.put(404,UserNotFoundException.class);
 		userClsMap.put(401, UnauthorizedAccessException.class);
+		userClsMap.put(403, ForbiddenException.class);
 
 		appClsMap.put(404,AppParameterCodeNotFoundException.class);
 

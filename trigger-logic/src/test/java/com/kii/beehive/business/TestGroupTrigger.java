@@ -1,6 +1,5 @@
 package com.kii.beehive.business;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
@@ -9,8 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kii.beehive.business.manager.TagThingManager;
-import com.kii.beehive.business.manager.ThingGroupStateManager;
+import com.kii.beehive.portal.manager.TagThingManager;
+import com.kii.beehive.portal.manager.ThingGroupStateManager;
 import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.business.service.ThingTagService;
 import com.kii.beehive.business.service.TriggerFireCallbackService;
@@ -66,7 +65,7 @@ public class TestGroupTrigger extends TestTemplate{
 	@Test
 	public void fireTagChange(){
 
-		tagManager.unbindTagToThing(Collections.singletonList(String.valueOf(tags[3])),thingIDs[0]);
+//		tagManager.unbindTagToThing(Collections.singletonList(String.valueOf(tags[3])),thingIDs[0]);
 
 	}
 

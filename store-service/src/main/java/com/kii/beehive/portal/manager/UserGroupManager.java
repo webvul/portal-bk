@@ -1,4 +1,4 @@
-package com.kii.beehive.business.manager;
+package com.kii.beehive.portal.manager;
 
 
 import java.util.ArrayList;
@@ -196,11 +196,11 @@ public class UserGroupManager {
         logger.debug("userGroup:" + userGroup);
         logger.debug("party3rdID:" + party3rdID);
 
-        // creat user group
+        // create user group
         String userGroupID = beehiveUserGroupDao.createUserGroup(userGroup);
 
-        // check and update user change
-        this.checkUsersChange(userGroupID, userGroup.getUserIDs(), party3rdID);
+        // check and update user
+        this.checkUsersChange(userGroupID, null, userGroup.getUserIDs(), party3rdID);
 
         logger.debug("End createUserGroup(BeehiveUserGroup userGroup, String party3rdID)");
         logger.debug("userGroupID:" + userGroupID);
@@ -221,12 +221,17 @@ public class UserGroupManager {
         logger.debug("userGroup:" + userGroup);
         logger.debug("party3rdID:" + party3rdID);
 
-        // check and update user change
-        // important:
-        // this has to go before the user group update(table BeehiveUserGroup),
-        // to get the exist list of users under the user group
-        this.checkUsersChange(userGroup.getUserGroupID(), userGroup.getUserIDs(), party3rdID);
+        // get the exist list of userIDs under the group
+        BeehiveUserGroup existGroup = beehiveUserGroupDao.getUserGroupByID(userGroup.getUserGroupID());
+        Set<String> existUserIDs = new HashSet<String>();
+        if (existGroup != null && existGroup.getUsers() != null) {
+            existUserIDs = existGroup.getUserIDs();
+        }
 
+        // check and update user
+        this.checkUsersChange(userGroup.getUserGroupID(), existUserIDs, userGroup.getUserIDs(), party3rdID);
+
+        // update user group
         beehiveUserGroupDao.updateUserGroup(userGroup.getUserGroupID(), userGroup);
 
         logger.debug("End updateUserGroup(BeehiveUserGroup userGroup, String party3rdID)");
@@ -246,12 +251,18 @@ public class UserGroupManager {
         logger.debug("userGroup:" + userGroupID);
         logger.debug("party3rdID:" + party3rdID);
 
-        // check and update user change
-        // important:
-        // this has to go before the user group update(table BeehiveUserGroup),
-        // to get the exist list of users under the user group
-        this.checkUsersChange(userGroupID, null, party3rdID);
 
+        // get the exist list of userIDs under the group
+        BeehiveUserGroup existGroup = beehiveUserGroupDao.getUserGroupByID(userGroupID);
+        Set<String> existUserIDs = new HashSet<String>();
+        if (existGroup != null && existGroup.getUsers() != null) {
+            existUserIDs = existGroup.getUserIDs();
+        }
+
+        // check and update user change
+        this.checkUsersChange(userGroupID, existUserIDs, null, party3rdID);
+
+        // delete user group
         beehiveUserGroupDao.deleteUserGroup(userGroupID);
 
         logger.debug("End deleteUserGroup(BeehiveUserGroup userGroup, String party3rdID)");
@@ -263,23 +274,21 @@ public class UserGroupManager {
      * if there is, update the user info too (table BeehiveUser)
      *
      * @param userGroupID
-     * @param userIDs  new set of users under the user group
+     * @param existUserIDs the existing set of users under the user group
+     * @param newUserIDs  new set of users under the user group
      * @param party3rdID
      */
-    private void checkUsersChange(String userGroupID, Set<String> userIDs, String party3rdID) {
+    private void checkUsersChange(String userGroupID, Set<String> existUserIDs, Set<String> newUserIDs, String party3rdID) {
 
-        if (userIDs == null) {
-            userIDs = new HashSet<String>();
+        if(existUserIDs == null) {
+            existUserIDs = new HashSet<String>();
         }
 
-        // get the exist list of user ids in DB
-        BeehiveUserGroup existGroup = beehiveUserGroupDao.getUserGroupByID(userGroupID);
-        Set<String> existUserIDs = new HashSet<String>();
-        if (existGroup != null && existGroup.getUsers() != null) {
-            existUserIDs = existGroup.getUserIDs();
+        if (newUserIDs == null) {
+            newUserIDs = new HashSet<String>();
         }
 
-        if (userIDs.containsAll(existUserIDs) && existUserIDs.containsAll(userIDs)) {
+        if (newUserIDs.containsAll(existUserIDs) && existUserIDs.containsAll(newUserIDs)) {
             logger.debug("no change on relation bwtween user and user group:" + userGroupID);
             return;
         }
@@ -287,13 +296,13 @@ public class UserGroupManager {
         // get the users(ID) to remove user group
         Set<String> userIDsToRemoveFromGroup = new HashSet<String>();
         userIDsToRemoveFromGroup.addAll(existUserIDs);
-        userIDsToRemoveFromGroup.removeAll(userIDs);
+        userIDsToRemoveFromGroup.removeAll(newUserIDs);
 
         logger.debug("userIDsToRemoveFromGroup:" + userIDsToRemoveFromGroup);
 
         // get the users(ID) to add user group
         Set<String> userIDsToAddToGroup = new HashSet<String>();
-        userIDsToAddToGroup.addAll(userIDs);
+        userIDsToAddToGroup.addAll(newUserIDs);
         userIDsToAddToGroup.removeAll(existUserIDs);
 
         logger.debug("userIDsToAddToGroup:" + userIDsToAddToGroup);

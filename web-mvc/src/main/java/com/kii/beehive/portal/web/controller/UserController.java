@@ -7,19 +7,16 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kii.beehive.business.manager.UserManager;
+import com.kii.beehive.portal.manager.UserManager;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.entity.UserRestBean;
-import com.kii.beehive.portal.web.help.PortalException;
 
 /**
  * Beehive API - User API
@@ -46,9 +43,7 @@ public class UserController {
 	@RequestMapping(path="",method={RequestMethod.POST})
 	public Map<String,String> createUser(@RequestBody UserRestBean user){
 
-		if(StringUtils.isEmpty(user.getUserName()) || StringUtils.isEmpty(user.getAliUserID())){
-			throw new PortalException("RequiredFieldsMissing","username or userID cannot been null", HttpStatus.BAD_REQUEST);
-		}
+		user.verifyInput();
 
 		BeehiveUser beehiveUser = user.getBeehiveUser();
 
@@ -71,6 +66,9 @@ public class UserController {
 	 */
 	@RequestMapping(path="/{userID}",method={RequestMethod.PATCH})
 	public Map<String,String> updateUser(@PathVariable("userID") String userID,@RequestBody UserRestBean user){
+
+		// clean the input user id
+		user.setAliUserID(null);
 
 		userManager.updateUser(user.getBeehiveUser(),userID);
 

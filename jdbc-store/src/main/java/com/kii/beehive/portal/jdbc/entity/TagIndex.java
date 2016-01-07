@@ -1,6 +1,7 @@
 package com.kii.beehive.portal.jdbc.entity;
 
 import org.springframework.util.StringUtils;
+import java.util.List;
 
 import com.kii.beehive.portal.jdbc.annotation.JdbcField;
 import com.kii.beehive.portal.jdbc.annotation.JdbcFieldType;
@@ -13,12 +14,16 @@ public class TagIndex extends DBEntity {
 	private String description;
 	private String fullTagName;
 
-	
+	private Long count;
+	private List<Long> things;
+
 	public final static String TAG_ID = "tag_id";
 	public final static String TAG_TYPE = "tag_type";
 	public final static String FULL_TAG_NAME="full_tag_name";
 	public final static String DISPLAY_NAME = "display_name";
 	public final static String DESCRIPTION = "description";
+	public final static String THING_COUNT = "count";
+	public final static String THINGS = "things";
 
 
 	public TagIndex(){
@@ -30,7 +35,6 @@ public class TagIndex extends DBEntity {
 		tagType=TagType.valueOf(arrays[0]);
 		displayName=arrays[1];
 	}
-	
 	@Override
 	@JdbcField(column="tag_id")
 	public long getId(){
@@ -74,6 +78,22 @@ public class TagIndex extends DBEntity {
 		this.description = description;
 	}
 	
+	public Long getCount() {
+		return count;
+	}
+
+	public void setCount(Long count) {
+		this.count = count;
+	}
+
+	public List<Long> getThings() {
+		return things;
+	}
+
+	public void setThings(List<Long> things) {
+		this.things = things;
+	}
+
 	public static TagIndex generCustomTagIndex(String name){
 		TagIndex tag=new TagIndex();
 		tag.tagType=TagType.Custom;
@@ -83,7 +103,7 @@ public class TagIndex extends DBEntity {
 
 	public static TagIndex generTagIndex(TagType tagType, String displayName, String description) {
 		TagIndex tag=new TagIndex();
-		tag.tagType=TagType.Location;
+		tag.tagType=tagType;
 		tag.displayName=displayName;
 		tag.description = description;
 		return tag;

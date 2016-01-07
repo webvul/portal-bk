@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
+import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.store.entity.trigger.TagSelector;
 
@@ -16,18 +17,9 @@ import com.kii.beehive.portal.store.entity.trigger.TagSelector;
 public class ThingTagService {
 
 	@Autowired
-	private GlobalThingDao globalThingDao;
+	private GlobalThingSpringDao globalThingDao;
 
-//	public List<GlobalThingInfo> queryThingByTagExpress(boolean isAnd, List<String> tagCollect) {
-//
-//		if(isAnd){
-//			return globalThingDao.queryThingByIntersectionTags(tagCollect);
-//		}else{
-//			return globalThingDao.queryThingByUnionTags(tagCollect);
-//		}
-//
-//
-//	}
+
 
 	public GlobalThingInfo getThingByID(long globalThingID) {
 

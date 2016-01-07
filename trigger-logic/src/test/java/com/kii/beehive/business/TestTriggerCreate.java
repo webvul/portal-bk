@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kii.beehive.business.manager.SimpleThingTriggerManager;
+import com.kii.beehive.portal.manager.SimpleThingTriggerManager;
 import com.kii.beehive.business.service.ServiceExtensionDeployService;
 import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.business.service.ThingTagService;
@@ -158,7 +158,7 @@ public class TestTriggerCreate extends TestTemplate {
 
 		long thingID=thingIDs[0];
 
-		GlobalThingInfo thingInfo=thingDao.getThingByID(thingID);
+		GlobalThingInfo thingInfo=thingDao.findByID(thingID);
 
 
 		ThingStatus status=new ThingStatus();
