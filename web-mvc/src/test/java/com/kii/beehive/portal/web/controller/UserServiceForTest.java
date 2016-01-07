@@ -21,8 +21,13 @@ public class UserServiceForTest {
     @Autowired
     private UserService userService;
 
-    public void createUser(KiiUser kiiUser) {
-        userService.createUser(kiiUser);
+    /**
+     * return kii user id
+     * @param kiiUser
+     * @return
+     */
+    public String createUser(KiiUser kiiUser) {
+        return userService.createUser(kiiUser);
     }
 
     public void removeUser(String userID) {

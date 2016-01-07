@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kii.beehive.portal.service.BeehiveUserDao;
+import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.WebTestTemplate;
 import com.kii.beehive.portal.web.help.AuthInterceptor;
 import com.kii.extension.sdk.entity.KiiUser;
@@ -31,6 +33,9 @@ public class TestAuthController extends WebTestTemplate {
     @Autowired
     private UserServiceForTest userServiceForTest;
 
+    @Autowired
+    private BeehiveUserDao beehiveUserDao;
+
     private String userIDForTest = "userIDForTestAuth";
 
     private String passwordForTest = DigestUtils.sha1Hex(userIDForTest+"_beehive");
@@ -49,7 +54,18 @@ public class TestAuthController extends WebTestTemplate {
         kiiUser.setPassword(passwordForTest);
 
         try {
-            userServiceForTest.createUser(kiiUser);
+            String kiiUserID = userServiceForTest.createUser(kiiUser);
+
+            BeehiveUser user = new BeehiveUser();
+            user.setAliUserID(userIDForTest);
+            user.setUserName("someUserNameForTest");
+            user.setKiiUserID(kiiUserID);
+
+            user.setCompany("someCompanyForTest");
+            user.setPhone("somePhoneNumberForTest");
+            user.setMail("someMailForTest");
+
+            beehiveUserDao.createUser(user);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -61,6 +77,12 @@ public class TestAuthController extends WebTestTemplate {
 
         try {
             userServiceForTest.removeUser(userIDForTest);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try {
+            beehiveUserDao.deleteUser(userIDForTest);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -155,9 +177,16 @@ public class TestAuthController extends WebTestTemplate {
 
         System.out.println("Response:" + result);
 
+        // assert
         accessToken = (String)map.get("accessToken");
         assertNotNull(map.get("accessToken"));
         assertTrue(accessToken.length() > 0);
+
+        assertEquals(userIDForTest, map.get("userID"));
+        assertEquals("someUserNameForTest", map.get("userName"));
+        assertEquals("somePhoneNumberForTest", map.get("phone"));
+        assertEquals("someMailForTest", map.get("mail"));
+        assertEquals("someCompanyForTest", map.get("company"));
 
     }
 

@@ -2,10 +2,8 @@ package com.kii.beehive.portal.web.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
-import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -16,12 +14,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.portal.common.utils.CollectUtils;
 import com.kii.beehive.portal.manager.AuthManager;
+import com.kii.beehive.portal.manager.UserManager;
+import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.constant.ErrorCode;
+import com.kii.beehive.portal.web.entity.AuthRestBean;
 import com.kii.beehive.portal.web.help.AuthInterceptor;
 import com.kii.beehive.portal.web.help.PortalException;
-import com.kii.extension.sdk.context.UserTokenBindTool;
 import com.kii.extension.sdk.entity.LoginInfo;
-import com.kii.extension.sdk.exception.UnauthorizedAccessException;
 
 /**
  * Beehive API - User API
@@ -35,6 +34,9 @@ public class AuthController {
 
     @Autowired
     private AuthManager authManager;
+
+    @Autowired
+    private UserManager userManager;
 
     /**
      * 用户注册
@@ -71,7 +73,7 @@ public class AuthController {
      * @return
      */
     @RequestMapping(path = "/login", method = { RequestMethod.POST })
-    public Map<String, Object> login(@RequestBody Map<String, Object> request) {
+    public AuthRestBean login(@RequestBody Map<String, Object> request) {
 
         String userID = (String)request.get("userID");
         String password = (String)request.get("password");
@@ -86,11 +88,15 @@ public class AuthController {
             throw new PortalException(ErrorCode.AUTH_FAIL, "Authentication failed", HttpStatus.BAD_REQUEST);
         }
 
-        Map<String, Object> response = new HashMap<>();
+        // get user info
+        BeehiveUser beehiveUser = userManager.getUserByID(userID);
+        AuthRestBean authRestBean = new AuthRestBean(beehiveUser);
 
-        response.put("accessToken", loginInfo.getToken());
+        // get access token
+        String accessToken = loginInfo.getToken();
+        authRestBean.setAccessToken(accessToken);
 
-        return response;
+        return authRestBean;
     }
 
     /**
