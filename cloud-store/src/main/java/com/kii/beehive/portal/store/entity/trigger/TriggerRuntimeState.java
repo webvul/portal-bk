@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.kii.extension.sdk.entity.KiiEntity;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME,
-		include = JsonTypeInfo.As.PROPERTY,
+		include = JsonTypeInfo.As.EXISTING_PROPERTY,
 		property = "type")
 @JsonSubTypes({
 		@JsonSubTypes.Type(value = SimpleTriggerRuntimeState.class,name="Simple"),
@@ -36,13 +36,13 @@ public class TriggerRuntimeState extends KiiEntity {
 		thingIDSet.add(thingID);
 	}
 
-	private String type;
+	private BeehiveTriggerType type;
 
-	public String getType() {
+	public BeehiveTriggerType getType() {
 		return type;
 	}
 
-	public void setType(String type) {
+	public void setType(BeehiveTriggerType type) {
 		this.type = type;
 	}
 }

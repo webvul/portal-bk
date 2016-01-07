@@ -12,7 +12,7 @@ import com.kii.extension.sdk.entity.thingif.StatePredicate;
 
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME,
-		include = JsonTypeInfo.As.PROPERTY,
+		include = JsonTypeInfo.As.EXISTING_PROPERTY,
 		property = "type")
 @JsonSubTypes({
 		@JsonSubTypes.Type(value = SimpleTriggerRecord.class,name="Simple"),
@@ -27,7 +27,15 @@ public abstract  class TriggerRecord extends KiiEntity {
 
 //	private TriggerType type;
 
+	private StatusType recordStatus;
 
+	public StatusType getRecordStatus() {
+		return recordStatus;
+	}
+
+	public void setRecordStatus(StatusType recordStatus) {
+		this.recordStatus = recordStatus;
+	}
 
 	public StatePredicate getPerdicate() {
 		return perdicate;
@@ -50,12 +58,17 @@ public abstract  class TriggerRecord extends KiiEntity {
 		this.targets.add(target);
 	}
 
-//	public void setType(TriggerType type) {
-//		this.type = type;
-//	}
+	private BeehiveTriggerType type;
 
-	public static enum TriggerType{
-		Simple,Group,Summary;
+	public void setType(BeehiveTriggerType type) {
+		this.type = type;
 	}
 
+	public BeehiveTriggerType getType() {
+		return type;
+	}
+
+	public enum StatusType{
+		enable,disable,deleted;
+	}
 }

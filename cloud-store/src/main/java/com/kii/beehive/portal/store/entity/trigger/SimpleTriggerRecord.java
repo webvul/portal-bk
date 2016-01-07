@@ -7,6 +7,8 @@ public class SimpleTriggerRecord extends TriggerRecord{
 
 	private ThingID source;
 
+
+
 	public ThingID getSource() {
 		return source;
 	}

@@ -25,7 +25,7 @@ public class KiiCloudEventBus {
 	private EventListenerDao eventDao;
 
 	@Async
-	public void onTagChangeFire(String tagName,Collection<Long> relationThingID,boolean isAdd){
+	public void onTagChangeFire(String tagName,boolean isAdd){
 
 
 

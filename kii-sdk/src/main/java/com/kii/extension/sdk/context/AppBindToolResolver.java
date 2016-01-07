@@ -193,7 +193,7 @@ public class AppBindToolResolver {
 			return;
 		}
 
-		OldInfos infos=infosQueue.getLast();
+		OldInfos infos=infosQueue.removeLast();
 
 		appInfoDirectly.set(infos.oldAppInfo);
 		appChoiceLocal.set(infos.oldAppChoice);

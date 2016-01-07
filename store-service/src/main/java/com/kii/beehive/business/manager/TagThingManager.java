@@ -37,10 +37,10 @@ public class TagThingManager {
 	
 	@Autowired
 	private TagThingRelationDao tagThingRelationDao;
-
-
-	@Autowired
-	private KiiCloudEventBus eventBus;
+//
+//
+//	@Autowired
+//	private KiiCloudEventBus eventBus;
 
 
 

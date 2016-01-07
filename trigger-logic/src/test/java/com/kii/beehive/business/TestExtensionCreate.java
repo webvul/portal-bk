@@ -15,7 +15,7 @@ import org.springframework.core.io.ResourceLoader;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import com.kii.beehive.business.manager.BeehiveTriggerInitManager;
+import com.kii.beehive.business.manager.TriggerMaintainManager;
 import com.kii.beehive.business.service.ServiceExtensionDeployService;
 import com.kii.beehive.portal.service.BeehiveParameterDao;
 import com.kii.beehive.portal.store.entity.CallbackUrlParameter;
@@ -32,7 +32,7 @@ public class TestExtensionCreate extends TestTemplate  {
 
 
 	@Autowired
-	private BeehiveTriggerInitManager triggerManager;
+	private TriggerMaintainManager triggerManager;
 
 
 	@Autowired
@@ -72,7 +72,7 @@ public class TestExtensionCreate extends TestTemplate  {
 
 		param.setBaseUrl("http://114.215.196.178:7070/api/echo");
 
-		param.setNegitive("negitiveCallback");
+		param.setNegative("negativeCallback");
 		param.setPositive("positiveCallback");
 		param.setSimple("simpleCallback");
 		param.setSummary("summaryCallback");
@@ -97,7 +97,7 @@ public class TestExtensionCreate extends TestTemplate  {
 	@Test
 	public void deployExtensionToAll() throws IOException {
 
-		triggerManager.deployTriggerToAll();
+//		triggerManager.deployTriggerToAll();
 
 		InputStream reader=System.in;
 

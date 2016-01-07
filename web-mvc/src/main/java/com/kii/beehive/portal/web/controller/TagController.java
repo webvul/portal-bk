@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kii.beehive.business.event.KiiCloudEventBus;
 import com.kii.beehive.business.manager.TagThingManager;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
@@ -39,6 +40,10 @@ public class TagController {
 
 	@Autowired
 	private TagThingManager thingTagManager;
+
+	@Autowired
+	private KiiCloudEventBus eventBus;
+
 
 	/**
 	 * 列出所有tag
@@ -109,6 +114,8 @@ public class TagController {
 		}
 
 		thingTagManager.removeTag(orig.get(0));
+
+//		eventBus.onTagChangeFire();
 	}
 
 	/**

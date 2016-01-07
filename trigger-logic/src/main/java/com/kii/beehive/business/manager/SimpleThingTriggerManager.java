@@ -1,5 +1,7 @@
 package com.kii.beehive.business.manager;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -9,11 +11,16 @@ import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.service.TriggerRecordDao;
 import com.kii.beehive.portal.service.TriggerRuntimeStatusDao;
+import com.kii.beehive.portal.store.entity.trigger.BeehiveTriggerType;
+import com.kii.beehive.portal.store.entity.trigger.GroupTriggerRuntimeState;
 import com.kii.beehive.portal.store.entity.trigger.SimpleTriggerRecord;
 import com.kii.beehive.portal.store.entity.trigger.SimpleTriggerRuntimeState;
+import com.kii.beehive.portal.store.entity.trigger.TriggerRecord;
+import com.kii.beehive.portal.store.entity.trigger.TriggerRuntimeState;
 import com.kii.extension.sdk.entity.FederatedAuthResult;
 import com.kii.extension.sdk.entity.thingif.ServiceCode;
 import com.kii.extension.sdk.entity.thingif.StatePredicate;
+import com.kii.extension.sdk.entity.thingif.ThingStatus;
 import com.kii.extension.sdk.entity.thingif.ThingTrigger;
 import com.kii.extension.sdk.entity.thingif.TriggerTarget;
 
@@ -37,10 +44,27 @@ public class SimpleThingTriggerManager {
 	@Autowired
 	private TriggerRuntimeStatusDao statusDao;
 
+	public void refreshState(){
+
+		List<TriggerRuntimeState> stateList=statusDao.getUnCompletedList(BeehiveTriggerType.Simple);
+
+		stateList.forEach(state->{
+
+			SimpleTriggerRuntimeState simpleState=(SimpleTriggerRuntimeState)state;
+
+			String thingID=simpleState.getThingIDSet().iterator().next();
+			ThingStatus status=thingIFService.getStatus(thingID);
+
+			thingIFService.putStatus(thingID,status);
+
+		});
+
+	}
+
 
 	public String  createSimpleTrigger(SimpleTriggerRecord record){
 
-
+		record.setRecordStatus(TriggerRecord.StatusType.disable);
 		String triggerID=triggerDao.addEntity(record).getObjectID();
 
 		SimpleTriggerRecord.ThingID thingID=record.getSource();
@@ -49,6 +73,7 @@ public class SimpleThingTriggerManager {
 
 		registSingleTrigger(thing.getFullKiiThingID(),record.getPerdicate(),triggerID);
 
+		triggerDao.enableTrigger(triggerID);
 		return triggerID;
 	}
 
@@ -60,7 +85,7 @@ public class SimpleThingTriggerManager {
 
 		statusDao.removeEntity(triggerID);
 
-		triggerDao.removeEntity(triggerID);
+		triggerDao.deleteTriggerRecord(triggerID);
 
 
 	}

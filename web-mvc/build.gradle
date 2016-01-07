@@ -6,8 +6,10 @@ ext {
 }
 dependencies {
 
+	compile project(":trigger-logic")
 	compile project(":commons")
 	compile project(":store-service")
+
 	compile "org.springframework:spring-webmvc:${springVersion}"
 
 

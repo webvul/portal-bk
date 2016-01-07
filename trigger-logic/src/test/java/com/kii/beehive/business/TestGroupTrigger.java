@@ -102,7 +102,7 @@ public class TestGroupTrigger extends TestTemplate{
 
 		for(GlobalThingInfo th:things) {
 			if(Math.random()>0.5f) {
-				callbackService.onNegitiveArrive(th.getFullKiiThingID(),triggerID);
+				callbackService.onNegativeArrive(th.getFullKiiThingID(),triggerID);
 			}else{
 				callbackService.onPositiveArrive(th.getFullKiiThingID(),triggerID);
 			}

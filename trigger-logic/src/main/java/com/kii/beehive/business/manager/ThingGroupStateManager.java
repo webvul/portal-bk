@@ -1,6 +1,7 @@
 package com.kii.beehive.business.manager;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -16,11 +17,14 @@ import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.service.TriggerRecordDao;
 import com.kii.beehive.portal.service.TriggerRuntimeStatusDao;
+import com.kii.beehive.portal.store.entity.trigger.BeehiveTriggerType;
 import com.kii.beehive.portal.store.entity.trigger.GroupTriggerRecord;
 import com.kii.beehive.portal.store.entity.trigger.GroupTriggerRuntimeState;
 import com.kii.beehive.portal.store.entity.trigger.KiiTriggerCol;
 import com.kii.beehive.portal.store.entity.trigger.MemberState;
 import com.kii.beehive.portal.store.entity.trigger.TriggerGroupPolicy;
+import com.kii.beehive.portal.store.entity.trigger.TriggerRecord;
+import com.kii.beehive.portal.store.entity.trigger.TriggerRuntimeState;
 import com.kii.extension.sdk.entity.thingif.ServiceCode;
 import com.kii.extension.sdk.entity.thingif.StatePredicate;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
@@ -56,8 +60,24 @@ public class ThingGroupStateManager {
 	private AppInfoManager appInfoManager;
 
 
+	public void refreshState(){
 
-	private void initGroupState(List<String> thingList){
+		List<TriggerRuntimeState>  stateList=statusDao.getUnCompletedList(BeehiveTriggerType.Group);
+
+		stateList.forEach(state->{
+
+			GroupTriggerRuntimeState  groupState=(GroupTriggerRuntimeState)state;
+
+
+			  initGroupState(groupState.getThingIDSet());
+
+
+		});
+
+	}
+
+
+	private void initGroupState(Collection<String> thingList){
 
 
 		thingList.forEach(thingID->{
@@ -86,12 +106,13 @@ public class ThingGroupStateManager {
 
 		listenerService.removeListener(state.getListenerID());
 
-		triggerDao.removeEntity(triggerID);
+		triggerDao.deleteTriggerRecord(triggerID);
 	}
 
 
 	public void createThingGroup( GroupTriggerRecord record){
 
+		record.setRecordStatus(TriggerRecord.StatusType.disable);
 		String triggerID=triggerDao.addKiiEntity(record);
 
 		List<GlobalThingInfo>  thingList=thingTagService.getThingInfos(record.getSource().getSelector());
@@ -122,6 +143,7 @@ public class ThingGroupStateManager {
 		statusDao.addEntity(state,triggerID);
 		initGroupState(thingIDs);
 
+		triggerDao.enableTrigger(triggerID);
 
 	}
 
@@ -134,7 +156,7 @@ public class ThingGroupStateManager {
 		String positiveID=thingIFService.createTrigger(thingID,getPositiveTrigger(condition,thingID,triggerID));
 		idCol.setPositiveID(positiveID);
 
-		String negativeID=thingIFService.createTrigger(thingID,getNegitiveTrigger(condition,thingID,triggerID));
+		String negativeID=thingIFService.createTrigger(thingID,getNegativeTrigger(condition,thingID,triggerID));
 		idCol.setNegativeID(negativeID);
 
 		return idCol;
@@ -200,9 +222,9 @@ public class ThingGroupStateManager {
 		return getServiceCode(condition,EndPointNameConstant.PositiveTriggerEndPoint,fullThingID,triggerID);
 	}
 
-	private  ThingTrigger getNegitiveTrigger(Condition condition,String fullThingID, String triggerID){
+	private  ThingTrigger getNegativeTrigger(Condition condition,String fullThingID, String triggerID){
 
-		return getServiceCode(getNotCondition(condition),EndPointNameConstant.NegitiveTriggerEndPoint,fullThingID,triggerID);
+		return getServiceCode(getNotCondition(condition),EndPointNameConstant.NegativeTriggerEndPoint,fullThingID,triggerID);
 	}
 
 	private  ThingTrigger getServiceCode(Condition condition,String endPoint ,String fullThingID,String triggerID){

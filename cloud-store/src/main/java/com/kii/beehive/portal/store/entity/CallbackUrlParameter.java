@@ -11,11 +11,21 @@ public class CallbackUrlParameter extends KiiEntity {
 
 	private String summary;
 
-	private String negitive;
+	private String negative;
 
 	private String baseUrl;
 
 	private String stateChange;
+
+	private String thingCreated;
+
+	public String getThingCreated() {
+		return thingCreated;
+	}
+
+	public void setThingCreated(String thingCreated) {
+		this.thingCreated = thingCreated;
+	}
 
 	public String getStateChange() {
 		return stateChange;
@@ -41,12 +51,12 @@ public class CallbackUrlParameter extends KiiEntity {
 		this.summary = summary;
 	}
 
-	public String getNegitive() {
-		return negitive;
+	public String getNegative() {
+		return negative;
 	}
 
-	public void setNegitive(String negitive) {
-		this.negitive = negitive;
+	public void setNegative(String negative) {
+		this.negative = negative;
 	}
 
 	public String getBaseUrl() {

@@ -9,20 +9,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
+import org.springframework.util.StringUtils;
 
 import com.google.common.base.Charsets;
 
 import com.kii.beehive.business.service.ServiceExtensionDeployService;
 import com.kii.beehive.portal.service.AppInfoDao;
+import com.kii.beehive.portal.service.BeehiveParameterDao;
 import com.kii.beehive.portal.service.ExtensionCodeDao;
+import com.kii.beehive.portal.service.TriggerRecordDao;
+import com.kii.beehive.portal.service.TriggerRuntimeStatusDao;
+import com.kii.beehive.portal.store.entity.CallbackUrlParameter;
 import com.kii.beehive.portal.store.entity.ExtensionCodeEntity;
+import com.kii.beehive.portal.store.entity.trigger.TriggerRecord;
 import com.kii.extension.sdk.entity.serviceextension.BucketWhenType;
 import com.kii.extension.sdk.entity.serviceextension.EventTriggerConfig;
+import com.kii.extension.sdk.entity.serviceextension.ThingWhenType;
 import com.kii.extension.sdk.entity.serviceextension.TriggerFactory;
 import com.kii.extension.sdk.entity.serviceextension.TriggerScopeType;
+import com.kii.extension.sdk.exception.ObjectNotFoundException;
 
 @Component
-public class BeehiveTriggerInitManager {
+public class TriggerMaintainManager {
 
 
 
@@ -37,11 +45,18 @@ public class BeehiveTriggerInitManager {
 	private ExtensionCodeDao  extensionDao;
 
 
+	@Autowired
+	private TriggerRuntimeStatusDao  statusDao;
+
+	@Autowired
+	private TriggerRecordDao triggerDao;
 
 	@Autowired
 	private ResourceLoader loader;
 
 
+	@Autowired
+	private BeehiveParameterDao parameterDao;
 
 	public void initAppForTrigger(){
 
@@ -61,13 +76,26 @@ public class BeehiveTriggerInitManager {
 
 	}
 
-	public void deployTriggerToAll(){
+	public void deployTriggerToAll(CallbackUrlParameter  param){
 
 		appInfoDao.getSalveAppList().forEach(appInfo->{
 
 			extensionService.deployScriptToApp(appInfo.getAppID());
 
+			parameterDao.saveTriggerCallbackParam(appInfo.getAppID(),param);
+
 		});
+	}
+
+	public void disableTrigger(String triggerID){
+
+		triggerDao.enableTrigger(triggerID);
+	}
+
+	public void enableTrigger(String triggerID){
+
+		triggerDao.disableTrigger(triggerID);
+
 	}
 
 
@@ -109,6 +137,11 @@ public class BeehiveTriggerInitManager {
 		EventTriggerConfig trigger2= TriggerFactory.getBucketInstance("_states", BucketWhenType.DATA_OBJECT_CREATED,TriggerScopeType.App);
 		trigger2.setEndpoint(EndPointNameConstant.OnThingStateChange);
 		list.add(trigger2);
+
+
+		EventTriggerConfig trigger3= TriggerFactory.getThingInstance(ThingWhenType.THING_CREATED);
+		trigger3.setEndpoint(EndPointNameConstant.OnThingCreated);
+		list.add(trigger3);
 		return list;
 	}
 
@@ -121,5 +154,8 @@ public class BeehiveTriggerInitManager {
 
 		extensionDao.addGlobalExtensionCode(uploadEntity);
 	}
-
+	
+	public TriggerRecord getTriggerRecord(String triggerID) {
+		return  triggerDao.getObjectByID(triggerID);
+	}
 }

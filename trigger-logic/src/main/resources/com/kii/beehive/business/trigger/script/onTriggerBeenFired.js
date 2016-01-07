@@ -37,9 +37,9 @@ function global_onSummaryTriggerArrive(params,context,done){
 }
 
 
-function global_onNegitiveTriggerArrive(params,context,done){
+function global_onNegativeTriggerArrive(params,context,done){
 
-	global_onTriggerArrive(params,"negitive",context,done);
+	global_onTriggerArrive(params,"negative",context,done);
 
 
 }

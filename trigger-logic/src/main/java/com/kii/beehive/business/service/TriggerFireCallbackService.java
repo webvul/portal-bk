@@ -12,6 +12,7 @@ import com.kii.beehive.portal.service.TriggerRecordDao;
 import com.kii.beehive.portal.service.TriggerRuntimeStatusDao;
 import com.kii.beehive.portal.store.entity.trigger.GroupTriggerRuntimeState;
 import com.kii.beehive.portal.store.entity.trigger.TargetAction;
+import com.kii.beehive.portal.store.entity.trigger.TriggerRecord;
 import com.kii.beehive.portal.store.entity.trigger.TriggerRuntimeState;
 import com.kii.beehive.portal.store.entity.trigger.TriggerTarget;
 import com.kii.extension.sdk.exception.StaleVersionedObjectException;
@@ -37,7 +38,13 @@ public class TriggerFireCallbackService {
 
 	private void doCommand(String triggerID){
 
-		List<TriggerTarget>  targets=triggerDao.getObjectByID(triggerID).getTargets();
+		TriggerRecord record=triggerDao.getTriggerRecord(triggerID);
+
+		if(record==null){
+			return;
+		}
+
+		List<TriggerTarget>  targets=record.getTargets();
 
 		targets.forEach(target->{
 
@@ -92,7 +99,7 @@ public class TriggerFireCallbackService {
 	}
 
 
-	public void onNegitiveArrive(String thingID,String triggerID){
+	public void onNegativeArrive(String thingID,String triggerID){
 
 		if(!verify(thingID,triggerID)) {
 			return;

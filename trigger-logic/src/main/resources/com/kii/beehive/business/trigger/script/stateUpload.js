@@ -2,25 +2,28 @@
 
 function global_onThingStateChange(params,context,done){
 
-
 	var bucket=context.getAppAdminContext().bucketWithName("_states");
 
-			var obj=bucket.createObjectWithID(params.objectID);
+	var obj=bucket.createObjectWithID(params.objectID);
 
-			obj.refresh({
+	obj.refresh({
 
 	      		success: function(theObject) {
 
-              		var request=new Global_RemoteKiiRequest("stateChange",context,done);
+                	doRemoteCall(context,"stateChange",theObject._customInfo,done);
 
-              		request.execute(theObject._customInfo,function(){done(theObject);});
-
-          },
+ 		         },
 
           		failure: function(theObject, anErrorString) {
             		 console.log("get state object fail:"+params.objectID);
-             		done(anErrorString);
+             		 done(anErrorString);
          		 }
-			});
+	});
+
+}
+
+function global_onThingOnBoard(params,context,done){
+
+	doRemoteCall(context,"thingCreated",params,done);
 
 }

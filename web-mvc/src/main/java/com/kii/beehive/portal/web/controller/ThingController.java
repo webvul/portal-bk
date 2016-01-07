@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kii.beehive.business.event.KiiCloudEventBus;
 import com.kii.beehive.business.manager.TagThingManager;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
@@ -50,7 +51,10 @@ public class ThingController {
 	
 	@Autowired
 	private GlobalThingDao globalThingDao;
-	
+
+	@Autowired
+	private KiiCloudEventBus eventBus;
+
 	/**
 	 * 查询设备（globalThingID）
 	 * GET /things/{globalThingID}
@@ -95,7 +99,7 @@ public class ThingController {
 
 
 	/**
-	 * 创建/更新设备信息
+	 * 创建设备信息
 	 * POST /things/
 	 *
 	 * refer to doc "Beehive API - Thing API" for request/response details
@@ -112,6 +116,8 @@ public class ThingController {
 		BeanUtils.copyProperties(input,thingInfo);
 
 		Long thingID = thingTagManager.createThing(thingInfo, input.getLocation(), input.getInputTags());
+
+//		input.getInputTags().
 
 		Map<String,Long> map=new HashMap<>();
 		map.put("globalThingID",thingID);
