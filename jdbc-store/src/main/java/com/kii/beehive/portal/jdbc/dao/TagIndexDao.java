@@ -5,19 +5,17 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.logging.log4j.util.Strings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import com.kii.beehive.portal.common.utils.CollectUtils;
-import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
+import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
 import com.kii.beehive.portal.jdbc.entity.TagType;
 
 @Repository
 public class TagIndexDao extends BaseDao<TagIndex> {
 
-	private Logger log= LoggerFactory.getLogger(TagIndexDao.class);
+	//private Logger log= LoggerFactory.getLogger(TagIndexDao.class);
 	
 	public static final String TABLE_NAME = "tag_index";
 	public static final String KEY = "tag_id";
@@ -26,15 +24,24 @@ public class TagIndexDao extends BaseDao<TagIndex> {
 		List<TagIndex> tagIndexList = super.findByIDs(tagNameArray);
 		return tagIndexList;
 	}*/
-	
+
+	/**
+	 * find tag list by tagType and displayName
+	 *
+	 * @param tagType
+	 * @param displayName if it's null or empty, will query all displayName under the tagType
+     * @return
+     */
 	public List<TagIndex> findTagByTagTypeAndName(String tagType,String displayName) {
-		String sql = "SELECT * "
-					+ "FROM " + this.getTableName();
+		String sql = "SELECT t.*, COUNT(r.thing_id) count, GROUP_CONCAT(r.thing_id) things "
+					+ "FROM " + this.getTableName() +" t "
+					+ "LEFT JOIN rel_thing_tag r ON r.tag_id = t.tag_id ";
 		
 		StringBuilder where = new StringBuilder();
+		
 		List<Object> params = new ArrayList<Object>();
 		if(!Strings.isBlank(tagType)){
-			where.append(TagIndex.TAG_TYPE).append(" = ? "); 
+			where.append("t.").append(TagIndex.TAG_TYPE).append(" = ? ");
 			params.add(tagType);
 		}
 		
@@ -42,13 +49,14 @@ public class TagIndexDao extends BaseDao<TagIndex> {
 			if(where.length() > 0){
 				where.append(" AND ");
 			}
-			where.append(TagIndex.DISPLAY_NAME).append(" = ? ");
+			where.append("t.").append(TagIndex.DISPLAY_NAME).append(" = ? ");
 			params.add(displayName);
 		}
-		
 		if(where.length() > 0){
 			where.insert(0, " WHERE ");
 		}
+		
+		where.append("GROUP BY t.").append(TagIndex.TAG_ID);
 		
 		Object[] paramArr = new String[params.size()];
 		paramArr = params.toArray(paramArr);
@@ -78,20 +86,27 @@ public class TagIndexDao extends BaseDao<TagIndex> {
 		return rows;
 	}
 
-
+	/**
+	 * get the list of tags related to the thing
+	 * @param globalThingID
+	 * @return
+     */
 	public List<TagIndex> findTagByGlobalThingID(String globalThingID) {
 		StringBuffer sql = new StringBuffer();
-		sql.append("SELECT t_").append(TagIndex.TAG_ID).append(" AS ").append(TagIndex.TAG_ID)
-				.append(", t_").append(TagIndex.TAG_TYPE).append(" AS ").append(TagIndex.TAG_TYPE)
-				.append(", t_").append(TagIndex.DISPLAY_NAME).append(" AS ").append(TagIndex.DISPLAY_NAME)
-				.append(", t_").append(TagIndex.DESCRIPTION).append(" AS ").append(TagIndex.DESCRIPTION)
-				.append(", t_").append(TagIndex.CREATE_DATE).append(" AS ").append(TagIndex.CREATE_DATE)
-				.append(", t_").append(TagIndex.CREATE_BY).append(" AS ").append(TagIndex.CREATE_BY)
-				.append(", t_").append(TagIndex.MODIFY_DATE).append(" AS ").append(TagIndex.MODIFY_DATE)
-				.append(", t_").append(TagIndex.MODIFY_BY).append(" AS ").append(TagIndex.MODIFY_BY)
-				.append(" FROM v_").append(TagThingRelationDao.TABLE_NAME)
-				.append(" WHERE g_").append(GlobalThingInfo.ID_GLOBAL_THING).append("=?")
-				.append(" ORDER BY ").append(TagIndex.TAG_TYPE).append(",").append(TagIndex.DISPLAY_NAME);
+		sql.append("SELECT t.").append(TagIndex.TAG_ID)
+				.append(", t.").append(TagIndex.TAG_TYPE)
+				.append(", t.").append(TagIndex.DISPLAY_NAME)
+				.append(", t.").append(TagIndex.DESCRIPTION)
+				.append(", t.").append(TagIndex.CREATE_DATE)
+				.append(", t.").append(TagIndex.CREATE_BY)
+				.append(", t.").append(TagIndex.MODIFY_DATE)
+				.append(", t.").append(TagIndex.MODIFY_BY)
+				.append(" FROM ")
+				.append(TagIndexDao.TABLE_NAME).append(" t, ")
+				.append(" ( SELECT ").append(TagThingRelation.TAG_ID)
+				.append("     FROM ").append(TagThingRelationDao.TABLE_NAME)
+				.append("    WHERE ").append(TagThingRelation.THING_ID).append("=? ) r ")
+				.append(" WHERE r.").append(TagThingRelation.TAG_ID).append("=t.").append(TagIndex.TAG_ID);
 
 		Object[] paramArr = new Object[] {globalThingID};
 		List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql.toString(), paramArr);
@@ -99,25 +114,17 @@ public class TagIndexDao extends BaseDao<TagIndex> {
 	}
 	
 	public long update(TagIndex tag) {
-		StringBuilder sql = new StringBuilder();
-		sql.append("UPDATE ").append(this.getTableName()).append(" SET ");
-		sql.append(TagIndex.TAG_TYPE).append("=?, ");
-		sql.append(TagIndex.DISPLAY_NAME).append("=?, ");
-		sql.append(TagIndex.DESCRIPTION).append("=?, ");
-		sql.append(TagIndex.CREATE_DATE).append("=?, ");
-		sql.append(TagIndex.CREATE_BY).append("=?, ");
-		sql.append(TagIndex.MODIFY_DATE).append("=?, ");
-		sql.append(TagIndex.MODIFY_BY).append("=? ");
-		sql.append("WHERE ").append(TagIndex.TAG_ID).append("=? ");
-		
-        return jdbcTemplate.update(sql.toString(), tag.getTagType().toString(),
-        								tag.getDisplayName(),
-        								tag.getDescription(),
-        								tag.getCreateDate(),
-        								tag.getCreateBy(),
-        								tag.getModifyDate(),
-        								tag.getModifyBy(),
-        								tag.getId());
+		String[] columns = new String[]{
+				TagIndex.TAG_TYPE,
+				TagIndex.DISPLAY_NAME,
+				TagIndex.DESCRIPTION,
+				TagIndex.CREATE_DATE,
+				TagIndex.CREATE_BY,
+				TagIndex.MODIFY_DATE,
+				TagIndex.MODIFY_BY,
+		};
+
+        return super.update(tag, columns);
     }
 
 	@Override
@@ -140,6 +147,19 @@ public class TagIndexDao extends BaseDao<TagIndex> {
 			tagIndex.setDisplayName((String)row.get(TagIndex.DISPLAY_NAME));
 			tagIndex.setTagType(TagType.valueOf((String) row.get(TagIndex.TAG_TYPE)));
 			tagIndex.setDescription((String)row.get(TagIndex.DESCRIPTION));
+			tagIndex.setCount((Long)row.get(TagIndex.THING_COUNT));
+
+			// set things
+			String strThingID = (String)row.get(TagIndex.THINGS);
+			if(strThingID != null) {
+				String[] strThingIDArr = strThingID.split(",");
+				List<Long> things = new ArrayList<Long>();
+				for(int i = 0; i < strThingIDArr.length; i++) {
+					things.add(Long.valueOf(strThingIDArr[i]));
+				}
+				tagIndex.setThings(things);
+			}
+
 			mapToListForDBEntity(tagIndex, row);
 			list.add(tagIndex);
 		}

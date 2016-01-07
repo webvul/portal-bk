@@ -20,11 +20,25 @@ public class GlobalThingDao extends BaseDao<GlobalThingInfo>{
 	}
 
 	public List<String> findAllThingTypes() {
-		String sql = "SELECT DISTINCT thing_type FROM " + this.getTableName();
+		String sql = "SELECT DISTINCT "+ GlobalThingInfo.THING_TYPE +" FROM " + this.getTableName();
 
 		List<String> rows = jdbcTemplate.queryForList(sql, null, String.class);
 
 		return rows;
+	}
+
+	public List<Map<String, Object>> findAllThingTypesWithThingCount() {
+		String sql = "SELECT "+ GlobalThingInfo.THING_TYPE +" as type, COUNT(1) as count FROM " + this.getTableName()
+				+ " GROUP BY " + GlobalThingInfo.THING_TYPE;
+
+		List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql, new Object[0]);
+
+		return rows;
+	}
+	
+	public List<GlobalThingInfo> getThingByType(String type) {
+		List<GlobalThingInfo> list = super.findBySingleField(GlobalThingInfo.THING_TYPE, type);
+			return list;
 	}
 
 	public GlobalThingInfo getThingByVendorThingID(String vendorThingID) {
@@ -97,29 +111,19 @@ public class GlobalThingDao extends BaseDao<GlobalThingInfo>{
 	
 	@Override
 	public long update(GlobalThingInfo entity) {
-		StringBuilder sql = new StringBuilder();
-		sql.append("UPDATE ").append(this.getTableName()).append(" SET ");
-		sql.append(GlobalThingInfo.VANDOR_THING_ID).append("=?, ");
-		sql.append(GlobalThingInfo.KII_APP_ID).append("=?, ");
-		sql.append(GlobalThingInfo.THING_TYPE).append("=?, ");
-		sql.append(GlobalThingInfo.STATUS).append("=?, ");
-		sql.append(GlobalThingInfo.CUSTOM_INFO).append("=?, ");
-		sql.append(GlobalThingInfo.CREATE_DATE).append("=?, ");
-		sql.append(GlobalThingInfo.CREATE_BY).append("=?, ");
-		sql.append(GlobalThingInfo.MODIFY_DATE).append("=?, ");
-		sql.append(GlobalThingInfo.MODIFY_BY).append("=? ");
-		sql.append("WHERE ").append(GlobalThingInfo.ID_GLOBAL_THING).append("=? ");
+		String[] columns = new String[]{
+				GlobalThingInfo.VANDOR_THING_ID,
+				GlobalThingInfo.KII_APP_ID,
+				GlobalThingInfo.THING_TYPE,
+				GlobalThingInfo.STATUS,
+				GlobalThingInfo.CUSTOM_INFO,
+				GlobalThingInfo.CREATE_DATE,
+				GlobalThingInfo.CREATE_BY,
+				GlobalThingInfo.MODIFY_DATE,
+				GlobalThingInfo.MODIFY_BY,
+		};
 		
-        return jdbcTemplate.update(sql.toString(), entity.getVendorThingID(),
-		        		entity.getKiiAppID(),
-		        		entity.getType(),
-		        		entity.getStatus(),
-		        		entity.getCustom(),
-		        		entity.getCreateDate(),
-		        		entity.getCreateBy(),
-		        		entity.getModifyDate(),
-		        		entity.getModifyBy(),
-		        		entity.getId());
+        return super.update(entity, columns);
 	}
 
 }

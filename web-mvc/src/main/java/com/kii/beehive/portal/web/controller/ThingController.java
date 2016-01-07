@@ -35,11 +35,6 @@ import com.kii.beehive.portal.web.help.PortalException;
  *
  * refer to doc "Beehive API - Tech Design" section "Thing API" for details
  *
- * TODO we may need to sync the logic of handling non-existing tag when we get clear requirement
- * current logic is as below, we leave the logic as it is with the assumption that frontend(web, mobile, etc) would ensure tag existing
- * 	createThing() => create the tag directly
- * 	addThingTag() => skip the tag
- *
  */
 @RestController
 @RequestMapping(path="/things",consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
@@ -50,6 +45,71 @@ public class ThingController {
 	
 	@Autowired
 	private GlobalThingDao globalThingDao;
+	
+	
+	
+	/**
+	 * @deprecated this is internal API for Kii only
+	 *
+	 * 查询所有设备
+	 * GET /things/all
+	 *
+	 * refer to doc "Beehive API - Thing API" for request/response details
+	 *
+     * @return
+     */
+	@RequestMapping(path = "/all", method = {RequestMethod.GET})
+	public ResponseEntity<List<ThingRestBean>> getThingsByAll() {
+		List<GlobalThingInfo> list = globalThingDao.findAll();
+		List<ThingRestBean> resultList = new ArrayList<>();
+		if(list != null) {
+			for (GlobalThingInfo thingInfo : list) {
+				ThingRestBean input = new ThingRestBean();
+				BeanUtils.copyProperties(thingInfo,input);
+				resultList.add(input);
+			}
+		}
+
+		return new ResponseEntity<>(resultList, HttpStatus.OK);
+	}
+	
+	/**
+	 * type下的所有设备
+	 * GET /things/types/{type}
+	 *
+	 * refer to doc "Beehive API - Thing API" for request/response details
+	 *
+     * @return
+     */
+	@RequestMapping(path = "/types/{type}", method = {RequestMethod.GET})
+	public ResponseEntity<List<ThingRestBean>> getThingsByType(@PathVariable("type") String type) {
+		List<GlobalThingInfo> list = globalThingDao.getThingByType(type);
+		List<ThingRestBean> resultList = new ArrayList<>();
+		if(list != null) {
+			for (GlobalThingInfo thingInfo : list) {
+				ThingRestBean input = new ThingRestBean();
+				BeanUtils.copyProperties(thingInfo,input);
+				resultList.add(input);
+			}
+		}
+
+		return new ResponseEntity<>(resultList, HttpStatus.OK);
+	}
+	
+	/**
+	 * 所有设备的type
+	 * GET /things/types
+	 *
+	 * refer to doc "Beehive API - Thing API" for request/response details
+	 *
+     * @return
+     */
+	@RequestMapping(path = "/types", method = {RequestMethod.GET})
+	public ResponseEntity<List<Map<String, Object>>> getAllType() {
+		List<Map<String, Object>> list = globalThingDao.findAllThingTypesWithThingCount();
+
+		return new ResponseEntity<>(list, HttpStatus.OK);
+	}
 	
 	/**
 	 * 查询设备（globalThingID）
@@ -132,7 +192,7 @@ public class ThingController {
 		GlobalThingInfo orig =  globalThingDao.findByID(globalThingID);
 		
 		if(orig == null){
-			throw new PortalException("no body", "no body", HttpStatus.NOT_FOUND);
+			throw new PortalException("Thing Not Found", "Thing with globalThingID:" + globalThingID + " Not Found", HttpStatus.NOT_FOUND);
 		}
 		
 		thingTagManager.removeThing(orig);
@@ -140,64 +200,78 @@ public class ThingController {
 
 	/**
 	 * 绑定设备及tag
-	 * PUT /things/{globalThingID}/tags/{tagID...}
+	 * PUT /things/{globalThingIDs}/tags/{tagID...}
 	 *
 	 * refer to doc "Beehive API - Thing API" for request/response details
 	 *
-	 * @param globalThingID
+	 * @param globalThingIDs
      */
-	@RequestMapping(path="/{globalThingID}/tags/{tagIDs}",method={RequestMethod.PUT})
-	public void addThingTag(@PathVariable("globalThingID") Long globalThingID,@PathVariable("tagIDs") String tagIDs){
+	@RequestMapping(path="/{globalThingIDs}/tags/{tagIDs}",method={RequestMethod.PUT})
+	public void addThingTag(@PathVariable("globalThingIDs") String globalThingIDs,@PathVariable("tagIDs") String tagIDs){
 		
+		List<String> thingIDList = CollectionUtils.arrayToList(globalThingIDs.split(","));
 		List<String> tagIDList = CollectionUtils.arrayToList(tagIDs.split(","));
-		thingTagManager.bindTagToThing(tagIDList, globalThingID);
+		thingTagManager.bindTagToThing(tagIDList, thingIDList);
 	}
 
 	/**
 	 * 解除绑定设备及tag
-	 * DELETE /things/{globalThingID}/tags/{tagID...}
+	 * DELETE /things/{globalThingIDs}/tags/{tagID...}
 	 *
 	 * refer to doc "Beehive API - Thing API" for request/response details
 	 *
-	 * @param globalThingID
+	 * @param globalThingIDs
      */
-	@RequestMapping(path="/{globalThingID}/tags/{tagIDs}",method={RequestMethod.DELETE},consumes={"*"})
-	public void removeThingTag(@PathVariable("globalThingID") Long globalThingID,@PathVariable("tagIDs") String tagIDs){
+	@RequestMapping(path="/{globalThingIDs}/tags/{tagIDs}",method={RequestMethod.DELETE},consumes={"*"})
+	public void removeThingTag(@PathVariable("globalThingIDs") String globalThingIDs,@PathVariable("tagIDs") String tagIDs){
+		List<String> thingIDList = CollectionUtils.arrayToList(globalThingIDs.split(","));
 		List<String> tagIDList = CollectionUtils.arrayToList(tagIDs.split(","));
-		thingTagManager.unbindTagToThing(tagIDList, globalThingID);
+		thingTagManager.unbindTagToThing(tagIDList, thingIDList);
 	}
 
 	/**
 	 * 绑定设备及custom tag
-	 * PUT /things/{globalThingID}/tags/{tagName ...}
+	 * PUT /things/{globalThingID ...}/tags/custom/{tagName ...}
 	 *
 	 * refer to doc "Beehive API - Thing API" for request/response details
 	 *
-	 * @param globalThingID
+	 * @param globalThingIDs
 	 * @param displayNames
 	 */
-	@RequestMapping(path="/{globalThingID}/tags/custom/{displayNames}",method={RequestMethod.PUT})
-	public void addThingCustomTag(@PathVariable("globalThingID") Long globalThingID,@PathVariable("displayNames") String displayNames){
+	@RequestMapping(path="/{globalThingIDs}/tags/custom/{displayNames}",method={RequestMethod.PUT})
+	public void addThingCustomTag(@PathVariable("globalThingIDs") String globalThingIDs,@PathVariable("displayNames") String displayNames){
+
+		List<String> list = CollectionUtils.arrayToList(globalThingIDs.split(","));
+		List<Long> globalThingIDList = new ArrayList<>();
+		for(String id : list) {
+			globalThingIDList.add(Long.valueOf(id));
+		}
 
 		List<String> displayNameList = CollectionUtils.arrayToList(displayNames.split(","));
-		thingTagManager.bindCustomTagToThing(displayNameList, globalThingID);
+		thingTagManager.bindCustomTagToThing(displayNameList, globalThingIDList);
 	}
 
 	/**
 	 * 解除绑定设备及custom tag
-	 * DELETE /things/{globalThingID}/tags/{tagName}
+	 * DELETE /things/{globalThingID ...}/tags/custom/{tagName ...}
 	 *
 	 * refer to doc "Beehive API - Thing API" for request/response details
 	 *
-	 * @param globalThingID
+	 * @param globalThingIDs
 	 * @param displayNames
 	 */
-	@RequestMapping(path="/{globalThingID}/tags/custom/{displayNames}",method={RequestMethod.DELETE},consumes={"*"})
-	public void removeThingCustomTag(@PathVariable("globalThingID") Long globalThingID,@PathVariable("displayNames") String displayNames){
-		List<String> displayNameList = CollectionUtils.arrayToList(displayNames.split(","));
-		thingTagManager.unbindCustomTagToThing(displayNameList, globalThingID);
-	}
+	@RequestMapping(path="/{globalThingIDs}/tags/custom/{displayNames}",method={RequestMethod.DELETE},consumes={"*"})
+	public void removeThingCustomTag(@PathVariable("globalThingIDs") String globalThingIDs,@PathVariable("displayNames") String displayNames){
 
+		List<String> list = CollectionUtils.arrayToList(globalThingIDs.split(","));
+		List<Long> globalThingIDList = new ArrayList<>();
+		for(String id : list) {
+			globalThingIDList.add(Long.valueOf(id));
+		}
+
+		List<String> displayNameList = CollectionUtils.arrayToList(displayNames.split(","));
+		thingTagManager.unbindCustomTagToThing(displayNameList, globalThingIDList);
+	}
 
 	/**
 	 * 查询tag下的设备

@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,10 +21,15 @@ import org.springframework.http.MediaType;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
+import com.kii.beehive.portal.jdbc.dao.TagThingRelationDao;
+import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
+import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
 import com.kii.beehive.portal.jdbc.entity.TagType;
 import com.kii.beehive.portal.web.WebTestTemplate;
+import com.kii.beehive.portal.web.help.AuthInterceptor;
 
 /**
  * Created by USER on 12/1/15.
@@ -36,9 +42,19 @@ public class TestTagController extends WebTestTemplate {
     @Autowired
     private TagIndexDao tagIndexDao;
 
+    @Autowired
+    private GlobalThingDao globalThingDao;
+
+    @Autowired
+    private TagThingRelationDao tagThingRelationDao;
+
+    private final static String KII_APP_ID = "0af7a7e7";
+
     private String displayName = "someDisplayName";
 
     private Long tagIDForTest;
+
+    private String tokenForTest = "Bearer " + AuthInterceptor.SUPER_TOKEN;
 
     @Test
     public void testCreateTag() throws Exception {
@@ -53,6 +69,7 @@ public class TestTagController extends WebTestTemplate {
                 post("/tags/custom").content(ctx)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
+                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -85,6 +102,7 @@ public class TestTagController extends WebTestTemplate {
                 post("/tags/custom").content(ctx)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
+                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -117,6 +135,7 @@ public class TestTagController extends WebTestTemplate {
                 post("/tags/custom").content(ctx)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
+                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -127,13 +146,13 @@ public class TestTagController extends WebTestTemplate {
 
         // assert http return
         tagID = Long.valueOf((int)map.get("id"));
-        assertEquals(tagIDForTest, tagID);
+        assertEquals(Long.valueOf(tagIDForTest + 1), tagID);
 
         tagName = (String)map.get("tagName");
         assertEquals(TagType.Custom + "-" + displayName+"_new", tagName);
 
         tagIndex = tagIndexDao.findByID(tagID);
-        assertEquals(tagIDForTest, (Long)tagIndex.getId());
+        assertEquals(Long.valueOf(tagIDForTest + 1), (Long)tagIndex.getId());
         assertEquals(displayName+"_new", tagIndex.getDisplayName());
         assertEquals("some description new", tagIndex.getDescription());
 
@@ -151,6 +170,7 @@ public class TestTagController extends WebTestTemplate {
                 post("/tags/custom").content(ctx)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
+                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isBadRequest())
                 .andReturn().getResponse().getContentAsString();
@@ -169,6 +189,7 @@ public class TestTagController extends WebTestTemplate {
                 delete("/tags/custom/" + displayName)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
+                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -185,6 +206,7 @@ public class TestTagController extends WebTestTemplate {
                 delete("/tags/custom/" + "some_non_existing_displayName")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
+                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isNotFound())
                 .andReturn().getResponse().getContentAsString();
@@ -199,6 +221,7 @@ public class TestTagController extends WebTestTemplate {
                 get("/tags/all")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
+                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -237,6 +260,7 @@ public class TestTagController extends WebTestTemplate {
                 get("/tags/all")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
+                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -281,6 +305,7 @@ public class TestTagController extends WebTestTemplate {
                 get("/tags/locations/" + "floor1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
+                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -298,6 +323,7 @@ public class TestTagController extends WebTestTemplate {
                 get("/tags/locations/" + "floor1-room1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
+                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -314,6 +340,7 @@ public class TestTagController extends WebTestTemplate {
                 get("/tags/locations/")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
+                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -328,6 +355,108 @@ public class TestTagController extends WebTestTemplate {
         assertEquals(displayNames.get(3), list.get(3));
         assertEquals(displayNames.get(4), list.get(4));
 
+    }
+
+
+    @Test
+    public void testFindTags() throws Exception {
+
+        // create thing
+        String[] vendorThingIDs = new String[]{"vendorThingIDForTest1", "vendorThingIDForTest2", "vendorThingIDForTest3"};
+        Long[] globalThingIDs = this.creatThingsForTest(vendorThingIDs, KII_APP_ID, "LED");
+
+        // create tag
+        String[] displayNames = new String[]{"displayNameForCustom1", "displayNameForCustom2", "displayNameForCustom3"};
+        Long[] tagIDs = this.creatTagsForTest(TagType.Custom, displayNames);
+
+        // create relation
+        TagThingRelation relation = new TagThingRelation();
+        relation.setTagID(tagIDs[0]);
+        relation.setThingID(globalThingIDs[0]);
+        tagThingRelationDao.saveOrUpdate(relation);
+
+        relation = new TagThingRelation();
+        relation.setTagID(tagIDs[0]);
+        relation.setThingID(globalThingIDs[1]);
+        tagThingRelationDao.saveOrUpdate(relation);
+
+        relation = new TagThingRelation();
+        relation.setTagID(tagIDs[1]);
+        relation.setThingID(globalThingIDs[2]);
+        tagThingRelationDao.saveOrUpdate(relation);
+
+
+        // search custom tag
+        String result=this.mockMvc.perform(
+                get("/tags/search?" + "tagType=" + TagType.Custom)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("UTF-8")
+                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+        )
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        List<Map<String, Object>> list = mapper.readValue(result, List.class);
+
+        assertEquals(3, list.size());
+
+        for(Map<String, Object> map : list) {
+            System.out.println("Response Map: " + map);
+            long tagID = ((Integer)map.get("id")).longValue();
+            int count = (Integer) map.get("count");
+            List<Integer> intThings = (List<Integer>)map.get("things");
+            List<Long> things = new ArrayList<>();
+            if(intThings != null) {
+                for (Integer i : intThings) {
+                    things.add(i.longValue());
+                }
+            }
+
+            if(tagID == tagIDs[0]) {
+                assertEquals(2, count);
+                System.out.println(things.contains(globalThingIDs[0]));
+                assertTrue(things.contains(globalThingIDs[0]));
+                assertTrue(things.contains(globalThingIDs[1]));
+            } else if(tagID == tagIDs[1]) {
+                assertEquals(1, count);
+                assertTrue(things.contains(globalThingIDs[2]));
+            } else if(tagID == tagIDs[2]) {
+                assertEquals(0, count);
+                assertTrue(things.isEmpty());
+            }
+        }
+
+    }
+
+    private Long[] creatThingsForTest(String[] vendorThingIDs, String kiiAppID, String type) {
+
+        Long[] globalThingIDs = new Long[vendorThingIDs.length];
+
+        for(int i = 0; i<vendorThingIDs.length;i++) {
+            GlobalThingInfo thingInfo = new GlobalThingInfo();
+            thingInfo.setVendorThingID(vendorThingIDs[i]);
+            thingInfo.setKiiAppID(kiiAppID);
+            thingInfo.setType(type);
+            globalThingIDs[i] = globalThingDao.saveOrUpdate(thingInfo);
+
+            System.out.println("create thing: " + globalThingIDs[i]);
+        }
+
+        return globalThingIDs;
+    }
+
+    private Long[] creatTagsForTest(TagType tagType, String[] displayNames) {
+
+        Long[] tagIDs = new Long[displayNames.length];
+
+        for(int i = 0; i<displayNames.length;i++) {
+            TagIndex tagIndex = TagIndex.generTagIndex(tagType, displayNames[i], null);
+            tagIDs[i] = tagIndexDao.saveOrUpdate(tagIndex);
+
+            System.out.println("create tag: " + tagIDs[i]);
+        }
+
+        return tagIDs;
     }
 
 }

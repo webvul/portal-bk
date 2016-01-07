@@ -1,5 +1,7 @@
 package com.kii.beehive.portal.exception;
 
+import org.apache.http.HttpStatus;
+
 public class UserNotExistException extends StoreServiceException{
 
 
@@ -7,7 +9,7 @@ public class UserNotExistException extends StoreServiceException{
 
 		super.setErrorCode("BeehiveUserNotExist");
 
-		super.setStatusCode(404);
+		super.setStatusCode(HttpStatus.SC_NOT_FOUND);
 
 		super.setMessage(" user with userID "+userID+" not existing in beehive");
 

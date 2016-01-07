@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -46,9 +47,7 @@ public class UserController {
 	@RequestMapping(path="",method={RequestMethod.POST})
 	public Map<String,String> createUser(@RequestBody UserRestBean user){
 
-		if(StringUtils.isEmpty(user.getUserName()) || StringUtils.isEmpty(user.getAliUserID())){
-			throw new PortalException("RequiredFieldsMissing","username or userID cannot been null", HttpStatus.BAD_REQUEST);
-		}
+		user.verifyInput();
 
 		BeehiveUser beehiveUser = user.getBeehiveUser();
 
@@ -71,6 +70,9 @@ public class UserController {
 	 */
 	@RequestMapping(path="/{userID}",method={RequestMethod.PATCH})
 	public Map<String,String> updateUser(@PathVariable("userID") String userID,@RequestBody UserRestBean user){
+
+		// clean the input user id
+		user.setAliUserID(null);
 
 		userManager.updateUser(user.getBeehiveUser(),userID);
 
