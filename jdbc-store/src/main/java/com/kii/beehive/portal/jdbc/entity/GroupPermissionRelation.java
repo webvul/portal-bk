@@ -4,11 +4,11 @@ import com.kii.beehive.portal.jdbc.annotation.JdbcField;
 
 public class GroupPermissionRelation extends DBEntity {
 
-	private long id;
+	private Long id;
 	
-	private long permissionID;
+	private Long permissionID;
 
-	private long userGroupID;
+	private Long userGroupID;
 	
 	public final static String ID = "id";
 	public final static String PERMISSION_ID = "permission_id";
@@ -18,20 +18,20 @@ public class GroupPermissionRelation extends DBEntity {
 	
 
 	@JdbcField(column=ID)
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
 	@JdbcField(column=PERMISSION_ID)
-	public long getPermissionID() {
+	public Long getPermissionID() {
 		return permissionID;
 	}
 
-	public void setPermissionID(long permissionID) {
+	public void setPermissionID(Long permissionID) {
 		this.permissionID = permissionID;
 	}
 
@@ -40,7 +40,7 @@ public class GroupPermissionRelation extends DBEntity {
 		return userGroupID;
 	}
 
-	public void setUserGroupID(long userGroupID) {
+	public void setUserGroupID(Long userGroupID) {
 		this.userGroupID = userGroupID;
 	}
 	

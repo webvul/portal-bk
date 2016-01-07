@@ -9,6 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import com.kii.beehive.portal.web.constant.Constants;
+
 public class OperatorLogInterceptor extends HandlerInterceptorAdapter {
 	
 	private Logger operatorLog= LoggerFactory.getLogger(OperatorLogInterceptor.class);
@@ -23,12 +25,10 @@ public class OperatorLogInterceptor extends HandlerInterceptorAdapter {
 
 		// output operator log
 		StringBuilder sb = new StringBuilder(100);
-		String auth = request.getHeader("Authorization");
+		String userID = (String) request.getSession().getAttribute(Constants.SESSION_USER_ID);
 
-		if (auth != null && auth.startsWith("Bearer ")) {
-			auth = auth.trim();
-			String token = auth.substring(auth.lastIndexOf(" ") + 1).trim();
-			sb.append(token);
+		if (userID != null) {
+			sb.append(userID);
 		}
 		sb.append(",").append(request.getRequestURI());
 		operatorLog.info(sb.toString());

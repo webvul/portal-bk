@@ -22,7 +22,7 @@ import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.store.entity.BeehiveUserGroup;
 
 @Component
-public class UserGroupManager {
+public class BeehiveUserGroupManager {
 
     private Logger logger= LoggerFactory.getLogger(this.getClass());
 
@@ -78,7 +78,13 @@ public class UserGroupManager {
         logger.debug("includeUserData:" + includeUserData);
 
         // get user group
-        List<BeehiveUserGroup> groupList =  beehiveUserGroupDao.getUserGroupsBySimpleQuery(queryMap);
+        List<BeehiveUserGroup> groupList = null;
+        if(queryMap == null || queryMap.isEmpty()) {
+        	groupList =  beehiveUserGroupDao.getAll();
+        }else{
+        	groupList =  beehiveUserGroupDao.getUserGroupsBySimpleQuery(queryMap);
+        }
+        
 
         if(groupList == null || groupList.isEmpty()) {
             return null;

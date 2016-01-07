@@ -133,7 +133,7 @@ public abstract class BaseDao<T extends DBEntity> {
 	}
 
 	public long saveOrUpdate(T entity){
-		if(entity.getId() == 0){
+		if(entity.getId() == null || entity.getId() == 0){
 			SqlParameterSource parameters = new AnnationBeanSqlParameterSource(entity);
 			Number id=insertTool.executeAndReturnKey(parameters);
 			return id.longValue();

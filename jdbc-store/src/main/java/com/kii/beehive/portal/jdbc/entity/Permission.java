@@ -4,7 +4,7 @@ import com.kii.beehive.portal.jdbc.annotation.JdbcField;
 
 public class Permission extends DBEntity {
 
-	private long sourceID;
+	private Long sourceID;
 	private String name;
 	private String action;
 	private String description;
@@ -17,7 +17,7 @@ public class Permission extends DBEntity {
 	
 	@Override
 	@JdbcField(column=PERMISSION_ID)
-	public long getId(){
+	public Long getId(){
 		return super.getId();
 	}
 	
@@ -40,11 +40,11 @@ public class Permission extends DBEntity {
 	}
 
 	@JdbcField(column=SOURCE_ID)
-	public long getSourceID() {
+	public Long getSourceID() {
 		return sourceID;
 	}
 
-	public void setSourceID(long sourceID) {
+	public void setSourceID(Long sourceID) {
 		this.sourceID = sourceID;
 	}
 

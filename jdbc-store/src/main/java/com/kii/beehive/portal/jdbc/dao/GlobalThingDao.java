@@ -94,7 +94,7 @@ public class GlobalThingDao extends BaseDao<GlobalThingInfo>{
 		List<GlobalThingInfo> list = new ArrayList<GlobalThingInfo>();
 		for (Map<String, Object> row : rows) {
 			GlobalThingInfo globalThingInfo = new GlobalThingInfo();
-			globalThingInfo.setId((Integer)row.get(GlobalThingInfo.ID_GLOBAL_THING));
+			globalThingInfo.setId(Long.valueOf((Integer)row.get(GlobalThingInfo.ID_GLOBAL_THING)));
 			globalThingInfo.setVendorThingID((String)row.get(GlobalThingInfo.VANDOR_THING_ID));
 			globalThingInfo.setKiiAppID((String)row.get(GlobalThingInfo.KII_APP_ID));
 			globalThingInfo.setType((String)row.get(GlobalThingInfo.THING_TYPE));

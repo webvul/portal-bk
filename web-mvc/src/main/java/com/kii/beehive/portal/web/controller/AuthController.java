@@ -1,8 +1,8 @@
 package com.kii.beehive.portal.web.controller;
 
-import javax.servlet.http.HttpServletRequest;
-
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,6 +16,7 @@ import com.kii.beehive.portal.common.utils.CollectUtils;
 import com.kii.beehive.portal.manager.AuthManager;
 import com.kii.beehive.portal.manager.UserManager;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
+import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.entity.AuthRestBean;
 import com.kii.beehive.portal.web.help.AuthInterceptor;
@@ -73,7 +74,7 @@ public class AuthController {
      * @return
      */
     @RequestMapping(path = "/login", method = { RequestMethod.POST })
-    public AuthRestBean login(@RequestBody Map<String, Object> request) {
+    public AuthRestBean login(@RequestBody Map<String, Object> request, HttpServletRequest httpRequest) {
 
         String userID = (String)request.get("userID");
         String password = (String)request.get("password");
@@ -87,6 +88,8 @@ public class AuthController {
         if(loginInfo == null) {
             throw new PortalException(ErrorCode.AUTH_FAIL, "Authentication failed", HttpStatus.BAD_REQUEST);
         }
+        
+        httpRequest.getSession().setAttribute(Constants.SESSION_USER_ID, userID);
 
         // get user info
         BeehiveUser beehiveUser = userManager.getUserByID(userID);

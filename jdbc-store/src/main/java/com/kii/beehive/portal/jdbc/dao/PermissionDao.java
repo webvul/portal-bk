@@ -48,8 +48,8 @@ public class PermissionDao extends BaseDao<Permission> {
 		List<Permission> list = new ArrayList<Permission>();
 		for (Map<String, Object> row : rows) {
 			Permission entity = new Permission();
-			entity.setId((int)row.get(Permission.PERMISSION_ID));
-			entity.setSourceID((int)row.get(Permission.SOURCE_ID));
+			entity.setId(Long.valueOf((Integer)row.get(Permission.PERMISSION_ID)));
+			entity.setSourceID((Long)row.get(Permission.SOURCE_ID));
 			entity.setName((String)row.get(Permission.NAME));
 			entity.setAction((String)row.get(Permission.ACTION));
 			entity.setDescription((String)row.get(Permission.DESCRIPTION));

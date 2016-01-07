@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,10 +18,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kii.beehive.portal.manager.UserGroupManager;
+import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
+import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
+import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
+import com.kii.beehive.portal.jdbc.entity.UserGroup;
 import com.kii.beehive.portal.manager.UserManager;
-import com.kii.beehive.portal.store.entity.BeehiveUserGroup;
-import com.kii.beehive.portal.web.entity.UserGroupRestBean;
+import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.beehive.portal.web.help.PortalException;
 
 /**
@@ -32,7 +36,10 @@ import com.kii.beehive.portal.web.help.PortalException;
 public class UserGroupController {
 
     @Autowired
-    private UserGroupManager userGroupManager;
+    private UserGroupDao userGroupDao;
+    
+    @Autowired
+    private GroupUserRelationDao groupUserRelationDao;
 
     @Autowired
     private UserManager userManager;
@@ -47,67 +54,55 @@ public class UserGroupController {
      * @param userGroup
      */
     @RequestMapping(path="",method={RequestMethod.POST})
-    public ResponseEntity createUserGroup(@RequestBody BeehiveUserGroup userGroup){
+    public ResponseEntity createUserGroup(@RequestBody UserGroup userGroup, HttpServletRequest httpRequest){
 
-        // check whether userGroupName available
-        String userGroupName = userGroup.getUserGroupName();
-        if(userGroupName == null || userGroupName.trim().length() == 0) {
-            throw new PortalException("RequiredFieldsMissing", "userGroupName cannot be null", HttpStatus.BAD_REQUEST);
+        if(Strings.isBlank(userGroup.getName())) {
+            throw new PortalException("RequiredFieldsMissing", "userGroupName is null", HttpStatus.BAD_REQUEST);
+        }
+        
+        String loginUserID = getLoginUserID(httpRequest);
+        Long userGroupID = null;
+        if(userGroup.getId() == null){//create
+        	userGroupID = userManager.createUserGroup(userGroup, loginUserID);
+        }else{//update
+        	userGroupID = userManager.updateUserGroup(userGroup, loginUserID);
         }
 
-        // check whether userGroupName existing
-        if(userGroupManager.checkUserGroupNameExist(userGroupName)) {
-            throw new PortalException("DuplicatedData", "userGroupName already exists", HttpStatus.CONFLICT);
-        }
-
-        // check whether userIDs existing
-        userManager.validateUserIDExisting(userGroup.getUsers());
-
-        // create user group
-        String userGroupID = userGroupManager.createUserGroup(userGroup, null);
-
-        Map<String,String> resultMap = new HashMap<>();
+        Map<String,Object> resultMap = new HashMap<>();
         resultMap.put("userGroupID", userGroupID);
         return new ResponseEntity<>(resultMap, HttpStatus.OK);
     }
-
-    /**
-     * 更新用户群组
-     * PATCH /usergroup/{userGroupID}
-     *
-     * refer to doc "Beehive API - User API" for request/response details
-     * refer to doc "Tech Design - Beehive API", section "Update User Group (更新用户群组)" for more details
-     *
-     * @param userGroupID
-     */
-    @RequestMapping(path="/{userGroupID}",method={RequestMethod.PATCH})
-    public ResponseEntity updateUserGroup(@PathVariable("userGroupID") String userGroupID, @RequestBody BeehiveUserGroup userGroup){
-
-        // check whether userGroupID existing
-        if(userGroupManager.checkUserGroupIDExist(userGroupID) == false) {
-            throw new PortalException("DataNotFound", "userGroupID not found", HttpStatus.NOT_FOUND);
-        }
-
-        // if userGroupName is set in request, check whether the user group with the same userGroupName already existing
-        String userGroupName = userGroup.getUserGroupName();
-        if(!Strings.isBlank(userGroupName)) {
-            BeehiveUserGroup tempUserGroup = userGroupManager.getUserGroupByName(userGroupName);
-            if(tempUserGroup != null && !userGroupID.equals(tempUserGroup.getUserGroupID())) {
-                throw new PortalException("DuplicatedData", "userGroupName already exists", HttpStatus.CONFLICT);
-            }
-        }
-
-        // check whether userIDs existing
-        userManager.validateUserIDExisting(userGroup.getUsers());
-
-        // update user group
-        userGroup.setUserGroupID(userGroupID);
-        userGroupManager.updateUserGroup(userGroup, null);
-
-        Map<String,String> resultMap = new HashMap<>();
-        resultMap.put("userGroupID", userGroupID);
-        return new ResponseEntity<>(resultMap, HttpStatus.OK);
+    
+    @RequestMapping(path="/{userGroupID}/user/{userID}",method={RequestMethod.POST})
+    public ResponseEntity addUserToUserGroup(@PathVariable("userGroupID") Long userGroupID, @PathVariable("userID") String userID, HttpServletRequest httpRequest){
+    	String loginUserID = getLoginUserID(httpRequest);
+    	
+    	//loginUser can edit, when loginUser is in this group , 
+    	List<UserGroup> checkAuth = userGroupDao.findUserGroup(loginUserID, userGroupID, null);
+		
+		if(checkAuth.size() == 1){
+			List<UserGroup> orgiList = userGroupDao.findUserGroup(userID, userGroupID, null);
+			if(orgiList.size() == 0){
+				GroupUserRelation gur = new GroupUserRelation(userID, userGroupID);
+	    		groupUserRelationDao.saveOrUpdate(gur);
+			}
+		}
+        return new ResponseEntity<>(HttpStatus.OK);
     }
+    
+    @RequestMapping(path="/{userGroupID}/user/{userID}",method={RequestMethod.PUT})
+    public ResponseEntity removeUserToUserGroup(@PathVariable("userGroupID") Long userGroupID, @PathVariable("userID") String userID, HttpServletRequest httpRequest){
+    	String loginUserID = getLoginUserID(httpRequest);
+    	
+    	//loginUser can edit, when loginUser is in this group , 
+    	List<UserGroup> checkAuth = userGroupDao.findUserGroup(loginUserID, userGroupID, null);
+		
+		if(checkAuth.size() == 1){
+    		groupUserRelationDao.delete(userID, userGroupID);
+		}
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 
     /**
      * 删除用户群组
@@ -118,55 +113,59 @@ public class UserGroupController {
      *
      * @param userGroupID
      */
-    @RequestMapping(path="/{userGroupID}",method={RequestMethod.DELETE},consumes={"*"})
-    public ResponseEntity deleteUserGroup(@PathVariable("userGroupID") String userGroupID){
+    @RequestMapping(path="/{userGroupID}",method={RequestMethod.DELETE})
+    public ResponseEntity deleteUserGroup(@PathVariable("userGroupID") Long userGroupID){
 
-        // check whether userGroupID existing
-        if(userGroupManager.checkUserGroupIDExist(userGroupID) == false) {
-            throw new PortalException("DataNotFound", "userGroupID not found", HttpStatus.NOT_FOUND);
-        }
-
-        // delete user group
-        userGroupManager.deleteUserGroup(userGroupID, null);
+    	UserGroup orig =  userGroupDao.findByID(userGroupID);
+		
+		if(orig == null){
+			throw new PortalException("Thing Not Found", "Thing with userGroupID:" + userGroupID + " Not Found", HttpStatus.NOT_FOUND);
+		}
+		
+		userManager.deleteUserGroup(userGroupID);
 
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+    
+    /**
+     * 取得群組用戶
+     * DELETE /usergroup/{userGroupID}
+     *
+     * refer to doc "Beehive API - User API" for request/response details
+     * refer to doc "Tech Design - Beehive API", section "Detail User Group" for more details
+     *
+     * @param userGroupID
+     */
+    @RequestMapping(path="/{userGroupID}",method={RequestMethod.GET})
+    public ResponseEntity getUserGroupDetail(@PathVariable("userGroupID") Long userGroupID, HttpServletRequest httpRequest){
+    	String loginUserID = getLoginUserID(httpRequest);
+    	List<UserGroup> checkAuth = userGroupDao.findUserGroup(loginUserID, userGroupID, null);
+    	List<GroupUserRelation> list = null;
+		if(checkAuth.size() == 1){
+			list = groupUserRelationDao.findByUserGroupID(userGroupID);
+		}
+
+        return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
     /**
      * 查询用户群组
-     * POST /usergroup/simplequery
+     * POST /usergroup/search
      *
      * refer to doc "Beehive API - User API" for request/response details
      * refer to doc "Tech Design - Beehive API", section "Inquire User Group (查询用户群组)" for more details
      *
      * @param queryMap
      */
-    @RequestMapping(path="/simplequery",method={RequestMethod.POST})
-    public ResponseEntity queryUserGroup(@RequestBody Map<String,Object> queryMap){
-
-        // if query condition is empty, return all the user groups
-        if(queryMap == null || queryMap.isEmpty()) {
-            List<BeehiveUserGroup> userGroupList = userGroupManager.getUserGroupAll();
-            return new ResponseEntity<>(userGroupList, HttpStatus.OK);
-        }
-
-        // if query condition is specified, query the user group
-        String includeUserData = (String)queryMap.remove("includeUserData");
-
-        if(queryMap.containsKey("userGroupID")) {
-            Object userGroupID = queryMap.remove("userGroupID");
-            queryMap.put("_id", userGroupID);
-        }
-
-        boolean isIncludeUserData = "1".equals(includeUserData);
-        BeehiveUserGroup userGroup = userGroupManager.getUserGroupBySimpleQuery(queryMap, isIncludeUserData);
-
-        UserGroupRestBean output = null;
-        if(userGroup != null) {
-            output = new UserGroupRestBean(userGroup, isIncludeUserData);
-        }
-
-        return new ResponseEntity<>(output, HttpStatus.OK);
+    @RequestMapping(path = "/list", method = {RequestMethod.GET})
+	public ResponseEntity<List<UserGroup>> getUserGroupList(HttpServletRequest httpRequest) {
+    	String loginUserID = getLoginUserID(httpRequest);
+		List<UserGroup> list = userGroupDao.findUserGroup(loginUserID, null , null);
+		return new ResponseEntity<>(list, HttpStatus.OK);
+	}
+    
+    private String getLoginUserID(HttpServletRequest httpRequest){
+    	return (String)httpRequest.getSession().getAttribute(Constants.SESSION_USER_ID);
     }
 
 }

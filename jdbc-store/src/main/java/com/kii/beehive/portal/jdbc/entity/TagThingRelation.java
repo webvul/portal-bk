@@ -4,11 +4,11 @@ import com.kii.beehive.portal.jdbc.annotation.JdbcField;
 
 public class TagThingRelation extends DBEntity {
 
-	private long id;
+	private Long id;
 	
-	private long tagID;
+	private Long tagID;
 
-	private long thingID;
+	private Long thingID;
 	
 	public final static String ID = "id";
 	public final static String TAG_ID = "tag_id";
@@ -16,36 +16,36 @@ public class TagThingRelation extends DBEntity {
 	
 	public TagThingRelation() {}
 	
-	public TagThingRelation(long tagID, long thingID) {
+	public TagThingRelation(Long tagID, Long thingID) {
 		super();
 		this.tagID = tagID;
 		this.thingID = thingID;
 	}
 
 	@JdbcField(column=ID)
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 	
 	@JdbcField(column = TAG_ID)
-	public long getTagID() {
+	public Long getTagID() {
 		return tagID;
 	}
 
-	public void setTagID(long tagID) {
+	public void setTagID(Long tagID) {
 		this.tagID = tagID;
 	}
 
 	@JdbcField(column = THING_ID)
-	public long getThingID() {
+	public Long getThingID() {
 		return thingID;
 	}
 
-	public void setThingID(long thingID) {
+	public void setThingID(Long thingID) {
 		this.thingID = thingID;
 	}
 }

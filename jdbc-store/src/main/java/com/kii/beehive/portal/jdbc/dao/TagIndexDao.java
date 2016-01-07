@@ -143,7 +143,7 @@ public class TagIndexDao extends BaseDao<TagIndex> {
 		List<TagIndex> list = new ArrayList<TagIndex>();
 		for (Map<String, Object> row : rows) {
 			TagIndex tagIndex = new TagIndex();
-			tagIndex.setId((int)row.get(TagIndex.TAG_ID));
+			tagIndex.setId(Long.valueOf((Integer)row.get(TagIndex.TAG_ID)));
 			tagIndex.setDisplayName((String)row.get(TagIndex.DISPLAY_NAME));
 			tagIndex.setTagType(TagType.valueOf((String) row.get(TagIndex.TAG_TYPE)));
 			tagIndex.setDescription((String)row.get(TagIndex.DESCRIPTION));

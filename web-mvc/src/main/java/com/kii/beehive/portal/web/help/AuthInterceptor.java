@@ -5,11 +5,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.guava.GuavaCacheManager;
-import org.springframework.context.ApplicationContext;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.kii.beehive.portal.manager.AuthManager;
+import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.extension.sdk.exception.UnauthorizedAccessException;
 
 public class AuthInterceptor extends HandlerInterceptorAdapter {
@@ -54,6 +53,8 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
         // TODO this checking is for testing only, must remove after testing complete
         if (SUPER_TOKEN.equals(token)) {
+        	
+        	request.getSession().setAttribute(Constants.SESSION_USER_ID, "211102");
             return true;
         }
 
