@@ -75,6 +75,7 @@ public class AuthInfoCacheService {
     /**
      * get available auth info from cache (available = not expired)
      * if not existing, try to get from DB and save into cache
+     * // TODO it may not be necessary to query DB again if the auth info is not found in cache, so maybe need to remove the source code of DB storage later
      *
      * @param token
      * @return if valid token, return the corresponding AuthInfo entity; otherwise, return null
@@ -114,6 +115,17 @@ public class AuthInfoCacheService {
         }
 
         return null;
+    }
+
+    /**
+     * get AuthInfo by token directly <br/>
+     * this method will not check whether token is valid
+     *
+     * @param token
+     * @return
+     */
+    public AuthInfo getAuthInfo(String token) {
+        return authInfoMap.get(token);
     }
 
     /**
@@ -171,7 +183,9 @@ public class AuthInfoCacheService {
     }
 
     /**
-     * check whether token expired
+     * check whether token expired <br/>
+     * if the expire time of token is null, treat it as permanent valid
+     *
      * @param authInfo
      * @return
      */

@@ -140,5 +140,16 @@ public class AuthManager {
         userTokenBindTool.clean();
     }
 
+    /**
+     * get AuthInfo by token directly <br/>
+     * this method will not check whether token is valid, so is supposed only to be called after AuthInterceptor validated the token
+     *
+     * @param token
+     * @return
+     */
+    public AuthInfo getAuthInfo(String token) {
+        return authInfoCacheService.getAuthInfo(token);
+    }
+
 }
 
