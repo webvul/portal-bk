@@ -17,6 +17,8 @@ import com.kii.extension.sdk.entity.thingif.ThingCommand;
 @Component
 public class KiiCommandService {
 
+	public static final String SCHEMA = "demo";
+	private static final int SCHEMA_VERSION = 1;
 	@Autowired
 	private ThingIFInAppService thingIFService;
 
@@ -71,8 +73,8 @@ public class KiiCommandService {
 //		resolver.setAppInfoDirectly(appInfoDao.getAppInfoByID(appID).getAppInfo());
 
 		command.setUserID(appInfoManager.getDefaultOwer(appID).getUserID());
-		command.setSchema(thingInfo.getSchema());
-		command.setSchemaVersion(thingInfo.getSchemaVersion());
+		command.setSchema(SCHEMA);
+		command.setSchemaVersion(SCHEMA_VERSION);
 
 		thingIFService.sendCommand(command,thingInfo.getFullKiiThingID());
 	}

@@ -57,6 +57,9 @@ public class AnnationBeanSqlParameterSource extends AbstractSqlParameterSource {
 	public boolean hasValue(String paramName) {
 
 		String fieldName=fieldMapper.get(paramName);
+		if(fieldName==null){
+			return false;
+		}
 		return this.beanWrapper.isReadableProperty(fieldName);
 	}
 

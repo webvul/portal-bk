@@ -15,6 +15,10 @@ import org.springframework.core.io.ResourceLoader;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import com.kii.beehive.business.service.ThingIFInAppService;
+import com.kii.beehive.portal.common.utils.ThingIDTools;
+import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
+import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.manager.TriggerMaintainManager;
 import com.kii.beehive.business.service.ServiceExtensionDeployService;
 import com.kii.beehive.portal.service.BeehiveParameterDao;
@@ -39,6 +43,8 @@ public class TestExtensionCreate extends TestTemplate  {
 	private ServiceExtensionDeployService extensionService;
 
 
+	@Autowired
+	private ThingIFInAppService thingIFInAppService;
 
 	@Autowired
 	private AppBindToolResolver resolver;
@@ -112,6 +118,33 @@ public class TestExtensionCreate extends TestTemplate  {
 
 	}
 
+	@Autowired
+	private GlobalThingSpringDao  thingDao;
+
+	@Test
+	public void createThing(){
+
+		String vendorThingID="vendorThingDemo"+System.currentTimeMillis();
+
+		GlobalThingInfo info=new GlobalThingInfo();
+		info.setKiiAppID(APP_NAME);
+//		String fullKiiThingID= ThingIDTools.joinFullKiiThingID(thingID,APP_NAME);
+
+//		info.setFullKiiThingID(fullKiiThingID);
+
+		info.setVendorThingID(vendorThingID);
+		info.setType("demo");
+
+		long id=thingDao.insert(info);
+
+
+		OnBoardingParam param = new OnBoardingParam();
+		param.setVendorThingID(vendorThingID);
+		param.setThingPassword("password");
+
+		String thingID=thingIFInAppService.onBoarding(param,APP_NAME).getThingID();
+
+	}
 
 	@Test
 	public void callStateChange() {

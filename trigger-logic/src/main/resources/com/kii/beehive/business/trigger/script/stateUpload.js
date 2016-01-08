@@ -27,3 +27,9 @@ function global_onThingOnBoard(params,context,done){
 	doRemoteCall(context,"thingCreated",params,done);
 
 }
+
+function global_onThingRemoved(params,context,done){
+
+	doRemoteCall(context,"thingRemoved",params,done);
+
+}

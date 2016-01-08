@@ -12,6 +12,7 @@ import com.kii.beehive.business.service.ThingStateNotifyCallbackService;
 import com.kii.beehive.business.service.TriggerFireCallbackService;
 import com.kii.beehive.portal.manager.ThingTagManager;
 import com.kii.beehive.portal.web.constant.CallbackNames;
+import com.kii.beehive.portal.web.entity.CreatedThing;
 import com.kii.beehive.portal.web.entity.StateUpload;
 import com.kii.beehive.portal.web.entity.TriggerCallbackParam;
 
@@ -75,11 +76,11 @@ public class ExtensionCallbackController {
 	@RequestMapping(path= "/" + CallbackNames.THING_CREATED,method = { RequestMethod.POST })
 	public void onThingCreatedFire(@RequestHeader("x-kii-appid") String appID,
 								  @RequestHeader("Authorization") String token,
-								  @RequestBody StateUpload status){
+								  @RequestBody CreatedThing thing){
 
 
-		stateNotifyService.onThingStateChange(appID,status.getTarget(), status.getState());
 
+		tagManager.updateKiicloudRelation(thing.getVendorThingID(),thing.getThingID());
 	}
 
 

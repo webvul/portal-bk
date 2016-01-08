@@ -128,19 +128,39 @@ public class TriggerMaintainManager {
 	private List<EventTriggerConfig> getTriggerEndpoint() {
 		List<EventTriggerConfig> list=new ArrayList<>();
 
-		EventTriggerConfig trigger1= TriggerFactory.getBucketInstance("_states", BucketWhenType.DATA_OBJECT_UPDATED, TriggerScopeType.App);
-		trigger1.setEndpoint(EndPointNameConstant.OnThingStateChange);
-		list.add(trigger1);
+		list.add(stateChange());
 
-		EventTriggerConfig trigger2= TriggerFactory.getBucketInstance("_states", BucketWhenType.DATA_OBJECT_CREATED,TriggerScopeType.App);
-		trigger2.setEndpoint(EndPointNameConstant.OnThingStateChange);
-		list.add(trigger2);
+		list.add( getStateCreated());
 
+		list.add(thingCreated());
 
+		list.add(thingRemoved());
+
+		return list;
+	}
+
+	private EventTriggerConfig thingRemoved() {
+		EventTriggerConfig trigger3= TriggerFactory.getThingInstance(ThingWhenType.THING_DELETED);
+		trigger3.setEndpoint(EndPointNameConstant.OnThingRemoved);
+		return trigger3;
+	}
+
+	private EventTriggerConfig thingCreated() {
 		EventTriggerConfig trigger3= TriggerFactory.getThingInstance(ThingWhenType.THING_CREATED);
 		trigger3.setEndpoint(EndPointNameConstant.OnThingCreated);
-		list.add(trigger3);
-		return list;
+		return trigger3;
+	}
+
+	private EventTriggerConfig getStateCreated() {
+		EventTriggerConfig trigger2= TriggerFactory.getBucketInstance("_states", BucketWhenType.DATA_OBJECT_CREATED, TriggerScopeType.App);
+		trigger2.setEndpoint(EndPointNameConstant.OnThingStateChange);
+		return trigger2;
+	}
+
+	private EventTriggerConfig stateChange() {
+		EventTriggerConfig trigger1 = TriggerFactory.getBucketInstance("_states", BucketWhenType.DATA_OBJECT_UPDATED, TriggerScopeType.App);
+		trigger1.setEndpoint(EndPointNameConstant.OnThingStateChange);
+		return trigger1;
 	}
 
 	private void initCommon() throws IOException {

@@ -7,9 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.stereotype.Repository;
+
 import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 
+@Repository
 public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 	@Override
 	protected String getTableName() {

@@ -18,9 +18,9 @@ public class GlobalThingInfo extends DBEntity{
 
 	private String fullKiiThingID;
 
-	private String schema;
-
-	private int schemaVersion;
+//	private String schema;
+//
+//	private int schemaVersion;
 	
 	public final static String ID_GLOBAL_THING = "id_global_thing";
 	public final static String VANDOR_THING_ID = "vendor_thing_id";
@@ -91,23 +91,23 @@ public class GlobalThingInfo extends DBEntity{
 		return kiiThingID;
 	}
 
-	@JdbcField(column="thing_schema")
-	public String getSchema() {
-		return schema;
-	}
-
-	public void setSchema(String schema) {
-		this.schema = schema;
-	}
-
-	@JdbcField(column="thing_schema_version")
-	public int getSchemaVersion() {
-		return schemaVersion;
-	}
-
-	public void setSchemaVersion(int schemaVersion) {
-		this.schemaVersion = schemaVersion;
-	}
+//	@JdbcField(column="thing_schema")
+//	public String getSchema() {
+//		return schema;
+//	}
+//
+//	public void setSchema(String schema) {
+//		this.schema = schema;
+//	}
+//
+//	@JdbcField(column="thing_schema_version")
+//	public int getSchemaVersion() {
+//		return schemaVersion;
+//	}
+//
+//	public void setSchemaVersion(int schemaVersion) {
+//		this.schemaVersion = schemaVersion;
+//	}
 
 	private String kiiThingID;
 

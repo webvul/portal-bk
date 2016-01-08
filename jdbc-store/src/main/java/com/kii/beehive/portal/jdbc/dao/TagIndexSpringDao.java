@@ -1,7 +1,10 @@
 package com.kii.beehive.portal.jdbc.dao;
 
+import org.springframework.stereotype.Repository;
+
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 
+@Repository
 public class TagIndexSpringDao extends SpringBaseDao<TagIndex> {
 
 

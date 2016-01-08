@@ -1,5 +1,7 @@
 package com.kii.beehive.portal.manager;
 
+import javax.annotation.PostConstruct;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -58,7 +60,7 @@ public class ThingGroupStateManager {
 	@Autowired
 	private AppInfoManager appInfoManager;
 
-
+	@PostConstruct
 	public void refreshState(){
 
 		List<TriggerRuntimeState>  stateList=statusDao.getUnCompletedList(BeehiveTriggerType.Group);

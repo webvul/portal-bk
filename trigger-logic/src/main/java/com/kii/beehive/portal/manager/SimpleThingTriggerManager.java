@@ -1,5 +1,7 @@
 package com.kii.beehive.portal.manager;
 
+import javax.annotation.PostConstruct;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +44,7 @@ public class SimpleThingTriggerManager {
 	@Autowired
 	private TriggerRuntimeStatusDao statusDao;
 
+	@PostConstruct
 	public void refreshState(){
 
 		List<TriggerRuntimeState> stateList=statusDao.getUnCompletedList(BeehiveTriggerType.Simple);
