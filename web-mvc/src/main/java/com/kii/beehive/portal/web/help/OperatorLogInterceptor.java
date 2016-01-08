@@ -1,6 +1,5 @@
 package com.kii.beehive.portal.web.help;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -11,8 +10,9 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+
+import com.kii.beehive.business.helper.OpLogTools;
 
 public class OperatorLogInterceptor extends HandlerInterceptorAdapter {
 	
@@ -21,7 +21,7 @@ public class OperatorLogInterceptor extends HandlerInterceptorAdapter {
 	private Logger log= LoggerFactory.getLogger("com.kii");
 
 	@Autowired
-	private OpLogTools  logTool;
+	private OpLogTools logTool;
 
 
 	

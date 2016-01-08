@@ -1,4 +1,4 @@
-package com.kii.beehive.portal.web.help;
+package com.kii.beehive.business.helper;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -54,13 +54,13 @@ public class OpLogTools {
 		prefix = fileName.substring(0, dotIdx);
 		ext = fileName.substring(dotIdx, fileName.length());
 
-		fillDatePrefix();
+		doDailySwitch();
 
 	}
 
 
 	@Scheduled(cron = "0 0 0 * * ?")
-	public void fillDatePrefix() {
+	public void doDailySwitch() {
 
 		Date date = new Date();
 
@@ -77,7 +77,9 @@ public class OpLogTools {
 				BufferedWriter newWriter = new BufferedWriter(new FileWriter(file, true));
 
 				BufferedWriter oldWriter=writerRef.getAndSet(newWriter);
-				oldWriter.close();
+				if(oldWriter!=null) {
+					oldWriter.close();
+				}
 				break;
 			} catch (IOException e) {
 				log.error("oplog create new file fail,retry "+i, e);
@@ -103,6 +105,18 @@ public class OpLogTools {
 
 		String line = StringUtils.collectionToDelimitedString(list, ",");
 
+		writeLine(line);
+	}
+
+	@Async
+	public void write(String[] list) {
+
+		String line = StringUtils.arrayToDelimitedString(list, ",");
+
+		writeLine(line);
+	}
+
+	private void writeLine(String line) {
 		try {
 			writerRef.get().write(line);
 			writerRef.get().newLine();
