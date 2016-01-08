@@ -59,18 +59,6 @@
             <property name="propFileName" value="classpath:com/kii/beehive/portal/web/beehive.portal.store.${spring.profile}.properties" />
     </bean>
 
-    <!-- log4j    -->
-
-    <bean id="log4jInitializer" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" >
-        <property name="targetClass" value="org.springframework.util.Log4jConfigurer" />
-        <property name="targetMethod" value="initLogging" />
-        <property name="arguments">
-            <list>
-                <value>classpath:com/kii/beehive/portal/web/log4j.${spring.profile}.xml</value>
-            </list>
-        </property>
-    </bean>
-
      <bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
         <property name="jdbcUrl" value="${beehive.jdbc.url}" />
