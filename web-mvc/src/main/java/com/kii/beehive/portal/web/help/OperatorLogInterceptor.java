@@ -1,37 +1,51 @@
 package com.kii.beehive.portal.web.help;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 public class OperatorLogInterceptor extends HandlerInterceptorAdapter {
 	
-	private Logger operatorLog= LoggerFactory.getLogger(OperatorLogInterceptor.class);
-
+//	private Logger operatorLog= LoggerFactory.getLogger(OperatorLogInterceptor.class);
+//
 	private Logger log= LoggerFactory.getLogger("com.kii");
+
+	@Autowired
+	private OpLogTools  logTool;
+
+
 	
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
-		// output system log
 		this.logRequest(request);
 
-		// output operator log
-		StringBuilder sb = new StringBuilder(100);
+		List<String> list=new ArrayList<>();
+
+		list.add(String.valueOf(System.currentTimeMillis()));
+
 		String auth = request.getHeader("Authorization");
 
 		if (auth != null && auth.startsWith("Bearer ")) {
 			auth = auth.trim();
+
 			String token = auth.substring(auth.lastIndexOf(" ") + 1).trim();
-			sb.append(token);
+			list.add(token);
 		}
-		sb.append(",").append(request.getRequestURI());
-		operatorLog.info(sb.toString());
+		list.add(request.getRequestURI());
+
+		logTool.write(list);
+
 		return super.preHandle(request, response, handler);
 	}
 
