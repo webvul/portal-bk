@@ -20,10 +20,6 @@ public class TagIndexDao extends BaseDao<TagIndex> {
 	public static final String TABLE_NAME = "tag_index";
 	public static final String KEY = "tag_id";
 	
-	/*public List<TagIndex> findTagIndexByTagNameArray(String[] tagNameArray){
-		List<TagIndex> tagIndexList = super.findByIDs(tagNameArray);
-		return tagIndexList;
-	}*/
 
 	/**
 	 * find tag list by tagType and displayName
@@ -86,6 +82,7 @@ public class TagIndexDao extends BaseDao<TagIndex> {
 		return rows;
 	}
 
+
 	/**
 	 * get the list of tags related to the thing
 	 * @param globalThingID
@@ -127,6 +124,7 @@ public class TagIndexDao extends BaseDao<TagIndex> {
         return super.update(tag, columns);
     }
 
+
 	@Override
 	public String getTableName() {
 		return TABLE_NAME;
@@ -147,6 +145,7 @@ public class TagIndexDao extends BaseDao<TagIndex> {
 			tagIndex.setDisplayName((String)row.get(TagIndex.DISPLAY_NAME));
 			tagIndex.setTagType(TagType.valueOf((String) row.get(TagIndex.TAG_TYPE)));
 			tagIndex.setDescription((String)row.get(TagIndex.DESCRIPTION));
+
 			tagIndex.setCount((Long)row.get(TagIndex.THING_COUNT));
 
 			// set things

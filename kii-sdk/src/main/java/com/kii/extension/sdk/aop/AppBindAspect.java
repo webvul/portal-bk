@@ -28,6 +28,8 @@ public class AppBindAspect {
 	private AppBindToolResolver  bindTool;
 
 
+
+
 	@Pointcut("execution (* com.kii.extension.sdk.service.AbstractDataAccess+.*(..)  ) ")
 	private void commDataAccess(){
 
@@ -40,7 +42,7 @@ public class AppBindAspect {
 	}
 
 
-	@Pointcut("execution (*  com.kii..*(@com.kii.extension.sdk.annotation.AppBindParam (*) , .. ))")
+	@Pointcut("execution (*  com.kii..*(..,@com.kii.extension.sdk.annotation.AppBindParam (*),.. ))")
 	private void bindWithParam(){
 
 	}
@@ -51,6 +53,9 @@ public class AppBindAspect {
 
 		BindAppByName  appByName=joinPoint.getTarget().getClass().getAnnotation(BindAppByName.class);
 
+		if(appByName==null){
+			return;
+		}
 		AppChoice choice=new AppChoice();
 		if(!StringUtils.isEmpty(appByName.appBindSource())) {
 			choice.setBindName(appByName.appBindSource());
@@ -65,6 +70,10 @@ public class AppBindAspect {
 	@After("commDataAccess() || appBindWithAnnotation() ")
 	public void afterCallDataAccess(JoinPoint joinPoint){
 
+		BindAppByName  appByName=joinPoint.getTarget().getClass().getAnnotation(BindAppByName.class);
+		if(appByName==null){
+			return;
+		}
 		bindTool.clean();
 
 	}
@@ -94,11 +103,13 @@ public class AppBindAspect {
 					Object arg=args[i];
 					if(arg instanceof AppInfo){
 						bindTool.setAppInfoDirectly((AppInfo)arg);
-						return;
+						break;
 					}else if(arg instanceof  String) {
 						param = String.valueOf(args[i]);
+						bindTool.setAppInfoDirectly(param);
+						break;
 					}
-					annotation=(AppBindParam)anno;
+//					annotation=(AppBindParam)anno;
 					break;
 				}
 			}
@@ -110,16 +121,16 @@ public class AppBindAspect {
 		}
 
 
-		if(param==null){
-			return;
-		}
-
-		AppChoice choice=new AppChoice();
-		choice.setAppName(param);
-		if(!StringUtils.isEmpty(annotation.appBindSource())){
-			choice.setBindName(annotation.appBindSource());
-		}
-		bindTool.setAppChoice(choice);
+//		if(param==null){
+//			return;
+//		}
+//
+//		AppChoice choice=new AppChoice();
+//		choice.setAppName(param);
+//		if(!StringUtils.isEmpty(annotation.appBindSource())){
+//			choice.setBindName(annotation.appBindSource());
+//		}
+//		bindTool.setAppChoice(choice);
 
 	}
 

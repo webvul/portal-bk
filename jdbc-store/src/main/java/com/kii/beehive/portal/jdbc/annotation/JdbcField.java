@@ -13,4 +13,8 @@ public @interface JdbcField {
 	String column();
 
 	JdbcFieldType type() default JdbcFieldType.Auto;
+
+//	boolean getter() default true;
+//
+//	boolean setter() default true;
 }

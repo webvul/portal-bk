@@ -13,9 +13,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.kii.beehive.portal.exception.EntryNotFoundException;
+
+import com.kii.beehive.business.helper.SyncMsgService;
 import com.kii.beehive.portal.exception.UserNotExistException;
-import com.kii.beehive.portal.helper.SyncMsgService;
+import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.beehive.portal.jdbc.dao.GroupPermissionRelationDao;
 import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
 import com.kii.beehive.portal.jdbc.dao.UserGroupDao;

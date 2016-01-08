@@ -8,26 +8,29 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 
 import com.kii.beehive.portal.jdbc.entity.DBEntity;
 import com.kii.beehive.portal.jdbc.helper.AnnationBeanSqlParameterSource;
+import com.kii.beehive.portal.jdbc.helper.BindClsFullUpdateTool;
+import com.kii.beehive.portal.jdbc.helper.BindClsRowMapper;
 
 public abstract class BaseDao<T extends DBEntity> {
 
 	private Logger log= LoggerFactory.getLogger(BaseDao.class);
 
 	protected JdbcTemplate jdbcTemplate;
-	
-	//private Class<T> entityClass;
-	
+
 	private SimpleJdbcInsert insertTool;
-	
+
 
 	public abstract String getTableName();
 	
@@ -36,6 +39,7 @@ public abstract class BaseDao<T extends DBEntity> {
 	public abstract long update(T entity);
 	
 	public abstract List<T> mapToList(List<Map<String, Object>> rows);
+
 
 	protected T mapToListForDBEntity(T entity, Map<String, Object> row) {
 		entity.setCreateBy((String)row.get(DBEntity.CREATE_BY));
@@ -47,15 +51,15 @@ public abstract class BaseDao<T extends DBEntity> {
 
 	@Autowired
 	public void setDataSource(DataSource dataSource) {
-		//ParameterizedType type = (ParameterizedType) getClass().getGenericSuperclass();  
-        //entityClass = (Class<T>) type.getActualTypeArguments()[0];  
+		//ParameterizedType type = (ParameterizedType) getClass().getGenericSuperclass();
+        //entityClass = (Class<T>) type.getActualTypeArguments()[0];
 
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
 		this.insertTool=new SimpleJdbcInsert(dataSource)
 				.withTableName(getTableName())
 				.usingGeneratedKeyColumns(getKey());
 	}
-	
+
 	public List<T> findAll() {  
         String sql = "SELECT * FROM " + this.getTableName();  
         List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql);
@@ -115,6 +119,9 @@ public abstract class BaseDao<T extends DBEntity> {
 
     	return result;
 	}
+
+
+
 
 	public int execute(String sql, List<Object> values) {
 
@@ -179,5 +186,5 @@ public abstract class BaseDao<T extends DBEntity> {
 
 		return updateResult;
 	}
-	
+
 }

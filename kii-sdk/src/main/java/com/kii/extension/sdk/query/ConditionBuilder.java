@@ -80,8 +80,8 @@ public class ConditionBuilder {
 		return this;
 	}
 
-	private <T> ConditionBuilder range(String field, T lower, Boolean withLower,
-			T upper, Boolean withUpper) {
+	private <T> ConditionBuilder range(String field, T lower, boolean withLower,
+			T upper, boolean withUpper) {
 
 		T sign = lower;
 		if (lower == null) {
@@ -93,11 +93,14 @@ public class ConditionBuilder {
 		if (upper != null) {
 			q.setUpperLimit(upper);
 		}
-		q.setUpperIncluded(withUpper);
-		q.setLowerIncluded(withLower);
 		if (lower != null) {
 			q.setLowerLimit(lower);
 		}
+
+		q.setUpperIncluded(withUpper);
+		q.setLowerIncluded(withLower);
+
+
 		fill(q);
 
 		return this;
@@ -105,26 +108,30 @@ public class ConditionBuilder {
 
 	public ConditionBuilder addSubClause(ConditionBuilder...  logic) {
 		for(ConditionBuilder b:logic){
-			fill(b.condition);
+			if(b.clauses!=null){
+				fill(b.clauses);
+			}else {
+				fill(b.condition);
+			}
 		}
 		return this;
 	}
 
-	public <T> ConditionBuilder Less(String field, T value) {
-		return range(field, null, null, value, null);
+	public <T> ConditionBuilder less(String field, T value) {
+		return range(field, null, false, value, false);
 
 	}
 
 	public <T> ConditionBuilder great(String field, T value) {
-		return range(field, value, null, null, null);
+		return range(field, value, false, null, false);
 	}
 
 	public <T> ConditionBuilder lessAndEq(String field, T value) {
-		return range(field, null, null, value, true);
+		return range(field, null, true, value, false);
 	}
 
 	public <T> ConditionBuilder greatAndEq(String field, T value) {
-		return range(field, value, true, null, null);
+		return range(field, value, false, null, true);
 	}
 
 	public <T> ConditionBuilder betweenIn(String field, T lower, boolean withLower,
@@ -159,18 +166,32 @@ public class ConditionBuilder {
 	 * create a conition with not oper
 	 * @return
 	 */
+	public static ConditionBuilder notCondition(Condition subCond) {
+		ConditionBuilder cb=new ConditionBuilder();
+		cb.clauses=new NotLogic();
+		cb.clauses.addClause(subCond);
+		return cb;
+	}
+
 	public static ConditionBuilder notCondition() {
 		ConditionBuilder cb=new ConditionBuilder();
 		cb.clauses=new NotLogic();
 		return cb;
 	}
-
 	
 	public QueryBuilder getFinalCondition() {
 		if (clauses==null) {
 			return new QueryBuilder(condition);
 		} else {
 			return new QueryBuilder(clauses);
+		}
+	}
+
+	public Condition getConditionInstance() {
+		if (clauses==null) {
+			return condition;
+		} else {
+			return clauses;
 		}
 	}
 

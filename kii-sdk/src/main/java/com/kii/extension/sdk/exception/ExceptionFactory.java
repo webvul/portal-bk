@@ -29,6 +29,8 @@ public class ExceptionFactory {
 
 	private Map<Integer,Class<? extends KiiCloudException>> userClsMap =new HashMap<>();
 
+	private Map<Integer,Class<? extends KiiCloudException>> appClsMap =new HashMap<>();
+
 
 	@PostConstruct
 	public void init(){
@@ -45,10 +47,12 @@ public class ExceptionFactory {
 		userClsMap.put(401, UnauthorizedAccessException.class);
 		userClsMap.put(403, ForbiddenException.class);
 
+		appClsMap.put(404,AppParameterCodeNotFoundException.class);
+
 	}
 
 	public enum OperateType{
-		bucket,user;
+		bucket,user,app;
 	}
 
 	public OperateType getOperateType(URI url){
@@ -57,6 +61,8 @@ public class ExceptionFactory {
 			return OperateType.bucket;
 		}else if(url.getPath().contains("/users")){
 			return OperateType.user;
+		}else if(url.getPath().contains("/configuration/")){
+			return OperateType.app;
 		}else{
 			return OperateType.bucket;
 		}
@@ -74,6 +80,9 @@ public class ExceptionFactory {
 				break;
 			case user:
 				map=userClsMap;
+				break;
+			case app:
+				map=appClsMap;
 				break;
 		}
 		checkResponse(response, map);

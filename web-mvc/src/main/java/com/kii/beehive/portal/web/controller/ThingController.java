@@ -22,11 +22,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kii.beehive.business.event.KiiCloudEventBus;
+import com.kii.beehive.portal.manager.TagThingManager;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagType;
-import com.kii.beehive.portal.manager.TagThingManager;
 import com.kii.beehive.portal.web.entity.ThingRestBean;
 import com.kii.beehive.portal.web.help.PortalException;
 
@@ -45,7 +46,11 @@ public class ThingController {
 	
 	@Autowired
 	private GlobalThingDao globalThingDao;
-	
+
+	@Autowired
+	private KiiCloudEventBus eventBus;
+
+
 	
 	
 	/**
@@ -155,7 +160,7 @@ public class ThingController {
 
 
 	/**
-	 * 创建/更新设备信息
+	 * 创建设备信息
 	 * POST /things
 	 *
 	 * refer to doc "Beehive API - Thing API" for request/response details
@@ -172,6 +177,8 @@ public class ThingController {
 		BeanUtils.copyProperties(input,thingInfo);
 
 		Long thingID = thingTagManager.createThing(thingInfo, input.getLocation(), input.getInputTags());
+
+//		input.getInputTags().
 
 		Map<String,Long> map=new HashMap<>();
 		map.put("globalThingID",thingID);
@@ -212,6 +219,8 @@ public class ThingController {
 		List<String> thingIDList = CollectionUtils.arrayToList(globalThingIDs.split(","));
 		List<String> tagIDList = CollectionUtils.arrayToList(tagIDs.split(","));
 		thingTagManager.bindTagToThing(tagIDList, thingIDList);
+
+		eventBus.onTagIDsChangeFire(tagIDList,true);
 	}
 
 	/**
@@ -227,6 +236,9 @@ public class ThingController {
 		List<String> thingIDList = CollectionUtils.arrayToList(globalThingIDs.split(","));
 		List<String> tagIDList = CollectionUtils.arrayToList(tagIDs.split(","));
 		thingTagManager.unbindTagToThing(tagIDList, thingIDList);
+
+		eventBus.onTagIDsChangeFire(tagIDList,false);
+
 	}
 
 	/**
@@ -249,6 +261,11 @@ public class ThingController {
 
 		List<String> displayNameList = CollectionUtils.arrayToList(displayNames.split(","));
 		thingTagManager.bindCustomTagToThing(displayNameList, globalThingIDList);
+
+		displayNameList.forEach(name->{
+			String fullName=TagType.Custom.getTagName(name);
+			eventBus.onTagChangeFire(fullName,true);
+		});
 	}
 
 	/**
@@ -271,6 +288,11 @@ public class ThingController {
 
 		List<String> displayNameList = CollectionUtils.arrayToList(displayNames.split(","));
 		thingTagManager.unbindCustomTagToThing(displayNameList, globalThingIDList);
+
+		displayNameList.forEach(name->{
+			String fullName=TagType.Custom.getTagName(name);
+			eventBus.onTagChangeFire(fullName,false);
+		});
 	}
 
 	/**
@@ -286,10 +308,11 @@ public class ThingController {
 	public ResponseEntity<List<ThingRestBean>> getThingsByTagExpress(@RequestParam(value="tagType", required = false) String tagType,
 																		@RequestParam(value="displayName", required = false) String displayName) {
 		List<GlobalThingInfo> list = null;
+
 		if(Strings.isBlank(tagType) && Strings.isBlank(displayName)){
 			list = globalThingDao.findAll();
 		}else{
-			list = globalThingDao.findThingByTag(StringUtils.capitalize(tagType), displayName);
+			list = globalThingDao.findThingByTag(StringUtils.capitalize(tagType)+"-"+displayName);
 		}
 
 		List<ThingRestBean> resultList = new ArrayList<>();

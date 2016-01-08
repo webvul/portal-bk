@@ -14,6 +14,7 @@ import com.kii.beehive.portal.common.utils.StrTemplate;
 import com.kii.extension.sdk.annotation.AppBindParam;
 import com.kii.extension.sdk.context.AdminTokenBindTool;
 import com.kii.extension.sdk.entity.AppInfo;
+import com.kii.extension.sdk.exception.AppParameterCodeNotFoundException;
 import com.kii.extension.sdk.exception.KiiCloudException;
 import com.kii.extension.sdk.impl.ApiAccessBuilder;
 import com.kii.extension.sdk.impl.KiiCloudClient;
@@ -31,6 +32,10 @@ public class AppMasterSalveService {
 	private AdminTokenBindTool tool;
 
 
+	private ApiAccessBuilder getBuilder(AppInfo info) {
+
+		return new ApiAccessBuilder(info).bindToken(tool.getToken());
+	}
 
 
 	public boolean isMaster(@AppBindParam AppInfo info){
@@ -45,7 +50,7 @@ X-Kii-AppKey: <appKey>
 
 		ApiAccessBuilder builder = getBuilder(info);
 
-		HttpUriRequest request=builder.addSubUrl("/configuration/parameters/isMasterApp").buildCustomCall("GET",null).generRequest(mapper);
+		HttpUriRequest request=builder.getSystemParameter("isMasterApp").generRequest(mapper);
 
 		String result=client.executeRequest(request);
 
@@ -53,56 +58,33 @@ X-Kii-AppKey: <appKey>
 	}
 
 	public String checkMaster(@AppBindParam  AppInfo info){
-		/*
 
-GET /apps/<slaveAppID>/configuration/parameters/kii.master_app_id
-Authorization: Bearer xxxyyyzzz (app-admin / sys-admin)
-X-Kii-AppID: <slaveAppID>
-X-Kii-AppKey: <slaveAppKey>
-		 */
 		HttpUriRequest  request=getBuilder(info).bindToken(tool.getToken())
-				.addSubUrl("/configuration/parameters/kii.master_app_id")
-				.buildCustomCall("GET",null).generRequest(mapper);
+				.getSystemParameter("kii.master_app_id")
+				.generRequest(mapper);
 
-		return client.executeRequest(request);
-
+		try {
+			return client.executeRequest(request);
+		}catch(AppParameterCodeNotFoundException e){
+			return null;
+		}
 
 	}
 
-	private ApiAccessBuilder getBuilder(AppInfo info) {
-//		bindToolResolver.setAppInfoDrectly(info);
-
-		return new ApiAccessBuilder(info).bindToken(tool.getToken());
-	}
 
 
 	public void setMaster(@AppBindParam AppInfo info){
 
-		/*
-		PUT /apps/<masterAppID>/configuration/parameters/isMasterApp
-content-type: text/plain
-Authorization: Bearer xxxyyyzzz (app-admin / sys-admin)
-X-Kii-AppID: <masterAppID>
-X-Kii-AppKey: <masterAppKey>
-		 */
+
 		ApiAccessBuilder builder = getBuilder(info);
 
-		HttpUriRequest request=builder.addSubUrl("/configuration/parameters/isMasterApp").setContentType("text/plain").buildCustomCall("PUT","true").generRequest(mapper);
+		HttpUriRequest request=builder.setSystemParameter("isMasterApp","true").generRequest(mapper);
 
 		HttpResponse response=client.doRequest(request);
 
 		if(response.getStatusLine().getStatusCode()!=204){
 			throw new  KiiCloudException(response);
 		}
-
-			/*
-		curl -XPOST \
-  -H'x-kii-appid: f5795cb7' -H'x-kii-appkey: 12c239d31a3c38dcf53c5208a59d2ddd' \
-  -H'authorization: Bearer YM-ke1JasJU9n4G-7zKC5uXPwC6Y_xUWBTaUJdJmeWU' \
-  -H'content-type: application/json' \
-  https://api-development-beehivecn3.internal.kii.com/api/apps/f5795cb7/oauth2/certs -d {}
-
-		 */
 
 		request=builder.addSubUrl("/oauth2/certs").buildCustomCall("POST","{}").setContentType("application/json").generRequest(mapper);
 
@@ -112,21 +94,9 @@ X-Kii-AppKey: <masterAppKey>
 
 
 
-
-	public void addSalveAppToMaster(@AppBindParam AppInfo  masterApp,AppInfo  salveAppInfo){
-
-
-		ClientInfo info=addSalveApp(masterApp, salveAppInfo);
-
-		registInSalve(info,masterApp,salveAppInfo);
-
-	}
-
-
-
 	static String url="http://$(0).$(1).kiiapps.com/api/apps/$(0)/integration/webauth/callback";
 
-	private  ClientInfo addSalveApp(AppInfo  masterApp,AppInfo  salveAppInfo){
+	public  ClientInfo addSalveApp(@AppBindParam AppInfo  masterApp,AppInfo  salveAppInfo){
 		/*
 		POST /apps/<masterAppId>/oauth2/clients
 content-type: application/vnd.kii.Oauth2ClientCreationRequest+json
@@ -156,7 +126,7 @@ Authorization: Bearer xxxyyyzzz (app-admin / sys-admin)
 
 	static String api="http://$(0).$(1).kiiapps.com/api/";
 
-	private void registInSalve(ClientInfo clientInfo,AppInfo masterApp,AppInfo salveApp){
+	public  void registInSalve(ClientInfo clientInfo,AppInfo masterApp,@AppBindParam AppInfo salveApp){
 
 		/*
 
@@ -173,6 +143,7 @@ http://api-development-jp.internal.kii.com/api/apps/<slaveAppId> -d \
   }
 }'
 		 */
+
 		ApiAccessBuilder builder = getBuilder(salveApp);
 
 

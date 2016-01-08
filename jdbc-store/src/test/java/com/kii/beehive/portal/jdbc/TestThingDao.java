@@ -11,12 +11,13 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
+import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 
 public class TestThingDao extends TestTemplate{
 
 	@Autowired
-	private GlobalThingDao dao;
+	private GlobalThingSpringDao dao;
 	
 	private GlobalThingInfo  thing=new GlobalThingInfo();
 	
@@ -27,14 +28,10 @@ public class TestThingDao extends TestTemplate{
 		thing.setCustom("custom");
 		thing.setType("type");
 		thing.setStatus("this is a test about long text,we don't know the final required,so....");
-		long id=dao.saveOrUpdate(thing);
+		long id=dao.insert(thing);
 		thing.setId(id);
 	}
 	
-	@Test
-	public void testFoo(){
-		dao.test();
-	}
 
 	@Test
 	public void testFindByID(){
@@ -54,9 +51,9 @@ public class TestThingDao extends TestTemplate{
 		thing2.setVendorThingID("demo_vendor_thing_id2");
 		thing2.setKiiAppID("appID2");
 		thing2.setStatus("1");
-		long id2=dao.saveOrUpdate(thing2);
+		long id2=dao.insert(thing2);
 		
-		List<GlobalThingInfo>  list=dao.findByIDs(new Object[]{thing.getId(),id2});
+		List<GlobalThingInfo>  list=dao.findByIDs(new long[]{thing.getId(),id2});
 
 		assertEquals(2,list.size());
 	}
@@ -67,12 +64,7 @@ public class TestThingDao extends TestTemplate{
 		GlobalThingInfo  entity=dao.findByID(thing.getId());
 		assertNull(entity);
 	}
-	
-	@Test
-	public void testIsIdExist(){
-		boolean b = dao.IsIdExist(thing.getId());
-		assertTrue(b);
-	}
+
 	
 	@Test
 	public void testGetThingByVendorThingID(){
@@ -83,4 +75,7 @@ public class TestThingDao extends TestTemplate{
 		assertEquals(thing.getType(),entity.getType());
 		assertEquals(thing.getStatus(),entity.getStatus());
 	}
+
+
+
 }

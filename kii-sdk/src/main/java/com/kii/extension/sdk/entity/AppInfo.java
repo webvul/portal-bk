@@ -82,7 +82,7 @@ public class AppInfo {
 	}
 
 	public String getSiteUrl(String subUrl) {
-		return siteUrl+"/api/apps/"+appID+"/"+subUrl;
+		return getAppSubUrl()+"/"+subUrl;
 	}
 
 	public String getAppKey() {
@@ -97,6 +97,11 @@ public class AppInfo {
 
 		return  siteUrl+"/api/apps/"+appID;
 	}
+
+	public String getThingIfSubUrl(){
+		return siteUrl+"/thing-if/apps/"+appID;
+	}
+
 	public String getSiteUrl(){
 		return siteUrl;
 	}

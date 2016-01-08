@@ -1,20 +1,14 @@
 dependencies {
 
-	compile project(":kii-sdk")
+	compile project(":cloud-business")
 	compile project(":jdbc-store")
+
 	compile project(":cloud-store")
-	
-	compile "org.springframework:spring-context:${springVersion}"
 
-	compile "org.springframework:spring-aspects:${springVersion}"
-
-	compile "org.springframework:spring-aop:${springVersion}"
-
-	compile "org.springframework:spring-context-support:${springVersion}"
-
-	compile "com.google.guava:guava:18.0"
 
 	testCompile 'org.eclipse.jetty:jetty-server:9.3.2.v20150730'
 	testCompile 'org.eclipse.jetty:jetty-webapp:9.3.2.v20150730'
+
+
 
 }

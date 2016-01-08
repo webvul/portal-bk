@@ -1,5 +1,6 @@
 package com.kii.beehive.portal.jdbc.entity;
 
+import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.jdbc.annotation.JdbcField;
 import com.kii.beehive.portal.jdbc.annotation.JdbcFieldType;
 
@@ -14,6 +15,12 @@ public class GlobalThingInfo extends DBEntity{
 	private String status;
 
 	private String custom;
+
+	private String fullKiiThingID;
+
+//	private String schema;
+//
+//	private int schemaVersion;
 	
 	public final static String ID_GLOBAL_THING = "id_global_thing";
 	public final static String VANDOR_THING_ID = "vendor_thing_id";
@@ -74,6 +81,67 @@ public class GlobalThingInfo extends DBEntity{
 	public void setCustom(String custom) {
 		this.custom = custom;
 	}
+
+	@JdbcField(column="full_kii_thing_id")
+	public String getFullKiiThingID() {
+		return fullKiiThingID;
+	}
+
+	public String getKiiThingID(){
+		return kiiThingID;
+	}
+
+//	@JdbcField(column="thing_schema")
+//	public String getSchema() {
+//		return schema;
+//	}
+//
+//	public void setSchema(String schema) {
+//		this.schema = schema;
+//	}
+//
+//	@JdbcField(column="thing_schema_version")
+//	public int getSchemaVersion() {
+//		return schemaVersion;
+//	}
+//
+//	public void setSchemaVersion(int schemaVersion) {
+//		this.schemaVersion = schemaVersion;
+//	}
+
+	private String kiiThingID;
+
+	public void setFullKiiThingID(String fullkiiThingID) {
+		this.fullKiiThingID = fullkiiThingID;
+
+		ThingIDTools.ThingIDCombine idCombine = ThingIDTools.splitFullKiiThingID(fullkiiThingID);
+
+		this.kiiThingID=idCombine.kiiThingID;
+		this.kiiAppID=idCombine.kiiAppID;
+	}
+
+
+	@Override
+	public boolean equals(Object obj){
+
+		if(obj == null){
+			return false;
+		}
+
+		if(obj instanceof GlobalThingInfo){
+			return this.getId()==(((GlobalThingInfo)obj).getId());
+		}else{
+			return false;
+		}
+	}
+
+
+	@Override
+	public int hashCode(){
+		return this.getId().intValue();
+
+	}
+
 
 	@Override
 	public String toString() {

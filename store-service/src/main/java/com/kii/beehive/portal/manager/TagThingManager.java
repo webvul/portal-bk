@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.kii.beehive.portal.common.utils.CollectUtils;
 import com.kii.beehive.portal.exception.EntryNotFoundException;
@@ -23,6 +24,7 @@ import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
 
 @Component
+@Transactional
 public class TagThingManager {
 	private Logger log= LoggerFactory.getLogger(TagThingManager.class);
 
@@ -36,6 +38,7 @@ public class TagThingManager {
 	
 	@Autowired
 	private TagThingRelationDao tagThingRelationDao;
+
 	
 	@Autowired
 	private AppInfoDao appInfoDao;
@@ -49,7 +52,7 @@ public class TagThingManager {
      * @return
      */
 	public Long createThing(GlobalThingInfo thingInfo, String location, Collection<String> tagList) {
-		
+
 		KiiAppInfo kiiAppInfo = appInfoDao.getAppInfoByID(thingInfo.getKiiAppID());
 
 		// check whether Kii App ID is existing
@@ -90,7 +93,8 @@ public class TagThingManager {
 				}else{
 					tagID = list.get(0).getId();
 				}
-				
+
+				eventBus.onTagChangeFire(tag.getFullTagName(), Collections.singletonList(new Long(thingID)),true);
 				tagThingRelationDao.saveOrUpdate(new TagThingRelation(tagID,thingID));
 			}
 		}*/
@@ -101,6 +105,7 @@ public class TagThingManager {
 	public void bindTagToThing(Collection<String> tagIDs,Collection<String> thingIDs) {
 		List<TagIndex> tagList = this.findTagList(tagIDs);
 		
+
 		for(String thingID:thingIDs){
 			GlobalThingInfo thing = globalThingDao.findByID(thingID);
 			if(thing == null){
@@ -138,6 +143,7 @@ public class TagThingManager {
 	public void unbindTagToThing(Collection<String> tagIDs,Collection<String> thingIDs) {
 		List<TagIndex> tagList = this.findTagList(tagIDs);
 		
+
 		for(String thingID:thingIDs){
 			GlobalThingInfo thing = globalThingDao.findByID(thingID);
 			if(thing == null){
@@ -181,6 +187,7 @@ public class TagThingManager {
 		return tagIndexDao.findLocations(parentLocation);
 
 	}
+
 
 	/**
 	 * save the thing-location relation

@@ -1,0 +1,34 @@
+package com.kii.beehive.portal.store.entity.trigger;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class SummaryTriggerRecord extends TriggerRecord {
+
+	private List<SummaryExpress> summaryExpress=new ArrayList<>();
+
+	private TriggerSource  source;
+
+
+
+
+
+	public TriggerSource getSource() {
+		return source;
+	}
+
+	public void setSource(TriggerSource source) {
+		this.source = source;
+	}
+
+
+	public List<SummaryExpress> getSummaryExpress() {
+		return summaryExpress;
+	}
+
+	public void setSummaryExpress(List<SummaryExpress> summaryExpress) {
+		this.summaryExpress = summaryExpress;
+	}
+
+
+}

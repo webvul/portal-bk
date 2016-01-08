@@ -1,10 +1,13 @@
 package com.kii.beehive.portal.web.controller;
 
+import javax.servlet.http.HttpServletRequest;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,11 +16,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.manager.AppInfoManager;
 import com.kii.beehive.portal.manager.TagThingManager;
+import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
+import com.kii.beehive.portal.manager.TriggerMaintainManager;
 import com.kii.beehive.portal.service.AppInfoDao;
+import com.kii.beehive.portal.store.entity.CallbackUrlParameter;
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
+import com.kii.beehive.portal.web.constant.CallbackNames;
 import com.kii.beehive.portal.web.help.PortalException;
 import com.kii.extension.sdk.entity.FederatedAuthResult;
 
@@ -29,7 +35,7 @@ import com.kii.extension.sdk.entity.FederatedAuthResult;
 @RestController
 public class OnboardingHelperController {
 
-    @Autowired
+	@Autowired
     private TagThingManager tagThingManager;
 
 	@Autowired
@@ -45,6 +51,9 @@ public class OnboardingHelperController {
 	private String masterAppID;
 
 
+	@Autowired
+	private TriggerMaintainManager maintainManager;
+
 
 	@Autowired
 	private AppInfoManager  appManager;
@@ -56,7 +65,7 @@ public class OnboardingHelperController {
 	 * @param paramMap
      */
 	@RequestMapping(path="/appinit",method={RequestMethod.POST},consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
-	public void initAppContext(@RequestBody Map<String,Object>  paramMap){
+	public void initAppContext(@RequestBody Map<String,Object>  paramMap,HttpServletRequest request){
 
 		String userName= (String) paramMap.getOrDefault("portal.username",portalUserName);
 		String pwd= (String) paramMap.getOrDefault("portal.pwd",portalPwd);
@@ -64,6 +73,22 @@ public class OnboardingHelperController {
 		String masterID= (String) paramMap.getOrDefault("portal.masterApp",masterAppID);
 
 		appManager.initAppInfos(userName,pwd,masterID);
+		
+		CallbackUrlParameter param=new CallbackUrlParameter();
+		param.setNegative(CallbackNames.NEGATION);
+		param.setSummary(CallbackNames.SUMMARY);
+		param.setSimple(CallbackNames.SIMPLE);
+		param.setStateChange(CallbackNames.STATE_CHANGED);
+		param.setPositive(CallbackNames.POSITION);
+		param.setThingCreated(CallbackNames.THING_CREATED);
+
+
+		String url=request.getRequestURL().toString();
+		String subUrl=url.substring(0,url.indexOf("/appinit"))+CallbackNames.CALLBACK_URL;
+		param.setBaseUrl(subUrl);
+
+		maintainManager.deployTriggerToAll(param);
+
 
 		return;
 

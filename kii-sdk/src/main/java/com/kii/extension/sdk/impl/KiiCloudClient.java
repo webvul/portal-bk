@@ -3,6 +3,7 @@ package com.kii.extension.sdk.impl;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
@@ -22,6 +23,8 @@ import org.apache.http.impl.nio.reactor.IOReactorConfig;
 import org.apache.http.nio.reactor.ConnectingIOReactor;
 import org.apache.http.nio.reactor.IOReactorException;
 import org.apache.http.protocol.HttpContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -32,8 +35,9 @@ import com.kii.extension.sdk.exception.ExceptionFactory;
 
 
 @Component
-public class KiiCloudClient {
+public class KiiCloudClient implements Closeable{
 
+	private Logger log= LoggerFactory.getLogger(KiiCloudClient.class);
 
 	private CloseableHttpAsyncClient httpClient;
 
@@ -56,15 +60,19 @@ public class KiiCloudClient {
 		@Override
 		public void completed(HttpResponse httpResponse) {
 
+			log.debug("http request completed");
+
 		}
 
 		@Override
 		public void failed(Exception e) {
+			log.error("http request failed",e);
 
 		}
 
 		@Override
 		public void cancelled() {
+			log.debug("http request cancelled");
 
 		}
 	};
@@ -77,7 +85,9 @@ public class KiiCloudClient {
 	public void init() throws IOReactorException {
 
 		ConnectingIOReactor ioReactor= new DefaultConnectingIOReactor(IOReactorConfig.custom()
-				.setIoThreadCount(50)
+				.setIoThreadCount(32)
+				.setSoKeepAlive(true)
+				.setConnectTimeout(30)
 				.build());
 
 		final PoolingNHttpClientConnectionManager connManager = new PoolingNHttpClientConnectionManager(
@@ -108,8 +118,6 @@ public class KiiCloudClient {
 
 
 
-
-
 	public <T> T executeRequestWithCls(HttpUriRequest request,Class<T> cls) {
 
 		return executeRequestWithCls(request,cls,null);
@@ -133,6 +141,7 @@ public class KiiCloudClient {
 	public HttpResponse doRequest(HttpUriRequest request,HttpContext context){
 		try{
 			Future<HttpResponse> future=null;
+			log.debug("start do request to "+request.getURI().toASCIIString());
 			if(context==null){
 				future = httpClient.execute(request,callback);
 			}else {
@@ -178,7 +187,7 @@ public class KiiCloudClient {
 	}
 
 
-	public Future<HttpResponse> syncExecuteRequest(HttpUriRequest request,FutureCallback<HttpResponse>  callback){
+	public Future<HttpResponse> asyncExecuteRequest(HttpUriRequest request, FutureCallback<HttpResponse>  callback){
 
 		return  httpClient.execute(request,callback);
 

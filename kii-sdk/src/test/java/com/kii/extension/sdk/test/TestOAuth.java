@@ -11,7 +11,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.extension.sdk.context.AppBindTool;
 import com.kii.extension.sdk.context.AppBindToolResolver;
-import com.kii.extension.sdk.context.TokenBindToolResolver;
 import com.kii.extension.sdk.context.UserTokenBindTool;
 import com.kii.extension.sdk.entity.BucketInfo;
 import com.kii.extension.sdk.service.DataService;
@@ -33,9 +32,6 @@ public class TestOAuth extends TestTemplate{
 
 	@Autowired
 	private AppBindToolResolver appResolver;
-
-	@Autowired
-	private TokenBindToolResolver  tokenResolver;
 
 	@Autowired
 	private UserTokenBindTool  userTool;
@@ -62,7 +58,7 @@ public class TestOAuth extends TestTemplate{
 
 		userTool.bindUserInfo("demo","qwerty");
 
-		String token=tokenResolver.getToken();
+		String token=appResolver.getToken();
 
 
 		BucketInfo bucket=new BucketInfo("test");

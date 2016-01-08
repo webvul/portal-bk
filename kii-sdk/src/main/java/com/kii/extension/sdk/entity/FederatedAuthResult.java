@@ -29,6 +29,10 @@ public class FederatedAuthResult {
 
 	private String code;
 
+	public FederatedAuthResult(){
+
+	}
+
 	public FederatedAuthResult(String url){
 
 		/*

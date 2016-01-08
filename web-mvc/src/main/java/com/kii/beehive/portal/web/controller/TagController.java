@@ -17,10 +17,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kii.beehive.business.event.KiiCloudEventBus;
+import com.kii.beehive.portal.manager.TagThingManager;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagType;
-import com.kii.beehive.portal.manager.TagThingManager;
 import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.help.PortalException;
 
@@ -39,6 +40,10 @@ public class TagController {
 
 	@Autowired
 	private TagThingManager thingTagManager;
+
+	@Autowired
+	private KiiCloudEventBus eventBus;
+
 
 	/**
 	 * @deprecated this method should not be exposed to external;<br>
@@ -112,6 +117,8 @@ public class TagController {
 		}
 
 		thingTagManager.removeTag(orig.get(0));
+
+//		eventBus.onTagChangeFire();
 	}
 
 	/**

@@ -38,6 +38,7 @@ public class AuthInfoDao extends BaseDao<AuthInfo> {
         return super.update(userInfo, columns);
     }
 
+
 	@Override
 	public String getTableName() {
 		return TABLE_NAME;

@@ -1,11 +1,12 @@
 package com.kii.beehive.portal.jdbc.helper;
 
 import java.beans.PropertyDescriptor;
-import java.sql.Types;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.NotReadablePropertyException;
 import org.springframework.beans.PropertyAccessorFactory;
@@ -18,6 +19,7 @@ import com.kii.beehive.portal.jdbc.annotation.JdbcFieldType;
 public class AnnationBeanSqlParameterSource extends AbstractSqlParameterSource {
 
 
+	private Logger log= LoggerFactory.getLogger(AnnationBeanSqlParameterSource.class);
 
 	private final BeanWrapper beanWrapper;
 
@@ -55,6 +57,9 @@ public class AnnationBeanSqlParameterSource extends AbstractSqlParameterSource {
 	public boolean hasValue(String paramName) {
 
 		String fieldName=fieldMapper.get(paramName);
+		if(fieldName==null){
+			return false;
+		}
 		return this.beanWrapper.isReadableProperty(fieldName);
 	}
 
@@ -66,9 +71,13 @@ public class AnnationBeanSqlParameterSource extends AbstractSqlParameterSource {
 
 			Object value= this.beanWrapper.getPropertyValue(fieldName);
 
+
+			log.debug(" bind param value:"+value+" to "+paramName);
+
 			if(value==null){
 				return null;
 			}
+
 
 			switch(sqlTypeMapper.get(paramName)){
 				case Auto:return value;
@@ -78,6 +87,7 @@ public class AnnationBeanSqlParameterSource extends AbstractSqlParameterSource {
 				case EnumStr:return ((Enum)value).name();
 				default:return value;
 			}
+
 
 		}
 		catch (NotReadablePropertyException ex) {
@@ -103,18 +113,7 @@ public class AnnationBeanSqlParameterSource extends AbstractSqlParameterSource {
 
 		JdbcFieldType type=sqlTypeMapper.get(paramName);
 
-
-		switch(type){
-			case Json:
-				return Types.LONGVARCHAR;
-			case EnumInt:
-				return Types.INTEGER;
-			case EnumStr:
-				return Types.VARCHAR;
-			default:
-				return TYPE_UNKNOWN;
-		}
-
+		return type.getSqlType();
 
 	}
 
