@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.stereotype.Repository;
 
 import com.kii.beehive.portal.jdbc.entity.GroupPermissionRelation;
+import com.kii.beehive.portal.jdbc.entity.UserGroup;
 
 @Repository
 public class GroupPermissionRelationDao extends BaseDao<GroupPermissionRelation> {
@@ -55,9 +56,9 @@ public class GroupPermissionRelationDao extends BaseDao<GroupPermissionRelation>
 		List<GroupPermissionRelation> list = new ArrayList<GroupPermissionRelation>();
 		for (Map<String, Object> row : rows) {
 			GroupPermissionRelation groupPermissionRelation = new GroupPermissionRelation();
-			groupPermissionRelation.setId((int)row.get(GroupPermissionRelation.ID));
-			groupPermissionRelation.setPermissionID((int)row.get(GroupPermissionRelation.PERMISSION_ID));
-			groupPermissionRelation.setUserGroupID((int)row.get(GroupPermissionRelation.USER_GROUP_ID));
+			groupPermissionRelation.setId(Long.valueOf((Integer)row.get(GroupPermissionRelation.ID)));
+			groupPermissionRelation.setPermissionID(Long.valueOf((Integer)row.get(GroupPermissionRelation.PERMISSION_ID)));
+			groupPermissionRelation.setUserGroupID(Long.valueOf((Integer)row.get(GroupPermissionRelation.USER_GROUP_ID)));
 			list.add(groupPermissionRelation);
 		}
 		return list;

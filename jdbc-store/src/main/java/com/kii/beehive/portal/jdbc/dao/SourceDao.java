@@ -47,7 +47,7 @@ public class SourceDao extends BaseDao<Source> {
 		List<Source> list = new ArrayList<Source>();
 		for (Map<String, Object> row : rows) {
 			Source entity = new Source();
-			entity.setId((int)row.get(Source.SOURCE_ID));
+			entity.setId(Long.valueOf((Integer)row.get(Source.SOURCE_ID)));
 			entity.setName((String)row.get(Source.NAME));
 			entity.setType(SourceType.valueOf((String) row.get(Source.TYPE)));
 			mapToListForDBEntity(entity, row);

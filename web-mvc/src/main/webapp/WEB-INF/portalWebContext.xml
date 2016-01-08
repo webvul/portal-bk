@@ -95,6 +95,15 @@
 			<mvc:mapping path="/tags/**" />
 			<bean class="com.kii.beehive.portal.web.help.AuthInterceptor" />
 		</mvc:interceptor>
+		<!--Permission API-->
+		<mvc:interceptor>
+			<mvc:mapping path="/permission" />
+			<bean class="com.kii.beehive.portal.web.help.AuthInterceptor" />
+		</mvc:interceptor>
+		<mvc:interceptor>
+			<mvc:mapping path="/permission/**" />
+			<bean class="com.kii.beehive.portal.web.help.AuthInterceptor" />
+		</mvc:interceptor>
 		<!--Other API-->
 		<mvc:interceptor>
 			<mvc:mapping path="/oauth2/changepassword" />

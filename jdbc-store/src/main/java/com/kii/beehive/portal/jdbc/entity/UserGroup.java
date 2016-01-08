@@ -4,7 +4,6 @@ import com.kii.beehive.portal.jdbc.annotation.JdbcField;
 
 public class UserGroup extends DBEntity {
 
-
 	private String name;
 	private String description;
 	
@@ -14,7 +13,7 @@ public class UserGroup extends DBEntity {
 	
 	@Override
 	@JdbcField(column=USER_GROUP_ID)
-	public long getId(){
+	public Long getId(){
 		return super.getId();
 	}
 	

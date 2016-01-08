@@ -10,7 +10,9 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
-
+/**
+ * @deprecated change to mysql
+ */
 public class BeehiveUserGroup extends PortalEntity {
 
     public static final String PREFIX = "custom-";

@@ -17,7 +17,7 @@ public class AuthInfo extends DBEntity {
 
 	@Override
 	@JdbcField(column=ID)
-	public long getId() {
+	public Long getId() {
 		return super.getId();
 	}
 

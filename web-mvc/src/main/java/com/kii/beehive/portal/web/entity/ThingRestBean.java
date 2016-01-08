@@ -35,7 +35,7 @@ public class ThingRestBean extends GlobalThingInfo {
 
 	@JsonIgnore
 	@Override
-	public long getId() {
+	public Long getId() {
 		return super.getId();
 	}
 

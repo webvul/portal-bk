@@ -1,9 +1,9 @@
 package com.kii.beehive.portal.web;
 
-import static junit.framework.TestCase.assertTrue;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertNull;
+import static junit.framework.TestCase.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -24,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.dao.TagThingRelationDao;
@@ -33,6 +32,7 @@ import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
 import com.kii.beehive.portal.jdbc.entity.TagType;
 import com.kii.beehive.portal.manager.TagThingManager;
+import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.beehive.portal.web.help.AuthInterceptor;
 
 public class TestThingControll extends WebTestTemplate{
@@ -94,7 +94,7 @@ public class TestThingControll extends WebTestTemplate{
 				post("/things").content(ctx)
 						.contentType(MediaType.APPLICATION_JSON)
 						.characterEncoding("UTF-8")
-						.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+						.header(Constants.ACCESS_TOKEN, tokenForTest)
 		)
 				.andExpect(status().isOk())
 				.andReturn().getResponse().getContentAsString();
@@ -123,7 +123,7 @@ public class TestThingControll extends WebTestTemplate{
 				post("/things").content(ctx)
 						.contentType(MediaType.APPLICATION_JSON)
 						.characterEncoding("UTF-8")
-						.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+						.header(Constants.ACCESS_TOKEN, tokenForTest)
 		)
 				.andExpect(status().isOk())
 				.andReturn().getResponse().getContentAsString();
@@ -140,7 +140,7 @@ public class TestThingControll extends WebTestTemplate{
 				get("/things/" + globalThingIDForTest)
 						.contentType(MediaType.APPLICATION_JSON)
 						.characterEncoding("UTF-8")
-						.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+						.header(Constants.ACCESS_TOKEN, tokenForTest)
 		)
 				.andExpect(status().isOk())
 				.andReturn().getResponse().getContentAsString();
@@ -182,7 +182,7 @@ public class TestThingControll extends WebTestTemplate{
 				post("/things").content(ctx)
 						.contentType(MediaType.APPLICATION_JSON)
 						.characterEncoding("UTF-8")
-						.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+						.header(Constants.ACCESS_TOKEN, tokenForTest)
 		)
 				.andExpect(status().isOk())
 				.andReturn().getResponse().getContentAsString();
@@ -223,7 +223,7 @@ public class TestThingControll extends WebTestTemplate{
 				post("/things").content(ctx)
 						.contentType(MediaType.APPLICATION_JSON)
 						.characterEncoding("UTF-8")
-						.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+						.header(Constants.ACCESS_TOKEN, tokenForTest)
 		)
 				.andExpect(status().isOk())
 				.andReturn().getResponse().getContentAsString();
@@ -258,7 +258,7 @@ public class TestThingControll extends WebTestTemplate{
 				post("/things").content(ctx)
 						.contentType(MediaType.APPLICATION_JSON)
 						.characterEncoding("UTF-8")
-						.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+						.header(Constants.ACCESS_TOKEN, tokenForTest)
 		)
 				.andExpect(status().isBadRequest())
 				.andReturn().getResponse().getContentAsString();
@@ -276,7 +276,7 @@ public class TestThingControll extends WebTestTemplate{
 				post("/things").content(ctx)
 						.contentType(MediaType.APPLICATION_JSON)
 						.characterEncoding("UTF-8")
-						.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+						.header(Constants.ACCESS_TOKEN, tokenForTest)
 		)
 				.andExpect(status().isBadRequest())
 				.andReturn().getResponse().getContentAsString();
@@ -293,7 +293,7 @@ public class TestThingControll extends WebTestTemplate{
 				post("/things").content(ctx)
 						.contentType(MediaType.APPLICATION_JSON)
 						.characterEncoding("UTF-8")
-						.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+						.header(Constants.ACCESS_TOKEN, tokenForTest)
 		)
 				.andExpect(status().isBadRequest())
 				.andReturn().getResponse().getContentAsString();
@@ -311,7 +311,7 @@ public class TestThingControll extends WebTestTemplate{
 				post("/things").content(ctx)
 						.contentType(MediaType.APPLICATION_JSON)
 						.characterEncoding("UTF-8")
-						.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+						.header(Constants.ACCESS_TOKEN, tokenForTest)
 		)
 				.andExpect(status().isNotFound())
 				.andReturn().getResponse().getContentAsString();
@@ -329,7 +329,7 @@ public class TestThingControll extends WebTestTemplate{
 				post("/things").content(ctx)
 						.contentType(MediaType.APPLICATION_JSON)
 						.characterEncoding("UTF-8")
-						.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+						.header(Constants.ACCESS_TOKEN, tokenForTest)
 		)
 				.andExpect(status().isNotFound())
 				.andReturn().getResponse().getContentAsString();
@@ -347,7 +347,7 @@ public class TestThingControll extends WebTestTemplate{
 				get("/things/" + globalThingIDForTest)
 						.contentType(MediaType.APPLICATION_JSON)
 						.characterEncoding("UTF-8")
-						.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+						.header(Constants.ACCESS_TOKEN, tokenForTest)
 		)
 				.andExpect(status().isOk())
 				.andReturn().getResponse().getContentAsString();
@@ -384,7 +384,7 @@ public class TestThingControll extends WebTestTemplate{
 				get("/things/" + "some_non_existing_globalthingid")
 						.contentType(MediaType.APPLICATION_JSON)
 						.characterEncoding("UTF-8")
-						.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+						.header(Constants.ACCESS_TOKEN, tokenForTest)
 		)
 				.andExpect(status().isNotFound())
 				.andReturn().getResponse().getContentAsString();
@@ -402,7 +402,7 @@ public class TestThingControll extends WebTestTemplate{
 		// delete thing
 		String result=this.mockMvc.perform(
 				delete("/things/" + globalThingIDForTest)
-						.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+						.header(Constants.ACCESS_TOKEN, tokenForTest)
 		)
 				.andExpect(status().isOk())
 				.andReturn().getResponse().getContentAsString();
@@ -419,7 +419,7 @@ public class TestThingControll extends WebTestTemplate{
 		// global thing id 123456789 is not supposed to exist
 		String result=this.mockMvc.perform(
 				delete("/things/" + "123456789")
-						.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+						.header(Constants.ACCESS_TOKEN, tokenForTest)
 		)
 				.andExpect(status().isNotFound())
 				.andReturn().getResponse().getContentAsString();
@@ -436,7 +436,7 @@ public class TestThingControll extends WebTestTemplate{
 				get("/things/" + globalThingIDForTest)
 						.contentType(MediaType.APPLICATION_JSON)
 						.characterEncoding("UTF-8")
-						.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+						.header(Constants.ACCESS_TOKEN, tokenForTest)
 		)
 				.andExpect(status().isOk())
 				.andReturn().getResponse().getContentAsString();
@@ -454,7 +454,7 @@ public class TestThingControll extends WebTestTemplate{
 		this.mockMvc.perform(put(url).content("{}")
 				.contentType(MediaType.APPLICATION_JSON)
 				.characterEncoding("UTF-8")
-				.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+				.header(Constants.ACCESS_TOKEN, tokenForTest)
 		)
 				.andExpect(status().isOk());
 
@@ -463,7 +463,7 @@ public class TestThingControll extends WebTestTemplate{
 				get("/things/" + globalThingIDForTest)
 						.contentType(MediaType.APPLICATION_JSON)
 						.characterEncoding("UTF-8")
-						.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+						.header(Constants.ACCESS_TOKEN, tokenForTest)
 		)
 				.andExpect(status().isOk())
 				.andReturn().getResponse().getContentAsString();
@@ -483,7 +483,7 @@ public class TestThingControll extends WebTestTemplate{
 		this.mockMvc.perform(put(url).content("{}")
 				.contentType(MediaType.APPLICATION_JSON)
 				.characterEncoding("UTF-8")
-				.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+				.header(Constants.ACCESS_TOKEN, tokenForTest)
 		)
 				.andExpect(status().isOk());
 
@@ -492,7 +492,7 @@ public class TestThingControll extends WebTestTemplate{
 				get("/things/" + globalThingIDForTest)
 						.contentType(MediaType.APPLICATION_JSON)
 						.characterEncoding("UTF-8")
-						.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+						.header(Constants.ACCESS_TOKEN, tokenForTest)
 		)
 				.andExpect(status().isOk())
 				.andReturn().getResponse().getContentAsString();
@@ -519,7 +519,7 @@ public class TestThingControll extends WebTestTemplate{
 		this.mockMvc.perform(delete(url).content("{}")
 				.contentType(MediaType.APPLICATION_JSON)
 				.characterEncoding("UTF-8")
-				.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+				.header(Constants.ACCESS_TOKEN, tokenForTest)
 		)
 
 				.andExpect(status().isOk());
@@ -529,7 +529,7 @@ public class TestThingControll extends WebTestTemplate{
 				get("/things/" + globalThingIDForTest)
 						.contentType(MediaType.APPLICATION_JSON)
 						.characterEncoding("UTF-8")
-						.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+						.header(Constants.ACCESS_TOKEN, tokenForTest)
 		)
 				.andExpect(status().isOk())
 				.andReturn().getResponse().getContentAsString();
@@ -548,7 +548,7 @@ public class TestThingControll extends WebTestTemplate{
 		this.mockMvc.perform(delete(url).content("{}")
 				.contentType(MediaType.APPLICATION_JSON)
 				.characterEncoding("UTF-8")
-				.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+				.header(Constants.ACCESS_TOKEN, tokenForTest)
 		)
 
 				.andExpect(status().isOk());
@@ -558,7 +558,7 @@ public class TestThingControll extends WebTestTemplate{
 				get("/things/" + globalThingIDForTest)
 						.contentType(MediaType.APPLICATION_JSON)
 						.characterEncoding("UTF-8")
-						.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+						.header(Constants.ACCESS_TOKEN, tokenForTest)
 		)
 				.andExpect(status().isOk())
 				.andReturn().getResponse().getContentAsString();
@@ -589,7 +589,7 @@ public class TestThingControll extends WebTestTemplate{
 					post("/things").content(ctx)
 							.contentType(MediaType.APPLICATION_JSON)
 							.characterEncoding("UTF-8")
-							.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+							.header(Constants.ACCESS_TOKEN, tokenForTest)
 			)
 					.andExpect(status().isOk())
 					.andReturn().getResponse().getContentAsString();
@@ -625,7 +625,7 @@ public class TestThingControll extends WebTestTemplate{
 		this.mockMvc.perform(put(url).content("{}")
 				.contentType(MediaType.APPLICATION_JSON)
 				.characterEncoding("UTF-8")
-				.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+				.header(Constants.ACCESS_TOKEN, tokenForTest)
 		)
 				.andExpect(status().isOk());
 
@@ -634,7 +634,7 @@ public class TestThingControll extends WebTestTemplate{
 				get("/things/search?tagType=Custom&displayName=" + displayNames[0])
 						.contentType(MediaType.APPLICATION_JSON)
 						.characterEncoding("UTF-8")
-						.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+						.header(Constants.ACCESS_TOKEN, tokenForTest)
 		)
 				.andExpect(status().isOk())
 				.andReturn().getResponse().getContentAsString();
@@ -655,7 +655,7 @@ public class TestThingControll extends WebTestTemplate{
 		this.mockMvc.perform(put(url).content("{}")
 				.contentType(MediaType.APPLICATION_JSON)
 				.characterEncoding("UTF-8")
-				.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+				.header(Constants.ACCESS_TOKEN, tokenForTest)
 		)
 				.andExpect(status().isOk());
 
@@ -664,7 +664,7 @@ public class TestThingControll extends WebTestTemplate{
 				get("/things/search?tagType=Custom&displayName=" + displayNames[0])
 						.contentType(MediaType.APPLICATION_JSON)
 						.characterEncoding("UTF-8")
-						.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+						.header(Constants.ACCESS_TOKEN, tokenForTest)
 		)
 				.andExpect(status().isOk())
 				.andReturn().getResponse().getContentAsString();
@@ -690,7 +690,7 @@ public class TestThingControll extends WebTestTemplate{
 		this.mockMvc.perform(delete(url).content("{}")
 				.contentType(MediaType.APPLICATION_JSON)
 				.characterEncoding("UTF-8")
-				.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+				.header(Constants.ACCESS_TOKEN, tokenForTest)
 		)
 
 				.andExpect(status().isOk());
@@ -700,7 +700,7 @@ public class TestThingControll extends WebTestTemplate{
 				get("/things/search?tagType=Custom&displayName=" + displayNames[0])
 						.contentType(MediaType.APPLICATION_JSON)
 						.characterEncoding("UTF-8")
-						.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+						.header(Constants.ACCESS_TOKEN, tokenForTest)
 		)
 				.andExpect(status().isOk())
 				.andReturn().getResponse().getContentAsString();
@@ -721,7 +721,7 @@ public class TestThingControll extends WebTestTemplate{
 		this.mockMvc.perform(delete(url).content("{}")
 				.contentType(MediaType.APPLICATION_JSON)
 				.characterEncoding("UTF-8")
-				.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+				.header(Constants.ACCESS_TOKEN, tokenForTest)
 		)
 
 				.andExpect(status().isOk());
@@ -731,7 +731,7 @@ public class TestThingControll extends WebTestTemplate{
 				get("/things/search?tagType=Custom&displayName=" + displayNames[0])
 						.contentType(MediaType.APPLICATION_JSON)
 						.characterEncoding("UTF-8")
-						.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+						.header(Constants.ACCESS_TOKEN, tokenForTest)
 		)
 				.andExpect(status().isOk())
 				.andReturn().getResponse().getContentAsString();
@@ -794,7 +794,7 @@ public class TestThingControll extends WebTestTemplate{
 				get("/things/search?" + "tagType=" + TagType.Custom + "&displayName=" + displayNames[0])
 						.contentType(MediaType.APPLICATION_JSON)
 						.characterEncoding("UTF-8")
-						.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+						.header(Constants.ACCESS_TOKEN, tokenForTest)
 		)
 				.andExpect(status().isOk())
 				.andReturn().getResponse().getContentAsString();
@@ -814,7 +814,7 @@ public class TestThingControll extends WebTestTemplate{
 				get("/things/search?" + "tagType=" + TagType.Location + "&displayName=" + displayNames[1])
 						.contentType(MediaType.APPLICATION_JSON)
 						.characterEncoding("UTF-8")
-						.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+						.header(Constants.ACCESS_TOKEN, tokenForTest)
 		)
 				.andExpect(status().isOk())
 				.andReturn().getResponse().getContentAsString();
@@ -834,7 +834,7 @@ public class TestThingControll extends WebTestTemplate{
 				get("/things/search")
 						.contentType(MediaType.APPLICATION_JSON)
 						.characterEncoding("UTF-8")
-						.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+						.header(Constants.ACCESS_TOKEN, tokenForTest)
 		)
 				.andExpect(status().isOk())
 				.andReturn().getResponse().getContentAsString();
@@ -863,7 +863,7 @@ public class TestThingControll extends WebTestTemplate{
 				get("/things/types/LED")
 						.contentType(MediaType.APPLICATION_JSON)
 						.characterEncoding("UTF-8")
-						.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+						.header(Constants.ACCESS_TOKEN, tokenForTest)
 		)
 				.andExpect(status().isOk())
 				.andReturn().getResponse().getContentAsString();
@@ -886,7 +886,7 @@ public class TestThingControll extends WebTestTemplate{
 				get("/things/types/some_non_existing_type")
 						.contentType(MediaType.APPLICATION_JSON)
 						.characterEncoding("UTF-8")
-						.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+						.header(Constants.ACCESS_TOKEN, tokenForTest)
 		)
 				.andExpect(status().isOk())
 				.andReturn().getResponse().getContentAsString();
@@ -908,7 +908,7 @@ public class TestThingControll extends WebTestTemplate{
 				get("/things/types")
 						.contentType(MediaType.APPLICATION_JSON)
 						.characterEncoding("UTF-8")
-						.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+						.header(Constants.ACCESS_TOKEN, tokenForTest)
 		)
 				.andExpect(status().isOk())
 				.andReturn().getResponse().getContentAsString();
@@ -929,7 +929,7 @@ public class TestThingControll extends WebTestTemplate{
 				get("/things/types")
 						.contentType(MediaType.APPLICATION_JSON)
 						.characterEncoding("UTF-8")
-						.header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+						.header(Constants.ACCESS_TOKEN, tokenForTest)
 		)
 				.andExpect(status().isOk())
 				.andReturn().getResponse().getContentAsString();

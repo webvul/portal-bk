@@ -8,11 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.kii.beehive.portal.manager.AuthManager;
+import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.extension.sdk.exception.UnauthorizedAccessException;
 
 public class AuthInterceptor extends HandlerInterceptorAdapter {
-
-    public static final String ACCESS_TOKEN = "accessToken";
 
     /**
      * @deprecated only for testing, so should not appear in any source code except for junit
@@ -39,7 +38,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
      */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        String auth = request.getHeader(ACCESS_TOKEN);
+        String auth = request.getHeader(Constants.ACCESS_TOKEN);
 
         if (auth == null || !auth.startsWith("Bearer ")) {
 
@@ -52,6 +51,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
         // TODO this checking is for testing only, must remove after testing complete
         if (SUPER_TOKEN.equals(token)) {
+        	authManager.saveToken("211102", token);
             return true;
         }
 

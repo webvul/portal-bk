@@ -37,7 +37,7 @@ public class TagIndex extends DBEntity {
 	}
 	@Override
 	@JdbcField(column="tag_id")
-	public long getId(){
+	public Long getId(){
 		return super.getId();
 	}
 
