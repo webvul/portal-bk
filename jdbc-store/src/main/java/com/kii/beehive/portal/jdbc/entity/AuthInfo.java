@@ -1,14 +1,16 @@
 package com.kii.beehive.portal.jdbc.entity;
 
 import java.util.Date;
+import java.util.Set;
 
 import com.kii.beehive.portal.jdbc.annotation.JdbcField;
 
 public class AuthInfo extends DBEntity {
 
-	private String userID = null;
-	private String token = null;
-	private Date expireTime = null;
+	private String userID;
+	private String token;
+	private Date expireTime;
+	private Set<String> permisssionSet;
 
 	public final static String ID = "id";
 	public final static String USER_ID = "user_id";
@@ -48,4 +50,11 @@ public class AuthInfo extends DBEntity {
 		this.expireTime = expireTime;
 	}
 
+	public Set<String> getPermisssionSet() {
+		return permisssionSet;
+	}
+
+	public void setPermisssionSet(Set<String> permisssionSet) {
+		this.permisssionSet = permisssionSet;
+	}
 }

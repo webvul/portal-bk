@@ -73,7 +73,7 @@ public class AuthController {
      * @return
      */
     @RequestMapping(path = "/login", method = { RequestMethod.POST })
-    public AuthRestBean login(@RequestBody Map<String, Object> request, HttpServletRequest httpRequest) {
+    public AuthRestBean login(@RequestBody Map<String, Object> request) {
 
         String userID = (String)request.get("userID");
         String password = (String)request.get("password");

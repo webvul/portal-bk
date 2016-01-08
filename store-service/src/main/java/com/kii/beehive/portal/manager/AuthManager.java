@@ -30,7 +30,7 @@ public class AuthManager {
 
     @Autowired
     private UserTokenBindTool userTokenBindTool;
-
+    
     /**
      * register with userID and password
      * the logic behind is as below:
@@ -116,17 +116,17 @@ public class AuthManager {
      * @param token
      * @return
      */
-    public boolean validateAndBindUserToken(String token) {
+    public AuthInfo validateAndBindUserToken(String token) {
 
         AuthInfo authInfo = authInfoCacheService.getAvailableAuthInfo(token);
 
         if(authInfo == null) {
-            return false;
+            return null;
         }
-
+        
         userTokenBindTool.bindToken(authInfo.getToken());
 
-        return true;
+        return authInfo;
     }
 
     /**

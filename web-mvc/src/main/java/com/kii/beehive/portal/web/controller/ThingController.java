@@ -156,7 +156,7 @@ public class ThingController {
 
 	/**
 	 * 创建/更新设备信息
-	 * POST /things/
+	 * POST /things
 	 *
 	 * refer to doc "Beehive API - Thing API" for request/response details
 	 *

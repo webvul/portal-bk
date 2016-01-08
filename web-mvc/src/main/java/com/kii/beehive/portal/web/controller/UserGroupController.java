@@ -59,6 +59,12 @@ public class UserGroupController extends AbstractController{
         return new ResponseEntity<>(resultMap, HttpStatus.OK);
     }
     
+    /**
+     * 用户加入群组
+     * POST /usergroup/{userGroupID}/user/{userID}
+     *
+     * @param userGroup
+     */
     @RequestMapping(path="/{userGroupID}/user/{userID}",method={RequestMethod.POST})
     public ResponseEntity addUserToUserGroup(@PathVariable("userGroupID") Long userGroupID, @PathVariable("userID") String userID, HttpServletRequest httpRequest){
     	String loginUserID = getLoginUserID(httpRequest);
@@ -73,6 +79,12 @@ public class UserGroupController extends AbstractController{
         return new ResponseEntity<>(HttpStatus.OK);
     }
     
+    /**
+     * 用户從群组刪除
+     * PUT /usergroup/{userGroupID}/user/{userID}
+     *
+     * @param userGroup
+     */
     @RequestMapping(path="/{userGroupID}/user/{userID}",method={RequestMethod.PUT})
     public ResponseEntity removeUserToUserGroup(@PathVariable("userGroupID") Long userGroupID, @PathVariable("userID") String userID, HttpServletRequest httpRequest){
     	String loginUserID = getLoginUserID(httpRequest);
@@ -109,7 +121,7 @@ public class UserGroupController extends AbstractController{
     
     /**
      * 取得群組用戶
-     * DELETE /usergroup/{userGroupID}
+     * GET /usergroup/{userGroupID}
      *
      * refer to doc "Beehive API - User API" for request/response details
      * refer to doc "Tech Design - Beehive API", section "Detail User Group" for more details
