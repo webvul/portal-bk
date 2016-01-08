@@ -19,7 +19,6 @@ import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.entity.AuthRestBean;
-import com.kii.beehive.portal.web.help.AuthInterceptor;
 import com.kii.beehive.portal.web.help.PortalException;
 import com.kii.extension.sdk.entity.LoginInfo;
 
@@ -89,8 +88,6 @@ public class AuthController {
             throw new PortalException(ErrorCode.AUTH_FAIL, "Authentication failed", HttpStatus.BAD_REQUEST);
         }
         
-        httpRequest.getSession().setAttribute(Constants.SESSION_USER_ID, userID);
-
         // get user info
         BeehiveUser beehiveUser = userManager.getUserByID(userID);
         AuthRestBean authRestBean = new AuthRestBean(beehiveUser);
@@ -113,7 +110,7 @@ public class AuthController {
     @RequestMapping(path = "/logout", method = { RequestMethod.POST })
     public void login(HttpServletRequest request) {
 
-        String auth = request.getHeader(AuthInterceptor.ACCESS_TOKEN);
+        String auth = request.getHeader(Constants.ACCESS_TOKEN);
 
         if (auth == null || !auth.startsWith("Bearer ")) {
             return;

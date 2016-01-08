@@ -1,14 +1,17 @@
 package com.kii.beehive.portal.web.help;
 
+import java.util.Enumeration;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import java.util.Enumeration;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import com.kii.beehive.portal.jdbc.entity.AuthInfo;
+import com.kii.beehive.portal.manager.AuthManager;
 import com.kii.beehive.portal.web.constant.Constants;
 
 public class OperatorLogInterceptor extends HandlerInterceptorAdapter {
@@ -16,6 +19,9 @@ public class OperatorLogInterceptor extends HandlerInterceptorAdapter {
 	private Logger operatorLog= LoggerFactory.getLogger(OperatorLogInterceptor.class);
 
 	private Logger log= LoggerFactory.getLogger("com.kii");
+	
+	@Autowired
+    private AuthManager authManager;
 	
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
@@ -25,10 +31,10 @@ public class OperatorLogInterceptor extends HandlerInterceptorAdapter {
 
 		// output operator log
 		StringBuilder sb = new StringBuilder(100);
-		String userID = (String) request.getSession().getAttribute(Constants.SESSION_USER_ID);
+		AuthInfo authInfo = authManager.getAuthInfo(request.getHeader(Constants.ACCESS_TOKEN));
 
-		if (userID != null) {
-			sb.append(userID);
+		if (authInfo != null) {
+			sb.append(authInfo.getUserID());
 		}
 		sb.append(",").append(request.getRequestURI());
 		operatorLog.info(sb.toString());

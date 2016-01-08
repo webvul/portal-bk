@@ -16,6 +16,13 @@ public class GroupPermissionRelation extends DBEntity {
 	
 	public GroupPermissionRelation() {}
 	
+	public GroupPermissionRelation(Long permissionID, Long userGroupID) {
+		super();
+		this.permissionID = permissionID;
+		this.userGroupID = userGroupID;
+	}
+
+
 
 	@JdbcField(column=ID)
 	public Long getId() {

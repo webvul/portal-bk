@@ -2,6 +2,7 @@ package com.kii.beehive.portal.manager;
 
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,6 +89,10 @@ public class AuthManager {
 
         return loginInfo;
     }
+    
+    public void saveToken(String userID, String token){
+    	authInfoCacheService.saveToken(userID, token);
+    }
 
     /**
      * change the Kii user password in Kii Cloud;
@@ -148,6 +153,10 @@ public class AuthManager {
      * @return
      */
     public AuthInfo getAuthInfo(String token) {
+    	if(Strings.isBlank(token)){
+    		return null;
+    	}
+    	
         return authInfoCacheService.getAuthInfo(token);
     }
 

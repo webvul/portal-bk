@@ -8,7 +8,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.logging.log4j.util.Strings;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,12 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
-import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
 import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
-import com.kii.beehive.portal.manager.UserManager;
-import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.beehive.portal.web.help.PortalException;
 
 /**
@@ -33,16 +28,7 @@ import com.kii.beehive.portal.web.help.PortalException;
  */
 @RestController
 @RequestMapping(path = "/usergroup",  consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
-public class UserGroupController {
-
-    @Autowired
-    private UserGroupDao userGroupDao;
-    
-    @Autowired
-    private GroupUserRelationDao groupUserRelationDao;
-
-    @Autowired
-    private UserManager userManager;
+public class UserGroupController extends AbstractController{
 
     /**
      * 创建用户群组
@@ -77,10 +63,7 @@ public class UserGroupController {
     public ResponseEntity addUserToUserGroup(@PathVariable("userGroupID") Long userGroupID, @PathVariable("userID") String userID, HttpServletRequest httpRequest){
     	String loginUserID = getLoginUserID(httpRequest);
     	
-    	//loginUser can edit, when loginUser is in this group , 
-    	List<UserGroup> checkAuth = userGroupDao.findUserGroup(loginUserID, userGroupID, null);
-		
-		if(checkAuth.size() == 1){
+		if(checkUserGroup(loginUserID, userGroupID)){
 			List<UserGroup> orgiList = userGroupDao.findUserGroup(userID, userGroupID, null);
 			if(orgiList.size() == 0){
 				GroupUserRelation gur = new GroupUserRelation(userID, userGroupID);
@@ -94,10 +77,7 @@ public class UserGroupController {
     public ResponseEntity removeUserToUserGroup(@PathVariable("userGroupID") Long userGroupID, @PathVariable("userID") String userID, HttpServletRequest httpRequest){
     	String loginUserID = getLoginUserID(httpRequest);
     	
-    	//loginUser can edit, when loginUser is in this group , 
-    	List<UserGroup> checkAuth = userGroupDao.findUserGroup(loginUserID, userGroupID, null);
-		
-		if(checkAuth.size() == 1){
+		if(checkUserGroup(loginUserID, userGroupID)){
     		groupUserRelationDao.delete(userID, userGroupID);
 		}
         return new ResponseEntity<>(HttpStatus.OK);
@@ -139,15 +119,14 @@ public class UserGroupController {
     @RequestMapping(path="/{userGroupID}",method={RequestMethod.GET})
     public ResponseEntity getUserGroupDetail(@PathVariable("userGroupID") Long userGroupID, HttpServletRequest httpRequest){
     	String loginUserID = getLoginUserID(httpRequest);
-    	List<UserGroup> checkAuth = userGroupDao.findUserGroup(loginUserID, userGroupID, null);
     	List<GroupUserRelation> list = null;
-		if(checkAuth.size() == 1){
+		if(checkUserGroup(loginUserID, userGroupID)){
 			list = groupUserRelationDao.findByUserGroupID(userGroupID);
 		}
 
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
-
+    
     /**
      * 查询用户群组
      * POST /usergroup/search
@@ -164,8 +143,16 @@ public class UserGroupController {
 		return new ResponseEntity<>(list, HttpStatus.OK);
 	}
     
-    private String getLoginUserID(HttpServletRequest httpRequest){
-    	return (String)httpRequest.getSession().getAttribute(Constants.SESSION_USER_ID);
+    
+    
+    private boolean checkUserGroup(String loginUserID, Long userGroupID){
+    	//loginUser can edit, when loginUser is in this group ,
+    	List<UserGroup> checkAuth = userGroupDao.findUserGroup(loginUserID, userGroupID, null);
+		if(checkAuth.size() == 1){
+			return true;
+		}else{
+			return false;
+		}
     }
 
 }

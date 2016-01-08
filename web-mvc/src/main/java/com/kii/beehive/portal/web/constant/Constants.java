@@ -1,5 +1,5 @@
 package com.kii.beehive.portal.web.constant;
 
 public class Constants {
-	public static String SESSION_USER_ID = "userID";
+	public static final String ACCESS_TOKEN = "accessToken";
 }

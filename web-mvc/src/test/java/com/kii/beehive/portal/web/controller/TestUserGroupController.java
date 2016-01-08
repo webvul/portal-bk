@@ -22,12 +22,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.kii.beehive.portal.service.BeehiveUserDao;
 import com.kii.beehive.portal.service.BeehiveUserGroupDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.store.entity.BeehiveUserGroup;
 import com.kii.beehive.portal.web.WebTestTemplate;
+import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.beehive.portal.web.help.AuthInterceptor;
 
 public class TestUserGroupController extends WebTestTemplate {
@@ -124,7 +124,7 @@ public class TestUserGroupController extends WebTestTemplate {
                 post("/usergroup/").content(ctx)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
-                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+                        .header(Constants.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -183,7 +183,7 @@ public class TestUserGroupController extends WebTestTemplate {
                 post("/usergroup/").content(ctx)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
-                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+                        .header(Constants.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isNotFound())
                 .andReturn().getResponse().getContentAsString();
@@ -224,7 +224,7 @@ public class TestUserGroupController extends WebTestTemplate {
                 patch("/usergroup/" + userGroupID).content(ctx)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
-                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+                        .header(Constants.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -293,7 +293,7 @@ public class TestUserGroupController extends WebTestTemplate {
                 patch("/usergroup/" + userGroupID).content(ctx)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
-                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+                        .header(Constants.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isNotFound())
                 .andReturn().getResponse().getContentAsString();
@@ -323,7 +323,7 @@ public class TestUserGroupController extends WebTestTemplate {
                 post("/usergroup/simplequery").content(ctx)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
-                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+                        .header(Constants.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -369,7 +369,7 @@ public class TestUserGroupController extends WebTestTemplate {
                 post("/usergroup/simplequery").content(ctx)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
-                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+                        .header(Constants.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -395,7 +395,7 @@ public class TestUserGroupController extends WebTestTemplate {
                 post("/usergroup/").content(ctx)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
-                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+                        .header(Constants.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -419,7 +419,7 @@ public class TestUserGroupController extends WebTestTemplate {
                 post("/usergroup/simplequery").content(ctx)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
-                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+                        .header(Constants.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -446,7 +446,7 @@ public class TestUserGroupController extends WebTestTemplate {
                 post("/usergroup/simplequery").content(ctx)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
-                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+                        .header(Constants.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -478,7 +478,7 @@ public class TestUserGroupController extends WebTestTemplate {
                 post("/usergroup/simplequery").content(ctx)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
-                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+                        .header(Constants.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -503,7 +503,7 @@ public class TestUserGroupController extends WebTestTemplate {
                 delete("/usergroup/" + userGroupID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
-                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+                        .header(Constants.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();

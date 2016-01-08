@@ -45,6 +45,27 @@ public class UserGroupDao extends BaseDao<UserGroup> {
 	    return mapToList(rows);
 	}
 	
+	public List<UserGroup> findUserGroup(Long permissionID, Long userGroupID) {
+		String sql = "SELECT u.user_group_id,u.name,u.description,u.create_by,u.create_date,u.modify_by,u.modify_date "
+					+ "FROM " + this.getTableName() +" u "
+					+ "INNER JOIN rel_group_permission r ON u.user_group_id = r.user_group_id " 
+					+ "WHERE r.permission = ? ";
+		
+		List<Object> params = new ArrayList<Object>();
+		params.add(permissionID);
+		
+		if(userGroupID != null){
+			sql += " AND u.user_group_id = ? "; 
+			params.add(userGroupID);
+		}
+		
+		Object[] paramArr = new Object[params.size()];
+		paramArr = params.toArray(paramArr);
+		
+		List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql, paramArr);
+	    return mapToList(rows);
+	}
+	
 	
 	@Override
 	public long update(UserGroup tag) {

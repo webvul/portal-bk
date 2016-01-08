@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.stereotype.Repository;
 
 import com.kii.beehive.portal.jdbc.entity.Permission;
+import com.kii.beehive.portal.jdbc.entity.UserGroup;
 
 @Repository
 public class PermissionDao extends BaseDao<Permission> {
@@ -53,9 +54,19 @@ public class PermissionDao extends BaseDao<Permission> {
 			entity.setName((String)row.get(Permission.NAME));
 			entity.setAction((String)row.get(Permission.ACTION));
 			entity.setDescription((String)row.get(Permission.DESCRIPTION));
+			entity.setSourceName((String)row.get(Permission.SOURCE_NAME));
 			mapToListForDBEntity(entity, row);
 			list.add(entity);
 		}
 		return list;
+	}
+	
+	public List<Permission> findAll() {
+		String sql = "SELECT p.permission_id, p.source_id,s.name sourceName,p.name,p.action,p.description,p.create_by,p.create_date,p.modify_by,p.modify_date "
+					+ "FROM " + this.getTableName() +" p "
+					+ "INNER JOIN source s ON s.source_id = p.source_id ";
+		
+		List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql);
+	    return mapToList(rows);
 	}
 }
