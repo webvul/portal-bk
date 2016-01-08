@@ -12,6 +12,7 @@ import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.entity.KiiUser;
 import com.kii.extension.sdk.entity.LoginInfo;
 import com.kii.extension.sdk.exception.UserAlreadyExistsException;
+import com.kii.extension.sdk.exception.UserNotFoundException;
 import com.kii.extension.sdk.service.UserService;
 
 
@@ -35,20 +36,19 @@ public class KiiUserSyncDao {
 	 */
 	public String addDefaultOwner(String name,String pwd){
 
-		KiiUser user=new KiiUser();
 
-		user.setLoginName(name);
-		user.setPassword(pwd);
 
 		try {
+			LoginInfo info = userService.login(name, pwd);
+			return info.getUserID();
+		}catch(UserNotFoundException e){
+			KiiUser user=new KiiUser();
+
+			user.setLoginName(name);
+			user.setPassword(pwd);
 			return userService.createUser(user);
-		}catch (UserAlreadyExistsException e){
-
-			userService.removeUserByLoginName(name);
-
-			return userService.createUser(user);
-
 		}
+
 	}
 
 	public void addBeehiveUser(BeehiveUser beehiveUser){
