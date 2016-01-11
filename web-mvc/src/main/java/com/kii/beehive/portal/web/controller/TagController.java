@@ -123,7 +123,7 @@ public class TagController {
 
 	/**
 	 * 查询tag
-	 * GET /tag/search?tagType={tagType}&displayName={displayName}
+	 * GET /tags/search?tagType={tagType}&displayName={displayName}
 	 *
 	 * refer to doc "Beehive API - Thing API" for request/response details refer
 	 * to doc "Tech Design - Beehive API", section "Inquire Tag (查询tag)" for
@@ -173,7 +173,7 @@ public class TagController {
 	 *
 	 * @return
 	 */
-	@RequestMapping(path = "/locations/", method = { RequestMethod.GET }, consumes = { "*" })
+	@RequestMapping(path = "/locations", method = { RequestMethod.GET }, consumes = { "*" })
 	public ResponseEntity<List<String>> findAllLocations() {
 		return findLocations("");
 	}

@@ -80,6 +80,10 @@ public class GroupUserRelationDao extends BaseDao<GroupUserRelation> {
 		return super.findBySingleField(GroupUserRelation.USER_GROUP_ID, userGroupID);
 	}
 	
+	public List<GroupUserRelation> findByUserID(String userID) {
+		return super.findBySingleField(GroupUserRelation.USER_ID, userID);
+	}
+	
 	public GroupUserRelation findByUserIDAndUserGroupID(String userID, Long userGroupID) {  
 		String sql = "SELECT * FROM " + this.getTableName() + " WHERE "+ GroupUserRelation.USER_ID +"=? AND "+ GroupUserRelation.USER_GROUP_ID + "=?";
         List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql, userID,userGroupID);

@@ -124,9 +124,9 @@ DEFAULT CHARACTER SET = utf8mb4;
 
 
 -- -----------------------------------------------------
--- Table `beehive`.`rel_group_ permission`
+-- Table `beehive`.`rel_group_permission`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `beehive`.`rel_group_ permission` (
+CREATE TABLE IF NOT EXISTS `beehive`.`rel_group_permission` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `user_group_id` INT(11) NOT NULL,
   `permission_id` INT(11) NOT NULL,

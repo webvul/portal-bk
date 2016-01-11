@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.LinkedList;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +20,7 @@ public class OperatorLogInterceptor extends HandlerInterceptorAdapter {
 	
 //	private Logger operatorLog= LoggerFactory.getLogger(OperatorLogInterceptor.class);
 //
-	private Logger log= LoggerFactory.getLogger("com.kii");
+	private Logger log= LoggerFactory.getLogger(OperatorLogInterceptor.class);
 
 	@Autowired
 	private OpLogTools logTool;
@@ -32,9 +33,8 @@ public class OperatorLogInterceptor extends HandlerInterceptorAdapter {
 			throws Exception {
 		this.logRequest(request);
 
-		List<String> list=new ArrayList<>();
+		List<String> list=new LinkedList<>();
 
-		list.add(String.valueOf(System.currentTimeMillis()));
 
 		String auth = request.getHeader("Authorization");
 

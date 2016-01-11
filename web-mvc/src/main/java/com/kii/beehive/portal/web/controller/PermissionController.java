@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,15 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kii.beehive.portal.jdbc.dao.GroupPermissionRelationDao;
-import com.kii.beehive.portal.jdbc.dao.PermissionDao;
-import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
 import com.kii.beehive.portal.jdbc.entity.GroupPermissionRelation;
-import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
 import com.kii.beehive.portal.jdbc.entity.Permission;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
-import com.kii.beehive.portal.manager.UserManager;
-import com.kii.beehive.portal.web.constant.Constants;
 
 /**
  * Beehive API - User API
@@ -34,21 +27,14 @@ import com.kii.beehive.portal.web.constant.Constants;
 @RequestMapping(path = "/permission",  consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
 public class PermissionController extends AbstractController{
 	
+    
     /**
-     * 创建用户群组
-     * POST /usergroup
+     * 綁定用户群组權限
+     * POST /permission/{permissionID}/userGroup/{userGroupID}
      *
      * refer to doc "Beehive API - User API" for request/response details
-     * refer to doc "Tech Design - Beehive API", section "Create User Group (创建用户群组)" for more details
      *
-     * @param userGroup
      */
-    @RequestMapping(path="",method={RequestMethod.POST})
-    public ResponseEntity createPermission(@RequestBody UserGroup userGroup, HttpServletRequest httpRequest){
-
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-    
     @RequestMapping(path="/{permissionID}/userGroup/{userGroupID}",method={RequestMethod.POST})
     public ResponseEntity addPermissionToUserGroup(@PathVariable("userGroupID") Long userGroupID, @PathVariable("permissionID") Long permissionID, HttpServletRequest httpRequest){
     	String loginUserID = getLoginUserID(httpRequest);
@@ -66,6 +52,13 @@ public class PermissionController extends AbstractController{
         return new ResponseEntity<>(HttpStatus.OK);
     }
     
+    /**
+     * 解除用户群组權限
+     * PUT /permission/{permissionID}
+     *
+     * refer to doc "Beehive API - User API" for request/response details
+     *
+     */
     @RequestMapping(path="/{permissionID}/userGroup/{userGroupID}",method={RequestMethod.PUT})
     public ResponseEntity removePermissionToUserGroup(@PathVariable("userGroupID") Long userGroupID, @PathVariable("permissionID") Long permissionID, HttpServletRequest httpRequest){
     	String loginUserID = getLoginUserID(httpRequest);
@@ -81,42 +74,38 @@ public class PermissionController extends AbstractController{
 
 
     /**
-     * 删除用户群组
-     * DELETE /usergroup/{userGroupID}
+     * 删除權限
+     * DELETE /permission/{permissionID}
      *
      * refer to doc "Beehive API - User API" for request/response details
-     * refer to doc "Tech Design - Beehive API", section "Delete User Group (删除用户群组)" for more details
      *
      * @param userGroupID
      */
     @RequestMapping(path="/{permissionID}",method={RequestMethod.DELETE})
-    public ResponseEntity deleteUserGroup(@PathVariable("permissionID") Long permissionID){
+    public ResponseEntity deletePermission(@PathVariable("permissionID") Long permissionID){
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
     
     /**
-     * 取得群組用戶
-     * DELETE /usergroup/{userGroupID}
+     * 取得群組權限
+     * GET /permission/user/{userGroupID}
      *
      * refer to doc "Beehive API - User API" for request/response details
-     * refer to doc "Tech Design - Beehive API", section "Detail User Group" for more details
      *
      * @param userGroupID
      */
-    @RequestMapping(path="/{permissionID}",method={RequestMethod.GET})
-    public ResponseEntity getPermissionIDDetail(@PathVariable("permissionID") Long permissionID, HttpServletRequest httpRequest){
-    	
-
-        return new ResponseEntity<>(HttpStatus.OK);
+    @RequestMapping(path="/userGroup/{userGroupID}",method={RequestMethod.GET})
+    public ResponseEntity<List<Permission>> getUserGroupPermission(@PathVariable("userID") Long userGroupID, HttpServletRequest httpRequest){
+    	List<Permission> pList = permissionDao.findByUserGroupID(userGroupID);
+        return new ResponseEntity<>(pList, HttpStatus.OK);
     }
 
     /**
-     * 查询用户群组
-     * POST /usergroup/search
+     * 列出所有權限
+     * POST /permission/list
      *
      * refer to doc "Beehive API - User API" for request/response details
-     * refer to doc "Tech Design - Beehive API", section "Inquire User Group (查询用户群组)" for more details
      *
      * @param queryMap
      */

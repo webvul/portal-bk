@@ -5,8 +5,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.AntPathMatcher;
+import org.springframework.util.PathMatcher;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import com.kii.beehive.portal.jdbc.entity.AuthInfo;
 import com.kii.beehive.portal.manager.AuthManager;
 import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.extension.sdk.exception.UnauthorizedAccessException;
@@ -41,27 +44,36 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
         String auth = request.getHeader(Constants.ACCESS_TOKEN);
 
         if (auth == null || !auth.startsWith("Bearer ")) {
-
             throw new UnauthorizedAccessException();
         }
 
         auth = auth.trim();
 
         String token = auth.substring(auth.indexOf(" ") + 1).trim();
-
+       
         // TODO this checking is for testing only, must remove after testing complete
         if (SUPER_TOKEN.equals(token)) {
         	authManager.saveToken("211102", token);
             return true;
         }
 
-        boolean valid = authManager.validateAndBindUserToken(token);
-        if (!valid) {
+        AuthInfo authInfo = authManager.validateAndBindUserToken(token);
+        if (authInfo == null) {
             throw new UnauthorizedAccessException();
         }
-
-        return super.preHandle(request, response, handler);
-
+        
+        //check Auth
+        String url = request.getMethod()+" "+request.getRequestURI().replaceAll(Constants.DOMAIN_URL, "");
+        PathMatcher pathMatcher = new AntPathMatcher();
+        for(String action:authInfo.getPermisssionSet()){
+        	if(pathMatcher.match(action, url)){
+        		return super.preHandle(request, response, handler);
+        	}
+        }
+        
+        //no permission
+        throw new UnauthorizedAccessException();
+        
     }
 
     @Override
