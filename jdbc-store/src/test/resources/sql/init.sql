@@ -3,6 +3,7 @@ CREATE TABLE `global_thing` (
   `vendor_thing_id` varchar(45) NOT NULL,
   `kii_app_id` varchar(45) NOT NULL,
   `thing_type` varchar(45) DEFAULT NULL,
+  `full_kii_thing_id` varchar(128),
   `custom_info` mediumtext,
   `status` mediumtext,
   `create_by` varchar(45) DEFAULT NULL,
@@ -14,21 +15,23 @@ CREATE TABLE `global_thing` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8mb4;
 
 
-CREATE TABLE `beehive`.`tag_index` (
+CREATE TABLE `tag_index` (
   `tag_id` INT NOT NULL AUTO_INCREMENT COMMENT '',
   `display_name` VARCHAR(45) NOT NULL COMMENT '',
   `tag_type` VARCHAR(45) NOT NULL COMMENT '',
   `tag_full_name` VARCHAR(100) NOT NULL COMMENT '';
   `description` VARCHAR(450) NULL COMMENT '',
+  `full_tag_name` varchar(128),
   `create_by` VARCHAR(45) NULL COMMENT '',
   `create_date` DATETIME NULL COMMENT '',
   `modify_by` VARCHAR(45) NULL COMMENT '',
   `modify_date` DATETIME NULL COMMENT '',
+  
   PRIMARY KEY (`tag_id`) COMMENT ''
   ) ENGINE=InnoDB AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8mb4;
 
 
-CREATE TABLE `beehive`.`rel_thing_tag` (
+CREATE TABLE `rel_thing_tag` (
   `id` INT NOT NULL AUTO_INCREMENT COMMENT '',
   `thing_id` INT NOT NULL COMMENT '',
   `tag_id` INT NOT NULL COMMENT '',
@@ -50,7 +53,7 @@ CREATE TABLE beehive.auth_info (
   PRIMARY KEY (id) COMMENT ''
   ) ENGINE=InnoDB AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8mb4;
   
-CREATE TABLE IF NOT EXISTS `beehive`.`user_group` (
+CREATE TABLE IF NOT EXISTS `user_group` (
   `user_group_id` INT(11) NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NOT NULL,
   `description` VARCHAR(450) NULL,
@@ -65,9 +68,9 @@ DEFAULT CHARACTER SET = utf8mb4;
 
 
 -- -----------------------------------------------------
--- Table `beehive`.`rel_group_user`
+-- Table `rel_group_user`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `beehive`.`rel_group_user` (
+CREATE TABLE IF NOT EXISTS `rel_group_user` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `user_id` VARCHAR(45) NOT NULL,
   `user_group_id` INT(11) NOT NULL,
@@ -75,16 +78,16 @@ CREATE TABLE IF NOT EXISTS `beehive`.`rel_group_user` (
   INDEX `fk_rel_group_user_user_group1_idx` (`user_group_id` ASC),
   CONSTRAINT `fk_rel_group_user_user_group1`
     FOREIGN KEY (`user_group_id`)
-    REFERENCES `beehive`.`user_group` (`user_group_id`)
+    REFERENCES `user_group` (`user_group_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `beehive`.`source`
+-- Table `source`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `beehive`.`source` (
+CREATE TABLE IF NOT EXISTS `source` (
   `source_id` INT(11) NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NOT NULL,
   `type` VARCHAR(45) NOT NULL,
@@ -99,9 +102,9 @@ DEFAULT CHARACTER SET = utf8mb4;
 
 
 -- -----------------------------------------------------
--- Table `beehive`.`permission`
+-- Table `permission`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `beehive`.`permission` (
+CREATE TABLE IF NOT EXISTS `permission` (
   `permission_id` INT(11) NOT NULL AUTO_INCREMENT,
   `source_id` INT(11) NOT NULL,
   `name` VARCHAR(45) NOT NULL,
@@ -115,7 +118,7 @@ CREATE TABLE IF NOT EXISTS `beehive`.`permission` (
   INDEX `fk_permission_source1_idx` (`source_id` ASC),
   CONSTRAINT `fk_permission_source1`
     FOREIGN KEY (`source_id`)
-    REFERENCES `beehive`.`source` (`source_id`)
+    REFERENCES `source` (`source_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -124,23 +127,23 @@ DEFAULT CHARACTER SET = utf8mb4;
 
 
 -- -----------------------------------------------------
--- Table `beehive`.`rel_group_permission`
+-- Table `rel_group_permission`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `beehive`.`rel_group_permission` (
+CREATE TABLE IF NOT EXISTS `rel_group_permission` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
   `user_group_id` INT(11) NOT NULL,
   `permission_id` INT(11) NOT NULL,
   PRIMARY KEY (`id`),
   INDEX `fk_rel_group_user_user_group1_idx` (`user_group_id` ASC),
-  INDEX `fk_rel_group_user_copy1_permission1_idx` (`permission_id` ASC),
+  INDEX `fk_rel_group_user_permission1_idx` (`permission_id` ASC),
   CONSTRAINT `fk_rel_group_user_user_group10`
     FOREIGN KEY (`user_group_id`)
-    REFERENCES `beehive`.`user_group` (`user_group_id`)
+    REFERENCES `user_group` (`user_group_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `fk_rel_group_user_copy1_permission1`
+  CONSTRAINT `fk_rel_group_user_permission`
     FOREIGN KEY (`permission_id`)
-    REFERENCES `beehive`.`permission` (`permission_id`)
+    REFERENCES `permission` (`permission_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
