@@ -103,8 +103,7 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 
 			log.debug(" fill row result "+fieldInst+" to field "+field);
 
-			beanWrapper.setPropertyValue(fieldMapper.get(field),fieldInst);
-
+			beanWrapper.setPropertyValue(fieldMapper.get(field), fieldInst);
 		}
 
 
