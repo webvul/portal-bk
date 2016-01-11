@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -89,7 +88,7 @@ public class PermissionController extends AbstractController{
     
     /**
      * 取得群組權限
-     * GET /permission/user/{userGroupID}
+     * GET /permission/userGroup/{userGroupID}
      *
      * refer to doc "Beehive API - User API" for request/response details
      *
@@ -103,7 +102,7 @@ public class PermissionController extends AbstractController{
 
     /**
      * 列出所有權限
-     * POST /permission/list
+     * GET /permission/list
      *
      * refer to doc "Beehive API - User API" for request/response details
      *

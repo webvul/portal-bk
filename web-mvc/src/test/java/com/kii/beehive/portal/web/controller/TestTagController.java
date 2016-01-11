@@ -217,7 +217,7 @@ public class TestTagController extends WebTestTemplate {
 
         // test no tag
         String result=this.mockMvc.perform(
-                get("/tags/all")
+                get("/tags/search")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
                         .header(Constants.ACCESS_TOKEN, tokenForTest)

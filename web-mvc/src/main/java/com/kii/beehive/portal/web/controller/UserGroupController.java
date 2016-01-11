@@ -121,7 +121,7 @@ public class UserGroupController extends AbstractController{
     }
     
     /**
-     * 取得群組用戶
+     * 取得群組內的用戶
      * GET /usergroup/{userGroupID}
      *
      * refer to doc "Beehive API - User API" for request/response details
