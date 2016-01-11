@@ -5,8 +5,6 @@ public class SummaryTriggerRuntimeState extends TriggerRuntimeState {
 
 	private String listenerID;
 
-	private String summaryThingID;
-
 	public String getListenerID() {
 		return listenerID;
 	}
@@ -15,12 +13,5 @@ public class SummaryTriggerRuntimeState extends TriggerRuntimeState {
 		this.listenerID = listenerID;
 	}
 
-	public String getSummaryThingID() {
-		return summaryThingID;
-	}
-
-	public void setSummaryThingID(String summaryThingID) {
-		this.summaryThingID = summaryThingID;
-	}
 
 }

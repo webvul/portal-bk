@@ -2,12 +2,14 @@ package com.kii.beehive.portal.manager;
 
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.business.event.KiicloudEventListenerService;
+import com.kii.beehive.business.ruleengine.ExpressCompute;
 import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
@@ -49,6 +51,9 @@ public class ThingStateSummaryManager {
 	@Autowired
 	private TriggerRuntimeStatusDao statusDao;
 
+	@Autowired
+	private ExpressCompute computer;
+
 
 //	@Autowired
 //	private AppInfoDao appDao;
@@ -57,18 +62,7 @@ public class ThingStateSummaryManager {
 	public void initStateSummary(SummaryTriggerRecord record){
 
 
-//		KiiAppInfo appInfo=appDao.getMasterAppInfo();
-
-		OnBoardingParam param=new OnBoardingParam();
-		param.setThingPassword("demo");
-//		param.setUserID(appInfo.getDefaultThingOwnerID());
-
-		OnBoardingResult result=thingIFService.onBoarding(param,"master");
-
 		SummaryTriggerRuntimeState state=new SummaryTriggerRuntimeState();
-
-		String summaryID=result.getThingID();
-		state.setSummaryThingID(summaryID);
 
 		TriggerSource  source=record.getSource();
 		List<GlobalThingInfo> things=thingTagService.getThingInfos(source.getSelector());
@@ -86,41 +80,10 @@ public class ThingStateSummaryManager {
 
 		String triggerID=triggerDao.addKiiEntity(record);
 
-		registTrigger(summaryID,triggerID,record.getPerdicate());
-
 		refreshThingState(thingIDs);
 
 	}
 
-	private void registTrigger(String summaryID, String triggerID, Predicate perdicate){
-
-		String masterAppID=appInfoManager.getMasterAppID();
-
-
-		ThingTrigger triggerInfo=new ThingTrigger();
-		triggerInfo.setTarget(TriggerTarget.SERVER_CODE);
-
-		triggerInfo.setPredicate(perdicate);
-
-		String fullThingID= ThingIDTools.joinFullKiiThingID(summaryID,masterAppID);
-
-
-		ServiceCode serviceCode=new ServiceCode();
-
-		serviceCode.setEndpoint(EndPointNameConstant.SummaryTriggerEndPoint);
-		serviceCode.addParameter("thingID",summaryID);
-		serviceCode.addParameter("triggerID",triggerID);
-
-		serviceCode.setTargetAppID(masterAppID);
-		serviceCode.setExecutorAccessToken(appInfoManager.getDefaultOwer(masterAppID).getMasterAuthToken());
-
-		triggerInfo.setServiceCode(serviceCode);
-
-
-		thingIFService.createTrigger(fullThingID,triggerInfo);
-
-		return;
-	}
 
 
 
@@ -239,7 +202,10 @@ public class ThingStateSummaryManager {
 		});
 
 
-		thingIFService.putStatus(thingID,summaryState);
+		Map<String,Object> summary=summaryState.getFields();
+
+
+//		thingIFService.putStatus(thingID,summaryState);
 	}
 
 

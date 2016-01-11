@@ -9,58 +9,76 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.NumberUtils;
 
 import com.kii.extension.sdk.query.Condition;
+import com.kii.extension.sdk.query.condition.AndLogic;
 import com.kii.extension.sdk.query.condition.Equal;
+import com.kii.extension.sdk.query.condition.LogicCol;
+import com.kii.extension.sdk.query.condition.NotLogic;
+import com.kii.extension.sdk.query.condition.OrLogic;
 import com.kii.extension.sdk.query.condition.Range;
 import com.kii.extension.sdk.query.condition.SimpleCondition;
 
 @Component
-public class ExpressConvert {
-
-	public boolean doExpress(Condition condition,Map<String,Object> content){
+public class ExpressCompute {
 
 
+	public boolean doExpress(Condition clause,final Map<String,Object> content)throws NumberFormatException{
 
 
-
-
-	}
-
-	public String convert(Condition condition){
-
-
-		StringBuilder sb=new StringBuilder();
-
-		switch(condition.getType()){
-
-			case and:
-
-
-
-
-		}
-
-	}
-
-	private boolean doExpress(SimpleCondition clause,Map<String,Object> content)throws NumberFormatException{
-
-		String field=clause.getField();
-
-		Object source=content.get(field);
 
 		switch(clause.getType()){
 
-			case eq:
-				Equal  eq=(Equal)clause;
-				Object target=getValue(eq.getValue(),content);
+			case and: {
+				boolean sign = true;
+				for(Condition  cond:((AndLogic) clause).getClauses()){
+					sign&=doExpress(cond,content);
+				};
+				return sign;
+			}
+			case or:{
+				boolean sign = false;
+				for(Condition  cond:((OrLogic) clause).getClauses()){
+					sign|=doExpress(cond,content);
+				};
+				return sign;
+			}
+			case not:{
+				NotLogic logic=(NotLogic)clause;
+				return !doExpress(logic.getClause(),content);
+			}
+			case eq: {
+				Equal eq = (Equal) clause;
+				String field = eq.getField();
+				Object source = content.get(field);
 
-				return compareToValue(source,target)==0;
+				Object target = getValue(eq.getValue(), content);
 
-			case range:
+				return compareToValue(source, target) == 0;
+			}
+			case range: {
+				Range range = (Range) clause;
+				String field = range.getField();
+				Object source = content.get(field);
 
-				Range range=(Range)clause;
+				if (range.getUpperLimit() != null) {
 
+					int sign = compareToValue(source, range.getUpperLimit());
+					if (sign == 0 && range.isUpperIncluded()) {
+						return true;
+					}
+					return sign < 0;
+				}
 
+				if (range.getLowerLimit() != null) {
 
+					int sign = compareToValue(source, range.getLowerLimit());
+					if (sign == 0 && range.isLowerIncluded()) {
+						return true;
+					}
+					return sign > 0;
+				}
+			}
+			default:
+				throw new IllegalArgumentException("unsupported express");
 		}
 
 

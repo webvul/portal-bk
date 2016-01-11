@@ -5,30 +5,13 @@ import java.util.List;
 
 public class SummaryTriggerRecord extends TriggerRecord {
 
-	private List<SummaryExpress> summaryExpress=new ArrayList<>();
+	private List<SummarySource> summarySource=new ArrayList<>();
 
-	private TriggerSource  source;
-
-
-
-
-
-	public TriggerSource getSource() {
-		return source;
+	public List<SummarySource> getSummarySource() {
+		return summarySource;
 	}
 
-	public void setSource(TriggerSource source) {
-		this.source = source;
+	public void setSummarySource(List<SummarySource> summarySource) {
+		this.summarySource = summarySource;
 	}
-
-
-	public List<SummaryExpress> getSummaryExpress() {
-		return summaryExpress;
-	}
-
-	public void setSummaryExpress(List<SummaryExpress> summaryExpress) {
-		this.summaryExpress = summaryExpress;
-	}
-
-
 }
