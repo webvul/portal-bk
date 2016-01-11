@@ -103,6 +103,8 @@ public class OpLogTools {
 	@Async
 	public void write(List<String> list) {
 
+		list.add(0,String.valueOf(System.currentTimeMillis()));
+
 		String line = StringUtils.collectionToDelimitedString(list, ",");
 
 		writeLine(line);

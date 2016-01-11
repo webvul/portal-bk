@@ -1,0 +1,25 @@
+<ehcache  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation="ehcache.xsd" >
+    <diskStore path="java.io.tmpdir"/>
+
+    <cache name="ttl_cache"
+           maxEntriesLocalHeap="10000"
+           maxEntriesLocalDisk="10000000"
+           timeToIdleSeconds="60"
+           timeToLiveSeconds="60" >
+    </cache>
+
+    <cache name="long_live_cache"
+           maxEntriesLocalHeap="10000"
+           maxEntriesLocalDisk="10000000"
+           timeToIdleSeconds="60"
+           timeToLiveSeconds="600">
+    </cache>
+
+    <cache name="demo_cache"
+           maxEntriesLocalHeap="10"
+           maxEntriesLocalDisk="10"
+           timeToIdleSeconds="10"
+           timeToLiveSeconds="10">
+    </cache>
+</ehcache>

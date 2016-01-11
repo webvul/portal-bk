@@ -1,7 +1,7 @@
 package com.kii.beehive.portal.web.help;
 
-import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,9 +19,7 @@ import com.kii.beehive.portal.web.constant.Constants;
 
 public class OperatorLogInterceptor extends HandlerInterceptorAdapter {
 	
-//	private Logger operatorLog= LoggerFactory.getLogger(OperatorLogInterceptor.class);
-//
-	private Logger log= LoggerFactory.getLogger("com.kii");
+	private Logger log= LoggerFactory.getLogger(OperatorLogInterceptor.class);
 
 	@Autowired
 	private OpLogTools logTool;
@@ -34,9 +32,8 @@ public class OperatorLogInterceptor extends HandlerInterceptorAdapter {
 			throws Exception {
 		this.logRequest(request);
 
-		List<String> list=new ArrayList<>();
+		List<String> list=new LinkedList<>();
 
-		list.add(String.valueOf(System.currentTimeMillis()));
 
 		String auth = request.getHeader(Constants.ACCESS_TOKEN);
 
