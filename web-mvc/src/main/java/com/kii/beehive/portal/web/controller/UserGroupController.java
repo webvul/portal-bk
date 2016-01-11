@@ -141,8 +141,8 @@ public class UserGroupController extends AbstractController{
     }
     
     /**
-     * 查询用户群组
-     * POST /usergroup/search
+     * 列出用户群组
+     * POST /usergroup/list
      *
      * refer to doc "Beehive API - User API" for request/response details
      * refer to doc "Tech Design - Beehive API", section "Inquire User Group (查询用户群组)" for more details

@@ -2,7 +2,7 @@ package com.kii.extension.sdk.exception;
 
 public class UnauthorizedAccessException extends KiiCloudException {
 
-
+	private static final long serialVersionUID = -6136853872245385114L;
 
 	private String authenticatedAppID;
 
@@ -15,6 +15,11 @@ public class UnauthorizedAccessException extends KiiCloudException {
 	@Override
 	public int getStatusCode(){
 		return 401;
+	}
+	
+	@Override
+	public String getErrorMessage() {
+		return "unauthorized access";
 	}
 
 	public String getAuthenticatedAppID() {

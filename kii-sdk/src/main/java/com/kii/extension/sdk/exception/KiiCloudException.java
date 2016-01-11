@@ -9,6 +9,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class KiiCloudException extends RuntimeException {
 
 
+	private static final long serialVersionUID = -7579029564962086868L;
+
+
 	public KiiCloudException(){
 
 
