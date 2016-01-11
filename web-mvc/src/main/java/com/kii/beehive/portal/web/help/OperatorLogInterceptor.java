@@ -1,19 +1,21 @@
 package com.kii.beehive.portal.web.help;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+
 import com.kii.beehive.business.helper.OpLogTools;
+import com.kii.beehive.portal.jdbc.entity.AuthInfo;
 import com.kii.beehive.portal.manager.AuthManager;
+import com.kii.beehive.portal.web.constant.Constants;
 
 public class OperatorLogInterceptor extends HandlerInterceptorAdapter {
 	
@@ -36,13 +38,19 @@ public class OperatorLogInterceptor extends HandlerInterceptorAdapter {
 
 		list.add(String.valueOf(System.currentTimeMillis()));
 
-		String auth = request.getHeader("Authorization");
+		String auth = request.getHeader(Constants.ACCESS_TOKEN);
 
 		if (auth != null && auth.startsWith("Bearer ")) {
 			auth = auth.trim();
 
 			String token = auth.substring(auth.lastIndexOf(" ") + 1).trim();
-			list.add(authManager.getAuthInfo(token).getUserID());
+			AuthInfo authInfo = authManager.getAuthInfo(token);
+			if(authInfo == null){
+				list.add("");
+			}else{
+				list.add(authInfo.getUserID());
+			}
+			
 		}
 		list.add(request.getRequestURI());
 
