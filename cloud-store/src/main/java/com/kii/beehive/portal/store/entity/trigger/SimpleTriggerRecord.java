@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class SimpleTriggerRecord extends TriggerRecord{
 
+	public SimpleTriggerRecord(){
+
+	}
 
 	private ThingID source;
 

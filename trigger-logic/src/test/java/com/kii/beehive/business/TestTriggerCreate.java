@@ -1,10 +1,15 @@
 package com.kii.beehive.business;
 
+import java.io.IOException;
+
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.beehive.portal.manager.SimpleThingTriggerManager;
 import com.kii.beehive.business.service.ServiceExtensionDeployService;
@@ -22,6 +27,7 @@ import com.kii.beehive.portal.manager.ThingTagManager;
 import com.kii.beehive.portal.store.entity.trigger.SimpleTriggerRecord;
 import com.kii.beehive.portal.store.entity.trigger.TagSelector;
 import com.kii.beehive.portal.store.entity.trigger.TargetAction;
+import com.kii.beehive.portal.store.entity.trigger.TriggerRecord;
 import com.kii.beehive.portal.store.entity.trigger.TriggerTarget;
 import com.kii.extension.sdk.entity.thingif.Action;
 import com.kii.extension.sdk.entity.thingif.OnBoardingParam;
@@ -169,8 +175,11 @@ public class TestTriggerCreate extends TestTemplate {
 
 	}
 
+	@Autowired
+	private ObjectMapper mapper;
+
 	@Test
-	public void testTriggerCreate(){
+	public void testTriggerCreate() throws IOException {
 
 
 		SimpleTriggerRecord record=new SimpleTriggerRecord();
@@ -192,7 +201,17 @@ public class TestTriggerCreate extends TestTemplate {
 		TriggerTarget target2=getServiceCodeTarget();
 		record.addTarget(target2);
 
-		simpleMang.createSimpleTrigger(record);
+
+		String json=mapper.writeValueAsString(record);
+
+
+		log.info(json);
+
+		TriggerRecord record1=mapper.readValue(json,TriggerRecord.class);
+
+
+
+//		simpleMang.createSimpleTrigger(record);
 
 	}
 

@@ -12,7 +12,7 @@ import com.kii.extension.sdk.entity.thingif.StatePredicate;
 
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME,
-		include = JsonTypeInfo.As.EXISTING_PROPERTY,
+		include = JsonTypeInfo.As.EXTERNAL_PROPERTY,
 		property = "type")
 @JsonSubTypes({
 		@JsonSubTypes.Type(value = SimpleTriggerRecord.class,name="Simple"),
