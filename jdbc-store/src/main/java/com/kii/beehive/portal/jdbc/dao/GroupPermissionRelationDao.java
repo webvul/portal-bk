@@ -7,7 +7,6 @@ import java.util.Map;
 import org.springframework.stereotype.Repository;
 
 import com.kii.beehive.portal.jdbc.entity.GroupPermissionRelation;
-import com.kii.beehive.portal.jdbc.entity.UserGroup;
 
 @Repository
 public class GroupPermissionRelationDao extends BaseDao<GroupPermissionRelation> {

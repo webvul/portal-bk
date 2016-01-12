@@ -213,7 +213,7 @@ public class ThingController {
 	 *
 	 * @param globalThingIDs
      */
-	@RequestMapping(path="/{globalThingIDs}/tags/{tagIDs}",method={RequestMethod.PUT})
+	@RequestMapping(path="/{globalThingIDs}/tags/{tagIDs}",method={RequestMethod.POST})
 	public void addThingTag(@PathVariable("globalThingIDs") String globalThingIDs,@PathVariable("tagIDs") String tagIDs){
 		
 		List<String> thingIDList = CollectionUtils.arrayToList(globalThingIDs.split(","));

@@ -7,7 +7,6 @@ import java.util.Map;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Repository;
 
-import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
 import com.kii.beehive.portal.jdbc.entity.TagType;

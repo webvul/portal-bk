@@ -23,9 +23,9 @@ public class TestTagIndexDao extends TestTemplate{
 	
 	@Before
 	public void init(){
-		tag.setDisplayName("DisplayName");
+		tag.setDisplayName("DisplayNameTest");
 		tag.setTagType(TagType.Custom);
-		tag.setDescription("Description");
+		tag.setDescription("DescriptionTest");
 		long id=dao.saveOrUpdate(tag);
 		tag.setId(id);
 	}
@@ -76,6 +76,16 @@ public class TestTagIndexDao extends TestTemplate{
 		boolean b = dao.IsIdExist(tag.getId());
 		assertTrue(b);
 	}
+	
+	@Test
+	public void testFindTagByTagTypeAndName(){
+		List<TagIndex> list = dao.findTagByTagTypeAndName(null,tag.getDisplayName());
+		assertEquals(1,list.size());
+		list = dao.findTagByTagTypeAndName(TagType.Custom.toString(),tag.getDisplayName());
+		assertEquals(1,list.size());
+	}
+	
+
 	
 	
 }
