@@ -58,7 +58,7 @@ public class PermissionController extends AbstractController{
      * refer to doc "Beehive API - User API" for request/response details
      *
      */
-    @RequestMapping(path="/{permissionID}/userGroup/{userGroupID}",method={RequestMethod.PUT})
+    @RequestMapping(path="/{permissionID}/userGroup/{userGroupID}",method={RequestMethod.DELETE})
     public ResponseEntity removePermissionToUserGroup(@PathVariable("userGroupID") Long userGroupID, @PathVariable("permissionID") Long permissionID, HttpServletRequest httpRequest){
     	String loginUserID = getLoginUserID(httpRequest);
     	

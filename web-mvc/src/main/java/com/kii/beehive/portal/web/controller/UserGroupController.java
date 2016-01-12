@@ -86,7 +86,7 @@ public class UserGroupController extends AbstractController{
      *
      * @param userGroup
      */
-    @RequestMapping(path="/{userGroupID}/user/{userID}",method={RequestMethod.PUT})
+    @RequestMapping(path="/{userGroupID}/user/{userID}",method={RequestMethod.DELETE})
     public ResponseEntity removeUserToUserGroup(@PathVariable("userGroupID") Long userGroupID, @PathVariable("userID") String userID, HttpServletRequest httpRequest){
     	String loginUserID = getLoginUserID(httpRequest);
     	
