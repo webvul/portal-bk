@@ -43,11 +43,13 @@ public class KiicloudEventListenerService {
 
 
 
-	public String addSummaryChangeListener(List<String> tagNames,String summaryThingID){
+//
+	public String addSummaryChangeListener(List<String> tagNames,String triggerID,String name){
 
 
 		EventListener  listener=new EventListener();
-		listener.setTargetKey(summaryThingID);
+		listener.setTargetKey(triggerID);
+		listener.addCustomValue("groupName",name);
 
 		listener.addBindKeys(tagNames);
 		listener.setEnable(true);
@@ -57,12 +59,13 @@ public class KiicloudEventListenerService {
 		return eventListenerDao.addEventListener(listener);
 
 	}
-
-
-	public String addThingStatusListener(List<String> thingIDs,String summaryThingID){
+//
+//
+	public String addThingStatusListener(List<String> thingIDs,String triggerID,String name){
 
 		EventListener  listener=new EventListener();
-		listener.setTargetKey(summaryThingID);
+		listener.setTargetKey(triggerID);
+		listener.addCustomValue("groupName",name);
 		listener.addBindKeys(thingIDs.stream().map(v->String.valueOf(v)).collect(Collectors.toList()));
 
 		listener.setRelationBeanName(COMPUTE_SUMMARY_STATE);
@@ -72,14 +75,9 @@ public class KiicloudEventListenerService {
 		return eventListenerDao.addEventListener(listener);
 
 	}
-
+//
 	public void updateThingStatusListener(List<String> thingIDs,String listenerID){
 
-//		EventListener  listener=new EventListener();
-//		listener.setTargetKey(summaryThingID);
-//		listener.addBindKeys(thingIDs.stream().map(v->String.valueOf(v)).collect(Collectors.toList()));
-//
-//		listener.setRelationBeanName(COMPUTE_SUMMARY_STATE);
 
 		Map<String,Boolean>  thingMap=new HashMap<>();
 		thingIDs.forEach(id->{

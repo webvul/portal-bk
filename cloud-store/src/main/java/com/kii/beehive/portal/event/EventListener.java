@@ -27,6 +27,22 @@ public class EventListener extends KiiEntity {
 		return enable;
 	}
 
+
+	private Map<String,Object> customs=new HashMap<>();
+
+	@JsonIgnore
+	public void addCustomValue(String field,Object value){
+		customs.put(field,value);
+	}
+
+	public Map<String, Object> getCustoms() {
+		return customs;
+	}
+
+	public void setCustoms(Map<String, Object> customs) {
+		this.customs = customs;
+	}
+
 	public void setEnable(boolean enable) {
 		this.enable = enable;
 	}

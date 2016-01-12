@@ -1,17 +1,26 @@
 package com.kii.beehive.portal.store.entity.trigger;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class SummaryTriggerRecord extends TriggerRecord {
 
-	private List<SummarySource> summarySource=new ArrayList<>();
+	private Map<String,SummarySource> summarySource=new HashMap<>();
 
-	public List<SummarySource> getSummarySource() {
+	public Map<String, SummarySource> getSummarySource() {
 		return summarySource;
 	}
 
-	public void setSummarySource(List<SummarySource> summarySource) {
+	public void setSummarySource(Map<String, SummarySource> summarySource) {
 		this.summarySource = summarySource;
+	}
+
+	@JsonIgnore
+	public void addSummarySource(String name,SummarySource source){
+		summarySource.put(name,source);
 	}
 }

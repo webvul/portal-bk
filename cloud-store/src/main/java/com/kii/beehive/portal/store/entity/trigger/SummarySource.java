@@ -5,16 +5,16 @@ import java.util.List;
 
 public class SummarySource {
 
-	private SummaryExpress summaryExpress;
+	private List<SummaryExpress> expressList=new ArrayList<>();
 
 	private TriggerSource  source;
 
-	public SummaryExpress getSummaryExpress() {
-		return summaryExpress;
+	public List<SummaryExpress> getExpressList() {
+		return expressList;
 	}
 
-	public void setSummaryExpress(SummaryExpress summaryExpress) {
-		this.summaryExpress = summaryExpress;
+	public void setExpressList(List<SummaryExpress> expressList) {
+		this.expressList = expressList;
 	}
 
 	public TriggerSource getSource() {
@@ -24,4 +24,6 @@ public class SummarySource {
 	public void setSource(TriggerSource source) {
 		this.source = source;
 	}
+
+
 }
