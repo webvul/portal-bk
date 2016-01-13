@@ -10,14 +10,24 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
+import com.kii.beehive.portal.jdbc.dao.TagThingRelationDao;
+import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
+import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
 import com.kii.beehive.portal.jdbc.entity.TagType;
 
 public class TestTagIndexDao extends TestTemplate{
 
 	@Autowired
 	private TagIndexDao dao;
+	
+	@Autowired
+	private GlobalThingDao globalThingDao;
+	
+	@Autowired
+	private TagThingRelationDao tagThingRelationDao;
 	
 	private TagIndex  tag =new TagIndex();
 	
@@ -85,7 +95,27 @@ public class TestTagIndexDao extends TestTemplate{
 		assertEquals(1,list.size());
 	}
 	
-
+	@Test
+	public void testFindTagByGlobalThingID(){
+		GlobalThingInfo  thing=new GlobalThingInfo();
+		thing.setVendorThingID("demo_vendor_thing_id");
+		thing.setKiiAppID("appID");
+		thing.setCustom("custom");
+		thing.setType("type");
+		thing.setStatus("1");
+		long thingID=globalThingDao.saveOrUpdate(thing);
+		
+		TagThingRelation rel =new TagThingRelation();
+		rel.setTagID(tag.getId());
+		rel.setThingID(thingID);
+		tagThingRelationDao.saveOrUpdate(rel);
+		
+		List<TagIndex> list = dao.findTagByGlobalThingID(thingID);
+		assertEquals(1,list.size());
+		assertEquals(tag.getDisplayName(),list.get(0).getDisplayName());
+		assertEquals(tag.getTagType(),list.get(0).getTagType());
+		assertEquals(tag.getDescription(),list.get(0).getDescription());
+	}
 	
 	
 }
