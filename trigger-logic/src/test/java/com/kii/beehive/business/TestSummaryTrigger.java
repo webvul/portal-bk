@@ -118,13 +118,13 @@ public class TestSummaryTrigger extends TestTemplate {
 		List<SummaryExpress> expList=new ArrayList<>();
 		SummaryExpress exp1=new SummaryExpress();
 		exp1.setFunction(SummaryFunctionType.Sum);
-		exp1.setStateName("num");
+		exp1.setStateName("foo");
 		exp1.setSummaryAlias("sum_num");
 		expList.add(exp1);
 
 		SummaryExpress exp2=new SummaryExpress();
 		exp2.setFunction(SummaryFunctionType.Avg);
-		exp2.setStateName("num");
+		exp2.setStateName("bar");
 		exp2.setSummaryAlias("avg_num");
 
 		expList.add(exp2);
@@ -145,13 +145,13 @@ public class TestSummaryTrigger extends TestTemplate {
 		List<SummaryExpress> expList=new ArrayList<>();
 		SummaryExpress exp1=new SummaryExpress();
 		exp1.setFunction(SummaryFunctionType.Sum);
-		exp1.setStateName("number");
+		exp1.setStateName("foo");
 		exp1.setSummaryAlias("sum_number");
 		expList.add(exp1);
 
 		SummaryExpress exp2=new SummaryExpress();
 		exp2.setFunction(SummaryFunctionType.Avg);
-		exp2.setStateName("number");
+		exp2.setStateName("bar");
 		exp2.setSummaryAlias("avg_number");
 
 		expList.add(exp2);

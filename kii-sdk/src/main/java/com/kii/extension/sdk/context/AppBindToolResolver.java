@@ -181,8 +181,12 @@ public class AppBindToolResolver {
 
 		AppChoice choice=appChoiceLocal.get();
 
-		return queryAppInfoByName(choice.getAppName(),choice.getBindName());
+		AppInfo newAppInfo= queryAppInfoByName(choice.getAppName(),choice.getBindName());
 
+		if(newAppInfo!=null) {
+			appInfoDirectly.set(newAppInfo);
+		}
+		return newAppInfo;
 	}
 
 	public void clean(){
@@ -219,6 +223,7 @@ public class AppBindToolResolver {
 
 			AppInfo info = bindTool.getAppInfo(appName);
 			if(info!=null){
+
 				return info;
 			}
 		}

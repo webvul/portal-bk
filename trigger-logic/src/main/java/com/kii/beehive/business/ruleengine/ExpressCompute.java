@@ -170,7 +170,7 @@ public class ExpressCompute {
 
 		String str=(String)val;
 
-		if(str.startsWith("${")&&str.endsWith("}")){
+		if(str.startsWith("$(")&&str.endsWith(")")){
 
 			String key=str.substring(2,str.length()-1);
 			return content.get(key);

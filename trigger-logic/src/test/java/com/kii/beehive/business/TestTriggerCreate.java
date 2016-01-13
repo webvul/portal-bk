@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -82,8 +83,8 @@ public class TestTriggerCreate extends TestTemplate {
 
 	private String[] tagNames={"Custom-name0","Custom-name1","Custom-name2","Custom-name3","Custom-name4"};
 
-//	@Test
-//	@Commit
+	@Test
+	@Commit
 	public void createThings(){
 
 		for(int i=0;i<10;i++) {

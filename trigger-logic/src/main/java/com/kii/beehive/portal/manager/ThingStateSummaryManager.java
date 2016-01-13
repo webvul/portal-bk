@@ -66,7 +66,35 @@ public class ThingStateSummaryManager {
 	private KiiCommandService commandService;
 
 
+	private void fillForAverageCompute(SummaryTriggerRecord record){
+
+
+		for(SummarySource source:record.getSummarySource().values()){
+
+			  List<SummaryExpress> newList=new ArrayList<>();
+
+			  List<SummaryExpress>  expressList=source.getExpressList();
+
+			  for(SummaryExpress express:expressList){
+
+				  if(express.getFunction()==SummaryFunctionType.Avg){
+
+					  List<SummaryExpress> additionList=express.generAdditionExp();
+
+					  newList.addAll(additionList);
+				  }
+
+			  }
+			  newList.addAll(expressList);
+			  source.setExpressList(newList);
+		}
+
+
+	}
+
 	public void initStateSummary(SummaryTriggerRecord record){
+
+		fillForAverageCompute(record);
 
 		record.setRecordStatus(TriggerRecord.StatusType.disable);
 		String triggerID=triggerDao.addKiiEntity(record);
@@ -129,6 +157,7 @@ public class ThingStateSummaryManager {
 
 	private SummaryStateEntry refreshThingState(List<String> thingList,String groupName,List<SummaryExpress> expressList,SummaryStateEntry entry){
 
+		entry.getSummary().clear();
 		thingList.forEach(thingID->{
 
 
@@ -199,11 +228,13 @@ public class ThingStateSummaryManager {
 
 		for(SummaryExpress express:expressList) {
 
+			if(express.getFunction()==SummaryFunctionType.Avg){
+				continue;
+			}
+
 			String fieldName = express.getStateName();
 
 			String summaryField = groupName + "." + express.getSummaryAlias();
-
-
 
 			Object delta = status.getField(fieldName);
 			Object currValue = summary.get(summaryField);
@@ -215,19 +246,26 @@ public class ThingStateSummaryManager {
 
 
 		expressList.stream()
-				.filter(expresss-> expresss.getFunction()!= SummaryFunctionType.Avg)
+				.filter(expresss-> expresss.getFunction()== SummaryFunctionType.Avg)
 				.forEach(express->{
 
 			String sumField=express.getSumField();
 			String countField=express.getCountField();
 
-			Number sum= (Number) summary.get(sumField);
+			Number sum= (Number) summary.get(groupName+"."+sumField);
 
-			Number count= (Number) summary.get(countField);
+			Number count= (Number) summary.get(groupName+"."+countField);
 
-			double avg=sum.doubleValue()/count.longValue();
+			String summaryAlias=groupName+"."+express.getSummaryAlias();
 
-			summary.put(express.getSummaryAlias(),avg);
+			if(count==null){
+				summary.put(summaryAlias,0);
+			}else {
+
+				double avg = sum.doubleValue() / count.longValue();
+				summary.put(summaryAlias,avg);
+			}
+
 		});
 
 		entry.setSummary(summary);
@@ -236,11 +274,22 @@ public class ThingStateSummaryManager {
 
 	private Object computeSummary(Object delta, SummaryFunctionType type, Object currValue) {
 
+		if(delta==null){
+			currValue=0;
+			return currValue;
+		}
+
 		try {
 			switch (type) {
 				case Count:
-					return ((Long) currValue) + 1;
+					if(currValue==null){
+						currValue=0;
+					}
+					return ((Integer) currValue) + 1;
 				case Max:
+					if(currValue==null){
+						currValue=Long.MIN_VALUE;
+					}
 					if (!isInteger(delta) || !isInteger(currValue)) {
 						boolean sign = ((Number) currValue).doubleValue() >= ((Number) delta).doubleValue();
 						if (!sign) {
@@ -251,6 +300,9 @@ public class ThingStateSummaryManager {
 					}
 					return currValue;
 				case Min:
+					if(currValue==null){
+						currValue=Long.MAX_VALUE;
+					}
 					if (!isInteger(delta) || !isInteger(currValue)) {
 						boolean sign = ((Number) currValue).doubleValue() <= ((Number) delta).doubleValue();
 						if (!sign) {
@@ -261,6 +313,9 @@ public class ThingStateSummaryManager {
 					}
 					return currValue;
 				case Sum:
+					if(currValue==null){
+						currValue=0l;
+					}
 					if (!isInteger(delta) || !isInteger(currValue)) {
 						currValue = ((Number) currValue).doubleValue() + ((Number) delta).doubleValue();
 					} else {

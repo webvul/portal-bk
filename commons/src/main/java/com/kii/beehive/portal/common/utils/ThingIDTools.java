@@ -1,5 +1,7 @@
 package com.kii.beehive.portal.common.utils;
 
+import org.springframework.util.StringUtils;
+
 public class ThingIDTools {
 
 	public static final String  joinFullKiiThingID(String kiiThingID,String kiiAppID) {
@@ -8,6 +10,10 @@ public class ThingIDTools {
 
 	public static final ThingIDCombine  splitFullKiiThingID(String fullKiiThingID) {
 
+		if(StringUtils.isEmpty(fullKiiThingID)){
+
+			return new ThingIDCombine(null,null);
+		}
 		int idx=fullKiiThingID.indexOf("-");
 
 		String  kiiThingID=fullKiiThingID.substring(idx+1);
