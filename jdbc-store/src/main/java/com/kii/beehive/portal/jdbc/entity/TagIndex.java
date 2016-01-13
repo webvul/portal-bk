@@ -29,6 +29,15 @@ public class TagIndex extends DBEntity {
 	public TagIndex(){
 
 	}
+	
+	public TagIndex(TagType tagType, String displayName, String description) {
+		super();
+		this.tagType = tagType;
+		this.displayName = displayName;
+		this.description = description;
+	}
+
+
 
 	public TagIndex(String fullTagName){
 		String[] arrays= StringUtils.split(fullTagName,"-");
@@ -98,14 +107,6 @@ public class TagIndex extends DBEntity {
 		TagIndex tag=new TagIndex();
 		tag.tagType=TagType.Custom;
 		tag.displayName=name;
-		return tag;
-	}
-
-	public static TagIndex generTagIndex(TagType tagType, String displayName, String description) {
-		TagIndex tag=new TagIndex();
-		tag.tagType=tagType;
-		tag.displayName=displayName;
-		tag.description = description;
 		return tag;
 	}
 

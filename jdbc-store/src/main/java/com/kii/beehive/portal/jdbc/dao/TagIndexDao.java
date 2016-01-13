@@ -60,13 +60,6 @@ public class TagIndexDao extends BaseDao<TagIndex> {
 	    return mapToList(rows);
 	}
 
-	public TagIndex findOneTagByTagTypeAndName(TagType tagType,String displayName) {
-		String type = (tagType == null)? null : tagType.toString();
-		List<TagIndex> tagIndexList = findTagByTagTypeAndName(type, displayName);
-
-		return CollectUtils.getFirst(tagIndexList);
-	}
-
 	public List<String> findLocations(String parentLocation) {
 
 		StringBuffer sql = new StringBuffer();
@@ -88,7 +81,7 @@ public class TagIndexDao extends BaseDao<TagIndex> {
 	 * @param globalThingID
 	 * @return
      */
-	public List<TagIndex> findTagByGlobalThingID(String globalThingID) {
+	public List<TagIndex> findTagByGlobalThingID(Long globalThingID) {
 		StringBuffer sql = new StringBuffer();
 		sql.append("SELECT t.").append(TagIndex.TAG_ID)
 				.append(", t.").append(TagIndex.TAG_TYPE)
