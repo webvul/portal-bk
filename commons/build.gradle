@@ -1,5 +1,6 @@
 dependencies {
 
+
 	compile group:'org.springframework',name:'spring-core',version:"${springVersion}"
 
 	compile "org.springframework:spring-context:${springVersion}"

@@ -1,10 +1,15 @@
 package com.kii.beehive.business;
 
+import java.io.IOException;
+
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.beehive.portal.manager.SimpleThingTriggerManager;
 import com.kii.beehive.business.service.ServiceExtensionDeployService;
@@ -22,6 +27,7 @@ import com.kii.beehive.portal.manager.ThingTagManager;
 import com.kii.beehive.portal.store.entity.trigger.SimpleTriggerRecord;
 import com.kii.beehive.portal.store.entity.trigger.TagSelector;
 import com.kii.beehive.portal.store.entity.trigger.TargetAction;
+import com.kii.beehive.portal.store.entity.trigger.TriggerRecord;
 import com.kii.beehive.portal.store.entity.trigger.TriggerTarget;
 import com.kii.extension.sdk.entity.thingif.Action;
 import com.kii.extension.sdk.entity.thingif.OnBoardingParam;
@@ -43,6 +49,8 @@ public class TestTriggerCreate extends TestTemplate {
 
 //	@Autowired
 //	private ExtensionCodeDao extensionDao;
+
+
 
 
 	@Autowired
@@ -67,6 +75,9 @@ public class TestTriggerCreate extends TestTemplate {
 
 	@Autowired
 	private TagThingRelationDao relationDao;
+
+	@Autowired
+	private ObjectMapper mapper;
 
 	private Long[] thingIDs={575l,576l,577l,578l,579l,580l,581l,582l,583l,584l};
 
@@ -170,7 +181,7 @@ public class TestTriggerCreate extends TestTemplate {
 	}
 
 	@Test
-	public void testTriggerCreate(){
+	public void testTriggerCreate() throws IOException {
 
 
 		SimpleTriggerRecord record=new SimpleTriggerRecord();
@@ -178,7 +189,7 @@ public class TestTriggerCreate extends TestTemplate {
 		record.setThingID(thingIDs[0]);
 
 		StatePredicate preidcate=new StatePredicate();
-		Condition condition= ConditionBuilder.newCondition().great("foo",0).getConditionInstance();
+		Condition condition= ConditionBuilder.andCondition().less("bar",100).great("foo",0).getConditionInstance();
 		preidcate.setCondition(condition);
 		preidcate.setTriggersWhen(TriggerWhen.CONDITION_TRUE);
 
@@ -192,7 +203,16 @@ public class TestTriggerCreate extends TestTemplate {
 		TriggerTarget target2=getServiceCodeTarget();
 		record.addTarget(target2);
 
-		simpleMang.createSimpleTrigger(record);
+
+		String json=mapper.writeValueAsString(record);
+
+		log.info(json);
+
+		TriggerRecord  simple=mapper.readValue(json,TriggerRecord.class);
+
+		SimpleTriggerRecord s=(SimpleTriggerRecord)simple;
+
+//		simpleMang.createSimpleTrigger(record);
 
 	}
 
@@ -223,6 +243,7 @@ public class TestTriggerCreate extends TestTemplate {
 
 		TargetAction action = getTargetAction("powerOn","power",true);
 		target.setCommand(action);
+		target.setSelector(selector);
 		return target;
 	}
 

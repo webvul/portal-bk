@@ -14,6 +14,8 @@
 
     <bean class="com.kii.extension.factory.KiiCloudSDKConfig" />
 
+    <bean class="com.kii.beehive.portal.aop.UserInfoBindAspect" />
+
     <bean class="com.kii.extension.factory.DevPortalBindFactory" >
         <property name="devPortalUrl" value="https://development-beehivecn3-developer.internal.kii.com" />
         <property name="userName"  value="steven.jiang@kii.com" />

@@ -1,5 +1,6 @@
 package com.kii.beehive.portal.aop;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.aspectj.lang.JoinPoint;
@@ -10,48 +11,57 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.kii.beehive.business.helper.PortalTokenService;
 import com.kii.beehive.portal.store.entity.PortalEntity;
+import com.kii.beehive.portal.util.AuthInfoStore;
 
 @Aspect
 public class ContextAspect {
 
-	@Autowired
-	private PortalTokenService tokenService;
-
-	@Pointcut("execution (*  com.kii.extension.sdk.service.AbstractDataAccess+.add*(..) )")
-	private void bindDataService(){
+	@Pointcut("execution (* com.kii.extension.sdk.service.DataService.createObject(..)  ) ")
+	private void commDataAdd(){
 
 	}
 
-	@Before("bindDataService()")
-	public void beforeCallCreateFun(JoinPoint joinPoint){
+
+	@Pointcut("execution (* com.kii.extension.sdk.service.DataService.update*(..)  ) ")
+	private void commDataUpdate(){
+
+	}
+
+	@Pointcut("execution (* com.kii.extension.sdk.service.DataService.fullUpdate*(..)  ) ")
+	private void commDataFullUpdate(){
+
+	}
+
+	@Before("commDataAdd()")
+	public void beforeDataAdd(JoinPoint joinPoint){
 
 
-		Object[] args=joinPoint.getArgs();
+		for(Object obj:joinPoint.getArgs()){
 
-		for(Object arg:args){
+			if(obj instanceof PortalEntity){
 
-			if(arg instanceof PortalEntity){
-				((PortalEntity)arg).setCreateBy(tokenService.getUserDescription());
-				((PortalEntity)arg).setModifyBy(tokenService.getUserDescription());
+				((PortalEntity)obj).setCreateBy(AuthInfoStore.getUserID());
+				((PortalEntity)obj).setModifyBy(AuthInfoStore.getUserID());
+				break;
 			}
-		}
-
+		};
 	}
 
-	@Before("bindDataService()")
-	public void beforeCallUpdateFun(JoinPoint joinPoint){
+	@Before(" commDataUpdate() || commDataFullUpdate() ")
+	public void beforeDataUpdate(JoinPoint joinPoint){
 
-		Object[] args=joinPoint.getArgs();
 
-		for(Object arg:args){
+		for(Object obj:joinPoint.getArgs()){
 
-			if(arg instanceof PortalEntity){
-				((PortalEntity)arg).setModifyBy(tokenService.getUserDescription());
-			}else if(arg instanceof Map){
-				((Map)arg).put("modifyBy",tokenService.getUserDescription());
+			if(obj instanceof PortalEntity){
+				((PortalEntity)obj).setModifyBy(AuthInfoStore.getUserID());
+				break;
+			}else if(obj instanceof Map){
+				Map map=new HashMap();
+				map.putAll((Map)obj);
+				map.put("modifyBy",AuthInfoStore.getUserID());
+				break;
 			}
-		}
-
+		};
 	}
-
 }

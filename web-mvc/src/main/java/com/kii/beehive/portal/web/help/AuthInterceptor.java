@@ -9,6 +9,7 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import com.kii.beehive.portal.util.AuthInfoStore;
 import com.kii.beehive.portal.jdbc.entity.AuthInfo;
 import com.kii.beehive.portal.manager.AuthManager;
 import com.kii.beehive.portal.web.constant.Constants;
@@ -23,6 +24,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
     @Autowired
     private AuthManager authManager;
+
 
     /**
      * validate the token from header "accessToken"
@@ -61,6 +63,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
         if (authInfo == null) {
             throw new UnauthorizedAccessException();
         }
+		AuthInfoStore.setAuthInfo(authInfo);
         
         //check Auth
         String url = request.getMethod()+" "+request.getRequestURI().replaceAll(Constants.DOMAIN_URL, "");
@@ -80,6 +83,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         authManager.unbindUserToken();
 
-        super.afterCompletion(request, response, handler, ex);
+		AuthInfoStore.clear();
+		super.afterCompletion(request, response, handler, ex);
     }
 }

@@ -28,6 +28,8 @@
 
     <bean id="appBindAspect"  class="com.kii.extension.sdk.aop.AppBindAspect" />
 
+
+
     <bean class="com.kii.extension.sdk.service.DevPortalService" >
         <property name="devPortalUrl"  value="${beehive.kiicloud.dev-portal.url}" />
     </bean>
