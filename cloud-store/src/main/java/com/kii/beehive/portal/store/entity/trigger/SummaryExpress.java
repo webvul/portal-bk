@@ -53,4 +53,6 @@ public class SummaryExpress {
 	public void setSummaryAlias(String summaryAlias) {
 		this.summaryAlias = summaryAlias;
 	}
+
+
 }
