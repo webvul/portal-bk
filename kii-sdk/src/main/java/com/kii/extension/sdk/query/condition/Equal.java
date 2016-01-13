@@ -9,6 +9,9 @@ public class Equal extends SimpleCondition{
 		return ConditionType.eq;
 	}
 
+	public Equal(){
+
+	}
 	
 	public Equal(String field,Object val){
 		setField(field);
