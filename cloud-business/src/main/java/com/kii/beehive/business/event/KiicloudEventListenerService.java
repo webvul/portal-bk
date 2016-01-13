@@ -22,6 +22,7 @@ public class KiicloudEventListenerService {
 	public static final String REFRESH_SUMMARY_GROUP="refreshSummaryGroup";
 
 	public static final String REFRESH_THING_GROUP="refreshThingGroup";
+	public static final String GROUP_NAME = "groupName";
 
 	@Autowired
 	private EventListenerDao  eventListenerDao;
@@ -49,7 +50,7 @@ public class KiicloudEventListenerService {
 
 		EventListener  listener=new EventListener();
 		listener.setTargetKey(triggerID);
-		listener.addCustomValue("groupName",name);
+		listener.addCustomValue(GROUP_NAME,name);
 
 		listener.addBindKeys(tagNames);
 		listener.setEnable(true);

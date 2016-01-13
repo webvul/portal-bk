@@ -11,6 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import com.kii.beehive.business.event.KiiCloudEventBus;
+import com.kii.beehive.business.event.process.ComputeSummaryStateProcess;
+import com.kii.beehive.business.event.process.ModifySummaryListenerProcess;
+import com.kii.beehive.business.event.process.RefreshThingGroupProcess;
 import com.kii.beehive.portal.manager.ThingStateSummaryManager;
 import com.kii.beehive.portal.store.entity.trigger.SummaryExpress;
 import com.kii.beehive.portal.store.entity.trigger.SummaryFunctionType;
@@ -24,6 +28,7 @@ import com.kii.beehive.portal.store.entity.trigger.TriggerTarget;
 import com.kii.extension.sdk.entity.thingif.Action;
 import com.kii.extension.sdk.entity.thingif.StatePredicate;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
+import com.kii.extension.sdk.entity.thingif.ThingStatus;
 import com.kii.extension.sdk.entity.thingif.TriggerWhen;
 import com.kii.extension.sdk.query.Condition;
 import com.kii.extension.sdk.query.ConditionBuilder;
@@ -43,6 +48,35 @@ public class TestSummaryTrigger extends TestTemplate {
 	private Long[] tags={311l,312l,313l,314l,315l};
 
 	private String[] tagNames={"Custom-name0","Custom-name1","Custom-name2","Custom-name3","Custom-name4"};
+
+
+	@Autowired
+	private KiiCloudEventBus bus;
+
+	@Autowired
+	private ModifySummaryListenerProcess  modifyProcess;
+
+
+	private String triggerID="b1f01480-b9d2-11e5-8554-00163e007aba";
+
+	@Test
+	public  void modifyState(){
+
+
+		String[] thingIDs={
+				"b8ca23d0-th.f83120e36100-a83b-5e11-70ea-07ea6737",
+				"b8ca23d0-th.f83120e36100-a83b-5e11-70ea-04b553f6"
+		};
+
+
+		ThingStatus status=new ThingStatus();
+		status.setField("foo",100);
+		status.setField("bar",20);
+
+		for(String thingID:thingIDs) {
+			bus.onStatusUploadFire(thingID, status);
+		}
+	}
 
 
 

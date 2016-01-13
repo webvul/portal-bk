@@ -22,7 +22,7 @@ public class ModifySummaryListenerProcess implements BeehiveEventProcess {
 	@Override
 	public void onEventFire(String eventKey, EventParam param,Map<String,Object> customer) {
 
-		String groupID= (String) customer.get("groupID");
+		String groupID= (String) customer.get(KiicloudEventListenerService.GROUP_NAME);
 
 		summaryService.onTagChanged(eventKey,groupID);
 	}

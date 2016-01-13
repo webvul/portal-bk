@@ -26,7 +26,7 @@ public class ComputeSummaryStateProcess implements BeehiveEventProcess {
 
 		ThingStatus  status= (ThingStatus) param.getParam("status");
 
-		String groupID= (String) customer.get("groupID");
+		String groupID= (String) customer.get(KiicloudEventListenerService.GROUP_NAME);
 
 		summaryService.computeStateSummary(summaryID,groupID,status);
 
