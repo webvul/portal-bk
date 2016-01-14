@@ -18,26 +18,28 @@ public class GroupUserRelationDao extends BaseDao<GroupUserRelation> {
 	public static final String KEY = "id";
 	
 	public void delete(String userID, Long userGroupID){
-		String sql = "DELETE FROM " + this.getTableName() + " WHERE ";
-		
-		StringBuilder where = new StringBuilder();
-		List<Object> params = new ArrayList<Object>();
-		if(!Strings.isBlank(userID)){
-			where.append(GroupUserRelation.USER_ID + " = ? "); 
-			params.add(userID);
-		}
-		
-		if(userGroupID != null){
-			if(where.length() > 0){
-				where.append(" AND ");
+		if(!Strings.isBlank(userID) || userGroupID != null){
+			String sql = "DELETE FROM " + this.getTableName() + " WHERE ";
+			
+			StringBuilder where = new StringBuilder();
+			List<Object> params = new ArrayList<Object>();
+			if(!Strings.isBlank(userID)){
+				where.append(GroupUserRelation.USER_ID + " = ? "); 
+				params.add(userID);
 			}
-			where.append(GroupUserRelation.USER_GROUP_ID+" = ? ");
-			params.add(userGroupID);
+			
+			if(userGroupID != null){
+				if(where.length() > 0){
+					where.append(" AND ");
+				}
+				where.append(GroupUserRelation.USER_GROUP_ID+" = ? ");
+				params.add(userGroupID);
+			}
+			Object[] paramArr = new Object[params.size()];
+			paramArr = params.toArray(paramArr);
+			
+	        jdbcTemplate.update(sql+where.toString(),paramArr);
 		}
-		Object[] paramArr = new Object[params.size()];
-		paramArr = params.toArray(paramArr);
-		
-        jdbcTemplate.update(sql+where.toString(),paramArr);
 	}
 
 	@Override
@@ -84,13 +86,15 @@ public class GroupUserRelationDao extends BaseDao<GroupUserRelation> {
 		return super.findBySingleField(GroupUserRelation.USER_ID, userID);
 	}
 	
-	public GroupUserRelation findByUserIDAndUserGroupID(String userID, Long userGroupID) {  
-		String sql = "SELECT * FROM " + this.getTableName() + " WHERE "+ GroupUserRelation.USER_ID +"=? AND "+ GroupUserRelation.USER_GROUP_ID + "=?";
-        List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql, userID,userGroupID);
-        List<GroupUserRelation> list = mapToList(rows);
-        if(list.size() > 0){
-        	return list.get(0);
-        }
+	public GroupUserRelation findByUserIDAndUserGroupID(String userID, Long userGroupID) {
+		if(!Strings.isBlank(userID) && userGroupID!=null){
+			String sql = "SELECT * FROM " + this.getTableName() + " WHERE "+ GroupUserRelation.USER_ID +"=? AND "+ GroupUserRelation.USER_GROUP_ID + "=?";
+	        List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql, userID,userGroupID);
+	        List<GroupUserRelation> list = mapToList(rows);
+	        if(list.size() > 0){
+	        	return list.get(0);
+	        }
+		}
         return null;
     }
 }
