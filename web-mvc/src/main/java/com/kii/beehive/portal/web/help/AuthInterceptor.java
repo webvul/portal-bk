@@ -16,7 +16,6 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.kii.beehive.business.helper.OpLogTools;
 import com.kii.beehive.portal.auth.AuthInfoStore;
-import com.kii.beehive.portal.jdbc.entity.AuthInfo;
 import com.kii.beehive.portal.manager.AppInfoManager;
 import com.kii.beehive.portal.manager.AuthManager;
 import com.kii.beehive.portal.service.DeviceSupplierDao;
@@ -25,15 +24,16 @@ import com.kii.beehive.portal.store.entity.DeviceSupplier;
 import com.kii.beehive.portal.web.constant.CallbackNames;
 import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.beehive.portal.web.exception.BeehiveUnAuthorizedException;
-import com.kii.extension.sdk.exception.UnauthorizedAccessException;
 
 public class AuthInterceptor extends HandlerInterceptorAdapter {
 
     /**
      * @deprecated only for testing, so should not appear in any source code except for junit
      */
-    public static final String SUPER_TOKEN = "super_token";
-	public static final String USER_ID = "211102";
+	private static final String USER_ID = "211102";
+
+//	private  static final String AUTH_HEADER = "Authorization";
+
 
 	private Logger log= LoggerFactory.getLogger(AuthInterceptor.class);
 
@@ -80,8 +80,9 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 		String subUrl=url.substring(idx+4).trim();
 
 		List<String> list=new LinkedList<>();
+
 		list.add(subUrl);
-		list.set(1,auth);
+		list.add(auth);
 
 		try {
 
@@ -97,9 +98,9 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
 
 			// TODO this checking is for testing only, must remove after testing complete
-			if (SUPER_TOKEN.equals(token)&&(!"production".equals(env))) {
+			if (Constants.SUPER_TOKEN.equals(token)&&(!"production".equals(env))) {
 
-				authManager.saveToken(USER_ID, token);
+//				authManager.saveToken(USER_ID, token);
 
 				AuthInfoStore.setAuthInfo("211102");
 
@@ -141,9 +142,9 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 				}
 			}
 
-			list.set(2,"loginSuccess");
+			list.add("loginSuccess");
 		}catch(BeehiveUnAuthorizedException e){
-			list.set(2,"UnauthorizedAccess");
+			list.add("UnauthorizedAccess");
 			logTool.write(list);
 			throw e;
 		}

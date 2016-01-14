@@ -43,7 +43,7 @@ public class TestUserGroupController extends WebTestTemplate {
 
     private List<String> userGroupNameListForTest = new ArrayList<>();
 
-    private String tokenForTest = "Bearer " + AuthInterceptor.SUPER_TOKEN;
+    private String tokenForTest = "Bearer " + Constants.SUPER_TOKEN;
 
     @Before
     public void before() {

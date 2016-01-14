@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.http.auth.AUTH;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,13 +29,14 @@ import com.kii.beehive.portal.service.ArchiveBeehiveUserDao;
 import com.kii.beehive.portal.service.BeehiveUserDao;
 import com.kii.beehive.portal.service.KiiUserSyncDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
-import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.beehive.portal.web.controller.UserController;
 import com.kii.beehive.portal.web.help.AuthInterceptor;
 import com.kii.extension.sdk.exception.UserAlreadyExistsException;
 
 
 public class TestUserController extends WebTestTemplate{
+
+	private  static final String AUTH_HEADER = "Authorization";
 
 	@Autowired
 	private UserController controller;
@@ -60,7 +62,7 @@ public class TestUserController extends WebTestTemplate{
 
 	private String userGroupNameForTest;
 
-	private String tokenForTest = "Bearer " + AuthInterceptor.SUPER_TOKEN;
+	private String tokenForTest = "Bearer super_token";
 
 	@Before
 	public void before() {
@@ -172,7 +174,7 @@ public class TestUserController extends WebTestTemplate{
 				.contentType(MediaType.APPLICATION_JSON)
 				.characterEncoding("UTF-8")
 				.header("Authorization", "Bearer d31032a0-8ebf-11e5-9560-00163e02138f")
-				.header(Constants.ACCESS_TOKEN, tokenForTest)
+				.header(AUTH_HEADER, tokenForTest)
 				)
 				.andExpect(status().isOk())
 				.andReturn().getResponse().getContentAsString();
@@ -217,7 +219,7 @@ public class TestUserController extends WebTestTemplate{
 						.contentType(MediaType.APPLICATION_JSON)
 						.characterEncoding("UTF-8")
 						.header("Authorization", "Bearer d31032a0-8ebf-11e5-9560-00163e02138f")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
+						.header(AUTH_HEADER, tokenForTest)
 		)
 				.andExpect(status().isOk())
 				.andReturn().getResponse().getContentAsString();
@@ -233,7 +235,7 @@ public class TestUserController extends WebTestTemplate{
 						.contentType(MediaType.APPLICATION_JSON)
 						.characterEncoding("UTF-8")
 						.header("Authorization", "Bearer d31032a0-8ebf-11e5-9560-00163e02138f")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
+						.header(AUTH_HEADER, tokenForTest)
 		)
 				.andExpect(status().isConflict())
 				.andReturn().getResponse().getContentAsString();
@@ -249,7 +251,7 @@ public class TestUserController extends WebTestTemplate{
 						.contentType(MediaType.APPLICATION_JSON)
 						.characterEncoding("UTF-8")
 						.header("Authorization", "Bearer d31032a0-8ebf-11e5-9560-00163e02138f")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
+						.header(AUTH_HEADER, tokenForTest)
 		)
 				.andExpect(status().isBadRequest())
 				.andReturn().getResponse().getContentAsString();
@@ -271,7 +273,7 @@ public class TestUserController extends WebTestTemplate{
 						.contentType(MediaType.APPLICATION_JSON)
 						.characterEncoding("UTF-8")
 						.header("Authorization", "Bearer d31032a0-8ebf-11e5-9560-00163e02138f")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
+						.header(AUTH_HEADER, tokenForTest)
 		)
 				.andExpect(status().isBadRequest())
 				.andReturn().getResponse().getContentAsString();
@@ -293,7 +295,7 @@ public class TestUserController extends WebTestTemplate{
 						.contentType(MediaType.APPLICATION_JSON)
 						.characterEncoding("UTF-8")
 						.header("Authorization", "Bearer d31032a0-8ebf-11e5-9560-00163e02138f")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
+						.header(AUTH_HEADER, tokenForTest)
 		)
 				.andExpect(status().isBadRequest())
 				.andReturn().getResponse().getContentAsString();
@@ -315,7 +317,7 @@ public class TestUserController extends WebTestTemplate{
 						.contentType(MediaType.APPLICATION_JSON)
 						.characterEncoding("UTF-8")
 						.header("Authorization", "Bearer d31032a0-8ebf-11e5-9560-00163e02138f")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
+						.header(AUTH_HEADER, tokenForTest)
 		)
 				.andExpect(status().isBadRequest())
 				.andReturn().getResponse().getContentAsString();
@@ -352,7 +354,7 @@ public class TestUserController extends WebTestTemplate{
 						.contentType(MediaType.APPLICATION_JSON)
 						.characterEncoding("UTF-8")
 						.header("Authorization", "Bearer d31032a0-8ebf-11e5-9560-00163e02138f")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
+						.header(AUTH_HEADER, tokenForTest)
 		)
 				.andExpect(status().isOk())
 				.andReturn().getResponse().getContentAsString();
@@ -383,7 +385,7 @@ public class TestUserController extends WebTestTemplate{
 						.contentType(MediaType.APPLICATION_JSON)
 						.characterEncoding("UTF-8")
 						.header("Authorization", "Bearer d31032a0-8ebf-11e5-9560-00163e02138f")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
+						.header(AUTH_HEADER, tokenForTest)
 		)
 				.andExpect(status().isOk())
 				.andReturn().getResponse().getContentAsString();
@@ -401,7 +403,7 @@ public class TestUserController extends WebTestTemplate{
 						.contentType(MediaType.APPLICATION_JSON)
 						.characterEncoding("UTF-8")
 						.header("Authorization", "Bearer d31032a0-8ebf-11e5-9560-00163e02138f")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
+						.header(AUTH_HEADER, tokenForTest)
 		)
 				.andExpect(status().isOk())
 				.andReturn().getResponse().getContentAsString();
@@ -438,7 +440,7 @@ public class TestUserController extends WebTestTemplate{
 						.contentType(MediaType.APPLICATION_JSON)
 						.characterEncoding("UTF-8")
 						.header("Authorization", "Bearer d31032a0-8ebf-11e5-9560-00163e02138f")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
+						.header(AUTH_HEADER, tokenForTest)
 		)
 				.andExpect(status().isNotFound())
 				.andReturn().getResponse().getContentAsString();
@@ -466,7 +468,7 @@ public class TestUserController extends WebTestTemplate{
 						.contentType(MediaType.APPLICATION_JSON)
 						.characterEncoding("UTF-8")
 						.header("Authorization", "Bearer d31032a0-8ebf-11e5-9560-00163e02138f")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
+						.header(AUTH_HEADER, tokenForTest)
 		)
 				.andExpect(status().isOk())
 				.andReturn().getResponse().getContentAsString();
@@ -492,7 +494,7 @@ public class TestUserController extends WebTestTemplate{
 				post("/users/simplequery").content(ctx)
 						.contentType("application/json")
 						.header("Authorization", "Bearer d31032a0-8ebf-11e5-9560-00163e02138f")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
+						.header(AUTH_HEADER, tokenForTest)
 		)
 				.andExpect(status().isOk())
 				.andReturn().getResponse().getContentAsString();
@@ -535,7 +537,7 @@ public class TestUserController extends WebTestTemplate{
 						.contentType(MediaType.APPLICATION_JSON)
 						.characterEncoding("UTF-8")
 						.header("Authorization", "Bearer d31032a0-8ebf-11e5-9560-00163e02138f")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
+						.header(AUTH_HEADER, tokenForTest)
 		)
 				.andExpect(status().isNotFound())
 				.andReturn().getResponse().getContentAsString();
@@ -561,7 +563,7 @@ public class TestUserController extends WebTestTemplate{
 				post("/users/simplequery").content(ctx)
 						.contentType("application/json")
 						.header("Authorization", "Bearer d31032a0-8ebf-11e5-9560-00163e02138f")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
+						.header(AUTH_HEADER, tokenForTest)
 		)
 				.andExpect(status().isOk())
 				.andReturn().getResponse().getContentAsString();
@@ -577,7 +579,7 @@ public class TestUserController extends WebTestTemplate{
 		result=this.mockMvc.perform(
 				delete("/users/" + userIDForTest)
 						.header("Authorization", "Bearer d31032a0-8ebf-11e5-9560-00163e02138f")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
+						.header(AUTH_HEADER, tokenForTest)
 		)
 				.andExpect(status().isOk())
 				.andReturn().getResponse().getContentAsString();
@@ -596,7 +598,7 @@ public class TestUserController extends WebTestTemplate{
 				post("/users/simplequery").content(ctx)
 						.contentType("application/json")
 						.header("Authorization", "Bearer d31032a0-8ebf-11e5-9560-00163e02138f")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
+						.header(AUTH_HEADER, tokenForTest)
 		)
 				.andExpect(status().isOk())
 				.andReturn().getResponse().getContentAsString();
@@ -621,7 +623,7 @@ public class TestUserController extends WebTestTemplate{
 				post("/users/simplequery").content(ctx)
 						.contentType("application/json")
 						.header("Authorization", "Bearer d31032a0-8ebf-11e5-9560-00163e02138f")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
+						.header(AUTH_HEADER, tokenForTest)
 		)
 				.andExpect(status().isOk())
 				.andReturn().getResponse().getContentAsString();
@@ -637,7 +639,7 @@ public class TestUserController extends WebTestTemplate{
 		result=this.mockMvc.perform(
 				delete("/users/" + "some_non_existing_userid")
 						.header("Authorization", "Bearer d31032a0-8ebf-11e5-9560-00163e02138f")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
+						.header(AUTH_HEADER, tokenForTest)
 		)
 				.andExpect(status().isNotFound())
 				.andReturn().getResponse().getContentAsString();
@@ -656,7 +658,7 @@ public class TestUserController extends WebTestTemplate{
 				post("/users/simplequery").content(ctx)
 						.contentType("application/json")
 						.header("Authorization", "Bearer d31032a0-8ebf-11e5-9560-00163e02138f")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
+						.header(AUTH_HEADER, tokenForTest)
 		)
 				.andExpect(status().isOk())
 				.andReturn().getResponse().getContentAsString();
@@ -682,7 +684,7 @@ public class TestUserController extends WebTestTemplate{
 				post("/users/simplequery").content(ctx)
 						.contentType("application/json")
 						.header("Authorization", "Bearer d31032a0-8ebf-11e5-9560-00163e02138f")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
+						.header(AUTH_HEADER, tokenForTest)
 		)
 				.andExpect(status().isOk())
 				.andReturn().getResponse().getContentAsString();
@@ -703,7 +705,7 @@ public class TestUserController extends WebTestTemplate{
 				post("/users/simplequery").content(ctx)
 						.contentType("application/json")
 						.header("Authorization", "Bearer d31032a0-8ebf-11e5-9560-00163e02138f")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
+						.header(AUTH_HEADER, tokenForTest)
 		)
 				.andExpect(status().isOk())
 				.andReturn().getResponse().getContentAsString();
@@ -724,7 +726,7 @@ public class TestUserController extends WebTestTemplate{
 				post("/users/simplequery").content(ctx)
 						.contentType("application/json")
 						.header("Authorization", "Bearer d31032a0-8ebf-11e5-9560-00163e02138f")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
+						.header(AUTH_HEADER, tokenForTest)
 		)
 				.andExpect(status().isOk())
 				.andReturn().getResponse().getContentAsString();
@@ -744,7 +746,7 @@ public class TestUserController extends WebTestTemplate{
 				post("/users/simplequery").content(ctx)
 						.contentType("application/json")
 						.header("Authorization", "Bearer d31032a0-8ebf-11e5-9560-00163e02138f")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
+						.header(AUTH_HEADER, tokenForTest)
 		)
 				.andExpect(status().isOk())
 				.andReturn().getResponse().getContentAsString();
@@ -762,7 +764,7 @@ public class TestUserController extends WebTestTemplate{
 				post("/users/simplequery").content(ctx)
 						.contentType("application/json")
 						.header("Authorization", "Bearer d31032a0-8ebf-11e5-9560-00163e02138f")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
+						.header(AUTH_HEADER, tokenForTest)
 		)
 				.andExpect(status().isOk())
 				.andReturn().getResponse().getContentAsString();
@@ -805,7 +807,7 @@ public class TestUserController extends WebTestTemplate{
 				post("/users/simplequery").content("{}")
 						.contentType("application/json")
 						.header("Authorization", "Bearer d31032a0-8ebf-11e5-9560-00163e02138f")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
+						.header(AUTH_HEADER, tokenForTest)
 		)
 				.andExpect(status().isOk())
 				.andReturn().getResponse().getContentAsString();

@@ -63,7 +63,7 @@ public class TestThingControll extends WebTestTemplate{
 
 	private String[] displayNames = new String[]{"A", "B"};
 
-	private String tokenForTest = "Bearer " + AuthInterceptor.SUPER_TOKEN;
+	private String tokenForTest = "Bearer " + Constants.SUPER_TOKEN;
 
 	@Before
 	public void before() {
