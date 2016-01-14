@@ -7,7 +7,6 @@ import java.util.Map;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Repository;
 
-import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
 import com.kii.beehive.portal.jdbc.entity.TagType;
@@ -59,9 +58,9 @@ public class TagThingRelationDao extends BaseDao<TagThingRelation> {
 		List<TagThingRelation> list = new ArrayList<TagThingRelation>();
 		for (Map<String, Object> row : rows) {
 			TagThingRelation tagThingRelation = new TagThingRelation();
-			tagThingRelation.setId((int)row.get(TagThingRelation.ID));
-			tagThingRelation.setTagID((int)row.get(TagThingRelation.TAG_ID));
-			tagThingRelation.setThingID((int)row.get(TagThingRelation.THING_ID));
+			tagThingRelation.setId(Long.valueOf((Integer)row.get(TagThingRelation.ID)));
+			tagThingRelation.setTagID(Long.valueOf((Integer)row.get(TagThingRelation.TAG_ID)));
+			tagThingRelation.setThingID(Long.valueOf((Integer)row.get(TagThingRelation.THING_ID)));
 			list.add(tagThingRelation);
 		}
 		return list;

@@ -1,5 +1,13 @@
 package com.kii.beehive.portal.web.controller;
 
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertNotNull;
+import static junit.framework.TestCase.assertNull;
+import static junit.framework.TestCase.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,13 +22,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kii.beehive.portal.service.BeehiveUserDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.WebTestTemplate;
-import com.kii.beehive.portal.web.help.AuthInterceptor;
+import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.extension.sdk.entity.KiiUser;
-
-import static junit.framework.TestCase.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Created by USER on 12/1/15.
@@ -284,7 +287,7 @@ public class TestAuthController extends WebTestTemplate {
                 get("/tags/locations/" + "floor1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
-                        .header(AuthInterceptor.ACCESS_TOKEN, "Bearer " + accessToken)
+                        .header(Constants.ACCESS_TOKEN, "Bearer " + accessToken)
         )
                 .andExpect(status().isOk());
 
@@ -296,7 +299,7 @@ public class TestAuthController extends WebTestTemplate {
                 get("/tags/locations/" + "floor1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
-                        .header(AuthInterceptor.ACCESS_TOKEN, "Bearer " + accessToken)
+                        .header(Constants.ACCESS_TOKEN, "Bearer " + accessToken)
         )
                 .andExpect(status().isOk());
 
@@ -308,7 +311,7 @@ public class TestAuthController extends WebTestTemplate {
                 get("/tags/locations/" + "floor1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
-                        .header(AuthInterceptor.ACCESS_TOKEN, "Bearer " + accessToken)
+                        .header(Constants.ACCESS_TOKEN, "Bearer " + accessToken)
         )
                 .andExpect(status().isUnauthorized());
 
@@ -427,7 +430,7 @@ public class TestAuthController extends WebTestTemplate {
     }
 
     @Test
-    public void testAuthInterceptorException() throws Exception{
+    public void testConstantsException() throws Exception{
 
         /**
          * test user API
@@ -462,7 +465,7 @@ public class TestAuthController extends WebTestTemplate {
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
                         .header("Authorization", "Bearer d31032a0-8ebf-11e5-9560-00163e02138f")
-                        .header(AuthInterceptor.ACCESS_TOKEN, "Bearer some_wrong_token")
+                        .header(Constants.ACCESS_TOKEN, "Bearer some_wrong_token")
         )
                 .andExpect(status().isUnauthorized());
 
@@ -488,7 +491,7 @@ public class TestAuthController extends WebTestTemplate {
                 post("/usergroup/").content(ctx)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
-                        .header(AuthInterceptor.ACCESS_TOKEN, "Bearer some_wrong_token")
+                        .header(Constants.ACCESS_TOKEN, "Bearer some_wrong_token")
         )
                 .andExpect(status().isUnauthorized())
                 .andReturn().getResponse().getContentAsString();
@@ -518,7 +521,7 @@ public class TestAuthController extends WebTestTemplate {
                 post("/things").content(ctx)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
-                        .header(AuthInterceptor.ACCESS_TOKEN, "Bearer some_wrong_token")
+                        .header(Constants.ACCESS_TOKEN, "Bearer some_wrong_token")
         )
                 .andExpect(status().isUnauthorized());
 
@@ -544,7 +547,7 @@ public class TestAuthController extends WebTestTemplate {
                 post("/tags/custom").content(ctx)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
-                        .header(AuthInterceptor.ACCESS_TOKEN, "Bearer some_wrong_token")
+                        .header(Constants.ACCESS_TOKEN, "Bearer some_wrong_token")
         )
                 .andExpect(status().isUnauthorized());
 
@@ -570,7 +573,7 @@ public class TestAuthController extends WebTestTemplate {
                 post("/oauth2/changepassword").content(ctx)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
-                        .header(AuthInterceptor.ACCESS_TOKEN, "Bearer some_wrong_token")
+                        .header(Constants.ACCESS_TOKEN, "Bearer some_wrong_token")
         )
                 .andExpect(status().isUnauthorized());
 

@@ -103,7 +103,7 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 
 	public void updateState(String state,String fullKiiThingID){
 
-		super.jdbcTemplate.update("update global_thing set state = ? where full_kii_thing_id = ? ",state,fullKiiThingID);
+		super.doUpdate("update global_thing set status = ? where full_kii_thing_id = ? ",state,fullKiiThingID);
 
 	}
 
@@ -127,7 +127,7 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 	
 	public void updateKiiThingID(String vendorID, String fullKiiThingID) {
 
-		super.jdbcTemplate.update("update global_thing set full_kii_thing_id = ? where vendor_thing_id = ? ",fullKiiThingID,vendorID);
+		super.doUpdate("update global_thing set full_kii_thing_id = ? where vendor_thing_id = ? ",fullKiiThingID,vendorID);
 
 
 	}

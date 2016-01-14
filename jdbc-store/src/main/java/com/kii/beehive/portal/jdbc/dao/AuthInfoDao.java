@@ -55,7 +55,7 @@ public class AuthInfoDao extends BaseDao<AuthInfo> {
 		List<AuthInfo> list = new ArrayList<AuthInfo>();
 		for (Map<String, Object> row : rows) {
 			AuthInfo userInfo = new AuthInfo();
-			userInfo.setId((Integer)row.get(AuthInfo.ID));
+			userInfo.setId(new Long((Integer)row.get(AuthInfo.ID)));
 			userInfo.setUserID((String)row.get(AuthInfo.USER_ID));
 			userInfo.setToken((String)row.get(AuthInfo.TOKEN));
 			userInfo.setExpireTime((Date) row.get(AuthInfo.EXPIRE_TIME));

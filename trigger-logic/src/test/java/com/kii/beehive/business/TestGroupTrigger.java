@@ -1,5 +1,8 @@
 package com.kii.beehive.business;
 
+import static junit.framework.TestCase.assertTrue;
+
+import java.io.IOException;
 import java.util.List;
 
 import org.junit.Test;
@@ -20,6 +23,7 @@ import com.kii.beehive.portal.store.entity.trigger.GroupTriggerRecord;
 import com.kii.beehive.portal.store.entity.trigger.TagSelector;
 import com.kii.beehive.portal.store.entity.trigger.TargetAction;
 import com.kii.beehive.portal.store.entity.trigger.TriggerGroupPolicy;
+import com.kii.beehive.portal.store.entity.trigger.TriggerRecord;
 import com.kii.beehive.portal.store.entity.trigger.TriggerSource;
 import com.kii.beehive.portal.store.entity.trigger.TriggerTarget;
 import com.kii.extension.sdk.entity.thingif.Action;
@@ -44,7 +48,8 @@ public class TestGroupTrigger extends TestTemplate{
 
 	private String[] tagNames={"Custom-name0","Custom-name1","Custom-name2","Custom-name3","Custom-name4"};
 
-
+	@Autowired
+	private ObjectMapper mapper;
 
 	@Autowired
 	private ThingIFInAppService thingIFService;
@@ -111,7 +116,7 @@ public class TestGroupTrigger extends TestTemplate{
 	}
 
 	@Test
-	public void createTrigger(){
+	public void createTrigger() throws IOException {
 		
 		GroupTriggerRecord record=new GroupTriggerRecord();
 		record.addTarget(getTagCmdTarget());
@@ -137,7 +142,14 @@ public class TestGroupTrigger extends TestTemplate{
 		source.setSelector(selector);
 		record.setSource(source);
 
-		groupMang.createThingGroup(record);
+		log.info(mapper.writeValueAsString(record));
+
+		TriggerRecord rec=mapper.readValue(mapper.writeValueAsBytes(record),TriggerRecord.class);
+
+		assertTrue(rec instanceof GroupTriggerRecord);
+
+
+//		groupMang.createThingGroup(record);
 
 
 	}

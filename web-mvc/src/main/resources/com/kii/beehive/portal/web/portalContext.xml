@@ -32,8 +32,13 @@
     <cache:annotation-driven />
 
     <bean id="cacheManager"
-          class="org.springframework.cache.guava.GuavaCacheManager"/>
+          class="org.springframework.cache.ehcache.EhCacheCacheManager" >
+        <property name="cacheManager" ref="ehcache" />
+    </bean>
 
+    <bean id="ehcache" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean" >
+        <property name="configLocation" value="classpath:com/kii/beehive/config/ehcache.xml" />
+    </bean>
 
     <!-- task  -->
 
@@ -44,8 +49,9 @@
 
     <!-- aop -->
     <bean id="appBindAspect"  class="com.kii.extension.sdk.aop.AppBindAspect" />
-
+    <bean class="com.kii.beehive.portal.aop.ContextAspect" />
     <bean id="appLogAspect" class="com.kii.beehive.portal.aop.LogAspect" />
+
     <bean id="controllerLogAspect" class="com.kii.beehive.portal.web.aop.ControllerLogAspect" />
 
     <!-- kiicloud connect -->

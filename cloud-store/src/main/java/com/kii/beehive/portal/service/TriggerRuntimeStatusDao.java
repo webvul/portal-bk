@@ -13,6 +13,7 @@ import com.kii.beehive.portal.store.entity.trigger.SummaryTriggerRuntimeState;
 import com.kii.beehive.portal.store.entity.trigger.TriggerRuntimeState;
 import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.entity.BucketInfo;
+import com.kii.extension.sdk.exception.ObjectNotFoundException;
 import com.kii.extension.sdk.query.ConditionBuilder;
 import com.kii.extension.sdk.query.QueryParam;
 import com.kii.extension.sdk.service.AbstractDataAccess;
@@ -44,17 +45,27 @@ public class TriggerRuntimeStatusDao extends AbstractDataAccess<TriggerRuntimeSt
 	}
 
 	public GroupTriggerRuntimeState getGroupRuntimeState(String triggerID){
-		return (GroupTriggerRuntimeState) super.getObjectByID(triggerID);
+		return (GroupTriggerRuntimeState) getObjByID(triggerID);
 	}
 
 
 	public SimpleTriggerRuntimeState getSimpleRuntimeState(String triggerID){
-		return (SimpleTriggerRuntimeState) super.getObjectByID(triggerID);
+		return (SimpleTriggerRuntimeState) getObjByID(triggerID);
 	}
 
 
 	public SummaryTriggerRuntimeState getSummaryRuntimeState(String triggerID){
-		return (SummaryTriggerRuntimeState) super.getObjectByID(triggerID);
+		return (SummaryTriggerRuntimeState) getObjByID(triggerID);
+	}
+
+
+	public  TriggerRuntimeState getObjByID(String id){
+
+		try{
+			return super.getObjectByID(id);
+		}catch(ObjectNotFoundException e){
+			return null;
+		}
 	}
 
 	public List<TriggerRuntimeState> getUnCompletedList(BeehiveTriggerType type){

@@ -4,11 +4,11 @@ import com.kii.beehive.portal.jdbc.annotation.JdbcField;
 
 public class GroupUserRelation extends DBEntity {
 
-	private long id;
+	private Long id;
 	
 	private String userID;
 
-	private long userGroupID;
+	private Long userGroupID;
 	
 	public final static String ID = "id";
 	public final static String USER_ID = "user_id";
@@ -16,22 +16,29 @@ public class GroupUserRelation extends DBEntity {
 	
 	public GroupUserRelation() {}
 	
+	public GroupUserRelation(String userID, Long userGroupID) {
+		super();
+		this.userID = userID;
+		this.userGroupID = userGroupID;
+	}
+
+
 
 	@JdbcField(column=ID)
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
 	@JdbcField(column=USER_GROUP_ID)
-	public long getUserGroupID() {
+	public Long getUserGroupID() {
 		return userGroupID;
 	}
 	
-	public void setUserGroupID(long userGroupID) {
+	public void setUserGroupID(Long userGroupID) {
 		this.userGroupID = userGroupID;
 	}
 

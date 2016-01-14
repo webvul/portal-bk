@@ -56,9 +56,9 @@ public class GroupUserRelationDao extends BaseDao<GroupUserRelation> {
 		List<GroupUserRelation> list = new ArrayList<GroupUserRelation>();
 		for (Map<String, Object> row : rows) {
 			GroupUserRelation groupPermissionRelation = new GroupUserRelation();
-			groupPermissionRelation.setId((int)row.get(GroupUserRelation.ID));
+			groupPermissionRelation.setId(Long.valueOf((Integer)row.get(GroupUserRelation.ID)));
 			groupPermissionRelation.setUserID((String)row.get(GroupUserRelation.USER_ID));
-			groupPermissionRelation.setUserGroupID((int)row.get(GroupUserRelation.USER_GROUP_ID));
+			groupPermissionRelation.setUserGroupID(Long.valueOf((Integer)row.get(GroupUserRelation.USER_GROUP_ID)));
 			list.add(groupPermissionRelation);
 		}
 		return list;
@@ -76,7 +76,15 @@ public class GroupUserRelationDao extends BaseDao<GroupUserRelation> {
 
 	}
 	
-	public GroupUserRelation findByPermissionIDAndUserGroupID(String userID, Long userGroupID) {  
+	public List<GroupUserRelation> findByUserGroupID(Long userGroupID) {
+		return super.findBySingleField(GroupUserRelation.USER_GROUP_ID, userGroupID);
+	}
+	
+	public List<GroupUserRelation> findByUserID(String userID) {
+		return super.findBySingleField(GroupUserRelation.USER_ID, userID);
+	}
+	
+	public GroupUserRelation findByUserIDAndUserGroupID(String userID, Long userGroupID) {  
 		String sql = "SELECT * FROM " + this.getTableName() + " WHERE "+ GroupUserRelation.USER_ID +"=? AND "+ GroupUserRelation.USER_GROUP_ID + "=?";
         List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql, userID,userGroupID);
         List<GroupUserRelation> list = mapToList(rows);

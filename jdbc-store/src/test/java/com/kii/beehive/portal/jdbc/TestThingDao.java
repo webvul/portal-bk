@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
@@ -28,6 +29,9 @@ public class TestThingDao extends TestTemplate{
 		thing.setCustom("custom");
 		thing.setType("type");
 		thing.setStatus("this is a test about long text,we don't know the final required,so....");
+
+		String fullKiiThingID= ThingIDTools.joinFullKiiThingID("abcdefghijk","appID");
+		thing.setFullKiiThingID(fullKiiThingID);
 		long id=dao.insert(thing);
 		thing.setId(id);
 	}
@@ -74,6 +78,15 @@ public class TestThingDao extends TestTemplate{
 		assertEquals(thing.getCustom(),entity.getCustom());
 		assertEquals(thing.getType(),entity.getType());
 		assertEquals(thing.getStatus(),entity.getStatus());
+	}
+
+	@Test
+	public void testUpdate(){
+
+		dao.updateState("demo",thing.getFullKiiThingID());
+
+
+		dao.updateKiiThingID(thing.getFullKiiThingID()+"xyz",thing.getVendorThingID());
 	}
 
 

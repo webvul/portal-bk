@@ -52,6 +52,8 @@ public class TestTriggerCreate extends TestTemplate {
 //	private ExtensionCodeDao extensionDao;
 
 
+
+
 	@Autowired
 	private ServiceExtensionDeployService extensionService;
 
@@ -190,7 +192,7 @@ public class TestTriggerCreate extends TestTemplate {
 		record.setThingID(thingIDs[0]);
 
 		StatePredicate preidcate=new StatePredicate();
-		Condition condition= ConditionBuilder.newCondition().great("foo",0).getConditionInstance();
+		Condition condition= ConditionBuilder.andCondition().less("bar",100).great("foo",0).getConditionInstance();
 		preidcate.setCondition(condition);
 		preidcate.setTriggersWhen(TriggerWhen.CONDITION_TRUE);
 
@@ -210,9 +212,9 @@ public class TestTriggerCreate extends TestTemplate {
 
 		log.info(json);
 
-		TriggerRecord record1=mapper.readValue(json,TriggerRecord.class);
+		TriggerRecord  simple=mapper.readValue(json,TriggerRecord.class);
 
-
+		SimpleTriggerRecord s=(SimpleTriggerRecord)simple;
 
 //		simpleMang.createSimpleTrigger(record);
 
@@ -245,6 +247,7 @@ public class TestTriggerCreate extends TestTemplate {
 
 		TargetAction action = getTargetAction("powerOn","power",true);
 		target.setCommand(action);
+		target.setSelector(selector);
 		return target;
 	}
 

@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.kii.beehive.business.event.KiicloudEventListenerService;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.manager.ThingTagManager;
 import com.kii.beehive.portal.service.TriggerRecordDao;
@@ -29,11 +30,19 @@ public class TriggerFireCallbackService {
 	@Autowired
 	private KiiCommandService commandService;
 
+	@Autowired
+	private KiicloudEventListenerService listenerService;
+
+
 
 	private boolean verify(String thingID,String triggerID){
 
 
-		TriggerRuntimeState state=statusDao.getObjectByID(triggerID);
+		TriggerRuntimeState state=statusDao.getObjByID(triggerID);
+
+		if(state==null){
+			return false;
+		}
 
 		return state.getThingIDSet().contains(thingID);
 
@@ -102,6 +111,10 @@ public class TriggerFireCallbackService {
 
 
 		GroupTriggerRuntimeState state=statusDao.getGroupRuntimeState(triggerID);
+		if(state==null){
+			listenerService.disableTriggerByTargetID(triggerID);
+			return false;
+		}
 		boolean oldState=state.isCurrentStatus();
 
 		state.getMemberState().setMemberStatus(thingID,sign);

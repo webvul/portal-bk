@@ -1,6 +1,7 @@
 package com.kii.beehive.portal.manager;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -15,12 +16,16 @@ import org.springframework.stereotype.Component;
 
 import com.kii.beehive.business.helper.SyncMsgService;
 import com.kii.beehive.portal.exception.UserNotExistException;
+import com.kii.beehive.portal.exception.EntryNotFoundException;
+import com.kii.beehive.portal.jdbc.dao.GroupPermissionRelationDao;
+import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
+import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
+import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
+import com.kii.beehive.portal.jdbc.entity.UserGroup;
 import com.kii.beehive.portal.service.ArchiveBeehiveUserDao;
 import com.kii.beehive.portal.service.BeehiveUserDao;
-import com.kii.beehive.portal.service.BeehiveUserGroupDao;
 import com.kii.beehive.portal.service.KiiUserSyncDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
-import com.kii.beehive.portal.store.entity.BeehiveUserGroup;
 import com.kii.beehive.portal.store.entity.CustomProperty;
 import com.kii.extension.sdk.exception.ObjectNotFoundException;
 
@@ -36,7 +41,13 @@ public class UserManager {
 	private BeehiveUserDao userDao;
 
 	@Autowired
-	private BeehiveUserGroupDao userGroupDao;
+	private UserGroupDao userGroupDao;
+	
+	@Autowired
+	private GroupUserRelationDao groupUserRelationDao;
+	
+	@Autowired
+	private GroupPermissionRelationDao groupPermissionRelationDao;
 
 	@Autowired
 	private KiiUserSyncDao kiiUserDao;
@@ -118,13 +129,49 @@ public class UserManager {
 			return userDao.getUsersBySimpleQuery(map);
 		}
 	}
+	
+	public Long createUserGroup(UserGroup userGroup,String loginUserID) {
+		 // create user group
+		Date today = new Date();
+		userGroup.setCreateDate(today);
+		userGroup.setCreateBy(loginUserID);
+	    Long userGroupID = userGroupDao.saveOrUpdate(userGroup);
+	    GroupUserRelation gur = new GroupUserRelation(loginUserID,userGroupID);
+	    groupUserRelationDao.saveOrUpdate(gur);
+	    
+	    return userGroupID;
+	}
+	
+	public Long updateUserGroup(UserGroup userGroup,String loginUserID) {
+		List<UserGroup> orgiList = userGroupDao.findUserGroup(loginUserID, userGroup.getId(), null);
+		
+		if(orgiList.size() == 0){
+			throw new EntryNotFoundException(userGroup.getId().toString());
+		}
+		
+		Date today = new Date();
+		UserGroup orgi = orgiList.get(0);
+		orgi.setName(userGroup.getName());
+		orgi.setDescription(userGroup.getDescription());
+		orgi.setModifyDate(today);
+		orgi.setModifyBy(loginUserID);
+		Long userGroupID = userGroupDao.saveOrUpdate(orgi);
+		return userGroupID;
+	}
+	
 
+	public void deleteUserGroup(Long userGroupID) {
+		groupUserRelationDao.delete(null, userGroupID);
+		userGroupDao.deleteByID(userGroupID);
+	}
 
 	public void deleteUser(String userID) {
 
 		BeehiveUser user = userDao.getUserByID(userID);
 
-		this.removeUserFromUserGroup(userID, user.getGroups());
+		//this.removeUserFromUserGroup(userID, user.getGroups());
+		
+		groupUserRelationDao.delete(userID, null);
 
 		kiiUserDao.disableBeehiveUser(user);
 		archiveUserDao.archive(user);
@@ -140,13 +187,13 @@ public class UserManager {
 	 * @param userID
 	 * @param userGroupIDs
      */
-	private void removeUserFromUserGroup(String userID, Set<String> userGroupIDs) {
+	/*private void removeUserFromUserGroup(String userID, Set<String> userGroupIDs) {
 
 		if(userGroupIDs == null) {
 			return;
 		}
 
-		List<BeehiveUserGroup> beehiveUserGroupList = userGroupDao.getUserGroupByIDs(new ArrayList<>(userGroupIDs));
+		List<BeehiveUserGroup> beehiveUserGroupList = beehiveUserGroupDao.getUserGroupByIDs(new ArrayList<>(userGroupIDs));
 
 		if(beehiveUserGroupList != null) {
 			// remove the user from each group
@@ -154,11 +201,11 @@ public class UserManager {
 				Set<String> users = beehiveUserGroup.getUsers();
 				if(users != null) {
 					users.remove(userID);
-					userGroupDao.updateUsers(beehiveUserGroup.getUserGroupID(), users);
+					beehiveUserGroupDao.updateUsers(beehiveUserGroup.getUserGroupID(), users);
 				}
 			}
 		}
-	}
+	}*/
 
 	public BeehiveUser getUserByID(String userID) {
 		return userDao.getUserByID(userID);

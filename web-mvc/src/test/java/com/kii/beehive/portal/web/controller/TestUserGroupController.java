@@ -22,12 +22,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.kii.beehive.portal.service.BeehiveUserDao;
-import com.kii.beehive.portal.service.BeehiveUserGroupDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
-import com.kii.beehive.portal.store.entity.BeehiveUserGroup;
 import com.kii.beehive.portal.web.WebTestTemplate;
+import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.beehive.portal.web.help.AuthInterceptor;
 
 public class TestUserGroupController extends WebTestTemplate {
@@ -38,8 +36,6 @@ public class TestUserGroupController extends WebTestTemplate {
     @Autowired
     private BeehiveUserDao userDao;
 
-    @Autowired
-    private BeehiveUserGroupDao userGroupDao;
     
     private List<String> userIDListForTest = new ArrayList<>();
 
@@ -90,8 +86,6 @@ public class TestUserGroupController extends WebTestTemplate {
             try {
                 Map<String, Object> param = new HashMap<>();
                 param.put("userGroupName", userGroupName);
-                userGroupID = userGroupDao.getUserGroupsBySimpleQuery(param).get(0).getUserGroupID();
-                userGroupDao.deleteUserGroup(userGroupID);
                 System.out.println("success to delete user group:" + userGroupID);
             } catch(Exception e) {
                 e.printStackTrace();
@@ -124,7 +118,7 @@ public class TestUserGroupController extends WebTestTemplate {
                 post("/usergroup/").content(ctx)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
-                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+                        .header(Constants.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -135,18 +129,6 @@ public class TestUserGroupController extends WebTestTemplate {
         userGroupID = (String)map.get("userGroupID");
         assertNotNull(userGroupID);
 
-        // assert user group in DB
-        BeehiveUserGroup userGroup = userGroupDao.getUserGroupByID(userGroupID);
-        assertEquals(userGroupID, userGroup.getUserGroupID());
-        assertEquals("test_usergroupname", userGroup.getUserGroupName());
-        assertEquals("some description", userGroup.getDescription());
-
-        assertEquals(3, userGroup.getUsers().size());
-        assertTrue(userGroup.getUsers().containsAll(userIDList));
-
-        assertEquals(2, userGroup.getCustom().size());
-        assertEquals("20001230", userGroup.getCustom().get("birthday"));
-        assertEquals("male", userGroup.getCustom().get("gender"));
 
         // assert user in DB
         List<BeehiveUser> beehiveUserList = userDao.getUserByIDs(userIDListForTest);
@@ -183,7 +165,7 @@ public class TestUserGroupController extends WebTestTemplate {
                 post("/usergroup/").content(ctx)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
-                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+                        .header(Constants.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isNotFound())
                 .andReturn().getResponse().getContentAsString();
@@ -224,7 +206,7 @@ public class TestUserGroupController extends WebTestTemplate {
                 patch("/usergroup/" + userGroupID).content(ctx)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
-                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+                        .header(Constants.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -236,19 +218,6 @@ public class TestUserGroupController extends WebTestTemplate {
         userGroupID = (String)map.get("userGroupID");
         assertEquals(expectedUserGroupID, userGroupID);
 
-        // assert DB
-        BeehiveUserGroup userGroup = userGroupDao.getUserGroupByID(userGroupID);
-        assertEquals(userGroupID, userGroup.getUserGroupID());
-        assertEquals("test_usergroupname_new", userGroup.getUserGroupName());
-        assertEquals("some description.new", userGroup.getDescription());
-
-        assertEquals(2, userGroup.getUsers().size());
-        assertTrue(userGroup.getUsers().containsAll(userIDList));
-
-        assertEquals(3, userGroup.getCustom().size());
-        assertEquals(123.45, userGroup.getCustom().get("birthday"));
-        assertEquals("male", userGroup.getCustom().get("gender"));
-        assertEquals("new field during update", userGroup.getCustom().get("nationality"));
 
         // assert user in DB
         List<BeehiveUser> beehiveUserList = userDao.getUserByIDs(userIDList);
@@ -293,7 +262,7 @@ public class TestUserGroupController extends WebTestTemplate {
                 patch("/usergroup/" + userGroupID).content(ctx)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
-                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+                        .header(Constants.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isNotFound())
                 .andReturn().getResponse().getContentAsString();
@@ -323,7 +292,7 @@ public class TestUserGroupController extends WebTestTemplate {
                 post("/usergroup/simplequery").content(ctx)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
-                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+                        .header(Constants.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -369,7 +338,7 @@ public class TestUserGroupController extends WebTestTemplate {
                 post("/usergroup/simplequery").content(ctx)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
-                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+                        .header(Constants.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -395,7 +364,7 @@ public class TestUserGroupController extends WebTestTemplate {
                 post("/usergroup/").content(ctx)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
-                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+                        .header(Constants.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -419,7 +388,7 @@ public class TestUserGroupController extends WebTestTemplate {
                 post("/usergroup/simplequery").content(ctx)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
-                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+                        .header(Constants.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -446,7 +415,7 @@ public class TestUserGroupController extends WebTestTemplate {
                 post("/usergroup/simplequery").content(ctx)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
-                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+                        .header(Constants.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -478,7 +447,7 @@ public class TestUserGroupController extends WebTestTemplate {
                 post("/usergroup/simplequery").content(ctx)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
-                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+                        .header(Constants.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -503,13 +472,11 @@ public class TestUserGroupController extends WebTestTemplate {
                 delete("/usergroup/" + userGroupID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
-                        .header(AuthInterceptor.ACCESS_TOKEN, tokenForTest)
+                        .header(Constants.ACCESS_TOKEN, tokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        BeehiveUserGroup userGroup = userGroupDao.getUserGroupByID(userGroupID);
-        assertNull(userGroup);
 
         // assert user in DB
         List<BeehiveUser> beehiveUserList = userDao.getUserByIDs(userIDListForTest);

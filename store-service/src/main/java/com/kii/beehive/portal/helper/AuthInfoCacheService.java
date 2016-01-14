@@ -1,12 +1,17 @@
 package com.kii.beehive.portal.helper;
 
-import javax.annotation.PostConstruct;
-
-import java.util.*;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +19,11 @@ import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.common.utils.CollectUtils;
 import com.kii.beehive.portal.jdbc.dao.AuthInfoDao;
+import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
+import com.kii.beehive.portal.jdbc.dao.PermissionDao;
 import com.kii.beehive.portal.jdbc.entity.AuthInfo;
+import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
+import com.kii.beehive.portal.jdbc.entity.Permission;
 
 /**
  * this class stores the auth info entities in cache (private map) and provides below functions:
@@ -37,6 +46,12 @@ public class AuthInfoCacheService {
 
     @Autowired
     private AuthInfoDao authInfoDao;
+    
+    @Autowired
+    private GroupUserRelationDao groupUserRelationDao;
+    
+    @Autowired
+    private PermissionDao permissionDao;
 
     private ScheduledExecutorService executeService = Executors.newSingleThreadScheduledExecutor();
 
@@ -75,6 +90,7 @@ public class AuthInfoCacheService {
     /**
      * get available auth info from cache (available = not expired)
      * if not existing, try to get from DB and save into cache
+     * // TODO it may not be necessary to query DB again if the auth info is not found in cache, so maybe need to remove the source code of DB storage later
      *
      * @param token
      * @return if valid token, return the corresponding AuthInfo entity; otherwise, return null
@@ -117,6 +133,17 @@ public class AuthInfoCacheService {
     }
 
     /**
+     * get AuthInfo by token directly <br/>
+     * this method will not check whether token is valid
+     *
+     * @param token
+     * @return
+     */
+    public AuthInfo getAuthInfo(String token) {
+        return authInfoMap.get(token);
+    }
+
+    /**
      * save auth info into DB and cache
      * if there is existing auth info in DB or cache, will update the token inside auth info
      * @param userID
@@ -148,6 +175,17 @@ public class AuthInfoCacheService {
         // save auth into into DB
         long id = authInfoDao.saveOrUpdate(authInfo);
         authInfo.setId(id);
+        
+        //get user Permission
+        Set<String> pSet = new HashSet<String>();
+        List<GroupUserRelation> groupUserRelation = groupUserRelationDao.findByUserID(authInfo.getUserID());
+        for(GroupUserRelation gur:groupUserRelation){
+        	List<Permission> plist = permissionDao.findByUserGroupID(gur.getUserGroupID());
+        	for(Permission p:plist){
+        		pSet.add(p.getAction());
+        	}
+        }
+        authInfo.setPermisssionSet(pSet);
 
         // save auth info into cache
         authInfoMap.put(token, authInfo);
@@ -171,7 +209,9 @@ public class AuthInfoCacheService {
     }
 
     /**
-     * check whether token expired
+     * check whether token expired <br/>
+     * if the expire time of token is null, treat it as permanent valid
+     *
      * @param authInfo
      * @return
      */

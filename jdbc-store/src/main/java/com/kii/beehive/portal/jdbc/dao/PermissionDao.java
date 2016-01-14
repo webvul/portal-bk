@@ -48,14 +48,34 @@ public class PermissionDao extends BaseDao<Permission> {
 		List<Permission> list = new ArrayList<Permission>();
 		for (Map<String, Object> row : rows) {
 			Permission entity = new Permission();
-			entity.setId((int)row.get(Permission.PERMISSION_ID));
-			entity.setSourceID((int)row.get(Permission.SOURCE_ID));
+			entity.setId(Long.valueOf((Integer)row.get(Permission.PERMISSION_ID)));
+			entity.setSourceID(Long.valueOf((Integer)row.get(Permission.SOURCE_ID)));
 			entity.setName((String)row.get(Permission.NAME));
 			entity.setAction((String)row.get(Permission.ACTION));
 			entity.setDescription((String)row.get(Permission.DESCRIPTION));
+			entity.setSourceName((String)row.get(Permission.SOURCE_NAME));
 			mapToListForDBEntity(entity, row);
 			list.add(entity);
 		}
 		return list;
+	}
+	
+	public List<Permission> findByUserGroupID(Long userGroupID) {
+		String sql = "SELECT p.permission_id, p.source_id,p.name,p.action,p.description,p.create_by,p.create_date,p.modify_by,p.modify_date "
+					+ "FROM " + this.getTableName() +" p "
+					+ "INNER JOIN rel_group_permission r ON r.permission_id = p.permission_id "
+					+ "WHERE r.user_group_id = ?";
+		
+		List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql,userGroupID);
+	    return mapToList(rows);
+	}
+	
+	public List<Permission> findAll() {
+		String sql = "SELECT p.permission_id, p.source_id,s.name sourceName,p.name,p.action,p.description,p.create_by,p.create_date,p.modify_by,p.modify_date "
+					+ "FROM " + this.getTableName() +" p "
+					+ "INNER JOIN source s ON s.source_id = p.source_id ";
+		
+		List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql);
+	    return mapToList(rows);
 	}
 }

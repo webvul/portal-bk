@@ -92,7 +92,7 @@ public class KiicloudEventListenerService {
 
 
 
-	public void disableTrigger(String triggerID){
+	public void disableTriggerByTargetID(String triggerID){
 
 		List<EventListener> listener=eventListenerDao.getEventListenerByTargetKey(triggerID);
 
@@ -100,7 +100,7 @@ public class KiicloudEventListenerService {
 
 	}
 
-	public void enableTrigger(String triggerID){
+	public void enableTriggerByTargetID(String triggerID){
 
 		List<EventListener> listener=eventListenerDao.getEventListenerByTargetKey(triggerID);
 

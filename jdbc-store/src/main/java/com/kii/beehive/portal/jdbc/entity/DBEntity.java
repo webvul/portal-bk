@@ -6,7 +6,7 @@ import com.kii.beehive.portal.jdbc.annotation.JdbcField;
 
 public class DBEntity {
 
-	private long id;
+	private Long id;
 
 	private Date createDate;
 
@@ -21,11 +21,11 @@ public class DBEntity {
 	public final static String MODIFY_DATE = "modify_date";
 	public final static String MODIFY_BY = "modify_by";
 
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 

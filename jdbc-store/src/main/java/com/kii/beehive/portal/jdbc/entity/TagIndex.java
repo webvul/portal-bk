@@ -37,7 +37,7 @@ public class TagIndex extends DBEntity {
 	}
 	@Override
 	@JdbcField(column="tag_id")
-	public long getId(){
+	public Long getId(){
 		return super.getId();
 	}
 
@@ -107,6 +107,25 @@ public class TagIndex extends DBEntity {
 		tag.displayName=displayName;
 		tag.description = description;
 		return tag;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("TagIndex [tagType=");
+		builder.append(tagType);
+		builder.append(", displayName=");
+		builder.append(displayName);
+		builder.append(", description=");
+		builder.append(description);
+		builder.append(", fullTagName=");
+		builder.append(fullTagName);
+		builder.append(", count=");
+		builder.append(count);
+		builder.append(", things=");
+		builder.append(things);
+		builder.append("]");
+		return builder.toString();
 	}
 	
 }

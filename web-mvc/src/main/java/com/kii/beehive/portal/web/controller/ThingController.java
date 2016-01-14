@@ -161,7 +161,7 @@ public class ThingController {
 
 	/**
 	 * 创建设备信息
-	 * POST /things/
+	 * POST /things
 	 *
 	 * refer to doc "Beehive API - Thing API" for request/response details
 	 *
@@ -213,7 +213,7 @@ public class ThingController {
 	 *
 	 * @param globalThingIDs
      */
-	@RequestMapping(path="/{globalThingIDs}/tags/{tagIDs}",method={RequestMethod.PUT})
+	@RequestMapping(path="/{globalThingIDs}/tags/{tagIDs}",method={RequestMethod.POST})
 	public void addThingTag(@PathVariable("globalThingIDs") String globalThingIDs,@PathVariable("tagIDs") String tagIDs){
 		
 		List<String> thingIDList = CollectionUtils.arrayToList(globalThingIDs.split(","));

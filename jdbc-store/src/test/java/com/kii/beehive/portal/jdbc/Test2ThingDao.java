@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
 
 import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
@@ -20,6 +21,7 @@ import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
 import com.kii.beehive.portal.jdbc.entity.TagType;
 
+@Rollback
 public class Test2ThingDao extends TestTemplate {
 
 	@Autowired
@@ -34,6 +36,15 @@ public class Test2ThingDao extends TestTemplate {
 
 
 	private List<Long> thingIDs=new ArrayList<>();
+
+	@Test
+	public void testRowMapper(){
+
+		List<Long> ids=new ArrayList<>();
+		ids.add(584L);
+
+		thingDao.getThingsByIDArray(ids);
+	}
 
 
 //	@Before

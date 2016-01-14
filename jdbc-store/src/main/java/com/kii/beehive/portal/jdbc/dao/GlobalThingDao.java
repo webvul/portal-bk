@@ -1,16 +1,11 @@
 package com.kii.beehive.portal.jdbc.dao;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.springframework.stereotype.Repository;
 
-import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 
 @Repository
@@ -86,7 +81,7 @@ public class GlobalThingDao extends BaseDao<GlobalThingInfo>{
 		List<GlobalThingInfo> list = new ArrayList<GlobalThingInfo>();
 		for (Map<String, Object> row : rows) {
 			GlobalThingInfo globalThingInfo = new GlobalThingInfo();
-			globalThingInfo.setId((Integer)row.get(GlobalThingInfo.ID_GLOBAL_THING));
+			globalThingInfo.setId(Long.valueOf((Integer)row.get(GlobalThingInfo.ID_GLOBAL_THING)));
 			globalThingInfo.setVendorThingID((String)row.get(GlobalThingInfo.VANDOR_THING_ID));
 			globalThingInfo.setKiiAppID((String)row.get(GlobalThingInfo.KII_APP_ID));
 			globalThingInfo.setType((String)row.get(GlobalThingInfo.THING_TYPE));

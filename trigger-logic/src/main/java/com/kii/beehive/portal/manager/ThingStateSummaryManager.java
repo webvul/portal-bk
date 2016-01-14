@@ -172,7 +172,13 @@ public class ThingStateSummaryManager {
 	public void onTagChanged(String triggerID,String groupName){
 
 
-		SummaryTriggerRecord  record= (SummaryTriggerRecord) triggerDao.getObjectByID(triggerID);
+		SummaryTriggerRecord record = (SummaryTriggerRecord) triggerDao.getTriggerRecord(triggerID);
+
+		if(record==null){
+
+			listenerService.disableTriggerByTargetID(triggerID);
+			return;
+		}
 
 		SummarySource source=record.getSummarySource().get(groupName);
 
@@ -181,6 +187,10 @@ public class ThingStateSummaryManager {
 		List<String> thingIDList=thingList.stream().map(thing->thing.getFullKiiThingID()).collect(Collectors.toList());
 
 		SummaryTriggerRuntimeState state=statusDao.getSummaryRuntimeState(triggerID);
+		if(state==null){
+			listenerService.disableTriggerByTargetID(triggerID);
+			return;
+		}
 
 		listenerService.updateThingStatusListener(thingIDList,state.getListeners().get(groupName).getTagListenerID());
 
@@ -191,11 +201,20 @@ public class ThingStateSummaryManager {
 
 	public void computeStateSummary(String  triggerID,String groupName,ThingStatus status){
 
-		SummaryTriggerRecord  trigger= (SummaryTriggerRecord) triggerDao.getObjectByID(triggerID);
+		SummaryTriggerRecord  trigger= (SummaryTriggerRecord) triggerDao.getTriggerRecord(triggerID);
+
+		if(trigger==null){
+			listenerService.disableTriggerByTargetID(triggerID);
+			return;
+		}
 
 		for(int i=0;i<5;i++) {
 
 			SummaryTriggerRuntimeState state=statusDao.getSummaryRuntimeState(triggerID);
+			if(state==null){
+				listenerService.disableTriggerByTargetID(triggerID);
+				break;
+			}
 			SummaryStateEntry entry=state.getListeners().get(groupName);
 
 			updateState(groupName, status, trigger.getSummarySource().get(groupName).getExpressList(), entry);

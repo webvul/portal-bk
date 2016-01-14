@@ -15,7 +15,7 @@ public class Source extends DBEntity {
 	
 	@Override
 	@JdbcField(column=SOURCE_ID)
-	public long getId(){
+	public Long getId(){
 		return super.getId();
 	}
 	

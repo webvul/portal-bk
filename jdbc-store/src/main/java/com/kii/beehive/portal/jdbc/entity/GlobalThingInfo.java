@@ -33,7 +33,7 @@ public class GlobalThingInfo extends DBEntity{
 
 	@Override
 	@JdbcField(column="id_global_thing")
-	public long getId(){
+	public Long getId(){
 		return super.getId();
 	}
 
@@ -138,7 +138,7 @@ public class GlobalThingInfo extends DBEntity{
 
 	@Override
 	public int hashCode(){
-		return (int) this.getId();
+		return this.getId().intValue();
 
 	}
 

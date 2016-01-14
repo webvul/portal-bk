@@ -14,6 +14,7 @@ public class ThingIDTools {
 
 			return new ThingIDCombine(null,null);
 		}
+
 		int idx=fullKiiThingID.indexOf("-");
 
 		String  kiiThingID=fullKiiThingID.substring(idx+1);
