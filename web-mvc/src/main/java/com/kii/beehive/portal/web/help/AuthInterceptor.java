@@ -73,9 +73,11 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
 		logRequest(request);
 
-        String auth = request.getHeader(Constants.ACCESS_TOKEN);
-
 		String url=request.getRequestURI();
+
+
+		String auth = request.getHeader(Constants.ACCESS_TOKEN);
+
 		int idx=url.indexOf("/api/");
 		String subUrl=url.substring(idx+4).trim();
 
@@ -85,6 +87,15 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 		list.add(auth);
 
 		try {
+
+			if(subUrl.startsWith("/oauth2/login")){
+
+				list.set(1,"LoginIn");
+				logTool.write(list);
+
+				return  super.preHandle(request, response, handler);
+
+			}
 
 			if (auth == null || !auth.startsWith("Bearer ")) {
 				throw new BeehiveUnAuthorizedException(" auth token format invalid");
@@ -142,7 +153,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 				}
 			}
 
-			list.add("loginSuccess");
+			list.add("authSuccess");
 		}catch(BeehiveUnAuthorizedException e){
 			list.add("UnauthorizedAccess");
 			logTool.write(list);
