@@ -15,7 +15,6 @@ import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.TagIndexSpringDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
-import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.store.entity.trigger.TagSelector;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 

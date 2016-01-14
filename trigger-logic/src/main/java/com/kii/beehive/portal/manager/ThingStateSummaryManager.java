@@ -15,7 +15,6 @@ import com.kii.beehive.business.event.KiicloudEventListenerService;
 import com.kii.beehive.business.ruleengine.ExpressCompute;
 import com.kii.beehive.business.service.KiiCommandService;
 import com.kii.beehive.business.service.ThingIFInAppService;
-import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.service.TriggerRecordDao;
 import com.kii.beehive.portal.service.TriggerRuntimeStatusDao;
@@ -28,13 +27,7 @@ import com.kii.beehive.portal.store.entity.trigger.SummaryTriggerRuntimeState;
 import com.kii.beehive.portal.store.entity.trigger.TagSelector;
 import com.kii.beehive.portal.store.entity.trigger.TriggerRecord;
 import com.kii.beehive.portal.store.entity.trigger.TriggerSource;
-import com.kii.extension.sdk.entity.thingif.OnBoardingParam;
-import com.kii.extension.sdk.entity.thingif.OnBoardingResult;
-import com.kii.extension.sdk.entity.thingif.Predicate;
-import com.kii.extension.sdk.entity.thingif.ServiceCode;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
-import com.kii.extension.sdk.entity.thingif.ThingTrigger;
-import com.kii.extension.sdk.entity.thingif.TriggerTarget;
 import com.kii.extension.sdk.exception.StaleVersionedObjectException;
 
 @Component

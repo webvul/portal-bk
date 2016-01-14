@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.store.entity.CallbackUrlParameter;
 import com.kii.extension.sdk.annotation.AppBindParam;
-import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.entity.AppInfo;
 import com.kii.extension.sdk.entity.BucketInfo;

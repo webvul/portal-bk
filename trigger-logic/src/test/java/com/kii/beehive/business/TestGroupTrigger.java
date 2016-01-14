@@ -13,11 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.kii.beehive.portal.manager.TagThingManager;
-import com.kii.beehive.portal.manager.ThingGroupStateManager;
 import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.business.service.TriggerFireCallbackService;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
+import com.kii.beehive.portal.manager.TagThingManager;
+import com.kii.beehive.portal.manager.ThingGroupStateManager;
 import com.kii.beehive.portal.manager.ThingTagManager;
 import com.kii.beehive.portal.store.entity.trigger.GroupTriggerRecord;
 import com.kii.beehive.portal.store.entity.trigger.TagSelector;

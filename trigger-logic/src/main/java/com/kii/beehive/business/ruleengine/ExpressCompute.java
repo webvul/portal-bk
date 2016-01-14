@@ -2,20 +2,14 @@ package com.kii.beehive.business.ruleengine;
 
 import java.util.Map;
 
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.PropertyAccessorFactory;
-import org.springframework.beans.factory.support.PropertiesBeanDefinitionReader;
 import org.springframework.stereotype.Component;
-import org.springframework.util.NumberUtils;
 
 import com.kii.extension.sdk.query.Condition;
 import com.kii.extension.sdk.query.condition.AndLogic;
 import com.kii.extension.sdk.query.condition.Equal;
-import com.kii.extension.sdk.query.condition.LogicCol;
 import com.kii.extension.sdk.query.condition.NotLogic;
 import com.kii.extension.sdk.query.condition.OrLogic;
 import com.kii.extension.sdk.query.condition.Range;
-import com.kii.extension.sdk.query.condition.SimpleCondition;
 
 @Component
 public class ExpressCompute {

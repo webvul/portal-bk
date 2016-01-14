@@ -9,10 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.kii.beehive.portal.manager.SimpleThingTriggerManager;
 import com.kii.beehive.business.service.ServiceExtensionDeployService;
 import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.business.service.TriggerFireCallbackService;
@@ -24,6 +22,7 @@ import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
 import com.kii.beehive.portal.jdbc.entity.TagType;
+import com.kii.beehive.portal.manager.SimpleThingTriggerManager;
 import com.kii.beehive.portal.manager.ThingTagManager;
 import com.kii.beehive.portal.store.entity.trigger.SimpleTriggerRecord;
 import com.kii.beehive.portal.store.entity.trigger.TagSelector;
