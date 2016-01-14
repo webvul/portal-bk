@@ -6,4 +6,5 @@ public class ErrorCode {
 	public static final String REQUIRED_FIELDS_MISSING = "RequiredFieldsMissing";
 	public static final String INVALID_INPUT = "InvalidInput";
 	public static final String AUTH_FAIL = "AuthFail";
+
 }

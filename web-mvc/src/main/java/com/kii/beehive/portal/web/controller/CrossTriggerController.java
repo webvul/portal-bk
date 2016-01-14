@@ -2,6 +2,7 @@ package com.kii.beehive.portal.web.controller;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.manager.TriggerMaintainManager;
 import com.kii.beehive.portal.manager.SimpleThingTriggerManager;
 import com.kii.beehive.portal.manager.ThingGroupStateManager;
@@ -17,6 +19,8 @@ import com.kii.beehive.portal.store.entity.trigger.GroupTriggerRecord;
 import com.kii.beehive.portal.store.entity.trigger.SimpleTriggerRecord;
 import com.kii.beehive.portal.store.entity.trigger.SummaryTriggerRecord;
 import com.kii.beehive.portal.store.entity.trigger.TriggerRecord;
+import com.kii.beehive.portal.web.constant.ErrorCode;
+import com.kii.beehive.portal.web.help.PortalException;
 
 @RestController
 @RequestMapping(path = "/triggers", consumes = { MediaType.APPLICATION_JSON_UTF8_VALUE }, produces = {
@@ -40,6 +44,8 @@ public class CrossTriggerController {
 	public void createTrigger(@RequestBody TriggerRecord record){
 
 
+		record.setUserID(AuthInfoStore.getUserID());
+
 		switch(record.getType()){
 			case Simple:
 				simpleMang.createSimpleTrigger((SimpleTriggerRecord)record);
@@ -59,6 +65,9 @@ public class CrossTriggerController {
 
 		TriggerRecord record=mang.getTriggerRecord(triggerID);
 
+		verify(record);
+
+
 		switch(record.getType()){
 			case Simple:
 				simpleMang.removeSimpleTrigger(triggerID);
@@ -67,10 +76,18 @@ public class CrossTriggerController {
 				groupMang.removeTrigger(triggerID);
 				break;
 			case Summary:
-//				summaryMang.r((SummaryTriggerRecord)record);
+				summaryMang.removeTrigger(triggerID);
 				break;
 		}
 
+	}
+
+	private void verify(TriggerRecord record) {
+		if(!record.getUserID().equals(AuthInfoStore.getUserID())
+				&&!AuthInfoStore.isAmin()){
+
+			throw new PortalException(ErrorCode.AUTH_FAIL,"only owner can operate trigger", HttpStatus.FORBIDDEN);
+		}
 	}
 
 	@RequestMapping(path="/{triggerID}/enable",method = { RequestMethod.PUT })

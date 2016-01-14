@@ -10,10 +10,12 @@ import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.helper.AuthInfoCacheService;
 import com.kii.beehive.portal.jdbc.entity.AuthInfo;
+import com.kii.beehive.portal.store.entity.AuthInfoEntry;
 import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.context.UserTokenBindTool;
 import com.kii.extension.sdk.entity.LoginInfo;
 import com.kii.extension.sdk.exception.KiiCloudException;
+import com.kii.extension.sdk.exception.UnauthorizedAccessException;
 import com.kii.extension.sdk.service.UserService;
 
 @BindAppByName(appName="master")
@@ -116,17 +118,17 @@ public class AuthManager {
      * @param token
      * @return
      */
-    public AuthInfo validateAndBindUserToken(String token) {
+    public AuthInfoEntry validateAndBindUserToken(String token) {
 
         AuthInfo authInfo = authInfoCacheService.getAvailableAuthInfo(token);
 
         if(authInfo == null) {
-            return null;
+			throw new UnauthorizedAccessException();
         }
         
         userTokenBindTool.bindToken(authInfo.getToken());
 
-        return authInfo;
+        return new AuthInfoEntry(authInfo);
     }
 
     /**
