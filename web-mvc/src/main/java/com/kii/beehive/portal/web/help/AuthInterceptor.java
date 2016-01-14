@@ -11,10 +11,12 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.kii.beehive.business.helper.OpLogTools;
 import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.jdbc.entity.AuthInfo;
 import com.kii.beehive.portal.manager.AppInfoManager;
 import com.kii.beehive.portal.manager.AuthManager;
 import com.kii.beehive.portal.service.DeviceSupplierDao;
@@ -31,9 +33,12 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
      * @deprecated only for testing, so should not appear in any source code except for junit
      */
     public static final String SUPER_TOKEN = "super_token";
+	public static final String USER_ID = "211102";
 
 	private Logger log= LoggerFactory.getLogger(AuthInterceptor.class);
 
+	@Value("${spring.profile}")
+	private String  env;
 
 	@Autowired
     private AuthManager authManager;
@@ -89,9 +94,19 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 			String token = auth.substring(auth.indexOf(" ") + 1).trim();
 
 			list.set(1,token);
+
+
 			// TODO this checking is for testing only, must remove after testing complete
-			if (SUPER_TOKEN.equals(token)) {
-				authManager.saveToken("211102", token);
+			if (SUPER_TOKEN.equals(token)&&(!"production".equals(env))) {
+
+				authManager.saveToken(USER_ID, token);
+
+				AuthInfoStore.setAuthInfo("211102");
+
+				list.set(1,USER_ID);
+				logTool.write(list);
+
+				return  super.preHandle(request, response, handler);
 			}
 
 			if(subUrl.startsWith("/users")){
