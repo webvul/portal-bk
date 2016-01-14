@@ -449,7 +449,7 @@ public class TestTagController extends WebTestTemplate {
         Long[] tagIDs = new Long[displayNames.length];
 
         for(int i = 0; i<displayNames.length;i++) {
-            TagIndex tagIndex = TagIndex.generTagIndex(tagType, displayNames[i], null);
+            TagIndex tagIndex = new TagIndex(tagType, displayNames[i], null);
             tagIDs[i] = tagIndexDao.saveOrUpdate(tagIndex);
 
             System.out.println("create tag: " + tagIDs[i]);

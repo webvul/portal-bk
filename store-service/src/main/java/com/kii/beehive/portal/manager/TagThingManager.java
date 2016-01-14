@@ -201,18 +201,17 @@ public class TagThingManager {
 	private void saveOrUpdateThingLocation(Long globalThingID, String location) {
 
 		// get location tag
-		TagIndex tagIndex = tagIndexDao.findOneTagByTagTypeAndName(TagType.Location, location);
-
+		List<TagIndex> list = tagIndexDao.findTagByTagTypeAndName(TagType.Location.toString(), location);
+		TagIndex tagIndex = CollectUtils.getFirst(list);
 		if(tagIndex == null) {
-			tagIndex = TagIndex.generTagIndex(TagType.Location, location, null);
+			tagIndex = new TagIndex(TagType.Location, location, null);
 			long tagID = tagIndexDao.saveOrUpdate(tagIndex);
 			tagIndex.setId(tagID);
 		}
 
 		// get tag-thing relation
-		List<TagThingRelation> relationList = tagThingRelationDao.find(globalThingID, TagType.Location, null);
-
-		TagThingRelation relation = CollectUtils.getFirst(relationList);
+		TagThingRelation relation = tagThingRelationDao.findByThingIDAndTagID(globalThingID, tagIndex.getId());
+		
 		if(relation == null) {
 			relation = new TagThingRelation(tagIndex.getId(), globalThingID);
 		} else {
@@ -240,7 +239,7 @@ public class TagThingManager {
 		return tagIndexList.get(0);
 	}
 
-	public List<TagIndex> findTagIndexByGlobalThingID(String globalThingID) {
+	public List<TagIndex> findTagIndexByGlobalThingID(Long globalThingID) {
 
 		return tagIndexDao.findTagByGlobalThingID(globalThingID);
 	}
@@ -261,7 +260,8 @@ public class TagThingManager {
 	private List<TagIndex> findCustomTagList(Collection<String> displayNames) {
 		List<TagIndex> tagList = new ArrayList<TagIndex>();
 		for(String displayName : displayNames){
-			TagIndex tag = tagIndexDao.findOneTagByTagTypeAndName(TagType.Custom, displayName);
+			List<TagIndex> list = tagIndexDao.findTagByTagTypeAndName(TagType.Custom.toString(), displayName);
+			TagIndex tag = CollectUtils.getFirst(list);
 			if(tag != null){
 				tagList.add(tag);
 			}else{

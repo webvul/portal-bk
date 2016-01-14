@@ -126,7 +126,7 @@ public class ThingController {
 	 * @return
 	 */
 	@RequestMapping(path = "/{globalThingID}", method = {RequestMethod.GET})
-	public ThingRestBean getThingByGlobalID(@PathVariable("globalThingID") String globalThingID) {
+	public ThingRestBean getThingByGlobalID(@PathVariable("globalThingID") Long globalThingID) {
 
 		// get thing
 		GlobalThingInfo thing =  globalThingDao.findByID(globalThingID);
