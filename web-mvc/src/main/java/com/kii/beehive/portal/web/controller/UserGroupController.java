@@ -156,7 +156,11 @@ public class UserGroupController extends AbstractController{
 		return new ResponseEntity<>(list, HttpStatus.OK);
 	}
     
-    
+    @RequestMapping(path = "/all", method = {RequestMethod.GET})
+	public ResponseEntity<List<UserGroup>> getUserGroupAll(HttpServletRequest httpRequest) {
+		List<UserGroup> list = userGroupDao.findAll();
+		return new ResponseEntity<>(list, HttpStatus.OK);
+	}
     
     private boolean checkUserGroup(String loginUserID, Long userGroupID){
     	//loginUser can edit, when loginUser is in this group ,

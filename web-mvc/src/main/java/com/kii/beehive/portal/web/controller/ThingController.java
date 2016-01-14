@@ -207,7 +207,7 @@ public class ThingController {
 
 	/**
 	 * 绑定设备及tag
-	 * PUT /things/{globalThingIDs}/tags/{tagID...}
+	 * POST /things/{globalThingIDs}/tags/{tagID...}
 	 *
 	 * refer to doc "Beehive API - Thing API" for request/response details
 	 *
@@ -243,14 +243,14 @@ public class ThingController {
 
 	/**
 	 * 绑定设备及custom tag
-	 * PUT /things/{globalThingID ...}/tags/custom/{tagName ...}
+	 * POST /things/{globalThingID ...}/tags/custom/{tagName ...}
 	 *
 	 * refer to doc "Beehive API - Thing API" for request/response details
 	 *
 	 * @param globalThingIDs
 	 * @param displayNames
 	 */
-	@RequestMapping(path="/{globalThingIDs}/tags/custom/{displayNames}",method={RequestMethod.PUT})
+	@RequestMapping(path="/{globalThingIDs}/tags/custom/{displayNames}",method={RequestMethod.POST})
 	public void addThingCustomTag(@PathVariable("globalThingIDs") String globalThingIDs,@PathVariable("displayNames") String displayNames){
 
 		List<String> list = CollectionUtils.arrayToList(globalThingIDs.split(","));
