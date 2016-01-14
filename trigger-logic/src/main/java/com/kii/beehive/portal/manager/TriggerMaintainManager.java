@@ -3,6 +3,7 @@ package com.kii.beehive.portal.manager;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,9 @@ import org.springframework.util.StreamUtils;
 import com.google.common.base.Charsets;
 
 import com.kii.beehive.business.service.ServiceExtensionDeployService;
+import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.exception.InvalidAuthException;
+import com.kii.beehive.portal.jdbc.entity.AuthInfo;
 import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.service.BeehiveParameterDao;
 import com.kii.beehive.portal.service.ExtensionCodeDao;
@@ -85,14 +89,34 @@ public class TriggerMaintainManager {
 		});
 	}
 
-	public void disableTrigger(String triggerID){
+	public void enableTrigger(String triggerID) {
 
-		triggerDao.enableTrigger(triggerID);
+		String userID= AuthInfoStore.getUserID();
+
+		TriggerRecord record=triggerDao.getTriggerRecord(triggerID);
+
+		if(userID.equals(record.getUserID()) && !AuthInfoStore.isAmin()){
+			throw new InvalidAuthException(userID,record.getUserID());
+		}
+		if(record.getRecordStatus()== TriggerRecord.StatusType.disable) {
+			triggerDao.updateEntity(Collections.singletonMap("recordStatus", TriggerRecord.StatusType.enable), triggerID);
+		}
 	}
 
-	public void enableTrigger(String triggerID){
+	public void disableTrigger(String triggerID) {
 
-		triggerDao.disableTrigger(triggerID);
+		String userID= AuthInfoStore.getUserID();
+
+		TriggerRecord record=triggerDao.getTriggerRecord(triggerID);
+
+		if(userID.equals(record.getUserID()) && !AuthInfoStore.isAmin()){
+			throw new InvalidAuthException(userID,record.getUserID());
+		}
+
+		if(record.getRecordStatus()== TriggerRecord.StatusType.enable) {
+
+			triggerDao.updateEntity(Collections.singletonMap("recordStatus", TriggerRecord.StatusType.disable), triggerID);
+		}
 
 	}
 

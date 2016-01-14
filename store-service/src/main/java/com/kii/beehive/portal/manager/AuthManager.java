@@ -10,10 +10,12 @@ import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.helper.AuthInfoCacheService;
 import com.kii.beehive.portal.jdbc.entity.AuthInfo;
+import com.kii.beehive.portal.store.entity.AuthInfoEntry;
 import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.context.UserTokenBindTool;
 import com.kii.extension.sdk.entity.LoginInfo;
 import com.kii.extension.sdk.exception.KiiCloudException;
+import com.kii.extension.sdk.exception.UnauthorizedAccessException;
 import com.kii.extension.sdk.service.UserService;
 
 @BindAppByName(appName="master")
@@ -43,16 +45,16 @@ public class AuthManager {
     public boolean register(String userID, String password) {
 
         try {
-            String defaultPassword = this.getDefaultPassword(userID);
+//            String defaultPassword = this.getDefaultPassword(userID);
 
             // login Kii Cloud
-            LoginInfo loginInfo = userService.login(userID, defaultPassword);
+            LoginInfo loginInfo = userService.login(userID, password);
 
             // bind token to ThreadLocal
             userTokenBindTool.bindToken(loginInfo.getToken());
 
             // change from default password to new password
-            userService.changePassword(defaultPassword, password);
+//            userService.changePassword(defaultPassword, password);
 
         } catch (KiiCloudException e) {
             log.debug("Login with default password failed", e);
@@ -62,9 +64,9 @@ public class AuthManager {
         return true;
     }
 
-    private String getDefaultPassword(String userID) {
-        return DigestUtils.sha1Hex(userID+"_beehive");
-    }
+//    private String getDefaultPassword(String userID) {
+//        return DigestUtils.sha1Hex(userID+"_beehive");
+//    }
 
     /**
      * login Kii Cloud and save the token info into DB
@@ -116,17 +118,17 @@ public class AuthManager {
      * @param token
      * @return
      */
-    public AuthInfo validateAndBindUserToken(String token) {
+    public AuthInfoEntry validateAndBindUserToken(String token) {
 
         AuthInfo authInfo = authInfoCacheService.getAvailableAuthInfo(token);
 
         if(authInfo == null) {
-            return null;
+			throw new UnauthorizedAccessException();
         }
         
         userTokenBindTool.bindToken(authInfo.getToken());
 
-        return authInfo;
+        return new AuthInfoEntry(authInfo);
     }
 
     /**

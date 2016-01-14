@@ -50,7 +50,7 @@ public class KiiCloudEventBus {
 			EventParam param = new EventParam();
 			param.setParam("isAdd",isAdd);
 
-			process.onEventFire(listener.getTargetKey(), param);
+			process.onEventFire(listener.getTargetKey(), param,listener.getCustoms());
 
 		});
 
@@ -72,7 +72,7 @@ public class KiiCloudEventBus {
 			EventParam param=new EventParam();
 			param.setParam("status",status);
 
-			process.onEventFire(listener.getTargetKey(),param);
+			process.onEventFire(listener.getTargetKey(),param,listener.getCustoms());
 		});
 
 	}

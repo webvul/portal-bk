@@ -257,11 +257,33 @@ public class ThingGroupStateManager {
 		return triggerForGroup;
 	}
 
-	public void updateThingGroup(List<GlobalThingInfo>  thingList,GroupTriggerRecord triggerRecord){
+
+	public void onTagChanged(String triggerID){
+
+
+		GroupTriggerRecord record= (GroupTriggerRecord) triggerDao.getTriggerRecord(triggerID);
+
+		if(record==null){
+
+			this.listenerService.disableTriggerByTargetID(triggerID);
+			return;
+		}
+
+		List<GlobalThingInfo>  things=thingTagService.getThingInfos(record.getSource().getSelector());
+
+		updateThingGroup(things,record);
+
+	}
+
+	private  void updateThingGroup(List<GlobalThingInfo>  thingList,GroupTriggerRecord triggerRecord){
 
 		List<String> thingIDs=thingList.stream().map(GlobalThingInfo::getFullKiiThingID).collect(Collectors.toList());
 
 		GroupTriggerRuntimeState state=statusDao.getGroupRuntimeState(triggerRecord.getId());
+		if(state==null){
+			listenerService.disableTriggerByTargetID(triggerRecord.getId());
+			return;
+		}
 
 		MemberState memberMap=state.getMemberState();
 

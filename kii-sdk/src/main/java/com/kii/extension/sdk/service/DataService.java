@@ -1,6 +1,7 @@
 package com.kii.extension.sdk.service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -17,7 +18,9 @@ import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.context.TokenBindToolResolver;
 import com.kii.extension.sdk.entity.AppInfo;
 import com.kii.extension.sdk.entity.BucketInfo;
+import com.kii.extension.sdk.entity.BucketList;
 import com.kii.extension.sdk.entity.CreateResponse;
+import com.kii.extension.sdk.entity.ScopeType;
 import com.kii.extension.sdk.entity.UpdateResponse;
 import com.kii.extension.sdk.impl.ApiAccessBuilder;
 import com.kii.extension.sdk.impl.KiiCloudClient;
@@ -43,6 +46,21 @@ public class DataService {
 		AppInfo info= bindToolResolver.getAppInfo();
 
 		return new ApiAccessBuilder(info).bindToken(bindToolResolver.getToken());
+	}
+
+	public List<String> getBucketList(ScopeType type,String name){
+
+		if(type==ScopeType.App){
+
+			HttpUriRequest request=getBuilder().bindAppScope().queryBuckets().generRequest(mapper);
+
+			BucketList list= client.executeRequestWithCls(request,BucketList.class);
+
+			return list.getBucketIDs();
+
+		}else{
+			return new ArrayList<>();
+		}
 	}
 
 

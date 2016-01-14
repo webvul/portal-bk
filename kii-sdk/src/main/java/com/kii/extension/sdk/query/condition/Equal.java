@@ -12,7 +12,7 @@ public class Equal extends SimpleCondition{
 	public Equal(){
 
 	}
-	
+
 	public Equal(String field,Object val){
 		setField(field);
 		setValue(val);

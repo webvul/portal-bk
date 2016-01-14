@@ -127,11 +127,11 @@ public class ConditionBuilder {
 	}
 
 	public <T> ConditionBuilder lessAndEq(String field, T value) {
-		return range(field, null, true, value, false);
+		return range(field, null, false, value, true);
 	}
 
 	public <T> ConditionBuilder greatAndEq(String field, T value) {
-		return range(field, value, false, null, true);
+		return range(field, value, true, null, false);
 	}
 
 	public <T> ConditionBuilder betweenIn(String field, T lower, boolean withLower,

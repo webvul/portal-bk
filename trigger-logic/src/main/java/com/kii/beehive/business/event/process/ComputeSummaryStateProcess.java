@@ -1,5 +1,7 @@
 package com.kii.beehive.business.event.process;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,11 +22,13 @@ public class ComputeSummaryStateProcess implements BeehiveEventProcess {
 
 
 	@Override
-	public void onEventFire(String summaryID, EventParam param) {
+	public void onEventFire(String summaryID, EventParam param,Map<String,Object> customer) {
 
 		ThingStatus  status= (ThingStatus) param.getParam("status");
 
-		summaryService.computeStateSummary(summaryID,status);
+		String groupID= (String) customer.get(KiicloudEventListenerService.GROUP_NAME);
+
+		summaryService.computeStateSummary(summaryID,groupID,status);
 
 	}
 }

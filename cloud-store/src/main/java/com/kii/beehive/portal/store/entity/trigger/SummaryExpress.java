@@ -1,5 +1,10 @@
 package com.kii.beehive.portal.store.entity.trigger;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class SummaryExpress {
 
 	private String stateName;
@@ -53,4 +58,43 @@ public class SummaryExpress {
 	public void setSummaryAlias(String summaryAlias) {
 		this.summaryAlias = summaryAlias;
 	}
+
+
+	@JsonIgnore
+	public List<SummaryExpress> generAdditionExp(){
+
+		List<SummaryExpress> expList=new ArrayList<>();
+
+		expList.add(getSumExpress());
+		expList.add(getCountExpress());
+
+		return expList;
+	}
+
+	private SummaryExpress getSumExpress(){
+
+		SummaryExpress sumExp=new SummaryExpress();
+		sumExp.setStateName(getStateName());
+		sumExp.setSummaryAlias(getSummaryAlias()+"_sum");
+		sumExp.setFunction(SummaryFunctionType.Sum);
+
+		this.sumField=sumExp.getSummaryAlias();
+
+		return sumExp;
+
+	}
+
+	private SummaryExpress getCountExpress(){
+
+		SummaryExpress countExp=new SummaryExpress();
+		countExp.setStateName(getStateName());
+		countExp.setSummaryAlias(getSummaryAlias()+"_count");
+		countExp.setFunction(SummaryFunctionType.Count);
+
+		this.countField=countExp.getSummaryAlias();
+		return countExp;
+
+	}
+
+
 }

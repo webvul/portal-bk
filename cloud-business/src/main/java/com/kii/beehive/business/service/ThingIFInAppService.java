@@ -42,6 +42,7 @@ public class ThingIFInAppService {
 
 	public void putStatus(String fullThingID,ThingStatus status){
 
+
 		service.putStatus(getRealThingID(fullThingID),status);
 
 	}

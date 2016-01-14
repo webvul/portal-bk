@@ -2,8 +2,6 @@ dependencies {
 
 	compile project(":kii-sdk")
 
-	compile project(":jdbc-store")
-
 	compile "org.springframework:spring-context-support:${springVersion}"
 
 	compile "net.sf.ehcache:ehcache:2.10.1"

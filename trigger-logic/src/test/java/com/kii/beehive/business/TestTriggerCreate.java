@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -76,9 +77,6 @@ public class TestTriggerCreate extends TestTemplate {
 	@Autowired
 	private TagThingRelationDao relationDao;
 
-	@Autowired
-	private ObjectMapper mapper;
-
 	private Long[] thingIDs={575l,576l,577l,578l,579l,580l,581l,582l,583l,584l};
 
 	private String appName="b8ca23d0";
@@ -87,8 +85,10 @@ public class TestTriggerCreate extends TestTemplate {
 
 	private String[] tagNames={"Custom-name0","Custom-name1","Custom-name2","Custom-name3","Custom-name4"};
 
-//	@Test
-//	@Commit
+
+
+	@Test
+	@Commit
 	public void createThings(){
 
 		for(int i=0;i<10;i++) {
@@ -180,6 +180,9 @@ public class TestTriggerCreate extends TestTemplate {
 
 	}
 
+	@Autowired
+	private ObjectMapper mapper;
+
 	@Test
 	public void testTriggerCreate() throws IOException {
 
@@ -205,6 +208,7 @@ public class TestTriggerCreate extends TestTemplate {
 
 
 		String json=mapper.writeValueAsString(record);
+
 
 		log.info(json);
 

@@ -1,6 +1,7 @@
 package com.kii.beehive.business.event.process;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -23,26 +24,11 @@ public class RefreshThingGroupProcess implements BeehiveEventProcess {
 	@Autowired
 	private ThingGroupStateManager triggerService;
 
-//	@Autowired
-//	private GlobalThingDao thingDao;
-
-	@Autowired
-	private TriggerRecordDao  triggerRecordDao;
-
-	@Autowired
-	private ThingTagManager thingService;
 
 	@Override
-	public void onEventFire(String triggerID, EventParam param) {
+	public void onEventFire(String triggerID, EventParam param,Map<String,Object> customer) {
 
-
-		GroupTriggerRecord record= (GroupTriggerRecord) triggerRecordDao.getObjectByID(triggerID);
-
-
-		List<GlobalThingInfo>  things=thingService.getThingInfos(record.getSource().getSelector());
-
-
-		triggerService.updateThingGroup(things,record);
+		triggerService.onTagChanged(triggerID);
 
 
 	}

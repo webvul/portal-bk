@@ -13,6 +13,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.service.AppInfoDao;
+import com.kii.beehive.portal.service.BeehiveParameterDao;
 import com.kii.beehive.portal.service.KiiUserSyncDao;
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
 import com.kii.extension.sdk.context.AppBindTool;
@@ -53,13 +54,25 @@ public class AppInfoManager {
 	@Autowired
 	private AppBindToolResolver resolver;
 
-
-
+	@Autowired
+	private BeehiveParameterDao paramDao;
 
 	private static  String DEFAULT_NAME="default_owner_id";
 
 	private static String DEFAULT_PWD=DigestUtils.sha1Hex(DEFAULT_NAME+"_default_owner_beehive");
 
+
+	public boolean verifyAppToken(String appID,String token){
+
+		KiiAppInfo info=appDao.getAppInfoByID(appID);
+
+		if(info==null){
+			return false;
+		}
+		resolver.setToken(token);
+		return paramDao.verify(info.getAppInfo(),token);
+
+	}
 
 	@Cacheable(cacheNames="ttl_cache")
 	public FederatedAuthResult getDefaultOwer(String appID){

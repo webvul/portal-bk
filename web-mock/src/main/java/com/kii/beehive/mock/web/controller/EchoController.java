@@ -1,5 +1,7 @@
 package com.kii.beehive.mock.web.controller;
 
+import javax.servlet.http.HttpServletRequest;
+
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +30,11 @@ public class EchoController {
 	private MockResultDao dao;
 
 	@RequestMapping(path="/echo/{method}",method={RequestMethod.POST})
-	public void echo(@RequestBody String context, @PathVariable("method") String method) throws IOException {
+	public void echo(@RequestBody String context, @PathVariable("method") String method,HttpServletRequest request) throws IOException {
+
+
+
+		String ctxPath=request.getContextPath();
 
 		JsonNode jsonNode=mapper.readValue(context,JsonNode.class);
 

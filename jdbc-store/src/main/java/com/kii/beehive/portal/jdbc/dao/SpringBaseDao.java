@@ -1,8 +1,6 @@
 package com.kii.beehive.portal.jdbc.dao;
 
 import java.io.Serializable;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -14,18 +12,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 
-import com.kii.beehive.portal.jdbc.entity.AuthInfo;
 import com.kii.beehive.portal.jdbc.entity.DBEntity;
 import com.kii.beehive.portal.jdbc.helper.AnnationBeanSqlParameterSource;
 import com.kii.beehive.portal.jdbc.helper.BindClsFullUpdateTool;
 import com.kii.beehive.portal.jdbc.helper.BindClsRowMapper;
-import com.kii.beehive.portal.util.AuthInfoStore;
+import com.kii.beehive.portal.auth.AuthInfoStore;
 
 public abstract class SpringBaseDao<T extends DBEntity> {
 

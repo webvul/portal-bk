@@ -4,7 +4,7 @@ package com.kii.beehive.portal.web.entity;
 import org.junit.Test;
 
 import com.kii.beehive.portal.web.WebTestTemplate;
-import com.kii.beehive.portal.web.help.PortalException;
+import com.kii.beehive.portal.web.exception.PortalException;
 
 import static junit.framework.TestCase.fail;
 

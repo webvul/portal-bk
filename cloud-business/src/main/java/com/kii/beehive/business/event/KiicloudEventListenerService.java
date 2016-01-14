@@ -22,6 +22,7 @@ public class KiicloudEventListenerService {
 	public static final String REFRESH_SUMMARY_GROUP="refreshSummaryGroup";
 
 	public static final String REFRESH_THING_GROUP="refreshThingGroup";
+	public static final String GROUP_NAME = "groupName";
 
 	@Autowired
 	private EventListenerDao  eventListenerDao;
@@ -43,11 +44,13 @@ public class KiicloudEventListenerService {
 
 
 
-	public String addSummaryChangeListener(List<String> tagNames,String summaryThingID){
+//
+	public String addSummaryChangeListener(List<String> tagNames,String triggerID,String name){
 
 
 		EventListener  listener=new EventListener();
-		listener.setTargetKey(summaryThingID);
+		listener.setTargetKey(triggerID);
+		listener.addCustomValue(GROUP_NAME,name);
 
 		listener.addBindKeys(tagNames);
 		listener.setEnable(true);
@@ -57,12 +60,13 @@ public class KiicloudEventListenerService {
 		return eventListenerDao.addEventListener(listener);
 
 	}
-
-
-	public String addThingStatusListener(List<String> thingIDs,String summaryThingID){
+//
+//
+	public String addThingStatusListener(List<String> thingIDs,String triggerID,String name){
 
 		EventListener  listener=new EventListener();
-		listener.setTargetKey(summaryThingID);
+		listener.setTargetKey(triggerID);
+		listener.addCustomValue("groupName",name);
 		listener.addBindKeys(thingIDs.stream().map(v->String.valueOf(v)).collect(Collectors.toList()));
 
 		listener.setRelationBeanName(COMPUTE_SUMMARY_STATE);
@@ -72,14 +76,9 @@ public class KiicloudEventListenerService {
 		return eventListenerDao.addEventListener(listener);
 
 	}
-
+//
 	public void updateThingStatusListener(List<String> thingIDs,String listenerID){
 
-//		EventListener  listener=new EventListener();
-//		listener.setTargetKey(summaryThingID);
-//		listener.addBindKeys(thingIDs.stream().map(v->String.valueOf(v)).collect(Collectors.toList()));
-//
-//		listener.setRelationBeanName(COMPUTE_SUMMARY_STATE);
 
 		Map<String,Boolean>  thingMap=new HashMap<>();
 		thingIDs.forEach(id->{
@@ -93,7 +92,7 @@ public class KiicloudEventListenerService {
 
 
 
-	public void disableTrigger(String triggerID){
+	public void disableTriggerByTargetID(String triggerID){
 
 		List<EventListener> listener=eventListenerDao.getEventListenerByTargetKey(triggerID);
 
@@ -101,7 +100,7 @@ public class KiicloudEventListenerService {
 
 	}
 
-	public void enableTrigger(String triggerID){
+	public void enableTriggerByTargetID(String triggerID){
 
 		List<EventListener> listener=eventListenerDao.getEventListenerByTargetKey(triggerID);
 

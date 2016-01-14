@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
+import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.store.entity.trigger.TriggerRecord;
 import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.entity.BucketInfo;
@@ -53,18 +54,12 @@ public class TriggerRecordDao extends AbstractDataAccess<TriggerRecord> {
 	
 	public void enableTrigger(String triggerID) {
 
-		TriggerRecord record=super.getObjectByID(triggerID);
-		if(record.getRecordStatus()== TriggerRecord.StatusType.disable) {
-			super.updateEntity(Collections.singletonMap("recordStatus", TriggerRecord.StatusType.enable), triggerID);
-		}
+		super.updateEntity(Collections.singletonMap("recordStatus", TriggerRecord.StatusType.enable), triggerID);
+
 	}
 
 	public void disableTrigger(String triggerID) {
-		TriggerRecord record=super.getObjectByID(triggerID);
-		if(record.getRecordStatus()== TriggerRecord.StatusType.enable) {
-
 			super.updateEntity(Collections.singletonMap("recordStatus", TriggerRecord.StatusType.disable), triggerID);
-		}
 
 	}
 }

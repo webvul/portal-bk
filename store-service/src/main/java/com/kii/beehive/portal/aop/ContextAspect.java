@@ -7,11 +7,9 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import com.kii.beehive.business.helper.PortalTokenService;
 import com.kii.beehive.portal.store.entity.PortalEntity;
-import com.kii.beehive.portal.util.AuthInfoStore;
+import com.kii.beehive.portal.auth.AuthInfoStore;
 
 @Aspect
 public class ContextAspect {

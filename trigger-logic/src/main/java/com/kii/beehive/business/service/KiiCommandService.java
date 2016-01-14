@@ -1,5 +1,7 @@
 package com.kii.beehive.business.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -9,8 +11,11 @@ import com.kii.beehive.portal.manager.AppInfoManager;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.manager.ThingTagManager;
 import com.kii.beehive.portal.service.ClientTriggerResultDao;
+import com.kii.beehive.portal.service.TriggerRecordDao;
 import com.kii.beehive.portal.store.entity.trigger.ClientTriggerResult;
 import com.kii.beehive.portal.store.entity.trigger.TargetAction;
+import com.kii.beehive.portal.store.entity.trigger.TriggerRecord;
+import com.kii.beehive.portal.store.entity.trigger.TriggerTarget;
 import com.kii.extension.sdk.entity.thingif.ServiceCode;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
 
@@ -21,6 +26,9 @@ public class KiiCommandService {
 	private static final int SCHEMA_VERSION = 1;
 	@Autowired
 	private ThingIFInAppService thingIFService;
+
+	@Autowired
+	private TriggerRecordDao triggerDao;
 
 
 	@Autowired
@@ -35,6 +43,38 @@ public class KiiCommandService {
 
 	@Autowired
 	private ClientTriggerResultDao  resultDao;
+
+
+	public void doCommand(TriggerRecord  record) {
+		List<TriggerTarget> targets=record.getTargets();
+
+		targets.forEach(target->{
+
+			TargetAction action=target.getCommand();
+
+
+			List<GlobalThingInfo>  thingList=thingTagService.getThingInfos(target.getSelector());
+
+			thingList.forEach(thing->{
+
+				sendCmdToThing(thing,action,record.getId());
+			});
+
+		});
+
+	}
+
+	public void doCommand(String triggerID){
+
+		TriggerRecord record=triggerDao.getTriggerRecord(triggerID);
+
+		if(record==null){
+			return;
+		}
+
+		doCommand(record);
+	}
+
 
 	public  void sendCmdToThing(GlobalThingInfo thingInfo,TargetAction target,String triggerID){
 

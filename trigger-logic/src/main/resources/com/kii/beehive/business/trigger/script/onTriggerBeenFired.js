@@ -12,10 +12,6 @@ function global_onTriggerArrive(params,endpoint,context,done){
 
  doRemoteCall(context,endpoint,params,done);
 
-// var request=new Global_RemoteKiiRequest(endpoint,context,done);
-//
-// request.execute(output,function(){done();});
-
 }
 
 function global_onSimpleTriggerArrive(params,context,done){
@@ -27,12 +23,6 @@ function global_onSimpleTriggerArrive(params,context,done){
 function global_onPositiveTriggerArrive(params,context,done){
 
 	global_onTriggerArrive(params,"positive",context,done);
-
-}
-
-function global_onSummaryTriggerArrive(params,context,done){
-
-	global_onTriggerArrive(params,"summary",context,done);
 
 }
 
