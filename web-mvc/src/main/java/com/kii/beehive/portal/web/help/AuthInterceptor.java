@@ -100,7 +100,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 			// TODO this checking is for testing only, must remove after testing complete
 			if (Constants.SUPER_TOKEN.equals(token)&&(!"production".equals(env))) {
 
-//				authManager.saveToken(USER_ID, token);
+				authManager.saveToken(USER_ID, token);
 
 				AuthInfoStore.setAuthInfo("211102");
 
