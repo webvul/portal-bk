@@ -1,6 +1,7 @@
 package com.kii.beehive.portal.web.controller;
 
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +9,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.logging.log4j.util.Strings;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +19,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-
 import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
+import com.kii.beehive.portal.service.BeehiveUserDao;
+import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.exception.PortalException;
 
 /**
@@ -30,7 +33,10 @@ import com.kii.beehive.portal.web.exception.PortalException;
 @RestController
 @RequestMapping(path = "/usergroup",  consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
 public class UserGroupController extends AbstractController{
-
+	
+	@Autowired
+	private BeehiveUserDao beehiveUserDao;
+	
     /**
      * 创建用户群组
      * POST /usergroup
@@ -132,9 +138,16 @@ public class UserGroupController extends AbstractController{
     @RequestMapping(path="/{userGroupID}",method={RequestMethod.GET})
     public ResponseEntity getUserGroupDetail(@PathVariable("userGroupID") Long userGroupID, HttpServletRequest httpRequest){
     	String loginUserID = getLoginUserID(httpRequest);
-    	List<GroupUserRelation> list = null;
+    	List<BeehiveUser> list = null;
 		if(checkUserGroup(loginUserID, userGroupID)){
-			list = groupUserRelationDao.findByUserGroupID(userGroupID);
+			List<String> userIdList = new ArrayList<String>(); 
+			List<GroupUserRelation> relList = groupUserRelationDao.findByUserGroupID(userGroupID);
+			if(relList.size() > 0){
+				for(GroupUserRelation gur:relList){
+					userIdList.add(gur.getUserID());
+				}
+				list = beehiveUserDao.getUserByIDs(userIdList);
+			}
 		}
 
         return new ResponseEntity<>(list, HttpStatus.OK);
