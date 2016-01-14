@@ -21,6 +21,8 @@ import com.kii.extension.sdk.entity.thingif.StatePredicate;
 })
 public abstract  class TriggerRecord extends KiiEntity {
 
+	private String userID;
+
 	private StatePredicate  perdicate;
 
 	private List<TriggerTarget>  targets=new ArrayList<>();
@@ -28,6 +30,14 @@ public abstract  class TriggerRecord extends KiiEntity {
 //	private TriggerType type;
 
 	private StatusType recordStatus;
+
+	public String getUserID() {
+		return userID;
+	}
+
+	public void setUserID(String userID) {
+		this.userID = userID;
+	}
 
 	public StatusType getRecordStatus() {
 		return recordStatus;

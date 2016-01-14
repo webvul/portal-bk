@@ -92,6 +92,21 @@ public class ThingStateSummaryManager {
 
 	}
 
+	public void removeTrigger(String triggerID){
+
+		SummaryTriggerRuntimeState state=statusDao.getSummaryRuntimeState(triggerID);
+
+		for(SummaryStateEntry  listener:state.getListeners().values()){
+
+			listenerService.removeListener(listener.getStateListenerID());
+			listenerService.removeListener(listener.getTagListenerID());
+
+		}
+
+		triggerDao.deleteTriggerRecord(triggerID);
+
+	}
+
 	public void initStateSummary(SummaryTriggerRecord record){
 
 		fillForAverageCompute(record);

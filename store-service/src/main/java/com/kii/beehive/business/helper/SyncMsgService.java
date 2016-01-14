@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.service.DeviceSupplierDao;
 import com.kii.beehive.portal.service.UserSyncMsgDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
@@ -31,8 +32,6 @@ public class SyncMsgService {
 	@Autowired
 	private DeviceSupplierDao  supplierDao;
 
-	@Autowired
-	private PortalTokenService tokenService;
 
 	@Autowired
 	private NotifySenderTool notifyTool;
@@ -66,7 +65,7 @@ public class SyncMsgService {
 		SupplierPushMsgTask entity=new SupplierPushMsgTask();
 
 		entity.setMsgContent(msg);
-		entity.setSourceSupplier(tokenService.getSupplierInfo().getId());
+		entity.setSourceSupplier(AuthInfoStore.getUserID());
 
 		msgDao.addUserSyncMsg(entity);
 

@@ -10,7 +10,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.beehive.business.helper.NotifySenderTool;
-import com.kii.beehive.business.helper.PortalTokenService;
 import com.kii.beehive.portal.service.DeviceSupplierDao;
 import com.kii.beehive.portal.service.UserSyncMsgDao;
 import com.kii.beehive.portal.store.entity.Token.PortalTokenType;
@@ -24,8 +23,7 @@ public class TestNotifyTool extends TestInit {
 	@Autowired
 	private NotifySenderTool tool;
 
-	@Autowired
-	private PortalTokenService tokenService;
+
 
 	@Autowired
 	private DeviceSupplierDao supplierDao;
@@ -35,12 +33,7 @@ public class TestNotifyTool extends TestInit {
 
 	@Autowired
 	private UserSyncMsgDao msgDao;
-	@Before
-	public void before(){
 
-		tokenService.setToken("d31032a0-8ebf-11e5-9560-00163e02138f", PortalTokenType.UserSync);
-
-	}
 
 	@Test
 	public void test() throws JsonProcessingException {
@@ -55,7 +48,7 @@ public class TestNotifyTool extends TestInit {
 
 		task.setMsgContent(msg);
 
-		task.setSourceSupplier(tokenService.getSupplierInfo().getId());
+		task.setSourceSupplier("d31032a0-8ebf-11e5-9560-00163e02138f");
 
 
 		Map<String,String> urlMap=supplierDao.getUrlMap();
