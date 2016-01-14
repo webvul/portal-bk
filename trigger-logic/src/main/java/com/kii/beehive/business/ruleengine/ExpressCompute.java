@@ -60,8 +60,9 @@ public class ExpressCompute {
 				Object source = content.get(field);
 
 				if (range.getUpperLimit() != null) {
+					Object upper=getValue(range.getUpperLimit(),content);
 
-					int sign = compareToValue(source, range.getUpperLimit());
+					int sign = compareToValue(source, upper);
 					if (sign == 0 && range.isUpperIncluded()) {
 						return true;
 					}
@@ -69,8 +70,8 @@ public class ExpressCompute {
 				}
 
 				if (range.getLowerLimit() != null) {
-
-					int sign = compareToValue(source, range.getLowerLimit());
+					Object lower=getValue(range.getLowerLimit(),content);
+					int sign = compareToValue(source, lower);
 					if (sign == 0 && range.isLowerIncluded()) {
 						return true;
 					}
@@ -94,13 +95,13 @@ public class ExpressCompute {
 
 		if(source instanceof Integer||
 				source instanceof  Long){
-			Long sourceVal=(Long)source;
+			Long sourceVal=getLongValue(source);
 			Long targetVal=getLongValue(target);
 			return sourceVal.compareTo(targetVal);
 		}else if(source instanceof  Float||
 				source instanceof  Double){
 
-			Double sourceVal=(Double)source;
+			Double sourceVal=getDoubleValue(source);
 			Double targetVal=getDoubleValue(target);
 			double detal=sourceVal*0.01;
 			if(Math.abs(sourceVal-targetVal)<detal){

@@ -4,9 +4,7 @@ package com.kii.beehive.portal.auth;
 
 public class AuthInfoStore {
 
-	private static ThreadLocal<String>  local=ThreadLocal.withInitial(()->{
-		return "anonymous";
-	});
+	private static ThreadLocal<String>  local=ThreadLocal.withInitial(()-> "anonymous");
 
 
 	public static void setAuthInfo(String userID){
