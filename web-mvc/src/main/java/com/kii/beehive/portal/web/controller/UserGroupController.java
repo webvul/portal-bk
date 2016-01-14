@@ -2,6 +2,7 @@ package com.kii.beehive.portal.web.controller;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -101,6 +102,41 @@ public class UserGroupController extends AbstractController{
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+	/**
+	 * 复数用户加入群组
+	 * POST /usergroup/{userGroupID}/users/{userID...}
+	 *
+	 * @param userGroupID
+	 */
+	@RequestMapping(path="/{userGroupID}/users/{userIDs}",method={RequestMethod.POST})
+	public ResponseEntity addUsersToUserGroup(@PathVariable("userGroupID") Long userGroupID, @PathVariable("userIDs") String userIDs, HttpServletRequest httpRequest){
+		String loginUserID = getLoginUserID(httpRequest);
+
+		if(checkUserGroup(loginUserID, userGroupID)){
+
+			List<String> userIDList = Arrays.asList(userIDs.split(","));
+			userManager.addUserToUserGroup(userIDList, userGroupID);
+		}
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+
+	/**
+	 * 复数用户從群组刪除
+	 * PUT /usergroup/{userGroupID}/users/{userID...}
+	 *
+	 * @param userGroupID
+	 */
+	@RequestMapping(path="/{userGroupID}/users/{userIDs}",method={RequestMethod.DELETE})
+	public ResponseEntity removeUsersFromUserGroup(@PathVariable("userGroupID") Long userGroupID, @PathVariable("userIDs") String userIDs, HttpServletRequest httpRequest){
+		String loginUserID = getLoginUserID(httpRequest);
+
+		if(checkUserGroup(loginUserID, userGroupID)){
+
+			List<String> userIDList = Arrays.asList(userIDs.split(","));
+			groupUserRelationDao.deleteUsers(userIDList, userGroupID);
+		}
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
 
     /**
      * 删除用户群组

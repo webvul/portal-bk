@@ -120,9 +120,6 @@ public abstract class BaseDao<T extends DBEntity> {
     	return result;
 	}
 
-
-
-
 	public int execute(String sql, List<Object> values) {
 
 		Object[] params = null;
@@ -185,6 +182,21 @@ public abstract class BaseDao<T extends DBEntity> {
 		log.debug("BaseDao Update Values: " + fieldValues);
 
 		return updateResult;
+	}
+
+	public int[] batchInsert(List<T> entityList){
+
+		if(entityList == null) {
+			return new int[0];
+		}
+
+		SqlParameterSource[] sqlParameterSources = new SqlParameterSource[entityList.size()];
+
+		for(int i=0;i<sqlParameterSources.length;i++){
+			sqlParameterSources[i] = new AnnationBeanSqlParameterSource(entityList.get(i));
+		}
+
+		return insertTool.executeBatch(sqlParameterSources);
 	}
 
 }

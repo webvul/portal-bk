@@ -97,4 +97,42 @@ public class GroupUserRelationDao extends BaseDao<GroupUserRelation> {
 		}
         return null;
     }
+
+	public List<String> findUserIDByUserGroupID(Long userGroupID) {
+
+		String sql = "SELECT " + GroupUserRelation.USER_ID + " FROM " + this.getTableName() + " WHERE "+ GroupUserRelation.USER_GROUP_ID + "=?";
+		List<String> rows = jdbcTemplate.queryForList(sql, String.class, userGroupID);
+		return rows;
+	}
+
+	/**
+	 * delete users from user group
+	 *
+	 * @param userIDList
+	 * @param userGroupID mandatory field
+     * @return
+     */
+	public int deleteUsers(List<String> userIDList, Long userGroupID){
+
+		int size = userIDList.size();
+		if(size > 0){
+			Object[] params = new Object[size + 1];
+			params[0] = userGroupID;
+
+			StringBuilder sb = new StringBuilder(size*2-1);
+			for(int i=0; i<size ; i++){
+				if(sb.length() > 0)
+					sb.append(",");
+				sb.append("?");
+				params[i+1] = userIDList.get(i);
+			}
+
+			String sql = "DELETE FROM  " + this.getTableName()
+					+ " WHERE " + GroupUserRelation.USER_GROUP_ID + "=? AND "+ GroupUserRelation.USER_ID +" IN ("+sb.toString()+")";
+			return jdbcTemplate.update(sql, params);
+		}
+
+		return 0;
+	}
+
 }

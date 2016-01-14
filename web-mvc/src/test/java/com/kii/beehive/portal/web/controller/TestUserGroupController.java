@@ -3,7 +3,6 @@ package com.kii.beehive.portal.web.controller;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
-import static junit.framework.TestCase.assertNull;
 import static junit.framework.TestCase.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -23,11 +22,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
 import com.kii.beehive.portal.service.BeehiveUserDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.WebTestTemplate;
 import com.kii.beehive.portal.web.constant.Constants;
-import com.kii.beehive.portal.web.help.AuthInterceptor;
 
 public class TestUserGroupController extends WebTestTemplate {
 
@@ -37,6 +36,8 @@ public class TestUserGroupController extends WebTestTemplate {
     @Autowired
     private BeehiveUserDao userDao;
 
+    @Autowired
+    private GroupUserRelationDao relationDao;
     
     private List<String> userIDListForTest = new ArrayList<>();
 
@@ -92,6 +93,76 @@ public class TestUserGroupController extends WebTestTemplate {
                 e.printStackTrace();
             }
         }
+    }
+
+    private String toString(List<String> list) {
+
+        StringBuffer buffer = new StringBuffer();
+        for(String str : list) {
+            buffer.append(",");
+            buffer.append(str);
+        }
+        buffer.deleteCharAt(0);
+
+        return buffer.toString();
+    }
+
+    @Test
+    public void testAddUsersToUserGroup() throws Exception {
+        this.testCreateUserGroup();
+
+        // add users to user group
+        String userIDs = this.toString(userIDListForTest);
+
+        String result=this.mockMvc.perform(
+                post("/usergroup/" + userGroupID + "/users/" + userIDs)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("UTF-8")
+                        .header(Constants.ACCESS_TOKEN, tokenForTest)
+        )
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        System.out.println("Response: " + result);
+
+        // assert
+        List<String> userIDList = relationDao.findUserIDByUserGroupID(Long.valueOf(userGroupID));
+        System.out.println("userIDList: " + userIDList);
+
+        assertTrue(userIDList.containsAll(userIDListForTest));
+
+    }
+
+    @Test
+    public void testRemoveUsersFromUserGroup() throws Exception {
+        // create user group
+        this.testAddUsersToUserGroup();
+
+        // remove users from user group
+        String userIDLeft = userIDListForTest.remove(0);
+        String userIDs = this.toString(userIDListForTest);
+
+        String result=this.mockMvc.perform(
+                delete("/usergroup/" + userGroupID + "/users/" + userIDs)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("UTF-8")
+                        .header(Constants.ACCESS_TOKEN, tokenForTest)
+        )
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        System.out.println("Response: " + result);
+
+        // assert
+        List<String> userIDList = relationDao.findUserIDByUserGroupID(Long.valueOf(userGroupID));
+        System.out.println("userIDList: " + userIDList);
+
+        assertTrue(userIDList.contains(userIDLeft));
+
+        for(String userID : userIDListForTest) {
+            assertTrue(!userIDList.contains(userID));
+        }
+
     }
 
     @Test
