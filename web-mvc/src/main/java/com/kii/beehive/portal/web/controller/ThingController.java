@@ -29,7 +29,7 @@ import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagType;
 import com.kii.beehive.portal.web.entity.ThingRestBean;
-import com.kii.beehive.portal.web.help.PortalException;
+import com.kii.beehive.portal.web.exception.PortalException;
 
 /**
  * Beehive API - Thing API

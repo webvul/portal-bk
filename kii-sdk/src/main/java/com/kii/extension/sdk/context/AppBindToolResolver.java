@@ -66,8 +66,10 @@ public class AppBindToolResolver {
 
 		oldInfosThreadLocal.get().addFirst(infos);
 	}
+	
 
-
+	
+	
 	private class OldInfos {
 
 		 AppInfo oldAppInfo=null;
@@ -156,6 +158,10 @@ public class AppBindToolResolver {
 
 		setAppChoice(choice);
 
+	}
+
+	public void setToken(String token) {
+		this.tokenDirectLocal.set(token);
 	}
 
 

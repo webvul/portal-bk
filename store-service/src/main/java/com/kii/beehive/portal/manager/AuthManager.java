@@ -45,16 +45,16 @@ public class AuthManager {
     public boolean register(String userID, String password) {
 
         try {
-            String defaultPassword = this.getDefaultPassword(userID);
+//            String defaultPassword = this.getDefaultPassword(userID);
 
             // login Kii Cloud
-            LoginInfo loginInfo = userService.login(userID, defaultPassword);
+            LoginInfo loginInfo = userService.login(userID, password);
 
             // bind token to ThreadLocal
             userTokenBindTool.bindToken(loginInfo.getToken());
 
             // change from default password to new password
-            userService.changePassword(defaultPassword, password);
+//            userService.changePassword(defaultPassword, password);
 
         } catch (KiiCloudException e) {
             log.debug("Login with default password failed", e);
@@ -64,9 +64,9 @@ public class AuthManager {
         return true;
     }
 
-    private String getDefaultPassword(String userID) {
-        return DigestUtils.sha1Hex(userID+"_beehive");
-    }
+//    private String getDefaultPassword(String userID) {
+//        return DigestUtils.sha1Hex(userID+"_beehive");
+//    }
 
     /**
      * login Kii Cloud and save the token info into DB

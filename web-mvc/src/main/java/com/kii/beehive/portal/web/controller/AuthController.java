@@ -19,7 +19,7 @@ import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.entity.AuthRestBean;
-import com.kii.beehive.portal.web.help.PortalException;
+import com.kii.beehive.portal.web.exception.PortalException;
 import com.kii.extension.sdk.entity.LoginInfo;
 
 /**

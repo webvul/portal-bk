@@ -133,6 +133,7 @@ public class ApiAccessBuilder {
 	}
 
 
+
 	public ApiAccessBuilder bindBucketInfo(BucketInfo bucketInfo) {
 		return this.bindBucket(bucketInfo.getBucketName()).bindScope(bucketInfo.getScopeType(), bucketInfo.getScopeName());
 	}
@@ -142,6 +143,18 @@ public class ApiAccessBuilder {
 		return this;
 	}
 
+	public ApiAccessBuilder bindAppScope() {
+		this.scopeSubUrl = "";
+		return this;
+	}
+
+	public ApiAccessBuilder queryBuckets(){
+
+		request = new HttpGet(appInfo.getAppSubUrl() + scopeSubUrl+ "/buckets");
+
+
+		return this;
+	}
 
 	public ApiAccessBuilder bindBucket(String bucketName) {
 		this.bucketUrl = "/buckets/" + bucketName;

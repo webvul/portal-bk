@@ -3,7 +3,6 @@ package com.kii.beehive.portal.web.entity;
 
 import java.util.Map;
 
-import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
@@ -13,8 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.store.entity.CustomProperty;
-import com.kii.beehive.portal.web.constant.ErrorCode;
-import com.kii.beehive.portal.web.help.PortalException;
+import com.kii.beehive.portal.web.exception.PortalException;
 
 public class UserRestBean  extends BeehiveUser {
 

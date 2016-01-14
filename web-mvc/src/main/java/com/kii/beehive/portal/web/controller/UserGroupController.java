@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
-import com.kii.beehive.portal.web.help.PortalException;
+import com.kii.beehive.portal.web.exception.PortalException;
 
 /**
  * Beehive API - User API

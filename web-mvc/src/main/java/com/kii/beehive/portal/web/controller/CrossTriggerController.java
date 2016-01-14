@@ -20,7 +20,8 @@ import com.kii.beehive.portal.store.entity.trigger.SimpleTriggerRecord;
 import com.kii.beehive.portal.store.entity.trigger.SummaryTriggerRecord;
 import com.kii.beehive.portal.store.entity.trigger.TriggerRecord;
 import com.kii.beehive.portal.web.constant.ErrorCode;
-import com.kii.beehive.portal.web.help.PortalException;
+import com.kii.beehive.portal.web.exception.BeehiveUnAuthorizedException;
+import com.kii.beehive.portal.web.exception.PortalException;
 
 @RestController
 @RequestMapping(path = "/triggers", consumes = { MediaType.APPLICATION_JSON_UTF8_VALUE }, produces = {
@@ -86,7 +87,7 @@ public class CrossTriggerController {
 		if(!record.getUserID().equals(AuthInfoStore.getUserID())
 				&&!AuthInfoStore.isAmin()){
 
-			throw new PortalException(ErrorCode.AUTH_FAIL,"only owner can operate trigger", HttpStatus.FORBIDDEN);
+			throw new BeehiveUnAuthorizedException("only owner can operate trigger");
 		}
 	}
 

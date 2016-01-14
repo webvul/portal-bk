@@ -15,12 +15,14 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.kii.beehive.business.helper.OpLogTools;
 import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.manager.AppInfoManager;
 import com.kii.beehive.portal.manager.AuthManager;
 import com.kii.beehive.portal.service.DeviceSupplierDao;
 import com.kii.beehive.portal.store.entity.AuthInfoEntry;
 import com.kii.beehive.portal.store.entity.DeviceSupplier;
 import com.kii.beehive.portal.web.constant.CallbackNames;
 import com.kii.beehive.portal.web.constant.Constants;
+import com.kii.beehive.portal.web.exception.BeehiveUnAuthorizedException;
 import com.kii.extension.sdk.exception.UnauthorizedAccessException;
 
 public class AuthInterceptor extends HandlerInterceptorAdapter {
@@ -42,6 +44,10 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
 	@Autowired
 	private DeviceSupplierDao supplierDao;
+
+	@Autowired
+	private AppInfoManager  appInfoManager;
+
     /**
      * validate the token from header "accessToken"
      * the token is assigned after login success
@@ -75,13 +81,14 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 		try {
 
 			if (auth == null || !auth.startsWith("Bearer ")) {
-				throw new UnauthorizedAccessException();
+				throw new BeehiveUnAuthorizedException(" auth token format invalid");
 			}
 
 			auth = auth.trim();
 
 			String token = auth.substring(auth.indexOf(" ") + 1).trim();
 
+			list.set(1,token);
 			// TODO this checking is for testing only, must remove after testing complete
 			if (SUPER_TOKEN.equals(token)) {
 				authManager.saveToken("211102", token);
@@ -92,7 +99,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
 				DeviceSupplier supper= supplierDao.getSupplierByID(token);
 				if(supper==null){
-					throw new UnauthorizedAccessException();
+					throw new BeehiveUnAuthorizedException(" DeviceSupplier Token invalid");
 				}else{
 					AuthInfoStore.setAuthInfo(supper.getId());
 				}
@@ -100,25 +107,33 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 			}else if(subUrl.startsWith(CallbackNames.CALLBACK_URL)){
 				//trigger app callvback
 
+				String appID=request.getHeader("x-kii-appid");
+
+				if(!appInfoManager.verifyAppToken(appID,token)){
+					throw new BeehiveUnAuthorizedException(" app callback unauthorized:app id "+appID);
+				}
+				AuthInfoStore.setAuthInfo(appID);
+
 			}else {
 
 				AuthInfoEntry authInfo = authManager.validateAndBindUserToken(token);
 				list.set(1, authInfo.getUserID());
 
 				if (!authInfo.doValid(request.getRequestURI(), request.getMethod())) {
-					throw new UnauthorizedAccessException();
+					throw new BeehiveUnAuthorizedException("access url not been authorized:"+subUrl);
 				} else {
 					AuthInfoStore.setAuthInfo(authInfo.getUserID());
 				}
 			}
 
 			list.set(2,"loginSuccess");
-		}catch(UnauthorizedAccessException e){
+		}catch(BeehiveUnAuthorizedException e){
 			list.set(2,"UnauthorizedAccess");
 			logTool.write(list);
 			throw e;
 		}
-
+		list.set(1,AuthInfoStore.getUserID());
+		logTool.write(list);
 
 		return super.preHandle(request, response, handler);
 
