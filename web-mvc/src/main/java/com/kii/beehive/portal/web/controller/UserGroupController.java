@@ -8,7 +8,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,6 +22,7 @@ import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
 import com.kii.beehive.portal.service.BeehiveUserDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
+import com.kii.beehive.portal.web.entity.UserGroupRestBean;
 import com.kii.beehive.portal.web.exception.PortalException;
 
 /**
@@ -44,15 +44,14 @@ public class UserGroupController extends AbstractController{
      * refer to doc "Beehive API - User API" for request/response details
      * refer to doc "Tech Design - Beehive API", section "Create User Group (创建用户群组)" for more details
      *
-     * @param userGroup
+     * @param userGroupRestBean
      */
     @RequestMapping(path="",method={RequestMethod.POST})
-    public ResponseEntity createUserGroup(@RequestBody UserGroup userGroup, HttpServletRequest httpRequest){
+    public ResponseEntity createUserGroup(@RequestBody UserGroupRestBean userGroupRestBean, HttpServletRequest httpRequest){
 
-        if(Strings.isBlank(userGroup.getName())) {
-            throw new PortalException("RequiredFieldsMissing", "userGroupName is null", HttpStatus.BAD_REQUEST);
-        }
-        
+		userGroupRestBean.verifyInput();
+
+		UserGroup userGroup = userGroupRestBean.getUserGroup();
         String loginUserID = getLoginUserID(httpRequest);
         Long userGroupID = null;
         if(userGroup.getId() == null){//create
@@ -62,7 +61,7 @@ public class UserGroupController extends AbstractController{
         }
 
         Map<String,Object> resultMap = new HashMap<>();
-        resultMap.put("userGroupID", userGroupID);
+        resultMap.put("userGroupID", String.valueOf(userGroupID));
         return new ResponseEntity<>(resultMap, HttpStatus.OK);
     }
     
@@ -70,7 +69,7 @@ public class UserGroupController extends AbstractController{
      * 用户加入群组
      * POST /usergroup/{userGroupID}/user/{userID}
      *
-     * @param userGroup
+     * @param userGroupID
      */
     @RequestMapping(path="/{userGroupID}/user/{userID}",method={RequestMethod.POST})
     public ResponseEntity addUserToUserGroup(@PathVariable("userGroupID") Long userGroupID, @PathVariable("userID") String userID, HttpServletRequest httpRequest){
@@ -90,7 +89,7 @@ public class UserGroupController extends AbstractController{
      * 用户從群组刪除
      * PUT /usergroup/{userGroupID}/user/{userID}
      *
-     * @param userGroup
+     * @param userGroupID
      */
     @RequestMapping(path="/{userGroupID}/user/{userID}",method={RequestMethod.DELETE})
     public ResponseEntity removeUserToUserGroup(@PathVariable("userGroupID") Long userGroupID, @PathVariable("userID") String userID, HttpServletRequest httpRequest){
@@ -160,19 +159,21 @@ public class UserGroupController extends AbstractController{
      * refer to doc "Beehive API - User API" for request/response details
      * refer to doc "Tech Design - Beehive API", section "Inquire User Group (查询用户群组)" for more details
      *
-     * @param queryMap
+     * @param httpRequest
      */
     @RequestMapping(path = "/list", method = {RequestMethod.GET})
-	public ResponseEntity<List<UserGroup>> getUserGroupList(HttpServletRequest httpRequest) {
+	public ResponseEntity<List<UserGroupRestBean>> getUserGroupList(HttpServletRequest httpRequest) {
     	String loginUserID = getLoginUserID(httpRequest);
 		List<UserGroup> list = userGroupDao.findUserGroup(loginUserID, null , null);
-		return new ResponseEntity<>(list, HttpStatus.OK);
+		List<UserGroupRestBean> restBeanList = this.convertList(list);
+		return new ResponseEntity<>(restBeanList, HttpStatus.OK);
 	}
     
     @RequestMapping(path = "/all", method = {RequestMethod.GET})
-	public ResponseEntity<List<UserGroup>> getUserGroupAll(HttpServletRequest httpRequest) {
+	public ResponseEntity<List<UserGroupRestBean>> getUserGroupAll(HttpServletRequest httpRequest) {
 		List<UserGroup> list = userGroupDao.findAll();
-		return new ResponseEntity<>(list, HttpStatus.OK);
+		List<UserGroupRestBean> restBeanList = this.convertList(list);
+		return new ResponseEntity<>(restBeanList, HttpStatus.OK);
 	}
     
     private boolean checkUserGroup(String loginUserID, Long userGroupID){
@@ -184,5 +185,18 @@ public class UserGroupController extends AbstractController{
 			return false;
 		}
     }
+
+	private List<UserGroupRestBean> convertList(List<UserGroup> userGroupList) {
+
+		List<UserGroupRestBean> list = new ArrayList<>();
+
+		if(userGroupList != null) {
+			for(UserGroup userGroup : userGroupList) {
+				list.add(new UserGroupRestBean(userGroup));
+			}
+		}
+
+		return list;
+	}
 
 }
