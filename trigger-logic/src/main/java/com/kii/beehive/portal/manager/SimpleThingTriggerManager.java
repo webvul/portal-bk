@@ -44,7 +44,7 @@ public class SimpleThingTriggerManager {
 	@Autowired
 	private TriggerRuntimeStatusDao statusDao;
 
-	@PostConstruct
+//	@PostConstruct
 	public void refreshState(){
 
 		List<TriggerRuntimeState> stateList=statusDao.getUnCompletedList(BeehiveTriggerType.Simple);

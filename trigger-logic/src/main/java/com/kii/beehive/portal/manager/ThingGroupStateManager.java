@@ -60,7 +60,7 @@ public class ThingGroupStateManager {
 	@Autowired
 	private AppInfoManager appInfoManager;
 
-	@PostConstruct
+//	@PostConstruct
 	public void refreshState(){
 
 		List<TriggerRuntimeState>  stateList=statusDao.getUnCompletedList(BeehiveTriggerType.Group);
