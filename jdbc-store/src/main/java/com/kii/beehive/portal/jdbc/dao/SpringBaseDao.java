@@ -82,7 +82,7 @@ public abstract class SpringBaseDao<T extends DBEntity> {
 
 	public T findByID(Serializable id){
 		String sql = "SELECT * FROM " + this.getTableName() + " WHERE "+ getKey() +"=?";
-		return (T) jdbcTemplate.queryForObject(sql, getRowMapper());
+		return (T) jdbcTemplate.queryForObject(sql, getRowMapper(), id);
 	}
 
 	public List<T> findByIDs(long[] ids){
