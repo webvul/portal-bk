@@ -100,7 +100,7 @@ public class ThingStateSummaryManager {
 
 	}
 
-	public void initStateSummary(SummaryTriggerRecord record){
+	public String initStateSummary(SummaryTriggerRecord record){
 
 		fillForAverageCompute(record);
 
@@ -157,6 +157,8 @@ public class ThingStateSummaryManager {
 
 			commandService.doCommand(record);
 		}
+
+		return triggerID;
 
 	}
 

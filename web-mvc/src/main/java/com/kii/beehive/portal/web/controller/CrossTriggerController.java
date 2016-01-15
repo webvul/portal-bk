@@ -1,8 +1,10 @@
 package com.kii.beehive.portal.web.controller;
 
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,9 +21,7 @@ import com.kii.beehive.portal.store.entity.trigger.GroupTriggerRecord;
 import com.kii.beehive.portal.store.entity.trigger.SimpleTriggerRecord;
 import com.kii.beehive.portal.store.entity.trigger.SummaryTriggerRecord;
 import com.kii.beehive.portal.store.entity.trigger.TriggerRecord;
-import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.exception.BeehiveUnAuthorizedException;
-import com.kii.beehive.portal.web.exception.PortalException;
 
 @RestController
 @RequestMapping(path = "/triggers", consumes = { MediaType.APPLICATION_JSON_UTF8_VALUE }, produces = {
@@ -40,25 +40,35 @@ public class CrossTriggerController {
 
 	private TriggerMaintainManager mang;
 
-
+	/**
+	 * onboarding should be already done on the things in the param
+	 *
+	 * @param record
+     */
 	@RequestMapping(path="/createTrigger",method = { RequestMethod.POST })
-	public void createTrigger(@RequestBody TriggerRecord record){
+	public Map<String, Object> createTrigger(@RequestBody TriggerRecord record){
 
 
 		record.setUserID(AuthInfoStore.getUserID());
 
+		String triggerID = null;
+
 		switch(record.getType()){
 			case Simple:
-				simpleMang.createSimpleTrigger((SimpleTriggerRecord)record);
+				triggerID = simpleMang.createSimpleTrigger((SimpleTriggerRecord)record);
 				break;
 			case Group:
-				groupMang.createThingGroup((GroupTriggerRecord)record);
+				triggerID = groupMang.createThingGroup((GroupTriggerRecord)record);
 				break;
 			case Summary:
-				summaryMang.initStateSummary((SummaryTriggerRecord)record);
+				triggerID = summaryMang.initStateSummary((SummaryTriggerRecord)record);
 				break;
 		}
 
+		Map<String, Object> result = new HashMap<>();
+		result.put("triggerID", triggerID);
+
+		return result;
 	}
 
 	@RequestMapping(path="/{triggerID}",method = { RequestMethod.DELETE })

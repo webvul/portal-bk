@@ -111,7 +111,7 @@ public class ThingGroupStateManager {
 	}
 
 
-	public void createThingGroup( GroupTriggerRecord record){
+	public String createThingGroup( GroupTriggerRecord record){
 
 		record.setRecordStatus(TriggerRecord.StatusType.disable);
 		String triggerID=triggerDao.addKiiEntity(record);
@@ -145,6 +145,8 @@ public class ThingGroupStateManager {
 		initGroupState(thingIDs);
 
 		triggerDao.enableTrigger(triggerID);
+
+		return triggerID;
 
 	}
 
