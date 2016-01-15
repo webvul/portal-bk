@@ -149,10 +149,10 @@ public class UserController {
 
 	}
 
-	@RequestMapping(path="/info",method={RequestMethod.POST})
+	@RequestMapping(path="/info",method={RequestMethod.GET})
 	public Map<String, String> info(){
 		Map<String, String> map = new HashMap<>();
-		InputStream manifestStream = this.getClass().getResourceAsStream("META-INF/MANIFEST.MF");
+		InputStream manifestStream = this.getClass().getResourceAsStream("/META-INF/MANIFEST.MF");
 		 try {
 		        Manifest manifest = new Manifest(manifestStream);
 		        Attributes attributes = manifest.getMainAttributes();
