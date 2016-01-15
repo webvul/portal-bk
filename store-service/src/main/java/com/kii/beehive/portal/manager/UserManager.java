@@ -158,11 +158,32 @@ public class UserManager {
 		Long userGroupID = userGroupDao.saveOrUpdate(orgi);
 		return userGroupID;
 	}
-	
+
 
 	public void deleteUserGroup(Long userGroupID) {
 		groupUserRelationDao.delete(null, userGroupID);
 		userGroupDao.deleteByID(userGroupID);
+	}
+
+	/**
+	 * add users to user group
+	 *
+	 * @param userIDList the already existing userIDs under the user group will not be added again
+	 * @param userGroupID
+     */
+	public void addUserToUserGroup(List<String> userIDList, Long userGroupID) {
+
+		List<String> existingUserIDList = groupUserRelationDao.findUserIDByUserGroupID(userGroupID);
+
+		List<String> userIDListToInsert = new ArrayList<>(userIDList);
+		userIDListToInsert.removeAll(existingUserIDList);
+
+		List<GroupUserRelation> relationList = new ArrayList<>();
+		for(String userID : userIDListToInsert) {
+			relationList.add(new GroupUserRelation(userID, userGroupID));
+		}
+
+		groupUserRelationDao.batchInsert(relationList);
 	}
 
 	public void deleteUser(String userID) {
@@ -181,31 +202,6 @@ public class UserManager {
 		msgService.addDeleteMsg(userID);
 
 	}
-
-	/**
-	 * remove the userID from the user groups specified by the param "userGroupIDs"
-	 * @param userID
-	 * @param userGroupIDs
-     */
-	/*private void removeUserFromUserGroup(String userID, Set<String> userGroupIDs) {
-
-		if(userGroupIDs == null) {
-			return;
-		}
-
-		List<BeehiveUserGroup> beehiveUserGroupList = beehiveUserGroupDao.getUserGroupByIDs(new ArrayList<>(userGroupIDs));
-
-		if(beehiveUserGroupList != null) {
-			// remove the user from each group
-			for(BeehiveUserGroup beehiveUserGroup : beehiveUserGroupList) {
-				Set<String> users = beehiveUserGroup.getUsers();
-				if(users != null) {
-					users.remove(userID);
-					beehiveUserGroupDao.updateUsers(beehiveUserGroup.getUserGroupID(), users);
-				}
-			}
-		}
-	}*/
 
 	public BeehiveUser getUserByID(String userID) {
 		return userDao.getUserByID(userID);

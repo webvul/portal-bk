@@ -53,7 +53,7 @@ public class TestTagController extends WebTestTemplate {
 
     private Long tagIDForTest;
 
-    private String tokenForTest = "Bearer " + AuthInterceptor.SUPER_TOKEN;
+    private String tokenForTest = "Bearer " + Constants.SUPER_TOKEN;
 
     @Test
     public void testCreateTag() throws Exception {

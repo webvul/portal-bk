@@ -16,7 +16,6 @@ import com.google.common.base.Charsets;
 import com.kii.beehive.business.service.ServiceExtensionDeployService;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.exception.InvalidAuthException;
-import com.kii.beehive.portal.jdbc.entity.AuthInfo;
 import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.service.BeehiveParameterDao;
 import com.kii.beehive.portal.service.ExtensionCodeDao;

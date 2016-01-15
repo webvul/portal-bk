@@ -66,4 +66,23 @@ public class Permission extends DBEntity {
 	public void setSourceName(String sourceName) {
 		this.sourceName = sourceName;
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("Permission [sourceID=");
+		builder.append(sourceID);
+		builder.append(", name=");
+		builder.append(name);
+		builder.append(", action=");
+		builder.append(action);
+		builder.append(", description=");
+		builder.append(description);
+		builder.append(", sourceName=");
+		builder.append(sourceName);
+		builder.append("]");
+		return builder.toString();
+	}
+	
+	
 }

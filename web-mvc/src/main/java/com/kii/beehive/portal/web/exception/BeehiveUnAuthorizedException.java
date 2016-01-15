@@ -7,6 +7,7 @@ import com.kii.beehive.portal.web.constant.ErrorCode;
 public class BeehiveUnAuthorizedException extends PortalException{
 
 
+	private static final long serialVersionUID = 6341018761603394787L;
 
 	public BeehiveUnAuthorizedException(String msg){
 

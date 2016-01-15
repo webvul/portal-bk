@@ -23,4 +23,8 @@ public class GroupTriggerRecord extends TriggerRecord{
 		this.source = source;
 	}
 
+	@Override
+	public BeehiveTriggerType getType() {
+		return BeehiveTriggerType.Group;
+	}
 }

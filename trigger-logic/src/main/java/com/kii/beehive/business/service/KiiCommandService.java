@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import com.kii.beehive.portal.manager.AppInfoManager;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
+import com.kii.beehive.portal.manager.AppInfoManager;
 import com.kii.beehive.portal.manager.ThingTagManager;
 import com.kii.beehive.portal.service.ClientTriggerResultDao;
 import com.kii.beehive.portal.service.TriggerRecordDao;

@@ -10,16 +10,26 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.kii.beehive.portal.jdbc.dao.GroupPermissionRelationDao;
 import com.kii.beehive.portal.jdbc.dao.PermissionDao;
 import com.kii.beehive.portal.jdbc.dao.SourceDao;
+import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
+import com.kii.beehive.portal.jdbc.entity.GroupPermissionRelation;
 import com.kii.beehive.portal.jdbc.entity.Permission;
 import com.kii.beehive.portal.jdbc.entity.Source;
 import com.kii.beehive.portal.jdbc.entity.SourceType;
+import com.kii.beehive.portal.jdbc.entity.UserGroup;
 
 public class TestPermissionDao extends TestTemplate {
 
 	@Autowired
 	private PermissionDao dao;
+	
+	@Autowired
+	private UserGroupDao userGroupDao;
+	
+	@Autowired
+	private GroupPermissionRelationDao groupPermissionRelationDao;
 	
 	@Autowired
 	private SourceDao sourceDao;
@@ -91,15 +101,24 @@ public class TestPermissionDao extends TestTemplate {
 	@Test
 	public void testFindAll() {
 		List<Permission> list = dao.findAll();
-		System.out.println(list.size());
 		assertTrue(list.size() > 0);
 	}
 	
-	/*@Test
+	@Test
 	public void testFindByUserGroupID() {
-		List<Permission> list = dao.findByUserGroupID();
-		System.out.println(list.size());
+		UserGroup userGroup = new UserGroup();
+		userGroup.setName("NameTest");
+		userGroup.setDescription("DescriptionTest");
+		long id = userGroupDao.saveOrUpdate(userGroup);
+		userGroup.setId(id);
+		GroupPermissionRelation rel = new GroupPermissionRelation();
+		rel.setUserGroupID(userGroup.getId());
+		rel.setPermissionID(permission.getId());
+		long id4 = groupPermissionRelationDao.saveOrUpdate(rel);
+		rel.setId(id4);
+		
+		List<Permission> list = dao.findByUserGroupID(userGroup.getId());
 		assertTrue(list.size() > 0);
-	}*/
+	}
 
 }

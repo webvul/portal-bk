@@ -5,8 +5,6 @@ import static junit.framework.TestCase.assertTrue;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.sun.tools.internal.xjc.reader.xmlschema.bindinfo.BIConversion;
-
 import com.kii.beehive.portal.manager.AppInfoManager;
 import com.kii.extension.sdk.service.UserService;
 

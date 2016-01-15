@@ -1,8 +1,6 @@
 package com.kii.beehive.portal.store.entity.trigger;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -22,5 +20,10 @@ public class SummaryTriggerRecord extends TriggerRecord {
 	@JsonIgnore
 	public void addSummarySource(String name,SummarySource source){
 		summarySource.put(name,source);
+	}
+
+	@Override
+	public BeehiveTriggerType getType() {
+		return BeehiveTriggerType.Summary;
 	}
 }

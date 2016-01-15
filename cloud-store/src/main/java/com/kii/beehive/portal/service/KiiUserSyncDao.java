@@ -11,7 +11,6 @@ import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.entity.KiiUser;
 import com.kii.extension.sdk.entity.LoginInfo;
-import com.kii.extension.sdk.exception.UserAlreadyExistsException;
 import com.kii.extension.sdk.exception.UserNotFoundException;
 import com.kii.extension.sdk.service.UserService;
 

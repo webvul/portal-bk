@@ -1,22 +1,15 @@
 package com.kii.beehive.business.service;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.business.event.KiicloudEventListenerService;
-import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
-import com.kii.beehive.portal.manager.ThingTagManager;
-import com.kii.beehive.portal.service.TriggerRecordDao;
 import com.kii.beehive.portal.service.TriggerRuntimeStatusDao;
 import com.kii.beehive.portal.store.entity.trigger.GroupTriggerRuntimeState;
-import com.kii.beehive.portal.store.entity.trigger.TargetAction;
-import com.kii.beehive.portal.store.entity.trigger.TriggerRecord;
 import com.kii.beehive.portal.store.entity.trigger.TriggerRuntimeState;
-import com.kii.beehive.portal.store.entity.trigger.TriggerTarget;
 import com.kii.extension.sdk.exception.StaleVersionedObjectException;
 
 @Component

@@ -4,14 +4,13 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.jdbc.dao.GroupPermissionRelationDao;
 import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
 import com.kii.beehive.portal.jdbc.dao.PermissionDao;
 import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
-import com.kii.beehive.portal.jdbc.entity.AuthInfo;
 import com.kii.beehive.portal.manager.AuthManager;
 import com.kii.beehive.portal.manager.UserManager;
-import com.kii.beehive.portal.web.constant.Constants;
 
 public abstract class AbstractController {
 	
@@ -34,9 +33,6 @@ public abstract class AbstractController {
     protected GroupPermissionRelationDao groupPermissionRelationDao;
 
 	protected String getLoginUserID(HttpServletRequest httpRequest) {
-		String auth = httpRequest.getHeader(Constants.ACCESS_TOKEN);
-		String token = auth.substring(auth.indexOf(" ") + 1).trim();
-		AuthInfo authInfo = authManager.getAuthInfo(token);
-		return authInfo.getUserID();
+		return AuthInfoStore.getUserID();
 	}
 }

@@ -30,6 +30,8 @@ import com.kii.extension.sdk.entity.KiiUser;
  */
 public class TestAuthController extends WebTestTemplate {
 
+	private  static final String AUTH_HEADER = "Authorization";
+
     @Autowired
     private ObjectMapper mapper;
 
@@ -287,7 +289,7 @@ public class TestAuthController extends WebTestTemplate {
                 get("/tags/locations/" + "floor1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
-                        .header(Constants.ACCESS_TOKEN, "Bearer " + accessToken)
+                        .header(AUTH_HEADER, "Bearer " + accessToken)
         )
                 .andExpect(status().isOk());
 
@@ -299,7 +301,7 @@ public class TestAuthController extends WebTestTemplate {
                 get("/tags/locations/" + "floor1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
-                        .header(Constants.ACCESS_TOKEN, "Bearer " + accessToken)
+                        .header(AUTH_HEADER, "Bearer " + accessToken)
         )
                 .andExpect(status().isOk());
 
@@ -311,7 +313,7 @@ public class TestAuthController extends WebTestTemplate {
                 get("/tags/locations/" + "floor1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
-                        .header(Constants.ACCESS_TOKEN, "Bearer " + accessToken)
+                        .header(AUTH_HEADER, "Bearer " + accessToken)
         )
                 .andExpect(status().isUnauthorized());
 

@@ -15,12 +15,11 @@ import org.springframework.core.io.ResourceLoader;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import com.kii.beehive.business.service.ServiceExtensionDeployService;
 import com.kii.beehive.business.service.ThingIFInAppService;
-import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.manager.TriggerMaintainManager;
-import com.kii.beehive.business.service.ServiceExtensionDeployService;
 import com.kii.beehive.portal.service.BeehiveParameterDao;
 import com.kii.beehive.portal.store.entity.CallbackUrlParameter;
 import com.kii.extension.sdk.context.AppBindToolResolver;

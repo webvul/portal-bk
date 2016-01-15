@@ -26,6 +26,11 @@ public class SimpleTriggerRecord extends TriggerRecord{
 		source.setThingID(thingID);
 	}
 
+	@Override
+	public BeehiveTriggerType getType() {
+		return BeehiveTriggerType.Simple;
+	}
+
 //	public TriggerType getType() {
 //		return TriggerType.Simple;
 //	}

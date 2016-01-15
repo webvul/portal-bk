@@ -12,7 +12,7 @@ import com.kii.extension.sdk.entity.thingif.StatePredicate;
 
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME,
-		include = JsonTypeInfo.As.EXTERNAL_PROPERTY,
+		include = JsonTypeInfo.As.EXISTING_PROPERTY,
 		property = "type")
 @JsonSubTypes({
 		@JsonSubTypes.Type(value = SimpleTriggerRecord.class,name="Simple"),
@@ -74,9 +74,7 @@ public abstract  class TriggerRecord extends KiiEntity {
 		this.type = type;
 	}
 
-	public BeehiveTriggerType getType() {
-		return type;
-	}
+	public abstract  BeehiveTriggerType getType();
 
 	public enum StatusType{
 		enable,disable,deleted;

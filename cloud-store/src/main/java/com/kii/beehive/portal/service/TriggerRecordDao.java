@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.store.entity.trigger.TriggerRecord;
 import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.entity.BucketInfo;

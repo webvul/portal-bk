@@ -9,12 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import com.kii.beehive.business.event.KiiCloudEventBus;
-import com.kii.beehive.business.event.process.ComputeSummaryStateProcess;
 import com.kii.beehive.business.event.process.ModifySummaryListenerProcess;
-import com.kii.beehive.business.event.process.RefreshThingGroupProcess;
 import com.kii.beehive.portal.manager.ThingStateSummaryManager;
 import com.kii.beehive.portal.store.entity.trigger.SummaryExpress;
 import com.kii.beehive.portal.store.entity.trigger.SummaryFunctionType;
