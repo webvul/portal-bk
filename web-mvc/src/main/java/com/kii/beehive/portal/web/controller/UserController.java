@@ -150,7 +150,7 @@ public class UserController {
 	}
 
 	@RequestMapping(path="/info",method={RequestMethod.POST})
-	public Map<String, String> info(HttpServletRequest httpRequest){
+	public Map<String, String> info(){
 		Map<String, String> map = new HashMap<>();
 		InputStream manifestStream = this.getClass().getResourceAsStream("META-INF/MANIFEST.MF");
 		 try {
