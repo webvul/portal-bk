@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import com.kii.beehive.portal.store.entity.trigger.BeehiveTriggerType;
 import com.kii.beehive.portal.store.entity.trigger.GroupTriggerRuntimeState;
 import com.kii.beehive.portal.store.entity.trigger.SimpleTriggerRuntimeState;
+import com.kii.beehive.portal.store.entity.trigger.SummaryStateEntry;
 import com.kii.beehive.portal.store.entity.trigger.SummaryTriggerRuntimeState;
 import com.kii.beehive.portal.store.entity.trigger.TriggerRuntimeState;
 import com.kii.extension.sdk.annotation.BindAppByName;
@@ -42,6 +43,13 @@ public class TriggerRuntimeStatusDao extends AbstractDataAccess<TriggerRuntimeSt
 
 		super.updateEntity(param,triggerID);
 
+	}
+
+	public void updateSummary(String groupName,SummaryStateEntry entry,String id){
+
+		Map<String,Object>  map=Collections.singletonMap(groupName, entry);
+
+		super.updateWithVerify(id,map,5);
 	}
 
 	public GroupTriggerRuntimeState getGroupRuntimeState(String triggerID){

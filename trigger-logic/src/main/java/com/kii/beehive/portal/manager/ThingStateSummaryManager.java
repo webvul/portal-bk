@@ -2,6 +2,7 @@ package com.kii.beehive.portal.manager;
 
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -154,27 +155,19 @@ public class ThingStateSummaryManager {
 		}
 
 
-
 		statusDao.saveState(state,triggerID);
 
 		triggerDao.enableTrigger(triggerID);
 
-
-		if(computer.doExpress(record.getPerdicate().getCondition(),globalStateMap)){
-
-			commandService.doCommand(record);
-		}
+		doCommand(record);
 
 	}
-
-
 
 
 	private SummaryStateEntry refreshThingState(List<String> thingList,String groupName,List<SummaryExpress> expressList,SummaryStateEntry entry){
 
 		entry.getSummary().clear();
 		thingList.forEach(thingID->{
-
 
 			ThingStatus status=thingIFService.getStatus(thingID);
 
@@ -209,9 +202,14 @@ public class ThingStateSummaryManager {
 
 		listenerService.updateThingStatusListener(thingIDList,state.getListeners().get(groupName).getTagListenerID());
 
-		refreshThingState(thingIDList,groupName,record.getSummarySource().get(groupName).getExpressList(),state.getListeners().get(groupName));
+		SummaryStateEntry entry=refreshThingState(thingIDList,groupName,record.getSummarySource().get(groupName).getExpressList(),state.getListeners().get(groupName));
+
+		statusDao.updateSummary(groupName,entry,triggerID);
+
+		doCommand(record);
 
 	}
+
 
 
 	public void computeStateSummary(String  triggerID,String groupName,ThingStatus status){
@@ -223,37 +221,39 @@ public class ThingStateSummaryManager {
 			return;
 		}
 
-		for(int i=0;i<5;i++) {
+		doMaintainState(triggerID, groupName, status, trigger);
+
+
+	}
+
+	private void doMaintainState(String triggerID, String groupName,ThingStatus status, SummaryTriggerRecord trigger) {
 
 			SummaryTriggerRuntimeState state=statusDao.getSummaryRuntimeState(triggerID);
 			if(state==null){
 				listenerService.disableTriggerByTargetID(triggerID);
-				break;
+				return;
 			}
 			SummaryStateEntry entry=state.getListeners().get(groupName);
 
 			updateState(groupName, status, trigger.getSummarySource().get(groupName).getExpressList(), entry);
 
-			try {
-				statusDao.updateEntityWithVersion(Collections.singletonMap(groupName, entry), triggerID, state.getVersion());
+ 			statusDao.updateSummary(groupName,entry,triggerID);
 
-				Map<String,Object> fullState=new HashMap<>();
-				state.getListeners().values().forEach(entity->{
-					fullState.putAll(entity.getSummary());
-				});
+		doCommand(trigger);
 
-				if(computer.doExpress(trigger.getPerdicate().getCondition(),fullState)){
+	}
 
-					commandService.doCommand(trigger);
-				}
+	private void doCommand(SummaryTriggerRecord trigger) {
 
-			}catch(StaleVersionedObjectException e){
-				continue;
-			}
+		SummaryTriggerRuntimeState state=statusDao.getSummaryRuntimeState(trigger.getId());
+		Map<String,Object> fullState=new HashMap<>();
+		state.getListeners().values().forEach(entity->{
+			fullState.putAll(entity.getSummary());
+		});
+
+		if(computer.doExpress(trigger.getPerdicate().getCondition(),fullState)){
+			commandService.doCommand(trigger);
 		}
-
-
-
 	}
 
 	private void updateState(String groupName, ThingStatus status, List<SummaryExpress>  expressList, SummaryStateEntry entry) {
