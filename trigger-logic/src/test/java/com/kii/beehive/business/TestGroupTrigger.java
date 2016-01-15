@@ -125,7 +125,7 @@ public class TestGroupTrigger extends TestTemplate{
 		Condition condition= ConditionBuilder.orCondition().less("bar",100).great("foo",0).getConditionInstance();
 		preidcate.setCondition(condition);
 		preidcate.setTriggersWhen(TriggerWhen.CONDITION_TRUE);
-		record.setPerdicate(preidcate);
+		record.setPredicate(preidcate);
 
 		TriggerGroupPolicy policy=new TriggerGroupPolicy();
 		policy.setCriticalNumber(75);

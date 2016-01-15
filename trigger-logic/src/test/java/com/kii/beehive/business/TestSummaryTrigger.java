@@ -85,13 +85,13 @@ public class TestSummaryTrigger extends TestTemplate {
 		record.addSummarySource("source",getSource1());
 		record.addSummarySource("target",getSource2());
 		
-		StatePredicate perdicate=new StatePredicate();
-		perdicate.setTriggersWhen(TriggerWhen.CONDITION_TRUE);
+		StatePredicate predicate=new StatePredicate();
+		predicate.setTriggersWhen(TriggerWhen.CONDITION_TRUE);
 
 		Condition cond= ConditionBuilder.newCondition().equal("source.sum_number","$(target.sum_num)").getConditionInstance();
-		perdicate.setCondition(cond);
+		predicate.setCondition(cond);
 
-		record.setPerdicate(perdicate);
+		record.setPredicate(predicate);
 
 		record.addTarget(getTagCmdTarget());
 

@@ -153,7 +153,7 @@ public class ThingStateSummaryManager {
 		triggerDao.enableTrigger(triggerID);
 
 
-		if(computer.doExpress(record.getPerdicate().getCondition(),globalStateMap)){
+		if(computer.doExpress(record.getPredicate().getCondition(),globalStateMap)){
 
 			commandService.doCommand(record);
 		}
@@ -237,7 +237,7 @@ public class ThingStateSummaryManager {
 					fullState.putAll(entity.getSummary());
 				});
 
-				if(computer.doExpress(trigger.getPerdicate().getCondition(),fullState)){
+				if(computer.doExpress(trigger.getPredicate().getCondition(),fullState)){
 
 					commandService.doCommand(trigger);
 				}

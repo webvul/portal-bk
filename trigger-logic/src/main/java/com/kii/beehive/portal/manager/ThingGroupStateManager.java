@@ -126,12 +126,12 @@ public class ThingGroupStateManager {
 
 		state.setPolicy(policy.getGroupPolicy());
 		state.setCriticalNumber(policy.getCriticalNumber());
-		state.setWhenType(record.getPerdicate().getTriggersWhen());
+		state.setWhenType(record.getPredicate().getTriggersWhen());
 
 		List<String> thingIDs=thingList.stream().map(GlobalThingInfo::getFullKiiThingID).collect(Collectors.toList());
 		thingIDs.forEach(thingID-> {
 			state.addThingID(thingID);
-			KiiTriggerCol idCol=registDoubleTrigger(thingID, record.getPerdicate().getCondition(),triggerID);
+			KiiTriggerCol idCol=registDoubleTrigger(thingID, record.getPredicate().getCondition(),triggerID);
 			state.addThingTriggerInfo(thingID,idCol);
 			state.getMemberState().setMemberStatus(thingID,false);
 		});
@@ -304,7 +304,7 @@ public class ThingGroupStateManager {
 		Set<String> newIDs=state.getMemberState().getAddedIDs(thingIDs);
 
 		newIDs.forEach(thingID-> {
-			KiiTriggerCol idCol=registDoubleTrigger(thingID, triggerRecord.getPerdicate().getCondition(),triggerRecord.getId());
+			KiiTriggerCol idCol=registDoubleTrigger(thingID, triggerRecord.getPredicate().getCondition(),triggerRecord.getId());
 			map.put(thingID,idCol);
 		});
 

@@ -23,7 +23,7 @@ public abstract  class TriggerRecord extends KiiEntity {
 
 	private String userID;
 
-	private StatePredicate  perdicate;
+	private StatePredicate predicate;
 
 	private List<TriggerTarget>  targets=new ArrayList<>();
 
@@ -47,12 +47,12 @@ public abstract  class TriggerRecord extends KiiEntity {
 		this.recordStatus = recordStatus;
 	}
 
-	public StatePredicate getPerdicate() {
-		return perdicate;
+	public StatePredicate getPredicate() {
+		return predicate;
 	}
 
-	public void setPerdicate(StatePredicate perdicate) {
-		this.perdicate = perdicate;
+	public void setPredicate(StatePredicate predicate) {
+		this.predicate = predicate;
 	}
 
 	public List<TriggerTarget> getTargets() {
