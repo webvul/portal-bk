@@ -21,4 +21,9 @@ public class SummaryTriggerRecord extends TriggerRecord {
 	public void addSummarySource(String name,SummarySource source){
 		summarySource.put(name,source);
 	}
+
+	@Override
+	public BeehiveTriggerType getType() {
+		return BeehiveTriggerType.Summary;
+	}
 }

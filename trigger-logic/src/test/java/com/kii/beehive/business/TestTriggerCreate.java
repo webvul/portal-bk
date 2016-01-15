@@ -1,5 +1,7 @@
 package com.kii.beehive.business;
 
+import static junit.framework.TestCase.assertEquals;
+
 import java.io.IOException;
 
 import org.junit.Test;
@@ -24,6 +26,7 @@ import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
 import com.kii.beehive.portal.jdbc.entity.TagType;
 import com.kii.beehive.portal.manager.SimpleThingTriggerManager;
 import com.kii.beehive.portal.manager.ThingTagManager;
+import com.kii.beehive.portal.store.entity.trigger.BeehiveTriggerType;
 import com.kii.beehive.portal.store.entity.trigger.SimpleTriggerRecord;
 import com.kii.beehive.portal.store.entity.trigger.TagSelector;
 import com.kii.beehive.portal.store.entity.trigger.TargetAction;
@@ -215,6 +218,7 @@ public class TestTriggerCreate extends TestTemplate {
 
 		SimpleTriggerRecord s=(SimpleTriggerRecord)simple;
 
+		assertEquals(s.getType(), BeehiveTriggerType.Simple);
 //		simpleMang.createSimpleTrigger(record);
 
 	}
