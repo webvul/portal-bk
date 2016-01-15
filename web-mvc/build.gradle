@@ -27,4 +27,15 @@ dependencies {
 
 }
 
-war.archiveName "beehive-portal.war"
+war {
+    doFirst {
+        manifest {
+            attributes(
+            "Implementation-Title": project.name, 
+            "Implementation-Version": version, 
+            "Implementation-Timestamp": new Date().format("yyyy-MM-dd HH:mm:ss")
+            )
+        }
+    }
+    archiveName 'beehive-portal.war'
+}

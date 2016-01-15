@@ -78,7 +78,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
 		String auth = request.getHeader(Constants.ACCESS_TOKEN);
 
-		int idx=url.indexOf("/api/");
+		int idx=url.indexOf(Constants.URL_PREFIX);
 		String subUrl=url.substring(idx+4).trim();
 
 		List<String> list=new LinkedList<>();
@@ -88,7 +88,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
 		try {
 
-			if(subUrl.startsWith("/oauth2/login")){
+			if(subUrl.startsWith(Constants.URL_LOGIN)){
 
 				list.set(1,"LoginIn");
 				logTool.write(list);
@@ -97,7 +97,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
 			}
 
-			if (auth == null || !auth.startsWith("Bearer ")) {
+			if (auth == null || !auth.startsWith(Constants.HEADER_BEARER)) {
 				throw new BeehiveUnAuthorizedException(" auth token format invalid");
 			}
 
@@ -113,7 +113,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
 				authManager.saveToken(USER_ID, token);
 
-				AuthInfoStore.setAuthInfo("211102");
+				AuthInfoStore.setAuthInfo(USER_ID);
 
 				list.set(1,USER_ID);
 				logTool.write(list);
@@ -121,7 +121,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 				return  super.preHandle(request, response, handler);
 			}
 
-			if(subUrl.startsWith("/users")){
+			if(subUrl.startsWith(Constants.URL_USER)){
 				//usersynccallback
 
 				DeviceSupplier supper= supplierDao.getSupplierByID(token);
@@ -134,7 +134,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 			}else if(subUrl.startsWith(CallbackNames.CALLBACK_URL)){
 				//trigger app callvback
 
-				String appID=request.getHeader("x-kii-appid");
+				String appID=request.getHeader(Constants.HEADER_KII);
 
 				if(!appInfoManager.verifyAppToken(appID,token)){
 					throw new BeehiveUnAuthorizedException(" app callback unauthorized:app id "+appID);
