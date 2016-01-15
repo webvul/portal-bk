@@ -53,6 +53,10 @@ public class TestExtensionCreate extends TestTemplate  {
 
 	private String APP_NAME="b8ca23d0";
 
+	private String APP_NAME1="c1744915";
+
+	private String APP_NAME2="0af7a7e7";
+
 	@Autowired
 	private TokenBindToolResolver token;
 
@@ -91,7 +95,7 @@ public class TestExtensionCreate extends TestTemplate  {
 
 		triggerManager.initAppForTrigger();
 
-		extensionService.deployScriptToApp(APP_NAME);
+		extensionService.deployScriptToApp(APP_NAME1);
 
 		InputStream reader=System.in;
 
@@ -111,7 +115,7 @@ public class TestExtensionCreate extends TestTemplate  {
 
 	@Test
 	public void getExtension(){
-		ServiceExtensionDeployService.ScriptCombine json=extensionService.getCurrentServiceCodeByVersion(APP_NAME);
+		ServiceExtensionDeployService.ScriptCombine json=extensionService.getCurrentServiceCodeByVersion(APP_NAME2);
 
 		log.info(json.getScript());
 
@@ -123,25 +127,29 @@ public class TestExtensionCreate extends TestTemplate  {
 	@Test
 	public void createThing(){
 
-		String vendorThingID="vendorThingDemo"+System.currentTimeMillis();
+//		thingIFInAppService.removeThing(param);
 
-		GlobalThingInfo info=new GlobalThingInfo();
-		info.setKiiAppID(APP_NAME);
+//		String vendorThingID="a1b2c3d4e5f6"+System.currentTimeMillis();
+
+		String vendorThingID="a1b2c3d4e5f61";
+
+//		GlobalThingInfo info=new GlobalThingInfo();
+//		info.setKiiAppID(APP_NAME1);
 //		String fullKiiThingID= ThingIDTools.joinFullKiiThingID(thingID,APP_NAME);
 
 //		info.setFullKiiThingID(fullKiiThingID);
 
-		info.setVendorThingID(vendorThingID);
-		info.setType("demo");
-
-		long id=thingDao.insert(info);
+//		info.setVendorThingID(vendorThingID);
+//		info.setType("demo");
+//
+//		long id=thingDao.insert(info);
 
 
 		OnBoardingParam param = new OnBoardingParam();
 		param.setVendorThingID(vendorThingID);
 		param.setThingPassword("password");
 
-		String thingID=thingIFInAppService.onBoarding(param,APP_NAME).getThingID();
+		String thingID=thingIFInAppService.onBoarding(param,APP_NAME2).getThingID();
 
 	}
 
@@ -161,7 +169,7 @@ public class TestExtensionCreate extends TestTemplate  {
 
 	}
 
-	String  thingID="th.f83120e36100-a83b-5e11-2eaa-035b1f86";
+	String  thingID=APP_NAME2+"-th.f83120e36100-a269-5e11-e5bb-0bc2e136";
 
 	@Test
 	public void putStatus(){
@@ -170,7 +178,7 @@ public class TestExtensionCreate extends TestTemplate  {
 		status.setField("lightness",99);
 		status.setField("power",true);
 
-		thingIFService.putStatus(thingID,status);
+		thingIFInAppService.putStatus(thingID,status);
 
 
 	}

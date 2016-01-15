@@ -11,6 +11,7 @@ import com.kii.extension.sdk.entity.BucketInfo;
 import com.kii.extension.sdk.entity.CreateResponse;
 import com.kii.extension.sdk.entity.KiiEntity;
 import com.kii.extension.sdk.entity.UpdateResponse;
+import com.kii.extension.sdk.exception.StaleVersionedObjectException;
 import com.kii.extension.sdk.query.ConditionBuilder;
 import com.kii.extension.sdk.query.QueryParam;
 
@@ -162,6 +163,21 @@ public abstract class AbstractDataAccess<T> {
 
 	}
 
+
+	public void updateWithVerify(String id,Map<String,Object> update,int retryNumber){
+
+		for(int i=0;i<retryNumber;i++){
+
+			KiiEntity entry= (KiiEntity) this.getObjectByID(id);
+
+			try {
+				this.updateEntityWithVersion(update, id, entry.getVersion());
+			} catch (StaleVersionedObjectException e) {
+				continue;
+			}
+		}
+
+	}
 
 
 }

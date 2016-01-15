@@ -80,7 +80,7 @@ public class ExtensionCallbackController {
 
 
 
-		tagManager.updateKiicloudRelation(thing.getVendorThingID(),thing.getThingID());
+		tagManager.updateKiicloudRelation(thing.getVendorThingID(),appID+"-"+thing.getThingID());
 	}
 
 

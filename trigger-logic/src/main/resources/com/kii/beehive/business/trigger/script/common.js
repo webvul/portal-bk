@@ -15,7 +15,7 @@ Global_RemoteKiiRequest = (function(){
 
 	    this.headers['x-kii-appid'] = context.getAppID();
         this.headers['Content-Type']= "application/json";
-        this.headers['Authorization']='Bearer '+context.getAccessToken();
+        this.headers['Authorization']='Bearer '+this.adminCtx._token;
 
 
 		var _this=this;
@@ -30,6 +30,7 @@ Global_RemoteKiiRequest = (function(){
         };
 
 	    this.onSuccess=function(anything, textStatus,jqXHR) {
+			console.log("request success");
 
 	        if ((200 <= (_ref1 = jqXHR.status) && _ref1 < 400)) {
 	            if (jqXHR.status==204) {
@@ -51,6 +52,8 @@ Global_RemoteKiiRequest = (function(){
 	    };
 
 		this.onError=function(jqXHR,textStatus,errorThrown){
+			console.log("request fail:"+textStatus+" "+jqXHR.responseText);
+
             var errString = textStatus + " : "  + _this._path;
             var resp = decodeURIComponent(jqXHR.responseText);
 
@@ -85,6 +88,8 @@ Global_RemoteKiiRequest = (function(){
 
 	Global_RemoteKiiRequest.prototype.executeToRemote=function(param,callback){
 
+		console.log("do remote post:"+JSON.stringify(param));
+
 		if(callback["success"]!=null){
 			this._success=callback["success"];
 		}
@@ -99,6 +104,9 @@ Global_RemoteKiiRequest = (function(){
 		ajaxParam["type"]=this.method;
 		ajaxParam["headers"]=this.headers;
 		ajaxParam["data"]=JSON.stringify(param);
+
+		console.log("header:"+JSON.stringify(this.headers));
+		console.log("url:"+this.path);
 
 		$.ajax(this.path,ajaxParam);
 
@@ -142,16 +150,16 @@ function doRemoteCall(context,name,param,done){
                  		success:function(){
                  			done(theObject);
                  		},
-                 		failure:function(){
-                 			console.log("get state object fail:"+params.objectID);
-                            done(anErrorString);
+                 		failure:function(errString){
+                 			console.log("get state object fail:"+param.objectID);
+                            done("remote request fail:"+errString);
                         }
                  	}
                 );
 
           },
           failure: function(theObject, anErrorString) {
-            	console.log("get state object fail:"+params.objectID);
+            	console.log("get state object fail:"+param.objectID);
              	done(anErrorString);
           }
 	})
