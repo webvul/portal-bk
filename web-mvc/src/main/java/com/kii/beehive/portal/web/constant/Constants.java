@@ -8,7 +8,9 @@ public class Constants {
 	public static final String HEADER_KII = "x-kii-appid";
 	
 	public static final String URL_PREFIX = "/api/";
-	public static final String URL_LOGIN = "/oauth2/login";
+	public static final String URL_OAUTH2 = "/oauth2";
+	public static final String URL_OAUTH2_REGISTER = "/oauth2/register";
+	public static final String URL_OAUTH2_LOGIN = "/oauth2/login";
 	public static final String URL_USER = "/users";
 
 }

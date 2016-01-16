@@ -16,6 +16,14 @@
            timeToLiveSeconds="600">
     </cache>
 
+    <!--for auth info-->
+    <cache name="auth_into_cache"
+           maxEntriesLocalHeap="10000"
+           maxEntriesLocalDisk="10000000"
+           timeToLiveSeconds="3600">
+    </cache>
+
+    <!--for testing only-->
     <cache name="demo_cache"
            maxEntriesLocalHeap="10"
            maxEntriesLocalDisk="10"

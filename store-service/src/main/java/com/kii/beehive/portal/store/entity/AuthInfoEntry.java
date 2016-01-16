@@ -8,15 +8,14 @@ import java.util.Set;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
 
-import com.kii.beehive.portal.jdbc.entity.AuthInfo;
-
 public class AuthInfoEntry {
 
+	public AuthInfoEntry(String userID, String token, Set<String> permissionSet){
 
-	public AuthInfoEntry(AuthInfo info){
-		this.userID=info.getUserID();
+		this.userID = userID;
+		this.token = token;
 
-		for(String permiss:info.getPermisssionSet()){
+		for(String permiss : permissionSet){
 
 			int spaceIdx=permiss.indexOf(" ");
 
@@ -37,9 +36,15 @@ public class AuthInfoEntry {
 
 	}
 
+	/**
+	 * get the header(function indicator, such as "/user", "/thing", etc) from url <br/>
+	 * @param url
+	 * @return
+     */
 	private String getHeader(String url) {
 		int solIdx1=url.indexOf("/");
 		int solIdx2=url.indexOf("/",solIdx1+1);
+		solIdx2 = (solIdx2 == -1)? url.length() : solIdx2;
 
 		return url.substring(solIdx1,solIdx2).trim();
 	}
@@ -49,12 +54,23 @@ public class AuthInfoEntry {
 	private Map<String,Set<String>> methodMap=new HashMap<>();
 
 
+	/**
+	 * validate whether user has permission to access to the method and subUrl
+	 *
+	 * @param subUrl it's supposed to start with the function indicator, such as "/user", "/thing", etc
+	 * @param method
+     * @return
+     */
 	public boolean doValid(String subUrl,String method){
 //http://localhost:7070/mock/api/echo/simple
 
 		Set<String> templateUrl=new HashSet<>();
 
 		String header=getHeader(subUrl);
+
+		if(!headerMap.containsKey(header) || !methodMap.containsKey(method.toUpperCase())) {
+			return false;
+		}
 
 		templateUrl.addAll(headerMap.get(header));
 		templateUrl.retainAll(methodMap.get(method.toUpperCase()));
@@ -66,11 +82,21 @@ public class AuthInfoEntry {
 
 	private String userID;
 
+	private String token;
+
 	public String getUserID() {
 		return userID;
 	}
 
 	public void setUserID(String userID) {
 		this.userID = userID;
+	}
+
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
 	}
 }

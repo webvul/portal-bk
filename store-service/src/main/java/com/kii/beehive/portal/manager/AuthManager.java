@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.helper.AuthInfoCacheService;
-import com.kii.beehive.portal.jdbc.entity.AuthInfo;
 import com.kii.beehive.portal.store.entity.AuthInfoEntry;
 import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.context.UserTokenBindTool;
@@ -45,16 +44,17 @@ public class AuthManager {
     public boolean register(String userID, String password) {
 
         try {
-//            String defaultPassword = this.getDefaultPassword(userID);
+            // TODO need to check why below was ever commented out?
+            String defaultPassword = this.getDefaultPassword(userID);
 
             // login Kii Cloud
-            LoginInfo loginInfo = userService.login(userID, password);
+            LoginInfo loginInfo = userService.login(userID, defaultPassword);
 
             // bind token to ThreadLocal
             userTokenBindTool.bindToken(loginInfo.getToken());
 
             // change from default password to new password
-//            userService.changePassword(defaultPassword, password);
+            userService.changePassword(defaultPassword, password);
 
         } catch (KiiCloudException e) {
             log.debug("Login with default password failed", e);
@@ -64,9 +64,9 @@ public class AuthManager {
         return true;
     }
 
-//    private String getDefaultPassword(String userID) {
-//        return DigestUtils.sha1Hex(userID+"_beehive");
-//    }
+    private String getDefaultPassword(String userID) {
+        return DigestUtils.sha1Hex(userID+"_beehive");
+    }
 
     /**
      * login Kii Cloud and save the token info into DB
@@ -120,7 +120,7 @@ public class AuthManager {
      */
     public AuthInfoEntry validateAndBindUserToken(String token) {
 
-        AuthInfo authInfo = authInfoCacheService.getAvailableAuthInfo(token);
+        AuthInfoEntry authInfo = authInfoCacheService.getAuthInfo(token);
 
         if(authInfo == null) {
 			throw new UnauthorizedAccessException();
@@ -128,7 +128,7 @@ public class AuthManager {
         
         userTokenBindTool.bindToken(authInfo.getToken());
 
-        return new AuthInfoEntry(authInfo);
+        return authInfo;
     }
 
     /**
@@ -148,13 +148,13 @@ public class AuthManager {
     }
 
     /**
-     * get AuthInfo by token directly <br/>
-     * this method will not check whether token is valid, so is supposed only to be called after AuthInterceptor validated the token
+     * get auth info entry by token <br/>
+     * this method is supposed to be called after AuthInterceptor validated the token
      *
      * @param token
-     * @return
+     * @return null if the corresponding auth info entry doesn't exist
      */
-    public AuthInfo getAuthInfo(String token) {
+    public AuthInfoEntry getAuthInfoEntry(String token) {
     	if(Strings.isBlank(token)){
     		return null;
     	}
