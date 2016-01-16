@@ -31,6 +31,7 @@ public class ThingIFInAppService {
 	@Autowired
 	private AppInfoDao  appInfoDao;
 
+	
 
 	private String getRealThingID(String fullThingID){
 		ThingIDTools.ThingIDCombine combine = ThingIDTools.splitFullKiiThingID(fullThingID);

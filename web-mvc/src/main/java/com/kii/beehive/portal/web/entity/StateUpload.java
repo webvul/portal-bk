@@ -1,5 +1,7 @@
 package com.kii.beehive.portal.web.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
 public class StateUpload {
@@ -15,6 +17,16 @@ public class StateUpload {
 
 	public void setState(ThingStatus state) {
 		this.state = state;
+	}
+
+
+	@JsonIgnore
+	public String getThingID(){
+
+		int idx=target.indexOf(":");
+
+		return target.substring(idx+1);
+
 	}
 
 	public String getTarget() {
