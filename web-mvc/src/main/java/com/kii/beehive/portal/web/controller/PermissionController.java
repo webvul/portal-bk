@@ -95,7 +95,7 @@ public class PermissionController extends AbstractController{
      * @param userGroupID
      */
     @RequestMapping(path="/userGroup/{userGroupID}",method={RequestMethod.GET})
-    public ResponseEntity<List<Permission>> getUserGroupPermission(@PathVariable("userID") Long userGroupID, HttpServletRequest httpRequest){
+    public ResponseEntity<List<Permission>> getUserGroupPermission(@PathVariable("userGroupID") Long userGroupID, HttpServletRequest httpRequest){
     	List<Permission> pList = permissionDao.findByUserGroupID(userGroupID);
         return new ResponseEntity<>(pList, HttpStatus.OK);
     }

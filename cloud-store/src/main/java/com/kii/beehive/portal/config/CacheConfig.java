@@ -7,5 +7,6 @@ public class CacheConfig {
 
 	public static final String LONGLIVE_CACHE="long_live_cache";
 
+	public static final String AUTH_INFO_CACHE = "auth_into_cache";
 
 }

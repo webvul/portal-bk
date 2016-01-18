@@ -24,6 +24,7 @@ import com.kii.beehive.portal.store.entity.DeviceSupplier;
 import com.kii.beehive.portal.web.constant.CallbackNames;
 import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.beehive.portal.web.exception.BeehiveUnAuthorizedException;
+import com.kii.extension.sdk.exception.ObjectNotFoundException;
 
 public class AuthInterceptor extends HandlerInterceptorAdapter {
 
@@ -54,14 +55,8 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 	private AppInfoManager  appInfoManager;
 
     /**
-     * validate the token from header "accessToken"
+     * validate the token from header "Authorization"
      * the token is assigned after login success
-     *
-     * // TODO need to discuss below:
-     *  1. the token naming
-     *  2. the compatibility with header Authorization
-     *  3. the APIs to Interceptor (the setting in portalWebContext.xml)
-     *  4. whether need to put token into UserTokenBindTool (ThreadLocal)
      *
      * @param request
      * @param response
@@ -78,7 +73,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
 		String auth = request.getHeader(Constants.ACCESS_TOKEN);
 
-		int idx=url.indexOf("/api/");
+		int idx=url.indexOf(Constants.URL_PREFIX);
 		String subUrl=url.substring(idx+4).trim();
 
 		List<String> list=new LinkedList<>();
@@ -88,16 +83,19 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
 		try {
 
-			if(subUrl.startsWith("/oauth2/login")){
+			// below APIs don't need to check token and permission
+			// - login: /oauth2/login
+			// - register: /oauth2/register
+			if(subUrl.startsWith(Constants.URL_OAUTH2_LOGIN) || subUrl.startsWith(Constants.URL_OAUTH2_REGISTER)){
 
-				list.set(1,"LoginIn");
+				list.set(1,subUrl);
 				logTool.write(list);
 
 				return  super.preHandle(request, response, handler);
 
 			}
 
-			if (auth == null || !auth.startsWith("Bearer ")) {
+			if (auth == null || !auth.startsWith(Constants.HEADER_BEARER)) {
 				throw new BeehiveUnAuthorizedException(" auth token format invalid");
 			}
 
@@ -113,7 +111,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
 				authManager.saveToken(USER_ID, token);
 
-				AuthInfoStore.setAuthInfo("211102");
+				AuthInfoStore.setAuthInfo(USER_ID);
 
 				list.set(1,USER_ID);
 				logTool.write(list);
@@ -121,20 +119,22 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 				return  super.preHandle(request, response, handler);
 			}
 
-			if(subUrl.startsWith("/users")){
+			if(subUrl.startsWith(Constants.URL_USER)){
 				//usersynccallback
 
-				DeviceSupplier supper= supplierDao.getSupplierByID(token);
-				if(supper==null){
+				DeviceSupplier supplier= null;
+				try {
+					supplier = supplierDao.getSupplierByID(token);
+				}catch(ObjectNotFoundException e) {
+					log.debug(e.getMessage(), e);
 					throw new BeehiveUnAuthorizedException(" DeviceSupplier Token invalid");
-				}else{
-					AuthInfoStore.setAuthInfo(supper.getId());
 				}
 
+				AuthInfoStore.setAuthInfo(supplier.getId());
 			}else if(subUrl.startsWith(CallbackNames.CALLBACK_URL)){
 				//trigger app callvback
 
-				String appID=request.getHeader("x-kii-appid");
+				String appID=request.getHeader(Constants.HEADER_KII);
 
 				if(!appInfoManager.verifyAppToken(appID,token)){
 					throw new BeehiveUnAuthorizedException(" app callback unauthorized:app id "+appID);
@@ -146,7 +146,9 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 				AuthInfoEntry authInfo = authManager.validateAndBindUserToken(token);
 				list.set(1, authInfo.getUserID());
 
-				if (!authInfo.doValid(request.getRequestURI(), request.getMethod())) {
+				// if not auth APIs and don't have permission, throw exception
+				// in other words, while calling auth APIs, only token will be checked, permission will not be checked
+				if (!subUrl.startsWith(Constants.URL_OAUTH2) && !authInfo.doValid(subUrl, request.getMethod())) {
 					throw new BeehiveUnAuthorizedException("access url not been authorized:"+subUrl);
 				} else {
 					AuthInfoStore.setAuthInfo(authInfo.getUserID());
@@ -164,8 +166,6 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
 		return super.preHandle(request, response, handler);
 
-
-        
     }
 
     @Override
@@ -176,8 +176,9 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
     }
 
 	private void logRequest(HttpServletRequest request) {
-		log.info("*************** API Request ***************");
-		log.info("URI: " + request.getRequestURI());
+		log.info("############### API Request ###############");
+
+		log.info("# URI: " + request.getRequestURI());
 
 		StringBuffer param = new StringBuffer();
 		Enumeration<String> paramNames = request.getParameterNames();
@@ -186,7 +187,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 			String value = request.getParameter(name);
 			param.append(" <").append(name).append("=").append(value).append(">");
 		}
-		log.info("URI Params: " + param.toString());
+		log.info("# URI Params: " + param.toString());
 
 		StringBuffer header = new StringBuffer();
 		Enumeration<String> headerNames = request.getHeaderNames();
@@ -195,8 +196,8 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 			String value = request.getHeader(name);
 			header.append(" <").append(name).append("=").append(value).append(">");
 		}
-		log.info("Headers: " + header.toString());
+		log.info("# Headers: " + header.toString());
 
-		log.info("*******************************************");
+		log.info("###########################################");
 	}
 }

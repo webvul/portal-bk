@@ -9,7 +9,6 @@ import java.util.HashSet;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.kii.beehive.portal.jdbc.entity.AuthInfo;
 import com.kii.beehive.portal.store.entity.AuthInfoEntry;
 
 public class TestAuthVerify {
@@ -24,25 +23,20 @@ public class TestAuthVerify {
 			"GET /things/*","GET /things/types","POST /things/*/tags/*","DELETE /things/*/tags/*"
 		};
 
-		AuthInfo info=new AuthInfo();
-
-		info.setUserID("foo");
-		info.setPermisssionSet(new HashSet<>(Arrays.asList(permissArray)));
-
-		entry=new AuthInfoEntry(info);
+		entry=new AuthInfoEntry("foo", "some_token", new HashSet<>(Arrays.asList(permissArray)));
 
 	}
 
 	@Test
 	public void test(){
 
-		assertTrue(entry.doValid("http://localhost:7070/mock/api/things/types","GET"));
+		assertTrue(entry.doValid("/things/types","GET"));
 
-		assertFalse(entry.doValid("http://localhost:7070/mock/api/things/types","POST"));
+		assertFalse(entry.doValid("/things/types","POST"));
 
-		assertTrue(entry.doValid("http://localhost:7070/mock/api/things/abc/tags/123","POST"));
+		assertTrue(entry.doValid("/things/abc/tags/123","POST"));
 
-		assertTrue(entry.doValid("http://localhost:7070/mock/api/things/abc","GET"));
+		assertTrue(entry.doValid("/things/abc","GET"));
 
 //		assertFalse(entry.doValid("http://localhost:7070/mock/api/things/abc/tags/123","POST"));
 

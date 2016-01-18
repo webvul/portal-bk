@@ -39,7 +39,7 @@ public class ControllerLogAspect {
             log.info("*************** Controller Method Start ***************");
             Method method = logMethod(joinPoint);
 
-            StringBuilder sb = new StringBuilder("Params: ");
+            StringBuilder sb = new StringBuilder("* Params: ");
 
             Parameter[] params = method.getParameters();
             Object[] args = joinPoint.getArgs();
@@ -63,7 +63,7 @@ public class ControllerLogAspect {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
 
-        log.info("Method: "+method);
+        log.info("* Method: "+method);
         return method;
     }
 
@@ -74,7 +74,7 @@ public class ControllerLogAspect {
             log.info("*************** Controller Method END ***************");
             logMethod(joinPoint);
 
-            log.info("Return: "+ safeToString(result));
+            log.info("* Return: "+ safeToString(result));
             log.info("*****************************************************");
         }catch(Throwable ex){
             log.error("Exception in afterCallBusinessFun", ex);

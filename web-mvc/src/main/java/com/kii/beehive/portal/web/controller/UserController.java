@@ -1,10 +1,16 @@
 package com.kii.beehive.portal.web.controller;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 import java.util.stream.Collectors;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -143,5 +149,23 @@ public class UserController {
 
 	}
 
+	@RequestMapping(path="/info",method={RequestMethod.GET})
+	public Map<String, String> info(HttpServletRequest httpRequest){
+		Map<String, String> map = new HashMap<>();
+		InputStream manifestStream = httpRequest.getServletContext().getResourceAsStream("/META-INF/MANIFEST.MF");
+		 try {
+		        Manifest manifest = new Manifest(manifestStream);
+		        Attributes attributes = manifest.getMainAttributes();
+		        String impVersion = attributes.getValue("Implementation-Version");
+		        String impTitle = attributes.getValue("Implementation-Title");
+		        String impTimestamp = attributes.getValue("Implementation-Timestamp");
+				map.put("Version", impVersion);
+				map.put("Title", impTitle);
+				map.put("Date", impTimestamp);
+		    }catch(IOException ex) {
+		        //log.warn("Error while reading version: " + ex.getMessage());
+		    }
+		return  map;
 
+	}
 }

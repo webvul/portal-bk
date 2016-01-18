@@ -204,7 +204,7 @@ public class TestTriggerCreate extends TestTemplate {
 		preidcate.setCondition(condition);
 		preidcate.setTriggersWhen(TriggerWhen.CONDITION_TRUE);
 
-		record.setPerdicate(preidcate);
+		record.setPredicate(preidcate);
 
 		TriggerTarget target = getTagCmdTarget();
 

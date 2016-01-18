@@ -101,7 +101,7 @@ public class ThingStateSummaryManager {
 
 	}
 
-	public void initStateSummary(SummaryTriggerRecord record){
+	public String initStateSummary(SummaryTriggerRecord record){
 
 		fillForAverageCompute(record);
 
@@ -152,7 +152,10 @@ public class ThingStateSummaryManager {
 
 		triggerDao.enableTrigger(triggerID);
 
+
 		doCommand(record);
+
+		return triggerID;
 
 	}
 
@@ -234,7 +237,9 @@ public class ThingStateSummaryManager {
 
 		doCommand(trigger);
 
+
 	}
+
 
 	private void doCommand(SummaryTriggerRecord trigger) {
 
@@ -244,7 +249,7 @@ public class ThingStateSummaryManager {
 			fullState.putAll(entity.getSummary());
 		});
 
-		if(computer.doExpress(trigger.getPerdicate().getCondition(),fullState)){
+		if(computer.doExpress(trigger.getPredicate().getCondition(),fullState)){
 			commandService.doCommand(trigger);
 		}
 	}
