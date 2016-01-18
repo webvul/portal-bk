@@ -30,7 +30,7 @@ public class TriggerRecordDao extends AbstractDataAccess<TriggerRecord> {
 
 	public TriggerRecord getTriggerRecord(String id){
 
-		QueryParam query= ConditionBuilder.newCondition().equal("recordStatus", TriggerRecord.StatusType.enable).getFinalQueryParam();
+		QueryParam query= ConditionBuilder.andCondition().equal("_id",id).equal("recordStatus", TriggerRecord.StatusType.enable).getFinalQueryParam();
 
 		List<TriggerRecord> list=super.query(query);
 

@@ -82,7 +82,10 @@ public abstract class SpringBaseDao<T extends DBEntity> {
 
 	public T findByID(Serializable id){
 		String sql = "SELECT * FROM " + this.getTableName() + " WHERE "+ getKey() +"=?";
-		return (T) jdbcTemplate.queryForObject(sql, getRowMapper());
+//		Map<String,Object> param= Collections.singletonMap("list",ids);
+		Object[] param=new Object[]{id};
+
+		return (T) jdbcTemplate.queryForObject(sql,param, getRowMapper());
 	}
 
 	public List<T> findByIDs(long[] ids){

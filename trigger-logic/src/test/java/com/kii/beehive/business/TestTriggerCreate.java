@@ -156,8 +156,13 @@ public class TestTriggerCreate extends TestTemplate {
 	@Test
 	public void fireCallback(){
 
-		String triggerID="1d08aa50-af80-11e5-962a-00163e02138f";
-		callbackService.onSimpleArrive("",triggerID);
+		/*
+		{"triggerID":"66919540-bd92-11e5-962a-00163e02138f","thingID":"0af7a7e7-th.f83120e36100-a269-5e11-e5bb-0bc2e136"} entry-name:global_onSimpleTriggerArrive
+
+		 */
+		String triggerID="66919540-bd92-11e5-962a-00163e02138f";
+		String thingID="0af7a7e7-th.f83120e36100-a269-5e11-e5bb-0bc2e136";
+		callbackService.onSimpleArrive(thingID,triggerID);
 
 
 
@@ -176,8 +181,9 @@ public class TestTriggerCreate extends TestTemplate {
 
 		ThingStatus status=new ThingStatus();
 		status.setField("foo",99);
+		status.setField("bar",99);
 
-		thingIFService.putStatus(thingInfo.getFullKiiThingID(),status);
+		thingIFService.putStatus("0af7a7e7-th.f83120e36100-a269-5e11-e5bb-0bc2e136",status);
 
 
 	}
@@ -191,7 +197,7 @@ public class TestTriggerCreate extends TestTemplate {
 
 		SimpleTriggerRecord record=new SimpleTriggerRecord();
 
-		record.setThingID(thingIDs[0]);
+		record.setThingID(1052);
 
 		StatePredicate preidcate=new StatePredicate();
 		Condition condition= ConditionBuilder.andCondition().less("bar",100).great("foo",0).getConditionInstance();
@@ -219,7 +225,7 @@ public class TestTriggerCreate extends TestTemplate {
 		SimpleTriggerRecord s=(SimpleTriggerRecord)simple;
 
 		assertEquals(s.getType(), BeehiveTriggerType.Simple);
-//		simpleMang.createSimpleTrigger(record);
+		simpleMang.createSimpleTrigger(record);
 
 	}
 

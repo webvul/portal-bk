@@ -72,10 +72,12 @@ public class ThingTagManager {
 			return things;
 		}
 
-		if(source.isAndExpress()) {
-			things.addAll(globalThingDao.queryThingByIntersectionTags(source.getTagList()));
-		}else{
-			things.addAll(globalThingDao.queryThingByUnionTags(source.getTagList()));
+		if(!source.getTagList().isEmpty()) {
+			if (source.isAndExpress() ) {
+				things.addAll(globalThingDao.queryThingByIntersectionTags(source.getTagList()));
+			} else {
+				things.addAll(globalThingDao.queryThingByUnionTags(source.getTagList()));
+			}
 		}
 		return things;
 	}

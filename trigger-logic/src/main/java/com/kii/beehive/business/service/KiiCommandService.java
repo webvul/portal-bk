@@ -85,9 +85,10 @@ public class KiiCommandService {
 			sendCmd(target.getCommand(), thingInfo);
 		}
 
-		if(target.getServiceCode()!=null){
-			callServiceCode(target.getServiceCode(),triggerID);
-		}
+		//TODO:need think about it again.
+//		if(target.getServiceCode()!=null){
+//			callServiceCode(target.getServiceCode(),triggerID);
+//		}
 
 	}
 
