@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -47,7 +48,7 @@ public class Test2ThingDao extends TestTemplate {
 	}
 
 
-//	@Before
+	@Before
 	public void init(){
 
 		List<Long> tagIDs=new ArrayList<>();
@@ -131,6 +132,15 @@ public class Test2ThingDao extends TestTemplate {
 
 
 		List<GlobalThingInfo> things=thingDao.getThingsByIDArray(new ArrayList<>(thingIDs.subList(0,5)));
+
+		assertEquals(5,things.size());
+	}
+
+	@Test
+	public void testGetThingBySpring(){
+
+
+		List<GlobalThingInfo> things=thingDao.findByIDs(thingIDs.subList(0,5));
 
 		assertEquals(5,things.size());
 	}

@@ -32,11 +32,11 @@ public class ThingTagManager {
 	@Autowired
 	private ObjectMapper mapper;
 
-	public List<String> getTagNamesByIDs(List<String> tagIDs){
+	public List<String> getTagNamesByIDs(List<Long> tagIDs){
 
-		long[] ids=  tagIDs.stream().mapToLong(Long::parseLong).toArray();
+//		long[] ids=  tagIDs.stream().mapToLong(Long::parseLong).toArray();
 
-		return tagDao.findByIDs(ids).stream().map(tag->tag.getFullTagName()).collect(Collectors.toList());
+		return tagDao.findByIDs(tagIDs).stream().map(tag->tag.getFullTagName()).collect(Collectors.toList());
 	}
 
 	public void updateKiicloudRelation(String vendorID,String fullKiiThingID){

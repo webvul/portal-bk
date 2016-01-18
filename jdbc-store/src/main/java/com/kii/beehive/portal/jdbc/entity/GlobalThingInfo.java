@@ -129,7 +129,9 @@ public class GlobalThingInfo extends DBEntity{
 		}
 
 		if(obj instanceof GlobalThingInfo){
-			return this.getId()==(((GlobalThingInfo)obj).getId());
+			GlobalThingInfo  info=(GlobalThingInfo)obj;
+
+			return this.getId().equals(info.getId());
 		}else{
 			return false;
 		}

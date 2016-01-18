@@ -4,6 +4,7 @@ import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
@@ -56,8 +57,12 @@ public class TestThingDao extends TestTemplate{
 		thing2.setKiiAppID("appID2");
 		thing2.setStatus("1");
 		long id2=dao.insert(thing2);
-		
-		List<GlobalThingInfo>  list=dao.findByIDs(new long[]{thing.getId(),id2});
+
+		List<Long> ls=new ArrayList<>();
+		ls.add(thing.getId());
+		ls.add(id2);
+
+		List<GlobalThingInfo>  list=dao.findByIDs(ls);
 
 		assertEquals(2,list.size());
 	}

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import com.kii.beehive.portal.event.EventListener;
 import com.kii.beehive.portal.event.EventParam;
 import com.kii.beehive.portal.event.EventType;
+import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.manager.ThingTagManager;
 import com.kii.beehive.portal.service.EventListenerDao;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
@@ -29,9 +30,11 @@ public class KiiCloudEventBus {
 
 
 	@Async
-	public void onTagIDsChangeFire(List<String> tagIDList, boolean b) {
+	public void onTagIDsChangeFire(List<Long> tagIDList, boolean b) {
 
-		 thingTagManager.getTagNamesByIDs(tagIDList).forEach(name->onTagChangeFire(name,b));
+		List<String> tags= thingTagManager.getTagNamesByIDs(tagIDList);
+
+		tags.forEach(name->onTagChangeFire(name,b));
 	}
 
 	@Async

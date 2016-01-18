@@ -277,7 +277,7 @@ public class ThingGroupStateManager {
 
 	private  void updateThingGroup(List<GlobalThingInfo>  thingList,GroupTriggerRecord triggerRecord){
 
-		List<String> thingIDs=thingList.stream().map(GlobalThingInfo::getFullKiiThingID).collect(Collectors.toList());
+		Set<String> thingIDs=thingList.stream().map(GlobalThingInfo::getFullKiiThingID).collect(Collectors.toSet());
 
 		GroupTriggerRuntimeState state=statusDao.getGroupRuntimeState(triggerRecord.getId());
 		if(state==null){

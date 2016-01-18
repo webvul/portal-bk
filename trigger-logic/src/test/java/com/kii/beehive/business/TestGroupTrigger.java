@@ -3,18 +3,22 @@ package com.kii.beehive.business;
 import static junit.framework.TestCase.assertTrue;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.kii.beehive.business.event.KiiCloudEventBus;
 import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.business.service.TriggerFireCallbackService;
+import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.manager.TagThingManager;
 import com.kii.beehive.portal.manager.ThingGroupStateManager;
@@ -69,12 +73,42 @@ public class TestGroupTrigger extends TestTemplate{
 	private TriggerFireCallbackService callbackService;
 
 
+
+	@Autowired
+	private TagThingManager thingTagManager;
+
+
+	@Autowired
+	private KiiCloudEventBus eventBus;
+
+
+//	@Commit
 	@Test
-	public void fireTagChange(){
+	public void fireTagChange() throws IOException {
+
+		List<Long> tagIDList=new ArrayList<>();
+		tagIDList.add(1001l);
+		tagIDList.add(1041l);
+
+
+		List<Long> thingIDList=new ArrayList<>();
+		thingIDList.add(1052l);
+		thingIDList.add(1054l);
+		thingIDList.add(1055l);
+		thingIDList.add(1056l);
+
+
+//		thingTagManager.bindTagToThing(tagIDList, thingIDList);
+
+		eventBus.onTagIDsChangeFire(tagIDList,true);
+//
+//
+		System.in.read();
 
 //		tagManager.unbindTagToThing(Collections.singletonList(String.valueOf(tags[3])),thingIDs[0]);
 
 	}
+
 
 
 	@Test
@@ -121,11 +155,11 @@ public class TestGroupTrigger extends TestTemplate{
 		GroupTriggerRecord record=new GroupTriggerRecord();
 		record.addTarget(getTagCmdTarget());
 
-		StatePredicate preidcate=new StatePredicate();
+		StatePredicate predicate=new StatePredicate();
 		Condition condition= ConditionBuilder.orCondition().less("bar",100).great("foo",0).getConditionInstance();
-		preidcate.setCondition(condition);
-		preidcate.setTriggersWhen(TriggerWhen.CONDITION_TRUE);
-		record.setPerdicate(preidcate);
+		predicate.setCondition(condition);
+		predicate.setTriggersWhen(TriggerWhen.CONDITION_TRUE);
+		record.setPerdicate(predicate);
 
 		TriggerGroupPolicy policy=new TriggerGroupPolicy();
 		policy.setCriticalNumber(75);
@@ -135,9 +169,8 @@ public class TestGroupTrigger extends TestTemplate{
 		
 		TriggerSource source=new TriggerSource();
 		TagSelector selector=new TagSelector();
-		selector.addTag(tagNames[1]);
-		selector.addTag(tagNames[2]);
-		selector.addTag(tagNames[3]);
+		selector.addTag("Location-3F-room1");
+		selector.addTag("Location-2F-room1");
 
 		source.setSelector(selector);
 		record.setSource(source);
@@ -149,10 +182,12 @@ public class TestGroupTrigger extends TestTemplate{
 		assertTrue(rec instanceof GroupTriggerRecord);
 
 
-//		groupMang.createThingGroup(record);
+		groupMang.createThingGroup(record);
 
 
 	}
+
+
 
 	private TriggerTarget getTagCmdTarget() {
 		TriggerTarget target=new TriggerTarget();

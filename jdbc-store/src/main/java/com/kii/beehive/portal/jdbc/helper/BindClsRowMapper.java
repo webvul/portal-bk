@@ -122,6 +122,8 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 			result=rs.getObject(key,target);
 		}else if(target.equals(String.class)){
 			result=rs.getString(key);
+		}else if( Number.class.isAssignableFrom(target)){
+			result=rs.getObject(key);
 		}
 		return result;
 	}

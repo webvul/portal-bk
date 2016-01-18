@@ -1,6 +1,9 @@
 package com.kii.beehive.portal.jdbc.dao;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -81,18 +84,17 @@ public abstract class SpringBaseDao<T extends DBEntity> {
 	}
 
 	public T findByID(Serializable id){
-		String sql = "SELECT * FROM " + this.getTableName() + " WHERE "+ getKey() +"=?";
-//		Map<String,Object> param= Collections.singletonMap("list",ids);
+		String sql = "SELECT t.* FROM " + this.getTableName() + " t WHERE t."+ getKey() +"=?";
 		Object[] param=new Object[]{id};
 
 		return (T) jdbcTemplate.queryForObject(sql,param, getRowMapper());
 	}
 
-	public List<T> findByIDs(long[] ids){
+	public List<T> findByIDs(List<Long> ids){
 
 
-			String sql = "SELECT * FROM " + this.getTableName() + " WHERE "+ getKey() +" IN (:list)";
-			Map<String,Object> param= Collections.singletonMap("list",ids);
+			String sql = "select t.* from " + this.getTableName() + " t where t."+ getKey() +" in (:list) ";
+			Map<String,Collection> param= Collections.singletonMap("list", new ArrayList<Long>(ids));
 			return  namedJdbcTemplate.query(sql, param,getRowMapper());
 
 	}

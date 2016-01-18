@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.BeanUtils;
@@ -220,7 +221,9 @@ public class ThingController {
 		List<String> tagIDList = CollectionUtils.arrayToList(tagIDs.split(","));
 		thingTagManager.bindTagToThing(tagIDList, thingIDList);
 
-		eventBus.onTagIDsChangeFire(tagIDList,true);
+		List<Long> tagIDsInLong=tagIDList.stream().mapToLong(id->Long.parseLong(id)).boxed().collect(Collectors.toList());
+
+		eventBus.onTagIDsChangeFire(tagIDsInLong,true);
 	}
 
 	/**
@@ -237,7 +240,9 @@ public class ThingController {
 		List<String> tagIDList = CollectionUtils.arrayToList(tagIDs.split(","));
 		thingTagManager.unbindTagToThing(tagIDList, thingIDList);
 
-		eventBus.onTagIDsChangeFire(tagIDList,false);
+		List<Long> tagIDsInLong=tagIDList.stream().mapToLong(id->Long.parseLong(id)).boxed().collect(Collectors.toList());
+
+		eventBus.onTagIDsChangeFire(tagIDsInLong,false);
 
 	}
 
