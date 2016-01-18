@@ -50,6 +50,5 @@
 			<bean class="com.kii.beehive.portal.web.help.AuthInterceptor" />
 		</mvc:interceptor>
 	</mvc:interceptors>
-	<!--TODO multiple interceptor with the same bean can't be merged into one, need to investigate-->
 
 </beans>

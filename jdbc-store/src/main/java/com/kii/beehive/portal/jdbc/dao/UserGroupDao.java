@@ -49,7 +49,7 @@ public class UserGroupDao extends BaseDao<UserGroup> {
 		String sql = "SELECT u.user_group_id,u.name,u.description,u.create_by,u.create_date,u.modify_by,u.modify_date "
 					+ "FROM " + this.getTableName() +" u "
 					+ "INNER JOIN rel_group_permission r ON u.user_group_id = r.user_group_id " 
-					+ "WHERE r.permission = ? ";
+					+ "WHERE r.permission_id = ? ";
 		
 		List<Object> params = new ArrayList<Object>();
 		params.add(permissionID);

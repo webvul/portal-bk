@@ -45,7 +45,7 @@ public class TestAuthInfoCacheService extends TestInit {
 
         for(int i=0;i<QUERY_COUNT;i++) {
             long start = System.currentTimeMillis();
-            authInfoCacheService.getAvailableAuthInfo("long_long_long_token_" + i);
+            authInfoCacheService.getAuthInfo("long_long_long_token_" + i);
             long end = System.currentTimeMillis();
 
             queryTime += (end - start);
@@ -175,7 +175,7 @@ public class TestAuthInfoCacheService extends TestInit {
         public void run() {
 
             long start = System.currentTimeMillis();
-            authInfoCacheService.getAvailableAuthInfo("long_long_long_token_" + index);
+            authInfoCacheService.getAuthInfo("long_long_long_token_" + index);
             long end = System.currentTimeMillis();
             executeTime += (end - start);
 
