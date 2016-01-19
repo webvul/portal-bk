@@ -153,7 +153,7 @@ public class UserGroupController extends AbstractController{
     	UserGroup orig =  userGroupDao.findByID(userGroupID);
 		
 		if(orig == null){
-			throw new PortalException("Thing Not Found", "Thing with userGroupID:" + userGroupID + " Not Found", HttpStatus.NOT_FOUND);
+			throw new PortalException("UserGroup Not Found", "UserGroup with userGroupID:" + userGroupID + " Not Found", HttpStatus.NOT_FOUND);
 		}
 		
 		userManager.deleteUserGroup(userGroupID);
