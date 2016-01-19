@@ -173,7 +173,7 @@ public class UserGroupController extends AbstractController{
     @RequestMapping(path="/{userGroupID}",method={RequestMethod.GET})
     public ResponseEntity getUserGroupDetail(@PathVariable("userGroupID") Long userGroupID, HttpServletRequest httpRequest){
     	String loginUserID = getLoginUserID(httpRequest);
-    	List<BeehiveUser> list = null;
+    	UserGroupRestBean ugrb = null;
 		if(checkUserGroup(loginUserID, userGroupID)){
 			List<String> userIdList = new ArrayList<String>(); 
 			List<GroupUserRelation> relList = groupUserRelationDao.findByUserGroupID(userGroupID);
@@ -181,11 +181,14 @@ public class UserGroupController extends AbstractController{
 				for(GroupUserRelation gur:relList){
 					userIdList.add(gur.getUserID());
 				}
-				list = beehiveUserDao.getUserByIDs(userIdList);
+				List<BeehiveUser> list = beehiveUserDao.getUserByIDs(userIdList);
+				UserGroup ug = userGroupDao.findByID(userGroupID);
+				ugrb = new UserGroupRestBean(ug);
+				ugrb.setUsers(list);
 			}
 		}
 
-        return new ResponseEntity<>(list, HttpStatus.OK);
+        return new ResponseEntity<>(ugrb, HttpStatus.OK);
     }
     
     /**
