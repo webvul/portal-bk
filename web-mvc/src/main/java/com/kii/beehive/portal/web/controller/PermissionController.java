@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kii.beehive.portal.jdbc.entity.GroupPermissionRelation;
 import com.kii.beehive.portal.jdbc.entity.Permission;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
+import com.kii.beehive.portal.web.exception.BeehiveUnAuthorizedException;
 
 /**
  * Beehive API - User API
@@ -47,6 +48,8 @@ public class PermissionController extends AbstractController{
 				GroupPermissionRelation gpr = new GroupPermissionRelation(permissionID, userGroupID);
 	    		groupPermissionRelationDao.saveOrUpdate(gpr);
 			}
+		}else{
+			throw new BeehiveUnAuthorizedException("loginUser isn't in the group");
 		}
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -67,25 +70,13 @@ public class PermissionController extends AbstractController{
 		
 		if(checkAuth.size() == 1){
 			groupPermissionRelationDao.delete(permissionID, userGroupID);
+		}else{
+			throw new BeehiveUnAuthorizedException("loginUser isn't in the group");
 		}
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
 
-    /**
-     * 删除權限
-     * DELETE /permission/{permissionID}
-     *
-     * refer to doc "Beehive API - User API" for request/response details
-     *
-     * @param userGroupID
-     */
-    @RequestMapping(path="/{permissionID}",method={RequestMethod.DELETE})
-    public ResponseEntity deletePermission(@PathVariable("permissionID") Long permissionID){
-
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-    
     /**
      * 取得群組權限
      * GET /permission/userGroup/{userGroupID}

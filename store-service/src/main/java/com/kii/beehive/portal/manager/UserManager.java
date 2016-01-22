@@ -172,18 +172,24 @@ public class UserManager {
 	 * @param userGroupID
      */
 	public void addUserToUserGroup(List<String> userIDList, Long userGroupID) {
-
-		List<String> existingUserIDList = groupUserRelationDao.findUserIDByUserGroupID(userGroupID);
-
-		List<String> userIDListToInsert = new ArrayList<>(userIDList);
-		userIDListToInsert.removeAll(existingUserIDList);
-
-		List<GroupUserRelation> relationList = new ArrayList<>();
-		for(String userID : userIDListToInsert) {
-			relationList.add(new GroupUserRelation(userID, userGroupID));
+		if(userIDList.size() == 1){
+			List<UserGroup> orgiList = userGroupDao.findUserGroup(userIDList.get(0), userGroupID, null);
+			if(orgiList.size() == 0){
+				GroupUserRelation gur = new GroupUserRelation(userIDList.get(0), userGroupID);
+	    		groupUserRelationDao.saveOrUpdate(gur);
+			}
+		}else{
+			List<String> existingUserIDList = groupUserRelationDao.findUserIDByUserGroupID(userGroupID);
+			
+			List<String> userIDListToInsert = new ArrayList<>(userIDList);
+			userIDListToInsert.removeAll(existingUserIDList);
+	
+			List<GroupUserRelation> relationList = new ArrayList<>();
+			for(String userID : userIDListToInsert) {
+				relationList.add(new GroupUserRelation(userID, userGroupID));
+			}
+			groupUserRelationDao.batchInsert(relationList);
 		}
-
-		groupUserRelationDao.batchInsert(relationList);
 	}
 
 	public void deleteUser(String userID) {
