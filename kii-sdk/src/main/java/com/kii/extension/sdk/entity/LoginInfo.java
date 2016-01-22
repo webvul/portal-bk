@@ -1,6 +1,7 @@
 package com.kii.extension.sdk.entity;
 
 import java.util.Date;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -12,6 +13,8 @@ public class LoginInfo {
 	private String  token;
 
 	private Date expainAt;
+	
+	private Set<String> permissionSet;
 
 
 	@JsonProperty("id")
@@ -43,4 +46,15 @@ public class LoginInfo {
 
 		this.expainAt = new Date(System.currentTimeMillis()+expainIn);
 	}
+
+	@JsonIgnore
+	public Set<String> getPermissionSet() {
+		return permissionSet;
+	}
+
+	public void setPermissionSet(Set<String> permissionSet) {
+		this.permissionSet = permissionSet;
+	}
+	
+	
 }

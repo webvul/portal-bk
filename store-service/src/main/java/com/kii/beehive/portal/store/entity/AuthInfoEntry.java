@@ -14,6 +14,7 @@ public class AuthInfoEntry {
 
 		this.userID = userID;
 		this.token = token;
+		this.permissionSet = permissionSet;
 
 		for(String permiss : permissionSet){
 
@@ -83,6 +84,8 @@ public class AuthInfoEntry {
 	private String userID;
 
 	private String token;
+	
+	private Set<String> permissionSet;
 
 	public String getUserID() {
 		return userID;
@@ -99,4 +102,14 @@ public class AuthInfoEntry {
 	public void setToken(String token) {
 		this.token = token;
 	}
+
+	public Set<String> getPermissionSet() {
+		return permissionSet;
+	}
+
+	public void setPermissionSet(Set<String> permissionSet) {
+		this.permissionSet = permissionSet;
+	}
+	
+	
 }
