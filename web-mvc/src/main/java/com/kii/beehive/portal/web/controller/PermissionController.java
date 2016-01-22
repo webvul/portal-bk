@@ -17,6 +17,7 @@ import com.kii.beehive.portal.jdbc.entity.GroupPermissionRelation;
 import com.kii.beehive.portal.jdbc.entity.Permission;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
 import com.kii.beehive.portal.web.exception.BeehiveUnAuthorizedException;
+import com.kii.beehive.portal.web.exception.PortalException;
 
 /**
  * Beehive API - User API
@@ -39,6 +40,10 @@ public class PermissionController extends AbstractController{
     public ResponseEntity addPermissionToUserGroup(@PathVariable("userGroupID") Long userGroupID, @PathVariable("permissionID") Long permissionID, HttpServletRequest httpRequest){
     	String loginUserID = getLoginUserID(httpRequest);
     	
+    	UserGroup ug = userGroupDao.findByID(userGroupID);
+    	if(ug == null){
+    		throw new PortalException("UserGroup Not Found", "UserGroup with userGroupID:" + userGroupID + " Not Found", HttpStatus.NOT_FOUND);
+    	}
     	//loginUser can edit, when loginUser is in this group , 
     	List<UserGroup> checkAuth = userGroupDao.findUserGroup(loginUserID, userGroupID, null);
 		
@@ -87,6 +92,10 @@ public class PermissionController extends AbstractController{
      */
     @RequestMapping(path="/userGroup/{userGroupID}",method={RequestMethod.GET})
     public ResponseEntity<List<Permission>> getUserGroupPermission(@PathVariable("userGroupID") Long userGroupID, HttpServletRequest httpRequest){
+    	UserGroup ug = userGroupDao.findByID(userGroupID);
+    	if(ug == null){
+    		throw new PortalException("UserGroup Not Found", "UserGroup with userGroupID:" + userGroupID + " Not Found", HttpStatus.NOT_FOUND);
+    	}
     	List<Permission> pList = permissionDao.findByUserGroupID(userGroupID);
         return new ResponseEntity<>(pList, HttpStatus.OK);
     }
