@@ -187,7 +187,9 @@ public class UserGroupController extends AbstractController{
 				ugrb.setUsers(list);
 			}
 		}
-
+		if(ugrb == null){
+			throw new PortalException("UserGroup Not Found", "UserGroup with userGroupID:" + userGroupID + " Not Found", HttpStatus.NOT_FOUND);
+		}
         return new ResponseEntity<>(ugrb, HttpStatus.OK);
     }
     
