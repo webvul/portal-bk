@@ -182,17 +182,18 @@ public abstract class AbstractDataAccess<T> {
 	}
 
 
-	public <I extends KiiEntity> Map<String,Object> executeWithVerify(String id, Function<I,Map<String,Object>> function, int retryNumber){
+	public  Map<String,Object> executeWithVerify(String id, Function<T,Map<String,Object>> function, int retryNumber){
 
 		Map<String,Object> result=null;
 		for(int i=0;i<retryNumber;i++){
 
-			I entry= (I) this.getObjectByID(id);
+			T entry= (T) this.getObjectByID(id);
 
 			result=function.apply(entry);
 
 			try {
-				this.updateEntityWithVersion(result , id, entry.getVersion());
+				int  version=((KiiEntity)entry).getVersion();
+				this.updateEntityWithVersion(result , id, version);
 			} catch (StaleVersionedObjectException e) {
 				continue;
 			}

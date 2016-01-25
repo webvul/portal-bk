@@ -6,8 +6,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.kii.beehive.business.service.BusinessTriggerRegister;
 import com.kii.beehive.business.service.BusinessTriggerService;
+import com.kii.beehive.business.service.CommandExecuteService;
 import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
@@ -47,7 +47,11 @@ public class SimpleThingTriggerManager {
 	private TriggerRuntimeStatusDao statusDao;
 
 	@Autowired
-	private BusinessTriggerRegister triggerRegister;
+	private BusinessTriggerService  triggerService;
+
+
+	@Autowired
+	private CommandExecuteService commandService;
 
 //	@PostConstruct
 	public void refreshState(){
@@ -117,7 +121,7 @@ public class SimpleThingTriggerManager {
 	private void registSingleTrigger(String thingID,SimpleTriggerRecord record){
 
 
-		triggerRegister.registerBusinessTrigger(Collections.singleton(thingID),record.getId(),BeehiveTriggerType.Simple,record.getPredicate());
+		triggerService.registerBusinessTrigger(Collections.singleton(thingID),record.getId(),BeehiveTriggerType.Simple,record.getPredicate());
 
 	}
 
@@ -139,5 +143,10 @@ public class SimpleThingTriggerManager {
 		state.addThingID(thingID);
 
 		statusDao.saveState(state,triggerID);
+	}
+	
+	public void onConditionMatch(String thingID, String triggerID) {
+		commandService.doCommand(triggerID);
+
 	}
 }

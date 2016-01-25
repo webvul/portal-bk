@@ -1,7 +1,10 @@
 package com.kii.beehive.portal.service;
 
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.kii.beehive.portal.store.entity.BusinessTrigger;
 import com.kii.extension.sdk.entity.BucketInfo;
@@ -43,6 +46,21 @@ public class BusinessTriggerDao extends AbstractDataAccess<BusinessTrigger> {
 		super.updateEntityWithVersion(Collections.singletonMap(thingID,sign),triggerID,version);
 
 	}
+	
+	
+	public void disableTrigger(String triggerID) {
 
+		super.updateEntity(Collections.singletonMap("enable",false),triggerID);
+
+
+	}
+	
+	public void addListenerID(String listenerID,String triggerID) {
+
+		super.updateEntity(Collections.singletonMap("listenerID",listenerID),triggerID);
+
+
+	}
+	
 
 }

@@ -1,7 +1,11 @@
 package com.kii.beehive.business.service;
 
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -11,13 +15,14 @@ import com.kii.beehive.business.event.BusinessEventListenerService;
 import com.kii.beehive.business.ruleengine.ExpressCompute;
 import com.kii.beehive.portal.service.BusinessTriggerDao;
 import com.kii.beehive.portal.store.entity.BusinessTrigger;
+import com.kii.beehive.portal.store.entity.TriggerMemberState;
+import com.kii.beehive.portal.store.entity.trigger.BeehiveTriggerType;
+import com.kii.extension.sdk.entity.thingif.StatePredicate;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
 @Component
 public class BusinessTriggerService {
 
-	@Autowired
-	private BusinessEventListenerService listenerService;
 
 	@Autowired
 	private BusinessTriggerDao triggerDao;
@@ -31,9 +36,11 @@ public class BusinessTriggerService {
 	@Autowired
 	private BusinessEventBus eventBus;
 
+	@Autowired
+	private BusinessEventListenerService listenerService;
 
 
-	public String createTrigger(BusinessTrigger trigger) {
+	private String createTrigger(BusinessTrigger trigger) {
 
 
 		trigger.setEnable(false);
@@ -57,21 +64,10 @@ public class BusinessTriggerService {
 		return triggerID;
 	}
 
-	public void onThingStateChange(String triggerID,String thingID,ThingStatus newState,String listenerID){
+	public void onThingStateChange(String triggerID,String thingID, ThingStatus newState){
 
 
 		BusinessTrigger trigger=triggerDao.getTriggerByID(triggerID);
-
-		if(trigger==null){
-			listenerService.disableTriggerByTargetID(triggerID);
-			return;
-		}
-
-		if(!trigger.getThingIDList().contains(thingID)){
-			listenerService.updateThingStatusListener(trigger.getThingIDList(),listenerID);
-			return;
-		}
-
 
 		boolean oldSign=trigger.getMemberStates().getMemberStatus(thingID);
 
@@ -84,18 +80,93 @@ public class BusinessTriggerService {
 		},5);
 
 
-		boolean finallySign=trigger.getWhen().checkStatus(oldSign, (Boolean) result.get(thingID));
+		boolean newSign= (boolean) result.get(thingID);
+
+		boolean finallySign=trigger.getWhen().checkStatus(oldSign, newSign);
 
 		if(finallySign){
-
-
-			eventBus.onTriggerFire(triggerID,trigger.getWhen(),thingID);
-
-
+			eventBus.onTriggerFire(triggerID,trigger.getWhen(),thingID,newSign);
 		}
 
 
 	}
+
+	public BusinessTrigger registerBusinessTrigger(Collection<String> thingIDs, String beehiveTriggerID, BeehiveTriggerType  triggerType, StatePredicate predicate){
+
+
+		BusinessTrigger  trigger=new BusinessTrigger();
+		trigger.setCondition(predicate.getCondition());
+		trigger.setThingIDList(new HashSet<>(thingIDs));
+		trigger.setWhen(predicate.getTriggersWhen());
+
+		String triggerID=createTrigger(trigger);
+
+		String listenerID=listenerService.addBeehiveTriggerChangeListener(beehiveTriggerID,triggerID,triggerType);
+
+		triggerDao.addListenerID(listenerID,triggerID);
+
+		return trigger;
+
+	}
+
+
+	public void removeTrigger(String triggerID) {
+
+
+		BusinessTrigger trigger=triggerDao.getTriggerByID(triggerID);
+		if(trigger==null){
+			return;
+		}
+		triggerDao.removeEntity(triggerID);
+
+		if(trigger!=null) {
+			listenerService.removeListener(trigger.getListenerID());
+		}
+	}
 	
 
+
+	public BusinessTrigger updateTrigger(Collection<String> newThingList,String triggerID){
+
+		triggerDao.executeWithVerify(triggerID,trigger->{
+
+			Set<String> newThings=new HashSet<>(newThingList);
+
+			newThings.removeAll(trigger.getThingIDList());
+
+			Map<String,Boolean>  newStates=trigger.getMemberStates().getMemberStatusMap();
+			newStates.replaceAll((k,v)-> null);
+
+			for(String thingID:newThings){
+
+				ThingStatus  status=thingIFService.getStatus(thingID);
+
+				boolean sign=compute.doExpress(trigger.getCondition(),status.getFields());
+
+				newStates.put(thingID,sign);
+			}
+
+
+			Map<String,Object> param=new HashMap<>();
+
+			param.put("thingIDList",newStates.keySet());
+
+			param.putAll(newStates);
+
+			return param;
+
+		},5);
+
+		BusinessTrigger trigger=triggerDao.getTriggerByID(triggerID);
+
+		listenerService.updateThingStatusListener(newThingList,trigger.getListenerID());
+
+		return trigger;
+	}
+	
+	
+	public BusinessTrigger getTriggerByID(String triggerID) {
+
+		return triggerDao.getTriggerByID(triggerID);
+	}
 }

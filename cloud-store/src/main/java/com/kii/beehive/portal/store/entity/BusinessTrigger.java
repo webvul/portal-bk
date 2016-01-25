@@ -1,19 +1,14 @@
 package com.kii.beehive.portal.store.entity;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
-import com.kii.beehive.portal.store.entity.trigger.TriggerSource;
 import com.kii.extension.sdk.entity.KiiEntity;
-import com.kii.extension.sdk.entity.thingif.Predicate;
-import com.kii.extension.sdk.entity.thingif.StatePredicate;
 import com.kii.extension.sdk.entity.thingif.TriggerWhen;
 import com.kii.extension.sdk.query.Condition;
 
@@ -25,9 +20,11 @@ public class BusinessTrigger extends KiiEntity{
 
 	private Condition condition;
 
+	private String listenerID;
+
 //	private String target;
 
-	private MemberState  states=new MemberState();
+	private TriggerMemberState states=new TriggerMemberState();
 
 	private Map<String,Object> additionParam=new HashMap<>();
 
@@ -50,11 +47,11 @@ public class BusinessTrigger extends KiiEntity{
 	}
 
 	@JsonUnwrapped
-	public MemberState getMemberStates() {
+	public TriggerMemberState getMemberStates() {
 		return states;
 	}
 
-	public void setMemberStates(MemberState states) {
+	public void setMemberStates(TriggerMemberState states) {
 		this.states = states;
 	}
 
@@ -88,11 +85,11 @@ public class BusinessTrigger extends KiiEntity{
 		this.condition = condition;
 	}
 
-//	public String getTarget() {
-//		return target;
-//	}
-//
-//	public void setTarget(String target) {
-//		this.target = target;
-//	}
+	public String getListenerID() {
+		return listenerID;
+	}
+
+	public void setListenerID(String listenerID) {
+		this.listenerID = listenerID;
+	}
 }

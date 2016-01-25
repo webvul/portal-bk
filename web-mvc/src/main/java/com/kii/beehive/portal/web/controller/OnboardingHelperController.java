@@ -74,11 +74,11 @@ public class OnboardingHelperController {
 		appManager.initAppInfos(userName,pwd,masterID);
 		
 		CallbackUrlParameter param=new CallbackUrlParameter();
-		param.setNegative(CallbackNames.NEGATION);
-		param.setSummary(CallbackNames.SUMMARY);
-		param.setSimple(CallbackNames.SIMPLE);
+//		param.setNegative(CallbackNames.NEGATION);
+//		param.setSummary(CallbackNames.SUMMARY);
+//		param.setSimple(CallbackNames.SIMPLE);
 		param.setStateChange(CallbackNames.STATE_CHANGED);
-		param.setPositive(CallbackNames.POSITION);
+//		param.setPositive(CallbackNames.POSITION);
 		param.setThingCreated(CallbackNames.THING_CREATED);
 
 

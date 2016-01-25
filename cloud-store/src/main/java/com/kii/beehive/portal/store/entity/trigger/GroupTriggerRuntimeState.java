@@ -12,40 +12,27 @@ public class GroupTriggerRuntimeState extends TriggerRuntimeState{
 
 
 
-	private MemberState  memberState=new MemberState();
+//	private PortalMemberState portalMemberState =new PortalMemberState();
 
 	private TriggerGroupPolicy.TriggerGroupPolicyType policy;
 
 	private int criticalNumber;
-
-//	private String relationTriggerID;
 
 	private boolean currentStatus;
 
 	private TriggerWhen whenType=TriggerWhen.CONDITION_TRUE;
 
 
-	private Map<String,KiiTriggerCol> currThingTriggerMap=new HashMap<>();
+	private String businessTriggerID;
 
-	public Map<String, KiiTriggerCol> getCurrThingTriggerMap() {
-		return currThingTriggerMap;
+	public String getBusinessTriggerID() {
+		return businessTriggerID;
 	}
 
-	public void setCurrThingTriggerMap(Map<String,KiiTriggerCol> currThingTriggerMap) {
-		this.currThingTriggerMap = currThingTriggerMap;
+	public void setBusinessTriggerID(String businessTriggerID) {
+		this.businessTriggerID = businessTriggerID;
 	}
 
-	public void addThingTriggerInfo(String thingID,KiiTriggerCol triggerCol){
-		this.currThingTriggerMap.put(thingID,triggerCol);
-	}
-
-//	public String getRelationTriggerID() {
-//		return relationTriggerID;
-//	}
-//
-//	public void setRelationTriggerID(String relationTriggerID) {
-//		this.relationTriggerID = relationTriggerID;
-//	}
 
 	public TriggerGroupPolicy.TriggerGroupPolicyType getPolicy() {
 		return policy;
@@ -79,22 +66,6 @@ public class GroupTriggerRuntimeState extends TriggerRuntimeState{
 		this.currentStatus = currentStatus;
 	}
 
-	@JsonUnwrapped(prefix="member-")
-	public MemberState getMemberState() {
-		return memberState;
-	}
-
-	public void setMemberState(MemberState memberState) {
-		this.memberState = memberState;
-	}
-
-	@JsonIgnore
-	public boolean checkPolicy(){
-
-		return memberState.checkPolicy(policy,criticalNumber);
-
-	}
-
 	private String listenerID;
 	
 	public void setListenerID(String listenerID) {
@@ -103,5 +74,34 @@ public class GroupTriggerRuntimeState extends TriggerRuntimeState{
 
 	public String getListenerID() {
 		return listenerID;
+	}
+
+	@JsonIgnore
+	public void checkPolicy(Map<String,Boolean> memberMap){
+
+
+		long accessNum=memberMap.values().stream().filter(v->v).count();
+
+		long sumNum=memberMap.values().stream().filter(v->v!=null).count();
+
+		boolean sign=false;
+		switch(policy){
+			case All:
+				sign= sumNum==accessNum;
+				break;
+			case Any:
+				sign= accessNum>0;
+				break;
+			case Some:
+				sign= accessNum>=criticalNumber;
+				break;
+			case Percent:
+				sign= 100*accessNum>=(criticalNumber*sumNum);
+				break;
+			default:
+				sign=false;
+		}
+
+		this.currentStatus=getWhenType().checkStatus(currentStatus,sign);
 	}
 }

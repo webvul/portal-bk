@@ -15,7 +15,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.beehive.business.service.ServiceExtensionDeployService;
 import com.kii.beehive.business.service.ThingIFInAppService;
-import com.kii.beehive.business.service.TriggerFireCallbackService;
 import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
@@ -69,8 +68,6 @@ public class TestTriggerCreate extends TestTemplate {
 	@Autowired
 	private GlobalThingDao thingDao;
 
-	@Autowired
-	private TriggerFireCallbackService callbackService;
 
 
 	@Autowired
@@ -162,7 +159,7 @@ public class TestTriggerCreate extends TestTemplate {
 		 */
 		String triggerID="66919540-bd92-11e5-962a-00163e02138f";
 		String thingID="0af7a7e7-th.f83120e36100-a269-5e11-e5bb-0bc2e136";
-		callbackService.onSimpleArrive(thingID,triggerID);
+//		callbackService.onSimpleArrive(thingID,triggerID);
 
 
 

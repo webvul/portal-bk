@@ -7,7 +7,8 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class MemberState {
+
+public class TriggerMemberState {
 
 	private Map<String,Boolean> memberStatusMap=new HashMap<>();
 
@@ -25,4 +26,6 @@ public class MemberState {
 	public boolean getMemberStatus(String thingID) {
 		return memberStatusMap.get(thingID);
 	}
+
+
 }

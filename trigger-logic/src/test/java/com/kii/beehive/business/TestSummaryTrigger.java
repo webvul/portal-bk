@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.kii.beehive.business.event.BusinessEventBus;
-import com.kii.beehive.business.event.process.ModifySummaryListenerProcess;
+import com.kii.beehive.business.event.process.SummaryTagChangeProcess;
 import com.kii.beehive.portal.manager.ThingStateSummaryManager;
 import com.kii.beehive.portal.store.entity.trigger.SummaryExpress;
 import com.kii.beehive.portal.store.entity.trigger.SummaryFunctionType;
@@ -50,7 +50,7 @@ public class TestSummaryTrigger extends TestTemplate {
 	private BusinessEventBus bus;
 
 	@Autowired
-	private ModifySummaryListenerProcess  modifyProcess;
+	private SummaryTagChangeProcess modifyProcess;
 
 
 	private String triggerID="b1f01480-b9d2-11e5-8554-00163e007aba";

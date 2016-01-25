@@ -15,7 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.beehive.business.event.BusinessEventBus;
 import com.kii.beehive.business.service.ThingIFInAppService;
-import com.kii.beehive.business.service.TriggerFireCallbackService;
+//import com.kii.beehive.business.service.TriggerFireCallbackService;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.manager.TagThingManager;
 import com.kii.beehive.portal.manager.ThingGroupStateManager;
@@ -66,8 +66,8 @@ public class TestGroupTrigger extends TestTemplate{
 	@Autowired
 	private ThingTagManager thingTagService;
 
-	@Autowired
-	private TriggerFireCallbackService callbackService;
+//	@Autowired
+//	private TriggerFireCallbackService callbackService;
 
 
 
@@ -126,25 +126,25 @@ public class TestGroupTrigger extends TestTemplate{
 	}
 
 	private String triggerID="6a7337b0-b38b-11e5-8554-00163e007aba";
-	@Test
-	public void callback(){
-
-		TagSelector selector=new TagSelector();
-		selector.addTag(tagNames[1]);
-		selector.addTag(tagNames[2]);
-		selector.addTag(tagNames[3]);
-
-		List<GlobalThingInfo> things=thingTagService.getThingInfos(selector);
-
-
-		for(GlobalThingInfo th:things) {
-			if(Math.random()>0.5f) {
-				callbackService.onNegativeArrive(th.getFullKiiThingID(),triggerID);
-			}else{
-				callbackService.onPositiveArrive(th.getFullKiiThingID(),triggerID);
-			}
-		}
-	}
+//	@Test
+//	public void callback(){
+//
+//		TagSelector selector=new TagSelector();
+//		selector.addTag(tagNames[1]);
+//		selector.addTag(tagNames[2]);
+//		selector.addTag(tagNames[3]);
+//
+//		List<GlobalThingInfo> things=thingTagService.getThingInfos(selector);
+//
+//
+//		for(GlobalThingInfo th:things) {
+//			if(Math.random()>0.5f) {
+//				callbackService.onNegativeArrive(th.getFullKiiThingID(),triggerID);
+//			}else{
+//				callbackService.onPositiveArrive(th.getFullKiiThingID(),triggerID);
+//			}
+//		}
+//	}
 
 	@Test
 	public void createTrigger() throws IOException {

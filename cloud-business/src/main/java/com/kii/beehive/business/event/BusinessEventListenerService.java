@@ -31,11 +31,13 @@ public class BusinessEventListenerService {
 
 	public static final String GROUP_NAME = "groupName";
 
+	public static final String TRIGGER_TYPE = "triggerType";
+
 	@Autowired
 	private EventListenerDao  eventListenerDao;
 
 
-	public String addBeehiveTriggerChangeListener(String beehiveTriggerID,String businessTriggerID,BeehiveTriggerType type ){
+	public String addBeehiveTriggerChangeListener(String beehiveTriggerID,String businessTriggerID ,BeehiveTriggerType type){
 
 		EventListener  listener=new EventListener();
 		listener.setTargetKey(beehiveTriggerID);
@@ -45,7 +47,7 @@ public class BusinessEventListenerService {
 		listener.setRelationBeanName(FIRE_TRIGGER_WHEN_MATCH);
 		listener.setEnable(true);
 		listener.setType(EventType.TriggerFire);
-		listener.addCustomValue("triggerType",type);
+		listener.addCustomValue(TRIGGER_TYPE,type);
 
 		return eventListenerDao.addEventListener(listener);
 
@@ -142,6 +144,18 @@ public class BusinessEventListenerService {
 		listener.stream().map(EventListener::getId).forEach(eventListenerDao::enableListener);
 
 	}
+
+	public void disableTrigger(String listenerID){
+
+		eventListenerDao.disableListener(listenerID);
+
+	}
+
+//	public void enableTrigger(String listenerID){
+//
+//		eventListenerDao.enableListener(listenerID);
+//
+//	}
 	
 	
 	public void removeListener(String listenerID) {

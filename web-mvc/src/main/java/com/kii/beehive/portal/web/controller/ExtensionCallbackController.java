@@ -9,12 +9,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.business.service.ThingStateNotifyCallbackService;
-import com.kii.beehive.business.service.TriggerFireCallbackService;
 import com.kii.beehive.portal.manager.ThingTagManager;
 import com.kii.beehive.portal.web.constant.CallbackNames;
 import com.kii.beehive.portal.web.entity.CreatedThing;
 import com.kii.beehive.portal.web.entity.StateUpload;
-import com.kii.beehive.portal.web.entity.TriggerCallbackParam;
 
 @RestController
 @RequestMapping(path = CallbackNames.CALLBACK_URL, consumes = { MediaType.APPLICATION_JSON_UTF8_VALUE }, produces = {
@@ -23,8 +21,8 @@ public class ExtensionCallbackController {
 
 
 
-	@Autowired
-	private TriggerFireCallbackService callbackService;
+//	@Autowired
+//	private TriggerFireCallbackService callbackService;
 
 	@Autowired
 	private ThingStateNotifyCallbackService stateNotifyService;
@@ -33,32 +31,32 @@ public class ExtensionCallbackController {
 	private ThingTagManager tagManager;
 
 
-	@RequestMapping(path= "/" + CallbackNames.SIMPLE,method = { RequestMethod.POST })
-	public void onSimpleTriggerFire(@RequestHeader("x-kii-appid") String appID,
-									@RequestHeader("Authorization") String token,
-									@RequestBody TriggerCallbackParam param){
-
-		callbackService.onSimpleArrive(param.getThingID(),param.getTriggerID());
-	}
-
-	@RequestMapping(path= "/" + CallbackNames.POSITION,method = { RequestMethod.POST })
-	public void onPositionTriggerFire(@RequestHeader("x-kii-appid") String appID,
-									  @RequestHeader("Authorization") String token,
-									  @RequestBody TriggerCallbackParam param){
-
-		callbackService.onPositiveArrive(param.getThingID(),param.getTriggerID());
-
-
-	}
-
-	@RequestMapping(path= "/" + CallbackNames.NEGATION,method = { RequestMethod.POST })
-	public void onNegationTriggerFire(@RequestHeader("x-kii-appid") String appID,
-									  @RequestHeader("Authorization") String token,
-									  @RequestBody TriggerCallbackParam param){
-
-		callbackService.onNegativeArrive(param.getThingID(),param.getTriggerID());
-
-	}
+//	@RequestMapping(path= "/" + CallbackNames.SIMPLE,method = { RequestMethod.POST })
+//	public void onSimpleTriggerFire(@RequestHeader("x-kii-appid") String appID,
+//									@RequestHeader("Authorization") String token,
+//									@RequestBody TriggerCallbackParam param){
+//
+//		callbackService.onSimpleArrive(param.getThingID(),param.getTriggerID());
+//	}
+//
+//	@RequestMapping(path= "/" + CallbackNames.POSITION,method = { RequestMethod.POST })
+//	public void onPositionTriggerFire(@RequestHeader("x-kii-appid") String appID,
+//									  @RequestHeader("Authorization") String token,
+//									  @RequestBody TriggerCallbackParam param){
+//
+//		callbackService.onPositiveArrive(param.getThingID(),param.getTriggerID());
+//
+//
+//	}
+//
+//	@RequestMapping(path= "/" + CallbackNames.NEGATION,method = { RequestMethod.POST })
+//	public void onNegationTriggerFire(@RequestHeader("x-kii-appid") String appID,
+//									  @RequestHeader("Authorization") String token,
+//									  @RequestBody TriggerCallbackParam param){
+//
+//		callbackService.onNegativeArrive(param.getThingID(),param.getTriggerID());
+//
+//	}
 
 	@RequestMapping(path= "/" + CallbackNames.STATE_CHANGED,method = { RequestMethod.POST })
 	public void onStateChangeFire(@RequestHeader("x-kii-appid") String appID,

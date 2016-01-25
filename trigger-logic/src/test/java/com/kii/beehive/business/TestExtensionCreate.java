@@ -81,10 +81,7 @@ public class TestExtensionCreate extends TestTemplate  {
 
 		param.setBaseUrl("http://114.215.196.178:7070/api/echo");
 
-		param.setNegative("negativeCallback");
-		param.setPositive("positiveCallback");
-		param.setSimple("simpleCallback");
-		param.setSummary("summaryCallback");
+
 		param.setStateChange("stateChangeCallback");
 
 		parameterDao.saveTriggerCallbackParam(APP_NAME,param);

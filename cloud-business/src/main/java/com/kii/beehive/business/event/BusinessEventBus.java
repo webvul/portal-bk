@@ -7,6 +7,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import com.kii.beehive.business.event.impl.TagChangeProcess;
+import com.kii.beehive.business.event.impl.ThingStatusChangeProcess;
+import com.kii.beehive.business.event.impl.TriggerFireProcess;
 import com.kii.beehive.portal.event.EventListener;
 import com.kii.beehive.portal.event.EventParam;
 import com.kii.beehive.portal.event.EventType;
@@ -26,7 +29,7 @@ public class BusinessEventBus {
 
 
 	@Async
-	public void onTriggerFire(String triggerID, TriggerWhen when, String thingID){
+	public void onTriggerFire(String triggerID, TriggerWhen when, String thingID,boolean sign){
 
 
 		List<EventListener> listeners=eventDao.getEventListenerByTypeAndKey(EventType.TriggerFire,triggerID);
@@ -35,14 +38,9 @@ public class BusinessEventBus {
 
 			String name=listener.getRelationBeanName();
 
-			BusinessEventProcess process= (BusinessEventProcess) context.getBean(name);
+			TriggerFireProcess process= (TriggerFireProcess) context.getBean(name);
 
-			EventParam param=new EventParam();
-
-			param.setParam("thingID",thingID);
-			param.setParam("triggerWhen",when);
-
-			process.onEventFire(listener,param);
+			process.onEventFire(listener,thingID,when,sign);
 
 		});
 
@@ -59,12 +57,9 @@ public class BusinessEventBus {
 		listenerList.forEach(listener->{
 			String name=listener.getRelationBeanName();
 
-			BusinessEventProcess process= (BusinessEventProcess) context.getBean(name);
+			TagChangeProcess process= (TagChangeProcess) context.getBean(name);
 
-			EventParam param = new EventParam();
-			param.setParam("isAdd",isAdd);
-
-			process.onEventFire(listener,param);
+			process.onEventFire(listener);
 
 		});
 
@@ -81,12 +76,9 @@ public class BusinessEventBus {
 
 			String relationBeanName=listener.getRelationBeanName();
 
-			BusinessEventProcess process= (BusinessEventProcess) context.getBean(relationBeanName);
+			ThingStatusChangeProcess process= (ThingStatusChangeProcess) context.getBean(relationBeanName);
 
-			EventParam param=new EventParam();
-			param.setParam("status",status);
-
-			process.onEventFire(listener,param);
+			process.onEventFire(listener,status,thingID);
 		});
 
 	}
