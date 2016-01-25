@@ -20,10 +20,6 @@ import com.kii.beehive.portal.web.entity.StateUpload;
 public class ExtensionCallbackController {
 
 
-
-//	@Autowired
-//	private TriggerFireCallbackService callbackService;
-
 	@Autowired
 	private ThingStateNotifyCallbackService stateNotifyService;
 
@@ -31,32 +27,6 @@ public class ExtensionCallbackController {
 	private ThingTagManager tagManager;
 
 
-//	@RequestMapping(path= "/" + CallbackNames.SIMPLE,method = { RequestMethod.POST })
-//	public void onSimpleTriggerFire(@RequestHeader("x-kii-appid") String appID,
-//									@RequestHeader("Authorization") String token,
-//									@RequestBody TriggerCallbackParam param){
-//
-//		callbackService.onSimpleArrive(param.getThingID(),param.getTriggerID());
-//	}
-//
-//	@RequestMapping(path= "/" + CallbackNames.POSITION,method = { RequestMethod.POST })
-//	public void onPositionTriggerFire(@RequestHeader("x-kii-appid") String appID,
-//									  @RequestHeader("Authorization") String token,
-//									  @RequestBody TriggerCallbackParam param){
-//
-//		callbackService.onPositiveArrive(param.getThingID(),param.getTriggerID());
-//
-//
-//	}
-//
-//	@RequestMapping(path= "/" + CallbackNames.NEGATION,method = { RequestMethod.POST })
-//	public void onNegationTriggerFire(@RequestHeader("x-kii-appid") String appID,
-//									  @RequestHeader("Authorization") String token,
-//									  @RequestBody TriggerCallbackParam param){
-//
-//		callbackService.onNegativeArrive(param.getThingID(),param.getTriggerID());
-//
-//	}
 
 	@RequestMapping(path= "/" + CallbackNames.STATE_CHANGED,method = { RequestMethod.POST })
 	public void onStateChangeFire(@RequestHeader("x-kii-appid") String appID,

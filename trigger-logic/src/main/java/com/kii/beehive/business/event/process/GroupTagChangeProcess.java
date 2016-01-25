@@ -11,7 +11,6 @@ import com.kii.beehive.portal.service.TriggerRecordDao;
 import com.kii.beehive.portal.service.TriggerRuntimeStatusDao;
 import com.kii.beehive.portal.store.entity.trigger.GroupTriggerRecord;
 import com.kii.beehive.portal.store.entity.trigger.GroupTriggerRuntimeState;
-import com.kii.beehive.portal.store.entity.trigger.TriggerRuntimeState;
 
 @Component(BusinessEventListenerService.REFRESH_THING_GROUP)
 public class GroupTagChangeProcess implements TagChangeProcess {

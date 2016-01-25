@@ -3,7 +3,6 @@ package com.kii.beehive.business;
 import static junit.framework.TestCase.assertTrue;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -15,7 +14,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.beehive.business.event.BusinessEventBus;
 import com.kii.beehive.business.service.ThingIFInAppService;
-//import com.kii.beehive.business.service.TriggerFireCallbackService;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.manager.TagThingManager;
 import com.kii.beehive.portal.manager.ThingGroupStateManager;
@@ -34,6 +32,8 @@ import com.kii.extension.sdk.entity.thingif.ThingStatus;
 import com.kii.extension.sdk.entity.thingif.TriggerWhen;
 import com.kii.extension.sdk.query.Condition;
 import com.kii.extension.sdk.query.ConditionBuilder;
+
+//import com.kii.beehive.business.service.TriggerFireCallbackService;
 
 @Transactional
 

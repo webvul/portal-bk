@@ -16,13 +16,11 @@ public class BusinessTrigger extends KiiEntity{
 
 	private boolean enable;
 
-	private Set<String> thingIDList=new HashSet<>();
+//	private Set<String> thingIDList=new HashSet<>();
 
 	private Condition condition;
 
 	private String listenerID;
-
-//	private String target;
 
 	private TriggerMemberState states=new TriggerMemberState();
 
@@ -69,12 +67,9 @@ public class BusinessTrigger extends KiiEntity{
 		this.additionParam.put(key,value);
 	}
 
-	public Set<String> getThingIDList() {
-		return thingIDList;
-	}
-
-	public void setThingIDList(Set<String> thingIDList) {
-		this.thingIDList = thingIDList;
+	@JsonIgnore
+	public Set<String> getThingIDSet() {
+		return states.getMemberStatusMap().keySet();
 	}
 
 	public Condition getCondition() {

@@ -10,7 +10,6 @@ import com.kii.beehive.portal.manager.SimpleThingTriggerManager;
 import com.kii.beehive.portal.manager.ThingGroupStateManager;
 import com.kii.beehive.portal.service.TriggerRuntimeStatusDao;
 import com.kii.beehive.portal.store.entity.trigger.BeehiveTriggerType;
-import com.kii.beehive.portal.store.entity.trigger.SimpleTriggerRuntimeState;
 import com.kii.beehive.portal.store.entity.trigger.TriggerRuntimeState;
 import com.kii.extension.sdk.entity.thingif.TriggerWhen;
 

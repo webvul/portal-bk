@@ -24,7 +24,6 @@ import com.kii.extension.sdk.entity.thingif.StatePredicate;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 import com.kii.extension.sdk.entity.thingif.ThingTrigger;
 import com.kii.extension.sdk.entity.thingif.TriggerTarget;
-import com.kii.extension.sdk.entity.thingif.TriggerWhen;
 
 @Component
 public class SimpleThingTriggerManager {
@@ -81,7 +80,7 @@ public class SimpleThingTriggerManager {
 
 		GlobalThingInfo thing=thingTagService.getThingByID(thingID.getThingID());
 
-		registSingleTrigger(thing.getFullKiiThingID(),record);
+		triggerService.registerBusinessTrigger(Collections.singleton(thing.getFullKiiThingID()),record.getId(),BeehiveTriggerType.Simple,record.getPredicate());
 
 		triggerDao.enableTrigger(triggerID);
 		return triggerID;
@@ -118,12 +117,11 @@ public class SimpleThingTriggerManager {
 	}
 
 
-	private void registSingleTrigger(String thingID,SimpleTriggerRecord record){
-
-
-		triggerService.registerBusinessTrigger(Collections.singleton(thingID),record.getId(),BeehiveTriggerType.Simple,record.getPredicate());
-
-	}
+//	private void registSingleTrigger(String thingID,SimpleTriggerRecord record){
+//
+//
+//
+//	}
 
 	private void registSingleTriggerOld(String thingID, StatePredicate predicate, String triggerID){
 

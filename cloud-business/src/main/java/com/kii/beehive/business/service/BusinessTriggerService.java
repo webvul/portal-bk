@@ -15,7 +15,6 @@ import com.kii.beehive.business.event.BusinessEventListenerService;
 import com.kii.beehive.business.ruleengine.ExpressCompute;
 import com.kii.beehive.portal.service.BusinessTriggerDao;
 import com.kii.beehive.portal.store.entity.BusinessTrigger;
-import com.kii.beehive.portal.store.entity.TriggerMemberState;
 import com.kii.beehive.portal.store.entity.trigger.BeehiveTriggerType;
 import com.kii.extension.sdk.entity.thingif.StatePredicate;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
@@ -40,12 +39,12 @@ public class BusinessTriggerService {
 	private BusinessEventListenerService listenerService;
 
 
-	private String createTrigger(BusinessTrigger trigger) {
+	private String createTrigger(BusinessTrigger trigger,Collection<String> thingIDs) {
 
 
 		trigger.setEnable(false);
 
-		for(String thingID:trigger.getThingIDList()){
+		for(String thingID:thingIDs){
 
 			ThingStatus  status=thingIFService.getStatus(thingID);
 
@@ -57,7 +56,7 @@ public class BusinessTriggerService {
 		String triggerID=triggerDao.addKiiEntity(trigger);
 
 
-		listenerService.addThingStatusListenerForTrigger(trigger.getThingIDList(),triggerID);
+		listenerService.addThingStatusListenerForTrigger(trigger.getThingIDSet(),triggerID);
 
 		triggerDao.enableTrigger(triggerID);
 
@@ -96,10 +95,10 @@ public class BusinessTriggerService {
 
 		BusinessTrigger  trigger=new BusinessTrigger();
 		trigger.setCondition(predicate.getCondition());
-		trigger.setThingIDList(new HashSet<>(thingIDs));
 		trigger.setWhen(predicate.getTriggersWhen());
 
-		String triggerID=createTrigger(trigger);
+
+		String triggerID=createTrigger(trigger,thingIDs);
 
 		String listenerID=listenerService.addBeehiveTriggerChangeListener(beehiveTriggerID,triggerID,triggerType);
 
@@ -132,7 +131,7 @@ public class BusinessTriggerService {
 
 			Set<String> newThings=new HashSet<>(newThingList);
 
-			newThings.removeAll(trigger.getThingIDList());
+			newThings.removeAll(trigger.getThingIDSet());
 
 			Map<String,Boolean>  newStates=trigger.getMemberStates().getMemberStatusMap();
 			newStates.replaceAll((k,v)-> null);

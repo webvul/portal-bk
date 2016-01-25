@@ -11,7 +11,6 @@ import com.kii.beehive.portal.service.TriggerRecordDao;
 import com.kii.beehive.portal.service.TriggerRuntimeStatusDao;
 import com.kii.beehive.portal.store.entity.trigger.SummaryTriggerRecord;
 import com.kii.beehive.portal.store.entity.trigger.SummaryTriggerRuntimeState;
-import com.kii.beehive.portal.store.entity.trigger.TriggerRuntimeState;
 
 @Component(BusinessEventListenerService.REFRESH_SUMMARY_GROUP)
 public class SummaryTagChangeProcess implements TagChangeProcess {

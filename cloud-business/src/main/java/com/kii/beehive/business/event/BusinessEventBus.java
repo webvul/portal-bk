@@ -11,7 +11,6 @@ import com.kii.beehive.business.event.impl.TagChangeProcess;
 import com.kii.beehive.business.event.impl.ThingStatusChangeProcess;
 import com.kii.beehive.business.event.impl.TriggerFireProcess;
 import com.kii.beehive.portal.event.EventListener;
-import com.kii.beehive.portal.event.EventParam;
 import com.kii.beehive.portal.event.EventType;
 import com.kii.beehive.portal.service.EventListenerDao;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
