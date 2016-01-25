@@ -6,7 +6,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.kii.beehive.business.event.KiicloudEventListenerService;
+import com.kii.beehive.business.event.BusinessEventListenerService;
 import com.kii.beehive.portal.service.TriggerRuntimeStatusDao;
 import com.kii.beehive.portal.store.entity.trigger.GroupTriggerRuntimeState;
 import com.kii.beehive.portal.store.entity.trigger.TriggerRuntimeState;
@@ -21,10 +21,10 @@ public class TriggerFireCallbackService {
 	private TriggerRuntimeStatusDao statusDao;
 
 	@Autowired
-	private KiiCommandService commandService;
+	private CommandExecuteService commandService;
 
 	@Autowired
-	private KiicloudEventListenerService listenerService;
+	private BusinessEventListenerService listenerService;
 
 
 

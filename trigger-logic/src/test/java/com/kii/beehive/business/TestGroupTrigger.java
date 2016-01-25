@@ -3,22 +3,19 @@ package com.kii.beehive.business;
 import static junit.framework.TestCase.assertTrue;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.kii.beehive.business.event.KiiCloudEventBus;
+import com.kii.beehive.business.event.BusinessEventBus;
 import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.business.service.TriggerFireCallbackService;
-import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.manager.TagThingManager;
 import com.kii.beehive.portal.manager.ThingGroupStateManager;
@@ -79,35 +76,35 @@ public class TestGroupTrigger extends TestTemplate{
 
 
 	@Autowired
-	private KiiCloudEventBus eventBus;
+	private BusinessEventBus eventBus;
 
 
 //	@Commit
-	@Test
-	public void fireTagChange() throws IOException {
-
-		List<Long> tagIDList=new ArrayList<>();
-		tagIDList.add(1001l);
-		tagIDList.add(1041l);
-
-
-		List<Long> thingIDList=new ArrayList<>();
-		thingIDList.add(1052l);
-		thingIDList.add(1054l);
-		thingIDList.add(1055l);
-		thingIDList.add(1056l);
-
-
-//		thingTagManager.bindTagToThing(tagIDList, thingIDList);
-
-		eventBus.onTagIDsChangeFire(tagIDList,true);
+//	@Test
+//	public void fireTagChange() throws IOException {
+//
+//		List<Long> tagIDList=new ArrayList<>();
+//		tagIDList.add(1001l);
+//		tagIDList.add(1041l);
 //
 //
-		System.in.read();
-
-//		tagManager.unbindTagToThing(Collections.singletonList(String.valueOf(tags[3])),thingIDs[0]);
-
-	}
+//		List<Long> thingIDList=new ArrayList<>();
+//		thingIDList.add(1052l);
+//		thingIDList.add(1054l);
+//		thingIDList.add(1055l);
+//		thingIDList.add(1056l);
+//
+//
+////		thingTagManager.bindTagToThing(tagIDList, thingIDList);
+//
+//		eventBus.onTagIDsChangeFire(tagIDList,true);
+////
+////
+//		System.in.read();
+//
+////		tagManager.unbindTagToThing(Collections.singletonList(String.valueOf(tags[3])),thingIDs[0]);
+//
+//	}
 
 
 

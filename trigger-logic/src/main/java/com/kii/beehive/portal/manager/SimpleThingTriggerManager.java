@@ -1,12 +1,13 @@
 package com.kii.beehive.portal.manager;
 
-import javax.annotation.PostConstruct;
-
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.kii.beehive.business.service.BusinessTriggerRegister;
+import com.kii.beehive.business.service.BusinessTriggerService;
 import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
@@ -23,6 +24,7 @@ import com.kii.extension.sdk.entity.thingif.StatePredicate;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 import com.kii.extension.sdk.entity.thingif.ThingTrigger;
 import com.kii.extension.sdk.entity.thingif.TriggerTarget;
+import com.kii.extension.sdk.entity.thingif.TriggerWhen;
 
 @Component
 public class SimpleThingTriggerManager {
@@ -43,6 +45,9 @@ public class SimpleThingTriggerManager {
 
 	@Autowired
 	private TriggerRuntimeStatusDao statusDao;
+
+	@Autowired
+	private BusinessTriggerRegister triggerRegister;
 
 //	@PostConstruct
 	public void refreshState(){
@@ -72,7 +77,7 @@ public class SimpleThingTriggerManager {
 
 		GlobalThingInfo thing=thingTagService.getThingByID(thingID.getThingID());
 
-		registSingleTrigger(thing.getFullKiiThingID(),record.getPredicate(),triggerID);
+		registSingleTrigger(thing.getFullKiiThingID(),record);
 
 		triggerDao.enableTrigger(triggerID);
 		return triggerID;
@@ -108,7 +113,15 @@ public class SimpleThingTriggerManager {
 		return serviceCode;
 	}
 
-	public void registSingleTrigger(String thingID, StatePredicate predicate, String triggerID){
+
+	private void registSingleTrigger(String thingID,SimpleTriggerRecord record){
+
+
+		triggerRegister.registerBusinessTrigger(Collections.singleton(thingID),record.getId(),BeehiveTriggerType.Simple,record.getPredicate());
+
+	}
+
+	private void registSingleTriggerOld(String thingID, StatePredicate predicate, String triggerID){
 
 
 		ThingTrigger triggerInfo=new ThingTrigger();

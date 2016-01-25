@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kii.beehive.business.event.KiiCloudEventBus;
+import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.portal.manager.TagThingManager;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
@@ -48,9 +48,9 @@ public class ThingController {
 	@Autowired
 	private GlobalThingDao globalThingDao;
 
-	@Autowired
-	private KiiCloudEventBus eventBus;
 
+	@Autowired
+	private ThingIFInAppService  thingIFService;
 
 	
 	
@@ -223,7 +223,7 @@ public class ThingController {
 
 		List<Long> tagIDsInLong=tagIDList.stream().mapToLong(id->Long.parseLong(id)).boxed().collect(Collectors.toList());
 
-		eventBus.onTagIDsChangeFire(tagIDsInLong,true);
+		thingIFService.onTagIDsChangeFire(tagIDsInLong,true);
 	}
 
 	/**
@@ -242,7 +242,7 @@ public class ThingController {
 
 		List<Long> tagIDsInLong=tagIDList.stream().mapToLong(id->Long.parseLong(id)).boxed().collect(Collectors.toList());
 
-		eventBus.onTagIDsChangeFire(tagIDsInLong,false);
+		thingIFService.onTagIDsChangeFire(tagIDsInLong,false);
 
 	}
 
@@ -269,7 +269,7 @@ public class ThingController {
 
 		displayNameList.forEach(name->{
 			String fullName=TagType.Custom.getTagName(name);
-			eventBus.onTagChangeFire(fullName,true);
+			thingIFService.onTagChangeFire(fullName,true);
 		});
 	}
 
@@ -296,7 +296,7 @@ public class ThingController {
 
 		displayNameList.forEach(name->{
 			String fullName=TagType.Custom.getTagName(name);
-			eventBus.onTagChangeFire(fullName,false);
+			thingIFService.onTagChangeFire(fullName,false);
 		});
 	}
 

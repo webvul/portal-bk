@@ -20,7 +20,7 @@ import com.kii.extension.sdk.entity.thingif.ServiceCode;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
 
 @Component
-public class KiiCommandService {
+public class CommandExecuteService {
 
 	public static final String SCHEMA = "demo";
 	private static final int SCHEMA_VERSION = 1;

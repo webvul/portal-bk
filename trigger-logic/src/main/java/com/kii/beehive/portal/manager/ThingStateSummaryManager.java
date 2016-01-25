@@ -2,8 +2,6 @@ package com.kii.beehive.portal.manager;
 
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,9 +10,9 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.kii.beehive.business.event.KiicloudEventListenerService;
+import com.kii.beehive.business.event.BusinessEventListenerService;
 import com.kii.beehive.business.ruleengine.ExpressCompute;
-import com.kii.beehive.business.service.KiiCommandService;
+import com.kii.beehive.business.service.CommandExecuteService;
 import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.service.TriggerRecordDao;
@@ -29,7 +27,6 @@ import com.kii.beehive.portal.store.entity.trigger.TagSelector;
 import com.kii.beehive.portal.store.entity.trigger.TriggerRecord;
 import com.kii.beehive.portal.store.entity.trigger.TriggerSource;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
-import com.kii.extension.sdk.exception.StaleVersionedObjectException;
 
 @Component
 public class ThingStateSummaryManager {
@@ -45,7 +42,7 @@ public class ThingStateSummaryManager {
 	private TriggerRecordDao  triggerDao;
 
 	@Autowired
-	private KiicloudEventListenerService listenerService;
+	private BusinessEventListenerService listenerService;
 
 	@Autowired
 	private AppInfoManager appInfoManager;
@@ -57,7 +54,7 @@ public class ThingStateSummaryManager {
 	private ExpressCompute computer;
 
 	@Autowired
-	private KiiCommandService commandService;
+	private CommandExecuteService commandService;
 
 
 	private void fillForAverageCompute(SummaryTriggerRecord record){
@@ -131,13 +128,13 @@ public class ThingStateSummaryManager {
 
 			SummaryStateEntry ids=new SummaryStateEntry();
 
-			ids.setStateListenerID( listenerService.addThingStatusListener(thingIDs, triggerID,name) );
+			ids.setStateListenerID( listenerService.addThingStatusListenerForSummary(thingIDs, triggerID,name) );
 
 			ids.setThingIDs(thingIDs);
 
 			if (!source.getSelector().getTagList().isEmpty()) {
 
-				String tagListenerID=listenerService.addSummaryChangeListener(source.getSelector().getTagList(), triggerID,name);
+				String tagListenerID=listenerService.addSummaryTagChangeListener(source.getSelector().getTagList(), triggerID,name);
 				ids.setTagListenerID(tagListenerID);
 			}
 

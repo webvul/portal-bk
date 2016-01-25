@@ -4,6 +4,8 @@ package com.kii.extension.sdk.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -176,6 +178,26 @@ public abstract class AbstractDataAccess<T> {
 				continue;
 			}
 		}
+
+	}
+
+
+	public <I extends KiiEntity> Map<String,Object> executeWithVerify(String id, Function<I,Map<String,Object>> function, int retryNumber){
+
+		Map<String,Object> result=null;
+		for(int i=0;i<retryNumber;i++){
+
+			I entry= (I) this.getObjectByID(id);
+
+			result=function.apply(entry);
+
+			try {
+				this.updateEntityWithVersion(result , id, entry.getVersion());
+			} catch (StaleVersionedObjectException e) {
+				continue;
+			}
+		}
+		return result;
 
 	}
 

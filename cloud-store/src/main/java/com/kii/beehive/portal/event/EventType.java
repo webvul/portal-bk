@@ -7,7 +7,7 @@ import com.kii.beehive.portal.event.annotation.ThingStateChange;
 
 public enum EventType {
 
-	TagChange(TagChanged.class),ThingStateChange(ThingStateChange.class);
+	TagChange(TagChanged.class),ThingStateChange(ThingStateChange.class),TriggerFire(null);
 
 	private Class<? extends Annotation> annotation;
 

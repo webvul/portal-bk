@@ -1,5 +1,6 @@
 package com.kii.beehive.business.event;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -12,9 +13,10 @@ import org.springframework.stereotype.Component;
 import com.kii.beehive.portal.event.EventListener;
 import com.kii.beehive.portal.event.EventType;
 import com.kii.beehive.portal.service.EventListenerDao;
+import com.kii.beehive.portal.store.entity.trigger.BeehiveTriggerType;
 
 @Component
-public class KiicloudEventListenerService {
+public class BusinessEventListenerService {
 
 
 	public static final String COMPUTE_SUMMARY_STATE = "computeSummaryState";
@@ -22,12 +24,35 @@ public class KiicloudEventListenerService {
 	public static final String REFRESH_SUMMARY_GROUP="refreshSummaryGroup";
 
 	public static final String REFRESH_THING_GROUP="refreshThingGroup";
+
+	public static final String REFRESH_THING_FOR_TRIGGER="refreshThingForTrigger";
+
+	public static final String FIRE_TRIGGER_WHEN_MATCH="fireTriggerWhenMatch";
+
 	public static final String GROUP_NAME = "groupName";
 
 	@Autowired
 	private EventListenerDao  eventListenerDao;
 
-	public String addTagChangeListener(List<String> tagNames,String triggerID){
+
+	public String addBeehiveTriggerChangeListener(String beehiveTriggerID,String businessTriggerID,BeehiveTriggerType type ){
+
+		EventListener  listener=new EventListener();
+		listener.setTargetKey(beehiveTriggerID);
+
+		listener.addBindKey(businessTriggerID);
+
+		listener.setRelationBeanName(FIRE_TRIGGER_WHEN_MATCH);
+		listener.setEnable(true);
+		listener.setType(EventType.TriggerFire);
+		listener.addCustomValue("triggerType",type);
+
+		return eventListenerDao.addEventListener(listener);
+
+
+	}
+
+	public String addGroupTagChangeListener(Collection<String> tagNames, String triggerID){
 
 
 		EventListener  listener=new EventListener();
@@ -42,10 +67,7 @@ public class KiicloudEventListenerService {
 
 	}
 
-
-
-//
-	public String addSummaryChangeListener(List<String> tagNames,String triggerID,String name){
+	public String addSummaryTagChangeListener(Collection<String> tagNames, String triggerID, String name){
 
 
 		EventListener  listener=new EventListener();
@@ -60,9 +82,8 @@ public class KiicloudEventListenerService {
 		return eventListenerDao.addEventListener(listener);
 
 	}
-//
-//
-	public String addThingStatusListener(List<String> thingIDs,String triggerID,String name){
+
+	public String addThingStatusListenerForSummary(Collection<String> thingIDs, String triggerID, String name){
 
 		EventListener  listener=new EventListener();
 		listener.setTargetKey(triggerID);
@@ -76,8 +97,22 @@ public class KiicloudEventListenerService {
 		return eventListenerDao.addEventListener(listener);
 
 	}
+
+	public String addThingStatusListenerForTrigger(Collection<String> thingIDs, String triggerID){
+
+		EventListener  listener=new EventListener();
+		listener.setTargetKey(triggerID);
+		listener.addBindKeys(thingIDs.stream().map(v->String.valueOf(v)).collect(Collectors.toList()));
+
+		listener.setRelationBeanName(REFRESH_THING_FOR_TRIGGER);
+		listener.setType(EventType.ThingStateChange);
+		listener.setEnable(true);
+
+		return eventListenerDao.addEventListener(listener);
+
+	}
 //
-	public void updateThingStatusListener(List<String> thingIDs,String listenerID){
+	public void updateThingStatusListener(Collection<String> thingIDs,String listenerID){
 
 
 		Map<String,Boolean>  thingMap=new HashMap<>();

@@ -1,6 +1,7 @@
 package com.kii.beehive.portal.event;
 
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,7 +67,7 @@ public class EventListener extends KiiEntity {
 	}
 
 	@JsonIgnore
-	public void addBindKeys(List<String> bindKeys) {
+	public void addBindKeys(Collection<String> bindKeys) {
 		bindKeys.forEach(key->{
 			bindKeyMap.put(key,true);
 		});

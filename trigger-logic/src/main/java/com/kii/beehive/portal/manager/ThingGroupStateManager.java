@@ -1,7 +1,5 @@
 package com.kii.beehive.portal.manager;
 
-import javax.annotation.PostConstruct;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -12,7 +10,8 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.kii.beehive.business.event.KiicloudEventListenerService;
+import com.kii.beehive.business.event.BusinessEventListenerService;
+import com.kii.beehive.business.service.BusinessTriggerRegister;
 import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
@@ -55,10 +54,13 @@ public class ThingGroupStateManager {
 	private TriggerRecordDao triggerDao;
 
 	@Autowired
-	private KiicloudEventListenerService listenerService;
+	private BusinessEventListenerService listenerService;
 
 	@Autowired
 	private AppInfoManager appInfoManager;
+
+	@Autowired
+	private BusinessTriggerRegister triggerRegister;
 
 //	@PostConstruct
 	public void refreshState(){
@@ -137,7 +139,7 @@ public class ThingGroupStateManager {
 		});
 
 		if(!record.getSource().getSelector().getTagList().isEmpty()) {
-			String listenerID=listenerService.addTagChangeListener(record.getSource().getSelector().getTagList(),triggerID);
+			String listenerID=listenerService.addGroupTagChangeListener(record.getSource().getSelector().getTagList(),triggerID);
 			state.setListenerID(listenerID);
 		}
 

@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.kii.beehive.business.event.KiiCloudEventBus;
+import com.kii.beehive.business.event.BusinessEventBus;
 import com.kii.beehive.business.event.process.ModifySummaryListenerProcess;
 import com.kii.beehive.portal.manager.ThingStateSummaryManager;
 import com.kii.beehive.portal.store.entity.trigger.SummaryExpress;
@@ -47,7 +47,7 @@ public class TestSummaryTrigger extends TestTemplate {
 
 
 	@Autowired
-	private KiiCloudEventBus bus;
+	private BusinessEventBus bus;
 
 	@Autowired
 	private ModifySummaryListenerProcess  modifyProcess;

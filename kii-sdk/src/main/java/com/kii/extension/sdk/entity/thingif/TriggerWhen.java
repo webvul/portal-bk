@@ -5,7 +5,7 @@ public enum TriggerWhen {
 
 	CONDITION_TRUE,
 	CONDITION_FALSE_TO_TRUE,
-
+	CONDITION_TRUE_TO_FALSE,
 	CONDITION_CHANGED;
 
 
@@ -17,6 +17,8 @@ public enum TriggerWhen {
 				return  newStatus;
 			case CONDITION_FALSE_TO_TRUE:
 				return  (!oldStatus)&&newStatus;
+			case CONDITION_TRUE_TO_FALSE:
+				return (oldStatus)&&(!newStatus);
 			case CONDITION_CHANGED:
 				return oldStatus!=newStatus;
 			default:

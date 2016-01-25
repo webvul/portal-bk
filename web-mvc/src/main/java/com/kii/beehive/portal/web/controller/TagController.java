@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kii.beehive.business.event.KiiCloudEventBus;
+import com.kii.beehive.business.event.BusinessEventBus;
 import com.kii.beehive.portal.manager.TagThingManager;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
@@ -42,7 +42,7 @@ public class TagController {
 	private TagThingManager thingTagManager;
 
 	@Autowired
-	private KiiCloudEventBus eventBus;
+	private BusinessEventBus eventBus;
 
 
 	/**

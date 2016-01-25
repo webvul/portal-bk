@@ -15,9 +15,7 @@ allprojects {
 		mavenLocal()
 		mavenCentral()
 		jcenter()
-		maven {
-			url "http://acesdk.github.io/repo"
-		}
+
 	}
 
 	compileJava {

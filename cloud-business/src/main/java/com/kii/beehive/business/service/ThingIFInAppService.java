@@ -1,9 +1,14 @@
 package com.kii.beehive.business.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import com.kii.beehive.business.event.BusinessEventBus;
 import com.kii.beehive.portal.common.utils.ThingIDTools;
+import com.kii.beehive.portal.manager.ThingTagManager;
 import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
 import com.kii.extension.sdk.context.AppBindToolResolver;
@@ -31,7 +36,26 @@ public class ThingIFInAppService {
 	@Autowired
 	private AppInfoDao  appInfoDao;
 
-	
+	@Autowired
+	private BusinessEventBus eventBus;
+
+	@Autowired
+	private ThingTagManager thingTagManager;
+
+	@Async
+	public void onTagIDsChangeFire(List<Long> tagIDList, boolean b) {
+
+		List<String> tags= thingTagManager.getTagNamesByIDs(tagIDList);
+
+		tags.forEach(name->eventBus.onTagChangeFire(name,b));
+	}
+
+	@Async
+	public void onTagChangeFire(String tagName,boolean b){
+
+		eventBus.onTagChangeFire(tagName,b);
+	}
+
 
 	private String getRealThingID(String fullThingID){
 		ThingIDTools.ThingIDCombine combine = ThingIDTools.splitFullKiiThingID(fullThingID);

@@ -10,13 +10,12 @@ import org.springframework.stereotype.Component;
 import com.kii.beehive.portal.event.EventListener;
 import com.kii.beehive.portal.event.EventParam;
 import com.kii.beehive.portal.event.EventType;
-import com.kii.beehive.portal.jdbc.entity.TagIndex;
-import com.kii.beehive.portal.manager.ThingTagManager;
 import com.kii.beehive.portal.service.EventListenerDao;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
+import com.kii.extension.sdk.entity.thingif.TriggerWhen;
 
 @Component
-public class KiiCloudEventBus {
+public class BusinessEventBus {
 
 
 	@Autowired
@@ -25,16 +24,28 @@ public class KiiCloudEventBus {
 	@Autowired
 	private EventListenerDao eventDao;
 
-	@Autowired
-	private ThingTagManager thingTagManager;
-
 
 	@Async
-	public void onTagIDsChangeFire(List<Long> tagIDList, boolean b) {
+	public void onTriggerFire(String triggerID, TriggerWhen when, String thingID){
 
-		List<String> tags= thingTagManager.getTagNamesByIDs(tagIDList);
 
-		tags.forEach(name->onTagChangeFire(name,b));
+		List<EventListener> listeners=eventDao.getEventListenerByTypeAndKey(EventType.TriggerFire,triggerID);
+
+		listeners.forEach(listener->{
+
+			String name=listener.getRelationBeanName();
+
+			BusinessEventProcess process= (BusinessEventProcess) context.getBean(name);
+
+			EventParam param=new EventParam();
+
+			param.setParam("thingID",thingID);
+			param.setParam("triggerWhen",when);
+
+			process.onEventFire(listener,param);
+
+		});
+
 	}
 
 	@Async
@@ -48,12 +59,12 @@ public class KiiCloudEventBus {
 		listenerList.forEach(listener->{
 			String name=listener.getRelationBeanName();
 
-			BeehiveEventProcess process= (BeehiveEventProcess) context.getBean(name);
+			BusinessEventProcess process= (BusinessEventProcess) context.getBean(name);
 
 			EventParam param = new EventParam();
 			param.setParam("isAdd",isAdd);
 
-			process.onEventFire(listener.getTargetKey(), param,listener.getCustoms());
+			process.onEventFire(listener,param);
 
 		});
 
@@ -70,12 +81,12 @@ public class KiiCloudEventBus {
 
 			String relationBeanName=listener.getRelationBeanName();
 
-			BeehiveEventProcess process= (BeehiveEventProcess) context.getBean(relationBeanName);
+			BusinessEventProcess process= (BusinessEventProcess) context.getBean(relationBeanName);
 
 			EventParam param=new EventParam();
 			param.setParam("status",status);
 
-			process.onEventFire(listener.getTargetKey(),param,listener.getCustoms());
+			process.onEventFire(listener,param);
 		});
 
 	}
