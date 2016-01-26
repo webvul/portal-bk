@@ -16,6 +16,7 @@ import com.kii.beehive.portal.common.utils.CollectUtils;
 import com.kii.beehive.portal.manager.AuthManager;
 import com.kii.beehive.portal.manager.UserManager;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
+import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.entity.AuthRestBean;
 import com.kii.beehive.portal.web.exception.PortalException;
@@ -30,8 +31,6 @@ import com.kii.extension.sdk.entity.LoginInfo;
 @RequestMapping(path = "/oauth2", consumes = { MediaType.APPLICATION_JSON_UTF8_VALUE }, produces = {
         MediaType.APPLICATION_JSON_UTF8_VALUE })
 public class AuthController {
-
-	private  static final String AUTH_HEADER = "Authorization";
 
 	@Autowired
     private AuthManager authManager;
@@ -111,7 +110,7 @@ public class AuthController {
     @RequestMapping(path = "/logout", method = { RequestMethod.POST })
     public void login(HttpServletRequest request) {
 
-        String auth = request.getHeader(AUTH_HEADER);
+        String auth = request.getHeader(Constants.ACCESS_TOKEN);
 
         if (auth == null || !auth.startsWith("Bearer ")) {
             return;
