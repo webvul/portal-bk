@@ -8,16 +8,20 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.beehive.business.event.BusinessEventBus;
+import com.kii.beehive.business.event.process.BusinessTriggerFireProcess;
 import com.kii.beehive.business.service.ThingIFInAppService;
+import com.kii.beehive.portal.event.EventListener;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
+import com.kii.beehive.portal.manager.AppInfoManager;
 import com.kii.beehive.portal.manager.TagThingManager;
 import com.kii.beehive.portal.manager.ThingGroupStateManager;
-import com.kii.beehive.portal.manager.ThingTagManager;
+import com.kii.beehive.portal.manager.ThingStateManager;
 import com.kii.beehive.portal.store.entity.trigger.GroupTriggerRecord;
 import com.kii.beehive.portal.store.entity.trigger.TagSelector;
 import com.kii.beehive.portal.store.entity.trigger.TargetAction;
@@ -26,6 +30,8 @@ import com.kii.beehive.portal.store.entity.trigger.TriggerRecord;
 import com.kii.beehive.portal.store.entity.trigger.TriggerSource;
 import com.kii.beehive.portal.store.entity.trigger.TriggerTarget;
 import com.kii.extension.sdk.entity.thingif.Action;
+import com.kii.extension.sdk.entity.thingif.OnBoardingParam;
+import com.kii.extension.sdk.entity.thingif.OnBoardingResult;
 import com.kii.extension.sdk.entity.thingif.StatePredicate;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
@@ -64,49 +70,36 @@ public class TestGroupTrigger extends TestTemplate{
 
 
 	@Autowired
-	private ThingTagManager thingTagService;
+	private ThingStateManager thingTagService;
 
-//	@Autowired
-//	private TriggerFireCallbackService callbackService;
-
-
-
-	@Autowired
-	private TagThingManager thingTagManager;
 
 
 	@Autowired
 	private BusinessEventBus eventBus;
 
 
-//	@Commit
-//	@Test
-//	public void fireTagChange() throws IOException {
-//
-//		List<Long> tagIDList=new ArrayList<>();
-//		tagIDList.add(1001l);
-//		tagIDList.add(1041l);
-//
-//
-//		List<Long> thingIDList=new ArrayList<>();
-//		thingIDList.add(1052l);
-//		thingIDList.add(1054l);
-//		thingIDList.add(1055l);
-//		thingIDList.add(1056l);
-//
-//
-////		thingTagManager.bindTagToThing(tagIDList, thingIDList);
-//
-//		eventBus.onTagIDsChangeFire(tagIDList,true);
-////
-////
-//		System.in.read();
-//
-////		tagManager.unbindTagToThing(Collections.singletonList(String.valueOf(tags[3])),thingIDs[0]);
-//
-//	}
+	@Autowired
+	private AppInfoManager appManager;
+
+	@Commit
+	@Test
+	public void initThing(){
 
 
+
+		for(int i=2;i<6;i++) {
+			String vendorID = "a1b2c3d4e5f6"+i;
+
+			OnBoardingParam param = new OnBoardingParam();
+			param.setVendorThingID(vendorID);
+			param.setThingPassword("12345678");
+
+			OnBoardingResult result = thingIFService.onBoarding(param, appName);
+
+
+			thingTagService.updateKiicloudRelation(vendorID, appName + "-" + result.getThingID());
+		}
+	}
 
 	@Test
 	public void sendState(){
@@ -126,8 +119,21 @@ public class TestGroupTrigger extends TestTemplate{
 	}
 
 	private String triggerID="6a7337b0-b38b-11e5-8554-00163e007aba";
-//	@Test
-//	public void callback(){
+
+	@Autowired
+	private BusinessTriggerFireProcess process;
+
+	@Test
+	public void callback(){
+
+		EventListener  listener=new EventListener();
+		listener.setTargetKey(triggerID);
+//		listener.set
+
+
+		process.onEventFire(listener,"c1744915-th.aba700e36100-4558-5e11-6d8b-053cc8e8",TriggerWhen.CONDITION_TRUE_TO_FALSE,true);
+
+
 //
 //		TagSelector selector=new TagSelector();
 //		selector.addTag(tagNames[1]);
@@ -144,7 +150,7 @@ public class TestGroupTrigger extends TestTemplate{
 //				callbackService.onPositiveArrive(th.getFullKiiThingID(),triggerID);
 //			}
 //		}
-//	}
+	}
 
 	@Test
 	public void createTrigger() throws IOException {

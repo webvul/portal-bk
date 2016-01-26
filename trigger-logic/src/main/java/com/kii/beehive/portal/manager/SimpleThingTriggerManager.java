@@ -34,7 +34,7 @@ public class SimpleThingTriggerManager {
 	private TriggerRecordDao triggerDao;
 
 	@Autowired
-	private ThingTagManager thingTagService;
+	private ThingStateManager thingTagService;
 
 	@Autowired
 	private ThingIFInAppService thingIFService;
@@ -80,7 +80,7 @@ public class SimpleThingTriggerManager {
 
 		GlobalThingInfo thing=thingTagService.getThingByID(thingID.getThingID());
 
-		triggerService.registerBusinessTrigger(Collections.singleton(thing.getFullKiiThingID()),record.getId(),BeehiveTriggerType.Simple,record.getPredicate());
+		triggerService.registerBusinessTrigger(Collections.singleton(thing.getFullKiiThingID()),record.getId(),record.getPredicate());
 
 		triggerDao.enableTrigger(triggerID);
 		return triggerID;

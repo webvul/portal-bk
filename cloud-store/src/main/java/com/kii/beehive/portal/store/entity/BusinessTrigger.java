@@ -1,7 +1,6 @@
 package com.kii.beehive.portal.store.entity;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -17,6 +16,7 @@ public class BusinessTrigger extends KiiEntity{
 	private boolean enable;
 
 //	private Set<String> thingIDList=new HashSet<>();
+	private String targetID;
 
 	private Condition condition;
 
@@ -65,6 +65,14 @@ public class BusinessTrigger extends KiiEntity{
 	public void addAdditionParam(String key,Object value){
 
 		this.additionParam.put(key,value);
+	}
+
+	public String getTargetID() {
+		return targetID;
+	}
+
+	public void setTargetID(String targetID) {
+		this.targetID = targetID;
 	}
 
 	@JsonIgnore

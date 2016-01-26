@@ -20,7 +20,7 @@ import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
 @Component
 @Transactional
-public class ThingTagManager {
+public class ThingStateManager {
 
 
 	@Autowired
@@ -34,7 +34,6 @@ public class ThingTagManager {
 
 	public List<String> getTagNamesByIDs(List<Long> tagIDs){
 
-//		long[] ids=  tagIDs.stream().mapToLong(Long::parseLong).toArray();
 
 		return tagDao.findByIDs(tagIDs).stream().map(tag->tag.getFullTagName()).collect(Collectors.toList());
 	}

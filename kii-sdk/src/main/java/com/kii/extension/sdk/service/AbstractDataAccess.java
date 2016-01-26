@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -174,6 +173,7 @@ public abstract class AbstractDataAccess<T> {
 
 			try {
 				this.updateEntityWithVersion(update, id, entry.getVersion());
+				break;
 			} catch (StaleVersionedObjectException e) {
 				continue;
 			}
@@ -194,6 +194,7 @@ public abstract class AbstractDataAccess<T> {
 			try {
 				int  version=((KiiEntity)entry).getVersion();
 				this.updateEntityWithVersion(result , id, version);
+				break;
 			} catch (StaleVersionedObjectException e) {
 				continue;
 			}

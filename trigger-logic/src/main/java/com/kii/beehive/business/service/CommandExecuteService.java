@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.manager.AppInfoManager;
-import com.kii.beehive.portal.manager.ThingTagManager;
+import com.kii.beehive.portal.manager.ThingStateManager;
 import com.kii.beehive.portal.service.ClientTriggerResultDao;
 import com.kii.beehive.portal.service.TriggerRecordDao;
 import com.kii.beehive.portal.store.entity.trigger.ClientTriggerResult;
@@ -36,7 +36,7 @@ public class CommandExecuteService {
 
 
 	@Autowired
-	private ThingTagManager thingTagService;
+	private ThingStateManager thingTagService;
 
 	@Autowired
 	private ServiceExtensionDeployService extensionService;

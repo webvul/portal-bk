@@ -24,7 +24,7 @@ import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
 import com.kii.beehive.portal.jdbc.entity.TagType;
 import com.kii.beehive.portal.manager.SimpleThingTriggerManager;
-import com.kii.beehive.portal.manager.ThingTagManager;
+import com.kii.beehive.portal.manager.ThingStateManager;
 import com.kii.beehive.portal.store.entity.trigger.BeehiveTriggerType;
 import com.kii.beehive.portal.store.entity.trigger.SimpleTriggerRecord;
 import com.kii.beehive.portal.store.entity.trigger.TagSelector;
@@ -63,7 +63,7 @@ public class TestTriggerCreate extends TestTemplate {
 
 
 	@Autowired
-	private ThingTagManager thingTagService;
+	private ThingStateManager thingTagService;
 
 	@Autowired
 	private GlobalThingDao thingDao;

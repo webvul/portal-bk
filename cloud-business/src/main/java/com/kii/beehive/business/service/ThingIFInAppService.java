@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 import com.kii.beehive.business.event.BusinessEventBus;
 import com.kii.beehive.portal.common.utils.ThingIDTools;
-import com.kii.beehive.portal.manager.ThingTagManager;
+import com.kii.beehive.portal.manager.ThingStateManager;
 import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
 import com.kii.extension.sdk.context.AppBindToolResolver;
@@ -40,7 +40,7 @@ public class ThingIFInAppService {
 	private BusinessEventBus eventBus;
 
 	@Autowired
-	private ThingTagManager thingTagManager;
+	private ThingStateManager thingTagManager;
 
 	@Async
 	public void onTagIDsChangeFire(List<Long> tagIDList, boolean b) {

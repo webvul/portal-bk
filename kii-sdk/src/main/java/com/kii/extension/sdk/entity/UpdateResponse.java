@@ -22,6 +22,14 @@ public class UpdateResponse {
 		return version;
 	}
 
+	@JsonIgnore
+	public int getVersionValue(){
+
+		String value=version.substring(1,version.length()-1);
+
+		return Integer.parseInt(value);
+	}
+
 	public void setVersion(String version) {
 		this.version = version;
 	}

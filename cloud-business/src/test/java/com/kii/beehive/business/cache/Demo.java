@@ -1,4 +1,4 @@
-package com.kii.beehive.business.com.kii.beehive.cache;
+package com.kii.beehive.business.cache;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

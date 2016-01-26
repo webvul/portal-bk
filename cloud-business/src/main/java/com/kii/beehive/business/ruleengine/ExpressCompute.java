@@ -7,8 +7,10 @@ import org.springframework.stereotype.Component;
 import com.kii.extension.sdk.query.Condition;
 import com.kii.extension.sdk.query.condition.AndLogic;
 import com.kii.extension.sdk.query.condition.Equal;
+import com.kii.extension.sdk.query.condition.FieldExist;
 import com.kii.extension.sdk.query.condition.NotLogic;
 import com.kii.extension.sdk.query.condition.OrLogic;
+import com.kii.extension.sdk.query.condition.PrefixLike;
 import com.kii.extension.sdk.query.condition.Range;
 
 @Component
@@ -16,8 +18,6 @@ public class ExpressCompute {
 
 
 	public boolean doExpress(Condition clause,final Map<String,Object> content)throws NumberFormatException{
-
-
 
 		switch(clause.getType()){
 
@@ -39,12 +39,35 @@ public class ExpressCompute {
 				NotLogic logic=(NotLogic)clause;
 				return !doExpress(logic.getClause(),content);
 			}
+			case hasField:{
+				FieldExist exist = (FieldExist) clause;
+				String field = exist.getField();
+				Object source = content.get(field);
+				return source==null;
+			}
+			case prefix:{
+				PrefixLike like=(PrefixLike)clause;
+				String field=like.getField();
+				Object source=content.get(field);
+				if(source==null){
+					return false;
+				}
+				String value=String.valueOf(source);
+				return value.startsWith(like.getPrefix());
+			}
 			case eq: {
 				Equal eq = (Equal) clause;
 				String field = eq.getField();
 				Object source = content.get(field);
 
 				Object target = getValue(eq.getValue(), content);
+
+				if(target==null&&source==null){
+					return true;
+				}
+				if(target==null||source==null){
+					return false;
+				}
 
 				return compareToValue(source, target) == 0;
 			}
@@ -53,8 +76,12 @@ public class ExpressCompute {
 				String field = range.getField();
 				Object source = content.get(field);
 
+
 				if (range.getUpperLimit() != null) {
 					Object upper=getValue(range.getUpperLimit(),content);
+					if(upper==null||source==null){
+						return false;
+					}
 
 					int sign = compareToValue(source, upper);
 					if (sign == 0 && range.isUpperIncluded()) {
@@ -65,6 +92,9 @@ public class ExpressCompute {
 
 				if (range.getLowerLimit() != null) {
 					Object lower=getValue(range.getLowerLimit(),content);
+					if(lower==null||source==null){
+						return false;
+					}
 					int sign = compareToValue(source, lower);
 					if (sign == 0 && range.isLowerIncluded()) {
 						return true;

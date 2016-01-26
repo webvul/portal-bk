@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 import com.kii.beehive.portal.event.EventListener;
 import com.kii.beehive.portal.event.EventType;
 import com.kii.beehive.portal.service.EventListenerDao;
-import com.kii.beehive.portal.store.entity.trigger.BeehiveTriggerType;
 
 @Component
 public class BusinessEventListenerService {
@@ -31,23 +30,23 @@ public class BusinessEventListenerService {
 
 	public static final String GROUP_NAME = "groupName";
 
-	public static final String TRIGGER_TYPE = "triggerType";
+//	public static final String TRIGGER_TYPE = "triggerType";
 
 	@Autowired
 	private EventListenerDao  eventListenerDao;
 
 
-	public String addBeehiveTriggerChangeListener(String beehiveTriggerID,String businessTriggerID ,BeehiveTriggerType type){
+	public String addBeehiveTriggerChangeListener(String targetKey,String businessTriggerID){
 
 		EventListener  listener=new EventListener();
-		listener.setTargetKey(beehiveTriggerID);
+		listener.setTargetKey(targetKey);
 
 		listener.addBindKey(businessTriggerID);
 
 		listener.setRelationBeanName(FIRE_TRIGGER_WHEN_MATCH);
 		listener.setEnable(true);
 		listener.setType(EventType.TriggerFire);
-		listener.addCustomValue(TRIGGER_TYPE,type);
+//		listener.addCustomValue(TRIGGER_TYPE,type);
 
 		return eventListenerDao.addEventListener(listener);
 

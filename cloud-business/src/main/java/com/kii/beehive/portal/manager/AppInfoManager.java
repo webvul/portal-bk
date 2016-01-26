@@ -149,10 +149,10 @@ public class AppInfoManager {
 
 				AppMasterSalveService.ClientInfo  clientInfo=masterSalveService.addSalveApp(master,app);
 				masterSalveService.registInSalve(clientInfo,master,app);
-				FederatedAuthResult  result=federatedAuthService.loginSalveApp(app,DEFAULT_NAME,DEFAULT_PWD);
-				appInfo.setFederatedAuthResult(result);
 			}
 
+			FederatedAuthResult  result=federatedAuthService.loginSalveApp(app,DEFAULT_NAME,DEFAULT_PWD);
+			appInfo.setFederatedAuthResult(result);
 			appDao.addAppInfo(appInfo);
 
 		});

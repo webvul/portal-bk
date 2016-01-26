@@ -1,4 +1,4 @@
-package com.kii.beehive.business.com.kii.beehive.cache;
+package com.kii.beehive.business.cache;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

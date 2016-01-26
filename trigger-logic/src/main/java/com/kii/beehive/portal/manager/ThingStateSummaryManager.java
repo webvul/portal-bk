@@ -36,7 +36,7 @@ public class ThingStateSummaryManager {
 	private ThingIFInAppService thingIFService;
 
 	@Autowired
-	private ThingTagManager  thingTagService;
+	private ThingStateManager thingTagService;
 
 	@Autowired
 	private TriggerRecordDao  triggerDao;

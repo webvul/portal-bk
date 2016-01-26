@@ -15,7 +15,6 @@ import com.kii.beehive.business.event.BusinessEventListenerService;
 import com.kii.beehive.business.ruleengine.ExpressCompute;
 import com.kii.beehive.portal.service.BusinessTriggerDao;
 import com.kii.beehive.portal.store.entity.BusinessTrigger;
-import com.kii.beehive.portal.store.entity.trigger.BeehiveTriggerType;
 import com.kii.extension.sdk.entity.thingif.StatePredicate;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
@@ -90,17 +89,18 @@ public class BusinessTriggerService {
 
 	}
 
-	public BusinessTrigger registerBusinessTrigger(Collection<String> thingIDs, String beehiveTriggerID, BeehiveTriggerType  triggerType, StatePredicate predicate){
+	public BusinessTrigger registerBusinessTrigger(Collection<String> thingIDs, String targetID, StatePredicate predicate){
 
 
 		BusinessTrigger  trigger=new BusinessTrigger();
 		trigger.setCondition(predicate.getCondition());
 		trigger.setWhen(predicate.getTriggersWhen());
+		trigger.setTargetID(targetID);
 
 
 		String triggerID=createTrigger(trigger,thingIDs);
 
-		String listenerID=listenerService.addBeehiveTriggerChangeListener(beehiveTriggerID,triggerID,triggerType);
+		String listenerID=listenerService.addBeehiveTriggerChangeListener(targetID,triggerID);
 
 		triggerDao.addListenerID(listenerID,triggerID);
 

@@ -17,11 +17,11 @@ import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.service.TriggerRecordDao;
 import com.kii.beehive.portal.service.TriggerRuntimeStatusDao;
 import com.kii.beehive.portal.store.entity.BusinessTrigger;
-import com.kii.beehive.portal.store.entity.trigger.BeehiveTriggerType;
 import com.kii.beehive.portal.store.entity.trigger.GroupTriggerRecord;
 import com.kii.beehive.portal.store.entity.trigger.GroupTriggerRuntimeState;
 import com.kii.beehive.portal.store.entity.trigger.TriggerGroupPolicy;
 import com.kii.beehive.portal.store.entity.trigger.TriggerRecord;
+import com.kii.extension.sdk.entity.UpdateResponse;
 import com.kii.extension.sdk.entity.thingif.StatePredicate;
 import com.kii.extension.sdk.entity.thingif.TriggerWhen;
 
@@ -36,7 +36,7 @@ public class ThingGroupStateManager {
 	private TriggerRuntimeStatusDao statusDao;
 
 	@Autowired
-	private ThingTagManager thingTagService;
+	private ThingStateManager thingTagService;
 
 	@Autowired
 	private TriggerRecordDao triggerDao;
@@ -95,7 +95,8 @@ public class ThingGroupStateManager {
 			state.setListenerID(listenerID);
 		}
 
-		statusDao.addEntity(state,triggerID);
+		UpdateResponse  resp=statusDao.addEntity(state,triggerID);
+		state.setVersion(resp.getVersionValue());
 
 		triggerDao.enableTrigger(triggerID);
 
@@ -110,7 +111,7 @@ public class ThingGroupStateManager {
 		positive.setCondition(record.getPredicate().getCondition());
 		positive.setTriggersWhen(TriggerWhen.CONDITION_CHANGED);
 
-		return triggerService.registerBusinessTrigger(thingIDs,triggerID, BeehiveTriggerType.Group,positive);
+		return triggerService.registerBusinessTrigger(thingIDs,triggerID,positive);
 	}
 
 

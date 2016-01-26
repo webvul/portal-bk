@@ -1,17 +1,19 @@
 package com.kii.beehive.portal.service;
 
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
+import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.store.entity.BusinessTrigger;
+import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.entity.BucketInfo;
 import com.kii.extension.sdk.query.ConditionBuilder;
 import com.kii.extension.sdk.query.QueryParam;
 import com.kii.extension.sdk.service.AbstractDataAccess;
 
+@BindAppByName(appName="portal",appBindSource="propAppBindTool")
+@Component
 public class BusinessTriggerDao extends AbstractDataAccess<BusinessTrigger> {
 	@Override
 	protected Class<BusinessTrigger> getTypeCls() {
