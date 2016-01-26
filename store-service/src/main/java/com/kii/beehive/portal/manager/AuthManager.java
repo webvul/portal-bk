@@ -87,8 +87,8 @@ public class AuthManager {
         }
 
         // insert or update the auth info into DB and cache, the expire time doesn't follow LoginInfo
-        authInfoCacheService.saveToken(userID, loginInfo.getToken());
-
+        AuthInfoEntry authInfoEntry = authInfoCacheService.saveToken(userID, loginInfo.getToken());
+        loginInfo.setPermissionSet(authInfoEntry.getPermissionSet());
         return loginInfo;
     }
     

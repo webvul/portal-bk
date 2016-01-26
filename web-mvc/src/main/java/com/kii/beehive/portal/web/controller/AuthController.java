@@ -96,7 +96,7 @@ public class AuthController {
         // get access token
         String accessToken = loginInfo.getToken();
         authRestBean.setAccessToken(accessToken);
-
+        authRestBean.setPermissions(loginInfo.getPermissionSet());
         return authRestBean;
     }
 

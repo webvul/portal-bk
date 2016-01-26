@@ -20,10 +20,10 @@ INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('2', 'RemoveThi
 INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('3', 'CreateUserGroup', 'POST /usergroup');
 INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('3', 'DeleteUserGroup', 'DELETE /usergroup/*');
 INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('3', 'AddUserToGroup', 'POST /usergroup/*/user/*');
-INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('3', 'RemoveUserToGroup', 'DELETE /usergroup/*/user/*');
+INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('3', 'RemoveUserFromGroup', 'DELETE /usergroup/*/user/*');
 INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('3', 'GetUserGroupDetail', 'GET /usergroup/*');
 INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('3', 'GetUserGroupList', 'GET /usergroup/list');
 INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('4', 'BindPermissionToUserGroup', 'POST /permission/*/userGroup/*');
-INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('4', 'RemovePermissionToUserGroup', 'DELETE /permission/*/userGroup/*');
-INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('4', 'GetUserGroupList', 'GET /permission/list');
+INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('4', 'RemovePermissionFromUserGroup', 'DELETE /permission/*/userGroup/*');
+INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('4', 'GetPermissionLlist', 'GET /permission/list');
 INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('4', 'GetUserGroupPermission', 'GET /permission/userGroup/*');

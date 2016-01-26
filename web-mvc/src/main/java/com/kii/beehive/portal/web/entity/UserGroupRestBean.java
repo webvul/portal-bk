@@ -1,12 +1,15 @@
 package com.kii.beehive.portal.web.entity;
 
 
+import java.util.List;
+
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
+import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.exception.PortalException;
 
 public class UserGroupRestBean extends UserGroup {
@@ -15,16 +18,18 @@ public class UserGroupRestBean extends UserGroup {
         super();
     }
 
-    private String userGroupID;
+    private Long userGroupID;
 
     private String userGroupName;
+    
+    private List<BeehiveUser> users;
 
     public UserGroupRestBean(UserGroup userGroup){
         BeanUtils.copyProperties(userGroup, this, "id", "name");
 
         Long id = userGroup.getId();
         if(id != null) {
-            userGroupID = String.valueOf(id);
+            userGroupID = id;
         }
 
         userGroupName = userGroup.getName();
@@ -55,11 +60,11 @@ public class UserGroupRestBean extends UserGroup {
 
     }
 
-    public String getUserGroupID() {
+    public Long getUserGroupID() {
         return userGroupID;
     }
 
-    public void setUserGroupID(String userGroupID) {
+    public void setUserGroupID(Long userGroupID) {
         this.userGroupID = userGroupID;
     }
 
@@ -71,4 +76,12 @@ public class UserGroupRestBean extends UserGroup {
         this.userGroupName = userGroupName;
     }
 
+	public List<BeehiveUser> getUsers() {
+		return users;
+	}
+
+	public void setUsers(List<BeehiveUser> users) {
+		this.users = users;
+	}
+    
 }
