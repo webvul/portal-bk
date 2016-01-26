@@ -14,6 +14,10 @@ public class SimpleTriggerRuntimeState extends TriggerRuntimeState {
 		this.triggerID = triggerID;
 	}
 
+	public BeehiveTriggerType getType() {
+		return BeehiveTriggerType.Simple;
+	}
+
 //	public String getThingID() {
 //		return thingID;
 //	}

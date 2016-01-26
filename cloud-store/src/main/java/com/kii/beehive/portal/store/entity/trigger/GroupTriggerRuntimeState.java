@@ -1,10 +1,8 @@
 package com.kii.beehive.portal.store.entity.trigger;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 import com.kii.extension.sdk.entity.thingif.TriggerWhen;
 
@@ -103,5 +101,9 @@ public class GroupTriggerRuntimeState extends TriggerRuntimeState{
 		}
 
 		this.currentStatus=getWhenType().checkStatus(currentStatus,sign);
+	}
+
+	public BeehiveTriggerType getType() {
+		return BeehiveTriggerType.Group;
 	}
 }

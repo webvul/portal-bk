@@ -32,5 +32,7 @@ public class SummaryTriggerRuntimeState extends TriggerRuntimeState {
 		map.put(name,ids);
 	}
 
-
+	public BeehiveTriggerType getType() {
+		return BeehiveTriggerType.Summary;
+	}
 }

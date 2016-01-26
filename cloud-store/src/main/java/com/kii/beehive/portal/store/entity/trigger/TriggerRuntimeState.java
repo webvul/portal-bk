@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.kii.extension.sdk.entity.KiiEntity;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME,
-		include = JsonTypeInfo.As.EXTERNAL_PROPERTY,
+		include = JsonTypeInfo.As.PROPERTY,
 		property = "type")
 @JsonSubTypes({
 		@JsonSubTypes.Type(value = SimpleTriggerRuntimeState.class,name="Simple"),

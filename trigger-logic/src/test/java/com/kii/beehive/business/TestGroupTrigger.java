@@ -47,7 +47,7 @@ public class TestGroupTrigger extends TestTemplate{
 
 	private Logger log= LoggerFactory.getLogger(TestGroupTrigger.class);
 
-	private Long[] thingIDs={575l,576l,577l,578l,579l,580l,581l,582l,583l,584l};
+	private Long[] thingIDs={1052l,1054l,1055l,1056l,1057l};
 
 	private String appName="b8ca23d0";
 
@@ -101,20 +101,21 @@ public class TestGroupTrigger extends TestTemplate{
 		}
 	}
 
+
 	@Test
 	public void sendState(){
 
 
 		for(long thingID:thingIDs) {
 
-			GlobalThingInfo thingInfo = thingTagService.getThingByID(thingIDs[8]);
+			GlobalThingInfo thingInfo = thingTagService.getThingByID(thingID);
 
 
 			ThingStatus status = new ThingStatus();
 			status.setField("foo", -100);
 			status.setField("bar",125);
 
-			thingIFService.putStatus(thingInfo.getFullKiiThingID(), status);
+			eventBus.onStatusUploadFire(thingInfo.getFullKiiThingID(),status);
 		}
 	}
 
