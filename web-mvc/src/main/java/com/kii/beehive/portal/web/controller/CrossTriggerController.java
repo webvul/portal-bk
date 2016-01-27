@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.portal.auth.AuthInfoStore;
-import com.kii.beehive.portal.manager.TriggerMaintainManager;
 import com.kii.beehive.portal.manager.SimpleThingTriggerManager;
 import com.kii.beehive.portal.manager.ThingGroupStateManager;
 import com.kii.beehive.portal.manager.ThingStateSummaryManager;
+import com.kii.beehive.portal.manager.TriggerMaintainManager;
 import com.kii.beehive.portal.store.entity.trigger.GroupTriggerRecord;
 import com.kii.beehive.portal.store.entity.trigger.SimpleTriggerRecord;
 import com.kii.beehive.portal.store.entity.trigger.SummaryTriggerRecord;
@@ -115,5 +115,11 @@ public class CrossTriggerController {
 		mang.disableTrigger(triggerID);
 	}
 
+	@RequestMapping(path="/{triggerID}",method={RequestMethod.GET})
+	public TriggerRecord getTriggerList(@PathVariable("triggerID") String triggerID){
+
+		return mang.getTriggerRecord(triggerID);
+
+	}
 
 }
