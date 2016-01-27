@@ -10,6 +10,7 @@ import java.util.Map;
 import org.apache.http.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -25,29 +26,59 @@ public class ExceptionFactory {
 	@Autowired
 	private ObjectMapper mapper;
 
-	private Map<Integer,Class<? extends KiiCloudException>> bucketClsMap =new HashMap<>();
+	private Map<OperateType,Map<Integer,Class<? extends KiiCloudException>>> exceptionMap=new HashMap<>();
 
-	private Map<Integer,Class<? extends KiiCloudException>> userClsMap =new HashMap<>();
 
-	private Map<Integer,Class<? extends KiiCloudException>> appClsMap =new HashMap<>();
+	Class[]  bucketArray={
+			InvalidBucketException.class,
+			UnauthorizedAccessException.class,
+			StaleVersionedObjectException.class,
+			ObjectNotFoundException.class,
+			ForbiddenException.class
+	};
+
+	Class[]  userArray={
+			UserAlreadyExistsException.class,
+			BadUserNameException.class,
+			UserNotFoundException.class,
+			UnauthorizedAccessException.class,
+			ForbiddenException.class
+	};
+
+	Class[]  appArray={
+			AppParameterCodeNotFoundException.class
+	};
 
 
 	@PostConstruct
 	public void init(){
 
-		bucketClsMap.put(400, InvalidBucketException.class);
-		bucketClsMap.put(401, UnauthorizedAccessException.class);
-		bucketClsMap.put(409, StaleVersionedObjectException.class);
-		bucketClsMap.put(404, ObjectNotFoundException.class);
-		bucketClsMap.put(403, ForbiddenException.class);
+		for(Class<KiiCloudException>  ex:bucketArray){
 
-		userClsMap.put(409, UserAlreadyExistsException.class);
-		userClsMap.put(400,BadUserNameException.class);
-		userClsMap.put(404,UserNotFoundException.class);
-		userClsMap.put(401, UnauthorizedAccessException.class);
-		userClsMap.put(403, ForbiddenException.class);
+			KiiCloudException  inst= BeanUtils.instantiate(ex);
 
-		appClsMap.put(404,AppParameterCodeNotFoundException.class);
+			exceptionMap.putIfAbsent(OperateType.bucket,new HashMap<>())
+					.put(inst.getStatusCode(),ex);
+		}
+
+		for(Class<KiiCloudException>  ex:userArray){
+
+			KiiCloudException  inst= BeanUtils.instantiate(ex);
+
+			exceptionMap.putIfAbsent(OperateType.user,new HashMap<>())
+					.put(inst.getStatusCode(),ex);
+
+		}
+
+
+		for(Class<KiiCloudException>  ex:appArray){
+
+			KiiCloudException  inst= BeanUtils.instantiate(ex);
+
+			exceptionMap.putIfAbsent(OperateType.app,new HashMap<>())
+					.put(inst.getStatusCode(),ex);
+
+		}
 
 	}
 
@@ -73,18 +104,8 @@ public class ExceptionFactory {
 
 		OperateType type=getOperateType(uri);
 
-		Map<Integer,Class<? extends KiiCloudException>> map=null;
-		switch(type){
-			case bucket:
-				map=bucketClsMap;
-				break;
-			case user:
-				map=userClsMap;
-				break;
-			case app:
-				map=appClsMap;
-				break;
-		}
+		Map<Integer,Class<? extends KiiCloudException>> map=exceptionMap.getOrDefault(type,new HashMap<>());
+
 		checkResponse(response, map);
 
 	}
@@ -114,6 +135,8 @@ public class ExceptionFactory {
 				}catch(IOException ex){
 					throw new IllegalArgumentException(ex);
 				}
+			}else{
+				throw new IllegalArgumentException("error code:"+status);
 			}
 		}
 	}
