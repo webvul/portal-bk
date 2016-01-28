@@ -27,8 +27,6 @@ import com.kii.beehive.portal.jdbc.helper.BindClsRowMapper;
 
 public abstract class SpringBaseDao<T extends DBEntity> {
 
-
-
 	private Logger log= LoggerFactory.getLogger(BaseDao.class);
 
 	protected JdbcTemplate jdbcTemplate;
@@ -81,21 +79,27 @@ public abstract class SpringBaseDao<T extends DBEntity> {
 		Number id=insertTool.executeAndReturnKey(parameters);
 		return id.longValue();
 	}
+	
+	public List<T> findAll() {  
+        String sql = "SELECT * FROM " + this.getTableName();  
+        return (List<T>) jdbcTemplate.query(sql,getRowMapper());
+    }
 
 	public T findByID(Serializable id){
 		String sql = "SELECT t.* FROM " + this.getTableName() + " t WHERE t."+ getKey() +"=?";
-		Object[] param=new Object[]{id};
 
-		return (T) jdbcTemplate.queryForObject(sql, param, getRowMapper());
-
+		List<T> rows = jdbcTemplate.query(sql, new Object[]{id}, getRowMapper());
+		if(rows.size() > 0){
+			 return rows.get(0);
+		}else{
+			return null;
+		}
 	}
 
 	public List<T> findByIDs(List<Long> ids){
-
 			String sql = "select t.* from " + this.getTableName() + " t where t."+ getKey() +" in (:list) ";
-			Map<String,Collection> param= Collections.singletonMap("list", new ArrayList<Long>(ids));
+			Map<String,Collection> param= Collections.singletonMap("list", ids);
 			return  namedJdbcTemplate.query(sql, param,getRowMapper());
-
 	}
 
 	public int deleteByID(Serializable id){
@@ -134,6 +138,25 @@ public abstract class SpringBaseDao<T extends DBEntity> {
 
 		return jdbcTemplate.update(newUpdateSql, newParams);
 
+	}
+	
+	public long saveOrUpdate(T entity){
+		if(entity.getId() == null || entity.getId() == 0){
+			return this.insert(entity);
+		}else{
+			return this.updateEntity(entity);
+		}
+	}
+	
+	public boolean IsIdExist(Serializable id){
+		boolean result = false;
+		String sql = "SELECT count(1) FROM " + this.getTableName() + " WHERE "+ getKey() +"=?";  
+		Long count =  jdbcTemplate.queryForObject(sql,new Object[]{id}, Long.class);
+        if (count > 0) {
+    		result = true;
+    	}
+
+    	return result;
 	}
 
 }
