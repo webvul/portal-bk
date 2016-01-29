@@ -107,7 +107,7 @@ public class TestUserGroupDao extends TestTemplate {
 		
 		rel.setUserGroupID(userGroup.getId());
 		rel.setUserID("UserTest");
-		groupUserRelationDao.saveOrUpdate(rel);
+		groupUserRelationDao.insert(rel);
 		
 		List<UserGroup> list = dao.findUserGroup(rel.getUserID(), null , null);
 		assertTrue(list.size() > 0);
