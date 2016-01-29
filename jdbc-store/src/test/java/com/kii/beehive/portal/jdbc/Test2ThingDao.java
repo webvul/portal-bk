@@ -1,10 +1,13 @@
 package com.kii.beehive.portal.jdbc;
 
 import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.Before;
@@ -13,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 
 import com.kii.beehive.portal.common.utils.ThingIDTools;
-import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.dao.TagThingRelationDao;
@@ -45,6 +47,66 @@ public class Test2ThingDao extends TestTemplate {
 		ids.add(584L);
 
 		thingDao.getThingsByIDArray(ids);
+	}
+
+
+	@Test
+	public void testUpdate(){
+
+		GlobalThingInfo thing=thingDao.getThingByVendorThingID("vendorID0");
+		long id=thing.getId();
+
+		GlobalThingInfo  newThing=new GlobalThingInfo();
+		newThing.setCustom("newCustom");
+		newThing.setFullKiiThingID(thing.getFullKiiThingID());
+
+		thingDao.updateEntityByField(newThing,"fullKiiThingID");
+
+		thing=thingDao.findByID(id);
+		assertEquals(thing.getCustom(),"newCustom");
+
+
+		newThing.setCustom("updated");
+		newThing.setFullKiiThingID(thing.getFullKiiThingID());
+		newThing.setType("new");
+		newThing.setVendorThingID(thing.getVendorThingID());
+		thingDao.updateEntityAllByField(newThing,"fullKiiThingID");
+
+		thing=thingDao.findByID(id);
+
+		assertEquals(thing.getCustom(),"updated");
+		assertEquals(thing.getType(),"new");
+		assertNull(thing.getStatus());
+	}
+
+	@Test
+	public void testUpdateAll(){
+
+		GlobalThingInfo thing=thingDao.getThingByVendorThingID("vendorID0");
+
+		thing.setType("new");
+
+		thing.setCustom("customNew");
+
+		long id=thing.getId();
+		thingDao.updateEntityAllByID(thing);
+
+		thing=thingDao.findByID(id);
+		assertEquals(thing.getCustom(),"customNew");
+		assertEquals(thing.getType(),"new");
+
+
+		Map<String,Object> map=new HashMap<>();
+		map.put("custom","updated");
+		map.put("status","newStatus");
+
+		thingDao.updateEntityByID(map,id);
+
+		thing=thingDao.findByID(id);
+
+		assertEquals(thing.getCustom(),"updated");
+		assertEquals(thing.getType(),"new");
+		assertEquals(thing.getStatus(),"newStatus");
 	}
 
 
