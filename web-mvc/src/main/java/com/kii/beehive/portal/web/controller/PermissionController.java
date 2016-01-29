@@ -51,7 +51,7 @@ public class PermissionController extends AbstractController{
 			List<UserGroup> orgiList = userGroupDao.findUserGroup(permissionID, userGroupID);
 			if(orgiList.size() == 0){
 				GroupPermissionRelation gpr = new GroupPermissionRelation(permissionID, userGroupID);
-	    		groupPermissionRelationDao.saveOrUpdate(gpr);
+	    		groupPermissionRelationDao.insert(gpr);
 			}
 		}else{
 			throw new BeehiveUnAuthorizedException("loginUser isn't in the group");
