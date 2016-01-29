@@ -49,7 +49,7 @@ public class TestTagThingRelationDao extends TestTemplate{
 
 		rel.setTagID(tagID);
 		rel.setThingID(thingID);
-		long id = dao.saveOrUpdate(rel);
+		long id = dao.insert(rel);
 		rel.setId(id);
 	}
 

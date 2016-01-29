@@ -108,7 +108,7 @@ public class TestTagIndexDao extends TestTemplate{
 		TagThingRelation rel =new TagThingRelation();
 		rel.setTagID(tag.getId());
 		rel.setThingID(thingID);
-		tagThingRelationDao.saveOrUpdate(rel);
+		tagThingRelationDao.insert(rel);
 		
 		List<TagIndex> list = dao.findTagByGlobalThingID(thingID);
 		assertEquals(1,list.size());

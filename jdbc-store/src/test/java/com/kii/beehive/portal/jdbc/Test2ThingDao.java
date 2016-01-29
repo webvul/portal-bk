@@ -145,14 +145,14 @@ public class Test2ThingDao extends TestTemplate {
 			relation.setThingID(id);
 			relation.setTagID(tagIDs.get(i%5));
 
-			relationDao.saveOrUpdate(relation);
+			relationDao.insert(relation);
 
 
 			TagThingRelation  relation2=new TagThingRelation();
 			relation2.setThingID(id);
 			relation2.setTagID(tagIDs.get((1+i)%5));
 
-			relationDao.saveOrUpdate(relation2);
+			relationDao.insert(relation2);
 
 			thingIDs.add(id);
 
