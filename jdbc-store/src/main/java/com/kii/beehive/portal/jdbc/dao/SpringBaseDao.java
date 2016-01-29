@@ -3,7 +3,6 @@ package com.kii.beehive.portal.jdbc.dao;
 import javax.sql.DataSource;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -164,7 +163,7 @@ public abstract class SpringBaseDao<T extends DBEntity> {
 		if(entity.getId() == null || entity.getId() == 0){
 			return this.insert(entity);
 		}else{
-			return this.updateEntity(entity);
+			return this.updateEntityAllByID(entity);
 		}
 	}
 	
