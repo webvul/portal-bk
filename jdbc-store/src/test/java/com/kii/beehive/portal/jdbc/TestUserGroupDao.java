@@ -148,7 +148,7 @@ public class TestUserGroupDao extends TestTemplate {
 
 		rel.setUserGroupID(userGroup.getId());
 		rel.setPermissionID(permission.getId());
-		groupPermissionRelationDao.saveOrUpdate(rel);
+		groupPermissionRelationDao.insert(rel);
 		
 		List<UserGroup> list = dao.findUserGroup(permission.getId(), null);
 		assertTrue(list.size() > 0);

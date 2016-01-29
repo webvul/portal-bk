@@ -114,7 +114,7 @@ public class TestPermissionDao extends TestTemplate {
 		GroupPermissionRelation rel = new GroupPermissionRelation();
 		rel.setUserGroupID(userGroup.getId());
 		rel.setPermissionID(permission.getId());
-		long id4 = groupPermissionRelationDao.saveOrUpdate(rel);
+		long id4 = groupPermissionRelationDao.insert(rel);
 		rel.setId(id4);
 		
 		List<Permission> list = dao.findByUserGroupID(userGroup.getId());

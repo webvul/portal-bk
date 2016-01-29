@@ -58,7 +58,7 @@ public class TestGroupPermissionRelationDao extends TestTemplate {
 
 		rel.setUserGroupID(userGroup.getId());
 		rel.setPermissionID(permission.getId());
-		long id4 = dao.saveOrUpdate(rel);
+		long id4 = dao.insert(rel);
 		rel.setId(id4);
 	}
 
