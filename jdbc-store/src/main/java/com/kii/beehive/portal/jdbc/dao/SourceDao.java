@@ -22,8 +22,4 @@ public class SourceDao extends SpringBaseDao<Source> {
 		return KEY;
 	}
 
-	@Override
-	protected Class getEntityCls() {
-		return Source.class;
-	}
 }

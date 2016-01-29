@@ -37,7 +37,8 @@ public abstract class SpringBaseRelDao<T> {
 	protected abstract String getTableName();
 
 	protected  abstract String getKey();
-
+	
+	private Class<T> entityClass;
 
 	@Autowired
 	public void setDataSource(DataSource dataSource) {
@@ -50,7 +51,7 @@ public abstract class SpringBaseRelDao<T> {
 				.usingGeneratedKeyColumns(getKey());
 
 		ParameterizedType type = (ParameterizedType) getClass().getGenericSuperclass();
-		Class<T> entityClass = (Class<T>) type.getActualTypeArguments()[0];
+		this.entityClass = (Class<T>) type.getActualTypeArguments()[0];
 		this.rowMapper=new BindClsRowMapper<T>(entityClass);
 	}
 

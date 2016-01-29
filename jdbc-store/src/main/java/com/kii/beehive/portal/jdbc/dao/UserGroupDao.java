@@ -87,10 +87,4 @@ public class UserGroupDao extends SpringBaseDao<UserGroup> {
 	public String getKey() {
 		return KEY;
 	}
-
-	@Override
-	protected Class getEntityCls() {
-		return UserGroup.class;
-	}
-	
 }

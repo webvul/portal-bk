@@ -3,6 +3,7 @@ package com.kii.beehive.portal.jdbc.dao;
 import javax.sql.DataSource;
 
 import java.io.Serializable;
+import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -37,15 +38,15 @@ public abstract class SpringBaseDao<T extends DBEntity> {
 
 	private RowMapper<T> rowMapper;
 
-	private BindClsFullUpdateTool updateTool;
+	private BindClsFullUpdateTool<T> updateTool;
 
 
 	protected abstract String getTableName();
 
 	protected  abstract String getKey();
 
-	protected abstract Class<T> getEntityCls();
-
+	
+	private Class<T> entityClass;
 
 	@Autowired
 	public void setDataSource(DataSource dataSource) {
@@ -57,12 +58,14 @@ public abstract class SpringBaseDao<T extends DBEntity> {
 				.withTableName(getTableName())
 				.usingGeneratedKeyColumns(getKey());
 
-		this.updateTool= BindClsFullUpdateTool.newInstance(dataSource,getTableName(),"id",getEntityCls(),getKey());
-		this.rowMapper=new BindClsRowMapper<T>(getEntityCls());
+		ParameterizedType type = (ParameterizedType) getClass().getGenericSuperclass();
+		this.entityClass = (Class<T>) type.getActualTypeArguments()[0];
+		this.updateTool= BindClsFullUpdateTool.newInstance(dataSource,getTableName(),"id",entityClass,getKey());
+		this.rowMapper=new BindClsRowMapper<T>(entityClass);
 	}
 
 
-	protected RowMapper getRowMapper(){
+	protected RowMapper<T> getRowMapper(){
 		return rowMapper;
 	}
 

@@ -24,11 +24,6 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 		return GlobalThingInfo.ID_GLOBAL_THING;
 	}
 
-	@Override
-	protected Class getEntityCls() {
-		return GlobalThingInfo.class;
-	}
-
 	public List<GlobalThingInfo> getThingsByIDArray(List<Long> thingIDs){
 
 		String sql = "SELECT g.* "

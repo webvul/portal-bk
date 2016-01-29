@@ -18,12 +18,4 @@ public class TagIndexSpringDao extends SpringBaseDao<TagIndex> {
 		return TagIndexDao.KEY;
 	}
 
-	@Override
-	protected Class<TagIndex> getEntityCls() {
-		return TagIndex.class;
-	}
-
-
-
-
 }
