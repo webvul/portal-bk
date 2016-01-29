@@ -3,7 +3,6 @@ package com.kii.beehive.portal.jdbc.dao;
 import javax.sql.DataSource;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -58,8 +57,7 @@ public abstract class SpringBaseDao<T extends DBEntity> {
 				.withTableName(getTableName())
 				.usingGeneratedKeyColumns(getKey());
 
-		this.updateTool=new BindClsFullUpdateTool(dataSource,getTableName());
-
+		this.updateTool= BindClsFullUpdateTool.newInstance(dataSource,getTableName(),"id",getEntityCls(),getKey());
 		this.rowMapper=new BindClsRowMapper<T>(getEntityCls());
 	}
 
@@ -107,12 +105,33 @@ public abstract class SpringBaseDao<T extends DBEntity> {
 		return jdbcTemplate.update(sql,id);
 	}
 
-	public int updateEntity(T entity) {
+	public int updateEntityAllByID(T entity) {
 
-		entity.setModifyDate(new Date());
-		entity.setModifyBy(AuthInfoStore.getUserID());
+		return updateTool.execute(entity);
+	}
 
-		return updateTool.executeUpdate(entity);
+
+	public int updateEntityByID(Map<String,Object> paramMap,long id) {
+
+		paramMap.put("id",id);
+		BindClsFullUpdateTool tool=updateTool.cloneInstance(paramMap,"id");
+
+		return tool.execute(paramMap);
+	}
+
+
+	public int updateEntityByField(T entity,String conditionField) {
+
+		BindClsFullUpdateTool tool=updateTool.cloneInstance(entity,conditionField,true);
+
+		return tool.execute(entity);
+	}
+
+	public int updateEntityAllByField(T entity,String conditionField) {
+
+		BindClsFullUpdateTool tool=updateTool.cloneInstance(entity,conditionField,false);
+
+		return tool.execute(entity);
 	}
 
 	protected int doUpdate(String updateSql,Object... params){
@@ -144,7 +163,7 @@ public abstract class SpringBaseDao<T extends DBEntity> {
 		if(entity.getId() == null || entity.getId() == 0){
 			return this.insert(entity);
 		}else{
-			return this.updateEntity(entity);
+			return this.updateEntityAllByID(entity);
 		}
 	}
 	
