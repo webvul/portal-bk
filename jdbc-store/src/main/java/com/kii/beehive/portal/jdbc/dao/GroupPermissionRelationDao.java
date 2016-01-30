@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import com.kii.beehive.portal.jdbc.entity.GroupPermissionRelation;
 
 @Repository
-public class GroupPermissionRelationDao extends SpringBaseRelDao<GroupPermissionRelation> {
+public class GroupPermissionRelationDao extends SpringBaseDao<GroupPermissionRelation> {
 
 	private Logger log= LoggerFactory.getLogger(GroupPermissionRelationDao.class);
 	

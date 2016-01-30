@@ -14,7 +14,7 @@ import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
 import com.kii.beehive.portal.jdbc.entity.TagType;
 
 @Repository
-public class TagThingRelationDao extends SpringBaseRelDao<TagThingRelation> {
+public class TagThingRelationDao extends SpringBaseDao<TagThingRelation> {
 
 	private Logger log= LoggerFactory.getLogger(TagThingRelationDao.class);
 	

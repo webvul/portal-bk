@@ -4,6 +4,7 @@ import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
@@ -53,7 +54,7 @@ public class TestTagIndexDao extends TestTemplate{
 	@Test
 	public void testUpdate(){
 		tag.setDisplayName("DisplayNameUpdate");
-		dao.update(tag);
+		dao.updateEntityAllByID(tag);
 		TagIndex  entity=dao.findByID(tag.getId());
 		assertEquals("DisplayNameUpdate",entity.getDisplayName());
 		assertEquals(tag.getTagType(),entity.getTagType());
@@ -68,8 +69,10 @@ public class TestTagIndexDao extends TestTemplate{
 		tag2.setTagType(TagType.Location);
 		tag2.setDescription("Description2");
 		long id2=dao.saveOrUpdate(tag2);
-		
-		List<TagIndex>  list=dao.findByIDs(new Object[]{tag.getId(),id2});
+		List<Long> ids = new ArrayList<>();
+		ids.add(tag.getId());
+		ids.add(id2);
+		List<TagIndex>  list=dao.findByIDs(ids);
 
 		assertEquals(2,list.size());
 	}

@@ -115,17 +115,23 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 	private Object autoConvert(ResultSet rs,String key,Class target) throws SQLException {
 
 		Object result=null;
-		if(target.equals(Date.class)){
-				java.sql.Date date=rs.getDate(key);
-				if(date!=null) {
-					result = new Date(date.getTime());
-				}
-		}else if(target.isPrimitive()){
-			result=rs.getObject(key,target);
-		}else if(target.equals(String.class)){
-			result=rs.getString(key);
-		}else if( Number.class.isAssignableFrom(target)){
-			result=rs.getObject(key);
+		try{
+			if(target.equals(Date.class)){
+					java.sql.Date date=rs.getDate(key);
+					if(date!=null) {
+						result = new Date(date.getTime());
+					}
+			}else if(target.isPrimitive()){
+				result=rs.getObject(key,target);
+			}else if(target.equals(String.class)){
+				
+					result=rs.getString(key);
+				
+			}else if( Number.class.isAssignableFrom(target)){
+				result=rs.getObject(key);
+			}
+		} catch (SQLException sqlex){
+			result = null;
 		}
 		return result;
 	}

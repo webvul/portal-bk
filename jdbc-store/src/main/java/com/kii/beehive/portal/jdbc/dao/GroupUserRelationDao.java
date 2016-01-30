@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
 
 @Repository
-public class GroupUserRelationDao extends SpringBaseRelDao<GroupUserRelation> {
+public class GroupUserRelationDao extends SpringBaseDao<GroupUserRelation> {
 
 	
 	public static final String TABLE_NAME = "rel_group_user";
