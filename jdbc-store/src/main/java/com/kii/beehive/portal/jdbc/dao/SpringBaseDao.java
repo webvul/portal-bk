@@ -102,6 +102,11 @@ public abstract class SpringBaseDao<T extends DBEntity> {
 			Map<String,Collection> param= Collections.singletonMap("list", ids);
 			return  namedJdbcTemplate.query(sql, param,getRowMapper());
 	}
+	
+	public List<T> findBySingleField(String fieldName, Object value) {  
+		String sql = "SELECT * FROM " + this.getTableName() + " WHERE "+ fieldName +"=?";
+        return jdbcTemplate.query(sql, new Object[]{value}, getRowMapper());
+    }
 
 	public int deleteByID(Serializable id){
 		String sql = "DELETE FROM " + this.getTableName() + " WHERE "+ getKey() +"=?";

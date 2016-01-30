@@ -10,7 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
+import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.dao.TagThingRelationDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
@@ -24,7 +24,7 @@ public class TestTagIndexDao extends TestTemplate{
 	private TagIndexDao dao;
 	
 	@Autowired
-	private GlobalThingDao globalThingDao;
+	private GlobalThingSpringDao globalThingDao;
 	
 	@Autowired
 	private TagThingRelationDao tagThingRelationDao;

@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kii.beehive.portal.common.utils.CollectUtils;
 import com.kii.beehive.portal.exception.EntryNotFoundException;
-import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
+import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.dao.TagThingRelationDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
@@ -31,7 +31,7 @@ public class TagThingManager {
 	public final static String DEFAULT_LOCATION = "Unknown";
 
 	@Autowired
-	private GlobalThingDao globalThingDao;
+	private GlobalThingSpringDao globalThingDao;
 
 	@Autowired
 	private TagIndexDao tagIndexDao;
@@ -114,7 +114,7 @@ public class TagThingManager {
 				for(TagIndex tag:tagList){
 					TagThingRelation ttr = tagThingRelationDao.findByThingIDAndTagID(thing.getId(), tag.getId());
 					if(ttr == null){
-						tagThingRelationDao.saveOrUpdate(new TagThingRelation(tag.getId(),thing.getId()));
+						tagThingRelationDao.insert(new TagThingRelation(tag.getId(),thing.getId()));
 					}
 				}
 			}
@@ -133,7 +133,7 @@ public class TagThingManager {
 				for(TagIndex tag : tagIndexList){
 					TagThingRelation ttr = tagThingRelationDao.findByThingIDAndTagID(globalThingID, tag.getId());
 					if(ttr == null){
-						tagThingRelationDao.saveOrUpdate(new TagThingRelation(tag.getId(), globalThingID));
+						tagThingRelationDao.insert(new TagThingRelation(tag.getId(), globalThingID));
 					}
 				}
 			}
@@ -214,12 +214,9 @@ public class TagThingManager {
 		
 		if(relation == null) {
 			relation = new TagThingRelation(tagIndex.getId(), globalThingID);
-		} else {
-			relation.setTagID(tagIndex.getId());
+			tagThingRelationDao.insert(relation);
 		}
-
-		// update tag-thing relation
-		tagThingRelationDao.saveOrUpdate(relation);
+		
 	}
 
 	public GlobalThingInfo findThingByVendorThingID(String vendorThingID) {

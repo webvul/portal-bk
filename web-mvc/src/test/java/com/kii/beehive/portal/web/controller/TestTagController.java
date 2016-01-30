@@ -19,7 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
+import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.dao.TagThingRelationDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
@@ -28,7 +28,6 @@ import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
 import com.kii.beehive.portal.jdbc.entity.TagType;
 import com.kii.beehive.portal.web.WebTestTemplate;
 import com.kii.beehive.portal.web.constant.Constants;
-import com.kii.beehive.portal.web.help.AuthInterceptor;
 
 /**
  * Created by USER on 12/1/15.
@@ -42,7 +41,7 @@ public class TestTagController extends WebTestTemplate {
     private TagIndexDao tagIndexDao;
 
     @Autowired
-    private GlobalThingDao globalThingDao;
+    private GlobalThingSpringDao globalThingDao;
 
     @Autowired
     private TagThingRelationDao tagThingRelationDao;
@@ -372,17 +371,17 @@ public class TestTagController extends WebTestTemplate {
         TagThingRelation relation = new TagThingRelation();
         relation.setTagID(tagIDs[0]);
         relation.setThingID(globalThingIDs[0]);
-        tagThingRelationDao.saveOrUpdate(relation);
+        tagThingRelationDao.insert(relation);
 
         relation = new TagThingRelation();
         relation.setTagID(tagIDs[0]);
         relation.setThingID(globalThingIDs[1]);
-        tagThingRelationDao.saveOrUpdate(relation);
+        tagThingRelationDao.insert(relation);
 
         relation = new TagThingRelation();
         relation.setTagID(tagIDs[1]);
         relation.setThingID(globalThingIDs[2]);
-        tagThingRelationDao.saveOrUpdate(relation);
+        tagThingRelationDao.insert(relation);
 
 
         // search custom tag
