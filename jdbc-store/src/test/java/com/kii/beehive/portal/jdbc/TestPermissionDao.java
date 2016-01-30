@@ -1,9 +1,11 @@
 package com.kii.beehive.portal.jdbc;
 
 import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
@@ -63,7 +65,7 @@ public class TestPermissionDao extends TestTemplate {
 	@Test
 	public void testUpdate() {
 		permission.setName("PermissionNameUpdate");
-		dao.update(permission);
+		dao.updateEntityAllByID(permission);
 		Permission entity = dao.findByID(permission.getId());
 		assertEquals("PermissionNameUpdate", entity.getName());
 		assertEquals(permission.getAction(), entity.getAction());
@@ -79,8 +81,10 @@ public class TestPermissionDao extends TestTemplate {
 		permission2.setAction("ActionTest2");
 		permission2.setDescription("DescriptionTest2");
 		long id2 = dao.saveOrUpdate(permission2);
-
-		List<Permission> list = dao.findByIDs(new Object[] { permission.getId(), id2 });
+		List<Long> ids = new ArrayList<>();
+		ids.add(permission.getId());
+		ids.add(id2);
+		List<Permission> list = dao.findByIDs(ids);
 
 		assertEquals(2, list.size());
 	}
@@ -102,6 +106,12 @@ public class TestPermissionDao extends TestTemplate {
 	public void testFindAll() {
 		List<Permission> list = dao.findAll();
 		assertTrue(list.size() > 0);
+		
+		for(Permission p : list){
+			assertNotNull(p.getSourceID());
+			assertNotNull(p.getName());
+			assertNotNull(p.getSourceName());
+		}
 	}
 	
 	@Test
