@@ -4,9 +4,6 @@ import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertNull;
 import static junit.framework.TestCase.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
@@ -52,7 +49,7 @@ public class TestTagController extends WebTestTemplate {
 
     private Long tagIDForTest;
 
-    private String tokenForTest = "Bearer " + Constants.SUPER_TOKEN;
+    private String tokenForTest = BEARER_SUPER_TOKEN;
 
     @Test
     public void testCreateTag() throws Exception {
