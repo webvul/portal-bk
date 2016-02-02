@@ -8,4 +8,5 @@ include 'jdbc-store'
 include 'cloud-store'
 include 'cloud-business'
 include 'web-mock'
+include 'drools-service'
 
