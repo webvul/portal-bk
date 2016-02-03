@@ -2,19 +2,27 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:cache="http://www.springframework.org/schema/cache"
        xmlns:bean="http://www.springframework.org/schema/context"
+       xmlns:kie="http://drools.org/schema/kie-spring"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-
-		http://www.springframework.org/schema/cache  http://www.springframework.org/schema/cache/spring-cache.xsd"
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context.xsd
+		http://drools.org/schema/kie-spring
+        http://drools.org/schema/kie-spring.xsd"
 >
 
     <bean:annotation-config />
 
     <context:component-scan base-package="com.kii.extension.ruleengine" />
 
-    <bean class="com.kii.extension.ruleengine.factory.KIEFactory" />
+    <!-- kie:kmodule id="drools" >
+        <kie:kbase name="state-rule" packages="com.kii.extension.ruleengine"  >
+            <kie:ksession name="demo" type="stateful" />
+        </kie:kbase>
+    </kie:kmodule  -->
+
+    <!-- bean id="kiePostProcessor"
+          class="org.kie.spring.annotations.KModuleAnnotationPostProcessor"/  -->
 
 
 </beans>

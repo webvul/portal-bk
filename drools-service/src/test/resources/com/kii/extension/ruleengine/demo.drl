@@ -1,4 +1,4 @@
-package com.kii.extension.ruleenging
+package com.kii.extension.ruleengine
 
 import com.kii.extension.ruleengine.demo.Message;
 

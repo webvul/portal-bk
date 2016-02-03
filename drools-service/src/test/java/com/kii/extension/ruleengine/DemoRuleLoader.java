@@ -1,9 +1,13 @@
 package com.kii.extension.ruleengine;
 
+import javax.annotation.PostConstruct;
+
 import org.kie.api.KieServices;
+import org.kie.api.builder.KieBuilder;
+import org.kie.api.builder.KieFileSystem;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.kie.api.runtime.rule.FactHandle;
 import org.springframework.stereotype.Component;
 
 import com.kii.extension.ruleengine.demo.Message;
@@ -12,38 +16,47 @@ import com.kii.extension.ruleengine.demo.Message;
 public class DemoRuleLoader {
 
 
-	@Autowired
-	private KieSession  session;
+	private KieSession kieSession;
 
 
-	public void initCondition(){
+	private KieServices  ks;
 
+	@PostConstruct
+	public void init(){
+
+
+		ks = KieServices.Factory.get();
 
 	}
 
-	public void addData(Message message){
+	private KieSession getSession(){
 
-		session.insert(message);
+
+		return kieSession;
+	}
+
+	public void initCondition(String rule){
+		KieFileSystem kfs = ks.newKieFileSystem();
+		kfs.write("src/main/resources/com/kii/extension/ruleengine/demo.drl", rule);
+
+		KieBuilder kb = ks.newKieBuilder(kfs);
+
+		KieContainer kieContainer = ks.newKieContainer(kb.getKieModule().getReleaseId());
+		kieSession = kieContainer.getKieBase().newKieSession();
+
+
+		kb.buildAll();
+	}
+
+	public FactHandle addData(Message message){
+
+		return getSession().insert(message);
 	}
 
 	public void fireCondition(){
 
-		session.fireAllRules();
+		getSession().fireAllRules();
 
 	}
 
-
-
-	public static final void main(String[] args) {
-		try {
-			// load up the knowledge base
-			KieServices ks = KieServices.Factory.get();
-			KieContainer kContainer = ks.getKieClasspathContainer();
-			KieSession kSession = kContainer.newKieSession("ksession-rules");
-
-
-		} catch (Throwable t) {
-			t.printStackTrace();
-		}
-	}
 }
