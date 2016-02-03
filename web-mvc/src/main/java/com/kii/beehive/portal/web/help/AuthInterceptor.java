@@ -24,6 +24,7 @@ import com.kii.beehive.portal.store.entity.DeviceSupplier;
 import com.kii.beehive.portal.web.constant.CallbackNames;
 import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.beehive.portal.web.exception.BeehiveUnAuthorizedException;
+import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.exception.ObjectNotFoundException;
 
 public class AuthInterceptor extends HandlerInterceptorAdapter {
@@ -53,6 +54,9 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
 	@Autowired
 	private AppInfoManager  appInfoManager;
+
+	@Autowired
+	private AppBindToolResolver  appInfoResolver;
 
     /**
      * validate the token from header "Authorization"
@@ -172,6 +176,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         authManager.unbindUserToken();
 		AuthInfoStore.clear();
+		appInfoResolver.clearAll();
 		super.afterCompletion(request, response, handler, ex);
     }
 
