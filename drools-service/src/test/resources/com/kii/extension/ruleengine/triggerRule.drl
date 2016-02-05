@@ -1,0 +1,35 @@
+package com.kii.extension.ruleengine.demo
+
+import com.kii.extension.ruleengine.thingtrigger.*;
+
+rule "add trigger 1's  express "
+when
+    Trigger( $triggerID:triggerID==1,$things:things )
+    $status:ThingStatus( $thingID:thingID memberOf $things )
+then
+	insertLogical(new MatchResult($triggerID,$thingID));
+end
+
+rule "add trigger 2's  express "
+when
+    Trigger($triggerID:triggerID==2,$things:things)
+    ThingStatus( $thingID:thingID memberOf $things , status>1 )
+then
+	insertLogical(new MatchResult($triggerID,$thingID));
+end
+
+rule "add trigger 0's  express "
+when
+    Trigger($triggerID:triggerID==0,$things:things)
+    $status:ThingStatus( $thingID:thingID memberOf $things , status>0 )
+then
+	insertLogical(new MatchResult($triggerID,$thingID));
+end
+
+rule "list result status"
+when
+	$result:MatchResult()
+then
+	System.out.println("result status:"+$result.getThingID());
+end
+
