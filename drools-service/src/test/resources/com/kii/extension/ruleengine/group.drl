@@ -3,11 +3,21 @@ package com.kii.extension.ruleengine.demo
 import com.kii.extension.ruleengine.thingtrigger.*;
 
 
-rule "list thing status"
+
+rule "compute the summary of  fieldName value:sum funName"
+	no-loop true
 when
-	$status:ThingStatus()
+	$trigger:Trigger(type =="summary")
+	$summary:Summary(triggerID==$trigger.triggerID , funName=="sum" )
+	accumulate( ThingStatus(thingID memberOf $trigger.things ,$status:values);
+                    $value : sum($status.get($summary.getFieldName()))
+                    )
+    $map:SummaryValueMap(triggerID==$trigger.triggerID)
 then
-	System.out.println("thing status:"+$status.getThingID());
+	modify($map){
+		setNumber($summary.getSummaryField(),$value);
+	};
+	System.out.println("compute summary:"+$map.getNumberMap());
 end
 
 

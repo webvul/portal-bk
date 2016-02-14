@@ -2,12 +2,17 @@ package com.kii.extension.ruleengine;
 
 import javax.annotation.PostConstruct;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieBuilder;
 import org.kie.api.builder.KieFileSystem;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.FactHandle;
+import org.kie.api.runtime.rule.QueryResults;
+import org.kie.api.runtime.rule.QueryResultsRow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -27,12 +32,22 @@ public class DemoRuleLoader {
 
 	private KieFileSystem kfs;
 
+	@Autowired
+	private CommandExec  exec;
+
 
 	@PostConstruct
 	public void init(){
 
 
 		ks = KieServices.Factory.get();
+//
+//
+//		Environment  env=ks.newEnvironment();
+//
+//		env.set("exec",exec);
+
+
 
 	}
 
@@ -59,7 +74,10 @@ public class DemoRuleLoader {
 		kieContainer= ks.newKieContainer(kb.getKieModule().getReleaseId());
 
 		kieSession = kieContainer.getKieBase().newKieSession();
-		kieSession.addEventListener(listener);
+
+		kieSession.getEnvironment().set("exec",exec);
+
+//		kieSession.addEventListener(listener);
 
 	}
 
@@ -78,6 +96,19 @@ public class DemoRuleLoader {
 		return getSession().insert(message);
 	}
 
+	public <T> List<T> doQuery(String queryName){
+
+		QueryResults results = getSession().getQueryResults( queryName );
+
+		List<T>  list=new ArrayList<>();
+
+		for ( QueryResultsRow row : results ) {
+			T result = ( T ) row.get( "results" );
+			list.add(result);
+		}
+
+		return list;
+	}
 
 
 	public void fireCondition(){

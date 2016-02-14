@@ -6,7 +6,7 @@
 
     <script language="javascript" >
 
-        function doCall(url,data,type,callback){
+        funName doCall(url,data,type,callback){
             var ajaxParam={};
 
             var headers={};
@@ -23,12 +23,12 @@
             ajaxParam["contentType"]="application/json";
 
             if(callback==undefined){
-                callback=function(v){
+                callback=funName(v){
                     console.log(v);
                 }
             }
 
-		    ajaxParam["success"]=function(anything, textStatus,jqXHR){
+		    ajaxParam["success"]=funName(anything, textStatus,jqXHR){
 		        if ((200 <= (_ref1 = jqXHR.status) && _ref1 < 400)) {
                     if(jqXHR.status==204){
                         return callback(null, textStatus);
@@ -41,7 +41,7 @@
 	                console.log("error :"+errString);
 	            }
 		    };
-		    ajaxParam["error"]=function(errString, status){
+		    ajaxParam["error"]=funName(errString, status){
 		        console.log("kii request failure:"+errString+" \n status:"+status);
 		    };
 
@@ -57,7 +57,7 @@
         }
 
 
-        function hello(){
+        funName hello(){
 
             doCall("/echo",{"foo":"bar"});
 

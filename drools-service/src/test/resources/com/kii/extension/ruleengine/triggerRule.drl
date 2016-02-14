@@ -1,6 +1,26 @@
 package com.kii.extension.ruleengine.demo
 
 import com.kii.extension.ruleengine.thingtrigger.*;
+import com.kii.extension.ruleengine.*;
+
+
+rule "match summary value"
+    when
+       $match : SummaryValueMap( numberMap["sum_foo"] != 0  && numberMap["sum_bar"] != 0  )
+    then
+
+    	CommandExec exec=(CommandExec)kcontext.getKieRuntime().getEnvironment().get("exec");
+
+    	exec.doExecute($match.getTriggerID());
+
+end
+
+rule "show trigger"
+when
+	$trigger:Trigger()
+then
+	System.out.println("list trigger:"+$trigger.getTriggerID());
+end
 
 rule "add trigger 1's  express "
 when
@@ -32,4 +52,3 @@ when
 then
 	System.out.println("result status:"+$result.getThingID());
 end
-

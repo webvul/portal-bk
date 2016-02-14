@@ -24,6 +24,8 @@ import com.kii.extension.ruleengine.demo.Fire;
 import com.kii.extension.ruleengine.demo.Message;
 import com.kii.extension.ruleengine.demo.Room;
 import com.kii.extension.ruleengine.demo.Sprinkler;
+import com.kii.extension.ruleengine.thingtrigger.Summary;
+import com.kii.extension.ruleengine.thingtrigger.SummaryValueMap;
 import com.kii.extension.ruleengine.thingtrigger.ThingStatus;
 import com.kii.extension.ruleengine.thingtrigger.Trigger;
 
@@ -58,9 +60,77 @@ public class TestDemo extends InitTest {
 				getDrlContent("group"));
 
 		execute.initCondition(getDrlContent("demo1"));
+
+
+		for(int i=0;i<10;i++){
+
+			ThingStatus status=new ThingStatus();
+			status.setThingID(String.valueOf(i));
+			status.setStatus(i%2);
+
+			status.addValue("foo",Math.random()*100-50);
+			status.addValue("bar",Math.random()*10-5);
+
+			ruleLoader.addData( status );
+		}
 	}
 
+	@Test
+	public void testSummary() throws IOException {
 
+		Trigger trigger=new Trigger();
+		for(int i=0;i<10;i++){
+			trigger.addThing(String.valueOf(i));
+		}
+		trigger.setType("summary");
+		trigger.setTriggerID(100);
+
+		ruleLoader.addData(trigger);
+
+		Summary summary=new Summary();
+		summary.setFieldName("foo");
+		summary.setFunName("sum");
+		summary.setTriggerID(100);
+		summary.setSummaryField("sum_foo");
+		ruleLoader.addData(summary);
+
+
+		Summary summary2=new Summary();
+		summary2.setFieldName("bar");
+		summary2.setFunName("sum");
+		summary2.setTriggerID(100);
+		summary2.setSummaryField("sum_bar");
+		ruleLoader.addData(summary2);
+
+		SummaryValueMap map=new SummaryValueMap();
+		map.setTriggerID(100);
+		ruleLoader.addData(map);
+
+		ruleLoader.fireCondition();
+
+		ruleLoader.addCondition("trigger",getDrlContent("triggerRule"));
+
+		ruleLoader.fireCondition();
+
+		for(int i=0;i<10;i++){
+
+			ThingStatus status=new ThingStatus();
+			status.setThingID(String.valueOf(i));
+			status.setStatus(i%2);
+
+			status.addValue("foo",Math.random()*100-50);
+			status.addValue("bar",Math.random()*10-5);
+
+			ruleLoader.addData( status );
+			ruleLoader.fireCondition();
+		}
+//
+//		List<SummaryValueMap> summarys=ruleLoader.doQuery("match summary value");
+//
+//		System.out.println( "we have results "+summarys.size()+" valu:"+summarys.get(0).getTriggerID() );
+
+
+	}
 
 	@Test
 	public void testThingGroup() throws IOException {
@@ -75,14 +145,7 @@ public class TestDemo extends InitTest {
 				t.setTriggerID(key);
 				return t;
 			}).addThing(String.valueOf(i));
-
-			ThingStatus status=new ThingStatus();
-			status.setThingID(String.valueOf(i));
-			status.setStatus(i%2);
-
-			ruleLoader.addData( status );
 		}
-
 
 		triggerMap.values().forEach(t->{
 			t.setType("all");

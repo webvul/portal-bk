@@ -47,6 +47,7 @@ public class Trigger {
 		this.things = things;
 	}
 
+
 	public String getExpress() {
 		return express;
 	}
