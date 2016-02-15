@@ -2,13 +2,14 @@ package com.kii.extension.ruleengine.thingtrigger;
 
 import com.google.common.base.Objects;
 
-public class MatchResult {
+public class TriggerResult {
 
 	private int triggerID;
 
-	public MatchResult(int triggerID){
+	public TriggerResult(int triggerID){
 		this.triggerID=triggerID;
 	}
+
 
 	public int getTriggerID() {
 		return triggerID;
@@ -22,19 +23,12 @@ public class MatchResult {
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
-		MatchResult that = (MatchResult) o;
+		TriggerResult that = (TriggerResult) o;
 		return triggerID == that.triggerID;
 	}
 
 	@Override
 	public int hashCode() {
 		return Objects.hashCode(triggerID);
-	}
-
-	@Override
-	public String toString() {
-		return "MatchResult{" +
-				"triggerID=" + triggerID +
-				'}';
 	}
 }

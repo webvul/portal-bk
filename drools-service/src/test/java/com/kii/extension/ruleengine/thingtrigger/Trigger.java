@@ -3,6 +3,8 @@ package com.kii.extension.ruleengine.thingtrigger;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.google.common.base.Objects;
+
 public class Trigger {
 
 	private int triggerID;
@@ -11,9 +13,28 @@ public class Trigger {
 
 	private Set<String> things=new HashSet<>();
 
-	private String express;
-
 	private String type;
+
+	private String when;
+
+	private boolean  previousResult=false;
+
+
+	public String getWhen() {
+		return when;
+	}
+
+	public void setWhen(String when) {
+		this.when = when;
+	}
+
+	public boolean isPreviousResult() {
+		return previousResult;
+	}
+
+	public void setPreviousResult(boolean previousResult) {
+		this.previousResult = previousResult;
+	}
 
 	public int getNumber() {
 		return number;
@@ -47,16 +68,32 @@ public class Trigger {
 		this.things = things;
 	}
 
-
-	public String getExpress() {
-		return express;
-	}
-
-	public void setExpress(String express) {
-		this.express = express;
-	}
-	
 	public void addThing(String id) {
 		this.things.add(id);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Trigger trigger = (Trigger) o;
+		return triggerID == trigger.triggerID;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(triggerID);
+	}
+
+	@Override
+	public String toString() {
+		return "Trigger{" +
+				"triggerID=" + triggerID +
+				", number=" + number +
+				", things=" + things +
+				", type='" + type + '\'' +
+				", when='" + when + '\'' +
+				", previousResult=" + previousResult +
+				'}';
 	}
 }

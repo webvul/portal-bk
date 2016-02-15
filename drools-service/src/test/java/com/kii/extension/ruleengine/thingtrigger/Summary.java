@@ -1,5 +1,7 @@
 package com.kii.extension.ruleengine.thingtrigger;
 
+import com.google.common.base.Objects;
+
 public class Summary {
 
 	private int triggerID;
@@ -43,5 +45,19 @@ public class Summary {
 
 	public void setFieldName(String fieldName) {
 		this.fieldName = fieldName;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Summary summary = (Summary) o;
+		return triggerID == summary.triggerID &&
+				Objects.equal(summaryField, summary.summaryField);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(triggerID, summaryField);
 	}
 }

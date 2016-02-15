@@ -1,0 +1,70 @@
+package com.kii.extension.ruleengine.demo
+
+import com.kii.extension.ruleengine.thingtrigger.*;
+import com.kii.extension.ruleengine.CommandExec;
+
+
+rule "fire all trigger:when false->true,trigger  fire"
+when
+	$trigger:Trigger($triggerID:triggerID,previousResult==false,$things:things,when == "false2true" )
+    CurrThing(thingID memberOf $things)
+    MatchResult(triggerID==$triggerID)
+then
+	System.out.println("false-true been fired");
+	modify($trigger){
+		setPreviousResult(true);
+	}
+	CommandExec exec=(CommandExec)kcontext.getKieRuntime().getEnvironment().get("exec");
+    exec.doExecute($triggerID);
+end
+
+
+rule "fire all trigger:when false->true,trigger not fire"
+when
+	$trigger:Trigger($triggerID:triggerID,$things:things,when == "false2true",previousResult==true)
+    CurrThing(thingID memberOf $things)
+    not ( exists MatchResult(triggerID==$triggerID) )
+then
+	System.out.println("false-true not been fired");
+	modify($trigger){
+		setPreviousResult(false);
+	}
+end
+
+rule "fire trigger:true "
+	no-loop true
+when
+	$trigger:Trigger($triggerID:triggerID,$things:things,when == "true" )
+    CurrThing(thingID memberOf $things)
+    MatchResult(triggerID==$triggerID)
+then
+    CommandExec exec=(CommandExec)kcontext.getKieRuntime().getEnvironment().get("exec");
+    exec.doExecute($triggerID);
+end
+
+
+rule "fire trigger:when true->false,trigger fire "
+when
+	$trigger:Trigger($triggerID:triggerID,previousResult==true,$things:things ,when == "true2false" )
+    CurrThing(thingID memberOf $things)
+    not( MatchResult(triggerID==$triggerID) )
+then
+	modify($trigger){
+		setPreviousResult(false);
+	}
+    CommandExec exec=(CommandExec)kcontext.getKieRuntime().getEnvironment().get("exec");
+    exec.doExecute($triggerID);
+end
+
+
+rule "fire trigger:when true->false,trigger not fire "
+when
+	$trigger:Trigger($triggerID:triggerID,previousResult==false,$things:things ,when == "true2false"  )
+    CurrThing(thingID memberOf $things)
+    MatchResult(triggerID==$triggerID)
+then
+	System.out.println("true-false not fired");
+	modify($trigger){
+		setPreviousResult(true);
+	}
+end

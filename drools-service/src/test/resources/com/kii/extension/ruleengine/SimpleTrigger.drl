@@ -1,0 +1,28 @@
+package com.kii.extension.ruleengine.demo
+
+import com.kii.extension.ruleengine.thingtrigger.*;
+
+
+
+/////////////////////////
+//tigger simple
+/////////////////////////
+
+
+/////////////////////////
+//tigger when
+/////////////////////////
+
+rule "fire trigger:false->true "
+when
+	$trigger:Trigger($triggerID:triggerID,previousResult==false,when=="false2true",$things:things )
+	CurrThing(currThing memberof $things)
+	$result:MatchResult(triggerID==$triggerID)
+then
+	modify($trigger){
+		setPreviousResult(true);
+	}
+    CommandExec exec=(CommandExec)kcontext.getKieRuntime().getEnvironment().get("exec");
+    exec.doExecute($triggerID);
+end
+

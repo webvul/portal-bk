@@ -3,14 +3,25 @@ package com.kii.extension.ruleengine.thingtrigger;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.common.base.Objects;
+
 public class ThingStatus {
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		ThingStatus that = (ThingStatus) o;
+		return Objects.equal(thingID, that.thingID);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(thingID);
+	}
 
 	private String thingID;
 
-
 	private Map<String,Object> values=new HashMap<>();
-
-	private int status;
 
 	public Map<String, Object> getValues() {
 		return values;
@@ -32,11 +43,11 @@ public class ThingStatus {
 		this.thingID = thingID;
 	}
 
-	public int getStatus() {
-		return status;
-	}
-
-	public void setStatus(int status) {
-		this.status = status;
+	@Override
+	public String toString() {
+		return "ThingStatus{" +
+				"thingID='" + thingID + '\'' +
+				", values=" + values +
+				'}';
 	}
 }

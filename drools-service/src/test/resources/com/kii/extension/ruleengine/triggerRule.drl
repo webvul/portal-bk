@@ -4,51 +4,48 @@ import com.kii.extension.ruleengine.thingtrigger.*;
 import com.kii.extension.ruleengine.*;
 
 
-rule "match summary value"
-    when
-       $match : SummaryValueMap( numberMap["sum_foo"] != 0  && numberMap["sum_bar"] != 0  )
-    then
-
-    	CommandExec exec=(CommandExec)kcontext.getKieRuntime().getEnvironment().get("exec");
-
-    	exec.doExecute($match.getTriggerID());
-
-end
-
-rule "show trigger"
+rule "show curr thing"
 when
-	$trigger:Trigger()
+	$curr:CurrThing()
+	$status:ThingStatus(thingID == $curr.thingID)
 then
-	System.out.println("list trigger:"+$trigger.getTriggerID());
+	System.out.println(" curr thing :"+$status);
 end
 
-rule "add trigger 1's  express "
+
+/////////////////////////////////////
+//simple trigger 100,when:false to true
+/////////////////////////////////////
+rule "add trigger 100's  express "
 when
-    Trigger( $triggerID:triggerID==1,$things:things )
-    $status:ThingStatus( $thingID:thingID memberOf $things )
+    Trigger( $triggerID:triggerID==100,$things:things  )
+    CurrThing(thingID memberOf $things)
+    ThingStatus( $thingID:thingID memberOf $things,(values["foo"]>10&&values["bar"]<0)  )
 then
-	insertLogical(new MatchResult($triggerID,$thingID));
+	insertLogical(new MatchResult($triggerID));
 end
 
-rule "add trigger 2's  express "
+/////////////////////////////////////
+//simple trigger 101,when:true
+/////////////////////////////////////
+rule "add trigger 101's  express "
 when
-    Trigger($triggerID:triggerID==2,$things:things)
-    ThingStatus( $thingID:thingID memberOf $things , status>1 )
+    Trigger( $triggerID:triggerID==101,$things:things )
+    CurrThing(thingID memberOf $things)
+    ThingStatus( $thingID:thingID memberOf $things,values["foo"]>10&&values["bar"]<0  )
 then
-	insertLogical(new MatchResult($triggerID,$thingID));
+	insertLogical(new MatchResult($triggerID));
 end
 
-rule "add trigger 0's  express "
+/////////////////////////////////////
+//simple trigger 102,when:change
+/////////////////////////////////////
+rule "add trigger 102's  express "
 when
-    Trigger($triggerID:triggerID==0,$things:things)
-    $status:ThingStatus( $thingID:thingID memberOf $things , status>0 )
+    Trigger( $triggerID:triggerID==102,$things:things )
+    CurrThing(thingID memberOf $things)
+    ThingStatus( $thingID:thingID memberOf $things,values["foo"]>10&&values["bar"]<0  )
 then
-	insertLogical(new MatchResult($triggerID,$thingID));
+	insertLogical(new MatchResult($triggerID));
 end
 
-rule "list result status"
-when
-	$result:MatchResult()
-then
-	System.out.println("result status:"+$result.getThingID());
-end

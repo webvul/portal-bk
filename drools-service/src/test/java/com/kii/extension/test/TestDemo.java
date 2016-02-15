@@ -4,7 +4,6 @@ import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,12 +12,7 @@ import org.junit.Test;
 import org.kie.api.runtime.rule.FactHandle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ResourceLoader;
-import org.springframework.util.StreamUtils;
 
-import com.kii.extension.ruleengine.DemoRuleLoader;
-import com.kii.extension.ruleengine.StatelessRuleExecute;
 import com.kii.extension.ruleengine.demo.Applicant;
 import com.kii.extension.ruleengine.demo.Fire;
 import com.kii.extension.ruleengine.demo.Message;
@@ -26,7 +20,6 @@ import com.kii.extension.ruleengine.demo.Room;
 import com.kii.extension.ruleengine.demo.Sprinkler;
 import com.kii.extension.ruleengine.thingtrigger.Summary;
 import com.kii.extension.ruleengine.thingtrigger.SummaryValueMap;
-import com.kii.extension.ruleengine.thingtrigger.ThingStatus;
 import com.kii.extension.ruleengine.thingtrigger.Trigger;
 
 public class TestDemo extends InitTest {
@@ -34,44 +27,23 @@ public class TestDemo extends InitTest {
 	private Logger log= LoggerFactory.getLogger(TestDemo.class);
 
 
-	@Autowired
-	private DemoRuleLoader  ruleLoader;
 
-
-	@Autowired
-	private StatelessRuleExecute execute;
-
-
-	@Autowired
-	private ResourceLoader  loader;
-
-
-	private String getDrlContent(String fileName) throws IOException {
-
-		return StreamUtils.copyToString(loader.getResource("classpath:com/kii/extension/ruleengine/"+fileName+".drl").getInputStream(), StandardCharsets.UTF_8);
-
-	}
 	@Before
 	public void init() throws IOException {
 
 
-		ruleLoader.initCondition(getDrlContent("demo"),
+		ruleLoader.initCondition(
+				getDrlContent("demo"),
 				getDrlContent("FireAlarm"),
-				getDrlContent("group"));
+				getDrlContent("group")
+		);
 
 		execute.initCondition(getDrlContent("demo1"));
 
 
 		for(int i=0;i<10;i++){
 
-			ThingStatus status=new ThingStatus();
-			status.setThingID(String.valueOf(i));
-			status.setStatus(i%2);
-
-			status.addValue("foo",Math.random()*100-50);
-			status.addValue("bar",Math.random()*10-5);
-
-			ruleLoader.addData( status );
+			updateThingState(String.valueOf(i));
 		}
 	}
 
@@ -112,16 +84,12 @@ public class TestDemo extends InitTest {
 
 		ruleLoader.fireCondition();
 
-		for(int i=0;i<10;i++){
+		for(int i=0;i<20;i++){
 
-			ThingStatus status=new ThingStatus();
-			status.setThingID(String.valueOf(i));
-			status.setStatus(i%2);
 
-			status.addValue("foo",Math.random()*100-50);
-			status.addValue("bar",Math.random()*10-5);
+			updateThingState(String.valueOf(i%10));
 
-			ruleLoader.addData( status );
+
 			ruleLoader.fireCondition();
 		}
 //
@@ -131,6 +99,9 @@ public class TestDemo extends InitTest {
 
 
 	}
+
+	private FactHandle currThingsHander;
+
 
 	@Test
 	public void testThingGroup() throws IOException {

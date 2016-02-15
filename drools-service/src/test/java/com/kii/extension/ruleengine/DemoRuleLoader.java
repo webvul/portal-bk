@@ -41,12 +41,6 @@ public class DemoRuleLoader {
 
 
 		ks = KieServices.Factory.get();
-//
-//
-//		Environment  env=ks.newEnvironment();
-//
-//		env.set("exec",exec);
-
 
 
 	}
@@ -91,6 +85,12 @@ public class DemoRuleLoader {
 		kieContainer.updateToVersion(kb.getKieModule().getReleaseId());
 	}
 
+
+	public void updateDate(FactHandle  handle,Object newObj){
+		 getSession().update(handle,newObj);
+	}
+
+
 	public FactHandle addData(Object message){
 
 		return getSession().insert(message);
@@ -112,6 +112,7 @@ public class DemoRuleLoader {
 
 
 	public void fireCondition(){
+
 
 		getSession().fireAllRules();
 
