@@ -1,27 +1,14 @@
 package com.kii.extension.ruleengine.demo
 
-import com.kii.extension.ruleengine.thingtrigger.*;
+import com.kii.extension.ruleengine.drools.entity.*;
 
-rule "compute the summary of  fieldName value:sum funName"
-	no-loop true
-when
-	$trigger:Trigger(type =="summary")
-	$summary:Summary(triggerID==$trigger.triggerID , funName=="sum" )
-	accumulate( ThingStatus(thingID memberOf $trigger.things ,$status:values);
-                    $value : sum($status.get($summary.getFieldName()))
-                    )
-    $map:SummaryValueMap(triggerID==$trigger.triggerID)
-then
-	modify($map){
-		setNumber($summary.getSummaryField(),$value);
-	};
-	System.out.println("compute summary:"+$map.getNumberMap());
-end
+global String currThing;
 
 
 rule "summary of  true  result:all"
 when
-	$trigger:Trigger(type =="all",$triggerID:triggerID)
+	$trigger:Trigger(type =="all",$triggerID:triggerID,$things:things)
+	CurrThing(thingID memberOf $things)
 	forall( MemberMatchResult(triggerID==$triggerID) )
 then
 	System.out.println("trigger all "+$trigger.getTriggerID()+" been fire");
@@ -31,7 +18,8 @@ end
 
 rule "summary of  true  result:any"
 when
-	$trigger:Trigger(type =="any",$triggerID:triggerID)
+	$trigger:Trigger(type =="any",$triggerID:triggerID,$things:things)
+	CurrThing(thingID memberOf $things)
 	exists MemberMatchResult(triggerID==$triggerID)
 then
 	System.out.println("trigger any "+$trigger.getTriggerID()+" been fire");
@@ -40,7 +28,8 @@ end
 
 rule "summary of  true  result:number"
 when
-	$trigger:Trigger(type =="number",$triggerID:triggerID)
+	$trigger:Trigger(type =="number",$triggerID:triggerID,$things:things)
+	CurrThing(thingID memberOf $things)
 	accumulate( MemberMatchResult(triggerID==$triggerID,$thingID:thingID );
                     $thingCount : count($thingID);
                     $thingCount>=$trigger.number

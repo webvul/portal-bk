@@ -1,0 +1,88 @@
+package com.kii.extension.ruleengine.demo
+
+import com.kii.extension.ruleengine.drools.entity.*;
+
+global String currThing;
+
+rule "compute the summary of  fieldName value: funName"
+	no-loop true
+when
+	$trigger:Trigger(type =="summary")
+	$summary:Summary(triggerID==$trigger.triggerID , funName=="sum" )
+	currThing memberOf $summary.things
+	accumulate( ThingStatus(thingID memberOf $summary.things ,$status:values);
+                    $value : sum($status.get($summary.getFieldName()))
+                    )
+    $map:SummaryValueMap(triggerID==$trigger.triggerID)
+then
+	modify($map){
+		setNumber($summary.getSummaryField(),$value);
+	};
+	System.out.println("compute  sum summary:"+$map.getNumberMap());
+end
+
+
+rule "compute the count of  fieldName value: funName"
+	no-loop true
+when
+	$trigger:Trigger(type =="summary")
+	$summary:Summary(triggerID==$trigger.triggerID , funName=="count" )
+	accumulate( ThingStatus(thingID memberOf $summary.things ,$status:values);
+                    $value : count($status.get($summary.getFieldName()))
+                    )
+    $map:SummaryValueMap(triggerID==$trigger.triggerID)
+then
+	modify($map){
+		setNumber($summary.getSummaryField(),$value);
+	};
+	System.out.println("compute count summary:"+$map.getNumberMap());
+end
+
+rule "compute the min of  fieldName value: funName"
+	no-loop true
+when
+	$trigger:Trigger(type =="summary")
+	$summary:Summary(triggerID==$trigger.triggerID , funName=="min" )
+	accumulate( ThingStatus(thingID memberOf $summary.things ,$status:values);
+                    $value : min($status.get($summary.getFieldName()))
+                    )
+    $map:SummaryValueMap(triggerID==$trigger.triggerID)
+then
+	modify($map){
+		setNumber($summary.getSummaryField(),$value);
+	};
+	System.out.println("compute min summary:"+$map.getNumberMap());
+end
+
+
+rule "compute the max of  fieldName value: funName"
+	no-loop true
+when
+	$trigger:Trigger(type =="summary")
+	$summary:Summary(triggerID==$trigger.triggerID , funName=="max" )
+	accumulate( ThingStatus(thingID memberOf $summary.things ,$status:values);
+                    $value : max($status.get($summary.getFieldName()))
+                    )
+    $map:SummaryValueMap(triggerID==$trigger.triggerID)
+then
+	modify($map){
+		setNumber($summary.getSummaryField(),$value);
+	};
+	System.out.println("compute max summary:"+$map.getNumberMap());
+end
+
+rule "compute the avg of  fieldName value: funName"
+	no-loop true
+when
+	$trigger:Trigger(type =="summary")
+	$summary:Summary(triggerID==$trigger.triggerID , funName=="avg" )
+	accumulate( ThingStatus(thingID memberOf $summary.things ,$status:values);
+                    $value : avg($status.get($summary.getFieldName()))
+                    )
+    $map:SummaryValueMap(triggerID==$trigger.triggerID)
+then
+	modify($map){
+		setNumber($summary.getSummaryField(),$value);
+	};
+	System.out.println("compute avg summary:"+$map.getNumberMap());
+end

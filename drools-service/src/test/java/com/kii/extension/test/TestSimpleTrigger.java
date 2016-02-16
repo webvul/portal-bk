@@ -7,7 +7,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.kii.extension.ruleengine.thingtrigger.Trigger;
+import com.kii.extension.ruleengine.drools.entity.Trigger;
 
 public class TestSimpleTrigger extends InitTest {
 
@@ -43,7 +43,7 @@ public class TestSimpleTrigger extends InitTest {
 
 		trigger.setTriggerID(100);
 
-		ruleLoader.addData(trigger);
+		ruleLoader.addOrUpdateData(trigger);
 //
 //		updateThingState("0");
 //
@@ -89,7 +89,7 @@ public class TestSimpleTrigger extends InitTest {
 
 		trigger.setTriggerID(101);
 
-		ruleLoader.addData(trigger);
+		ruleLoader.addOrUpdateData(trigger);
 
 		updateThingState("1");
 
@@ -131,7 +131,7 @@ public class TestSimpleTrigger extends InitTest {
 
 		trigger.setTriggerID(102);
 
-		ruleLoader.addData(trigger);
+		ruleLoader.addOrUpdateData(trigger);
 
 		updateThingState("2");
 

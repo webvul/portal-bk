@@ -14,13 +14,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.kii.extension.ruleengine.demo.Applicant;
-import com.kii.extension.ruleengine.demo.Fire;
 import com.kii.extension.ruleengine.demo.Message;
-import com.kii.extension.ruleengine.demo.Room;
-import com.kii.extension.ruleengine.demo.Sprinkler;
-import com.kii.extension.ruleengine.thingtrigger.Summary;
-import com.kii.extension.ruleengine.thingtrigger.SummaryValueMap;
-import com.kii.extension.ruleengine.thingtrigger.Trigger;
+import com.kii.extension.ruleengine.drools.entity.Summary;
+import com.kii.extension.ruleengine.drools.entity.SummaryValueMap;
+import com.kii.extension.ruleengine.drools.entity.Trigger;
 
 public class TestDemo extends InitTest {
 
@@ -57,14 +54,14 @@ public class TestDemo extends InitTest {
 		trigger.setType("summary");
 		trigger.setTriggerID(100);
 
-		ruleLoader.addData(trigger);
+		ruleLoader.addOrUpdateData(trigger);
 
 		Summary summary=new Summary();
 		summary.setFieldName("foo");
 		summary.setFunName("sum");
 		summary.setTriggerID(100);
 		summary.setSummaryField("sum_foo");
-		ruleLoader.addData(summary);
+		ruleLoader.addOrUpdateData(summary);
 
 
 		Summary summary2=new Summary();
@@ -72,11 +69,11 @@ public class TestDemo extends InitTest {
 		summary2.setFunName("sum");
 		summary2.setTriggerID(100);
 		summary2.setSummaryField("sum_bar");
-		ruleLoader.addData(summary2);
+		ruleLoader.addOrUpdateData(summary2);
 
 		SummaryValueMap map=new SummaryValueMap();
 		map.setTriggerID(100);
-		ruleLoader.addData(map);
+		ruleLoader.addOrUpdateData(map);
 
 		ruleLoader.fireCondition();
 
@@ -120,44 +117,44 @@ public class TestDemo extends InitTest {
 
 		triggerMap.values().forEach(t->{
 			t.setType("all");
-			ruleLoader.addData(t);
+			ruleLoader.addOrUpdateData(t);
 		});
 
 		ruleLoader.fireCondition();
 
 	}
 
-	@Test
-	public void testFireAlarm(){
-
-		String[] names = new String[]{"kitchen", "bedroom", "office", "livingroom"};
-		Map<String,Room> name2room = new HashMap<String,Room>();
-		for( String name: names ){
-			Room room = new Room();
-			room.setName(name);
-			name2room.put( name, room );
-			ruleLoader.addData(room);
-
-			Sprinkler sprinkler = new Sprinkler( );
-			sprinkler.setOn(false);
-			sprinkler.setRoom(room);
-
-			ruleLoader.addData( sprinkler );
-		}
-
-		ruleLoader.fireCondition();
-
-		Fire newFire=new Fire();
-		newFire.setRoom(name2room.get(names[0]));
-
-		FactHandle holder=ruleLoader.addData(newFire);
-
-		ruleLoader.fireCondition();
-
-		ruleLoader.removeData(holder);
-
-		ruleLoader.fireCondition();
-	}
+//	@Test
+//	public void testFireAlarm(){
+//
+//		String[] names = new String[]{"kitchen", "bedroom", "office", "livingroom"};
+//		Map<String,Room> name2room = new HashMap<String,Room>();
+//		for( String name: names ){
+//			Room room = new Room();
+//			room.setName(name);
+//			name2room.put( name, room );
+//			ruleLoader.addOrUpdateData(room);
+//
+//			Sprinkler sprinkler = new Sprinkler( );
+//			sprinkler.setOn(false);
+//			sprinkler.setRoom(room);
+//
+//			ruleLoader.addOrUpdateData( sprinkler );
+//		}
+//
+//		ruleLoader.fireCondition();
+//
+//		Fire newFire=new Fire();
+//		newFire.setRoom(name2room.get(names[0]));
+//
+//		FactHandle holder=ruleLoader.addOrUpdateData(newFire);
+//
+//		ruleLoader.fireCondition();
+//
+//		ruleLoader.removeData(holder);
+//
+//		ruleLoader.fireCondition();
+//	}
 
 	@Test
 	public void testExecute() throws IOException{
@@ -188,7 +185,7 @@ public class TestDemo extends InitTest {
 		message.setMessage("Hello World");
 		message.setStatus(Message.HELLO);
 
-		ruleLoader.addData(message);
+		ruleLoader.addOrUpdateData(message);
 
 		ruleLoader.fireCondition();
 

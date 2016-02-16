@@ -1,4 +1,4 @@
-package com.kii.extension.ruleengine.thingtrigger;
+package com.kii.extension.ruleengine.drools.entity;
 
 import com.google.common.base.Objects;
 
@@ -6,11 +6,11 @@ public class CurrThing {
 
 	private String thingID;
 
-	public String getThingID() {
+	public String getThing() {
 		return thingID;
 	}
 
-	public void setThingID(String thingID) {
+	public void setThing(String thingID) {
 		this.thingID = thingID;
 	}
 

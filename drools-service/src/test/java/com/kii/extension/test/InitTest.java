@@ -2,21 +2,19 @@ package com.kii.extension.test;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.runner.RunWith;
-import org.kie.api.runtime.rule.FactHandle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.StreamUtils;
 
-import com.kii.extension.ruleengine.DemoRuleLoader;
 import com.kii.extension.ruleengine.StatelessRuleExecute;
-import com.kii.extension.ruleengine.thingtrigger.CurrThing;
-import com.kii.extension.ruleengine.thingtrigger.ThingStatus;
+import com.kii.extension.ruleengine.drools.DroolsRuleService;
+import com.kii.extension.ruleengine.drools.entity.CurrThing;
+import com.kii.extension.ruleengine.drools.entity.ThingStatus;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -25,7 +23,7 @@ public class InitTest {
 
 
 	@Autowired
-	protected DemoRuleLoader ruleLoader;
+	protected DroolsRuleService ruleLoader;
 
 
 	@Autowired
@@ -34,8 +32,6 @@ public class InitTest {
 
 	@Autowired
 	protected ResourceLoader loader;
-
-	private FactHandle handle;
 
 
 	protected String getDrlContent(String fileName) {
@@ -49,7 +45,7 @@ public class InitTest {
 
 	}
 
-	private Map<String,FactHandle>  handleMap=new HashMap<>();
+
 
 
 	protected  void updateThingState(String thingID,Map<String,Object> values){
@@ -63,18 +59,15 @@ public class InitTest {
 
 	private void addThingStatus(String thingID, ThingStatus status) {
 
-		FactHandle thHandler=handleMap.computeIfAbsent(thingID,(id)-> ruleLoader.addData(status));
 
-		ruleLoader.updateDate(thHandler,status);
+		ruleLoader.addOrUpdateData(status);
 
 		CurrThing curr=new CurrThing();
-		curr.setThingID(thingID);
+		curr.setThing(thingID);
 
-		if(handle==null){
-			handle=ruleLoader.addData(curr);
-		}else{
-			ruleLoader.updateDate(handle,curr);
-		}
+		ruleLoader.setGlobal("currThing",curr);
+
+
 	}
 
 	protected void updateThingState(String thingID){

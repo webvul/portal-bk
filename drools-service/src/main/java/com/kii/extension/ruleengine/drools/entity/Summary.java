@@ -1,4 +1,7 @@
-package com.kii.extension.ruleengine.thingtrigger;
+package com.kii.extension.ruleengine.drools.entity;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import com.google.common.base.Objects;
 
@@ -13,7 +16,15 @@ public class Summary {
 
 	private String summaryField;
 
+	private Set<String> things=new HashSet<>();
 
+	public Set<String> getThings() {
+		return things;
+	}
+
+	public void setThings(Set<String> things) {
+		this.things = things;
+	}
 
 	public String getSummaryField() {
 		return summaryField;

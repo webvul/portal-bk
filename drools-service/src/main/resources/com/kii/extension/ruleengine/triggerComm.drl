@@ -1,13 +1,14 @@
 package com.kii.extension.ruleengine.demo
 
-import com.kii.extension.ruleengine.thingtrigger.*;
-import com.kii.extension.ruleengine.CommandExec;
+import com.kii.extension.ruleengine.drools.entity.*;
+import com.kii.extension.ruleengine.drools.CommandExec;
 
+global com.kii.extension.ruleengine.drools.entity.CurrThing currThing;
 
 rule "fire all trigger:when false->true,trigger  fire"
 when
 	$trigger:Trigger($triggerID:triggerID,previousResult==false,$things:things,when == "false2true" )
-    CurrThing(thingID memberOf $things)
+    CurrThing(thing memberOf $things) from currThing
     MatchResult(triggerID==$triggerID)
 then
 	System.out.println("false-true been fired");
@@ -22,7 +23,7 @@ end
 rule "fire all trigger:when false->true,trigger not fire"
 when
 	$trigger:Trigger($triggerID:triggerID,$things:things,when == "false2true",previousResult==true)
-    CurrThing(thingID memberOf $things)
+    CurrThing(thing memberOf $things) from currThing
     not ( exists MatchResult(triggerID==$triggerID) )
 then
 	System.out.println("false-true not been fired");
@@ -35,7 +36,7 @@ rule "fire trigger:true "
 	no-loop true
 when
 	$trigger:Trigger($triggerID:triggerID,$things:things,when == "true" )
-    CurrThing(thingID memberOf $things)
+    CurrThing(thing memberOf $things) from currThing
     MatchResult(triggerID==$triggerID)
 then
     CommandExec exec=(CommandExec)kcontext.getKieRuntime().getEnvironment().get("exec");
@@ -46,7 +47,7 @@ end
 rule "fire trigger:when true->false,trigger fire "
 when
 	$trigger:Trigger($triggerID:triggerID,previousResult==true,$things:things ,when == "true2false" )
-    CurrThing(thingID memberOf $things)
+    CurrThing(thing memberOf $things) from currThing
     not( MatchResult(triggerID==$triggerID) )
 then
 	modify($trigger){
@@ -60,7 +61,7 @@ end
 rule "fire trigger:when true->false,trigger not fire "
 when
 	$trigger:Trigger($triggerID:triggerID,previousResult==false,$things:things ,when == "true2false"  )
-    CurrThing(thingID memberOf $things)
+    CurrThing(thing memberOf $things) from currThing
     MatchResult(triggerID==$triggerID)
 then
 	System.out.println("true-false not fired");

@@ -1,9 +1,11 @@
-package com.kii.extension.ruleengine;
+package com.kii.extension.ruleengine.drools;
 
 import javax.annotation.PostConstruct;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieBuilder;
@@ -17,7 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DemoRuleLoader {
+public class DroolsRuleService {
 
 
 	@Autowired
@@ -33,7 +35,9 @@ public class DemoRuleLoader {
 	private KieFileSystem kfs;
 
 	@Autowired
-	private CommandExec  exec;
+	private CommandExec exec;
+
+	private Map<String,FactHandle> handleMap=new HashMap<>();
 
 
 	@PostConstruct
@@ -71,9 +75,10 @@ public class DemoRuleLoader {
 
 		kieSession.getEnvironment().set("exec",exec);
 
-//		kieSession.addEventListener(listener);
 
 	}
+
+
 
 	public void addCondition(String name,String rule){
 
@@ -86,14 +91,26 @@ public class DemoRuleLoader {
 	}
 
 
-	public void updateDate(FactHandle  handle,Object newObj){
-		 getSession().update(handle,newObj);
+//	public void updateDate(FactHandle  handle,Object newObj){
+//
+//	}
+
+
+	public void setGlobal(String name,Object key){
+		getSession().setGlobal(name,key);
 	}
 
+	public void addOrUpdateData(Object entity){
 
-	public FactHandle addData(Object message){
+		String key = getEntityKey(entity);
 
-		return getSession().insert(message);
+		FactHandle handler=handleMap.computeIfAbsent(key,(id)-> getSession().insert(entity));
+
+		getSession().update(handler,entity);
+	}
+
+	private String getEntityKey(Object entity) {
+		return entity.getClass().getName()+entity.hashCode();
 	}
 
 	public <T> List<T> doQuery(String queryName){
@@ -118,8 +135,14 @@ public class DemoRuleLoader {
 
 	}
 	
-	public void removeData(FactHandle holder) {
-		getSession().delete(holder);
+	public void removeData(Object obj) {
 
+		String key=getEntityKey(obj);
+
+		FactHandle handler=handleMap.get(key);
+
+		if(handler!=null) {
+			getSession().delete(handler);
+		}
 	}
 }

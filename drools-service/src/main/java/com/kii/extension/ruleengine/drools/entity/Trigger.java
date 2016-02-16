@@ -1,4 +1,4 @@
-package com.kii.extension.ruleengine.thingtrigger;
+package com.kii.extension.ruleengine.drools.entity;
 
 import java.util.HashSet;
 import java.util.Set;

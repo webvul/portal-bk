@@ -1,4 +1,4 @@
-package com.kii.extension.ruleengine.thingtrigger;
+package com.kii.extension.ruleengine.drools.entity;
 
 import com.google.common.base.Objects;
 

@@ -1,4 +1,4 @@
-package com.kii.extension.ruleengine;
+package com.kii.extension.ruleengine.drools;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -10,6 +10,8 @@ import org.kie.api.runtime.StatelessKieSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.kii.extension.ruleengine.drools.TrackingAgendaEventListener;
+
 @Component
 public class StatelessRuleExecute {
 

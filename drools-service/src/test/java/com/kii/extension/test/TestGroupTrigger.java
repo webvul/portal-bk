@@ -7,7 +7,7 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.kii.extension.ruleengine.thingtrigger.Trigger;
+import com.kii.extension.ruleengine.drools.entity.Trigger;
 
 public class TestGroupTrigger extends InitTest {
 
@@ -44,7 +44,7 @@ public class TestGroupTrigger extends InitTest {
 
 		trigger.setTriggerID(200);
 
-		ruleLoader.addData(trigger);
+		ruleLoader.addOrUpdateData(trigger);
 
 		Map<String,Object> paramOk=new HashMap<>();
 		paramOk.put("foo",100);
@@ -91,7 +91,7 @@ public class TestGroupTrigger extends InitTest {
 
 		trigger.setTriggerID(201);
 
-		ruleLoader.addData(trigger);
+		ruleLoader.addOrUpdateData(trigger);
 
 		Map<String,Object> paramOk=new HashMap<>();
 		paramOk.put("foo",100);
@@ -142,7 +142,7 @@ public class TestGroupTrigger extends InitTest {
 
 		trigger.setTriggerID(202);
 
-		ruleLoader.addData(trigger);
+		ruleLoader.addOrUpdateData(trigger);
 
 		Map<String,Object> paramOk=new HashMap<>();
 		paramOk.put("foo",100);

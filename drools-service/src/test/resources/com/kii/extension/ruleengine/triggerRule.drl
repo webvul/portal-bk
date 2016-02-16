@@ -1,13 +1,14 @@
 package com.kii.extension.ruleengine.demo
 
-import com.kii.extension.ruleengine.thingtrigger.*;
-import com.kii.extension.ruleengine.*;
+import com.kii.extension.ruleengine.drools.entity.*;
+
+global com.kii.extension.ruleengine.drools.entity.CurrThing currThing;
 
 
 rule "show curr thing"
 when
 	$curr:CurrThing()
-	$status:ThingStatus(thingID == $curr.thingID)
+	$status:ThingStatus(thingID == $curr.thing)
 then
 	System.out.println(" curr thing :"+$status);
 end
@@ -19,7 +20,7 @@ end
 rule "add trigger 100's  express "
 when
     Trigger( $triggerID:triggerID==100,$things:things  )
-    CurrThing(thingID memberOf $things)
+    CurrThing(thing memberOf $things) from currThing
     ThingStatus( $thingID:thingID memberOf $things,(values["foo"]>10&&values["bar"]<0)  )
 then
 	insertLogical(new MatchResult($triggerID));
@@ -31,7 +32,7 @@ end
 rule "add trigger 101's  express "
 when
     Trigger( $triggerID:triggerID==101,$things:things )
-    CurrThing(thingID memberOf $things)
+    CurrThing(thing memberOf $things) from currThing
     ThingStatus( $thingID:thingID memberOf $things,values["foo"]>10&&values["bar"]<0  )
 then
 	insertLogical(new MatchResult($triggerID));
@@ -43,7 +44,7 @@ end
 rule "add trigger 102's  express "
 when
     Trigger( $triggerID:triggerID==102,$things:things )
-    CurrThing(thingID memberOf $things)
+    CurrThing(thing memberOf $things) from currThing
     ThingStatus( $thingID:thingID memberOf $things,values["foo"]>10&&values["bar"]<0  )
 then
 	insertLogical(new MatchResult($triggerID));
@@ -56,7 +57,7 @@ end
 rule "add trigger 200's  express "
 when
     Trigger( $triggerID:triggerID==200,$things:things )
-    CurrThing(thingID memberOf $things)
+    CurrThing(thing memberOf $things) from currThing
     ThingStatus( $thingID:thingID memberOf $things,values["foo"]>10&&values["bar"]<0  )
 then
 	insertLogical(new MemberMatchResult($triggerID,$thingID));
@@ -68,7 +69,7 @@ end
 rule "add trigger 201's  express "
 when
     Trigger( $triggerID:triggerID==201,$things:things )
-    CurrThing(thingID memberOf $things)
+    CurrThing(thing memberOf $things) from currThing
     ThingStatus( $thingID:thingID memberOf $things,values["foo"]>10&&values["bar"]<0  )
 then
 	insertLogical(new MemberMatchResult($triggerID,$thingID));
@@ -81,7 +82,19 @@ end
 rule "add trigger 202's  express "
 when
     Trigger( $triggerID:triggerID==202,$things:things )
-    CurrThing(thingID memberOf $things)
+    CurrThing(thing memberOf $things) from currThing
+    ThingStatus( $thingID:thingID memberOf $things,values["foo"]>10&&values["bar"]<0  )
+then
+	insertLogical(new MemberMatchResult($triggerID,$thingID));
+end
+
+/////////////////////////////////////
+//summary trigger 300
+/////////////////////////////////////
+rule "add trigger 300's  express "
+when
+    Trigger( $triggerID:triggerID==300,$things:things )
+    CurrThing(thing memberOf $things) from currThing
     ThingStatus( $thingID:thingID memberOf $things,values["foo"]>10&&values["bar"]<0  )
 then
 	insertLogical(new MemberMatchResult($triggerID,$thingID));
