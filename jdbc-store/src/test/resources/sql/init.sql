@@ -19,7 +19,7 @@ CREATE TABLE `tag_index` (
   `tag_id` INT NOT NULL AUTO_INCREMENT COMMENT '',
   `display_name` VARCHAR(45) NOT NULL COMMENT '',
   `tag_type` VARCHAR(45) NOT NULL COMMENT '',
-  `tag_full_name` VARCHAR(100) NOT NULL COMMENT '';
+  `tag_full_name` VARCHAR(100) NOT NULL COMMENT '',
   `description` VARCHAR(450) NULL COMMENT '',
   `full_tag_name` varchar(128),
   `create_by` VARCHAR(45) NULL COMMENT '',
@@ -31,14 +31,28 @@ CREATE TABLE `tag_index` (
   ) ENGINE=InnoDB AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8mb4;
 
 
-CREATE TABLE `rel_thing_tag` (
-  `id` INT NOT NULL AUTO_INCREMENT COMMENT '',
-  `thing_id` INT NOT NULL COMMENT '',
-  `tag_id` INT NOT NULL COMMENT '',
-  PRIMARY KEY (id)  COMMENT '',
-  FOREIGN KEY (thing_id) REFERENCES global_thing(id_global_thing),
-  FOREIGN KEY (tag_id) REFERENCES tag_index(tag_id)
-  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+-- -----------------------------------------------------
+-- Table `rel_thing_tag`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `rel_thing_tag` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `thing_id` INT(11) NOT NULL,
+  `tag_id` INT(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `thing_id` (`thing_id` ASC),
+  INDEX `tag_id` (`tag_id` ASC),
+  CONSTRAINT `rel_thing_tag_ibfk_1`
+    FOREIGN KEY (`thing_id`)
+    REFERENCES `global_thing` (`id_global_thing`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `rel_thing_tag_ibfk_2`
+    FOREIGN KEY (`tag_id`)
+    REFERENCES `tag_index` (`tag_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4;
 
 
 CREATE TABLE IF NOT EXISTS `user_group` (
@@ -51,7 +65,7 @@ CREATE TABLE IF NOT EXISTS `user_group` (
   `modify_date` DATETIME NULL DEFAULT NULL,
   PRIMARY KEY (`user_group_id`))
 ENGINE = InnoDB
-AUTO_INCREMENT = 1003
+AUTO_INCREMENT = 1000
 DEFAULT CHARACTER SET = utf8mb4;
 
 
@@ -67,8 +81,8 @@ CREATE TABLE IF NOT EXISTS `rel_group_user` (
   CONSTRAINT `fk_rel_group_user_user_group1`
     FOREIGN KEY (`user_group_id`)
     REFERENCES `user_group` (`user_group_id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
@@ -107,10 +121,10 @@ CREATE TABLE IF NOT EXISTS `permission` (
   CONSTRAINT `fk_permission_source1`
     FOREIGN KEY (`source_id`)
     REFERENCES `source` (`source_id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 1003
+AUTO_INCREMENT = 1000
 DEFAULT CHARACTER SET = utf8mb4;
 
 
@@ -127,12 +141,114 @@ CREATE TABLE IF NOT EXISTS `rel_group_permission` (
   CONSTRAINT `fk_rel_group_user_user_group10`
     FOREIGN KEY (`user_group_id`)
     REFERENCES `user_group` (`user_group_id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
   CONSTRAINT `fk_rel_group_user_permission`
     FOREIGN KEY (`permission_id`)
     REFERENCES `permission` (`permission_id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `team`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `team` (
+  `team_id` INT(11) NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(45) NOT NULL,
+  `create_by` VARCHAR(45) NULL DEFAULT NULL,
+  `create_date` DATETIME NULL DEFAULT NULL,
+  `modify_by` VARCHAR(45) NULL DEFAULT NULL,
+  `modify_date` DATETIME NULL DEFAULT NULL,
+  PRIMARY KEY (`team_id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4;
+
+
+-- -----------------------------------------------------
+-- Table `rel_team_user`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `rel_team_user` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `user_id` VARCHAR(45) NULL,
+  `team_id` INT(11) NOT NULL,
+  `vaild` INT(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_rel_team_user_team_id_idx` (`team_id` ASC),
+  CONSTRAINT `fk_rel_team_user_team_id`
+    FOREIGN KEY (`team_id`)
+    REFERENCES `team` (`team_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `rel_tag_group`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `rel_tag_group` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `tag_id` INT(11) NOT NULL,
+  `user_group_id` INT(11) NOT NULL,
+  `type` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_rel_tag_group_tag_id_idx` (`tag_id` ASC),
+  INDEX `fk_rel_tag_group_user_group_id_idx` (`user_group_id` ASC),
+  CONSTRAINT `fk_rel_tag_group_tag_id`
+    FOREIGN KEY (`tag_id`)
+    REFERENCES `tag_index` (`tag_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_rel_tag_group_user_group_id`
+    FOREIGN KEY (`user_group_id`)
+    REFERENCES `user_group` (`user_group_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `rel_team_group`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `rel_team_group` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `user_group_id` INT(11) NOT NULL,
+  `team_id` INT(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_rel_team_group_user_group_idx` (`user_group_id` ASC),
+  INDEX `fk_rel_team_group_team_id_idx` (`team_id` ASC),
+  CONSTRAINT `fk_rel_team_group_user_group`
+    FOREIGN KEY (`user_group_id`)
+    REFERENCES `user_group` (`user_group_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_rel_team_group_team_id`
+    FOREIGN KEY (`team_id`)
+    REFERENCES `team` (`team_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `rel_team_thing`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `rel_team_thing` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `team_id` INT(11) NOT NULL,
+  `thing_id` INT(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_rel_team_thing_team_id_idx` (`team_id` ASC),
+  INDEX `fk_rel_team_thing_thing_id_idx` (`thing_id` ASC),
+  CONSTRAINT `fk_rel_team_thing_team_id`
+    FOREIGN KEY (`team_id`)
+    REFERENCES `team` (`team_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_rel_team_thing_thing_id`
+    FOREIGN KEY (`thing_id`)
+    REFERENCES `global_thing` (`id_global_thing`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
