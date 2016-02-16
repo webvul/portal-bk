@@ -49,3 +49,40 @@ then
 	insertLogical(new MatchResult($triggerID));
 end
 
+
+/////////////////////////////////////
+//group trigger 200
+/////////////////////////////////////
+rule "add trigger 200's  express "
+when
+    Trigger( $triggerID:triggerID==200,$things:things )
+    CurrThing(thingID memberOf $things)
+    ThingStatus( $thingID:thingID memberOf $things,values["foo"]>10&&values["bar"]<0  )
+then
+	insertLogical(new MemberMatchResult($triggerID,$thingID));
+end
+
+/////////////////////////////////////
+//group trigger 201
+/////////////////////////////////////
+rule "add trigger 201's  express "
+when
+    Trigger( $triggerID:triggerID==201,$things:things )
+    CurrThing(thingID memberOf $things)
+    ThingStatus( $thingID:thingID memberOf $things,values["foo"]>10&&values["bar"]<0  )
+then
+	insertLogical(new MemberMatchResult($triggerID,$thingID));
+end
+
+
+/////////////////////////////////////
+//group trigger 202
+/////////////////////////////////////
+rule "add trigger 202's  express "
+when
+    Trigger( $triggerID:triggerID==202,$things:things )
+    CurrThing(thingID memberOf $things)
+    ThingStatus( $thingID:thingID memberOf $things,values["foo"]>10&&values["bar"]<0  )
+then
+	insertLogical(new MemberMatchResult($triggerID,$thingID));
+end
