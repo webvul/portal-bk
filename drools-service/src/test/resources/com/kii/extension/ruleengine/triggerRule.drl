@@ -20,6 +20,13 @@ then
 	System.out.println(" match result :"+$result);
 end
 
+rule "list all member match Result "
+when
+	$result:MemberMatchResult()
+then
+	System.out.println(" match member result :"+$result);
+end
+
 /////////////////////////////////////
 //simple trigger 100,when:false to true
 /////////////////////////////////////

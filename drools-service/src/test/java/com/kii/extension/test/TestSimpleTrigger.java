@@ -3,8 +3,6 @@ package com.kii.extension.test;
 import static junit.framework.TestCase.assertEquals;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -13,10 +11,6 @@ import com.kii.extension.ruleengine.drools.entity.Trigger;
 
 public class TestSimpleTrigger extends InitTest {
 
-
-	Map<String,Object> paramOk =new HashMap<>();
-
-	Map<String,Object> paramNo =new HashMap<>();
 
 	@Before
 	public void init() throws IOException {
@@ -29,16 +23,6 @@ public class TestSimpleTrigger extends InitTest {
 
 		initGlobal();
 
-//
-//		for(int i=0;i<10;i++){
-//			updateThingState(String.valueOf(i));
-//		}
-
-		paramNo.put("foo",-100);
-		paramNo.put("bar",10);
-
-		paramOk.put("foo",100);
-		paramOk.put("bar",-10);
 
 	}
 

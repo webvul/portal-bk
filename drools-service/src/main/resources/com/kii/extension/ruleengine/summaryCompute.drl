@@ -2,14 +2,14 @@ package com.kii.extension.ruleengine.demo
 
 import com.kii.extension.ruleengine.drools.entity.*;
 
-global String currThing;
+global com.kii.extension.ruleengine.drools.entity.CurrThing currThing;
 
 rule "compute the summary of  fieldName value: funName"
 	no-loop true
 when
 	$trigger:Trigger(type =="summary")
 	$summary:Summary(triggerID==$trigger.triggerID , funName=="sum" )
-	currThing memberOf $summary.things
+    CurrThing(thing memberOf $things) from currThing
 	accumulate( ThingStatus(thingID memberOf $summary.things ,$status:values);
                     $value : sum($status.get($summary.getFieldName()))
                     )
@@ -27,6 +27,7 @@ rule "compute the count of  fieldName value: funName"
 when
 	$trigger:Trigger(type =="summary")
 	$summary:Summary(triggerID==$trigger.triggerID , funName=="count" )
+	CurrThing(thing memberOf $things) from currThing
 	accumulate( ThingStatus(thingID memberOf $summary.things ,$status:values);
                     $value : count($status.get($summary.getFieldName()))
                     )
@@ -43,6 +44,7 @@ rule "compute the min of  fieldName value: funName"
 when
 	$trigger:Trigger(type =="summary")
 	$summary:Summary(triggerID==$trigger.triggerID , funName=="min" )
+	CurrThing(thing memberOf $things) from currThing
 	accumulate( ThingStatus(thingID memberOf $summary.things ,$status:values);
                     $value : min($status.get($summary.getFieldName()))
                     )

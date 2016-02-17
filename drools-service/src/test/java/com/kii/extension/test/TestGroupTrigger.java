@@ -1,8 +1,8 @@
 package com.kii.extension.test;
 
+import static junit.framework.TestCase.assertEquals;
+
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -21,17 +21,15 @@ public class TestGroupTrigger extends InitTest {
 				getDrlContent("groupPolicy")
 		);
 
-//
-//		for(int i=0;i<10;i++){
-//			updateThingState(String.valueOf(i));
-//		}
+		ruleLoader.addCondition("trigger",getDrlContent("triggerRule"));
+
+		initGlobal();
 
 	}
 
 	@Test
 	public void testTrigger200(){
 
-		ruleLoader.addCondition("trigger",getDrlContent("triggerRule"));
 
 		Trigger trigger=new Trigger();
 
@@ -42,24 +40,20 @@ public class TestGroupTrigger extends InitTest {
 		trigger.setWhen("false2true");
 		trigger.setPreviousResult(false);
 
-		trigger.setTriggerID(200);
+		int triggerID = 200;
+		trigger.setTriggerID(triggerID);
 
 		ruleLoader.addOrUpdateData(trigger);
 
-		Map<String,Object> paramOk=new HashMap<>();
-		paramOk.put("foo",100);
-		paramOk.put("bar",-10);
 
-
-		Map<String,Object> paramNo=new HashMap<>();
-		paramNo.put("foo",-100);
-		paramNo.put("bar",10);
 
 		for(int i=0;i<5;i++){
 			updateThingState(String.valueOf(i),i%2==0?paramOk:paramNo);
 			ruleLoader.fireCondition();
-
 		}
+
+		assertEquals(0,exec.getHitCount(triggerID));
+
 
 		for(int i=0;i<5;i++){
 			updateThingState(String.valueOf(i),paramOk);
@@ -67,18 +61,23 @@ public class TestGroupTrigger extends InitTest {
 
 		}
 
+		assertEquals(1,exec.getHitCount(triggerID));
+
+
 		for(int i=0;i<5;i++){
 			updateThingState(String.valueOf(i),i%2==0?paramOk:paramNo);
 			ruleLoader.fireCondition();
 
 		}
 
+		assertEquals(1,exec.getHitCount(triggerID));
+
+
 	}
 
 	@Test
 	public void testTrigger201(){
 
-		ruleLoader.addCondition("trigger",getDrlContent("triggerRule"));
 
 		Trigger trigger=new Trigger();
 
@@ -86,41 +85,43 @@ public class TestGroupTrigger extends InitTest {
 			trigger.addThing(String.valueOf(i));
 		}
 		trigger.setType("any");
-		trigger.setWhen("false2true");
+		trigger.setWhen("true");
 		trigger.setPreviousResult(false);
 
-		trigger.setTriggerID(201);
+		int triggerID = 201;
+		trigger.setTriggerID(triggerID);
 
 		ruleLoader.addOrUpdateData(trigger);
 
-		Map<String,Object> paramOk=new HashMap<>();
-		paramOk.put("foo",100);
-		paramOk.put("bar",-10);
-
-
-		Map<String,Object> paramNo=new HashMap<>();
-		paramNo.put("foo",-100);
-		paramNo.put("bar",10);
 
 		for(int i=0;i<5;i++){
 			updateThingState(String.valueOf(i),i%2==0?paramOk:paramNo);
 			ruleLoader.fireCondition();
 
 		}
+		assertEquals(3,exec.getHitCount(triggerID));
+
 
 		for(int i=0;i<5;i++){
 			updateThingState(String.valueOf(i),paramOk);
 			ruleLoader.fireCondition();
 
 		}
+		assertEquals(8,exec.getHitCount(triggerID));
+
 
 		for(int i=0;i<5;i++){
 			updateThingState(String.valueOf(i),paramNo);
 			ruleLoader.fireCondition();
 		}
+		assertEquals(8,exec.getHitCount(triggerID));
+
 
 		updateThingState("1",paramOk);
 		ruleLoader.fireCondition();
+
+		assertEquals(9,exec.getHitCount(triggerID));
+
 
 	}
 
@@ -128,7 +129,6 @@ public class TestGroupTrigger extends InitTest {
 	@Test
 	public void testTrigger202(){
 
-		ruleLoader.addCondition("trigger",getDrlContent("triggerRule"));
 
 		Trigger trigger=new Trigger();
 
@@ -140,29 +140,26 @@ public class TestGroupTrigger extends InitTest {
 		trigger.setWhen("false2true");
 		trigger.setPreviousResult(false);
 
-		trigger.setTriggerID(202);
+		int triggerID = 202;
+		trigger.setTriggerID(triggerID);
 
 		ruleLoader.addOrUpdateData(trigger);
 
-		Map<String,Object> paramOk=new HashMap<>();
-		paramOk.put("foo",100);
-		paramOk.put("bar",-10);
-
-
-		Map<String,Object> paramNo=new HashMap<>();
-		paramNo.put("foo",-100);
-		paramNo.put("bar",10);
 
 		for(int i=0;i<5;i++){
 			updateThingState(String.valueOf(i),i%2!=0?paramOk:paramNo);
 		}
 		ruleLoader.fireCondition();
+		assertEquals(0,exec.getHitCount(triggerID));
+
 
 //
 		for(int i=0;i<5;i++){
 			updateThingState(String.valueOf(i),paramOk);
 		}
 		ruleLoader.fireCondition();
+		assertEquals(1,exec.getHitCount(triggerID));
+
 
 		for(int i=0;i<5;i++){
 			updateThingState(String.valueOf(i),paramNo);
@@ -170,6 +167,8 @@ public class TestGroupTrigger extends InitTest {
 
 		}
 		ruleLoader.fireCondition();
+		assertEquals(1,exec.getHitCount(triggerID));
+
 //
 //		for(int i=0;i<5;i++){
 //			updateThingState(String.valueOf(i),i%2==0?paramOk:paramNo);

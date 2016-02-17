@@ -2,6 +2,7 @@ package com.kii.extension.test;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.runner.RunWith;
@@ -31,12 +32,25 @@ public class InitTest {
 //
 
 
-
 	@Autowired
 	protected ResourceLoader loader;
 
 	CurrThing curr=new CurrThing();
 
+	Map<String,Object> paramOk=new HashMap<>();
+
+	public InitTest(){
+
+		paramOk.put("foo",100);
+		paramOk.put("bar",-10);
+
+		paramNo.put("foo",-100);
+		paramNo.put("bar",10);
+
+	}
+
+
+	Map<String,Object> paramNo=new HashMap<>();
 
 
 	protected void initGlobal() throws IOException {

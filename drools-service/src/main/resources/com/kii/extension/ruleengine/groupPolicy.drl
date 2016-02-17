@@ -2,14 +2,17 @@ package com.kii.extension.ruleengine.demo
 
 import com.kii.extension.ruleengine.drools.entity.*;
 
-global String currThing;
+global com.kii.extension.ruleengine.drools.entity.CurrThing currThing;
 
 
 rule "summary of  true  result:all"
 when
 	$trigger:Trigger(type =="all",$triggerID:triggerID,$things:things)
-	CurrThing(thingID memberOf $things)
-	forall( MemberMatchResult(triggerID==$triggerID) )
+    CurrThing(thing memberOf $things) from currThing
+	accumulate( MemberMatchResult(triggerID==$triggerID,$thingID:thingID );
+                        $thingCount : count($thingID);
+                        $thingCount==$trigger.things.size()
+              )
 then
 	System.out.println("trigger all "+$trigger.getTriggerID()+" been fire");
 	insertLogical(new MatchResult($triggerID));
@@ -19,8 +22,8 @@ end
 rule "summary of  true  result:any"
 when
 	$trigger:Trigger(type =="any",$triggerID:triggerID,$things:things)
-	CurrThing(thingID memberOf $things)
-	exists MemberMatchResult(triggerID==$triggerID)
+    CurrThing(thing memberOf $things) from currThing
+	MemberMatchResult(triggerID==$triggerID)
 then
 	System.out.println("trigger any "+$trigger.getTriggerID()+" been fire");
 	insertLogical(new MatchResult($triggerID));
@@ -29,7 +32,7 @@ end
 rule "summary of  true  result:number"
 when
 	$trigger:Trigger(type =="number",$triggerID:triggerID,$things:things)
-	CurrThing(thingID memberOf $things)
+    CurrThing(thing memberOf $things) from currThing
 	accumulate( MemberMatchResult(triggerID==$triggerID,$thingID:thingID );
                     $thingCount : count($thingID);
                     $thingCount>=$trigger.number

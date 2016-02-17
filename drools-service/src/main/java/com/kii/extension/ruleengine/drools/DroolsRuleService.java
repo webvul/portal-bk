@@ -89,6 +89,8 @@ public class DroolsRuleService {
 		kb.buildAll();
 
 		kieContainer.updateToVersion(kb.getKieModule().getReleaseId());
+
+		handleMap.clear();
 	}
 
 
@@ -108,6 +110,7 @@ public class DroolsRuleService {
 		FactHandle handler=handleMap.computeIfAbsent(key,(id)-> getSession().insert(entity));
 
 		getSession().update(handler,entity);
+
 	}
 
 	private String getEntityKey(Object entity) {
