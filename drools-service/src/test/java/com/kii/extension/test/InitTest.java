@@ -11,7 +11,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.StreamUtils;
 
-import com.kii.extension.ruleengine.StatelessRuleExecute;
+import com.kii.extension.ruleengine.drools.CommandExec;
 import com.kii.extension.ruleengine.drools.DroolsRuleService;
 import com.kii.extension.ruleengine.drools.entity.CurrThing;
 import com.kii.extension.ruleengine.drools.entity.ThingStatus;
@@ -25,14 +25,27 @@ public class InitTest {
 	@Autowired
 	protected DroolsRuleService ruleLoader;
 
-
 	@Autowired
-	protected StatelessRuleExecute execute;
+	protected CommandExec exec;
+//
+//
+
 
 
 	@Autowired
 	protected ResourceLoader loader;
 
+	CurrThing curr=new CurrThing();
+
+
+
+	protected void initGlobal() throws IOException {
+
+		curr.setThing("NONE");
+
+		ruleLoader.setGlobal("currThing",curr);
+
+	}
 
 	protected String getDrlContent(String fileName) {
 
@@ -62,10 +75,9 @@ public class InitTest {
 
 		ruleLoader.addOrUpdateData(status);
 
-		CurrThing curr=new CurrThing();
+
 		curr.setThing(thingID);
 
-		ruleLoader.setGlobal("currThing",curr);
 
 
 	}

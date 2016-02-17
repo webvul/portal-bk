@@ -40,6 +40,7 @@ public class DroolsRuleService {
 	private Map<String,FactHandle> handleMap=new HashMap<>();
 
 
+
 	@PostConstruct
 	public void init(){
 

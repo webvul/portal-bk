@@ -12,7 +12,9 @@ import org.junit.Test;
 import org.kie.api.runtime.rule.FactHandle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import com.kii.extension.ruleengine.StatelessRuleExecute;
 import com.kii.extension.ruleengine.demo.Applicant;
 import com.kii.extension.ruleengine.demo.Message;
 import com.kii.extension.ruleengine.drools.entity.Summary;
@@ -23,7 +25,8 @@ public class TestDemo extends InitTest {
 
 	private Logger log= LoggerFactory.getLogger(TestDemo.class);
 
-
+	@Autowired
+	protected StatelessRuleExecute execute;
 
 	@Before
 	public void init() throws IOException {

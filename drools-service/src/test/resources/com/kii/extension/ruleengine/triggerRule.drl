@@ -7,12 +7,18 @@ global com.kii.extension.ruleengine.drools.entity.CurrThing currThing;
 
 rule "show curr thing"
 when
-	$curr:CurrThing()
+	$curr:CurrThing() from currThing
 	$status:ThingStatus(thingID == $curr.thing)
 then
 	System.out.println(" curr thing :"+$status);
 end
 
+rule "list all match Result "
+when
+	$result:MatchResult()
+then
+	System.out.println(" match result :"+$result);
+end
 
 /////////////////////////////////////
 //simple trigger 100,when:false to true

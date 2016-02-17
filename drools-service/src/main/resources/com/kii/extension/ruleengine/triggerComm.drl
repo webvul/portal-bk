@@ -33,14 +33,14 @@ then
 end
 
 rule "fire trigger:true "
-	no-loop true
 when
 	$trigger:Trigger($triggerID:triggerID,$things:things,when == "true" )
     CurrThing(thing memberOf $things) from currThing
-    MatchResult(triggerID==$triggerID)
+    $result:MatchResult(triggerID==$triggerID)
 then
     CommandExec exec=(CommandExec)kcontext.getKieRuntime().getEnvironment().get("exec");
     exec.doExecute($triggerID);
+    delete($result);
 end
 
 

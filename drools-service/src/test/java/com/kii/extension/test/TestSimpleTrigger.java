@@ -1,5 +1,7 @@
 package com.kii.extension.test;
 
+import static junit.framework.TestCase.assertEquals;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,21 +14,35 @@ import com.kii.extension.ruleengine.drools.entity.Trigger;
 public class TestSimpleTrigger extends InitTest {
 
 
+	Map<String,Object> paramOk =new HashMap<>();
+
+	Map<String,Object> paramNo =new HashMap<>();
 
 	@Before
 	public void init() throws IOException {
+
 
 
 		ruleLoader.initCondition(
 				getDrlContent("triggerComm")
 		);
 
+		initGlobal();
+
 //
 //		for(int i=0;i<10;i++){
 //			updateThingState(String.valueOf(i));
 //		}
 
+		paramNo.put("foo",-100);
+		paramNo.put("bar",10);
+
+		paramOk.put("foo",100);
+		paramOk.put("bar",-10);
+
 	}
+
+
 
 
 	@Test
@@ -44,36 +60,35 @@ public class TestSimpleTrigger extends InitTest {
 		trigger.setTriggerID(100);
 
 		ruleLoader.addOrUpdateData(trigger);
-//
-//		updateThingState("0");
-//
-//		ruleLoader.fireCondition();
-
-		Map<String,Object> param=new HashMap<>();
-		param.put("foo",100);
-		param.put("bar",-10);
 
 
-		Map<String,Object> param1=new HashMap<>();
-		param1.put("foo",-100);
-		param1.put("bar",10);
 
-
-		updateThingState("0",param);
+		updateThingState("0", paramOk);
 
 		ruleLoader.fireCondition();
 
-		updateThingState("0",param);
+		assertEquals(1,exec.getHitCount(100));
+
+		updateThingState("0", paramOk);
 
 		ruleLoader.fireCondition();
 
-		updateThingState("0",param1);
+		assertEquals(1,exec.getHitCount(100));
+
+
+		updateThingState("0", paramNo);
 
 		ruleLoader.fireCondition();
 
-		updateThingState("0",param);
+		assertEquals(1,exec.getHitCount(100));
+
+
+		updateThingState("0", paramOk);
 
 		ruleLoader.fireCondition();
+
+		assertEquals(2,exec.getHitCount(100));
+
 	}
 
 	@Test
@@ -87,41 +102,45 @@ public class TestSimpleTrigger extends InitTest {
 		trigger.setType("simple");
 		trigger.setWhen("true");
 
-		trigger.setTriggerID(101);
+		int triggerID = 101;
+
+		trigger.setTriggerID(triggerID);
 
 		ruleLoader.addOrUpdateData(trigger);
 
-		updateThingState("1");
+		String thingID = "1";
+
+		updateThingState(thingID);
 
 		ruleLoader.fireCondition();
 
-		Map<String,Object> param=new HashMap<>();
-		param.put("foo",100);
-		param.put("bar",-10);
-
-		updateThingState("1",param);
-
+		updateThingState(thingID,paramOk);
 		ruleLoader.fireCondition();
+		assertEquals(1,exec.getHitCount(triggerID));
 
-
-		updateThingState("1",param);
-
+//		paramOk.put("foo",101);
+		updateThingState(thingID,paramOk);
 		ruleLoader.fireCondition();
+		assertEquals(2,exec.getHitCount(triggerID));
 
-		updateThingState("1",param);
 
+		updateThingState(thingID, paramNo);
 		ruleLoader.fireCondition();
+		assertEquals(2,exec.getHitCount(triggerID));
 
 
-		updateThingState("1",param);
-
+		updateThingState(thingID,paramOk);
 		ruleLoader.fireCondition();
+		assertEquals(3,exec.getHitCount(triggerID));
+
 	}
 
 	@Test
 	public void testTrigger102(){
 
 		ruleLoader.addCondition("trigger",getDrlContent("triggerRule"));
+
+		int triggerID=102;
 
 		Trigger trigger=new Trigger();
 		trigger.addThing(String.valueOf(2));
@@ -137,31 +156,29 @@ public class TestSimpleTrigger extends InitTest {
 
 		ruleLoader.fireCondition();
 
-		Map<String,Object> param=new HashMap<>();
-		param.put("foo",100);
-		param.put("bar",-10);
-
-		updateThingState("2",param);
+		updateThingState("2", paramOk);
 
 		ruleLoader.fireCondition();
 
+		assertEquals(0,exec.getHitCount(triggerID));
 
-		param.put("foo",-100);
-		param.put("bar",100);
-		updateThingState("2",param);
-
-		ruleLoader.fireCondition();
-
-		param.put("foo",100);
-		param.put("bar",-100);
-		updateThingState("2",param);
+		updateThingState("2", paramNo);
 
 		ruleLoader.fireCondition();
 
-		param.put("foo",-100);
-		param.put("bar",100);
-		updateThingState("2",param);
+		assertEquals(1,exec.getHitCount(triggerID));
+
+		updateThingState("2", paramOk);
 
 		ruleLoader.fireCondition();
+
+		assertEquals(1,exec.getHitCount(triggerID));
+
+		updateThingState("2", paramNo);
+
+		ruleLoader.fireCondition();
+
+		assertEquals(2,exec.getHitCount(triggerID));
+
 	}
 }
