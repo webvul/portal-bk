@@ -1,7 +1,6 @@
 package com.kii.beehive.portal.jdbc.entity;
 
 import com.kii.beehive.portal.jdbc.annotation.JdbcField;
-import com.kii.beehive.portal.jdbc.annotation.JdbcFieldType;
 
 public class Team extends DBEntity {
 

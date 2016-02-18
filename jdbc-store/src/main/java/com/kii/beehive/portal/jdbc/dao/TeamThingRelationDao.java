@@ -55,7 +55,7 @@ public class TeamThingRelationDao extends SpringBaseDao<TeamThingRelation> {
 		return KEY;
 	}
 	
-	public TeamThingRelation findByTagIDAndUserGroupID(Long teamID, Long thingID) {
+	public TeamThingRelation findByTeamIDAndThingID(Long teamID, Long thingID) {
 		if(teamID!=null && thingID!=null){
 			String sql = "SELECT * FROM " + this.getTableName() + " WHERE "+ TeamThingRelation.TEAM_ID +"=? AND "+ TeamThingRelation.THING_ID + "=?";
 			List<TeamThingRelation> list= jdbcTemplate.query(sql,new Object[]{teamID,thingID},getRowMapper());

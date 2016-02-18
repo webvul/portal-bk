@@ -21,7 +21,6 @@ CREATE TABLE `tag_index` (
   `tag_type` VARCHAR(45) NOT NULL COMMENT '',
   `tag_full_name` VARCHAR(100) NOT NULL COMMENT '',
   `description` VARCHAR(450) NULL COMMENT '',
-  `full_tag_name` varchar(128),
   `create_by` VARCHAR(45) NULL COMMENT '',
   `create_date` DATETIME NULL COMMENT '',
   `modify_by` VARCHAR(45) NULL COMMENT '',

@@ -46,4 +46,16 @@ public class TagGroupRelation extends DBEntity{
 	public void setUserGroupID(Long userGroupID) {
 		this.userGroupID = userGroupID;
 	}
+
+	@JdbcField(column=TYPE)
+	public String getType() {
+		return type;
+	}
+
+
+	public void setType(String type) {
+		this.type = type;
+	}
+	
+	
 }

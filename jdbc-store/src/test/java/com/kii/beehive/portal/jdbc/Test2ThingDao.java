@@ -122,7 +122,6 @@ public class Test2ThingDao extends TestTemplate {
 			tag.setDisplayName("name"+i);
 			tag.setTagType(TagType.Custom);
 			tag.setFullTagName(TagType.Custom.getTagName("name"+i));
-
 			long id=tagDao.saveOrUpdate(tag);
 
 			tagIDs.add(id);

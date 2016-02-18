@@ -21,7 +21,7 @@ public class TagIndex extends DBEntity {
 
 	public final static String TAG_ID = "tag_id";
 	public final static String TAG_TYPE = "tag_type";
-	public final static String FULL_TAG_NAME="full_tag_name";
+	public final static String FULL_TAG_NAME="tag_full_name";
 	public final static String DISPLAY_NAME = "display_name";
 	public final static String DESCRIPTION = "description";
 	public final static String THING_COUNT = "count";

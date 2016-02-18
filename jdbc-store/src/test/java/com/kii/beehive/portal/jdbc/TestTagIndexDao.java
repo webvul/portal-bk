@@ -37,6 +37,7 @@ public class TestTagIndexDao extends TestTemplate{
 		tag.setDisplayName("DisplayNameTest");
 		tag.setTagType(TagType.Custom);
 		tag.setDescription("DescriptionTest");
+		tag.setFullTagName(TagType.Custom.getTagName("DisplayNameTest"));
 		long id=dao.saveOrUpdate(tag);
 		tag.setId(id);
 	}
@@ -68,6 +69,7 @@ public class TestTagIndexDao extends TestTemplate{
 		tag2.setDisplayName("DisplayName2");
 		tag2.setTagType(TagType.Location);
 		tag2.setDescription("Description2");
+		tag2.setFullTagName(TagType.Location.getTagName("DisplayName2"));
 		long id2=dao.saveOrUpdate(tag2);
 		List<Long> ids = new ArrayList<>();
 		ids.add(tag.getId());

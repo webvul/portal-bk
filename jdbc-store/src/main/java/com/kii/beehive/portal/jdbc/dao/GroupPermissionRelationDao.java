@@ -55,7 +55,6 @@ public class GroupPermissionRelationDao extends SpringBaseDao<GroupPermissionRel
 		return KEY;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public GroupPermissionRelation findByPermissionIDAndUserGroupID(Long permissionID, Long userGroupID) {
 		if(permissionID!=null && userGroupID!=null){
 			String sql = "SELECT * FROM " + this.getTableName() + " WHERE "+ GroupPermissionRelation.PERMISSION_ID +"=? AND "+ GroupPermissionRelation.USER_GROUP_ID + "=?";
