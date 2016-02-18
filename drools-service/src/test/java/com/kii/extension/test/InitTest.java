@@ -3,6 +3,7 @@ package com.kii.extension.test;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.runner.RunWith;
@@ -15,6 +16,7 @@ import org.springframework.util.StreamUtils;
 import com.kii.extension.ruleengine.drools.CommandExec;
 import com.kii.extension.ruleengine.drools.DroolsRuleService;
 import com.kii.extension.ruleengine.drools.entity.CurrThing;
+import com.kii.extension.ruleengine.drools.entity.MatchResult;
 import com.kii.extension.ruleengine.drools.entity.ThingStatus;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -50,6 +52,18 @@ public class InitTest {
 	}
 
 
+	protected boolean isMatch(int triggerID){
+
+
+		List<MatchResult> results=ruleLoader.doQuery("get Match Result by TriggerID");
+
+
+		return results.stream().filter(  (r)->r.getTriggerID()==triggerID ).findAny().isPresent();
+
+
+	}
+
+
 	Map<String,Object> paramNo=new HashMap<>();
 
 
@@ -79,7 +93,8 @@ public class InitTest {
 		ThingStatus status=new ThingStatus();
 		status.setThingID(thingID);
 
-		status.setValues(values);
+
+		status.setValues(new HashMap<>(values));
 
 		addThingStatus(thingID, status);
 	}

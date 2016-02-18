@@ -1,6 +1,8 @@
 package com.kii.extension.test;
 
 import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
@@ -100,22 +102,22 @@ public class TestSimpleTrigger extends InitTest {
 
 		updateThingState(thingID,paramOk);
 		ruleLoader.fireCondition();
-		assertEquals(1,exec.getHitCount(triggerID));
+		assertTrue(isMatch(triggerID));
 
 //		paramOk.put("foo",101);
 		updateThingState(thingID,paramOk);
 		ruleLoader.fireCondition();
-		assertEquals(2,exec.getHitCount(triggerID));
+		assertTrue(isMatch(triggerID));
 
 
 		updateThingState(thingID, paramNo);
 		ruleLoader.fireCondition();
-		assertEquals(2,exec.getHitCount(triggerID));
+		assertFalse(isMatch(triggerID));
 
 
 		updateThingState(thingID,paramOk);
 		ruleLoader.fireCondition();
-		assertEquals(3,exec.getHitCount(triggerID));
+		assertTrue(isMatch(triggerID));
 
 	}
 

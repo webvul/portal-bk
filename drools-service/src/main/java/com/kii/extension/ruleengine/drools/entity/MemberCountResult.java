@@ -2,15 +2,12 @@ package com.kii.extension.ruleengine.drools.entity;
 
 import com.google.common.base.Objects;
 
-public class MatchResult {
+public class MemberCountResult {
 
-	private int triggerID;
 
-	private boolean result;
+	private  int triggerID;
 
-	public MatchResult(int triggerID){
-		this.triggerID=triggerID;
-	}
+	private int count;
 
 	public int getTriggerID() {
 		return triggerID;
@@ -20,31 +17,24 @@ public class MatchResult {
 		this.triggerID = triggerID;
 	}
 
-	public boolean isResult() {
-		return result;
+	public int getCount() {
+		return count;
 	}
 
-	public void setResult(boolean result) {
-		this.result = result;
+	public void setCount(int count) {
+		this.count = count;
 	}
 
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
-		MatchResult that = (MatchResult) o;
+		MemberCountResult that = (MemberCountResult) o;
 		return triggerID == that.triggerID;
 	}
 
 	@Override
 	public int hashCode() {
 		return Objects.hashCode(triggerID);
-	}
-
-	@Override
-	public String toString() {
-		return "MatchResult{" +
-				"triggerID=" + triggerID +
-				'}';
 	}
 }

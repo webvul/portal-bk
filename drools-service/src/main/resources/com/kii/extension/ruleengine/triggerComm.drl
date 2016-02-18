@@ -5,13 +5,19 @@ import com.kii.extension.ruleengine.drools.CommandExec;
 
 global com.kii.extension.ruleengine.drools.entity.CurrThing currThing;
 
+
+query "get Match Result by TriggerID" ()
+	Trigger($triggerID:triggerID,when=="true")
+    results : MatchResult( triggerID == $triggerID )
+end
+
 rule "fire all trigger:when false->true,trigger  fire"
 when
 	$trigger:Trigger($triggerID:triggerID,previousResult==false,$things:things,when == "false2true" )
     CurrThing(thing memberOf $things) from currThing
     MatchResult(triggerID==$triggerID)
 then
-	System.out.println("false-true been fired");
+	System.out.println("false-true "+$triggerID+" been fired");
 	modify($trigger){
 		setPreviousResult(true);
 	}
@@ -26,22 +32,26 @@ when
     CurrThing(thing memberOf $things) from currThing
     not ( exists MatchResult(triggerID==$triggerID) )
 then
-	System.out.println("false-true not been fired");
+	System.out.println("false-true "+$triggerID+" not been fired");
 	modify($trigger){
 		setPreviousResult(false);
 	}
 end
 
+
+/*
 rule "fire trigger:true "
 when
-	$trigger:Trigger($triggerID:triggerID,$things:things,when == "true" )
+	$trigger:Trigger($triggerID:triggerID,$things:things,when == "true")
     CurrThing(thing memberOf $things) from currThing
     $result:MatchResult(triggerID==$triggerID)
 then
+	System.out.println("the match result exist");
     CommandExec exec=(CommandExec)kcontext.getKieRuntime().getEnvironment().get("exec");
     exec.doExecute($triggerID);
-    delete($result);
 end
+
+*/
 
 
 rule "fire trigger:when true->false,trigger fire "
@@ -50,6 +60,7 @@ when
     CurrThing(thing memberOf $things) from currThing
     not( MatchResult(triggerID==$triggerID) )
 then
+	System.out.println("true-false "+ $triggerID +" fired ");
 	modify($trigger){
 		setPreviousResult(false);
 	}
@@ -64,7 +75,7 @@ when
     CurrThing(thing memberOf $things) from currThing
     MatchResult(triggerID==$triggerID)
 then
-	System.out.println("true-false not fired");
+	System.out.println("true-false "+ $triggerID +" not fired");
 	modify($trigger){
 		setPreviousResult(true);
 	}

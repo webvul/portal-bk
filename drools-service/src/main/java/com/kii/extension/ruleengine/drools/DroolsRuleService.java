@@ -10,6 +10,8 @@ import java.util.Map;
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieBuilder;
 import org.kie.api.builder.KieFileSystem;
+import org.kie.api.event.rule.DebugAgendaEventListener;
+import org.kie.api.event.rule.DebugRuleRuntimeEventListener;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.FactHandle;
@@ -76,6 +78,9 @@ public class DroolsRuleService {
 
 		kieSession.getEnvironment().set("exec",exec);
 
+		kieSession.addEventListener(new DebugAgendaEventListener());
+
+		kieSession.addEventListener(new DebugRuleRuntimeEventListener());
 
 	}
 
@@ -93,10 +98,6 @@ public class DroolsRuleService {
 		handleMap.clear();
 	}
 
-
-//	public void updateDate(FactHandle  handle,Object newObj){
-//
-//	}
 
 
 	public void setGlobal(String name,Object key){
@@ -117,9 +118,11 @@ public class DroolsRuleService {
 		return entity.getClass().getName()+entity.hashCode();
 	}
 
-	public <T> List<T> doQuery(String queryName){
+	public <T> List<T> doQuery(String queryName,Object... params){
 
-		QueryResults results = getSession().getQueryResults( queryName );
+
+
+		QueryResults results = getSession().getQueryResults( queryName,params );
 
 		List<T>  list=new ArrayList<>();
 
@@ -130,6 +133,7 @@ public class DroolsRuleService {
 
 		return list;
 	}
+
 
 
 	public void fireCondition(){

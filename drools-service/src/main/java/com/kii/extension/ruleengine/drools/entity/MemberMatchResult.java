@@ -1,5 +1,7 @@
 package com.kii.extension.ruleengine.drools.entity;
 
+import com.google.common.base.Objects;
+
 public class MemberMatchResult {
 
 
@@ -7,13 +9,21 @@ public class MemberMatchResult {
 
 	private int triggerID;
 
-//	private boolean result;
+	private boolean result=false;
+
 
 	public MemberMatchResult(int triggerID,String thingID){
 		this.thingID=thingID;
 		this.triggerID=triggerID;
+		this.result=true;
+	}
+	public boolean isResult() {
+		return result;
 	}
 
+	public void setResult(boolean result) {
+		this.result = result;
+	}
 
 	public String getThingID() {
 		return thingID;
@@ -31,4 +41,26 @@ public class MemberMatchResult {
 		this.triggerID = triggerID;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		MemberMatchResult that = (MemberMatchResult) o;
+		return triggerID == that.triggerID &&
+				Objects.equal(thingID, that.thingID);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(thingID, triggerID);
+	}
+
+	@Override
+	public String toString() {
+		return "MemberMatchResult{" +
+				"thingID='" + thingID + '\'' +
+				", triggerID=" + triggerID +
+				", result=" + result +
+				'}';
+	}
 }

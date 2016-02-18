@@ -1,12 +1,15 @@
 package com.kii.extension.test;
 
+import static junit.framework.Assert.assertTrue;
 import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertFalse;
 
 import java.io.IOException;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import com.kii.extension.ruleengine.drools.entity.MemberCountResult;
 import com.kii.extension.ruleengine.drools.entity.Trigger;
 
 public class TestGroupTrigger extends InitTest {
@@ -58,14 +61,13 @@ public class TestGroupTrigger extends InitTest {
 		for(int i=0;i<5;i++){
 			updateThingState(String.valueOf(i),paramOk);
 			ruleLoader.fireCondition();
-
 		}
 
 		assertEquals(1,exec.getHitCount(triggerID));
 
 
 		for(int i=0;i<5;i++){
-			updateThingState(String.valueOf(i),i%2==0?paramOk:paramNo);
+			updateThingState(String.valueOf(i),i%2!=0?paramOk:paramNo);
 			ruleLoader.fireCondition();
 
 		}
@@ -74,6 +76,7 @@ public class TestGroupTrigger extends InitTest {
 
 
 	}
+
 
 	@Test
 	public void testTrigger201(){
@@ -93,34 +96,37 @@ public class TestGroupTrigger extends InitTest {
 
 		ruleLoader.addOrUpdateData(trigger);
 
+		MemberCountResult result=new MemberCountResult();
+		result.setTriggerID(triggerID);
+
+		ruleLoader.addOrUpdateData(result);
+
 
 		for(int i=0;i<5;i++){
 			updateThingState(String.valueOf(i),i%2==0?paramOk:paramNo);
 			ruleLoader.fireCondition();
 
-		}
-		assertEquals(3,exec.getHitCount(triggerID));
 
+			assertTrue(isMatch(triggerID));
+		}
 
 		for(int i=0;i<5;i++){
 			updateThingState(String.valueOf(i),paramOk);
 			ruleLoader.fireCondition();
-
+			assertTrue(isMatch(triggerID));
 		}
-		assertEquals(8,exec.getHitCount(triggerID));
-
 
 		for(int i=0;i<5;i++){
 			updateThingState(String.valueOf(i),paramNo);
 			ruleLoader.fireCondition();
 		}
-		assertEquals(8,exec.getHitCount(triggerID));
+		assertFalse(isMatch(triggerID));
 
 
 		updateThingState("1",paramOk);
 		ruleLoader.fireCondition();
 
-		assertEquals(9,exec.getHitCount(triggerID));
+		assertTrue(isMatch(triggerID));
 
 
 	}
@@ -152,8 +158,6 @@ public class TestGroupTrigger extends InitTest {
 		ruleLoader.fireCondition();
 		assertEquals(0,exec.getHitCount(triggerID));
 
-
-//
 		for(int i=0;i<5;i++){
 			updateThingState(String.valueOf(i),paramOk);
 		}
@@ -163,18 +167,11 @@ public class TestGroupTrigger extends InitTest {
 
 		for(int i=0;i<5;i++){
 			updateThingState(String.valueOf(i),paramNo);
-//			ruleLoader.fireCondition();
 
 		}
 		ruleLoader.fireCondition();
 		assertEquals(1,exec.getHitCount(triggerID));
 
-//
-//		for(int i=0;i<5;i++){
-//			updateThingState(String.valueOf(i),i%2==0?paramOk:paramNo);
-//			ruleLoader.fireCondition();
-//
-//		}
 
 	}
 
