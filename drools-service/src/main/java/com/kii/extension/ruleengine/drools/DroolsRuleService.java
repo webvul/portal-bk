@@ -10,8 +10,6 @@ import java.util.Map;
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieBuilder;
 import org.kie.api.builder.KieFileSystem;
-import org.kie.api.event.rule.DebugAgendaEventListener;
-import org.kie.api.event.rule.DebugRuleRuntimeEventListener;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.FactHandle;
@@ -78,9 +76,9 @@ public class DroolsRuleService {
 
 		kieSession.getEnvironment().set("exec",exec);
 
-		kieSession.addEventListener(new DebugAgendaEventListener());
+//		kieSession.addEventListener(new DebugAgendaEventListener());
 
-		kieSession.addEventListener(new DebugRuleRuntimeEventListener());
+//		kieSession.addEventListener(new DebugRuleRuntimeEventListener());
 
 	}
 

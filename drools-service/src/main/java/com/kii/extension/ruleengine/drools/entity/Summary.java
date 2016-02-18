@@ -26,6 +26,10 @@ public class Summary {
 		this.things = things;
 	}
 
+	public void addThing(String thingID){
+		this.things.add(thingID);
+	}
+
 	public String getSummaryField() {
 		return summaryField;
 	}

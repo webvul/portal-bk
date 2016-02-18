@@ -1,12 +1,14 @@
 package com.kii.extension.test;
 
+import static junit.framework.TestCase.assertEquals;
+
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import com.kii.extension.ruleengine.drools.entity.Summary;
+import com.kii.extension.ruleengine.drools.entity.SummaryValueMap;
 import com.kii.extension.ruleengine.drools.entity.Trigger;
 
 public class TestSummaryTrigger extends InitTest {
@@ -21,6 +23,8 @@ public class TestSummaryTrigger extends InitTest {
 				getDrlContent("summaryCompute")
 		);
 
+		initGlobal();
+
 	}
 
 	@Test
@@ -29,44 +33,65 @@ public class TestSummaryTrigger extends InitTest {
 		ruleLoader.addCondition("trigger",getDrlContent("triggerRule"));
 
 		Trigger trigger=new Trigger();
-
 		for(int i=0;i<5;i++) {
 			trigger.addThing(String.valueOf(i));
 		}
+
 		trigger.setType("summary");
 		trigger.setWhen("false2true");
 		trigger.setPreviousResult(false);
 
-		trigger.setTriggerID(200);
+		int triggerID=300;
+		trigger.setTriggerID(triggerID);
 
 		ruleLoader.addOrUpdateData(trigger);
 
-		Map<String,Object> paramOk=new HashMap<>();
-		paramOk.put("foo",100);
-		paramOk.put("bar",-10);
+		Summary summary=new Summary();
+		for(int i=0;i<5;i++) {
+			summary.addThing(String.valueOf(i));
+		}
+		summary.setFieldName("foo");
+		summary.setFunName("sum");
+		summary.setSummaryField("sum_foo");
+		summary.setTriggerID(triggerID);
 
+		ruleLoader.addOrUpdateData(summary);
 
-		Map<String,Object> paramNo=new HashMap<>();
-		paramNo.put("foo",-100);
-		paramNo.put("bar",10);
+		Summary summary2=new Summary();
+		for(int i=0;i<5;i++) {
+			summary2.addThing(String.valueOf(i));
+		}
+		summary2.setFieldName("bar");
+		summary2.setFunName("count");
+		summary2.setSummaryField("count_bar");
+		summary2.setTriggerID(triggerID);
+
+		ruleLoader.addOrUpdateData(summary2);
+
+		SummaryValueMap value=new SummaryValueMap();
+		value.setTriggerID(triggerID);
+
+		ruleLoader.addOrUpdateData(value);
+
 
 		for(int i=0;i<5;i++){
 			updateThingState(String.valueOf(i),i%2==0?paramOk:paramNo);
-			ruleLoader.fireCondition();
-
 		}
+		ruleLoader.fireCondition();
 
 		for(int i=0;i<5;i++){
 			updateThingState(String.valueOf(i),paramOk);
 			ruleLoader.fireCondition();
-
 		}
+		assertEquals(1,exec.getHitCount(triggerID));
+
 
 		for(int i=0;i<5;i++){
-			updateThingState(String.valueOf(i),i%2==0?paramOk:paramNo);
+			updateThingState(String.valueOf(i),paramNo);
 			ruleLoader.fireCondition();
-
 		}
+		assertEquals(1,exec.getHitCount(triggerID));
+
 
 	}
 
