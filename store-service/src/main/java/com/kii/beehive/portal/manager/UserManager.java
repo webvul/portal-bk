@@ -137,7 +137,7 @@ public class UserManager {
 		userGroup.setCreateBy(loginUserID);
 	    Long userGroupID = userGroupDao.saveOrUpdate(userGroup);
 	    GroupUserRelation gur = new GroupUserRelation(loginUserID,userGroupID);
-	    groupUserRelationDao.saveOrUpdate(gur);
+	    groupUserRelationDao.insert(gur);
 	    
 	    return userGroupID;
 	}
@@ -176,7 +176,7 @@ public class UserManager {
 			List<UserGroup> orgiList = userGroupDao.findUserGroup(userIDList.get(0), userGroupID, null);
 			if(orgiList.size() == 0){
 				GroupUserRelation gur = new GroupUserRelation(userIDList.get(0), userGroupID);
-	    		groupUserRelationDao.saveOrUpdate(gur);
+	    		groupUserRelationDao.insert(gur);
 			}
 		}else{
 			List<String> existingUserIDList = groupUserRelationDao.findUserIDByUserGroupID(userGroupID);

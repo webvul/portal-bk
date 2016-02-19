@@ -1,8 +1,10 @@
 package com.kii.beehive.portal.jdbc.entity;
 
-import org.springframework.util.StringUtils;
 import java.util.List;
 
+import org.springframework.util.StringUtils;
+
+import com.kii.beehive.portal.jdbc.annotation.DisplayField;
 import com.kii.beehive.portal.jdbc.annotation.JdbcField;
 import com.kii.beehive.portal.jdbc.annotation.JdbcFieldType;
 
@@ -87,6 +89,7 @@ public class TagIndex extends DBEntity {
 		this.description = description;
 	}
 	
+	@DisplayField(column=THING_COUNT)
 	public Long getCount() {
 		return count;
 	}
@@ -94,7 +97,8 @@ public class TagIndex extends DBEntity {
 	public void setCount(Long count) {
 		this.count = count;
 	}
-
+	
+	@DisplayField(column=THINGS)
 	public List<Long> getThings() {
 		return things;
 	}

@@ -35,7 +35,7 @@ public class TestGroupUserRelationDao extends TestTemplate {
 
 		rel.setUserGroupID(userGroup.getId());
 		rel.setUserID("UserTest");
-		long id4 = dao.saveOrUpdate(rel);
+		long id4 = dao.insert(rel);
 		rel.setId(id4);
 	}
 

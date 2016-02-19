@@ -46,23 +46,6 @@ public class TagController {
 
 
 	/**
-	 * @deprecated this method should not be exposed to external;<br>
-	 *     if required to get all tags, "查询tag" API should be used to inquiry all the tags under certain tag type
-	 *
-	 * 列出所有tag
-	 * GET /tags/all
-	 *
-	 * refer to doc "Beehive API - Thing API" for request/response details
-	 *
-	 * @return
-	 */
-	@RequestMapping(path = "/all", method = { RequestMethod.GET })
-	public List<TagIndex> getAllTag() {
-		List<TagIndex> list = tagIndexDao.findAll();
-		return list;
-	}
-
-	/**
 	 * 创建tag
 	 * POST /tags/custom
 	 *
@@ -86,7 +69,7 @@ public class TagController {
 			old.setDescription(tag.getDescription());
 			tag = old;
 		}
-
+		tag.setFullTagName(tag.getTagType().name()+"-"+tag.getDisplayName());
 		long tagID = tagIndexDao.saveOrUpdate(tag);
 		Map<String, Object> map = new HashMap<>();
 		map.put("id", tagID);

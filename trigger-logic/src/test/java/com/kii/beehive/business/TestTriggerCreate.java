@@ -12,11 +12,10 @@ import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.kii.beehive.business.service.ServiceExtensionDeployService;
 import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.portal.common.utils.ThingIDTools;
-import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
+import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.dao.TagThingRelationDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
@@ -66,7 +65,7 @@ public class TestTriggerCreate extends TestTemplate {
 	private ThingStateManager thingTagService;
 
 	@Autowired
-	private GlobalThingDao thingDao;
+	private GlobalThingSpringDao thingDao;
 
 
 
@@ -114,14 +113,14 @@ public class TestTriggerCreate extends TestTemplate {
 			relation.setThingID(id);
 			relation.setTagID(tags[i%5]);
 
-			relationDao.saveOrUpdate(relation);
+			relationDao.insert(relation);
 
 
 			TagThingRelation  relation2=new TagThingRelation();
 			relation2.setThingID(id);
 			relation2.setTagID(tags[(i+1)%5]);
 
-			relationDao.saveOrUpdate(relation2);
+			relationDao.insert(relation2);
 
 //			thingIDs.add(id);
 		}

@@ -4,13 +4,14 @@ import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
+import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.dao.TagThingRelationDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
@@ -24,7 +25,7 @@ public class TestTagIndexDao extends TestTemplate{
 	private TagIndexDao dao;
 	
 	@Autowired
-	private GlobalThingDao globalThingDao;
+	private GlobalThingSpringDao globalThingDao;
 	
 	@Autowired
 	private TagThingRelationDao tagThingRelationDao;
@@ -53,7 +54,7 @@ public class TestTagIndexDao extends TestTemplate{
 	@Test
 	public void testUpdate(){
 		tag.setDisplayName("DisplayNameUpdate");
-		dao.update(tag);
+		dao.updateEntityAllByID(tag);
 		TagIndex  entity=dao.findByID(tag.getId());
 		assertEquals("DisplayNameUpdate",entity.getDisplayName());
 		assertEquals(tag.getTagType(),entity.getTagType());
@@ -68,8 +69,10 @@ public class TestTagIndexDao extends TestTemplate{
 		tag2.setTagType(TagType.Location);
 		tag2.setDescription("Description2");
 		long id2=dao.saveOrUpdate(tag2);
-		
-		List<TagIndex>  list=dao.findByIDs(new Object[]{tag.getId(),id2});
+		List<Long> ids = new ArrayList<>();
+		ids.add(tag.getId());
+		ids.add(id2);
+		List<TagIndex>  list=dao.findByIDs(ids);
 
 		assertEquals(2,list.size());
 	}
@@ -108,7 +111,7 @@ public class TestTagIndexDao extends TestTemplate{
 		TagThingRelation rel =new TagThingRelation();
 		rel.setTagID(tag.getId());
 		rel.setThingID(thingID);
-		tagThingRelationDao.saveOrUpdate(rel);
+		tagThingRelationDao.insert(rel);
 		
 		List<TagIndex> list = dao.findTagByGlobalThingID(thingID);
 		assertEquals(1,list.size());

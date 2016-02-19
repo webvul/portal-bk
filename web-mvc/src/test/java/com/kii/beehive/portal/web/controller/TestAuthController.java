@@ -17,8 +17,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
@@ -55,12 +53,14 @@ public class TestAuthController extends WebTestTemplate {
 
     private String accessToken;
 
+    private String superTokenForTest = BEARER_SUPER_TOKEN;
+
     private List<Integer> getAllPermissions() throws Exception {
         String result = this.mockMvc.perform(
                 get("/permission/list")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
-                        .header(AUTH_HEADER, "Bearer super_token")
+                        .header(AUTH_HEADER, superTokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -90,7 +90,7 @@ public class TestAuthController extends WebTestTemplate {
                 post("/usergroup").content(ctx)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
-                        .header(AUTH_HEADER, "Bearer super_token")
+                        .header(AUTH_HEADER, superTokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -106,7 +106,7 @@ public class TestAuthController extends WebTestTemplate {
                 post("/usergroup/" + userGroupID + "/user/" + userID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
-                        .header(AUTH_HEADER, "Bearer super_token")
+                        .header(AUTH_HEADER, superTokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -127,7 +127,7 @@ public class TestAuthController extends WebTestTemplate {
                     post("/permission/" + permissionID + "/userGroup/" + userGroupID)
                             .contentType(MediaType.APPLICATION_JSON)
                             .characterEncoding("UTF-8")
-                            .header(AUTH_HEADER, "Bearer super_token")
+                            .header(AUTH_HEADER, superTokenForTest)
             )
                     .andExpect(status().isOk())
                     .andReturn().getResponse().getContentAsString();
@@ -135,26 +135,6 @@ public class TestAuthController extends WebTestTemplate {
             System.out.println("Response: " + result);
         }
 
-    }
-
-    /**
-     * this method is added to resolve the problem that HttpServletRequest.getRequestURI() doesn't include the context path
-     *
-     * @param uri
-     * @return
-     */
-    private MockHttpServletRequestBuilder post(String uri) {
-        return MockMvcRequestBuilders.post(WEB_CONTEXT_PATH_FOR_TEST + uri).contextPath(WEB_CONTEXT_PATH_FOR_TEST);
-    }
-
-    /**
-     * this method is added to resolve the problem that HttpServletRequest.getRequestURI() doesn't include the context path
-     *
-     * @param uri
-     * @return
-     */
-    private MockHttpServletRequestBuilder get(String uri) {
-        return MockMvcRequestBuilders.get(WEB_CONTEXT_PATH_FOR_TEST + uri).contextPath(WEB_CONTEXT_PATH_FOR_TEST);
     }
 
     @Before

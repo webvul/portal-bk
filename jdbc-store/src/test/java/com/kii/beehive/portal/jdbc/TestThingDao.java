@@ -13,19 +13,15 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.kii.beehive.portal.common.utils.ThingIDTools;
-import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
+import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.dao.TagThingRelationDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
-import com.kii.beehive.portal.jdbc.entity.Permission;
-import com.kii.beehive.portal.jdbc.entity.TagIndex;
-import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
-import com.kii.beehive.portal.jdbc.entity.TagType;
 
 public class TestThingDao extends TestTemplate{
 
 	@Autowired
-	private GlobalThingDao dao;
+	private GlobalThingSpringDao dao;
 	
 	@Autowired
 	private TagIndexDao tagIndexDao;
@@ -70,8 +66,10 @@ public class TestThingDao extends TestTemplate{
 		thing2.setStatus("1");
 
 		long id2=dao.saveOrUpdate(thing2);
-
-		List<GlobalThingInfo>  list=dao.findByIDs(new Object[]{thing.getId(),id2});
+		List<Long> ids = new ArrayList<>();
+		ids.add(thing.getId());
+		ids.add(id2);
+		List<GlobalThingInfo>  list=dao.findByIDs(ids);
 
 		assertEquals(2,list.size());
 	}
@@ -100,7 +98,7 @@ public class TestThingDao extends TestTemplate{
 		thing.setCustom("customUpdate");
 		thing.setType("typeUpdate");
 		thing.setStatus("Update");
-		dao.update(thing);
+		dao.updateEntityAllByID(thing);
 		GlobalThingInfo  entity=dao.findByID(thing.getId());
 		assertEquals(thing.getVendorThingID(),entity.getVendorThingID());
 		assertEquals(thing.getKiiAppID(),entity.getKiiAppID());

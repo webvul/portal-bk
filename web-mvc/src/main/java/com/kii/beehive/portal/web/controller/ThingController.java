@@ -24,11 +24,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.business.service.ThingIFInAppService;
-import com.kii.beehive.portal.manager.TagThingManager;
-import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
+import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagType;
+import com.kii.beehive.portal.manager.TagThingManager;
 import com.kii.beehive.portal.web.entity.ThingRestBean;
 import com.kii.beehive.portal.web.exception.PortalException;
 
@@ -46,38 +46,12 @@ public class ThingController {
 	private TagThingManager thingTagManager;
 	
 	@Autowired
-	private GlobalThingDao globalThingDao;
+	private GlobalThingSpringDao globalThingDao;
 
 
 	@Autowired
 	private ThingIFInAppService  thingIFService;
 
-	
-	
-	/**
-	 * @deprecated this is internal API for Kii only
-	 *
-	 * 查询所有设备
-	 * GET /things/all
-	 *
-	 * refer to doc "Beehive API - Thing API" for request/response details
-	 *
-     * @return
-     */
-	@RequestMapping(path = "/all", method = {RequestMethod.GET})
-	public ResponseEntity<List<ThingRestBean>> getThingsByAll() {
-		List<GlobalThingInfo> list = globalThingDao.findAll();
-		List<ThingRestBean> resultList = new ArrayList<>();
-		if(list != null) {
-			for (GlobalThingInfo thingInfo : list) {
-				ThingRestBean input = new ThingRestBean();
-				BeanUtils.copyProperties(thingInfo,input);
-				resultList.add(input);
-			}
-		}
-
-		return new ResponseEntity<>(resultList, HttpStatus.OK);
-	}
 	
 	/**
 	 * type下的所有设备

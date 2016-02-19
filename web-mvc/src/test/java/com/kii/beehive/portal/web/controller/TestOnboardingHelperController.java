@@ -2,7 +2,6 @@ package com.kii.beehive.portal.web.controller;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Map;
@@ -14,8 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
+import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.web.WebTestTemplate;
 
@@ -23,7 +21,7 @@ import com.kii.beehive.portal.web.WebTestTemplate;
 public class TestOnboardingHelperController extends WebTestTemplate {
 
     @Autowired
-    private GlobalThingDao thingDao;
+    private GlobalThingSpringDao thingDao;
 
     @Autowired
     private ObjectMapper mapper;

@@ -2,7 +2,6 @@ package com.kii.beehive.portal.jdbc.dao;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import com.kii.beehive.portal.jdbc.entity.GroupPermissionRelation;
 
 @Repository
-public class GroupPermissionRelationDao extends BaseDao<GroupPermissionRelation> {
+public class GroupPermissionRelationDao extends SpringBaseDao<GroupPermissionRelation> {
 
 	private Logger log= LoggerFactory.getLogger(GroupPermissionRelationDao.class);
 	
@@ -56,36 +55,11 @@ public class GroupPermissionRelationDao extends BaseDao<GroupPermissionRelation>
 		return KEY;
 	}
 	
-	@Override
-	public List<GroupPermissionRelation> mapToList(List<Map<String, Object>> rows) {
-		List<GroupPermissionRelation> list = new ArrayList<GroupPermissionRelation>();
-		for (Map<String, Object> row : rows) {
-			GroupPermissionRelation groupPermissionRelation = new GroupPermissionRelation();
-			groupPermissionRelation.setId(Long.valueOf((Integer)row.get(GroupPermissionRelation.ID)));
-			groupPermissionRelation.setPermissionID(Long.valueOf((Integer)row.get(GroupPermissionRelation.PERMISSION_ID)));
-			groupPermissionRelation.setUserGroupID(Long.valueOf((Integer)row.get(GroupPermissionRelation.USER_GROUP_ID)));
-			list.add(groupPermissionRelation);
-		}
-		return list;
-	}
-	
-	@Override
-	public long update(GroupPermissionRelation entity) {
-		
-		String[] columns = new String[]{
-				GroupPermissionRelation.PERMISSION_ID,
-				GroupPermissionRelation.USER_GROUP_ID
-		};
-
-        return super.update(entity, columns);
-
-	}
-	
+	@SuppressWarnings("unchecked")
 	public GroupPermissionRelation findByPermissionIDAndUserGroupID(Long permissionID, Long userGroupID) {
 		if(permissionID!=null && userGroupID!=null){
 			String sql = "SELECT * FROM " + this.getTableName() + " WHERE "+ GroupPermissionRelation.PERMISSION_ID +"=? AND "+ GroupPermissionRelation.USER_GROUP_ID + "=?";
-	        List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql, permissionID,userGroupID);
-	        List<GroupPermissionRelation> list = mapToList(rows);
+			List<GroupPermissionRelation> list= jdbcTemplate.query(sql,new Object[]{permissionID,userGroupID},getRowMapper());
 	        if(list.size() > 0){
 	        	return list.get(0);
 	        }
