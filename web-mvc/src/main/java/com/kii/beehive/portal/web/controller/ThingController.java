@@ -217,7 +217,6 @@ public class ThingController {
 		List<Long> tagIDsInLong=tagIDList.stream().mapToLong(id->Long.parseLong(id)).boxed().collect(Collectors.toList());
 
 		thingIFService.onTagIDsChangeFire(tagIDsInLong,false);
-
 	}
 
 	/**
@@ -272,6 +271,37 @@ public class ThingController {
 			String fullName=TagType.Custom.getTagName(name);
 			thingIFService.onTagChangeFire(fullName,false);
 		});
+	}
+	
+	/**
+	 * 绑定设备及team
+	 * POST /things/{globalThingIDs}/teams/{teamID}
+	 *
+	 * refer to doc "Beehive API - Thing API" for request/response details
+	 *
+	 * @param globalThingIDs
+     */
+	@RequestMapping(path="/{globalThingIDs}/teams/{teamIDs}",method={RequestMethod.POST})
+	public void addThingTeam(@PathVariable("globalThingIDs") String globalThingIDs,@PathVariable("teamIDs") String teamIDs){
+		
+		List<String> thingIDList = CollectionUtils.arrayToList(globalThingIDs.split(","));
+		List<String> teamIDList = CollectionUtils.arrayToList(teamIDs.split(","));
+		thingTagManager.bindTeamToThing(teamIDList, thingIDList);
+	}
+	
+	/**
+	 * 解除绑定设备及team
+	 * DELETE /things/{globalThingIDs}/teams/{teamIDs...}
+	 *
+	 * refer to doc "Beehive API - Thing API" for request/response details
+	 *
+	 * @param globalThingIDs
+     */
+	@RequestMapping(path="/{globalThingIDs}/teams/{teamIDs}",method={RequestMethod.DELETE},consumes={"*"})
+	public void removeThingTeam(@PathVariable("globalThingIDs") String globalThingIDs,@PathVariable("teamIDs") String teamIDs){
+		List<String> thingIDList = CollectionUtils.arrayToList(globalThingIDs.split(","));
+		List<String> teamIDList = CollectionUtils.arrayToList(teamIDs.split(","));
+		thingTagManager.unbindTeamToThing(teamIDList, thingIDList);
 	}
 
 	/**

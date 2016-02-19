@@ -17,6 +17,13 @@ public class TeamThingRelation extends DBEntity{
 	public TeamThingRelation() {}
 	
 
+	public TeamThingRelation(Long teamID, Long thingID) {
+		super();
+		this.thingID = thingID;
+		this.teamID = teamID;
+	}
+
+
 	@JdbcField(column=ID)
 	public Long getId() {
 		return id;
