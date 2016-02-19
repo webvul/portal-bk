@@ -57,7 +57,7 @@ public class ExceptionFactory {
 
 			KiiCloudException  inst= BeanUtils.instantiate(ex);
 
-			exceptionMap.putIfAbsent(OperateType.bucket,new HashMap<>())
+			exceptionMap.computeIfAbsent(OperateType.bucket,(t)->new HashMap<>())
 					.put(inst.getStatusCode(),ex);
 		}
 
@@ -65,7 +65,7 @@ public class ExceptionFactory {
 
 			KiiCloudException  inst= BeanUtils.instantiate(ex);
 
-			exceptionMap.putIfAbsent(OperateType.user,new HashMap<>())
+			exceptionMap.computeIfAbsent(OperateType.user,(t)->new HashMap<>())
 					.put(inst.getStatusCode(),ex);
 
 		}
@@ -75,7 +75,7 @@ public class ExceptionFactory {
 
 			KiiCloudException  inst= BeanUtils.instantiate(ex);
 
-			exceptionMap.putIfAbsent(OperateType.app,new HashMap<>())
+			exceptionMap.computeIfAbsent(OperateType.app,(t)->new HashMap<>())
 					.put(inst.getStatusCode(),ex);
 
 		}
