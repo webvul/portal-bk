@@ -1,0 +1,16 @@
+
+ext{
+	droolsVersion = "6.3.0.Final"
+}
+
+dependencies {
+
+
+	compile "org.drools:drools-core:${droolsVersion}"
+
+	compile "org.drools:drools-compiler:${droolsVersion}"
+
+	compile "org.springframework:spring-context:${springVersion}"
+
+
+}

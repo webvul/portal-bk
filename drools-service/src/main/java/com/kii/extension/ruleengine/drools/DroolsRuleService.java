@@ -96,6 +96,17 @@ public class DroolsRuleService {
 		handleMap.clear();
 	}
 
+	public void removeCondition(String name){
+		kfs.delete("src/main/resources/"+name+".drl");
+
+		KieBuilder kb=ks.newKieBuilder(kfs);
+		kb.buildAll();
+
+		kieContainer.updateToVersion(kb.getKieModule().getReleaseId());
+
+		handleMap.clear();
+	}
+
 
 
 	public void setGlobal(String name,Object key){
