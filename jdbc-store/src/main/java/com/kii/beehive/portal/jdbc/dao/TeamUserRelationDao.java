@@ -1,5 +1,6 @@
 package com.kii.beehive.portal.jdbc.dao;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
+import com.kii.beehive.portal.jdbc.entity.Team;
 import com.kii.beehive.portal.jdbc.entity.TeamUserRelation;
 
 @Repository
@@ -54,6 +56,12 @@ public class TeamUserRelationDao extends SpringBaseDao<TeamUserRelation> {
 	@Override
 	public String getKey() {
 		return KEY;
+	}
+	
+	public Long countByTeamID(Long teamID){
+		String sql = "SELECT count(1) FROM " + this.getTableName() + " WHERE "+ TeamUserRelation.TEAM_ID +"=?";  
+		Long count =  jdbcTemplate.queryForObject(sql,new Object[]{teamID}, Long.class);
+    	return count;
 	}
 	
 	public TeamUserRelation findByTeamIDAndUserID(Long teamID, String userID) {

@@ -20,6 +20,14 @@ public class TeamUserRelation extends DBEntity{
 	public TeamUserRelation() {}
 	
 
+	public TeamUserRelation(String userID, Long teamID, int vaild) {
+		super();
+		this.userID = userID;
+		this.teamID = teamID;
+		this.vaild = vaild;
+	}
+
+
 	@JdbcField(column=ID)
 	public Long getId() {
 		return id;

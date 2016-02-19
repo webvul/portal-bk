@@ -9,10 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.kii.beehive.portal.jdbc.dao.TeamDao;
 import com.kii.beehive.portal.jdbc.dao.TeamUserRelationDao;
-import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
 import com.kii.beehive.portal.jdbc.entity.Team;
 import com.kii.beehive.portal.jdbc.entity.TeamUserRelation;
-import com.kii.beehive.portal.jdbc.entity.UserGroup;
 
 public class TestTeamUserRelationDao extends TestTemplate {
 

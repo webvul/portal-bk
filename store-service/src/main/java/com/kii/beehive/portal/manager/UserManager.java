@@ -13,14 +13,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-
 import com.kii.beehive.business.helper.SyncMsgService;
-import com.kii.beehive.portal.exception.UserNotExistException;
 import com.kii.beehive.portal.exception.EntryNotFoundException;
+import com.kii.beehive.portal.exception.UserNotExistException;
 import com.kii.beehive.portal.jdbc.dao.GroupPermissionRelationDao;
 import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
+import com.kii.beehive.portal.jdbc.dao.TeamDao;
+import com.kii.beehive.portal.jdbc.dao.TeamUserRelationDao;
 import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
 import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
+import com.kii.beehive.portal.jdbc.entity.Team;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
 import com.kii.beehive.portal.service.ArchiveBeehiveUserDao;
 import com.kii.beehive.portal.service.BeehiveUserDao;
@@ -42,6 +44,9 @@ public class UserManager {
 
 	@Autowired
 	private UserGroupDao userGroupDao;
+	
+	@Autowired
+	private TeamDao teamDao;
 	
 	@Autowired
 	private GroupUserRelationDao groupUserRelationDao;
@@ -132,9 +137,6 @@ public class UserManager {
 	
 	public Long createUserGroup(UserGroup userGroup,String loginUserID) {
 		 // create user group
-		Date today = new Date();
-		userGroup.setCreateDate(today);
-		userGroup.setCreateBy(loginUserID);
 	    Long userGroupID = userGroupDao.saveOrUpdate(userGroup);
 	    GroupUserRelation gur = new GroupUserRelation(loginUserID,userGroupID);
 	    groupUserRelationDao.insert(gur);
@@ -259,6 +261,14 @@ public class UserManager {
 
 			throw new UserNotExistException(buffer.toString());
 		}
-
+	}
+	
+	public Team getTeamByID(String userID) {
+		List<Team> teamList = teamDao.findTeamByUserID(userID);
+		if(teamList != null && teamList.size() > 0){
+			return teamList.get(0);
+		}else{
+			return null;
+		}
 	}
 }

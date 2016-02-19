@@ -32,7 +32,7 @@ public abstract class AbstractController {
     @Autowired
     protected GroupPermissionRelationDao groupPermissionRelationDao;
 
-	protected String getLoginUserID(HttpServletRequest httpRequest) {
+	protected String getLoginUserID() {
 		return AuthInfoStore.getUserID();
 	}
 }

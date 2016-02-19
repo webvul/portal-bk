@@ -12,20 +12,32 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.kii.beehive.portal.jdbc.dao.TeamDao;
+import com.kii.beehive.portal.jdbc.dao.TeamUserRelationDao;
 import com.kii.beehive.portal.jdbc.entity.Team;
+import com.kii.beehive.portal.jdbc.entity.TeamUserRelation;
 
 public class TestTeamDao extends TestTemplate {
 
 	@Autowired
 	private TeamDao dao;
+	
+	@Autowired
+	private TeamUserRelationDao teamUserRelationDao;
 
 	private Team team = new Team();
+	private TeamUserRelation rel = new TeamUserRelation();
 
 	@Before
 	public void init() {
 		team.setName("TeamNameTest");
 		long id = dao.saveOrUpdate(team);
 		team.setId(id);
+		
+		rel.setUserID("UserTest");
+		rel.setTeamID(team.getId());
+		rel.setVaild(1);
+		long id4 = teamUserRelationDao.insert(rel);
+		rel.setId(id4);
 	}
 
 	@Test
@@ -68,6 +80,18 @@ public class TestTeamDao extends TestTemplate {
 	public void testIsIdExist() {
 		boolean b = dao.IsIdExist(team.getId());
 		assertTrue(b);
+	}
+	
+	@Test
+	public void findTeamByTeamName(){
+		List<Team> list = dao.findTeamByTeamName(team.getName());
+		assertEquals(1, list.size());
+	}
+	
+	@Test
+	public void findTeamByUserID(){
+		List<Team> list = dao.findTeamByUserID(rel.getUserID());
+		assertEquals(1, list.size());
 	}
 
 }

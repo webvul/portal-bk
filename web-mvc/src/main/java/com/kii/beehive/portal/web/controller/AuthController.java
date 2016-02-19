@@ -1,9 +1,11 @@
 package com.kii.beehive.portal.web.controller;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -12,7 +14,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.CollectUtils;
+import com.kii.beehive.portal.jdbc.dao.TeamDao;
+import com.kii.beehive.portal.jdbc.dao.TeamUserRelationDao;
+import com.kii.beehive.portal.jdbc.entity.Team;
+import com.kii.beehive.portal.jdbc.entity.TeamUserRelation;
+import com.kii.beehive.portal.jdbc.entity.UserGroup;
 import com.kii.beehive.portal.manager.AuthManager;
 import com.kii.beehive.portal.manager.UserManager;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
@@ -37,6 +45,13 @@ public class AuthController {
 
     @Autowired
     private UserManager userManager;
+    
+    @Autowired
+    private TeamDao teamDao;
+    
+    @Autowired
+	private TeamUserRelationDao teamUserRelationDao;
+
 
     /**
      * 用户注册
@@ -51,15 +66,39 @@ public class AuthController {
 
         String userID = (String)request.get("userID");
         String password = (String)request.get("password");
+        String teamName = (String)request.get("teamName");
 
         if(CollectUtils.containsBlank(userID, password)) {
             throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "userID or password empty", HttpStatus.BAD_REQUEST);
         }
-
+        
         boolean result = authManager.register(userID, password);
 
         if(result == false) {
             throw new PortalException(ErrorCode.AUTH_FAIL, "userID incorrect or already registered", HttpStatus.BAD_REQUEST);
+        }
+        
+        //create team
+        if(!Strings.isBlank(teamName)){
+        	List<Team> teamList = teamDao.findTeamByTeamName(teamName);
+        	Long teamID = null;
+        	if(teamList.size() == 0){//create team and user add to team
+        		Team t = new Team();
+            	t.setName(teamName);
+            	teamID = teamDao.saveOrUpdate(t);
+            	TeamUserRelation tur = new TeamUserRelation(userID, teamID, 1);
+            	teamUserRelationDao.saveOrUpdate(tur);
+            	
+            	//first user add to admin userGroup
+            	UserGroup userGroup = new UserGroup();
+            	userGroup.setName(Constants.ADMIN_GROUP);
+            	userManager.createUserGroup(userGroup,userID);
+            	
+        	}else{// user add to team
+        		teamID = teamList.get(0).getId();
+        		TeamUserRelation tur = new TeamUserRelation(userID, teamID, 0);
+            	teamUserRelationDao.saveOrUpdate(tur);
+        	}
         }
 
     }
@@ -90,7 +129,15 @@ public class AuthController {
         
         // get user info
         BeehiveUser beehiveUser = userManager.getUserByID(userID);
+        
         AuthRestBean authRestBean = new AuthRestBean(beehiveUser);
+        
+        Team team = userManager.getTeamByID(userID);
+        if(team != null){
+        	authRestBean.setTeamID(team.getId());
+        	authRestBean.setTeamName(team.getName());
+        	AuthInfoStore.setTeamID(team.getId());
+        }
 
         // get access token
         String accessToken = loginInfo.getToken();
