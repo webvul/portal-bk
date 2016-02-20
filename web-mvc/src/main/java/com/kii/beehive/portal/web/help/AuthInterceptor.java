@@ -75,12 +75,15 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
 		// bypass the method OPTIONS
 		if(Constants.HTTP_METHOD_OPTIONS.equalsIgnoreCase(request.getMethod())) {
-			this.handleCORS(request, response, handler);
+			this.handleCORSMethodOptions(request, response, handler);
 			return false;
 		}
 
-		String url=request.getRequestURI();
+		// handle CORS request
+		this.handleCORSMethodOthers(request, response, handler);
 
+
+		String url=request.getRequestURI();
 
 		String auth = request.getHeader(Constants.ACCESS_TOKEN);
 
@@ -214,7 +217,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 	}
 
 	/**
-	 * handle CORS request
+	 * handle CORS request OPTIONS method
 	 *
 	 * @param request
 	 * @param response
@@ -222,18 +225,34 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 	 * @return
 	 * @throws IOException
      */
-	private void handleCORS(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
+	private void handleCORSMethodOptions(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
 
 		// Add HTML5 CORS headers
 		response.addHeader("Access-Control-Allow-Origin", "*");
 		response.addHeader("Access-Control-Allow-Methods", "GET, HEAD, POST, PUT, DELETE, OPTIONS");
-		response.addHeader("Access-Control-Allow-Headers", "origin, authorization, accept");
+		response.addHeader("Access-Control-Allow-Headers", "origin, authorization, accept, content-type");
 		response.addHeader("Access-Control-Max-Age", "99999");
 
 		response.setContentType("application/jason");
 
 		response.setStatus(200);
 		response.getWriter().flush();
+
+	}
+
+	/**
+	 * handle CORS request other methods
+	 *
+	 * @param request
+	 * @param response
+	 * @param handler
+	 * @return
+	 * @throws IOException
+	 */
+	private void handleCORSMethodOthers(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
+
+		// Add HTML5 CORS headers
+		response.addHeader("Access-Control-Allow-Origin", "*");
 
 	}
 }
