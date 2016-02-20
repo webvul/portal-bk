@@ -4,6 +4,7 @@ package com.kii.beehive.portal.web.help;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import java.io.IOException;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
@@ -71,6 +72,12 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
 		logRequest(request);
+
+		// bypass the method OPTIONS
+		if(Constants.HTTP_METHOD_OPTIONS.equalsIgnoreCase(request.getMethod())) {
+			this.handleCORS(request, response, handler);
+			return false;
+		}
 
 		String url=request.getRequestURI();
 
@@ -204,5 +211,29 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 		log.info("# Headers: " + header.toString());
 
 		log.info("###########################################");
+	}
+
+	/**
+	 * handle CORS request
+	 *
+	 * @param request
+	 * @param response
+	 * @param handler
+	 * @return
+	 * @throws IOException
+     */
+	private void handleCORS(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
+
+		// Add HTML5 CORS headers
+		response.addHeader("Access-Control-Allow-Origin", "*");
+		response.addHeader("Access-Control-Allow-Methods", "*");
+		response.addHeader("Access-Control-Allow-Headers", "*");
+		response.addHeader("Access-Control-Max-Age", "99999");
+
+		response.setContentType("application/jason");
+
+		response.setStatus(200);
+		response.getWriter().flush();
+
 	}
 }

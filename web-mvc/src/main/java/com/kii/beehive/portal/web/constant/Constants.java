@@ -13,4 +13,6 @@ public class Constants {
 	public static final String URL_OAUTH2_LOGIN = "/oauth2/login";
 	public static final String URL_USER = "/users";
 
+	public static final String HTTP_METHOD_OPTIONS = "OPTIONS";
+
 }
