@@ -25,9 +25,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
+import com.kii.beehive.portal.jdbc.dao.TeamThingRelationDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagType;
+import com.kii.beehive.portal.jdbc.entity.TeamThingRelation;
 import com.kii.beehive.portal.manager.TagThingManager;
 import com.kii.beehive.portal.web.entity.ThingRestBean;
 import com.kii.beehive.portal.web.exception.PortalException;
@@ -40,14 +42,16 @@ import com.kii.beehive.portal.web.exception.PortalException;
  */
 @RestController
 @RequestMapping(path="/things",consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
-public class ThingController {
+public class ThingController extends AbstractController{
 
 	@Autowired
 	private TagThingManager thingTagManager;
 	
 	@Autowired
 	private GlobalThingSpringDao globalThingDao;
-
+	
+	@Autowired
+	private TeamThingRelationDao teamThingRelationDao;
 
 	@Autowired
 	private ThingIFInAppService  thingIFService;
@@ -152,6 +156,11 @@ public class ThingController {
 		BeanUtils.copyProperties(input,thingInfo);
 
 		Long thingID = thingTagManager.createThing(thingInfo, input.getLocation(), input.getInputTags());
+		
+		if(isTeamIDExist()){
+    		TeamThingRelation tgr = new TeamThingRelation(getLoginTeamID(), thingID);
+    		teamThingRelationDao.insert(tgr);
+    	}
 
 //		input.getInputTags().
 

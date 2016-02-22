@@ -16,6 +16,13 @@ public class TeamGroupRelation extends DBEntity{
 	
 	public TeamGroupRelation() {}
 	
+	public TeamGroupRelation(Long teamID, Long userGroupID) {
+		super();
+		this.userGroupID = userGroupID;
+		this.teamID = teamID;
+	}
+
+
 
 	@JdbcField(column=ID)
 	public Long getId() {

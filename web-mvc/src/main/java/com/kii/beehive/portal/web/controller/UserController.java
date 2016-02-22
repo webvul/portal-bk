@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,9 +21,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kii.beehive.portal.manager.UserManager;
+import com.kii.beehive.portal.jdbc.dao.TeamUserRelationDao;
+import com.kii.beehive.portal.jdbc.entity.TeamUserRelation;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.entity.UserRestBean;
+import com.kii.beehive.portal.web.exception.PortalException;
 
 /**
  * Beehive API - User API
@@ -31,13 +34,10 @@ import com.kii.beehive.portal.web.entity.UserRestBean;
  */
 @RestController
 @RequestMapping(path = "/users",  consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
-public class UserController {
-
-
-
+public class UserController  extends AbstractController{
+	
 	@Autowired
-	private UserManager userManager;
-
+	private TeamUserRelationDao teamUserRelationDao;
 	/**
 	 * 创建用户
 	 * POST /users
@@ -94,7 +94,13 @@ public class UserController {
 	 */
 	@RequestMapping(path="/{userID}",method={RequestMethod.GET})
 	public UserRestBean getUser(@PathVariable("userID") String userID){
-
+		
+		if(isTeamIDExist()){
+			TeamUserRelation tur = teamUserRelationDao.findByTeamIDAndUserID(this.getLoginTeamID(), userID);
+			if(tur == null){
+				throw new PortalException("User Not Found", "userID:" + userID + " Not Found", HttpStatus.NOT_FOUND);
+			}
+		}
 
 		return new UserRestBean(userManager.getUserByID(userID));
 	}

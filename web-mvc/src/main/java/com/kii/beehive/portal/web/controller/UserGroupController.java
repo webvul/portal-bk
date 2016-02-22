@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
+import com.kii.beehive.portal.jdbc.entity.TeamGroupRelation;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
 import com.kii.beehive.portal.service.BeehiveUserDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
@@ -57,6 +58,10 @@ public class UserGroupController extends AbstractController{
         Long userGroupID = null;
         if(userGroup.getId() == null){//create
         	userGroupID = userManager.createUserGroup(userGroup, getLoginUserID());
+        	if(isTeamIDExist()){
+        		TeamGroupRelation tgr = new TeamGroupRelation(getLoginTeamID(), userGroupID);
+        		teamGroupRelationDao.insert(tgr);
+        	}
         }else{//update
         	userGroupID = userManager.updateUserGroup(userGroup, getLoginUserID());
         }

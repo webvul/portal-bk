@@ -47,7 +47,7 @@ public class TagIndex extends DBEntity {
 		displayName=arrays[1];
 	}
 	@Override
-	@JdbcField(column="tag_id")
+	@JdbcField(column=TAG_ID)
 	public Long getId(){
 		return super.getId();
 	}
