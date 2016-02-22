@@ -38,7 +38,8 @@ public class TestRuleLoader extends InitTest {
 		trigger.setWhen("false2true");
 //		trigger.setPreviousResult(false);
 
-		trigger.setTriggerID(100);
+		String i = "100";
+		trigger.setTriggerID(i);
 
 		ruleLoader.addOrUpdateData(trigger);
 
@@ -47,13 +48,13 @@ public class TestRuleLoader extends InitTest {
 
 		ruleLoader.fireCondition();
 
-		assertEquals(1,exec.getHitCount(100));
+		assertEquals(1,exec.getHitCount(i));
 
 		updateThingState("0", paramOk);
 
 		ruleLoader.fireCondition();
 
-		assertEquals(1,exec.getHitCount(100));
+		assertEquals(1,exec.getHitCount(i));
 
 		updateThingState("0", paramNo);
 		ruleLoader.fireCondition();
@@ -65,13 +66,13 @@ public class TestRuleLoader extends InitTest {
 
 		ruleLoader.fireCondition();
 
-		assertEquals(2,exec.getHitCount(100));
+		assertEquals(2,exec.getHitCount(i));
 
 		updateThingState("0", paramOk);
 
 		ruleLoader.fireCondition();
 
-		assertEquals(2,exec.getHitCount(100));
+		assertEquals(2,exec.getHitCount(i));
 
 	}
 

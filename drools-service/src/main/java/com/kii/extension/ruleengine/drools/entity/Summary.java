@@ -7,7 +7,7 @@ import com.google.common.base.Objects;
 
 public class Summary {
 
-	private int triggerID;
+	private String triggerID;
 
 
 	private String funName;
@@ -38,11 +38,11 @@ public class Summary {
 		this.summaryField = summaryField;
 	}
 
-	public int getTriggerID() {
+	public String getTriggerID() {
 		return triggerID;
 	}
 
-	public void setTriggerID(int triggerID) {
+	public void setTriggerID(String triggerID) {
 		this.triggerID = triggerID;
 	}
 
@@ -67,7 +67,7 @@ public class Summary {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		Summary summary = (Summary) o;
-		return triggerID == summary.triggerID &&
+		return Objects.equal(triggerID,summary.triggerID)  &&
 				Objects.equal(summaryField, summary.summaryField);
 	}
 

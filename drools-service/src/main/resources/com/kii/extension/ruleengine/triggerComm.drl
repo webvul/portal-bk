@@ -13,10 +13,10 @@ end
 
 rule "fire all trigger:when false->true,trigger  fire"
 when
-	$trigger:Trigger($triggerID:triggerID,$things:things,when == "false2true" )
+	$trigger:Trigger($triggerID:triggerID, $things:things, when == "false2true")
     CurrThing(thing memberOf $things) from currThing
     MatchResult(triggerID==$triggerID)
-    not ( exists TriggerResult(triggerID==$triggerID) )
+    not ( TriggerResult(triggerID==$triggerID) )
 then
 	System.out.println("false-true "+$triggerID+" been fired");
 	insert(new TriggerResult($triggerID));
@@ -58,7 +58,7 @@ when
 	$trigger:Trigger($triggerID:triggerID,$things:things ,when == "true2false"  )
     CurrThing(thing memberOf $things) from currThing
     MatchResult(triggerID==$triggerID)
-    not ( exists TriggerResult(triggerID==$triggerID) )
+    not ( TriggerResult(triggerID==$triggerID) )
 then
 	System.out.println("true-false "+ $triggerID +" not fired");
 	insert(new TriggerResult($triggerID));

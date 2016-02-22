@@ -4,7 +4,7 @@ import com.google.common.base.Objects;
 
 public class SummaryResult {
 
-	private int triggerID;
+	private String triggerID;
 
 	private String summaryField;
 
@@ -14,17 +14,17 @@ public class SummaryResult {
 
 	}
 
-	public SummaryResult(int triggerID,String summaryField,Number value){
+	public SummaryResult(String triggerID,String summaryField,Number value){
 		this.triggerID=triggerID;
 		this.value=value;
 		this.summaryField=summaryField;
 	}
 
-	public int getTriggerID() {
+	public String getTriggerID() {
 		return triggerID;
 	}
 
-	public void setTriggerID(int triggerID) {
+	public void setTriggerID(String triggerID) {
 		this.triggerID = triggerID;
 	}
 
@@ -49,7 +49,7 @@ public class SummaryResult {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		SummaryResult that = (SummaryResult) o;
-		return triggerID == that.triggerID &&
+		return Objects.equal(triggerID,that.triggerID) &&
 				Objects.equal(summaryField, that.summaryField);
 	}
 

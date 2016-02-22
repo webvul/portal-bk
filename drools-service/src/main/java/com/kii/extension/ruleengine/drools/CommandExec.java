@@ -10,16 +10,16 @@ import org.springframework.stereotype.Component;
 public class CommandExec {
 
 
-	private Map<Integer,AtomicInteger> map=new HashMap<>();
+	private Map<String,AtomicInteger> map=new HashMap<>();
 
 
-	public void doExecute(int triggerID){
+	public void doExecute(String triggerID){
 
 		int oldValue=map.computeIfAbsent(triggerID,(id)->new AtomicInteger(0)).incrementAndGet();
 		System.out.println("execute trigger  " + triggerID+" been fire "+oldValue);
 	}
 
-	public int getHitCount(int triggerID){
+	public int getHitCount(String triggerID){
 
 		return map.getOrDefault(triggerID,new AtomicInteger(0)).get();
 

@@ -7,7 +7,7 @@ import com.google.common.base.Objects;
 
 public class SummaryValueMap {
 
-	private int triggerID;
+	private String triggerID;
 
 	private Map<String,Number> numberMap=new HashMap<>();
 
@@ -27,11 +27,11 @@ public class SummaryValueMap {
 		this.numberMap = numberMap;
 	}
 
-	public int getTriggerID() {
+	public String getTriggerID() {
 		return triggerID;
 	}
 
-	public void setTriggerID(int triggerID) {
+	public void setTriggerID(String triggerID) {
 		this.triggerID = triggerID;
 	}
 
@@ -40,7 +40,7 @@ public class SummaryValueMap {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		SummaryValueMap that = (SummaryValueMap) o;
-		return triggerID == that.triggerID;
+		return Objects.equal(triggerID,that.triggerID) ;
 	}
 
 	@Override

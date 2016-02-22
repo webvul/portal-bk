@@ -55,14 +55,15 @@ public class TestDemo extends InitTest {
 			trigger.addThing(String.valueOf(i));
 		}
 		trigger.setType("summary");
-		trigger.setTriggerID(100);
+		String triggerID="100";
+		trigger.setTriggerID(triggerID);
 
 		ruleLoader.addOrUpdateData(trigger);
 
 		Summary summary=new Summary();
 		summary.setFieldName("foo");
 		summary.setFunName("sum");
-		summary.setTriggerID(100);
+		summary.setTriggerID(triggerID);
 		summary.setSummaryField("sum_foo");
 		ruleLoader.addOrUpdateData(summary);
 
@@ -70,12 +71,12 @@ public class TestDemo extends InitTest {
 		Summary summary2=new Summary();
 		summary2.setFieldName("bar");
 		summary2.setFunName("sum");
-		summary2.setTriggerID(100);
+		summary2.setTriggerID(triggerID);
 		summary2.setSummaryField("sum_bar");
 		ruleLoader.addOrUpdateData(summary2);
 
 		SummaryValueMap map=new SummaryValueMap();
-		map.setTriggerID(100);
+		map.setTriggerID(triggerID);
 		ruleLoader.addOrUpdateData(map);
 
 		ruleLoader.fireCondition();
@@ -113,7 +114,7 @@ public class TestDemo extends InitTest {
 			int id=i%3;
 			triggerMap.computeIfAbsent(id,(key)->{
 				Trigger t=new Trigger();
-				t.setTriggerID(key);
+				t.setTriggerID(String.valueOf(key));
 				return t;
 			}).addThing(String.valueOf(i));
 		}

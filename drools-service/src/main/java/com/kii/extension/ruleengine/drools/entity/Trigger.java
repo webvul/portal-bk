@@ -7,7 +7,7 @@ import com.google.common.base.Objects;
 
 public class Trigger {
 
-	private int triggerID;
+	private String triggerID;
 
 	private int number;
 
@@ -42,11 +42,11 @@ public class Trigger {
 		this.type = type;
 	}
 
-	public int getTriggerID() {
+	public String getTriggerID() {
 		return triggerID;
 	}
 
-	public void setTriggerID(int triggerID) {
+	public void setTriggerID(String triggerID) {
 		this.triggerID = triggerID;
 	}
 
@@ -67,7 +67,7 @@ public class Trigger {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		Trigger trigger = (Trigger) o;
-		return triggerID == trigger.triggerID;
+		return Objects.equal(triggerID,trigger.triggerID) ;
 	}
 
 	@Override
@@ -78,7 +78,7 @@ public class Trigger {
 	@Override
 	public String toString() {
 		return "Trigger{" +
-				"triggerID=" + triggerID +
+				"triggerID='" + triggerID +"\'"+
 				", number=" + number +
 				", things=" + things +
 				", type='" + type + '\'' +

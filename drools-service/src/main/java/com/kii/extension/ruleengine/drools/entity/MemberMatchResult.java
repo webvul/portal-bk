@@ -7,12 +7,12 @@ public class MemberMatchResult {
 
 	private String thingID;
 
-	private int triggerID;
+	private String triggerID;
 
 	private boolean result=false;
 
 
-	public MemberMatchResult(int triggerID,String thingID){
+	public MemberMatchResult(String triggerID,String thingID){
 		this.thingID=thingID;
 		this.triggerID=triggerID;
 		this.result=true;
@@ -33,11 +33,11 @@ public class MemberMatchResult {
 		this.thingID = thingID;
 	}
 
-	public int getTriggerID() {
+	public String getTriggerID() {
 		return triggerID;
 	}
 
-	public void setTriggerID(int triggerID) {
+	public void setTriggerID(String triggerID) {
 		this.triggerID = triggerID;
 	}
 
@@ -46,7 +46,7 @@ public class MemberMatchResult {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		MemberMatchResult that = (MemberMatchResult) o;
-		return triggerID == that.triggerID &&
+		return Objects.equal(triggerID,that.triggerID) &&
 				Objects.equal(thingID, that.thingID);
 	}
 

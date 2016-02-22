@@ -18,9 +18,12 @@ import org.kie.api.runtime.rule.FactHandle;
 import org.kie.api.runtime.rule.QueryResults;
 import org.kie.api.runtime.rule.QueryResultsRow;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Component
+@Scope(scopeName= ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class DroolsRuleService {
 
 
@@ -36,8 +39,7 @@ public class DroolsRuleService {
 
 	private KieFileSystem kfs;
 
-	@Autowired
-	private CommandExec exec;
+
 
 	private Map<String,FactHandle> handleMap=new ConcurrentHashMap<>();
 
@@ -64,7 +66,7 @@ public class DroolsRuleService {
 
 		int i=0;
 		for(String rule:rules) {
-			kfs.write("src/main/resources/rule"+i+".drl", rule);
+			kfs.write("src/main/resources/comm_"+i+".drl", rule);
 			i++;
 		}
 
@@ -75,22 +77,22 @@ public class DroolsRuleService {
 		kieContainer= ks.newKieContainer(kb.getKieModule().getReleaseId());
 
 		kieSession = kieContainer.getKieBase().newKieSession();
-
-		kieSession.getEnvironment().set("exec",exec);
-
 		kieSession.addEventListener(new DebugAgendaEventListener());
-
 		kieSession.addEventListener(new DebugRuleRuntimeEventListener());
 
 		handleMap.clear();
+	}
 
+	public void bindWithInstance(String name,Object instance){
+
+		kieSession.getEnvironment().set(name,instance);
 	}
 
 
 
 	public void addCondition(String name,String rule){
 
-		kfs.write("src/main/resources/"+name+".drl", rule);
+		kfs.write("src/main/resources/user_"+name+".drl", rule);
 
 		KieBuilder kb=ks.newKieBuilder(kfs);
 		kb.buildAll();
@@ -109,7 +111,7 @@ public class DroolsRuleService {
 
 
 	public void removeCondition(String name){
-		kfs.delete("src/main/resources/"+name+".drl");
+		kfs.delete("src/main/resources/user_"+name+".drl");
 
 		KieBuilder kb=ks.newKieBuilder(kfs);
 		kb.buildAll();

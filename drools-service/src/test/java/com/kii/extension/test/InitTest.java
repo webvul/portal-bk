@@ -17,7 +17,7 @@ import com.kii.extension.ruleengine.drools.CommandExec;
 import com.kii.extension.ruleengine.drools.DroolsRuleService;
 import com.kii.extension.ruleengine.drools.entity.CurrThing;
 import com.kii.extension.ruleengine.drools.entity.MatchResult;
-import com.kii.extension.ruleengine.drools.entity.ThingStatus;
+import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -52,7 +52,7 @@ public class InitTest {
 	}
 
 
-	protected boolean isMatch(int triggerID){
+	protected boolean isMatch(String triggerID){
 
 
 		List<MatchResult> results=ruleLoader.doQuery("get Match Result by TriggerID");
@@ -73,6 +73,7 @@ public class InitTest {
 
 		ruleLoader.setGlobal("currThing",curr);
 
+		ruleLoader.bindWithInstance("exec",exec);
 	}
 
 	protected String getDrlContent(String fileName) {
@@ -90,16 +91,15 @@ public class InitTest {
 
 
 	protected  void updateThingState(String thingID,Map<String,Object> values){
-		ThingStatus status=new ThingStatus();
+		ThingStatusInRule status=new ThingStatusInRule();
 		status.setThingID(thingID);
-
 
 		status.setValues(new HashMap<>(values));
 
 		addThingStatus(thingID, status);
 	}
 
-	private void addThingStatus(String thingID, ThingStatus status) {
+	private void addThingStatus(String thingID, ThingStatusInRule status) {
 
 
 		ruleLoader.addOrUpdateData(status);
@@ -113,7 +113,7 @@ public class InitTest {
 
 	protected void updateThingState(String thingID){
 
-		ThingStatus status=new ThingStatus();
+		ThingStatusInRule status=new ThingStatusInRule();
 		status.setThingID(thingID);
 
 		status.addValue("foo",Math.random()*100-50);

@@ -41,7 +41,7 @@ public class TestSummaryTrigger extends InitTest {
 		trigger.setWhen("false2true");
 //		trigger.setPreviousResult(false);
 
-		int triggerID=300;
+		String triggerID="300";
 		trigger.setTriggerID(triggerID);
 
 		ruleLoader.addOrUpdateData(trigger);

@@ -5,12 +5,12 @@ import java.util.Map;
 
 import com.google.common.base.Objects;
 
-public class ThingStatus {
+public class ThingStatusInRule {
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
-		ThingStatus that = (ThingStatus) o;
+		ThingStatusInRule that = (ThingStatusInRule) o;
 		return Objects.equal(thingID, that.thingID);
 	}
 

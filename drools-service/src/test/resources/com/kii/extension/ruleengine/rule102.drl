@@ -11,9 +11,9 @@ global com.kii.extension.ruleengine.drools.entity.CurrThing currThing;
 /////////////////////////////////////
 rule "add trigger 102's  express "
 when
-    Trigger( $triggerID:triggerID==102,$things:things )
+    Trigger( $triggerID:triggerID=="102",$things:things )
     CurrThing(thing memberOf $things) from currThing
-    ThingStatus( $thingID:thingID memberOf $things,values["foo"]>10&&values["bar"]<0  )
+    ThingStatusInRule( $thingID:thingID memberOf $things,values["foo"]>10&&values["bar"]<0  )
 then
 	insertLogical(new MatchResult($triggerID));
 end

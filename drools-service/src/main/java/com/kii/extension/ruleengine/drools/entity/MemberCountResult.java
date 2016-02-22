@@ -5,15 +5,15 @@ import com.google.common.base.Objects;
 public class MemberCountResult {
 
 
-	private  int triggerID;
+	private  String triggerID;
 
 	private int count;
 
-	public int getTriggerID() {
+	public String getTriggerID() {
 		return triggerID;
 	}
 
-	public void setTriggerID(int triggerID) {
+	public void setTriggerID(String triggerID) {
 		this.triggerID = triggerID;
 	}
 
@@ -30,7 +30,7 @@ public class MemberCountResult {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		MemberCountResult that = (MemberCountResult) o;
-		return triggerID == that.triggerID;
+		return Objects.equal(triggerID,that.triggerID) ;
 	}
 
 	@Override

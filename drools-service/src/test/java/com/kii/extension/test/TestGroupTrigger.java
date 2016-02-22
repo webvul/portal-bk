@@ -43,7 +43,7 @@ public class TestGroupTrigger extends InitTest {
 		trigger.setWhen("false2true");
 //		trigger.setPreviousResult(false);
 
-		int triggerID = 200;
+		String triggerID = "200";
 		trigger.setTriggerID(triggerID);
 
 		ruleLoader.addOrUpdateData(trigger);
@@ -91,7 +91,7 @@ public class TestGroupTrigger extends InitTest {
 		trigger.setWhen("true");
 //		trigger.setPreviousResult(false);
 
-		int triggerID = 201;
+		String triggerID = "201";
 		trigger.setTriggerID(triggerID);
 
 		ruleLoader.addOrUpdateData(trigger);
@@ -146,7 +146,7 @@ public class TestGroupTrigger extends InitTest {
 		trigger.setWhen("false2true");
 //		trigger.setPreviousResult(false);
 
-		int triggerID = 202;
+		String triggerID = "202";
 		trigger.setTriggerID(triggerID);
 
 		ruleLoader.addOrUpdateData(trigger);

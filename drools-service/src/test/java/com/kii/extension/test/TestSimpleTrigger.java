@@ -14,6 +14,7 @@ import com.kii.extension.ruleengine.drools.entity.Trigger;
 public class TestSimpleTrigger extends InitTest {
 
 
+
 	@Before
 	public void init() throws IOException {
 
@@ -42,8 +43,9 @@ public class TestSimpleTrigger extends InitTest {
 		trigger.setType("simple");
 		trigger.setWhen("false2true");
 //		trigger.setPreviousResult(false);
-
-		trigger.setTriggerID(100);
+		
+		String id = "100";
+		trigger.setTriggerID(id);
 
 		ruleLoader.addOrUpdateData(trigger);
 
@@ -53,27 +55,27 @@ public class TestSimpleTrigger extends InitTest {
 
 		ruleLoader.fireCondition();
 
-		assertEquals(1,exec.getHitCount(100));
+		assertEquals(1,exec.getHitCount(id));
 
 		updateThingState("0", paramOk);
 
 		ruleLoader.fireCondition();
 
-		assertEquals(1,exec.getHitCount(100));
+		assertEquals(1,exec.getHitCount(id));
 
 
 		updateThingState("0", paramNo);
 
 		ruleLoader.fireCondition();
 
-		assertEquals(1,exec.getHitCount(100));
+		assertEquals(1,exec.getHitCount(id));
 
 
 		updateThingState("0", paramOk);
 
 		ruleLoader.fireCondition();
 
-		assertEquals(2,exec.getHitCount(100));
+		assertEquals(2,exec.getHitCount(id));
 
 	}
 
@@ -88,7 +90,7 @@ public class TestSimpleTrigger extends InitTest {
 		trigger.setType("simple");
 		trigger.setWhen("true");
 
-		int triggerID = 101;
+		String triggerID = "101";
 
 		trigger.setTriggerID(triggerID);
 
@@ -126,7 +128,7 @@ public class TestSimpleTrigger extends InitTest {
 
 		ruleLoader.addCondition("trigger",getDrlContent("rule102"));
 
-		int triggerID=102;
+		String triggerID="102";
 
 		Trigger trigger=new Trigger();
 		trigger.addThing(String.valueOf(2));
@@ -134,7 +136,7 @@ public class TestSimpleTrigger extends InitTest {
 		trigger.setType("simple");
 		trigger.setWhen("true2false");
 
-		trigger.setTriggerID(102);
+		trigger.setTriggerID(triggerID);
 
 		ruleLoader.addOrUpdateData(trigger);
 

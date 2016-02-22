@@ -4,18 +4,18 @@ import com.google.common.base.Objects;
 
 public class TriggerResult {
 
-	private int triggerID;
+	private String triggerID;
 
 
-	public TriggerResult(int triggerID){
+	public TriggerResult(String triggerID){
 		this.triggerID=triggerID;
 	}
 
-	public int getTriggerID() {
+	public String getTriggerID() {
 		return triggerID;
 	}
 
-	public void setTriggerID(int triggerID) {
+	public void setTriggerID(String triggerID) {
 		this.triggerID = triggerID;
 	}
 
@@ -24,7 +24,7 @@ public class TriggerResult {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		TriggerResult that = (TriggerResult) o;
-		return triggerID == that.triggerID;
+		return Objects.equal(triggerID,that.triggerID) ;
 	}
 
 	@Override

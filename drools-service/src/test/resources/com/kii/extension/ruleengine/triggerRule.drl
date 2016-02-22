@@ -10,9 +10,9 @@ global com.kii.extension.ruleengine.drools.entity.CurrThing currThing;
 /////////////////////////////////////
 rule "add trigger 200's  express "
 when
-    Trigger( $triggerID:triggerID==200,$things:things )
+    Trigger( $triggerID:triggerID=="200",$things:things )
     CurrThing(thing memberOf $things) from currThing
-    ThingStatus( $thingID:thingID memberOf $things,values["foo"]>10&&values["bar"]<0  )
+    ThingStatusInRule( $thingID:thingID memberOf $things,values["foo"]>10&&values["bar"]<0  )
 then
 	insertLogical(new MemberMatchResult($triggerID,$thingID));
 end
@@ -23,9 +23,9 @@ end
 
 rule "add trigger 201's  express :true"
 when
-    Trigger( $triggerID:triggerID==201,$things:things )
+    Trigger( $triggerID:triggerID=="201",$things:things )
     CurrThing(thing memberOf $things) from currThing
-	ThingStatus( $thingID:thingID memberOf $things,values["foo"]>10&&values["bar"]<0  )
+	ThingStatusInRule( $thingID:thingID memberOf $things,values["foo"]>10&&values["bar"]<0  )
 then
 	System.out.println("add match result:"+$thingID);
 	insertLogical(new MemberMatchResult($triggerID,$thingID));
@@ -37,9 +37,9 @@ end
 /////////////////////////////////////
 rule "add trigger 202's  express "
 when
-    Trigger( $triggerID:triggerID==202,$things:things )
+    Trigger( $triggerID:triggerID=="202",$things:things )
     CurrThing(thing memberOf $things) from currThing
-    ThingStatus( $thingID:thingID memberOf $things,values["foo"]>10&&values["bar"]<0  )
+    ThingStatusInRule( $thingID:thingID memberOf $things,values["foo"]>10&&values["bar"]<0  )
 then
 	insertLogical(new MemberMatchResult($triggerID,$thingID));
 end
@@ -49,7 +49,7 @@ end
 /////////////////////////////////////
 rule "add trigger 300's  express "
 when
-	Trigger($triggerID:triggerID,triggerID==300)
+	Trigger($triggerID:triggerID,triggerID=="300")
     SummaryValueMap( triggerID==$triggerID, numberMap["sum_foo"]>numberMap["count_bar"]  )
 then
 	System.out.println("fire summary trigger 300");
