@@ -2,6 +2,7 @@ INSERT INTO `source` (`source_id`,`name`, `type`) VALUES (1,'Tag', 'Web');
 INSERT INTO `source` (`source_id`,`name`, `type`) VALUES (2,'Thing', 'Web');
 INSERT INTO `source` (`source_id`,`name`, `type`) VALUES (3,'UserGroup', 'Web');
 INSERT INTO `source` (`source_id`,`name`, `type`) VALUES (4,'Permission', 'Web');
+INSERT INTO `source` (`source_id`,`name`, `type`) VALUES (5,'Trigger', 'Web');
 INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('1', 'CreateTag', 'POST /tags/custom');
 INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('1', 'DeleteTag', 'DELETE /tags/custom/*');
 INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('1', 'SearchTag', 'GET /tags/search*');
@@ -27,3 +28,8 @@ INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('4', 'BindPermi
 INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('4', 'RemovePermissionFromUserGroup', 'DELETE /permission/*/userGroup/*');
 INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('4', 'GetPermissionLlist', 'GET /permission/list');
 INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('4', 'GetUserGroupPermission', 'GET /permission/userGroup/*');
+INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('5', 'CreateTrigger', 'POST /triggers/createTrigger');
+INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('5', 'DeleteTrigger', 'DELETE /triggers/*');
+INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('5', 'EnableTrigger', 'PUT /triggers/*/enable');
+INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('5', 'DisableTrigger', 'PUT /triggers/*/disable');
+INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('5', 'GetTrigger', 'GET /triggers/*');
