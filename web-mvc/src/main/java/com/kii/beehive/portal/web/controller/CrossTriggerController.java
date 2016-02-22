@@ -38,6 +38,7 @@ public class CrossTriggerController {
 	@Autowired
 	private ThingStateSummaryManager  summaryMang;
 
+	@Autowired
 	private TriggerMaintainManager mang;
 
 	/**
