@@ -41,7 +41,7 @@ public class TestGroupTrigger extends InitTest {
 		}
 		trigger.setType("all");
 		trigger.setWhen("false2true");
-		trigger.setPreviousResult(false);
+//		trigger.setPreviousResult(false);
 
 		int triggerID = 200;
 		trigger.setTriggerID(triggerID);
@@ -89,7 +89,7 @@ public class TestGroupTrigger extends InitTest {
 		}
 		trigger.setType("any");
 		trigger.setWhen("true");
-		trigger.setPreviousResult(false);
+//		trigger.setPreviousResult(false);
 
 		int triggerID = 201;
 		trigger.setTriggerID(triggerID);
@@ -144,7 +144,7 @@ public class TestGroupTrigger extends InitTest {
 		trigger.setType("number");
 		trigger.setNumber(3);
 		trigger.setWhen("false2true");
-		trigger.setPreviousResult(false);
+//		trigger.setPreviousResult(false);
 
 		int triggerID = 202;
 		trigger.setTriggerID(triggerID);

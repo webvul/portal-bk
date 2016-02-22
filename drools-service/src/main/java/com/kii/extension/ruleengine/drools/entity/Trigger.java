@@ -17,8 +17,6 @@ public class Trigger {
 
 	private String when;
 
-	private boolean  previousResult=false;
-
 
 	public String getWhen() {
 		return when;
@@ -26,14 +24,6 @@ public class Trigger {
 
 	public void setWhen(String when) {
 		this.when = when;
-	}
-
-	public boolean isPreviousResult() {
-		return previousResult;
-	}
-
-	public void setPreviousResult(boolean previousResult) {
-		this.previousResult = previousResult;
 	}
 
 	public int getNumber() {
@@ -93,7 +83,6 @@ public class Trigger {
 				", things=" + things +
 				", type='" + type + '\'' +
 				", when='" + when + '\'' +
-				", previousResult=" + previousResult +
 				'}';
 	}
 }

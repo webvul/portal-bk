@@ -13,14 +13,13 @@ end
 
 rule "fire all trigger:when false->true,trigger  fire"
 when
-	$trigger:Trigger($triggerID:triggerID,previousResult==false,$things:things,when == "false2true" )
+	$trigger:Trigger($triggerID:triggerID,$things:things,when == "false2true" )
     CurrThing(thing memberOf $things) from currThing
     MatchResult(triggerID==$triggerID)
+    not ( exists TriggerResult(triggerID==$triggerID) )
 then
 	System.out.println("false-true "+$triggerID+" been fired");
-	modify($trigger){
-		setPreviousResult(true);
-	}
+	insert(new TriggerResult($triggerID));
 	CommandExec exec=(CommandExec)kcontext.getKieRuntime().getEnvironment().get("exec");
     exec.doExecute($triggerID);
 end
@@ -28,42 +27,27 @@ end
 
 rule "fire all trigger:when false->true,trigger not fire"
 when
-	$trigger:Trigger($triggerID:triggerID,$things:things,when == "false2true",previousResult==true)
+	$trigger:Trigger($triggerID:triggerID,$things:things,when == "false2true")
     CurrThing(thing memberOf $things) from currThing
     not ( exists MatchResult(triggerID==$triggerID) )
+    $result:TriggerResult(triggerID==$triggerID)
 then
 	System.out.println("false-true "+$triggerID+" not been fired");
-	modify($trigger){
-		setPreviousResult(false);
-	}
+	delete($result);
 end
 
 
-/*
-rule "fire trigger:true "
-when
-	$trigger:Trigger($triggerID:triggerID,$things:things,when == "true")
-    CurrThing(thing memberOf $things) from currThing
-    $result:MatchResult(triggerID==$triggerID)
-then
-	System.out.println("the match result exist");
-    CommandExec exec=(CommandExec)kcontext.getKieRuntime().getEnvironment().get("exec");
-    exec.doExecute($triggerID);
-end
-
-*/
 
 
 rule "fire trigger:when true->false,trigger fire "
 when
-	$trigger:Trigger($triggerID:triggerID,previousResult==true,$things:things ,when == "true2false" )
+	$trigger:Trigger($triggerID:triggerID,$things:things ,when == "true2false" )
     CurrThing(thing memberOf $things) from currThing
     not( MatchResult(triggerID==$triggerID) )
+    $result:TriggerResult(triggerID==$triggerID)
 then
 	System.out.println("true-false "+ $triggerID +" fired ");
-	modify($trigger){
-		setPreviousResult(false);
-	}
+	delete($result);
     CommandExec exec=(CommandExec)kcontext.getKieRuntime().getEnvironment().get("exec");
     exec.doExecute($triggerID);
 end
@@ -71,12 +55,11 @@ end
 
 rule "fire trigger:when true->false,trigger not fire "
 when
-	$trigger:Trigger($triggerID:triggerID,previousResult==false,$things:things ,when == "true2false"  )
+	$trigger:Trigger($triggerID:triggerID,$things:things ,when == "true2false"  )
     CurrThing(thing memberOf $things) from currThing
     MatchResult(triggerID==$triggerID)
+    not ( exists TriggerResult(triggerID==$triggerID) )
 then
 	System.out.println("true-false "+ $triggerID +" not fired");
-	modify($trigger){
-		setPreviousResult(true);
-	}
+	insert(new TriggerResult($triggerID));
 end

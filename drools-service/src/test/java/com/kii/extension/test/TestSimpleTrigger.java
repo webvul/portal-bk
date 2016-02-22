@@ -34,14 +34,14 @@ public class TestSimpleTrigger extends InitTest {
 	@Test
 	public void testTrigger100(){
 
-		ruleLoader.addCondition("trigger",getDrlContent("triggerRule"));
+		ruleLoader.addCondition("trigger100",getDrlContent("rule100"));
 
 		Trigger trigger=new Trigger();
 		trigger.addThing(String.valueOf(0));
 
 		trigger.setType("simple");
 		trigger.setWhen("false2true");
-		trigger.setPreviousResult(false);
+//		trigger.setPreviousResult(false);
 
 		trigger.setTriggerID(100);
 
@@ -80,7 +80,7 @@ public class TestSimpleTrigger extends InitTest {
 	@Test
 	public void testTrigger101(){
 
-		ruleLoader.addCondition("trigger",getDrlContent("triggerRule"));
+		ruleLoader.addCondition("trigger",getDrlContent("rule101"));
 
 		Trigger trigger=new Trigger();
 		trigger.addThing(String.valueOf(1));
@@ -124,7 +124,7 @@ public class TestSimpleTrigger extends InitTest {
 	@Test
 	public void testTrigger102(){
 
-		ruleLoader.addCondition("trigger",getDrlContent("triggerRule"));
+		ruleLoader.addCondition("trigger",getDrlContent("rule102"));
 
 		int triggerID=102;
 

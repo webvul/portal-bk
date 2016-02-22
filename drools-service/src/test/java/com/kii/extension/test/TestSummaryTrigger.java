@@ -39,7 +39,7 @@ public class TestSummaryTrigger extends InitTest {
 
 		trigger.setType("summary");
 		trigger.setWhen("false2true");
-		trigger.setPreviousResult(false);
+//		trigger.setPreviousResult(false);
 
 		int triggerID=300;
 		trigger.setTriggerID(triggerID);

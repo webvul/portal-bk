@@ -10,6 +10,8 @@ import java.util.Map;
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieBuilder;
 import org.kie.api.builder.KieFileSystem;
+import org.kie.api.event.rule.DebugAgendaEventListener;
+import org.kie.api.event.rule.DebugRuleRuntimeEventListener;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.FactHandle;
@@ -76,9 +78,9 @@ public class DroolsRuleService {
 
 		kieSession.getEnvironment().set("exec",exec);
 
-//		kieSession.addEventListener(new DebugAgendaEventListener());
+		kieSession.addEventListener(new DebugAgendaEventListener());
 
-//		kieSession.addEventListener(new DebugRuleRuntimeEventListener());
+		kieSession.addEventListener(new DebugRuleRuntimeEventListener());
 
 	}
 
@@ -93,8 +95,16 @@ public class DroolsRuleService {
 
 		kieContainer.updateToVersion(kb.getKieModule().getReleaseId());
 
-		handleMap.clear();
+		getSession().getObjects().forEach((obj)->{
+
+			FactHandle handle=getSession().getFactHandle(obj);
+
+			handleMap.put(getEntityKey(obj),handle);
+
+		});
+
 	}
+
 
 	public void removeCondition(String name){
 		kfs.delete("src/main/resources/"+name+".drl");
@@ -103,8 +113,13 @@ public class DroolsRuleService {
 		kb.buildAll();
 
 		kieContainer.updateToVersion(kb.getKieModule().getReleaseId());
+		getSession().getObjects().forEach((obj)->{
 
-		handleMap.clear();
+			FactHandle handle=getSession().getFactHandle(obj);
+
+			handleMap.put(getEntityKey(obj),handle);
+
+		});
 	}
 
 
@@ -115,12 +130,10 @@ public class DroolsRuleService {
 
 	public void addOrUpdateData(Object entity){
 
-		String key = getEntityKey(entity);
 
-		FactHandle handler=handleMap.computeIfAbsent(key,(id)-> getSession().insert(entity));
+		FactHandle handler=handleMap.computeIfAbsent(getEntityKey(entity),(k)-> getSession().insert(entity));
 
-		getSession().update(handler,entity);
-
+		getSession().update(handler, entity);
 	}
 
 	private String getEntityKey(Object entity) {
@@ -154,9 +167,7 @@ public class DroolsRuleService {
 	
 	public void removeData(Object obj) {
 
-		String key=getEntityKey(obj);
-
-		FactHandle handler=handleMap.get(key);
+		FactHandle handler=handleMap.get(getEntityKey(obj));
 
 		if(handler!=null) {
 			getSession().delete(handler);
