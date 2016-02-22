@@ -3,9 +3,9 @@ package com.kii.extension.ruleengine.drools;
 import javax.annotation.PostConstruct;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieBuilder;
@@ -39,7 +39,7 @@ public class DroolsRuleService {
 	@Autowired
 	private CommandExec exec;
 
-	private Map<String,FactHandle> handleMap=new HashMap<>();
+	private Map<String,FactHandle> handleMap=new ConcurrentHashMap<>();
 
 
 
@@ -81,6 +81,8 @@ public class DroolsRuleService {
 		kieSession.addEventListener(new DebugAgendaEventListener());
 
 		kieSession.addEventListener(new DebugRuleRuntimeEventListener());
+
+		handleMap.clear();
 
 	}
 
