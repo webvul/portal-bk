@@ -24,6 +24,7 @@ import com.kii.beehive.portal.service.TriggerRuntimeStatusDao;
 import com.kii.beehive.portal.store.entity.CallbackUrlParameter;
 import com.kii.beehive.portal.store.entity.ExtensionCodeEntity;
 import com.kii.beehive.portal.store.entity.trigger.TriggerRecord;
+import com.kii.extension.sdk.entity.AppInfo;
 import com.kii.extension.sdk.entity.serviceextension.BucketWhenType;
 import com.kii.extension.sdk.entity.serviceextension.EventTriggerConfig;
 import com.kii.extension.sdk.entity.serviceextension.ThingWhenType;
@@ -80,12 +81,17 @@ public class TriggerMaintainManager {
 	public void deployTriggerToAll(CallbackUrlParameter  param){
 
 		appInfoDao.getSalveAppList().forEach(appInfo->{
-
-			extensionService.deployScriptToApp(appInfo.getAppID());
-
-			parameterDao.saveTriggerCallbackParam(appInfo.getAppID(),param);
-
+			deployTrigger(appInfo,param);
 		});
+	}
+
+	public void deployTrigger(AppInfo appInfo, CallbackUrlParameter  param){
+
+
+		extensionService.deployScriptToApp(appInfo.getAppID());
+
+		parameterDao.saveTriggerCallbackParam(appInfo.getAppID(),param);
+
 	}
 
 	public void enableTrigger(String triggerID) {

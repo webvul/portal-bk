@@ -18,12 +18,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kii.beehive.portal.manager.AppInfoManager;
 import com.kii.beehive.portal.manager.TagThingManager;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
-import com.kii.beehive.portal.manager.TriggerMaintainManager;
 import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.store.entity.CallbackUrlParameter;
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
 import com.kii.beehive.portal.web.constant.CallbackNames;
 import com.kii.beehive.portal.web.exception.PortalException;
+import com.kii.beehive.portal.web.help.BeehiveAppInfoManager;
 import com.kii.extension.sdk.entity.FederatedAuthResult;
 
 /**
@@ -51,11 +51,12 @@ public class OnboardingHelperController {
 
 
 	@Autowired
-	private TriggerMaintainManager maintainManager;
+	private BeehiveAppInfoManager  appInfoManager;
 
 
 	@Autowired
-	private AppInfoManager  appManager;
+	private AppInfoManager appManager;
+
 
 	/**
 	 * important:
@@ -71,8 +72,7 @@ public class OnboardingHelperController {
 
 		String masterID= (String) paramMap.getOrDefault("portal.masterApp",masterAppID);
 
-		appManager.initAppInfos(userName,pwd,masterID);
-		
+
 		CallbackUrlParameter param=new CallbackUrlParameter();
 		param.setStateChange(CallbackNames.STATE_CHANGED);
 		param.setThingCreated(CallbackNames.THING_CREATED);
@@ -82,7 +82,26 @@ public class OnboardingHelperController {
 		String subUrl=url.substring(0,url.indexOf("/appinit"))+CallbackNames.CALLBACK_URL;
 		param.setBaseUrl(subUrl);
 
-		maintainManager.deployTriggerToAll(param);
+		appInfoManager.initAllAppInfo(userName,pwd,masterID,param);
+
+
+		return;
+	}
+
+	@RequestMapping(path="/appAppend/{appID}",method={RequestMethod.POST},consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+	public void initAppContext(@PathVariable("appID") String appID,HttpServletRequest request){
+
+
+		CallbackUrlParameter param=new CallbackUrlParameter();
+		param.setStateChange(CallbackNames.STATE_CHANGED);
+		param.setThingCreated(CallbackNames.THING_CREATED);
+
+
+		String url=request.getRequestURL().toString();
+		String subUrl=url.substring(0,url.indexOf("/appinit"))+CallbackNames.CALLBACK_URL;
+		param.setBaseUrl(subUrl);
+
+		appInfoManager.addAppInfo(appID,param);
 
 
 		return;

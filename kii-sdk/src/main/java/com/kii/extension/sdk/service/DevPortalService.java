@@ -149,15 +149,7 @@ public class DevPortalService {
 		List<AppInfo> infoList=new ArrayList<>();
 		for(AppInfoEntity  entity:list){
 
-			AppDetail detail=getAppInfoDetail(entity.getId());
-
-			AppInfo info=detail.getAppInfo();
-
-			AppSecret secret=getAppInfoSecret(entity.getId());
-
-			secret.fillAppInfo(info);
-
-			infoList.add(info);
+			infoList.add( getAppInfoByEntity( entity));
 
 			try {
 				Thread.sleep(500);
@@ -167,6 +159,27 @@ public class DevPortalService {
 		}
 
 		return infoList;
+	}
+
+	private AppInfo getAppInfoByEntity( AppInfoEntity entity) {
+		AppDetail detail=getAppInfoDetail(entity.getId());
+
+		AppInfo info=detail.getAppInfo();
+
+		AppSecret secret=getAppInfoSecret(entity.getId());
+
+		secret.fillAppInfo(info);
+
+		return info;
+	}
+
+	public AppInfo  getAppInfoByID(String appID){
+
+		List<AppInfoEntity> list=getAppList();
+
+		AppInfoEntity entity=list.stream().filter((info)-> info.getAppID().equals(appID)).findFirst().get();
+
+		return getAppInfoByEntity(entity);
 	}
 
 	public List<AppInfoEntity> getAppList(){

@@ -102,7 +102,15 @@ public class TestExtensionCreate extends TestTemplate  {
 	@Test
 	public void deployExtensionToAll() throws IOException {
 
-//		triggerManager.deployTriggerToAll();
+
+		CallbackUrlParameter param=new CallbackUrlParameter();
+		param.setStateChange("stateChanged");
+		param.setThingCreated("thingCreated");
+
+
+		param.setBaseUrl("http://114.215.196.178:8080/beehive-portal/api/callback");
+
+		triggerManager.deployTriggerToAll(param);
 
 		InputStream reader=System.in;
 
