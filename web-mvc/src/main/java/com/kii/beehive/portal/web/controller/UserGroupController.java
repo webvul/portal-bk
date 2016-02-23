@@ -137,7 +137,7 @@ public class UserGroupController extends AbstractController{
      * @param userGroupID
      */
     @RequestMapping(path="/{userGroupID}",method={RequestMethod.GET})
-    public ResponseEntity getUserGroupDetail(@PathVariable("userGroupID") Long userGroupID, HttpServletRequest httpRequest){
+    public ResponseEntity<UserGroupRestBean> getUserGroupDetail(@PathVariable("userGroupID") Long userGroupID, HttpServletRequest httpRequest){
     	UserGroupRestBean ugrb = null;
 		if(checkUserGroup(getLoginUserID(), userGroupID)){
 			List<String> userIdList = new ArrayList<String>(); 
@@ -169,7 +169,12 @@ public class UserGroupController extends AbstractController{
      */
     @RequestMapping(path = "/list", method = {RequestMethod.GET})
 	public ResponseEntity<List<UserGroupRestBean>> getUserGroupList(HttpServletRequest httpRequest) {
-		List<UserGroup> list = userGroupDao.findUserGroup(getLoginUserID(), null , null);
+		List<UserGroup> list = null;
+		if(this.isTeamIDExist()){
+			list = userGroupDao.findUserGroup(null, null , null);
+		}else{
+			list = userGroupDao.findUserGroup(getLoginUserID(), null , null);
+		}
 		List<UserGroupRestBean> restBeanList = this.convertList(list);
 		return new ResponseEntity<>(restBeanList, HttpStatus.OK);
 	}
@@ -182,8 +187,14 @@ public class UserGroupController extends AbstractController{
 	}
     
     private boolean checkUserGroup(String loginUserID, Long userGroupID){
-    	//loginUser can edit, when loginUser is in this group ,
-    	List<UserGroup> checkAuth = userGroupDao.findUserGroup(loginUserID, userGroupID, null);
+    	List<UserGroup> checkAuth = null;
+    	if(this.isTeamIDExist()){
+    		checkAuth = userGroupDao.findUserGroup(null, userGroupID, null);
+    	}else{
+    		//loginUser can edit, when loginUser is in this group ,
+    		checkAuth = userGroupDao.findUserGroup(loginUserID, userGroupID, null);
+    	}
+    	
 		if(checkAuth.size() == 1){
 			return true;
 		}else{

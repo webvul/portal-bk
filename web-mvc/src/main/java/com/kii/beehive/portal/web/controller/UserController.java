@@ -72,7 +72,9 @@ public class UserController  extends AbstractController{
 	 */
 	@RequestMapping(path="/{userID}",method={RequestMethod.PATCH})
 	public Map<String,String> updateUser(@PathVariable("userID") String userID,@RequestBody UserRestBean user){
-
+		
+		checkTeam(userID);
+		
 		// clean the input user id
 		user.setAliUserID(null);
 
@@ -95,13 +97,8 @@ public class UserController  extends AbstractController{
 	@RequestMapping(path="/{userID}",method={RequestMethod.GET})
 	public UserRestBean getUser(@PathVariable("userID") String userID){
 		
-		if(isTeamIDExist()){
-			TeamUserRelation tur = teamUserRelationDao.findByTeamIDAndUserID(this.getLoginTeamID(), userID);
-			if(tur == null){
-				throw new PortalException("User Not Found", "userID:" + userID + " Not Found", HttpStatus.NOT_FOUND);
-			}
-		}
-
+		checkTeam(userID);
+		
 		return new UserRestBean(userManager.getUserByID(userID));
 	}
 
@@ -115,7 +112,9 @@ public class UserController  extends AbstractController{
 	 */
 	@RequestMapping(path="/{userID}/custom",method={RequestMethod.PATCH})
 	public Map<String,String> updateCustomProp(@PathVariable("userID") String userID,@RequestBody Map<String,Object> props){
-
+		
+		checkTeam(userID);
+		
 		userManager.updateCustomProp(userID,props);
 
 		Map<String,String> map=new HashMap<>();
@@ -133,7 +132,7 @@ public class UserController  extends AbstractController{
 	 */
 	@RequestMapping(path="/{userID}",method={RequestMethod.DELETE},consumes={"*"})
 	public void deleteUser(@PathVariable("userID") String userID){
-
+		checkTeam(userID);
 		userManager.deleteUser(userID);
 
 	}
@@ -148,7 +147,7 @@ public class UserController  extends AbstractController{
 	 */
 	@RequestMapping(path="/simplequery",method={RequestMethod.POST})
 	public List<UserRestBean> queryUserByProps(@RequestBody Map<String,Object> queryMap){
-
+		
 		return  userManager.simpleQueryUser(queryMap).stream()
 				.map((e) -> new UserRestBean(e))
 				.collect(Collectors.toCollection(ArrayList::new));
@@ -172,6 +171,14 @@ public class UserController  extends AbstractController{
 		        //log.warn("Error while reading version: " + ex.getMessage());
 		    }
 		return  map;
-
+	}
+	
+	private void checkTeam(String userID){
+		if(isTeamIDExist()){
+			TeamUserRelation tur = teamUserRelationDao.findByTeamIDAndUserID(this.getLoginTeamID(), userID);
+			if(tur == null){
+				throw new PortalException("User Not Found", "userID:" + userID + " Not Found", HttpStatus.NOT_FOUND);
+			}
+		}
 	}
 }

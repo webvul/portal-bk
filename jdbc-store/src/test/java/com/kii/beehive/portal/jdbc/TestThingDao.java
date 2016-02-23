@@ -190,7 +190,7 @@ public class TestThingDao extends TestTemplate{
 		assertEquals(thing.getStatus(),entity.getStatus());
 	}
 	
-	/*@Test
+	@Test
 	public void testFindThingByTagWithTeamID() {
 		TagIndex tag = createTagRel();
 		
@@ -198,7 +198,6 @@ public class TestThingDao extends TestTemplate{
 		
 		AuthInfoStore.setTeamID(teamID);
 		List<GlobalThingInfo> list = dao.findThingByTag(tag.getFullTagName());
-		System.out.println(list.size());
 		assertTrue(list.size() > 0);
 		GlobalThingInfo  entity=list.get(0);
 		assertEquals(thing.getVendorThingID(),entity.getVendorThingID());
@@ -206,7 +205,7 @@ public class TestThingDao extends TestTemplate{
 		assertEquals(thing.getCustom(),entity.getCustom());
 		assertEquals(thing.getType(),entity.getType());
 		assertEquals(thing.getStatus(),entity.getStatus());
-	}*/
+	}
 	
 	private TagIndex createTagRel(){
 		TagIndex  tag =new TagIndex();
