@@ -88,7 +88,7 @@ public class OnboardingHelperController {
 		return;
 	}
 
-	@RequestMapping(path="/appAppend/{appID}",method={RequestMethod.POST},consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+	@RequestMapping(path="/appRegist/{appID}",method={RequestMethod.POST},consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
 	public void initAppContext(@PathVariable("appID") String appID,HttpServletRequest request){
 
 
@@ -98,7 +98,7 @@ public class OnboardingHelperController {
 
 
 		String url=request.getRequestURL().toString();
-		String subUrl=url.substring(0,url.indexOf("/appinit"))+CallbackNames.CALLBACK_URL;
+		String subUrl=url.substring(0,url.indexOf("/appRegist"))+CallbackNames.CALLBACK_URL;
 		param.setBaseUrl(subUrl);
 
 		appInfoManager.addAppInfo(appID,param);
