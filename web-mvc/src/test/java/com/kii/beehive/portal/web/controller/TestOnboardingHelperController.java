@@ -100,11 +100,29 @@ public class TestOnboardingHelperController extends WebTestTemplate {
                 get("/onboardinghelper/" + "some_non_existing_vendorThingID")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
+						.header("Authorization","Bearer super_token")
         )
                 .andExpect(status().isNotFound())
                 .andReturn().getResponse().getContentAsString();
 
 
     }
+
+	@Test
+	public  void testAddApp() throws Exception {
+
+		int status=this.mockMvc.perform(
+				post("/appRegist/" + "ec08d20c")
+						.contentType(MediaType.APPLICATION_JSON)
+						.characterEncoding("UTF-8")
+						.header("Authorization","Bearer super_token")
+
+		).andReturn().getResponse().getStatus();
+
+		assertEquals(200,status);
+
+		System.in.read();
+
+	}
 
 }
