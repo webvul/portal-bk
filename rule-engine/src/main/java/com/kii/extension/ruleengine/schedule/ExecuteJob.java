@@ -13,6 +13,6 @@ public class ExecuteJob implements JobInSpring {
 	@Override
 	public void execute(JobDataMap paramMap) {
 
-		bean.output("execute "+paramMap.getString("triggerID"));
+		bean.output("execute "+paramMap.getString(ScheduleService.TRIGGER_ID));
 	}
 }

@@ -12,7 +12,7 @@ public class StopTriggerJob implements JobInSpring {
 
 	@Override
 	public void execute(JobDataMap paramMap) {
-		bean.output("end trigger "+paramMap.getString("triggerID"));
+		bean.output("end trigger "+paramMap.getString(ScheduleService.TRIGGER_ID));
 
 	}
 }

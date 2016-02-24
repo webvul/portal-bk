@@ -17,13 +17,16 @@ import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.store.entity.trigger.SchedulePeriod;
 import com.kii.beehive.portal.store.entity.trigger.SimplePeriod;
+import com.kii.extension.ruleengine.RuleEngineConfig;
 import com.kii.extension.sdk.entity.thingif.Predicate;
 import com.kii.extension.sdk.entity.thingif.SchedulePredicate;
 import com.kii.extension.sdk.entity.thingif.TaskPredicate;
 
 @Component
 public class ScheduleService {
-
+	
+	
+	public static final String TRIGGER_ID = "triggerID";
 
 	@Autowired
 	private Scheduler scheduler;
@@ -52,8 +55,8 @@ public class ScheduleService {
 
 		TriggerBuilder  builder= TriggerBuilder.newTrigger()
 				.startNow()
-				.usingJobData("triggerID",triggerID)
-				.forJob("execute","exec");
+				.usingJobData(TRIGGER_ID,triggerID)
+				.forJob(RuleEngineConfig.EXECUTE_JOB,RuleEngineConfig.EXE_GROUP);
 
 		Trigger trigger=null;
 
@@ -81,8 +84,8 @@ public class ScheduleService {
 
 		Trigger triggerStart= TriggerBuilder.newTrigger()
 				.startNow()
-				.usingJobData("triggerID",triggerID)
-				.forJob("start","manager")
+				.usingJobData(TRIGGER_ID,triggerID)
+				.forJob(RuleEngineConfig.START_JOB,RuleEngineConfig.MANAGER_GROUP)
 				.withSchedule(cronSchedule(period.getStartCron()))
 				.build();
 
@@ -91,8 +94,8 @@ public class ScheduleService {
 
 		Trigger triggerEnd= TriggerBuilder.newTrigger()
 				.startNow()
-				.usingJobData("triggerID",triggerID)
-				.forJob("end","manager")
+				.usingJobData(TRIGGER_ID,triggerID)
+				.forJob(RuleEngineConfig.STOP_JOB,RuleEngineConfig.MANAGER_GROUP)
 				.withSchedule(cronSchedule(period.getEndCron()))
 				.build();
 
@@ -103,8 +106,8 @@ public class ScheduleService {
 
 
 		Trigger triggerStart= TriggerBuilder.newTrigger()
-				.usingJobData("triggerID",triggerID)
-				.forJob("start","manager")
+				.usingJobData(TRIGGER_ID,triggerID)
+				.forJob(RuleEngineConfig.START_JOB,RuleEngineConfig.MANAGER_GROUP)
 				.startAt(new Date(period.getStartAt()))
 				.withSchedule(simpleSchedule()
 						.withIntervalInMinutes(period.getInterval()))
@@ -114,8 +117,8 @@ public class ScheduleService {
 
 
 		Trigger triggerEnd= TriggerBuilder.newTrigger()
-				.usingJobData("triggerID",triggerID)
-				.forJob("end","manager")
+				.usingJobData(TRIGGER_ID,triggerID)
+				.forJob(RuleEngineConfig.STOP_JOB, RuleEngineConfig.MANAGER_GROUP)
 				.startAt(new Date(period.getStartAt()+period.getDuration()))
 				.withSchedule(simpleSchedule().withIntervalInMinutes(period.getInterval()))
 				.build();

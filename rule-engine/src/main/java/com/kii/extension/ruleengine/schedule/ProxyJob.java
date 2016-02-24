@@ -8,24 +8,24 @@ import org.springframework.context.ApplicationContext;
 
 public class ProxyJob implements Job {
 
-	private String beanName;
+	private Class<? extends JobInSpring> beanClass;
 
-	private ApplicationContext appplicationCtx;
+	private ApplicationContext applicationCtx;
 
-	public String getBeanName() {
-		return beanName;
+	public Class getBeanClass() {
+		return beanClass;
 	}
 
-	public void setBeanName(String beanName) {
-		this.beanName = beanName;
+	public void setBeanClass(Class beanClass) {
+		this.beanClass = beanClass;
 	}
 
-	public ApplicationContext getAppplicationCtx() {
-		return appplicationCtx;
+	public ApplicationContext getApplicationCtx() {
+		return applicationCtx;
 	}
 
-	public void setAppplicationCtx(ApplicationContext appplicationCtx) {
-		this.appplicationCtx = appplicationCtx;
+	public void setApplicationCtx(ApplicationContext applicationCtx) {
+		this.applicationCtx = applicationCtx;
 	}
 
 	@Override
@@ -33,7 +33,10 @@ public class ProxyJob implements Job {
 
 		JobDataMap dataMap=context.getMergedJobDataMap();
 
-		JobInSpring  jobInSpring=appplicationCtx.getBean(beanName,JobInSpring.class);
+//		ApplicationContext  applicationCtx= (ApplicationContext) dataMap.get(RuleEngineConfig.APPLICATION_CTX);
+//		String beanClass=dataMap.getString(RuleEngineConfig.BEAN_CLASS);
+
+		JobInSpring  jobInSpring=applicationCtx.getBean(beanClass);
 
 		jobInSpring.execute(dataMap);
 

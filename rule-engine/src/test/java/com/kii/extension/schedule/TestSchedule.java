@@ -1,6 +1,8 @@
 package com.kii.extension.schedule;
 
 
+import java.io.IOException;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.quartz.SchedulerException;
@@ -13,7 +15,7 @@ import com.kii.extension.ruleengine.schedule.ScheduleService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
-		"classpath:scheduleTestCtx.xml"})
+		"classpath:scheduleCtx.xml"})
 public class TestSchedule {
 
 	@Autowired
@@ -21,16 +23,18 @@ public class TestSchedule {
 
 
 	@Test
-	public void testStart() throws SchedulerException {
+	public void testStart() throws SchedulerException, IOException {
 		
 		
 		SchedulePeriod period=new SchedulePeriod();
-		period.setEndCron("0  0/5 *  *  *  ?");
-		period.setStartCron("0  1/5 *  *  *  ?");
+		period.setEndCron("0  0/1 *  *  *  ?");
+		period.setStartCron("0  5/1 *  *  *  ?");
 
 
 
 		scheduleService.addManagerTaskForSchedule("aaa",period);
+
+		System.in.read();
 
 	}
 

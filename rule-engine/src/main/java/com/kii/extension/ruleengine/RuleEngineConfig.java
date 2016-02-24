@@ -22,6 +22,16 @@ import com.kii.extension.ruleengine.schedule.StopTriggerJob;
 public class RuleEngineConfig {
 
 
+	public static final String MANAGER_GROUP = "manager";
+	public static final String EXE_GROUP = "exe";
+
+	public static final String START_JOB = "start";
+	public static final String STOP_JOB = "stop";
+	public static final String EXECUTE_JOB = "execute";
+
+	public static final String APPLICATION_CTX = "applicationCtx";
+	public static final String BEAN_CLASS = "beanClass";
+
 	@Autowired
 	private StartTriggerJob  startJob;
 
@@ -34,12 +44,12 @@ public class RuleEngineConfig {
 	@Autowired
 	private ApplicationContext  applicationCtx;
 
+	SchedulerFactory schedFact = new org.quartz.impl.StdSchedulerFactory();
+
 	@Bean
 	public Scheduler getScheduler() throws SchedulerException {
 
-		SchedulerFactory schedFact = new org.quartz.impl.StdSchedulerFactory();
 		Scheduler sched = schedFact.getScheduler();
-
 
 		sched.addJob(getExeJob(),false);
 		sched.addJob(getStartJob(),false);
@@ -49,46 +59,39 @@ public class RuleEngineConfig {
 
 	}
 
-	private JobDetail  getExeJob(){
-
+	private JobBuilder getJobBuilder(Class cls){
 
 		JobDataMap  dataMap=new JobDataMap();
-		dataMap.put("applicationCtx",applicationCtx);
-		dataMap.put("beanClass",execJob.getClass());
+		dataMap.put(APPLICATION_CTX,applicationCtx);
+		dataMap.put(BEAN_CLASS,cls);
 
 		return JobBuilder.newJob()
-				.withIdentity("execute","exe")
 				.setJobData(dataMap)
-				.ofType(ProxyJob.class)
+				.storeDurably(true)
+				.ofType(ProxyJob.class);
+
+
+	}
+
+	private JobDetail  getExeJob(){
+
+		return getJobBuilder(execJob.getClass())
+				.withIdentity(EXECUTE_JOB, EXE_GROUP)
 				.build();
 	}
 
 
 	private JobDetail  getStartJob(){
 
-
-		JobDataMap  dataMap=new JobDataMap();
-		dataMap.put("applicationCtx",applicationCtx);
-		dataMap.put("beanClass",startJob.getClass());
-
-		return JobBuilder.newJob()
-				.withIdentity("start","manager")
-				.setJobData(dataMap)
-				.ofType(ProxyJob.class)
+		return getJobBuilder(startJob.getClass())
+				.withIdentity(START_JOB, MANAGER_GROUP)
 				.build();
 	}
 
 	private JobDetail  getStopJob(){
 
-
-		JobDataMap  dataMap=new JobDataMap();
-		dataMap.put("applicationCtx",applicationCtx);
-		dataMap.put("beanClass",stopJob.getClass());
-
-		return JobBuilder.newJob()
-				.withIdentity("stop","manager")
-				.setJobData(dataMap)
-				.ofType(ProxyJob.class)
+		return getJobBuilder(stopJob.getClass())
+				.withIdentity(STOP_JOB,MANAGER_GROUP)
 				.build();
 	}
 
