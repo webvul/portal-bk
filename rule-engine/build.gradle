@@ -5,13 +5,15 @@ ext{
 
 dependencies {
 
-	compile project(":kii-sdk")
+	compile project(":cloud-business")
 
 	compile "org.drools:drools-core:${droolsVersion}"
 
 	compile "org.drools:drools-compiler:${droolsVersion}"
 
 	compile "org.springframework:spring-context:${springVersion}"
+
+	compile "org.quartz-scheduler:quartz:2.2.2"
 
 
 }

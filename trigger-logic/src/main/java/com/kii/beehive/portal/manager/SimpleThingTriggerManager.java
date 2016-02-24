@@ -80,7 +80,7 @@ public class SimpleThingTriggerManager {
 
 		GlobalThingInfo thing=thingTagService.getThingByID(thingID.getThingID());
 
-		triggerService.registerBusinessTrigger(Collections.singleton(thing.getFullKiiThingID()),record.getId(),record.getPredicate());
+		triggerService.registerBusinessTrigger(Collections.singleton(thing.getFullKiiThingID()),record.getId(), (StatePredicate) record.getPredicate());
 
 		triggerDao.enableTrigger(triggerID);
 		return triggerID;

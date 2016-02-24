@@ -26,6 +26,7 @@ import com.kii.beehive.portal.store.entity.trigger.SummaryTriggerRuntimeState;
 import com.kii.beehive.portal.store.entity.trigger.TagSelector;
 import com.kii.beehive.portal.store.entity.trigger.TriggerRecord;
 import com.kii.beehive.portal.store.entity.trigger.TriggerSource;
+import com.kii.extension.sdk.entity.thingif.StatePredicate;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
 @Component
@@ -225,7 +226,7 @@ public class ThingStateSummaryManager {
 			fullState.putAll(entity.getSummary());
 		});
 
-		if(computer.doExpress(trigger.getPredicate().getCondition(),fullState)){
+		if(computer.doExpress(((StatePredicate)trigger.getPredicate()).getCondition(),fullState)){
 			commandService.doCommand(trigger);
 		}
 	}

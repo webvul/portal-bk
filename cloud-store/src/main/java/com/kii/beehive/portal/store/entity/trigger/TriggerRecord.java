@@ -23,6 +23,8 @@ public abstract  class TriggerRecord extends KiiEntity {
 
 	private String userID;
 
+	private FrontCondition  frontCondition;
+
 	private StatePredicate predicate;
 
 	private List<TriggerTarget>  targets=new ArrayList<>();
@@ -34,6 +36,14 @@ public abstract  class TriggerRecord extends KiiEntity {
 	private String  name;
 
 	private String description;
+
+	public FrontCondition getFrontCondition() {
+		return frontCondition;
+	}
+
+	public void setFrontCondition(FrontCondition frontCondition) {
+		this.frontCondition = frontCondition;
+	}
 
 	public String getDescription() {
 		return description;
