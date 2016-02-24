@@ -111,6 +111,11 @@ public class ThingController extends AbstractController{
 		GlobalThingInfo thing =  globalThingDao.findByID(globalThingID);
 		if(thing == null) {
 			throw new PortalException("Thing Not Found", "Thing with globalThingID:" + globalThingID + " Not Found", HttpStatus.NOT_FOUND);
+		}else if(this.isTeamIDExist()){
+			TeamThingRelation ttr = teamThingRelationDao.findByTeamIDAndThingID(this.getLoginTeamID(), thing.getId());
+			if(ttr == null){
+				throw new PortalException("Thing Not Found", "Thing with globalThingID:" + globalThingID + " Not Found", HttpStatus.NOT_FOUND);
+			}
 		}
 
 		// get tag
@@ -158,8 +163,7 @@ public class ThingController extends AbstractController{
 		Long thingID = thingTagManager.createThing(thingInfo, input.getLocation(), input.getInputTags());
 		
 		if(isTeamIDExist()){
-    		TeamThingRelation tgr = new TeamThingRelation(getLoginTeamID(), thingID);
-    		teamThingRelationDao.insert(tgr);
+    		teamThingRelationDao.saveOrUpdate(new TeamThingRelation(getLoginTeamID(), thingID));
     	}
 
 //		input.getInputTags().

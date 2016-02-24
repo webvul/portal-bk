@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Repository;
 
+import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
 import com.kii.beehive.portal.jdbc.entity.TagType;
@@ -27,14 +28,23 @@ public class TagIndexDao extends SpringBaseDao<TagIndex> {
      * @return
      */
 	public List<TagIndex> findTagByTagTypeAndName(String tagType,String displayName) {
-		String sql = "SELECT t.*, COUNT(r.thing_id) count, GROUP_CONCAT(r.thing_id) things "
+		List<Object> params = new ArrayList<Object>();
+		StringBuilder sql = new StringBuilder();
+		sql.append("SELECT t.*, COUNT(r.thing_id) count, GROUP_CONCAT(r.thing_id) things "
 					+ "FROM " + this.getTableName() +" t "
-					+ "LEFT JOIN rel_thing_tag r ON r.tag_id = t.tag_id ";
+					+ "LEFT JOIN rel_thing_tag r ON r.tag_id = t.tag_id ");
 		
 		StringBuilder where = new StringBuilder();
+		if(AuthInfoStore.getTeamID() != null){
+			sql.append(" INNER JOIN rel_team_tag rt ON t.tag_id=rt.tag_id ");
+			where.append(" rt.team_id = ? ");
+			params.add(AuthInfoStore.getTeamID());
+		}
 		
-		List<Object> params = new ArrayList<Object>();
 		if(!Strings.isBlank(tagType)){
+			if(where.length() > 0){
+				where.append(" AND ");
+			}
 			where.append("t.").append(TagIndex.TAG_TYPE).append(" = ? ");
 			params.add(tagType);
 		}
@@ -51,23 +61,32 @@ public class TagIndexDao extends SpringBaseDao<TagIndex> {
 		}
 		
 		where.append("GROUP BY t.").append(TagIndex.TAG_ID);
-		
-		Object[] paramArr = new String[params.size()];
-		paramArr = params.toArray(paramArr);
-		List<TagIndex> rows = jdbcTemplate.query(sql+where.toString(), paramArr, getRowMapper());
+		sql.append(where);
+
+		List<TagIndex> rows = jdbcTemplate.query(sql.toString(), params.toArray(new Object[params.size()]), getRowMapper());
 	    return rows;
 	}
 
 	public List<String> findLocations(String parentLocation) {
 
 		StringBuffer sql = new StringBuffer();
-		sql.append("SELECT ").append(TagIndex.DISPLAY_NAME)
-				.append(" FROM ").append(this.getTableName())
-				.append(" WHERE ").append(TagIndex.TAG_TYPE).append("='").append(TagType.Location)
-				.append("' AND ").append(TagIndex.DISPLAY_NAME).append(" like ? ")
-				.append(" ORDER BY ").append(TagIndex.DISPLAY_NAME);
-
-		Object[] params = new String[] {parentLocation + "%"};
+		sql.append("SELECT t.").append(TagIndex.DISPLAY_NAME).append(" FROM ").append(this.getTableName()+" t ");
+		
+		StringBuffer where = new StringBuffer();
+		where.append(" WHERE t.").append(TagIndex.TAG_TYPE).append(" = ? ")
+		.append(" AND t.").append(TagIndex.DISPLAY_NAME).append(" like ? ");
+		
+		
+		if(AuthInfoStore.getTeamID() != null){
+			sql.append(" INNER JOIN rel_team_tag rt ON t.tag_id=rt.tag_id ");
+			where.append("AND rt.team_id = ").append(AuthInfoStore.getTeamID());
+		}
+		
+		where.append(" ORDER BY t.").append(TagIndex.DISPLAY_NAME);
+		sql.append(where);
+		
+		Object[] params = new Object[] {TagType.Location.toString(), parentLocation + "%"};
+		System.out.println(sql.toString());
 		List<String> rows = jdbcTemplate.queryForList(sql.toString(), params, String.class);
 
 		return rows;

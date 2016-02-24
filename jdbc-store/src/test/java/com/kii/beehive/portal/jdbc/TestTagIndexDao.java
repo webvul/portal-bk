@@ -11,13 +11,19 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.dao.TagThingRelationDao;
+import com.kii.beehive.portal.jdbc.dao.TeamDao;
+import com.kii.beehive.portal.jdbc.dao.TeamTagRelationDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
 import com.kii.beehive.portal.jdbc.entity.TagType;
+import com.kii.beehive.portal.jdbc.entity.Team;
+import com.kii.beehive.portal.jdbc.entity.TeamTagRelation;
+import com.kii.beehive.portal.jdbc.entity.TeamThingRelation;
 
 public class TestTagIndexDao extends TestTemplate{
 
@@ -30,6 +36,12 @@ public class TestTagIndexDao extends TestTemplate{
 	@Autowired
 	private TagThingRelationDao tagThingRelationDao;
 	
+	@Autowired
+	private TeamDao teamDao;
+	
+	@Autowired
+	private TeamTagRelationDao teamTagRelationDao;
+	
 	private TagIndex  tag =new TagIndex();
 	
 	@Before
@@ -40,6 +52,7 @@ public class TestTagIndexDao extends TestTemplate{
 		tag.setFullTagName(TagType.Custom.getTagName("DisplayNameTest"));
 		long id=dao.saveOrUpdate(tag);
 		tag.setId(id);
+		AuthInfoStore.setTeamID(null);
 	}
 	
 	@Test
@@ -101,6 +114,49 @@ public class TestTagIndexDao extends TestTemplate{
 	}
 	
 	@Test
+	public void testFindTagByTagTypeAndNameWithTeamID(){
+		Long teamID = createTeamRel();
+		
+		AuthInfoStore.setTeamID(teamID);
+		
+		List<TagIndex> list = dao.findTagByTagTypeAndName(null,tag.getDisplayName());
+		assertEquals(1,list.size());
+		list = dao.findTagByTagTypeAndName(TagType.Custom.toString(),tag.getDisplayName());
+		assertEquals(1,list.size());
+	}
+	
+	@Test
+	public void testFindLocations(){
+		TagIndex t = new TagIndex();
+		t.setDisplayName("LocationTest");
+		t.setTagType(TagType.Location);
+		t.setDescription("DescriptionTest");
+		t.setFullTagName(TagType.Location.getTagName("LocationTest"));
+		dao.saveOrUpdate(t);
+		
+		List<String> list = dao.findLocations(t.getDisplayName());
+		assertEquals(1,list.size());
+	}
+	
+	@Test
+	public void testFindLocationsWithTeamID(){
+		Long teamID = createTeamRel();
+		AuthInfoStore.setTeamID(teamID);
+		
+		TagIndex t = new TagIndex();
+		t.setDisplayName("LocationTest");
+		t.setTagType(TagType.Location);
+		t.setDescription("DescriptionTest");
+		t.setFullTagName(TagType.Location.getTagName("LocationTest"));
+		Long tID =dao.saveOrUpdate(t);
+		
+		teamTagRelationDao.saveOrUpdate(new TeamTagRelation(teamID,tID));
+		
+		List<String> list = dao.findLocations(t.getDisplayName());
+		assertEquals(1,list.size());
+	}
+	
+	@Test
 	public void testFindTagByGlobalThingID(){
 		GlobalThingInfo  thing=new GlobalThingInfo();
 		thing.setVendorThingID("demo_vendor_thing_id");
@@ -122,5 +178,13 @@ public class TestTagIndexDao extends TestTemplate{
 		assertEquals(tag.getDescription(),list.get(0).getDescription());
 	}
 	
+	private Long createTeamRel(){
+		Team t = new Team();
+		t.setName("TeamTest");
+		Long teamID = teamDao.saveOrUpdate(t);
+		
+		teamTagRelationDao.saveOrUpdate(new TeamTagRelation(teamID,tag.getId()));
+		return teamID;
+	}
 	
 }

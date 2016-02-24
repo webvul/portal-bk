@@ -54,6 +54,10 @@ public class UserController  extends AbstractController{
 		BeehiveUser beehiveUser = user.getBeehiveUser();
 
 		String userID = userManager.addUser(beehiveUser);
+		
+		if(this.isTeamIDExist()){
+			teamUserRelationDao.saveOrUpdate(new TeamUserRelation(this.getLoginTeamID(), userID, 1));
+		}
 
 		Map<String,String> map = new HashMap<>();
 		map.put("userID", userID);

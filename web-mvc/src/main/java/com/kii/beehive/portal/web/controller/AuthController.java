@@ -86,7 +86,7 @@ public class AuthController {
         		Team t = new Team();
             	t.setName(teamName);
             	teamID = teamDao.saveOrUpdate(t);
-            	TeamUserRelation tur = new TeamUserRelation(userID, teamID, 1);
+            	TeamUserRelation tur = new TeamUserRelation(teamID, userID, 1);
             	teamUserRelationDao.saveOrUpdate(tur);
             	
             	//first user add to admin userGroup
@@ -96,7 +96,7 @@ public class AuthController {
             	
         	}else{// user add to team
         		teamID = teamList.get(0).getId();
-        		TeamUserRelation tur = new TeamUserRelation(userID, teamID, 0);
+        		TeamUserRelation tur = new TeamUserRelation(teamID, userID, 0);
             	teamUserRelationDao.saveOrUpdate(tur);
         	}
         }

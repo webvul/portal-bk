@@ -251,3 +251,24 @@ CREATE TABLE IF NOT EXISTS `rel_team_thing` (
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
+-- -----------------------------------------------------
+-- Table `rel_team_tag`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `rel_team_tag` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `team_id` INT(11) NOT NULL,
+  `tag_id` INT(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_rel_team_tag_team_id_idx` (`team_id` ASC),
+  INDEX `fk_rel_team_tag_tag_id_idx` (`tag_id` ASC),
+  CONSTRAINT `fk_rel_team_tag_team_id`
+    FOREIGN KEY (`team_id`)
+    REFERENCES `team` (`team_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_rel_team_tag_thing_id`
+    FOREIGN KEY (`tag_id`)
+    REFERENCES `tag_index` (`tag_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;

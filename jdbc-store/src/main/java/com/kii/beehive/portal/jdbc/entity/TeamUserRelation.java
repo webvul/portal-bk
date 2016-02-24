@@ -20,7 +20,7 @@ public class TeamUserRelation extends DBEntity{
 	public TeamUserRelation() {}
 	
 
-	public TeamUserRelation(String userID, Long teamID, int vaild) {
+	public TeamUserRelation( Long teamID,String userID, int vaild) {
 		super();
 		this.userID = userID;
 		this.teamID = teamID;
