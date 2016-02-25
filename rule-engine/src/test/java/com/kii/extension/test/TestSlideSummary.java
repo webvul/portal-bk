@@ -53,7 +53,6 @@ public class TestSlideSummary extends InitTest{
 			summary.addThing(String.valueOf(i));
 		}
 		summary.setFieldName("foo");
-		summary.setLength(5);
 		summary.setFunName("sum-length");
 		summary.setSummaryField("sum_foo");
 		summary.setTriggerID(triggerID);
@@ -67,7 +66,6 @@ public class TestSlideSummary extends InitTest{
 		summary2.setFieldName("bar");
 		summary2.setFunName("sum-time");
 		summary2.setSummaryField("sum_bar");
-		summary2.setTime("1m");
 		summary2.setTriggerID(triggerID);
 
 		ruleLoader.addOrUpdateData(summary2);
