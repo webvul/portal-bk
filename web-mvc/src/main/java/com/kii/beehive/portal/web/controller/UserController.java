@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,9 +22,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kii.beehive.portal.jdbc.dao.TeamDao;
 import com.kii.beehive.portal.jdbc.dao.TeamUserRelationDao;
+import com.kii.beehive.portal.jdbc.entity.Team;
 import com.kii.beehive.portal.jdbc.entity.TeamUserRelation;
+import com.kii.beehive.portal.jdbc.entity.UserGroup;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
+import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.beehive.portal.web.entity.UserRestBean;
 import com.kii.beehive.portal.web.exception.PortalException;
 
@@ -38,6 +43,10 @@ public class UserController  extends AbstractController{
 	
 	@Autowired
 	private TeamUserRelationDao teamUserRelationDao;
+	
+	@Autowired
+    private TeamDao teamDao;
+    
 	/**
 	 * 创建用户
 	 * POST /users
@@ -55,9 +64,28 @@ public class UserController  extends AbstractController{
 
 		String userID = userManager.addUser(beehiveUser);
 		
-		if(this.isTeamIDExist()){
-			teamUserRelationDao.saveOrUpdate(new TeamUserRelation(this.getLoginTeamID(), userID, 1));
-		}
+		//create team
+        if(!Strings.isBlank(user.getTeamName())){
+        	List<Team> teamList = teamDao.findTeamByTeamName(user.getTeamName());
+        	Long teamID = null;
+        	if(teamList.size() == 0){//create team and user add to team
+        		Team t = new Team();
+            	t.setName(user.getTeamName());
+            	teamID = teamDao.saveOrUpdate(t);
+            	TeamUserRelation tur = new TeamUserRelation(teamID, userID, 1);
+            	teamUserRelationDao.saveOrUpdate(tur);
+            	
+            	//first user add to admin userGroup
+            	UserGroup userGroup = new UserGroup();
+            	userGroup.setName(Constants.ADMIN_GROUP);
+            	userManager.createUserGroup(userGroup,userID);
+            	
+        	}else{// user add to team
+        		teamID = teamList.get(0).getId();
+        		TeamUserRelation tur = new TeamUserRelation(teamID, userID, 0);
+            	teamUserRelationDao.saveOrUpdate(tur);
+        	}
+        }
 
 		Map<String,String> map = new HashMap<>();
 		map.put("userID", userID);
