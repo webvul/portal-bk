@@ -167,7 +167,7 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 	
 	public List<GlobalThingInfo> findThingByTag(String tagName) {
 		StringBuilder sql = new StringBuilder("SELECT g.* from " + this.getTableName() +" g ");
-		StringBuilder where = new StringBuilder(" WHERE t.tag_full_name = ? ");
+		StringBuilder where = new StringBuilder(" WHERE t.full_tag_name = ? ");
 		List<Object> params = new ArrayList<Object>();
 		params.add(tagName);
 		if(AuthInfoStore.getTeamID() != null){
