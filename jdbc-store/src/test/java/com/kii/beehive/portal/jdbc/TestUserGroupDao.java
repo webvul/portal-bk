@@ -11,16 +11,21 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.jdbc.dao.GroupPermissionRelationDao;
 import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
 import com.kii.beehive.portal.jdbc.dao.PermissionDao;
 import com.kii.beehive.portal.jdbc.dao.SourceDao;
+import com.kii.beehive.portal.jdbc.dao.TeamDao;
+import com.kii.beehive.portal.jdbc.dao.TeamGroupRelationDao;
 import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
 import com.kii.beehive.portal.jdbc.entity.GroupPermissionRelation;
 import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
 import com.kii.beehive.portal.jdbc.entity.Permission;
 import com.kii.beehive.portal.jdbc.entity.Source;
 import com.kii.beehive.portal.jdbc.entity.SourceType;
+import com.kii.beehive.portal.jdbc.entity.Team;
+import com.kii.beehive.portal.jdbc.entity.TeamGroupRelation;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
 
 public class TestUserGroupDao extends TestTemplate {
@@ -39,6 +44,12 @@ public class TestUserGroupDao extends TestTemplate {
 	@Autowired
 	private PermissionDao permissionDao;
 	
+	@Autowired
+	private TeamDao teamDao;
+	
+	@Autowired
+	private TeamGroupRelationDao teamGroupRelationDao;
+	
 	private UserGroup userGroup = new UserGroup();
 
 	@Before
@@ -48,6 +59,7 @@ public class TestUserGroupDao extends TestTemplate {
 		userGroup.setDescription("DescriptionTest");
 		long id = dao.saveOrUpdate(userGroup);
 		userGroup.setId(id);
+		AuthInfoStore.setTeamID(null);
 	}
 
 	@Test
@@ -126,6 +138,40 @@ public class TestUserGroupDao extends TestTemplate {
 		
 		list = dao.findUserGroup(null, null , null);
 		assertNull(list);
+	}
+	
+	@Test
+	public void testFindUserGroupByUserIDWithTeamID() {
+		GroupUserRelation rel = new GroupUserRelation();
+		
+		rel.setUserGroupID(userGroup.getId());
+		rel.setUserID("UserTest");
+		groupUserRelationDao.insert(rel);
+		
+		Team t = new Team();
+		t.setName("TeamTest");
+		Long teamID = teamDao.saveOrUpdate(t);
+		AuthInfoStore.setTeamID(teamID);
+		
+		teamGroupRelationDao.saveOrUpdate(new TeamGroupRelation(teamID,userGroup.getId()));
+		
+		List<UserGroup> list = dao.findUserGroup(rel.getUserID(), null , null);
+		assertTrue(list.size() > 0);
+		
+		list = dao.findUserGroup(rel.getUserID(), userGroup.getId() , null);
+		assertTrue(list.size() > 0);
+		UserGroup ug = list.get(0);
+		assertEquals(userGroup.getName(), ug.getName());
+		assertEquals(userGroup.getDescription(), ug.getDescription());
+		
+		list = dao.findUserGroup(rel.getUserID(), null , userGroup.getName());
+		assertTrue(list.size() > 0);
+		
+		list = dao.findUserGroup(rel.getUserID(), userGroup.getId() , userGroup.getName());
+		assertTrue(list.size() > 0);
+		
+		list = dao.findUserGroup(null, null , null);
+		assertTrue(list.size() > 0);
 	}
 	
 	@Test

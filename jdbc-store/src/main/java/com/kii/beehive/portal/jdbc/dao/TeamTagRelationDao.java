@@ -7,32 +7,32 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
-import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
+import com.kii.beehive.portal.jdbc.entity.TeamTagRelation;
 
 @Repository
-public class TagThingRelationDao extends SpringBaseDao<TagThingRelation> {
+public class TeamTagRelationDao extends SpringBaseDao<TeamTagRelation> {
 
-	private Logger log= LoggerFactory.getLogger(TagThingRelationDao.class);
+	private Logger log= LoggerFactory.getLogger(TeamTagRelationDao.class);
 	
-	public static final String TABLE_NAME = "rel_thing_tag";
+	public static final String TABLE_NAME = "rel_team_tag";
 	public static final String KEY = "id";
 	
-	public void delete( Long tagID, Long thingID){
-		if(tagID != null || thingID != null){
+	public void delete(Long teamID, Long tagID){
+		if(teamID != null || tagID != null){
 			String sql = "DELETE FROM " + this.getTableName() + " WHERE ";
 			
 			StringBuilder where = new StringBuilder();
 			List<Object> params = new ArrayList<Object>();
-			if(thingID != null){
-				where.append(TagThingRelation.THING_ID + " = ? "); 
-				params.add(thingID);
+			if(teamID != null){
+				where.append(TeamTagRelation.TEAM_ID + " = ? "); 
+				params.add(teamID);
 			}
 			
 			if(tagID != null){
 				if(where.length() > 0){
 					where.append(" AND ");
 				}
-				where.append(TagThingRelation.TAG_ID+" = ? ");
+				where.append(TeamTagRelation.TAG_ID+" = ? ");
 				params.add(tagID);
 			}
 			Object[] paramArr = new Object[params.size()];
@@ -40,7 +40,7 @@ public class TagThingRelationDao extends SpringBaseDao<TagThingRelation> {
 			
 	        jdbcTemplate.update(sql+where.toString(),paramArr);
 		}else{
-			log.warn("tagID and thingID are null");
+			log.warn("teamID and tagID are null");
 		}
 	}
 
@@ -55,11 +55,10 @@ public class TagThingRelationDao extends SpringBaseDao<TagThingRelation> {
 		return KEY;
 	}
 	
-	
-	public TagThingRelation findByThingIDAndTagID(Long thingID, Long tagID) {  
-		if(tagID != null && thingID != null){
-			String sql = "SELECT * FROM " + this.getTableName() + " WHERE "+ TagThingRelation.THING_ID +"=? AND "+ TagThingRelation.TAG_ID + "=?";
-	        List<TagThingRelation> list = jdbcTemplate.query(sql, new Object[]{thingID,tagID},getRowMapper());
+	public TeamTagRelation findByTeamIDAndTagID(Long teamID, Long tagID) {
+		if(teamID!=null && tagID!=null){
+			String sql = "SELECT * FROM " + this.getTableName() + " WHERE "+ TeamTagRelation.TEAM_ID +"=? AND "+ TeamTagRelation.TAG_ID + "=?";
+			List<TeamTagRelation> list= jdbcTemplate.query(sql,new Object[]{teamID,tagID},getRowMapper());
 	        if(list.size() > 0){
 	        	return list.get(0);
 	        }

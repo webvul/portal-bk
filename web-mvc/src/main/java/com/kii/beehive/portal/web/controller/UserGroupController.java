@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
+import com.kii.beehive.portal.jdbc.entity.TeamGroupRelation;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
 import com.kii.beehive.portal.service.BeehiveUserDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
@@ -54,12 +55,15 @@ public class UserGroupController extends AbstractController{
 		userGroupRestBean.verifyInput();
 
 		UserGroup userGroup = userGroupRestBean.getUserGroup();
-        String loginUserID = getLoginUserID(httpRequest);
         Long userGroupID = null;
         if(userGroup.getId() == null){//create
-        	userGroupID = userManager.createUserGroup(userGroup, loginUserID);
+        	userGroupID = userManager.createUserGroup(userGroup, getLoginUserID());
+        	if(isTeamIDExist()){
+        		TeamGroupRelation tgr = new TeamGroupRelation(getLoginTeamID(), userGroupID);
+        		teamGroupRelationDao.insert(tgr);
+        	}
         }else{//update
-        	userGroupID = userManager.updateUserGroup(userGroup, loginUserID);
+        	userGroupID = userManager.updateUserGroup(userGroup, getLoginUserID());
         }
 
         Map<String,Object> resultMap = new HashMap<>();
@@ -75,9 +79,8 @@ public class UserGroupController extends AbstractController{
 	 */
 	@RequestMapping(path="/{userGroupID}/user/{userIDs}",method={RequestMethod.POST})
 	public ResponseEntity addUsersToUserGroup(@PathVariable("userGroupID") Long userGroupID, @PathVariable("userIDs") String userIDs, HttpServletRequest httpRequest){
-		String loginUserID = getLoginUserID(httpRequest);
 
-		if(checkUserGroup(loginUserID, userGroupID)){
+		if(checkUserGroup(getLoginUserID(), userGroupID)){
 			List<String> userIDList = Arrays.asList(userIDs.split(","));
 			userManager.addUserToUserGroup(userIDList, userGroupID);
 		}
@@ -92,9 +95,8 @@ public class UserGroupController extends AbstractController{
 	 */
 	@RequestMapping(path="/{userGroupID}/user/{userIDs}",method={RequestMethod.DELETE})
 	public ResponseEntity removeUsersFromUserGroup(@PathVariable("userGroupID") Long userGroupID, @PathVariable("userIDs") String userIDs, HttpServletRequest httpRequest){
-		String loginUserID = getLoginUserID(httpRequest);
 
-		if(checkUserGroup(loginUserID, userGroupID)){
+		if(checkUserGroup(getLoginUserID(), userGroupID)){
 
 			List<String> userIDList = Arrays.asList(userIDs.split(","));
 			groupUserRelationDao.deleteUsers(userIDList, userGroupID);
@@ -135,10 +137,9 @@ public class UserGroupController extends AbstractController{
      * @param userGroupID
      */
     @RequestMapping(path="/{userGroupID}",method={RequestMethod.GET})
-    public ResponseEntity getUserGroupDetail(@PathVariable("userGroupID") Long userGroupID, HttpServletRequest httpRequest){
-    	String loginUserID = getLoginUserID(httpRequest);
+    public ResponseEntity<UserGroupRestBean> getUserGroupDetail(@PathVariable("userGroupID") Long userGroupID, HttpServletRequest httpRequest){
     	UserGroupRestBean ugrb = null;
-		if(checkUserGroup(loginUserID, userGroupID)){
+		if(checkUserGroup(getLoginUserID(), userGroupID)){
 			List<String> userIdList = new ArrayList<String>(); 
 			List<GroupUserRelation> relList = groupUserRelationDao.findByUserGroupID(userGroupID);
 			if(relList.size() > 0){
@@ -168,8 +169,12 @@ public class UserGroupController extends AbstractController{
      */
     @RequestMapping(path = "/list", method = {RequestMethod.GET})
 	public ResponseEntity<List<UserGroupRestBean>> getUserGroupList(HttpServletRequest httpRequest) {
-    	String loginUserID = getLoginUserID(httpRequest);
-		List<UserGroup> list = userGroupDao.findUserGroup(loginUserID, null , null);
+		List<UserGroup> list = null;
+		if(this.isTeamIDExist()){
+			list = userGroupDao.findUserGroup(null, null , null);
+		}else{
+			list = userGroupDao.findUserGroup(getLoginUserID(), null , null);
+		}
 		List<UserGroupRestBean> restBeanList = this.convertList(list);
 		return new ResponseEntity<>(restBeanList, HttpStatus.OK);
 	}
@@ -182,8 +187,14 @@ public class UserGroupController extends AbstractController{
 	}
     
     private boolean checkUserGroup(String loginUserID, Long userGroupID){
-    	//loginUser can edit, when loginUser is in this group ,
-    	List<UserGroup> checkAuth = userGroupDao.findUserGroup(loginUserID, userGroupID, null);
+    	List<UserGroup> checkAuth = null;
+    	if(this.isTeamIDExist()){
+    		checkAuth = userGroupDao.findUserGroup(null, userGroupID, null);
+    	}else{
+    		//loginUser can edit, when loginUser is in this group ,
+    		checkAuth = userGroupDao.findUserGroup(loginUserID, userGroupID, null);
+    	}
+    	
 		if(checkAuth.size() == 1){
 			return true;
 		}else{

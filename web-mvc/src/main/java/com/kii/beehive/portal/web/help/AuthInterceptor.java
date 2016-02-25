@@ -34,6 +34,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
      * @deprecated only for testing, so should not appear in any source code except for junit
      */
 	private static final String USER_ID = "211102";
+	private static final Long TEAM_ID = 1L;
 
 //	private  static final String AUTH_HEADER = "Authorization";
 
@@ -126,7 +127,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 //				authManager.saveToken(USER_ID, token);
 
 				AuthInfoStore.setAuthInfo(USER_ID);
-
+				AuthInfoStore.setTeamID(TEAM_ID);
 				list.set(1,USER_ID);
 				logTool.write(list);
 

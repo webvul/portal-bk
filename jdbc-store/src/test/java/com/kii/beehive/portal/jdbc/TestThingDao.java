@@ -12,11 +12,19 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.dao.TagThingRelationDao;
+import com.kii.beehive.portal.jdbc.dao.TeamDao;
+import com.kii.beehive.portal.jdbc.dao.TeamThingRelationDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
+import com.kii.beehive.portal.jdbc.entity.TagIndex;
+import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
+import com.kii.beehive.portal.jdbc.entity.TagType;
+import com.kii.beehive.portal.jdbc.entity.Team;
+import com.kii.beehive.portal.jdbc.entity.TeamThingRelation;
 
 public class TestThingDao extends TestTemplate{
 
@@ -28,6 +36,12 @@ public class TestThingDao extends TestTemplate{
 	
 	@Autowired
 	private TagThingRelationDao tagThingRelationDao;
+	
+	@Autowired
+	private TeamDao teamDao;
+	
+	@Autowired
+	private TeamThingRelationDao teamThingRelationDao;
 	
 	private GlobalThingInfo  thing=new GlobalThingInfo();
 	
@@ -43,6 +57,8 @@ public class TestThingDao extends TestTemplate{
 		thing.setFullKiiThingID(fullKiiThingID);
 		long id=dao.saveOrUpdate(thing);
 		thing.setId(id);
+		
+		AuthInfoStore.setTeamID(null);
 	}
 	
 
@@ -114,7 +130,26 @@ public class TestThingDao extends TestTemplate{
 	}
 	
 	@Test
+	public void testFindAllThingTypesWithTeamID() {
+		Long teamID = createTeamRel();
+		
+		AuthInfoStore.setTeamID(teamID);
+		List<String> list = dao.findAllThingTypes();
+		assertTrue(list.size() > 0);
+	}
+	
+	@Test
 	public void testFindAllThingTypesWithThingCount() {
+		List<Map<String, Object>> list = dao.findAllThingTypesWithThingCount();
+		assertTrue(list.size() > 0);
+	}
+	
+	@Test
+	public void testFindAllThingTypesWithThingCountWithTeamID() {
+		Long teamID = createTeamRel();
+		
+		AuthInfoStore.setTeamID(teamID);
+		
 		List<Map<String, Object>> list = dao.findAllThingTypesWithThingCount();
 		assertTrue(list.size() > 0);
 	}
@@ -130,21 +165,22 @@ public class TestThingDao extends TestTemplate{
 		assertEquals(thing.getStatus(),entity.getStatus());
 	}
 	
-	/*@Test
+	@Test
+	public void testGetThingByTypeWithTeamID() {
+		List<GlobalThingInfo> list = dao.getThingByType(thing.getType());
+		GlobalThingInfo  entity=list.get(0);
+		assertEquals(thing.getVendorThingID(),entity.getVendorThingID());
+		assertEquals(thing.getKiiAppID(),entity.getKiiAppID());
+		assertEquals(thing.getCustom(),entity.getCustom());
+		assertEquals(thing.getType(),entity.getType());
+		assertEquals(thing.getStatus(),entity.getStatus());
+	}
+	
+	@Test
 	public void testFindThingByTag() {
-		TagIndex  tag =new TagIndex();
-		tag.setDisplayName("DisplayNameTest");
-		tag.setTagType(TagType.Custom);
-		tag.setDescription("DescriptionTest");
-		long id=tagIndexDao.saveOrUpdate(tag);
-		tag.setId(id);
+		TagIndex tag = createTagRel();
 		
-		TagThingRelation rel =new TagThingRelation();
-		rel.setTagID(tag.getId());
-		rel.setThingID(thing.getId());
-		tagThingRelationDao.saveOrUpdate(rel);
-		
-		List<GlobalThingInfo> list = dao.findThingByTag(tag.getDisplayName());
+		List<GlobalThingInfo> list = dao.findThingByTag(tag.getFullTagName());
 		assertTrue(list.size() > 0);
 		GlobalThingInfo  entity=list.get(0);
 		assertEquals(thing.getVendorThingID(),entity.getVendorThingID());
@@ -152,5 +188,44 @@ public class TestThingDao extends TestTemplate{
 		assertEquals(thing.getCustom(),entity.getCustom());
 		assertEquals(thing.getType(),entity.getType());
 		assertEquals(thing.getStatus(),entity.getStatus());
-	}*/
+	}
+	
+	@Test
+	public void testFindThingByTagWithTeamID() {
+		TagIndex tag = createTagRel();
+		
+		Long teamID = createTeamRel();
+		
+		AuthInfoStore.setTeamID(teamID);
+		List<GlobalThingInfo> list = dao.findThingByTag(tag.getFullTagName());
+		assertTrue(list.size() > 0);
+		GlobalThingInfo  entity=list.get(0);
+		assertEquals(thing.getVendorThingID(),entity.getVendorThingID());
+		assertEquals(thing.getKiiAppID(),entity.getKiiAppID());
+		assertEquals(thing.getCustom(),entity.getCustom());
+		assertEquals(thing.getType(),entity.getType());
+		assertEquals(thing.getStatus(),entity.getStatus());
+	}
+	
+	private TagIndex createTagRel(){
+		TagIndex  tag =new TagIndex();
+		tag.setDisplayName("DisplayNameTest");
+		tag.setTagType(TagType.Custom);
+		tag.setDescription("DescriptionTest");
+		tag.setFullTagName(TagType.Custom.getTagName("DisplayNameTest"));
+		long id=tagIndexDao.saveOrUpdate(tag);
+		tag.setId(id);
+		
+		tagThingRelationDao.saveOrUpdate(new TagThingRelation(tag.getId(), thing.getId()));
+		return tag;
+	}
+	
+	private Long createTeamRel(){
+		Team t = new Team();
+		t.setName("TeamTest");
+		Long teamID = teamDao.saveOrUpdate(t);
+		
+		teamThingRelationDao.saveOrUpdate(new TeamThingRelation(teamID,thing.getId()));
+		return teamID;
+	}
 }

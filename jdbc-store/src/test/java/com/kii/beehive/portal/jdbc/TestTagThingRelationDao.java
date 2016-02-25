@@ -36,6 +36,7 @@ public class TestTagThingRelationDao extends TestTemplate{
 		tag.setDisplayName("DisplayName");
 		tag.setTagType(TagType.Custom);
 		tag.setDescription("Description");
+		tag.setFullTagName(TagType.Custom.getTagName("DisplayName"));
 		long tagID=tagIndexDao.saveOrUpdate(tag);
 		tag.setId(tagID);
 		

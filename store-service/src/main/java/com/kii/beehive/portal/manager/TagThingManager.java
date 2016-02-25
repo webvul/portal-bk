@@ -16,10 +16,14 @@ import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.dao.TagThingRelationDao;
+import com.kii.beehive.portal.jdbc.dao.TeamDao;
+import com.kii.beehive.portal.jdbc.dao.TeamThingRelationDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
 import com.kii.beehive.portal.jdbc.entity.TagType;
+import com.kii.beehive.portal.jdbc.entity.Team;
+import com.kii.beehive.portal.jdbc.entity.TeamThingRelation;
 import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
 
@@ -38,6 +42,12 @@ public class TagThingManager {
 	
 	@Autowired
 	private TagThingRelationDao tagThingRelationDao;
+	
+	@Autowired
+	private TeamDao teamDao;
+	
+	@Autowired
+	private TeamThingRelationDao teamThingRelationDao;
 
 	
 	@Autowired
@@ -104,7 +114,6 @@ public class TagThingManager {
 	
 	public void bindTagToThing(Collection<String> tagIDs,Collection<String> thingIDs) {
 		List<TagIndex> tagList = this.findTagList(tagIDs);
-		
 
 		for(String thingID:thingIDs){
 			GlobalThingInfo thing = globalThingDao.findByID(thingID);
@@ -115,6 +124,24 @@ public class TagThingManager {
 					TagThingRelation ttr = tagThingRelationDao.findByThingIDAndTagID(thing.getId(), tag.getId());
 					if(ttr == null){
 						tagThingRelationDao.insert(new TagThingRelation(tag.getId(),thing.getId()));
+					}
+				}
+			}
+		}
+	}
+	
+	public void bindTeamToThing(Collection<String> teamIDs,Collection<String> thingIDs) {
+		List<Team> teamList = this.findTeamList(teamIDs);
+
+		for(String thingID:thingIDs){
+			GlobalThingInfo thing = globalThingDao.findByID(thingID);
+			if(thing == null){
+				log.warn("Thing is null, ThingId = " + thingID);
+			}else{
+				for(Team team:teamList){
+					TeamThingRelation ttr = teamThingRelationDao.findByTeamIDAndThingID(team.getId(), thing.getId());
+					if(ttr == null){
+						teamThingRelationDao.insert(new TeamThingRelation(team.getId(), thing.getId()));
 					}
 				}
 			}
@@ -142,7 +169,6 @@ public class TagThingManager {
 	
 	public void unbindTagToThing(Collection<String> tagIDs,Collection<String> thingIDs) {
 		List<TagIndex> tagList = this.findTagList(tagIDs);
-		
 
 		for(String thingID:thingIDs){
 			GlobalThingInfo thing = globalThingDao.findByID(thingID);
@@ -151,6 +177,21 @@ public class TagThingManager {
 			}else{
 				for(TagIndex tag:tagList){
 					tagThingRelationDao.delete(tag.getId(),thing.getId());
+				}
+			}
+		}
+	}
+	
+	public void unbindTeamToThing(Collection<String> teamIDs,Collection<String> thingIDs) {
+		List<Team> teamList = this.findTeamList(teamIDs);
+
+		for(String thingID:thingIDs){
+			GlobalThingInfo thing = globalThingDao.findByID(thingID);
+			if(thing == null){
+				log.warn("Thing is null, ThingId = " + thingID);
+			}else{
+				for(Team team:teamList){
+					teamThingRelationDao.delete(team.getId(), thing.getId());
 				}
 			}
 		}
@@ -252,6 +293,19 @@ public class TagThingManager {
 			}
 		}
 		return tagList;
+	}
+	
+	private List<Team> findTeamList(Collection<String> teamIDs){
+		List<Team> teamList = new ArrayList<Team>();
+		for(String teamID:teamIDs){
+			Team team = teamDao.findByID(teamID);
+			if(team != null){
+				teamList.add(team);
+			}else{
+				log.warn("Team is null, TeamId = " + teamID);
+			}
+		}
+		return teamList;
 	}
 
 	private List<TagIndex> findCustomTagList(Collection<String> displayNames) {

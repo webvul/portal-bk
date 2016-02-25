@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,9 +21,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kii.beehive.portal.manager.UserManager;
+import com.kii.beehive.portal.jdbc.dao.TeamUserRelationDao;
+import com.kii.beehive.portal.jdbc.entity.TeamUserRelation;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.entity.UserRestBean;
+import com.kii.beehive.portal.web.exception.PortalException;
 
 /**
  * Beehive API - User API
@@ -31,13 +34,10 @@ import com.kii.beehive.portal.web.entity.UserRestBean;
  */
 @RestController
 @RequestMapping(path = "/users",  consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
-public class UserController {
-
-
-
+public class UserController  extends AbstractController{
+	
 	@Autowired
-	private UserManager userManager;
-
+	private TeamUserRelationDao teamUserRelationDao;
 	/**
 	 * 创建用户
 	 * POST /users
@@ -54,6 +54,10 @@ public class UserController {
 		BeehiveUser beehiveUser = user.getBeehiveUser();
 
 		String userID = userManager.addUser(beehiveUser);
+		
+		if(this.isTeamIDExist()){
+			teamUserRelationDao.saveOrUpdate(new TeamUserRelation(this.getLoginTeamID(), userID, 1));
+		}
 
 		Map<String,String> map = new HashMap<>();
 		map.put("userID", userID);
@@ -72,7 +76,9 @@ public class UserController {
 	 */
 	@RequestMapping(path="/{userID}",method={RequestMethod.PATCH})
 	public Map<String,String> updateUser(@PathVariable("userID") String userID,@RequestBody UserRestBean user){
-
+		
+		checkTeam(userID);
+		
 		// clean the input user id
 		user.setAliUserID(null);
 
@@ -94,8 +100,9 @@ public class UserController {
 	 */
 	@RequestMapping(path="/{userID}",method={RequestMethod.GET})
 	public UserRestBean getUser(@PathVariable("userID") String userID){
-
-
+		
+		checkTeam(userID);
+		
 		return new UserRestBean(userManager.getUserByID(userID));
 	}
 
@@ -109,7 +116,9 @@ public class UserController {
 	 */
 	@RequestMapping(path="/{userID}/custom",method={RequestMethod.PATCH})
 	public Map<String,String> updateCustomProp(@PathVariable("userID") String userID,@RequestBody Map<String,Object> props){
-
+		
+		checkTeam(userID);
+		
 		userManager.updateCustomProp(userID,props);
 
 		Map<String,String> map=new HashMap<>();
@@ -127,7 +136,7 @@ public class UserController {
 	 */
 	@RequestMapping(path="/{userID}",method={RequestMethod.DELETE},consumes={"*"})
 	public void deleteUser(@PathVariable("userID") String userID){
-
+		checkTeam(userID);
 		userManager.deleteUser(userID);
 
 	}
@@ -142,7 +151,7 @@ public class UserController {
 	 */
 	@RequestMapping(path="/simplequery",method={RequestMethod.POST})
 	public List<UserRestBean> queryUserByProps(@RequestBody Map<String,Object> queryMap){
-
+		
 		return  userManager.simpleQueryUser(queryMap).stream()
 				.map((e) -> new UserRestBean(e))
 				.collect(Collectors.toCollection(ArrayList::new));
@@ -166,6 +175,14 @@ public class UserController {
 		        //log.warn("Error while reading version: " + ex.getMessage());
 		    }
 		return  map;
-
+	}
+	
+	private void checkTeam(String userID){
+		if(isTeamIDExist()){
+			TeamUserRelation tur = teamUserRelationDao.findByTeamIDAndUserID(this.getLoginTeamID(), userID);
+			if(tur == null){
+				throw new PortalException("User Not Found", "userID:" + userID + " Not Found", HttpStatus.NOT_FOUND);
+			}
+		}
 	}
 }
