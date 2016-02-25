@@ -18,10 +18,12 @@ import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.beehive.portal.exception.UserNotExistException;
 import com.kii.beehive.portal.jdbc.dao.GroupPermissionRelationDao;
 import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
+import com.kii.beehive.portal.jdbc.dao.PermissionDao;
 import com.kii.beehive.portal.jdbc.dao.TeamDao;
-import com.kii.beehive.portal.jdbc.dao.TeamUserRelationDao;
 import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
+import com.kii.beehive.portal.jdbc.entity.GroupPermissionRelation;
 import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
+import com.kii.beehive.portal.jdbc.entity.Permission;
 import com.kii.beehive.portal.jdbc.entity.Team;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
 import com.kii.beehive.portal.service.ArchiveBeehiveUserDao;
@@ -53,6 +55,9 @@ public class UserManager {
 	
 	@Autowired
 	private GroupPermissionRelationDao groupPermissionRelationDao;
+	
+	@Autowired
+	protected PermissionDao permissionDao;
 
 	@Autowired
 	private KiiUserSyncDao kiiUserDao;
@@ -140,6 +145,15 @@ public class UserManager {
 	    Long userGroupID = userGroupDao.saveOrUpdate(userGroup);
 	    GroupUserRelation gur = new GroupUserRelation(loginUserID,userGroupID);
 	    groupUserRelationDao.insert(gur);
+	    
+	    List<Permission> pList = permissionDao.findAll();
+	    if(pList.size() > 0){
+	    	List<GroupPermissionRelation> gprList = new ArrayList<GroupPermissionRelation>();
+		    for(Permission p:pList){
+			    gprList.add(new GroupPermissionRelation(p.getId(), userGroupID));
+		    }
+		    groupPermissionRelationDao.batchInsert(gprList);
+	    }
 	    
 	    return userGroupID;
 	}
