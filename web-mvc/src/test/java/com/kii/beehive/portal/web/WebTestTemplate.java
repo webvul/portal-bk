@@ -37,6 +37,8 @@ public class WebTestTemplate {
 
 	@Before
 	public void before(){
+
+
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
 	}
 

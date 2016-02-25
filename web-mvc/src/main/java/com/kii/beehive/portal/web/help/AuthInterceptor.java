@@ -4,6 +4,7 @@ package com.kii.beehive.portal.web.help;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import java.io.IOException;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
@@ -24,6 +25,7 @@ import com.kii.beehive.portal.store.entity.DeviceSupplier;
 import com.kii.beehive.portal.web.constant.CallbackNames;
 import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.beehive.portal.web.exception.BeehiveUnAuthorizedException;
+import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.exception.ObjectNotFoundException;
 
 public class AuthInterceptor extends HandlerInterceptorAdapter {
@@ -55,6 +57,9 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 	@Autowired
 	private AppInfoManager  appInfoManager;
 
+	@Autowired
+	private AppBindToolResolver  appInfoResolver;
+
     /**
      * validate the token from header "Authorization"
      * the token is assigned after login success
@@ -69,8 +74,17 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
 		logRequest(request);
 
-		String url=request.getRequestURI();
+		// bypass the method OPTIONS
+		if(Constants.HTTP_METHOD_OPTIONS.equalsIgnoreCase(request.getMethod())) {
+			this.handleCORSMethodOptions(request, response, handler);
+			return false;
+		}
 
+		// handle CORS request
+		this.handleCORSMethodOthers(request, response, handler);
+
+
+		String url=request.getRequestURI();
 
 		String auth = request.getHeader(Constants.ACCESS_TOKEN);
 
@@ -110,7 +124,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 			// TODO this checking is for testing only, must remove after testing complete
 			if (Constants.SUPER_TOKEN.equals(token)&&(!"production".equals(env))) {
 
-				authManager.saveToken(USER_ID, token);
+//				authManager.saveToken(USER_ID, token);
 
 				AuthInfoStore.setAuthInfo(USER_ID);
 				AuthInfoStore.setTeamID(TEAM_ID);
@@ -173,6 +187,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         authManager.unbindUserToken();
 		AuthInfoStore.clear();
+		appInfoResolver.clearAll();
 		super.afterCompletion(request, response, handler, ex);
     }
 
@@ -200,5 +215,45 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 		log.info("# Headers: " + header.toString());
 
 		log.info("###########################################");
+	}
+
+	/**
+	 * handle CORS request OPTIONS method
+	 *
+	 * @param request
+	 * @param response
+	 * @param handler
+	 * @return
+	 * @throws IOException
+     */
+	private void handleCORSMethodOptions(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
+
+		// Add HTML5 CORS headers
+		response.addHeader("Access-Control-Allow-Origin", "*");
+		response.addHeader("Access-Control-Allow-Methods", "GET, HEAD, POST, PUT, DELETE, OPTIONS");
+		response.addHeader("Access-Control-Allow-Headers", "origin, authorization, accept, content-type");
+		response.addHeader("Access-Control-Max-Age", "99999");
+
+		response.setContentType("application/jason");
+
+		response.setStatus(200);
+		response.getWriter().flush();
+
+	}
+
+	/**
+	 * handle CORS request other methods
+	 *
+	 * @param request
+	 * @param response
+	 * @param handler
+	 * @return
+	 * @throws IOException
+	 */
+	private void handleCORSMethodOthers(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
+
+		// Add HTML5 CORS headers
+		response.addHeader("Access-Control-Allow-Origin", "*");
+
 	}
 }

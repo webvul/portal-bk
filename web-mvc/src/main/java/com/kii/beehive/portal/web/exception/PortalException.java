@@ -27,7 +27,7 @@ public class PortalException extends RuntimeException {
 	@JsonIgnore
 	@Override
 	public StackTraceElement[] getStackTrace(){
-		return this.getStackTrace();
+		return super.getStackTrace();
 	}
 
 	public void setErrorCode(String errorCode) {

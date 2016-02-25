@@ -81,7 +81,7 @@ public class ExceptionFactory {
 
 		if(url.getPath().contains("/buckets/")){
 			return OperateType.bucket;
-		}else if(url.getPath().contains("/users")){
+		}else if(url.getPath().contains("/users") || url.getPath().contains("/oauth2")){
 			return OperateType.user;
 		}else if(url.getPath().contains("/configuration/")){
 			return OperateType.app;

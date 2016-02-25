@@ -1,6 +1,7 @@
 package com.kii.extension.sdk.context;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 import java.util.LinkedList;
 
@@ -56,6 +57,13 @@ public class AppBindToolResolver {
 
 	}
 
+	@PreDestroy
+	public void afterClose(){
+
+		oldInfosThreadLocal=null;
+		appChoiceLocal=null;
+		tokenDirectLocal=null;
+	}
 
 	private void offerInfo(OldInfos infos){
 
@@ -210,6 +218,13 @@ public class AppBindToolResolver {
 
 		tokenDirectLocal.set(infos.token);
 
+	}
+
+	public void clearAll(){
+
+		appInfoDirectly.remove();
+		appChoiceLocal.remove();
+		tokenDirectLocal.remove();
 	}
 
 

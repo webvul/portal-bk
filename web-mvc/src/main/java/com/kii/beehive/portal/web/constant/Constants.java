@@ -15,4 +15,6 @@ public class Constants {
 	
 	public static final String ADMIN_GROUP = "/api/";
 
+	public static final String HTTP_METHOD_OPTIONS = "OPTIONS";
+
 }
