@@ -59,7 +59,9 @@ public class DroolsTriggerService {
 
 		curr.setThing("NONE");
 		droolsService.setGlobal("currThing",curr);
+
 	}
+
 
 
 	public void addTrigger(Trigger trigger,String ruleContent){
@@ -96,9 +98,6 @@ public class DroolsTriggerService {
 	}
 
 	private  void fireCondition(){
-
-		droolsService.fireCondition();
-
 
 		List<MatchResult> results=droolsService.doQuery("get Match Result by TriggerID");
 

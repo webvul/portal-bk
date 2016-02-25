@@ -3,17 +3,21 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:bean="http://www.springframework.org/schema/context"
-       xmlns:kie="http://drools.org/schema/kie-spring"
+       xmlns:task="http://www.springframework.org/schema/task"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/context
 		http://www.springframework.org/schema/context/spring-context.xsd
-		http://drools.org/schema/kie-spring
-        http://drools.org/schema/kie-spring.xsd"
+		http://www.springframework.org/schema/task
+		http://www.springframework.org/schema/task/spring-task.xsd"
 >
 
     <bean:annotation-config />
 
     <context:component-scan base-package="com.kii.extension.ruleengine" />
+
+    <task:annotation-driven executor="myExecutor" scheduler="myScheduler"/>
+    <task:executor id="myExecutor" pool-size="5"/>
+    <task:scheduler id="myScheduler" pool-size="10"/>
 
     <!-- kie:kmodule id="drools" >
         <kie:kbase name="state-rule" packages="com.kii.extension.ruleengine"  >

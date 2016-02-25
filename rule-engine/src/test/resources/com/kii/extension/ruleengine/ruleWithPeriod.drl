@@ -1,0 +1,8 @@
+package com.kii.extension.ruleengine.demo
+
+import com.kii.extension.ruleengine.drools.entity.*;
+
+global com.kii.extension.ruleengine.drools.entity.CurrThing currThing;
+
+
+

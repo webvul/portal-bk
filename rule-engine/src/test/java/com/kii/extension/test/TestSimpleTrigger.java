@@ -26,8 +26,8 @@ public class TestSimpleTrigger extends InitTest {
 
 		initGlobal();
 
-
 	}
+
 
 
 
@@ -42,14 +42,14 @@ public class TestSimpleTrigger extends InitTest {
 
 		trigger.setType("simple");
 		trigger.setWhen("false2true");
-//		trigger.setPreviousResult(false);
-		
+
 		String id = "100";
 		trigger.setTriggerID(id);
 
 		ruleLoader.addOrUpdateData(trigger);
 
-
+		updateThingState("0", paramNo);
+		ruleLoader.fireCondition();
 
 		updateThingState("0", paramOk);
 

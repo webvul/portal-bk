@@ -11,7 +11,8 @@ import com.kii.extension.ruleengine.drools.entity.Summary;
 import com.kii.extension.ruleengine.drools.entity.SummaryValueMap;
 import com.kii.extension.ruleengine.drools.entity.Trigger;
 
-public class TestSummaryTrigger extends InitTest {
+public class TestSlideSummary extends InitTest{
+
 
 
 	@Before
@@ -42,7 +43,7 @@ public class TestSummaryTrigger extends InitTest {
 		trigger.setWhen("false2true");
 //		trigger.setPreviousResult(false);
 
-		String triggerID="300";
+		String triggerID="400";
 		trigger.setTriggerID(triggerID);
 
 		ruleLoader.addOrUpdateData(trigger);
@@ -52,7 +53,8 @@ public class TestSummaryTrigger extends InitTest {
 			summary.addThing(String.valueOf(i));
 		}
 		summary.setFieldName("foo");
-		summary.setFunName("sum");
+		summary.setLength(5);
+		summary.setFunName("sum-length");
 		summary.setSummaryField("sum_foo");
 		summary.setTriggerID(triggerID);
 
@@ -63,8 +65,9 @@ public class TestSummaryTrigger extends InitTest {
 			summary2.addThing(String.valueOf(i));
 		}
 		summary2.setFieldName("bar");
-		summary2.setFunName("count");
-		summary2.setSummaryField("count_bar");
+		summary2.setFunName("sum-time");
+		summary2.setSummaryField("sum_bar");
+		summary2.setTime("1m");
 		summary2.setTriggerID(triggerID);
 
 		ruleLoader.addOrUpdateData(summary2);

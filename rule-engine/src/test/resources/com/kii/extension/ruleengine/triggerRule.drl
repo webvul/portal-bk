@@ -55,3 +55,15 @@ then
 	System.out.println("fire summary trigger 300");
 	insertLogical(new MatchResult($triggerID));
 end
+
+/////////////////////////////////////
+//summary trigger 400
+/////////////////////////////////////
+rule "add trigger 400's  express "
+when
+	Trigger($triggerID:triggerID,triggerID=="400")
+    SummaryValueMap( triggerID==$triggerID, numberMap["sum_foo"]>numberMap["sum_bar"]  )
+then
+	System.out.println("fire summary trigger 400");
+	insertLogical(new MatchResult($triggerID));
+end

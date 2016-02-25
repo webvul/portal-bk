@@ -1,5 +1,6 @@
 package com.kii.extension.ruleengine.drools.entity;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,7 +22,17 @@ public class ThingStatusInRule {
 
 	private String thingID;
 
+	private Date createAt;
+
 	private Map<String,Object> values=new HashMap<>();
+
+	public Date getCreateAt() {
+		return createAt;
+	}
+
+	public void setCreateAt(Date createAt) {
+		this.createAt = createAt;
+	}
 
 	public Map<String, Object> getValues() {
 		return values;

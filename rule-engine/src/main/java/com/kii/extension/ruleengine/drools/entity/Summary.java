@@ -16,6 +16,26 @@ public class Summary {
 
 	private String summaryField;
 
+	private int length;
+
+	private String time;
+
+	public int getLength() {
+		return length;
+	}
+
+	public void setLength(int length) {
+		this.length = length;
+	}
+
+	public String getTime() {
+		return time;
+	}
+
+	public void setTime(String time) {
+		this.time = time;
+	}
+
 	private Set<String> things=new HashSet<>();
 
 	public Set<String> getThings() {

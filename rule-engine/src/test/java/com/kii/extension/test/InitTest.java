@@ -2,6 +2,7 @@ package com.kii.extension.test;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -93,7 +94,7 @@ public class InitTest {
 	protected  void updateThingState(String thingID,Map<String,Object> values){
 		ThingStatusInRule status=new ThingStatusInRule();
 		status.setThingID(thingID);
-
+		status.setCreateAt(new Date());
 		status.setValues(new HashMap<>(values));
 
 		addThingStatus(thingID, status);

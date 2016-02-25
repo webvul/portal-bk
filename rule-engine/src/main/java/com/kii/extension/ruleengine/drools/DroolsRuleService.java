@@ -7,13 +7,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.drools.compiler.kie.builder.impl.MemoryKieModule;
+import org.kie.api.KieBase;
+import org.kie.api.KieBaseConfiguration;
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieBuilder;
 import org.kie.api.builder.KieFileSystem;
+import org.kie.api.conf.EventProcessingOption;
 import org.kie.api.event.rule.DebugAgendaEventListener;
 import org.kie.api.event.rule.DebugRuleRuntimeEventListener;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.KieSessionConfiguration;
+import org.kie.api.runtime.conf.TimedRuleExectionOption;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.api.runtime.rule.QueryResults;
 import org.kie.api.runtime.rule.QueryResultsRow;
@@ -60,7 +66,8 @@ public class DroolsRuleService {
 		return kieSession;
 	}
 
-	public void initCondition(String... rules){
+	public  void initCondition(String... rules){
+
 		 kfs= ks.newKieFileSystem();
 
 
@@ -74,13 +81,27 @@ public class DroolsRuleService {
 
 		kb.buildAll();
 
-		kieContainer= ks.newKieContainer(kb.getKieModule().getReleaseId());
+		MemoryKieModule kieModule= (MemoryKieModule) kb.getKieModule();
 
-		kieSession = kieContainer.getKieBase().newKieSession();
+		kieContainer= ks.newKieContainer(kieModule.getReleaseId());
+
+//
+		KieBaseConfiguration config = KieServices.Factory.get().newKieBaseConfiguration();
+		config.setOption( EventProcessingOption.STREAM );
+
+//		KieBase kieBase=kieContainer.newKieBase(null);
+		KieBase kieBase=kieContainer.newKieBase(config);
+
+		KieSessionConfiguration ksconf = KieServices.Factory.get().newKieSessionConfiguration();
+		ksconf.setOption( TimedRuleExectionOption.YES );
+
+		kieSession = kieBase.newKieSession(ksconf,null);
+//		kieSession=kieBase.newKieSession();
 		kieSession.addEventListener(new DebugAgendaEventListener());
 		kieSession.addEventListener(new DebugRuleRuntimeEventListener());
 
 		handleMap.clear();
+
 	}
 
 	public void bindWithInstance(String name,Object instance){
@@ -160,14 +181,11 @@ public class DroolsRuleService {
 		return list;
 	}
 
-
-
 	public void fireCondition(){
 
-
 		getSession().fireAllRules();
+	};
 
-	}
 	
 	public void removeData(Object obj) {
 
