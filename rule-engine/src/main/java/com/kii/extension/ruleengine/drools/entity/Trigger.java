@@ -3,6 +3,8 @@ package com.kii.extension.ruleengine.drools.entity;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.springframework.beans.BeanUtils;
+
 import com.google.common.base.Objects;
 
 public class Trigger {
@@ -18,6 +20,25 @@ public class Trigger {
 	private String when;
 
 	private boolean enable=true;
+
+	private boolean isStream=false;
+
+	public Trigger(){
+
+	}
+
+	public Trigger(Trigger trigger){
+
+		BeanUtils.copyProperties(trigger,this);
+	}
+
+	public boolean isStream() {
+		return isStream;
+	}
+
+	public void setStream(boolean stream) {
+		isStream = stream;
+	}
 
 	public boolean isEnable() {
 		return enable;

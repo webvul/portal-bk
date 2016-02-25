@@ -2,14 +2,13 @@ package com.kii.extension.ruleengine.drools;
 
 import javax.annotation.PostConstruct;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ResourceLoader;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StreamUtils;
 
 import com.kii.extension.ruleengine.drools.entity.CurrThing;
 import com.kii.extension.ruleengine.drools.entity.MatchResult;
@@ -21,68 +20,67 @@ import com.kii.extension.sdk.entity.thingif.ThingStatus;
 public class DroolsTriggerService {
 
 	@Autowired
-	private DroolsRuleService droolsService;
+	@Qualifier("cloudDroolsService")
+	private DroolsRuleService cloudService;
 
 	@Autowired
-	protected ResourceLoader loader;
+	@Qualifier("streamDroolsService")
+	private DroolsRuleService streamService;
 
 	@Autowired
 	private CommandExec exec;
 
 
+	private Map<String, Trigger> triggerMap=new ConcurrentHashMap<>();
 
 	private  CurrThing curr=new CurrThing();
-
-
-	private String getDrlContent(String fileName) {
-
-		try {
-			return StreamUtils.copyToString(loader.getResource("classpath:com/kii/extension/ruleengine/"+fileName+".drl").getInputStream(), StandardCharsets.UTF_8);
-		} catch (IOException e) {
-			e.printStackTrace();
-			throw new IllegalArgumentException(e);
-		}
-
-	}
-
 
 	@PostConstruct
 	public void initRule(){
 
-		droolsService.initCondition(
-				getDrlContent("triggerComm"),
-				getDrlContent("groupPolicy"),
-				getDrlContent("summaryCompute")
-				);
-
-		droolsService.bindWithInstance("exec",exec);
-
 		curr.setThing("NONE");
-		droolsService.setGlobal("currThing",curr);
 
+		cloudService.setGlobal("currThing",curr);
+		streamService.setGlobal("currThing",curr);
 	}
 
 
+	private DroolsRuleService getService(Trigger trigger){
 
-	public void addTrigger(Trigger trigger,String ruleContent){
+		if(trigger.isStream()){
+			return streamService;
+		}else{
+			return cloudService;
+		}
 
-		droolsService.addCondition("rule"+trigger.getTriggerID(),ruleContent);
+	}
 
-		droolsService.addOrUpdateData(trigger);
+	public void addTrigger(Trigger triggerInput,String ruleContent){
+
+		Trigger trigger=new Trigger(triggerInput);
+		triggerMap.put(trigger.getTriggerID(),trigger);
+
+		getService(trigger).addCondition("rule"+trigger.getTriggerID(),ruleContent);
+
+		getService(trigger).addOrUpdateData(trigger);
+
 	}
 
 	public void removeTrigger(String triggerID){
 
-		Trigger trigger=new Trigger();
-		trigger.setTriggerID(triggerID);
+		Trigger trigger=triggerMap.get(triggerID);
 
-		droolsService.removeData(trigger);
+		getService(trigger).removeData(trigger);
+		getService(trigger).removeCondition("rule"+triggerID);
 
-		droolsService.removeCondition("rule"+triggerID);
 	}
 
-	public void updateTrigger(Trigger trigger){
-		droolsService.addOrUpdateData(trigger);
+	public void updateTrigger(Trigger triggerInput){
+
+		Trigger trigger=new Trigger(triggerInput);
+		triggerMap.put(trigger.getTriggerID(),trigger);
+
+		getService(trigger).addOrUpdateData(trigger);
 	}
 
 	public void addThingStatus(String fullThingID,ThingStatus status){
@@ -92,14 +90,20 @@ public class DroolsTriggerService {
 		newStatus.setValues(status.getFields());
 
 		curr.setThing(fullThingID);
-		droolsService.addOrUpdateData(newStatus);
+
+		cloudService.addOrUpdateData(newStatus);
+		streamService.addOrUpdateData(newStatus);
 
 		fireCondition();
 	}
 
 	private  void fireCondition(){
 
-		List<MatchResult> results=droolsService.doQuery("get Match Result by TriggerID");
+		List<MatchResult> results=cloudService.doQuery("get Match Result by TriggerID");
+
+		results.forEach(r-> exec.doExecute(r.getTriggerID()));
+
+		results=streamService.doQuery("get Match Result by TriggerID");
 
 		results.forEach(r-> exec.doExecute(r.getTriggerID()));
 

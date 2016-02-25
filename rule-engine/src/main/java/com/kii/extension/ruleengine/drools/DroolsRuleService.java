@@ -1,7 +1,5 @@
 package com.kii.extension.ruleengine.drools;
 
-import javax.annotation.PostConstruct;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +21,6 @@ import org.kie.api.runtime.conf.TimedRuleExectionOption;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.api.runtime.rule.QueryResults;
 import org.kie.api.runtime.rule.QueryResultsRow;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -33,42 +30,26 @@ import org.springframework.stereotype.Component;
 public class DroolsRuleService {
 
 
-	@Autowired
-	private TrackingAgendaEventListener listener;
-
 	private KieSession kieSession;
 
+	private final KieContainer kieContainer;
 
-	private KieContainer kieContainer;
+	private final KieServices  ks;
 
-	private KieServices  ks;
-
-	private KieFileSystem kfs;
-
+	private final KieFileSystem kfs;
 
 
 	private Map<String,FactHandle> handleMap=new ConcurrentHashMap<>();
 
 
 
-	@PostConstruct
-	public void init(){
+	public DroolsRuleService(boolean isStream,String...  rules){
 
 
 		ks = KieServices.Factory.get();
 
 
-	}
-
-	private KieSession getSession(){
-
-
-		return kieSession;
-	}
-
-	public  void initCondition(String... rules){
-
-		 kfs= ks.newKieFileSystem();
+		kfs= ks.newKieFileSystem();
 
 
 		int i=0;
@@ -85,22 +66,38 @@ public class DroolsRuleService {
 
 		kieContainer= ks.newKieContainer(kieModule.getReleaseId());
 
+		KieBase kieBase=null;
 //
-		KieBaseConfiguration config = KieServices.Factory.get().newKieBaseConfiguration();
-		config.setOption( EventProcessingOption.STREAM );
+		if(isStream) {
+			KieBaseConfiguration config = KieServices.Factory.get().newKieBaseConfiguration();
+			config.setOption(EventProcessingOption.STREAM);
+			kieBase=kieContainer.newKieBase(config);
+		}else{
+			kieBase = kieContainer.getKieBase();
+		}
 
-//		KieBase kieBase=kieContainer.newKieBase(null);
-		KieBase kieBase=kieContainer.newKieBase(config);
 
 		KieSessionConfiguration ksconf = KieServices.Factory.get().newKieSessionConfiguration();
 		ksconf.setOption( TimedRuleExectionOption.YES );
 
 		kieSession = kieBase.newKieSession(ksconf,null);
-//		kieSession=kieBase.newKieSession();
+
 		kieSession.addEventListener(new DebugAgendaEventListener());
 		kieSession.addEventListener(new DebugRuleRuntimeEventListener());
 
 		handleMap.clear();
+	}
+
+
+
+	private KieSession getSession(){
+
+
+		return kieSession;
+	}
+
+	public  void initCondition(String... rules){
+
 
 	}
 

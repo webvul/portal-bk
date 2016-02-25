@@ -1,5 +1,8 @@
 package com.kii.extension.ruleengine;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
 import org.quartz.JobBuilder;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -11,8 +14,11 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.util.StreamUtils;
 
-import com.kii.extension.ruleengine.schedule.ExecuteJob;
+import com.kii.extension.ruleengine.drools.CommandExec;
+import com.kii.extension.ruleengine.drools.DroolsRuleService;
 import com.kii.extension.ruleengine.schedule.ProxyJob;
 import com.kii.extension.ruleengine.schedule.StartTriggerJob;
 import com.kii.extension.ruleengine.schedule.StopTriggerJob;
@@ -38,11 +44,61 @@ public class RuleEngineConfig {
 	@Autowired
 	private StopTriggerJob  stopJob;
 
-	@Autowired
-	private ExecuteJob  execJob;
 
 	@Autowired
 	private ApplicationContext  applicationCtx;
+
+
+	@Autowired
+	private CommandExec exec;
+
+
+	@Autowired
+	protected ResourceLoader loader;
+
+
+
+	private String getDrlContent(String fileName) {
+
+		try {
+			return StreamUtils.copyToString(loader.getResource("classpath:com/kii/extension/ruleengine/"+fileName+".drl").getInputStream(), StandardCharsets.UTF_8);
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new IllegalArgumentException(e);
+		}
+
+	}
+
+
+	@Bean(name="cloudDroolsService")
+	public DroolsRuleService  getCloudService(){
+
+		DroolsRuleService droolsService= new DroolsRuleService(false,
+				getDrlContent("triggerComm"),
+				getDrlContent("groupPolicy"),
+				getDrlContent("summaryCompute"));
+
+		droolsService.bindWithInstance("exec",exec);
+
+		return droolsService;
+
+	}
+
+	@Bean(name="streamDroolsService")
+	public DroolsRuleService  getStreamService(){
+
+		DroolsRuleService droolsService= new DroolsRuleService(true,
+				getDrlContent("triggerComm"),
+				getDrlContent("groupPolicy"));
+
+		droolsService.bindWithInstance("exec",exec);
+
+		return droolsService;
+
+	}
+
+
+
 
 	SchedulerFactory schedFact = new org.quartz.impl.StdSchedulerFactory();
 
@@ -51,7 +107,6 @@ public class RuleEngineConfig {
 
 		Scheduler sched = schedFact.getScheduler();
 
-		sched.addJob(getExeJob(),false);
 		sched.addJob(getStartJob(),false);
 		sched.addJob(getStopJob(),false);
 
@@ -71,13 +126,6 @@ public class RuleEngineConfig {
 				.ofType(ProxyJob.class);
 
 
-	}
-
-	private JobDetail  getExeJob(){
-
-		return getJobBuilder(execJob.getClass())
-				.withIdentity(EXECUTE_JOB, EXE_GROUP)
-				.build();
 	}
 
 
