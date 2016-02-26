@@ -1,4 +1,4 @@
-package com.kii.extension.ruleengine.demo
+package com.kii.extension.ruleengine.drools.rule
 
 import com.kii.extension.ruleengine.drools.entity.*;
 

@@ -226,7 +226,7 @@ public class ThingStateSummaryManager {
 			fullState.putAll(entity.getSummary());
 		});
 
-		if(computer.doExpress(((StatePredicate)trigger.getPredicate()).getCondition(),fullState)){
+		if(computer.doExpress(((StatePredicate)trigger.getPredicate().getPredicate()).getCondition(),fullState)){
 			commandService.doCommand(trigger);
 		}
 	}

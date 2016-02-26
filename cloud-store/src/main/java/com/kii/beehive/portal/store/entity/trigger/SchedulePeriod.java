@@ -1,9 +1,6 @@
 package com.kii.beehive.portal.store.entity.trigger;
 
-public class SchedulePeriod implements   AbstractPeriod{
-
-
-
+public class SchedulePeriod implements TriggerValidPeriod {
 
 	private String startCron;
 

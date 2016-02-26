@@ -7,10 +7,10 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 		include = JsonTypeInfo.As.EXISTING_PROPERTY,
 		property = "type")
 @JsonSubTypes({
-		@JsonSubTypes.Type(value = SimplePeriod.class,name="Simple"),
-		@JsonSubTypes.Type(value = SchedulePeriod.class,name="Schedule"),
+		@JsonSubTypes.Type(value = IntervalPrefix.class,name="Interval"),
+		@JsonSubTypes.Type(value = SchedulePrefix.class,name="Cron"),
 })
-public interface AbstractPeriod  {
+public interface SchedulePrefix {
 
 	String getType();
 

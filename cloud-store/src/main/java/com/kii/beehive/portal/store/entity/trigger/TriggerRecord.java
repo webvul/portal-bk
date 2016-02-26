@@ -8,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import com.kii.extension.sdk.entity.KiiEntity;
-import com.kii.extension.sdk.entity.thingif.StatePredicate;
 
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME,
@@ -23,9 +22,9 @@ public abstract  class TriggerRecord extends KiiEntity {
 
 	private String userID;
 
-	private FrontCondition  frontCondition;
+	private PreparedCondition preparedCondition;
 
-	private StatePredicate predicate;
+	private CombinePredicate predicate;
 
 	private List<TriggerTarget>  targets=new ArrayList<>();
 
@@ -37,12 +36,12 @@ public abstract  class TriggerRecord extends KiiEntity {
 
 	private String description;
 
-	public FrontCondition getFrontCondition() {
-		return frontCondition;
+	public PreparedCondition getPreparedCondition() {
+		return preparedCondition;
 	}
 
-	public void setFrontCondition(FrontCondition frontCondition) {
-		this.frontCondition = frontCondition;
+	public void setPreparedCondition(PreparedCondition preparedCondition) {
+		this.preparedCondition = preparedCondition;
 	}
 
 	public String getDescription() {
@@ -77,11 +76,11 @@ public abstract  class TriggerRecord extends KiiEntity {
 		this.recordStatus = recordStatus;
 	}
 
-	public StatePredicate getPredicate() {
+	public CombinePredicate getPredicate() {
 		return predicate;
 	}
 
-	public void setPredicate(StatePredicate predicate) {
+	public void setPredicate(CombinePredicate predicate) {
 		this.predicate = predicate;
 	}
 

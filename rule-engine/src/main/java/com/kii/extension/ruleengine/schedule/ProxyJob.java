@@ -33,9 +33,6 @@ public class ProxyJob implements Job {
 
 		JobDataMap dataMap=context.getMergedJobDataMap();
 
-//		ApplicationContext  applicationCtx= (ApplicationContext) dataMap.get(RuleEngineConfig.APPLICATION_CTX);
-//		String beanClass=dataMap.getString(RuleEngineConfig.BEAN_CLASS);
-
 		JobInSpring  jobInSpring=applicationCtx.getBean(beanClass);
 
 		jobInSpring.execute(dataMap);

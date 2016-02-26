@@ -82,7 +82,7 @@ public class ThingGroupStateManager {
 
 		state.setPolicy(policy.getGroupPolicy());
 		state.setCriticalNumber(policy.getCriticalNumber());
-		state.setWhenType(((StatePredicate)record.getPredicate()).getTriggersWhen());
+		state.setWhenType(((StatePredicate)record.getPredicate().getPredicate()).getTriggersWhen());
 
 		List<String> thingIDs=thingList.stream().map(GlobalThingInfo::getFullKiiThingID).collect(Collectors.toList());
 		state.setThingIDSet(new HashSet<>(thingIDs));
@@ -108,7 +108,7 @@ public class ThingGroupStateManager {
 
 	private BusinessTrigger getBusinessTrigger(GroupTriggerRecord record, String triggerID, List<String> thingIDs) {
 		StatePredicate positive=new StatePredicate();
-		positive.setCondition(((StatePredicate)record.getPredicate()).getCondition());
+		positive.setCondition(((StatePredicate)record.getPredicate().getPredicate()).getCondition());
 		positive.setTriggersWhen(TriggerWhen.CONDITION_CHANGED);
 
 		return triggerService.registerBusinessTrigger(thingIDs,triggerID,positive);

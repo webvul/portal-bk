@@ -31,6 +31,7 @@ public class DroolsTriggerService {
 	private CommandExec exec;
 
 
+
 	private Map<String, Trigger> triggerMap=new ConcurrentHashMap<>();
 
 	private  CurrThing curr=new CurrThing();
@@ -75,10 +76,20 @@ public class DroolsTriggerService {
 
 	}
 
-	public void updateTrigger(Trigger triggerInput){
+	public void enableTrigger(String triggerID) {
 
-		Trigger trigger=new Trigger(triggerInput);
-		triggerMap.put(trigger.getTriggerID(),trigger);
+		Trigger trigger=triggerMap.get(triggerID);
+
+		trigger.setEnable(true);
+
+		getService(trigger).addOrUpdateData(trigger);
+	}
+
+	public void disableTrigger(String triggerID) {
+
+		Trigger trigger=triggerMap.get(triggerID);
+
+		trigger.setEnable(false);
 
 		getService(trigger).addOrUpdateData(trigger);
 	}
@@ -108,7 +119,6 @@ public class DroolsTriggerService {
 		results.forEach(r-> exec.doExecute(r.getTriggerID()));
 
 	}
-
-
+	
 
 }

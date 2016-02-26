@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 		@JsonSubTypes.Type(value = StatePredicate.class,name="states"),
 		@JsonSubTypes.Type(value = TaskPredicate.class,name="schedule_once"),
 })
-public abstract  class Predicate {
+public abstract   class Predicate {
 
 	private EventSourceType  eventSource;
 
