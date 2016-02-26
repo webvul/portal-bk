@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.CollectUtils;
-import com.kii.beehive.portal.jdbc.dao.TeamDao;
-import com.kii.beehive.portal.jdbc.dao.TeamUserRelationDao;
 import com.kii.beehive.portal.jdbc.entity.Team;
 import com.kii.beehive.portal.manager.AuthManager;
 import com.kii.beehive.portal.manager.UserManager;
