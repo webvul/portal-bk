@@ -3,6 +3,7 @@ INSERT INTO `source` (`source_id`,`name`, `type`) VALUES (2,'Thing', 'Web');
 INSERT INTO `source` (`source_id`,`name`, `type`) VALUES (3,'UserGroup', 'Web');
 INSERT INTO `source` (`source_id`,`name`, `type`) VALUES (4,'Permission', 'Web');
 INSERT INTO `source` (`source_id`,`name`, `type`) VALUES (5,'Trigger', 'Web');
+INSERT INTO `source` (`source_id`,`name`, `type`) VALUES (6,'User', 'Web');
 INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('1', 'CreateTag', 'POST /tags/custom');
 INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('1', 'DeleteTag', 'DELETE /tags/custom/*');
 INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('1', 'SearchTag', 'GET /tags/search*');
@@ -33,3 +34,10 @@ INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('5', 'DeleteTri
 INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('5', 'EnableTrigger', 'PUT /triggers/*/enable');
 INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('5', 'DisableTrigger', 'PUT /triggers/*/disable');
 INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('5', 'GetTrigger', 'GET /triggers/*');
+INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('6', 'GetUser', 'GET /users/*');
+INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('6', 'CreateUser', 'POST /users');
+INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('6', 'UpdateUser', 'PATCH /users/*');
+INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('6', 'UpdateThirdPartyUser', 'PATCH /users/*/custom');
+INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('6', 'DeleteUser', 'DELETE /users/*');
+INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('6', 'SearchUser', 'POST /users/simplequery');
+

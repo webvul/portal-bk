@@ -152,15 +152,6 @@ public class UserManager {
 	    GroupUserRelation gur = new GroupUserRelation(loginUserID,userGroupID);
 	    groupUserRelationDao.insert(gur);
 	    
-	    List<Permission> pList = permissionDao.findAll();
-	    if(pList.size() > 0){
-	    	List<GroupPermissionRelation> gprList = new ArrayList<GroupPermissionRelation>();
-		    for(Permission p:pList){
-			    gprList.add(new GroupPermissionRelation(p.getId(), userGroupID));
-		    }
-		    groupPermissionRelationDao.batchInsert(gprList);
-	    }
-	    
 	    if(AuthInfoStore.getTeamID() != null){
     		TeamGroupRelation tgr = new TeamGroupRelation(AuthInfoStore.getTeamID(), userGroupID);
     		teamGroupRelationDao.insert(tgr);
@@ -295,5 +286,16 @@ public class UserManager {
 		}else{
 			return null;
 		}
+	}
+	
+	public void setDefaultPermission(Long userGroupID){
+		List<Permission> pList = permissionDao.findAll();
+	    if(pList.size() > 0){
+	    	List<GroupPermissionRelation> gprList = new ArrayList<GroupPermissionRelation>();
+		    for(Permission p:pList){
+			    gprList.add(new GroupPermissionRelation(p.getId(), userGroupID));
+		    }
+		    groupPermissionRelationDao.batchInsert(gprList);
+	    }
 	}
 }

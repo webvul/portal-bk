@@ -24,6 +24,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.portal.jdbc.dao.TeamDao;
 import com.kii.beehive.portal.jdbc.dao.TeamUserRelationDao;
+import com.kii.beehive.portal.jdbc.entity.GroupPermissionRelation;
+import com.kii.beehive.portal.jdbc.entity.Permission;
 import com.kii.beehive.portal.jdbc.entity.Team;
 import com.kii.beehive.portal.jdbc.entity.TeamUserRelation;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
@@ -78,7 +80,9 @@ public class UserController  extends AbstractController{
             	//first user add to admin userGroup
             	UserGroup userGroup = new UserGroup();
             	userGroup.setName(Constants.ADMIN_GROUP);
-            	userManager.createUserGroup(userGroup,userID);
+            	Long userGroupID = userManager.createUserGroup(userGroup,userID);
+            	
+            	userManager.setDefaultPermission(userGroupID);
             	
         	}else{// user add to team
         		teamID = teamList.get(0).getId();
