@@ -14,10 +14,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.kii.beehive.portal.store.entity.trigger.TriggerGroupPolicyType;
 import com.kii.extension.ruleengine.StatelessRuleExecute;
 import com.kii.extension.ruleengine.demo.Applicant;
 import com.kii.extension.ruleengine.demo.Message;
-import com.kii.extension.ruleengine.drools.entity.GroupPolicy;
 import com.kii.extension.ruleengine.drools.entity.Summary;
 import com.kii.extension.ruleengine.drools.entity.SummaryValueMap;
 import com.kii.extension.ruleengine.drools.entity.Trigger;
@@ -122,7 +122,7 @@ public class TestDemo extends InitTest {
 		}
 
 		triggerMap.values().forEach(t->{
-			t.setPolicy(GroupPolicy.all);
+			t.setPolicy(TriggerGroupPolicyType.All);
 			ruleLoader.addOrUpdateData(t);
 		});
 

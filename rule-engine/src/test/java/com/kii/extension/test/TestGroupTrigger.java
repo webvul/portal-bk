@@ -9,7 +9,8 @@ import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.kii.extension.ruleengine.drools.entity.GroupPolicy;
+import com.kii.beehive.portal.store.entity.trigger.TriggerGroupPolicyType;
+import com.kii.beehive.portal.store.entity.trigger.TriggerWhen;
 import com.kii.extension.ruleengine.drools.entity.MemberCountResult;
 import com.kii.extension.ruleengine.drools.entity.Trigger;
 import com.kii.extension.ruleengine.drools.entity.TriggerType;
@@ -42,8 +43,8 @@ public class TestGroupTrigger extends InitTest {
 			trigger.addThing(String.valueOf(i));
 		}
 		trigger.setType(TriggerType.group);
-		trigger.setPolicy(GroupPolicy.all);
-		trigger.setWhen("false2true");
+		trigger.setPolicy(TriggerGroupPolicyType.All);
+		trigger.setWhen(TriggerWhen.CONDITION_FALSE_TO_TRUE);
 //		trigger.setPreviousResult(false);
 
 		String triggerID = "200";
@@ -90,10 +91,10 @@ public class TestGroupTrigger extends InitTest {
 		for(int i=0;i<5;i++) {
 			trigger.addThing(String.valueOf(i));
 		}
-		trigger.setPolicy(GroupPolicy.any);
+		trigger.setPolicy(TriggerGroupPolicyType.Any);
 		trigger.setType(TriggerType.group);
 
-		trigger.setWhen("true");
+		trigger.setWhen(TriggerWhen.CONDITION_TRUE);
 //		trigger.setPreviousResult(false);
 
 		String triggerID = "201";
@@ -146,11 +147,11 @@ public class TestGroupTrigger extends InitTest {
 		for(int i=0;i<5;i++) {
 			trigger.addThing(String.valueOf(i));
 		}
-		trigger.setPolicy(GroupPolicy.number);
+		trigger.setPolicy(TriggerGroupPolicyType.Some);
 		trigger.setType(TriggerType.group);
 
 		trigger.setNumber(3);
-		trigger.setWhen("false2true");
+		trigger.setWhen(TriggerWhen.CONDITION_FALSE_TO_TRUE);
 //		trigger.setPreviousResult(false);
 
 		String triggerID = "202";

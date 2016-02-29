@@ -7,6 +7,7 @@ import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.kii.beehive.portal.store.entity.trigger.TriggerWhen;
 import com.kii.extension.ruleengine.drools.entity.Summary;
 import com.kii.extension.ruleengine.drools.entity.SummaryValueMap;
 import com.kii.extension.ruleengine.drools.entity.Trigger;
@@ -41,7 +42,7 @@ public class TestSlideSummary extends InitTest{
 		}
 
 		trigger.setType(TriggerType.summary);
-		trigger.setWhen("false2true");
+		trigger.setWhen(TriggerWhen.CONDITION_FALSE_TO_TRUE);
 //		trigger.setPreviousResult(false);
 
 		String triggerID="400";

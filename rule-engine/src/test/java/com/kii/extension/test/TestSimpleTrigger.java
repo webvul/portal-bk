@@ -9,6 +9,7 @@ import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.kii.beehive.portal.store.entity.trigger.TriggerWhen;
 import com.kii.extension.ruleengine.drools.entity.Trigger;
 import com.kii.extension.ruleengine.drools.entity.TriggerType;
 
@@ -42,7 +43,7 @@ public class TestSimpleTrigger extends InitTest {
 		trigger.addThing(String.valueOf(0));
 
 		trigger.setType(TriggerType.simple);
-		trigger.setWhen("false2true");
+		trigger.setWhen(TriggerWhen.CONDITION_FALSE_TO_TRUE);
 
 		String id = "100";
 		trigger.setTriggerID(id);
@@ -89,7 +90,7 @@ public class TestSimpleTrigger extends InitTest {
 		trigger.addThing(String.valueOf(1));
 
 		trigger.setType(TriggerType.simple);
-		trigger.setWhen("true");
+		trigger.setWhen(TriggerWhen.CONDITION_TRUE);
 
 		String triggerID = "101";
 
@@ -135,7 +136,7 @@ public class TestSimpleTrigger extends InitTest {
 		trigger.addThing(String.valueOf(2));
 
 		trigger.setType(TriggerType.simple);
-		trigger.setWhen("true2false");
+		trigger.setWhen(TriggerWhen.CONDITION_TRUE_TO_FALSE);
 
 		trigger.setTriggerID(triggerID);
 
