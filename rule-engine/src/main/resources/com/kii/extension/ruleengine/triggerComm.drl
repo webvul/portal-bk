@@ -6,7 +6,7 @@ import com.kii.extension.ruleengine.drools.CommandExec;
 global com.kii.extension.ruleengine.drools.entity.CurrThing currThing;
 
 query "get Match Result by TriggerID" ()
-	Trigger($triggerID:triggerID,when=="true")
+	Trigger($triggerID:triggerID,when=="CONDITION_TRUE")
     results : MatchResult( triggerID == $triggerID )
 end
 
