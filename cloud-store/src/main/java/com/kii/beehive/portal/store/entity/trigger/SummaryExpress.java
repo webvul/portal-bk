@@ -1,10 +1,5 @@
 package com.kii.beehive.portal.store.entity.trigger;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 public class SummaryExpress {
 
 	private String stateName;
@@ -13,25 +8,25 @@ public class SummaryExpress {
 
 	private String summaryAlias;
 
-	private String sumField;
+//	private String sumField;
+//
+//	private String countField;
 
-	private String countField;
-
-	public String getSumField() {
-		return sumField;
-	}
-
-	public void setSumField(String sumField) {
-		this.sumField = sumField;
-	}
-
-	public String getCountField() {
-		return countField;
-	}
-
-	public void setCountField(String countField) {
-		this.countField = countField;
-	}
+//	public String getSumField() {
+//		return sumField;
+////	}
+//
+//	public void setSumField(String sumField) {
+//		this.sumField = sumField;
+//	}
+//
+//	public String getCountField() {
+//		return countField;
+//	}
+//
+//	public void setCountField(String countField) {
+//		this.countField = countField;
+//	}
 
 	public String getStateName() {
 		return stateName;
@@ -60,41 +55,41 @@ public class SummaryExpress {
 	}
 
 
-	@JsonIgnore
-	public List<SummaryExpress> generAdditionExp(){
+//	@JsonIgnore
+//	public List<SummaryExpress> generAdditionExp(){
+//
+//		List<SummaryExpress> expList=new ArrayList<>();
+//
+//		expList.add(getSumExpress());
+//		expList.add(getCountExpress());
+//
+//		return expList;
+//	}
 
-		List<SummaryExpress> expList=new ArrayList<>();
+//	private SummaryExpress getSumExpress(){
+//
+//		SummaryExpress sumExp=new SummaryExpress();
+//		sumExp.setStateName(getStateName());
+//		sumExp.setSummaryAlias(getSummaryAlias()+"_sum");
+//		sumExp.setFunction(SummaryFunctionType.Sum);
+//
+////		this.sumField=sumExp.getSummaryAlias();
+//
+//		return sumExp;
+//
+//	}
 
-		expList.add(getSumExpress());
-		expList.add(getCountExpress());
-
-		return expList;
-	}
-
-	private SummaryExpress getSumExpress(){
-
-		SummaryExpress sumExp=new SummaryExpress();
-		sumExp.setStateName(getStateName());
-		sumExp.setSummaryAlias(getSummaryAlias()+"_sum");
-		sumExp.setFunction(SummaryFunctionType.Sum);
-
-		this.sumField=sumExp.getSummaryAlias();
-
-		return sumExp;
-
-	}
-
-	private SummaryExpress getCountExpress(){
-
-		SummaryExpress countExp=new SummaryExpress();
-		countExp.setStateName(getStateName());
-		countExp.setSummaryAlias(getSummaryAlias()+"_count");
-		countExp.setFunction(SummaryFunctionType.Count);
-
-		this.countField=countExp.getSummaryAlias();
-		return countExp;
-
-	}
+//	private SummaryExpress getCountExpress(){
+//
+//		SummaryExpress countExp=new SummaryExpress();
+//		countExp.setStateName(getStateName());
+//		countExp.setSummaryAlias(getSummaryAlias()+"_count");
+//		countExp.setFunction(SummaryFunctionType.Count);
+//
+////		this.countField=countExp.getSummaryAlias();
+//		return countExp;
+//
+//	}
 
 
 }

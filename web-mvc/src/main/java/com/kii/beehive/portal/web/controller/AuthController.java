@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.portal.common.utils.CollectUtils;
-import com.kii.beehive.portal.manager.AuthManager;
-import com.kii.beehive.portal.manager.UserManager;
+import com.kii.beehive.business.manager.AuthManager;
+import com.kii.beehive.business.manager.UserManager;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.entity.AuthRestBean;

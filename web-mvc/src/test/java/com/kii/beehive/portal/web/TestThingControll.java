@@ -31,9 +31,8 @@ import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
 import com.kii.beehive.portal.jdbc.entity.TagType;
-import com.kii.beehive.portal.manager.TagThingManager;
+import com.kii.beehive.business.manager.TagThingManager;
 import com.kii.beehive.portal.web.constant.Constants;
-import com.kii.beehive.portal.web.help.AuthInterceptor;
 
 public class TestThingControll extends WebTestTemplate{
 

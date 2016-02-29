@@ -1,4 +1,4 @@
-package com.kii.beehive.portal.manager;
+package com.kii.beehive.business.manager;
 
 import java.util.HashSet;
 import java.util.List;

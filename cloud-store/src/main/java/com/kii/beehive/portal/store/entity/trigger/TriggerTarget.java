@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 public class TriggerTarget {
 
 
-	private TagSelector  selector;
+	private TagSelector selector;
 
 	@JsonUnwrapped
 	public TagSelector getSelector() {

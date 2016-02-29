@@ -1,4 +1,4 @@
-package com.kii.beehive.portal.manager;
+package com.kii.beehive.business.manager;
 
 
 import java.util.ArrayList;
@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.business.event.BusinessEventListenerService;
-import com.kii.beehive.business.ruleengine.ExpressCompute;
+import com.kii.beehive.portal.ruleengine.ExpressCompute;
 import com.kii.beehive.business.service.CommandExecuteService;
 import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;

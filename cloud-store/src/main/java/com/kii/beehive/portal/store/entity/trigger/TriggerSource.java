@@ -6,7 +6,7 @@ public class TriggerSource {
 
 
 
-	private TagSelector  selector;
+	private TagSelector selector;
 
 	@JsonUnwrapped
 	public TagSelector getSelector() {

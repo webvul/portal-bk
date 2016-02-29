@@ -9,7 +9,6 @@ import com.kii.extension.sdk.query.condition.AndLogic;
 import com.kii.extension.sdk.query.condition.Equal;
 import com.kii.extension.sdk.query.condition.FieldExist;
 import com.kii.extension.sdk.query.condition.InCollect;
-import com.kii.extension.sdk.query.condition.Like;
 import com.kii.extension.sdk.query.condition.NotLogic;
 import com.kii.extension.sdk.query.condition.OrLogic;
 import com.kii.extension.sdk.query.condition.PrefixLike;
@@ -24,7 +23,6 @@ import com.kii.extension.sdk.query.condition.Range;
 		@JsonSubTypes.Type(value = InCollect.class,name="in"),
 		@JsonSubTypes.Type(value = FieldExist.class,name="hasField"),
 		@JsonSubTypes.Type(value = PrefixLike.class,name="prefix"),
-		@JsonSubTypes.Type(value = Like.class,name="like"),
 		@JsonSubTypes.Type(value = Equal.class,name="eq"),
 		@JsonSubTypes.Type(value = AndLogic.class,name="and"),
 		@JsonSubTypes.Type(value = OrLogic.class,name="or"),

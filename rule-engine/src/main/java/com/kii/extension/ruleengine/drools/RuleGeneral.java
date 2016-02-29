@@ -13,21 +13,21 @@ import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
 
 import com.kii.beehive.portal.common.utils.StrTemplate;
-import com.kii.beehive.portal.store.entity.trigger.CombinePredicate;
+import com.kii.beehive.portal.store.entity.trigger.Condition;
 import com.kii.beehive.portal.store.entity.trigger.CronPrefix;
 import com.kii.beehive.portal.store.entity.trigger.IntervalPrefix;
+import com.kii.beehive.portal.store.entity.trigger.RuleEnginePredicate;
 import com.kii.beehive.portal.store.entity.trigger.SchedulePrefix;
-import com.kii.beehive.portal.store.entity.trigger.TriggerRecord;
-import com.kii.extension.sdk.query.Condition;
-import com.kii.extension.sdk.query.condition.AndLogic;
-import com.kii.extension.sdk.query.condition.Equal;
-import com.kii.extension.sdk.query.condition.InCollect;
-import com.kii.extension.sdk.query.condition.Like;
-import com.kii.extension.sdk.query.condition.LogicCol;
-import com.kii.extension.sdk.query.condition.NotLogic;
-import com.kii.extension.sdk.query.condition.OrLogic;
-import com.kii.extension.sdk.query.condition.Range;
-import com.kii.extension.sdk.query.condition.SimpleCondition;
+import com.kii.beehive.portal.store.entity.trigger.condition.AndLogic;
+import com.kii.beehive.portal.store.entity.trigger.condition.Equal;
+import com.kii.beehive.portal.store.entity.trigger.condition.InCollect;
+import com.kii.beehive.portal.store.entity.trigger.condition.Like;
+import com.kii.beehive.portal.store.entity.trigger.condition.LogicCol;
+import com.kii.beehive.portal.store.entity.trigger.condition.NotLogic;
+import com.kii.beehive.portal.store.entity.trigger.condition.OrLogic;
+import com.kii.beehive.portal.store.entity.trigger.condition.Range;
+import com.kii.beehive.portal.store.entity.trigger.condition.SimpleCondition;
+import com.kii.extension.ruleengine.drools.entity.TriggerType;
 
 @Component
 public class RuleGeneral {
@@ -46,23 +46,23 @@ public class RuleGeneral {
 		}
 	}
 
-	public String generDrlConfig(TriggerRecord record){
+	public String generDrlConfig(String triggerID, TriggerType type, RuleEnginePredicate predicate){
 
-		String template=loadTemplate(record.getType().name());
+		String template=loadTemplate(type.name());
 
-		String fullDrl=generDrl(template,record.getPredicate(),record.getId());
+		String fullDrl=generDrl(template,predicate,triggerID);
 
 		return fullDrl;
 	}
 
 
-	private String generDrl(String template,CombinePredicate predicate, String triggerID){
+	private String generDrl(String template, RuleEnginePredicate predicate, String triggerID){
 
 			Map<String,String> params=new HashMap<>();
 			params.put("timer",generTimer(predicate.getSchedule()));
 
 			if(StringUtils.isEmpty(predicate.getExpress())) {
-				Condition cond=predicate.getPredicate().getCondition();
+				Condition cond=predicate.getCondition();
 				if(cond==null){
 					params.put("express"," eval(true) ");
 				}else{
@@ -101,13 +101,13 @@ public class RuleGeneral {
 		return sb.append(")").toString();
 	}
 
-	private String getLogicExpress(LogicCol  condition){
+	private String getLogicExpress(LogicCol condition){
 
 		StringBuilder sb=new StringBuilder();
 
 		switch(condition.getType()){
 			case and:
-				AndLogic  andLogic=(AndLogic)condition;
+				AndLogic andLogic=(AndLogic)condition;
 				for(Condition cond:andLogic.getClauses()){
 
 					String express=generExpress(cond);
@@ -131,7 +131,7 @@ public class RuleGeneral {
 		return sb.toString();
 	}
 
-	private String getNotExpress(NotLogic  condition){
+	private String getNotExpress(NotLogic condition){
 
 		Condition clause=condition.getClause();
 

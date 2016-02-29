@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import com.kii.beehive.portal.store.entity.BusinessTrigger;
+import com.kii.beehive.portal.store.entity.trigger.BusinessTrigger;
 import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.entity.BucketInfo;
 import com.kii.extension.sdk.query.ConditionBuilder;

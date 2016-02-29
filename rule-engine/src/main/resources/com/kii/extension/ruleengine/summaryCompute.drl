@@ -22,7 +22,7 @@ end
 rule "compute the summary of  fieldName value: funName"
 when
 	$trigger:Trigger(type =="summary",$triggerID:triggerID)
-	$summary:Summary(triggerID==$triggerID ,$things:things, funName=="sum" )
+	$summary:Summary(triggerID==$triggerID ,$things:things, funName=="Sum" )
 	CurrThing(thing memberOf $things) from currThing
 	accumulate( ThingStatusInRule(thingID memberOf $things , $status:values);
                     $sum : sum($status.get($summary.getFieldName()))
@@ -36,7 +36,7 @@ end
 rule "compute the count of  fieldName value: funName"
 when
 	$trigger:Trigger(type =="summary",$triggerID:triggerID)
-	$summary:Summary(triggerID==$triggerID ,$things:things, funName=="count" )
+	$summary:Summary(triggerID==$triggerID ,$things:things, funName=="Count" )
 	CurrThing(thing memberOf $things) from currThing
 	accumulate( ThingStatusInRule(thingID memberOf $summary.things ,$status:values);
                     $value : count($status)
@@ -50,7 +50,7 @@ end
 rule "compute the max of  fieldName value: funName"
 when
 	$trigger:Trigger(type =="summary",$triggerID:triggerID)
-	$summary:Summary(triggerID==$triggerID ,$things:things, funName=="max" )
+	$summary:Summary(triggerID==$triggerID ,$things:things, funName=="Max" )
 	CurrThing(thing memberOf $things) from currThing
 	accumulate( ThingStatusInRule(thingID memberOf $summary.things ,$status:values);
                     $value : max($status)
@@ -64,7 +64,7 @@ end
 rule "compute the min of  fieldName value: funName"
 when
 	$trigger:Trigger(type =="summary",$triggerID:triggerID)
-	$summary:Summary(triggerID==$triggerID ,$things:things, funName=="min" )
+	$summary:Summary(triggerID==$triggerID ,$things:things, funName=="Min" )
 	CurrThing(thing memberOf $things) from currThing
 	accumulate( ThingStatusInRule(thingID memberOf $summary.things ,$status:values);
                     $value : min($status)
@@ -78,7 +78,7 @@ end
 rule "compute the average of  fieldName value: funName"
 when
 	$trigger:Trigger(type =="summary",$triggerID:triggerID)
-	$summary:Summary(triggerID==$triggerID ,$things:things, funName=="average" )
+	$summary:Summary(triggerID==$triggerID ,$things:things, funName=="Avg" )
 	CurrThing(thing memberOf $things) from currThing
 	accumulate( ThingStatusInRule(thingID memberOf $summary.things ,$status:values);
                     $value : average($status)

@@ -9,8 +9,8 @@ import com.kii.beehive.portal.jdbc.dao.GroupPermissionRelationDao;
 import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
 import com.kii.beehive.portal.jdbc.dao.PermissionDao;
 import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
-import com.kii.beehive.portal.manager.AuthManager;
-import com.kii.beehive.portal.manager.UserManager;
+import com.kii.beehive.business.manager.AuthManager;
+import com.kii.beehive.business.manager.UserManager;
 
 public abstract class AbstractController {
 	

@@ -1,4 +1,4 @@
-package com.kii.beehive.portal.manager;
+package com.kii.beehive.business.manager;
 
 public class EndPointNameConstant {
 

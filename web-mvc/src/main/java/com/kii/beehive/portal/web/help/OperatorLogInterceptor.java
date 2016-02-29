@@ -14,7 +14,7 @@
 //
 //import com.kii.beehive.business.helper.OpLogTools;
 //import com.kii.beehive.portal.jdbc.entity.AuthInfo;
-//import com.kii.beehive.portal.manager.AuthManager;
+//import com.kii.beehive.business.manager.AuthManager;
 //import com.kii.beehive.portal.web.constant.Constants;
 //
 //public class OperatorLogInterceptor extends HandlerInterceptorAdapter {

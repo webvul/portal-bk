@@ -7,6 +7,9 @@ import org.springframework.beans.BeanUtils;
 
 import com.google.common.base.Objects;
 
+import com.kii.beehive.portal.store.entity.trigger.TriggerGroupPolicyType;
+import com.kii.beehive.portal.store.entity.trigger.TriggerWhen;
+
 public class Trigger {
 
 	private String triggerID;
@@ -15,9 +18,11 @@ public class Trigger {
 
 	private Set<String> things=new HashSet<>();
 
-	private String type;
+	private TriggerGroupPolicyType policy=TriggerGroupPolicyType.None;
 
-	private String when;
+	private TriggerType type;
+
+	private TriggerWhen when;
 
 	private boolean enable=true;
 
@@ -48,11 +53,11 @@ public class Trigger {
 		this.enable = enable;
 	}
 
-	public String getWhen() {
+	public TriggerWhen getWhen() {
 		return when;
 	}
 
-	public void setWhen(String when) {
+	public void setWhen(TriggerWhen when) {
 		this.when = when;
 	}
 
@@ -64,12 +69,20 @@ public class Trigger {
 		this.number = number;
 	}
 
-	public String getType() {
+	public TriggerType getType() {
 		return type;
 	}
 
-	public void setType(String type) {
+	public void setType(TriggerType type) {
 		this.type = type;
+	}
+
+	public TriggerGroupPolicyType getPolicy() {
+		return policy;
+	}
+
+	public void setPolicy(TriggerGroupPolicyType policy) {
+		this.policy = policy;
 	}
 
 	public String getTriggerID() {

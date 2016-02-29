@@ -75,4 +75,6 @@ public class Summary {
 	public int hashCode() {
 		return Objects.hashCode(triggerID, summaryField);
 	}
+
+
 }

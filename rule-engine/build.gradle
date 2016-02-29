@@ -5,7 +5,11 @@ ext{
 
 dependencies {
 
-	compile project(":cloud-business")
+	compile project(":cloud-store")
+
+	compile project(":jdbc-store")
+
+	compile project(":business-component")
 
 	compile "org.drools:drools-core:${droolsVersion}"
 

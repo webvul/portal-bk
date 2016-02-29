@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import com.kii.beehive.business.event.BusinessEventListenerService;
 import com.kii.beehive.business.event.impl.ThingStatusChangeProcess;
 import com.kii.beehive.portal.event.EventListener;
-import com.kii.beehive.portal.manager.ThingStateSummaryManager;
+import com.kii.beehive.business.manager.ThingStateSummaryManager;
 import com.kii.beehive.portal.service.TriggerRecordDao;
 import com.kii.beehive.portal.store.entity.trigger.SummaryTriggerRecord;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;

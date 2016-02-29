@@ -17,9 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.kii.extension.ruleengine.StatelessRuleExecute;
 import com.kii.extension.ruleengine.demo.Applicant;
 import com.kii.extension.ruleengine.demo.Message;
+import com.kii.extension.ruleengine.drools.entity.GroupPolicy;
 import com.kii.extension.ruleengine.drools.entity.Summary;
 import com.kii.extension.ruleengine.drools.entity.SummaryValueMap;
 import com.kii.extension.ruleengine.drools.entity.Trigger;
+import com.kii.extension.ruleengine.drools.entity.TriggerType;
 
 public class TestDemo extends InitTest {
 
@@ -54,7 +56,7 @@ public class TestDemo extends InitTest {
 		for(int i=0;i<10;i++){
 			trigger.addThing(String.valueOf(i));
 		}
-		trigger.setType("summary");
+		trigger.setType(TriggerType.summary);
 		String triggerID="100";
 		trigger.setTriggerID(triggerID);
 
@@ -120,7 +122,7 @@ public class TestDemo extends InitTest {
 		}
 
 		triggerMap.values().forEach(t->{
-			t.setType("all");
+			t.setPolicy(GroupPolicy.all);
 			ruleLoader.addOrUpdateData(t);
 		});
 

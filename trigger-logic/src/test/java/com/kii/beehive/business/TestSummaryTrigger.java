@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.kii.beehive.business.event.BusinessEventBus;
 import com.kii.beehive.business.event.process.SummaryTagChangeProcess;
-import com.kii.beehive.portal.manager.ThingStateSummaryManager;
+import com.kii.beehive.business.manager.ThingStateSummaryManager;
 import com.kii.beehive.portal.store.entity.trigger.SummaryExpress;
 import com.kii.beehive.portal.store.entity.trigger.SummaryFunctionType;
 import com.kii.beehive.portal.store.entity.trigger.SummarySource;

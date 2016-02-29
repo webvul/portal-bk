@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:cache="http://www.springframework.org/schema/cache"
+       xmlns:bean="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+
+		http://www.springframework.org/schema/cache  http://www.springframework.org/schema/cache/spring-cache.xsd"
+>
+
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations" value="classpath:com/kii/beehive/business/testConfig.properties"/>
+        <property name="properties">
+            <value>foo=bar</value>
+        </property>
+    </bean>
+
+    <bean:annotation-config />
+
+
+    <bean id="propAppBindTool" class="com.kii.extension.factory.LocalPropertyBindTool" >
+        <property name="propFileName" value="classpath:com/kii/beehive/business/beehive.portal.store.properties" />
+    </bean>
+
+    <bean class="com.kii.extension.factory.KiiCloudSDKConfig" />
+
+    <bean id="appBindAspect"  class="com.kii.extension.sdk.aop.AppBindAspect" />
+
+
+
+    <bean class="com.kii.extension.sdk.service.DevPortalService" >
+        <property name="devPortalUrl"  value="${beehive.kiicloud.dev-portal.url}" />
+    </bean>
+
+    <context:component-scan base-package="com.kii.beehive" />
+
+    <!-- <task:annotation-driven executor="myExecutor" scheduler="myScheduler"/>
+    <task:executor id="myExecutor" pool-size="5"/>
+    <task:scheduler id="myScheduler" pool-size="10"/> -->
+
+
+    <cache:annotation-driven />
+
+    <bean id="cacheManager"
+          class="org.springframework.cache.ehcache.EhCacheCacheManager" >
+        <property name="cacheManager" ref="ehcache" />
+    </bean>
+
+    <bean id="ehcache" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean" >
+        <property name="configLocation" value="classpath:com/kii/beehive/config/ehcache.xml" />
+    </bean>
+
+
+
+    <bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+    	<property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="jdbcUrl" value="${beehive.jdbc.url}" />
+        <property name="username" value="${beehive.jdbc.username}"/>
+        <property name="password" value="${beehive.jdbc.password}"/>
+    </bean>
+
+
+</beans>

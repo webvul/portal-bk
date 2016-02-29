@@ -23,11 +23,4 @@ public class TriggerGroupPolicy {
 	}
 
 
-	public static  enum TriggerGroupPolicyType {
-
-		Any,All,Some,Percent;
-
-	}
-
-
 }

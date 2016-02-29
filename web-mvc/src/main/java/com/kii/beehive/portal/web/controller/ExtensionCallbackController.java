@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.business.service.ThingStateNotifyCallbackService;
-import com.kii.beehive.portal.manager.ThingStateManager;
+import com.kii.beehive.business.manager.ThingStateManager;
 import com.kii.beehive.portal.web.constant.CallbackNames;
 import com.kii.beehive.portal.web.entity.CreatedThing;
 import com.kii.beehive.portal.web.entity.StateUpload;

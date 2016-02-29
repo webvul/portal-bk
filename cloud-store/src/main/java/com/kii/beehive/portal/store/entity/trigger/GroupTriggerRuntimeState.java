@@ -12,7 +12,7 @@ public class GroupTriggerRuntimeState extends TriggerRuntimeState{
 
 //	private PortalMemberState portalMemberState =new PortalMemberState();
 
-	private TriggerGroupPolicy.TriggerGroupPolicyType policy;
+	private TriggerGroupPolicyType policy;
 
 	private int criticalNumber;
 
@@ -32,11 +32,11 @@ public class GroupTriggerRuntimeState extends TriggerRuntimeState{
 	}
 
 
-	public TriggerGroupPolicy.TriggerGroupPolicyType getPolicy() {
+	public TriggerGroupPolicyType getPolicy() {
 		return policy;
 	}
 
-	public void setPolicy(TriggerGroupPolicy.TriggerGroupPolicyType policy) {
+	public void setPolicy(TriggerGroupPolicyType policy) {
 		this.policy = policy;
 	}
 

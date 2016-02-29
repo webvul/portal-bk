@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kii.beehive.portal.manager.AppInfoManager;
-import com.kii.beehive.portal.manager.TagThingManager;
+import com.kii.beehive.business.event.ListenerEnvInitService;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
-import com.kii.beehive.portal.manager.TriggerMaintainManager;
+import com.kii.beehive.business.manager.AppInfoManager;
+import com.kii.beehive.business.manager.TagThingManager;
 import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.store.entity.CallbackUrlParameter;
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
@@ -49,9 +49,11 @@ public class OnboardingHelperController {
 	@Value("${beehive.kiicloud.dev-portal.masterApp}")
 	private String masterAppID;
 
-
 	@Autowired
-	private TriggerMaintainManager maintainManager;
+	private ListenerEnvInitService  eventInitService;
+
+//	@Autowired
+//	private TriggerMaintainManager maintainManager;
 
 
 	@Autowired
@@ -82,7 +84,7 @@ public class OnboardingHelperController {
 		String subUrl=url.substring(0,url.indexOf("/appinit"))+CallbackNames.CALLBACK_URL;
 		param.setBaseUrl(subUrl);
 
-		maintainManager.deployTriggerToAll(param);
+		eventInitService.deployTriggerToAll(param);
 
 
 		return;

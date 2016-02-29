@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.kii.extension.ruleengine.drools.entity.Trigger;
+import com.kii.extension.ruleengine.drools.entity.TriggerType;
 
 public class TestRuleLoader extends InitTest {
 
@@ -34,7 +35,7 @@ public class TestRuleLoader extends InitTest {
 		Trigger trigger=new Trigger();
 		trigger.addThing(String.valueOf(0));
 
-		trigger.setType("simple");
+		trigger.setType(TriggerType.simple);
 		trigger.setWhen("false2true");
 //		trigger.setPreviousResult(false);
 

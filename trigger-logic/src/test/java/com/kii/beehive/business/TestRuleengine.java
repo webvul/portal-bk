@@ -9,7 +9,7 @@ import java.util.Map;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.kii.beehive.business.ruleengine.ExpressCompute;
+import com.kii.beehive.portal.ruleengine.ExpressCompute;
 import com.kii.extension.sdk.query.Condition;
 import com.kii.extension.sdk.query.ConditionBuilder;
 

@@ -24,7 +24,7 @@ public abstract  class TriggerRecord extends KiiEntity {
 
 	private PreparedCondition preparedCondition;
 
-	private CombinePredicate predicate;
+	private RuleEnginePredicate predicate;
 
 	private List<TriggerTarget>  targets=new ArrayList<>();
 
@@ -76,11 +76,11 @@ public abstract  class TriggerRecord extends KiiEntity {
 		this.recordStatus = recordStatus;
 	}
 
-	public CombinePredicate getPredicate() {
+	public RuleEnginePredicate getPredicate() {
 		return predicate;
 	}
 
-	public void setPredicate(CombinePredicate predicate) {
+	public void setPredicate(RuleEnginePredicate predicate) {
 		this.predicate = predicate;
 	}
 

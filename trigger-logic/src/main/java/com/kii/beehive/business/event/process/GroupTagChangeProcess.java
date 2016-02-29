@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import com.kii.beehive.business.event.BusinessEventListenerService;
 import com.kii.beehive.business.event.impl.TagChangeProcess;
 import com.kii.beehive.portal.event.EventListener;
-import com.kii.beehive.portal.manager.ThingGroupStateManager;
+import com.kii.beehive.business.manager.ThingGroupStateManager;
 import com.kii.beehive.portal.service.TriggerRecordDao;
 import com.kii.beehive.portal.service.TriggerRuntimeStatusDao;
 import com.kii.beehive.portal.store.entity.trigger.GroupTriggerRecord;

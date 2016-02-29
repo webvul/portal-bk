@@ -10,6 +10,7 @@ import org.junit.Test;
 import com.kii.extension.ruleengine.drools.entity.Summary;
 import com.kii.extension.ruleengine.drools.entity.SummaryValueMap;
 import com.kii.extension.ruleengine.drools.entity.Trigger;
+import com.kii.extension.ruleengine.drools.entity.TriggerType;
 
 public class TestSummaryTrigger extends InitTest {
 
@@ -38,7 +39,7 @@ public class TestSummaryTrigger extends InitTest {
 			trigger.addThing(String.valueOf(i));
 		}
 
-		trigger.setType("summary");
+		trigger.setType(TriggerType.summary);
 		trigger.setWhen("false2true");
 //		trigger.setPreviousResult(false);
 

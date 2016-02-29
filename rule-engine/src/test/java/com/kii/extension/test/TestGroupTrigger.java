@@ -9,8 +9,10 @@ import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.kii.extension.ruleengine.drools.entity.GroupPolicy;
 import com.kii.extension.ruleengine.drools.entity.MemberCountResult;
 import com.kii.extension.ruleengine.drools.entity.Trigger;
+import com.kii.extension.ruleengine.drools.entity.TriggerType;
 
 public class TestGroupTrigger extends InitTest {
 
@@ -39,7 +41,8 @@ public class TestGroupTrigger extends InitTest {
 		for(int i=0;i<5;i++) {
 			trigger.addThing(String.valueOf(i));
 		}
-		trigger.setType("all");
+		trigger.setType(TriggerType.group);
+		trigger.setPolicy(GroupPolicy.all);
 		trigger.setWhen("false2true");
 //		trigger.setPreviousResult(false);
 
@@ -87,7 +90,9 @@ public class TestGroupTrigger extends InitTest {
 		for(int i=0;i<5;i++) {
 			trigger.addThing(String.valueOf(i));
 		}
-		trigger.setType("any");
+		trigger.setPolicy(GroupPolicy.any);
+		trigger.setType(TriggerType.group);
+
 		trigger.setWhen("true");
 //		trigger.setPreviousResult(false);
 
@@ -141,7 +146,9 @@ public class TestGroupTrigger extends InitTest {
 		for(int i=0;i<5;i++) {
 			trigger.addThing(String.valueOf(i));
 		}
-		trigger.setType("number");
+		trigger.setPolicy(GroupPolicy.number);
+		trigger.setType(TriggerType.group);
+
 		trigger.setNumber(3);
 		trigger.setWhen("false2true");
 //		trigger.setPreviousResult(false);

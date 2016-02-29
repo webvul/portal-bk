@@ -2,8 +2,10 @@ package com.kii.extension.ruleengine.drools;
 
 import javax.annotation.PostConstruct;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import com.kii.extension.ruleengine.drools.entity.CurrThing;
 import com.kii.extension.ruleengine.drools.entity.MatchResult;
+import com.kii.extension.ruleengine.drools.entity.Summary;
 import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
 import com.kii.extension.ruleengine.drools.entity.Trigger;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
@@ -32,9 +35,12 @@ public class DroolsTriggerService {
 
 
 
-	private Map<String, Trigger> triggerMap=new ConcurrentHashMap<>();
+	private final Map<String, Trigger> triggerMap=new ConcurrentHashMap<>();
 
-	private  CurrThing curr=new CurrThing();
+	private final Map<String,Map<String,Summary>>  summaryMap=new ConcurrentHashMap<>();
+
+
+	private  final CurrThing curr=new CurrThing();
 
 	@PostConstruct
 	public void initRule(){
@@ -67,6 +73,40 @@ public class DroolsTriggerService {
 
 	}
 
+
+
+	public void addSummary(Summary summary) {
+
+		Trigger trigger=triggerMap.get(summary.getTriggerID());
+
+		getService(trigger).addOrUpdateData(summary);
+
+		summaryMap.computeIfAbsent(trigger.getTriggerID(),(id)->new HashMap<>()).put(summary.getSummaryField(),summary);
+
+	}
+
+	public void updateThingsInTrigger(String triggerID, Set<String> newThings) {
+
+		Trigger trigger=triggerMap.get(triggerID);
+
+		trigger.setThings(newThings);
+
+
+		getService(trigger).addOrUpdateData(trigger);
+
+	}
+
+	public void updateThingsInSummary(String triggerID,String summaryField,Set<String> newThings){
+
+		Trigger trigger=triggerMap.get(triggerID);
+
+		Summary summary=summaryMap.get(triggerID).get(summaryField);
+
+		summary.setThings(newThings);
+
+		getService(trigger).addOrUpdateData(summary);
+	}
+
 	public void removeTrigger(String triggerID){
 
 		Trigger trigger=triggerMap.get(triggerID);
@@ -74,6 +114,8 @@ public class DroolsTriggerService {
 		getService(trigger).removeData(trigger);
 		getService(trigger).removeCondition("rule"+triggerID);
 
+		Map<String,Summary> map=summaryMap.remove(triggerID);
+		map.values().forEach(summary-> getService(trigger).removeData(summary));
 	}
 
 	public void enableTrigger(String triggerID) {
@@ -119,6 +161,7 @@ public class DroolsTriggerService {
 		results.forEach(r-> exec.doExecute(r.getTriggerID()));
 
 	}
+	
 	
 
 }

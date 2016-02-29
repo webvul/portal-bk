@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.kii.extension.ruleengine.drools.entity.Trigger;
+import com.kii.extension.ruleengine.drools.entity.TriggerType;
 
 public class TestScheduleTrigger extends InitTest {
 
@@ -31,7 +32,7 @@ public class TestScheduleTrigger extends InitTest {
 		Trigger trigger=new Trigger();
 		trigger.addThing(String.valueOf(10));
 
-		trigger.setType("simple");
+		trigger.setType(TriggerType.simple);
 		trigger.setWhen("false2true");
 
 		String id = "500";
@@ -56,7 +57,7 @@ public class TestScheduleTrigger extends InitTest {
 		Trigger trigger=new Trigger();
 		trigger.addThing(String.valueOf(11));
 
-		trigger.setType("simple");
+		trigger.setType(TriggerType.simple);
 		trigger.setWhen("false2true");
 
 		String id = "501";
@@ -84,7 +85,7 @@ public class TestScheduleTrigger extends InitTest {
 		Trigger trigger=new Trigger();
 		trigger.addThing(String.valueOf(11));
 
-		trigger.setType("simple");
+		trigger.setType(TriggerType.simple);
 		trigger.setWhen("false2true");
 
 		String id = "502";
