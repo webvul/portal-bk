@@ -14,16 +14,20 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kii.beehive.portal.common.utils.CollectUtils;
 import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
+import com.kii.beehive.portal.jdbc.dao.TagGroupRelationDao;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.dao.TagThingRelationDao;
 import com.kii.beehive.portal.jdbc.dao.TeamDao;
 import com.kii.beehive.portal.jdbc.dao.TeamThingRelationDao;
+import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
+import com.kii.beehive.portal.jdbc.entity.TagGroupRelation;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
 import com.kii.beehive.portal.jdbc.entity.TagType;
 import com.kii.beehive.portal.jdbc.entity.Team;
 import com.kii.beehive.portal.jdbc.entity.TeamThingRelation;
+import com.kii.beehive.portal.jdbc.entity.UserGroup;
 import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
 
@@ -48,8 +52,13 @@ public class TagThingManager {
 	
 	@Autowired
 	private TeamThingRelationDao teamThingRelationDao;
-
 	
+	@Autowired
+	private TagGroupRelationDao tagGroupRelationDao;
+	
+	@Autowired
+	private UserGroupDao usergroupDao;
+
 	@Autowired
 	private AppInfoDao appInfoDao;
 
@@ -148,6 +157,25 @@ public class TagThingManager {
 		}
 	}
 	
+	public void bindTagToUserGroup(Collection<String> tagIDs,Collection<String> userGroupIDs) {
+		List<TagIndex> tagList = this.findTagList(tagIDs);
+
+		for(String userGroupID:userGroupIDs){
+			Long ugID = Long.parseLong(userGroupID);
+			List<UserGroup> userGroupList = usergroupDao.findUserGroup(null, ugID , null);
+			if(userGroupList.size() == 0){
+				log.warn("UserGroup is null, UserGroupID = " + userGroupID);
+			}else{
+				for(TagIndex tag:tagList){
+					TagGroupRelation tgr = tagGroupRelationDao.findByTagIDAndUserGroupID(tag.getId(), ugID);
+					if(tgr == null){
+						tagGroupRelationDao.insert(new TagGroupRelation(tag.getId(), ugID));
+					}
+				}
+			}
+		}
+	}
+	
 	public void bindCustomTagToThing(Collection<String> displayNames, Collection<Long> globalThingIDs) {
 
 		List<TagIndex> tagIndexList = this.findCustomTagList(displayNames);
@@ -177,6 +205,22 @@ public class TagThingManager {
 			}else{
 				for(TagIndex tag:tagList){
 					tagThingRelationDao.delete(tag.getId(),thing.getId());
+				}
+			}
+		}
+	}
+	
+	public void unbindTagToUserGroup(Collection<String> tagIDs,Collection<String> userGroupIDs) {
+		List<TagIndex> tagList = this.findTagList(tagIDs);
+
+		for(String userGroupID:userGroupIDs){
+			Long ugID = Long.parseLong(userGroupID);
+			List<UserGroup> userGroupList = usergroupDao.findUserGroup(null, ugID , null);
+			if(userGroupList.size() == 0){
+				log.warn("UserGroup is null, UserGroupID = " + userGroupID);
+			}else{
+				for(TagIndex tag:tagList){
+					tagGroupRelationDao.delete(tag.getId(),ugID);
 				}
 			}
 		}

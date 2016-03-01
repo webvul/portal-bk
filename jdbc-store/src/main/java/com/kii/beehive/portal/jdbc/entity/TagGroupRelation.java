@@ -19,6 +19,11 @@ public class TagGroupRelation extends DBEntity{
 	
 	public TagGroupRelation() {}
 	
+	public TagGroupRelation(Long tagID, Long userGroupID) {
+		super();
+		this.tagID = tagID;
+		this.userGroupID = userGroupID;
+	}
 
 	@JdbcField(column=ID)
 	public Long getId() {
