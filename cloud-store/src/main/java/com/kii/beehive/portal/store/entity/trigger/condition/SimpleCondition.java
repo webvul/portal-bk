@@ -11,7 +11,9 @@ public abstract  class SimpleCondition implements Condition {
 	
 
 	private String field;
-	
+
+
+
 	public String getField() {
 		return field;
 	}
@@ -19,6 +21,8 @@ public abstract  class SimpleCondition implements Condition {
 	public void setField(String field) {
 		this.field = field;
 	}
+
+
 	
 
 }

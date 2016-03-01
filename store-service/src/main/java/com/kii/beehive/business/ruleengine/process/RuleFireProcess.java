@@ -11,7 +11,7 @@ import com.kii.beehive.portal.service.TriggerRecordDao;
 import com.kii.beehive.portal.store.entity.trigger.TriggerRecord;
 
 @Component(BusinessEventListenerService.FIRE_TRIGGER_WHEN_MATCH)
-public class BusinessTriggerFireProcess  implements TriggerFireProcess {
+public class RuleFireProcess implements TriggerFireProcess {
 
 
 	@Autowired

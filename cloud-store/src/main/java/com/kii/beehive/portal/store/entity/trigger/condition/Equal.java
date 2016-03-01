@@ -21,6 +21,15 @@ public class Equal extends SimpleCondition {
 	
 	private Object value;
 
+	private String express;
+
+	public String getExpress() {
+		return express;
+	}
+
+	public void setExpress(String express) {
+		this.express = express;
+	}
 
 	public Object getValue() {
 		return value;

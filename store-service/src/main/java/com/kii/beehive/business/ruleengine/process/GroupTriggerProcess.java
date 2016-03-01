@@ -12,7 +12,6 @@ import com.kii.beehive.business.event.impl.TagChangeProcess;
 import com.kii.beehive.business.manager.ThingStateManager;
 import com.kii.beehive.portal.event.EventListener;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
-import com.kii.beehive.portal.service.BusinessTriggerDao;
 import com.kii.beehive.portal.service.TriggerRecordDao;
 import com.kii.beehive.portal.store.entity.trigger.GroupTriggerRecord;
 import com.kii.beehive.portal.store.entity.trigger.TagSelector;
@@ -28,8 +27,7 @@ public class GroupTriggerProcess implements TagChangeProcess {
 	@Autowired
 	private TriggerRecordDao triggerRecordDao;
 
-	@Autowired
-	private BusinessTriggerDao triggerDao;
+
 
 	@Autowired
 	private BusinessEventListenerService listenerService;
