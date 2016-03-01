@@ -12,11 +12,8 @@
 //import org.springframework.web.bind.annotation.RequestMethod;
 //import org.springframework.web.bind.annotation.RestController;
 //
+//import com.kii.beehive.business.ruleengine.TriggerManager;
 //import com.kii.beehive.portal.auth.AuthInfoStore;
-//import com.kii.beehive.business.manager.SimpleThingTriggerManager;
-//import com.kii.beehive.business.manager.ThingGroupStateManager;
-//import com.kii.beehive.business.manager.ThingStateSummaryManager;
-//import com.kii.beehive.business.manager.TriggerMaintainManager;
 //import com.kii.beehive.portal.store.entity.trigger.GroupTriggerRecord;
 //import com.kii.beehive.portal.store.entity.trigger.SimpleTriggerRecord;
 //import com.kii.beehive.portal.store.entity.trigger.SummaryTriggerRecord;
@@ -30,15 +27,9 @@
 //
 //
 //	@Autowired
-//	private ThingGroupStateManager groupMang;
+//	private TriggerManager manager;
 //
-//	@Autowired
-//	private SimpleThingTriggerManager  simpleMang;
 //
-//	@Autowired
-//	private ThingStateSummaryManager  summaryMang;
-//
-//	private TriggerMaintainManager mang;
 //
 //	/**
 //	 * onboarding should be already done on the things in the param
@@ -55,13 +46,13 @@
 //
 //		switch(record.getType()){
 //			case Simple:
-//				triggerID = simpleMang.createSimpleTrigger((SimpleTriggerRecord)record);
+//				triggerID = manager.createSimpleTrigger((SimpleTriggerRecord)record);
 //				break;
 //			case Group:
-//				triggerID = groupMang.createThingGroup((GroupTriggerRecord)record);
+//				triggerID = manager.createGroupTrigger((GroupTriggerRecord)record);
 //				break;
 //			case Summary:
-//				triggerID = summaryMang.initStateSummary((SummaryTriggerRecord)record);
+//				triggerID = manager.createSummaryTrigger((SummaryTriggerRecord)record);
 //				break;
 //		}
 //

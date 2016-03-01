@@ -120,4 +120,17 @@ public class EngineService {
 
 		droolsTriggerService.addThingStatus(thingID,status);
 	}
+	
+	public void disableTrigger(String triggerID) {
+
+		droolsTriggerService.disableTrigger(triggerID);
+
+	}
+
+
+	public void enableTrigger(String triggerID) {
+
+		droolsTriggerService.enableTrigger(triggerID);
+
+	}
 }

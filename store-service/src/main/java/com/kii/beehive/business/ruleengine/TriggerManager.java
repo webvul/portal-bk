@@ -11,6 +11,7 @@ import com.kii.beehive.portal.service.TriggerRecordDao;
 import com.kii.beehive.portal.store.entity.trigger.GroupTriggerRecord;
 import com.kii.beehive.portal.store.entity.trigger.SimpleTriggerRecord;
 import com.kii.beehive.portal.store.entity.trigger.SummaryTriggerRecord;
+import com.kii.beehive.portal.store.entity.trigger.TriggerRecord;
 import com.kii.extension.ruleengine.EngineService;
 
 @Component
@@ -29,6 +30,7 @@ public class TriggerManager {
 
 	@Autowired
 	private ThingStateManager thingTagService;
+
 
 //
 	public String createSimpleTrigger(SimpleTriggerRecord record){
@@ -95,5 +97,32 @@ public class TriggerManager {
 		return triggerID;
 
 	}
+
+	public void disableTrigger(String triggerID){
+		triggerDao.disableTrigger(triggerID);
+		service.disableTrigger(triggerID);
+		eventService.disableTriggerByTargetID(triggerID);
+	}
+
+
+	public void enableTrigger(String triggerID){
+		triggerDao.enableTrigger(triggerID);
+		service.enableTrigger(triggerID);
+		eventService.enableTriggerByTargetID(triggerID);
+	}
+
+	public TriggerRecord  getTriggerByID(String triggerID){
+
+		return triggerDao.getTriggerRecord(triggerID);
+	}
+//	public void deleteTrigger(String triggerID){
+//
+//		triggerDao.deleteTriggerRecord(triggerID);
+//
+//		service.removeTrigger(triggerID);
+//
+//		eventService.removeListener();
+//
+//	}
 
 }

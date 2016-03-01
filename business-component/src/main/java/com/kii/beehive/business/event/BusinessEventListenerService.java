@@ -1,11 +1,7 @@
 package com.kii.beehive.business.event;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -82,47 +78,33 @@ public class BusinessEventListenerService {
 
 	}
 
-	public String addThingStatusListenerForSummary(Collection<String> thingIDs, String triggerID, String name){
 
-		EventListener  listener=new EventListener();
-		listener.setTargetKey(triggerID);
-		listener.addCustomValue("groupName",name);
-		listener.addBindKeys(thingIDs.stream().map(v->String.valueOf(v)).collect(Collectors.toList()));
-
-		listener.setRelationBeanName(COMPUTE_SUMMARY_STATE);
-		listener.setType(EventType.ThingStateChange);
-		listener.setEnable(true);
-
-		return eventListenerDao.addEventListener(listener);
-
-	}
-
-	public String addThingStatusListenerForTrigger(Collection<String> thingIDs, String triggerID){
-
-		EventListener  listener=new EventListener();
-		listener.setTargetKey(triggerID);
-		listener.addBindKeys(thingIDs.stream().map(v->String.valueOf(v)).collect(Collectors.toList()));
-
-		listener.setRelationBeanName(REFRESH_THING_FOR_TRIGGER);
-		listener.setType(EventType.ThingStateChange);
-		listener.setEnable(true);
-
-		return eventListenerDao.addEventListener(listener);
-
-	}
+//	public String addThingStatusListenerForTrigger(Collection<String> thingIDs, String triggerID){
 //
-	public void updateThingStatusListener(Collection<String> thingIDs,String listenerID){
-
-
-		Map<String,Boolean>  thingMap=new HashMap<>();
-		thingIDs.forEach(id->{
-			thingMap.put(id,true);
-		});
-		Map<String,Object> param=Collections.singletonMap("bindKeys",thingMap);
-
-		 eventListenerDao.updateEntity(param,listenerID);
-
-	}
+//		EventListener  listener=new EventListener();
+//		listener.setTargetKey(triggerID);
+//		listener.addBindKeys(thingIDs.stream().map(v->String.valueOf(v)).collect(Collectors.toList()));
+//
+//		listener.setRelationBeanName(REFRESH_THING_FOR_TRIGGER);
+//		listener.setType(EventType.ThingStateChange);
+//		listener.setEnable(true);
+//
+//		return eventListenerDao.addEventListener(listener);
+//
+//	}
+//
+//	public void updateThingStatusListener(Collection<String> thingIDs,String listenerID){
+//
+//
+//		Map<String,Boolean>  thingMap=new HashMap<>();
+//		thingIDs.forEach(id->{
+//			thingMap.put(id,true);
+//		});
+//		Map<String,Object> param=Collections.singletonMap("bindKeys",thingMap);
+//
+//		 eventListenerDao.updateEntity(param,listenerID);
+//
+//	}
 
 
 
