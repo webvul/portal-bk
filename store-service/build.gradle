@@ -1,6 +1,6 @@
 dependencies {
 
-	compile project(":cloud-business")
+	compile project(":business-component")
 	compile project(":jdbc-store")
 
 	compile project(":cloud-store")

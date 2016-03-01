@@ -14,6 +14,7 @@ import com.kii.extension.ruleengine.drools.RuleGeneral;
 import com.kii.extension.ruleengine.drools.entity.Summary;
 import com.kii.extension.ruleengine.drools.entity.Trigger;
 import com.kii.extension.ruleengine.drools.entity.TriggerType;
+import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
 @Component
 public class EngineService {
@@ -113,5 +114,10 @@ public class EngineService {
 
 		droolsTriggerService.updateThingsInSummary( triggerID,summaryName,newThings);
 
+	}
+	
+	public void updateThingStatus(String thingID,ThingStatus status) {
+
+		droolsTriggerService.addThingStatus(thingID,status);
 	}
 }

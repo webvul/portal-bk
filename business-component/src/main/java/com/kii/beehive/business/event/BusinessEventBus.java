@@ -14,7 +14,6 @@ import com.kii.beehive.portal.event.EventListener;
 import com.kii.beehive.portal.event.EventType;
 import com.kii.beehive.portal.service.EventListenerDao;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
-import com.kii.extension.sdk.entity.thingif.TriggerWhen;
 
 @Component
 public class BusinessEventBus {
@@ -28,7 +27,7 @@ public class BusinessEventBus {
 
 
 	@Async
-	public void onTriggerFire(String triggerID, TriggerWhen when, String thingID,boolean sign){
+	public void onTriggerFire(String triggerID){
 
 
 		List<EventListener> listeners=eventDao.getEventListenerByTypeAndKey(EventType.TriggerFire,triggerID);
@@ -39,7 +38,7 @@ public class BusinessEventBus {
 
 			TriggerFireProcess process= (TriggerFireProcess) context.getBean(name);
 
-			process.onEventFire(listener,thingID,when,sign);
+			process.onEventFire(listener,triggerID);
 
 		});
 

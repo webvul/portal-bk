@@ -1,10 +1,11 @@
-package com.kii.beehive.business.service;
+package com.kii.beehive.business.ruleengine;
 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.business.manager.AppInfoManager;
 import com.kii.beehive.business.manager.ThingStateManager;
