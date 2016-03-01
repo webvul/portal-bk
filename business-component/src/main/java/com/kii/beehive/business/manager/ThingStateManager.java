@@ -2,6 +2,7 @@ package com.kii.beehive.business.manager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,10 +33,10 @@ public class ThingStateManager {
 	@Autowired
 	private ObjectMapper mapper;
 
-	public List<String> getTagNamesByIDs(List<Long> tagIDs){
+	public Set<String> getTagNamesByIDs(List<Long> tagIDs){
 
 
-		return tagDao.findByIDs(tagIDs).stream().map(tag->tag.getFullTagName()).collect(Collectors.toList());
+		return tagDao.findByIDs(tagIDs).stream().map(tag->tag.getFullTagName()).collect(Collectors.toSet());
 	}
 
 	public void updateKiicloudRelation(String vendorID,String fullKiiThingID){
@@ -81,4 +82,12 @@ public class ThingStateManager {
 		return things;
 	}
 
+
+	public Set<String> getKiiThingIDs(TagSelector source){
+
+		List<GlobalThingInfo> thingList=getThingInfos(source);
+
+		return thingList.stream().map(thing->thing.getFullKiiThingID()).collect(Collectors.toSet());
+
+	}
 }

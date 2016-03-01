@@ -35,17 +35,16 @@ public class BusinessEventListenerService {
 	@Autowired
 	private EventListenerDao  eventListenerDao;
 
-	public String addBeehiveTriggerChangeListener(String targetKey,String businessTriggerID){
+	public String addBeehiveTriggerChangeListener(String triggerID){
 
 		EventListener  listener=new EventListener();
-		listener.setTargetKey(targetKey);
+		listener.setTargetKey(triggerID);
 
-		listener.addBindKey(businessTriggerID);
+		listener.addBindKey(triggerID);
 
 		listener.setRelationBeanName(FIRE_TRIGGER_WHEN_MATCH);
 		listener.setEnable(true);
 		listener.setType(EventType.TriggerFire);
-//		listener.addCustomValue(TRIGGER_TYPE,type);
 
 		return eventListenerDao.addEventListener(listener);
 
