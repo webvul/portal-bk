@@ -12,7 +12,7 @@
 //
 //import com.kii.beehive.business.event.BusinessEventBus;
 //import com.kii.beehive.business.event.BusinessEventListenerService;
-//import com.kii.beehive.portal.ruleengine.ExpressCompute;
+//import com.kii.beehive.business.ruleengine.ExpressCompute;
 //import com.kii.beehive.portal.service.BusinessTriggerDao;
 //import com.kii.beehive.portal.store.entity.trigger.BusinessTrigger;
 //import com.kii.extension.sdk.entity.thingif.StatePredicate;

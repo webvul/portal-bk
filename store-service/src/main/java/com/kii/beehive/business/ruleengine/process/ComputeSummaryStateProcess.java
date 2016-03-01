@@ -1,4 +1,4 @@
-//package com.kii.beehive.portal.ruleengine.process;
+//package com.kii.beehive.business.ruleengine.process;
 //
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.stereotype.Component;

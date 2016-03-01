@@ -1,4 +1,4 @@
-package com.kii.beehive.portal.ruleengine.process;
+package com.kii.beehive.business.ruleengine.process;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -8,20 +8,22 @@ import com.kii.beehive.business.event.impl.ThingStatusChangeProcess;
 import com.kii.beehive.portal.event.EventListener;
 import com.kii.beehive.portal.service.BusinessTriggerDao;
 import com.kii.beehive.portal.store.entity.trigger.BusinessTrigger;
+import com.kii.extension.ruleengine.EngineService;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
 @Component(BusinessEventListenerService.REFRESH_THING_FOR_TRIGGER)
 public class BusinessTriggerProcess implements ThingStatusChangeProcess {
 
 
-//	@Autowired
-//	private BusinessTriggerService  service;
 
 	@Autowired
 	private BusinessTriggerDao triggerDao;
 
 	@Autowired
 	private BusinessEventListenerService listenerService;
+
+	@Autowired
+	private EngineService engine;
 
 
 	@Override
@@ -44,7 +46,6 @@ public class BusinessTriggerProcess implements ThingStatusChangeProcess {
 			return;
 		}
 
-//		service.onThingStateChange(triggerID,thingID,status);
 
 
 	}

@@ -4,6 +4,7 @@ dependencies {
 	compile project(":jdbc-store")
 
 	compile project(":cloud-store")
+	compile project(":rule-engine")
 
 
 	testCompile 'org.eclipse.jetty:jetty-server:9.3.2.v20150730'

@@ -1,4 +1,4 @@
-package com.kii.beehive.portal.ruleengine;
+package com.kii.beehive.business.ruleengine;
 
 import java.util.Map;
 

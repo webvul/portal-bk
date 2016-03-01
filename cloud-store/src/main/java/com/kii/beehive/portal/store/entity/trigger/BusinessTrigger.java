@@ -15,7 +15,6 @@ public class BusinessTrigger extends KiiEntity{
 
 	private boolean enable;
 
-//	private Set<String> thingIDList=new HashSet<>();
 	private String targetID;
 
 	private Condition condition;
