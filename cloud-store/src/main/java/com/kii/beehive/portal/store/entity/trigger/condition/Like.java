@@ -23,6 +23,15 @@ public class Like extends SimpleCondition {
 
 	private String like;
 
+	private String express;
+
+	public String getExpress() {
+		return express;
+	}
+
+	public void setExpress(String express) {
+		this.express = express;
+	}
 
 	public String getLike() {
 		return like;

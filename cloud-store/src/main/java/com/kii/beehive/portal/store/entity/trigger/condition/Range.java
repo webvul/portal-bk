@@ -1,5 +1,7 @@
 package com.kii.beehive.portal.store.entity.trigger.condition;
 
+import org.springframework.util.StringUtils;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.kii.beehive.portal.store.entity.trigger.ConditionType;
@@ -50,6 +52,9 @@ public class Range extends SimpleCondition {
 	
 	private Boolean lowerIncluded;
 
+	private String upperExpress;
+
+	private String lowerExpress;
 
 
 
@@ -59,7 +64,7 @@ public class Range extends SimpleCondition {
 
 	@JsonIgnore
 	public boolean isExistUpper(){
-		return (upperLimit!=null);
+		return (upperLimit!=null)&&(StringUtils.isEmpty(upperExpress));
 	}
 
 	public void setUpperIncluded(Boolean upperIncluded) {
@@ -74,7 +79,7 @@ public class Range extends SimpleCondition {
 
 	@JsonIgnore
 	public boolean isExistLower(){
-		return (lowerLimit!=null);
+		return (lowerLimit!=null)&&StringUtils.isEmpty(lowerExpress);
 	}
 
 	public void setLowerIncluded(Boolean lowerIncluded) {
