@@ -52,9 +52,11 @@ public class AppInfoDao extends AbstractDataAccess<KiiAppInfo> {
 
 	@CacheEvict(cacheNames = CacheConfig.LONGLIVE_CACHE,key=APP_LIST_CACHE)
 	@CachePut(cacheNames={CacheConfig.LONGLIVE_CACHE},key="#appInfo.id")
-	public void addAppInfo(KiiAppInfo appInfo) {
+	public KiiAppInfo addAppInfo(KiiAppInfo appInfo) {
 
 		super.addEntity(appInfo, appInfo.getAppInfo().getAppID());
+
+		return appInfo;
 	}
 
 	@Cacheable(cacheNames={CacheConfig.LONGLIVE_CACHE})
@@ -91,14 +93,10 @@ public class AppInfoDao extends AbstractDataAccess<KiiAppInfo> {
 	}
 
 	@CacheEvict(cacheNames=CacheConfig.LONGLIVE_CACHE,key=MASTER_CACHE)
-	public void setMasterAppInfo(String id){
+	public void setMasterAppInfo(KiiAppInfo appInfo){
 
-
-		KiiAppInfo info=new KiiAppInfo();
-		info.setMasterApp(true);
-
-		super.updateEntity(info, id);
-
+		appInfo.setMasterApp(true);
+		super.addEntity(appInfo, appInfo.getAppInfo().getAppID());
 	}
 
 

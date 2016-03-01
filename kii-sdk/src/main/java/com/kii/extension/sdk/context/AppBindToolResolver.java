@@ -197,9 +197,8 @@ public class AppBindToolResolver {
 
 		AppInfo newAppInfo= queryAppInfoByName(choice.getAppName(),choice.getBindName());
 
-		if(newAppInfo!=null) {
-			appInfoDirectly.set(newAppInfo);
-		}
+		appInfoDirectly.set(newAppInfo);
+
 		return newAppInfo;
 	}
 
@@ -249,7 +248,7 @@ public class AppBindToolResolver {
 			}
 		}
 
-		return null;
+		throw new NullPointerException("app "+appName+" not found. bind name:"+bindName);
 	}
 
 }

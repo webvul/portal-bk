@@ -146,7 +146,7 @@ public class AppInfoManager {
 		masterAppInfo.setAppInfo(master);
 		masterAppInfo.setMasterApp(true);
 
-		appDao.addAppInfo(masterAppInfo);
+		appDao.setMasterAppInfo(masterAppInfo);
 
 		appInfoMap.values().forEach((app)->{
 
