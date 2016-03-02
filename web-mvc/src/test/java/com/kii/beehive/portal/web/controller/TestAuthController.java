@@ -27,7 +27,8 @@ import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.extension.sdk.entity.KiiUser;
 
 /**
- * Created by USER on 12/1/15.
+ * the test cases in this class is to test the scenarios of the token stored in auth info cache,
+ * the token stored in auth info cache has an expiration
  */
 public class TestAuthController extends WebTestTemplate {
 
@@ -194,6 +195,76 @@ public class TestAuthController extends WebTestTemplate {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private String login(String userID, String password) throws Exception {
+
+        Map<String, Object> request = new HashMap<>();
+        request.put("userID", userID);
+        request.put("password", password);
+
+        String ctx= mapper.writeValueAsString(request);
+
+        String result=this.mockMvc.perform(
+                post("/oauth2/login").content(ctx)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("UTF-8")
+        )
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        Map<String,Object> map=mapper.readValue(result, Map.class);
+
+        System.out.println("Response:" + result);
+
+        // assert
+        String accessToken = (String)map.get("accessToken");
+        assertNotNull(map.get("accessToken"));
+        assertTrue(accessToken.length() > 0);
+
+        assertEquals(userID, map.get("userID"));
+        assertEquals("someUserNameForTest", map.get("userName"));
+        assertEquals("somePhoneNumberForTest", map.get("phone"));
+        assertEquals("someMailForTest", map.get("mail"));
+        assertEquals("someCompanyForTest", map.get("company"));
+
+        return accessToken;
+    }
+
+    private void logout(String token) throws Exception {
+
+        this.mockMvc.perform(
+                post("/oauth2/logout")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("UTF-8")
+                        .header(AUTH_HEADER, "Bearer " + token)
+        )
+                .andExpect(status().isOk());
+
+    }
+
+    private void validateTokenAvailable(String token) throws Exception {
+
+        this.mockMvc.perform(
+                get("/tags/locations/" + "floor1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("UTF-8")
+                        .header(AUTH_HEADER, "Bearer " + token)
+        )
+                .andExpect(status().isOk());
+
+    }
+
+    private void validateTokenUnavailable(String token) throws Exception {
+
+        this.mockMvc.perform(
+                get("/tags/locations/" + "floor1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("UTF-8")
+                        .header(AUTH_HEADER, "Bearer " + token)
+        )
+                .andExpect(status().isUnauthorized());
+
     }
 
     @Test
@@ -363,33 +434,6 @@ public class TestAuthController extends WebTestTemplate {
         )
                 .andExpect(status().isUnauthorized());
 
-    }
-
-    private String login(String userID, String password) throws Exception {
-        Map<String, Object> request = new HashMap<>();
-        request.put("userID", userID);
-        request.put("password", password);
-
-        String ctx= mapper.writeValueAsString(request);
-
-        String result=this.mockMvc.perform(
-                post("/oauth2/login").content(ctx)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .characterEncoding("UTF-8")
-        )
-                .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString();
-
-        Map<String,Object> map=mapper.readValue(result, Map.class);
-
-        System.out.println("Response:" + result);
-
-        // assert
-        String accessToken = (String)map.get("accessToken");
-        assertNotNull(map.get("accessToken"));
-        assertTrue(accessToken.length() > 0);
-
-        return accessToken;
     }
 
     /**

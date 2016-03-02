@@ -19,7 +19,7 @@ import com.kii.beehive.portal.jdbc.entity.Permission;
 import com.kii.beehive.portal.store.entity.AuthInfoEntry;
 
 /**
- * this class stores the auth info entries in cache as below:
+ * this class stores the auth info entries in auth info cache as below:
  * key: token
  * value: auth info entry
  *
@@ -30,13 +30,13 @@ public class AuthInfoCacheService {
     private Logger log= LoggerFactory.getLogger(AuthInfoCacheService.class);
 
     @Autowired
-    private GroupUserRelationDao groupUserRelationDao;
-    
-    @Autowired
-    private PermissionDao permissionDao;
+    private AuthInfoService authInfoService;
 
     /**
-     * get auth info entry from cache
+     * get auth info entry from auth info cache
+     *
+     * Important:
+     * this method should not be called inside this class, otherwise the cache function can't work properly
      *
      * @param token
      * @return if valid token, return the corresponding AuthInfo entity; otherwise, return null
@@ -47,8 +47,12 @@ public class AuthInfoCacheService {
     }
 
     /**
-     * save auth info into cache
-     * if there is existing auth info in DB or cache, will update the token inside auth info
+     * save auth info into auth info cache
+     * if there is existing auth info in auth info cache, will update the token inside auth info
+     *
+     * Important:
+     * this method should not be called inside this class, otherwise the cache function can't work properly
+     *
      * @param userID
      * @param token
      */
@@ -57,22 +61,15 @@ public class AuthInfoCacheService {
 
         log.debug("save(into cache) token: " + token + " for userID: " + userID);
 
-        //get user Permission
-        Set<String> pSet = new HashSet<String>();
-        List<GroupUserRelation> groupUserRelation = groupUserRelationDao.findByUserID(userID);
-        for(GroupUserRelation gur:groupUserRelation){
-        	List<Permission> plist = permissionDao.findByUserGroupID(gur.getUserGroupID());
-        	for(Permission p:plist){
-                log.debug("get permission on userID: " + userID + " action: " + p.getAction());
-        		pSet.add(p.getAction());
-        	}
-        }
-
-        return new AuthInfoEntry(userID, token, pSet);
+        return authInfoService.createAuthInfoEntry(userID, token);
     }
 
     /**
-     * remove auth info entry from cache
+     * remove auth info entry from auth info cache
+     *
+     * Important:
+     * this method should not be called inside this class, otherwise the cache function can't work properly
+     *
      * @param token
      */
     @CacheEvict(cacheNames=CacheConfig.AUTH_INFO_CACHE, key="#token")

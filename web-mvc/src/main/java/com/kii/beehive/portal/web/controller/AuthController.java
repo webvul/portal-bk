@@ -78,12 +78,17 @@ public class AuthController {
 
         String userID = (String)request.get("userID");
         String password = (String)request.get("password");
+        Boolean permanentToken = (Boolean)request.get("permanentToken");
+        // if permanentToken is not set, make it false as default
+        if(permanentToken == null) {
+            permanentToken = false;
+        }
 
         if(CollectUtils.containsBlank(userID, password)) {
             throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "userID or password empty", HttpStatus.BAD_REQUEST);
         }
 
-        LoginInfo loginInfo = authManager.login(userID, password);
+        LoginInfo loginInfo = authManager.login(userID, password, permanentToken);
 
         if(loginInfo == null) {
             throw new PortalException(ErrorCode.AUTH_FAIL, "Authentication failed", HttpStatus.BAD_REQUEST);
