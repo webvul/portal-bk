@@ -17,12 +17,14 @@ import com.kii.beehive.portal.common.utils.CollectUtils;
 import com.kii.beehive.portal.jdbc.entity.Team;
 import com.kii.beehive.portal.manager.AuthManager;
 import com.kii.beehive.portal.manager.UserManager;
+import com.kii.beehive.portal.store.entity.AuthInfoEntry;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.entity.AuthRestBean;
 import com.kii.beehive.portal.web.exception.PortalException;
 import com.kii.extension.sdk.entity.LoginInfo;
+import com.kii.extension.sdk.exception.UnauthorizedAccessException;
 
 /**
  * Beehive API - User API
@@ -122,21 +124,71 @@ public class AuthController {
      * @return
      */
     @RequestMapping(path = "/logout", method = { RequestMethod.POST })
-    public void login(HttpServletRequest request) {
+    public void logout(HttpServletRequest request) {
 
+        String token = getTokenFromHttpHeader(request);
+
+        if(token == null) {
+            return;
+        }
+
+        authManager.logout(token);
+
+    }
+
+    private String getTokenFromHttpHeader(HttpServletRequest request) {
         String auth = request.getHeader(Constants.ACCESS_TOKEN);
 
         if (auth == null || !auth.startsWith("Bearer ")) {
-            return;
+            return null;
         }
 
         auth = auth.trim();
 
         String token = auth.substring(auth.indexOf(" ") + 1).trim();
 
-        authManager.logout(token);
-
+        return token;
     }
+
+    /**
+     * 验证用户（令牌）
+     * POST /oauth2/validatetoken
+     *
+     * refer to doc "Beehive API - User API" for request/response details
+     *
+     * @return
+     */
+    @RequestMapping(path = "/validatetoken", method = { RequestMethod.POST })
+    public AuthRestBean validateUserToken(HttpServletRequest request) {
+
+        String token = getTokenFromHttpHeader(request);
+        AuthInfoEntry entry = authManager.getAuthInfoEntry(token);
+
+        // this case would rarely happen, because token is validated in AuthInterceptor before coming here
+        if(entry == null) {
+            throw new PortalException(ErrorCode.AUTH_FAIL, "Authentication failed", HttpStatus.BAD_REQUEST);
+        }
+
+        String userID = entry.getUserID();
+
+        // get user info
+        BeehiveUser beehiveUser = userManager.getUserByID(userID);
+
+        AuthRestBean authRestBean = new AuthRestBean(beehiveUser);
+
+        Team team = userManager.getTeamByID(userID);
+        if(team != null){
+            authRestBean.setTeamID(team.getId());
+            authRestBean.setTeamName(team.getName());
+        }
+
+        // get access token
+        String accessToken = entry.getToken();
+        authRestBean.setAccessToken(accessToken);
+        authRestBean.setPermissions(entry.getPermissionSet());
+        return authRestBean;
+    }
+
 
     /**
      * 用户修改密码

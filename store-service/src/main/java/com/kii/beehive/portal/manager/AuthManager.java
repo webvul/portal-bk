@@ -164,7 +164,7 @@ public class AuthManager {
         if(authInfo == null) {
 			throw new UnauthorizedAccessException();
         }
-        
+
         userTokenBindTool.bindToken(authInfo.getToken());
 
         return authInfo;
@@ -201,8 +201,14 @@ public class AuthManager {
     	if(Strings.isBlank(token)){
     		return null;
     	}
-    	
-        return authInfoCacheService.getAuthInfo(token);
+
+        AuthInfoEntry authInfoEntry = authInfoCacheService.getAuthInfo(token);
+
+        if(authInfoEntry == null) {
+            authInfoEntry = authInfoPermanentTokenService.getAuthInfo(token);
+        }
+
+        return authInfoEntry;
     }
 
 }

@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.ResultActions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
@@ -265,20 +266,34 @@ public class TestAuthControllerPermanentToken extends WebTestTemplate {
 
     private void validateTokenAvailable(String token) throws Exception {
 
-        this.mockMvc.perform(
-                get("/tags/locations/" + "floor1")
+
+        ResultActions resultActions = this.mockMvc.perform(
+                post("/oauth2/validatetoken")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
                         .header(AUTH_HEADER, "Bearer " + token)
         )
                 .andExpect(status().isOk());
 
+        String result = resultActions.andReturn().getResponse().getContentAsString();
+
+        Map<String, Object> map = (Map<String, Object>)mapper.readValue(result, Map.class);
+
+        String accessToken = (String)map.get("accessToken");
+        assertTrue(accessToken.length() > 0);
+
+        String userID = (String)map.get("userID");
+        assertTrue(userID.length() > 0);
+
+        List<String> list = (List<String>)map.get("permissions");
+        assertTrue(list.size() > 0);
+
     }
 
     private void validateTokenUnavailable(String token) throws Exception {
 
         this.mockMvc.perform(
-                get("/tags/locations/" + "floor1")
+                post("/oauth2/validatetoken")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
                         .header(AUTH_HEADER, "Bearer " + token)
