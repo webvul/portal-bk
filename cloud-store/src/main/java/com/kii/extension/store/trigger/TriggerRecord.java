@@ -26,7 +26,7 @@ public abstract  class TriggerRecord extends KiiEntity {
 
 	private RuleEnginePredicate predicate;
 
-	private List<TriggerTarget>  targets=new ArrayList<>();
+	private List<ExecuteTarget>  targets=new ArrayList<>();
 
 //	private TriggerType type;
 
@@ -84,16 +84,16 @@ public abstract  class TriggerRecord extends KiiEntity {
 		this.predicate = predicate;
 	}
 
-	public List<TriggerTarget> getTargets() {
+	public List<ExecuteTarget> getTargets() {
 		return targets;
 	}
 
-	public void setTarget(List<TriggerTarget> target) {
+	public void setTarget(List<ExecuteTarget> target) {
 		this.targets = target;
 	}
 
 	@JsonIgnore
-	public void addTarget(TriggerTarget  target){
+	public void addTarget(ExecuteTarget target){
 		this.targets.add(target);
 	}
 

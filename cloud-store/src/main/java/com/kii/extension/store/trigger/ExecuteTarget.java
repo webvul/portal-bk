@@ -3,7 +3,7 @@ package com.kii.extension.store.trigger;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 
-public class TriggerTarget {
+public class ExecuteTarget {
 
 
 	private TagSelector selector;

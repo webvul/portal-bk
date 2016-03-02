@@ -12,7 +12,7 @@ import com.kii.beehive.business.manager.ThingStateManager;
 import com.kii.extension.service.TriggerRecordDao;
 import com.kii.extension.store.trigger.TargetAction;
 import com.kii.extension.store.trigger.TriggerRecord;
-import com.kii.extension.store.trigger.TriggerTarget;
+import com.kii.extension.store.trigger.ExecuteTarget;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
 
 
@@ -41,7 +41,7 @@ public class CommandExecuteService {
 
 
 	public void doCommand(TriggerRecord  record) {
-		List<TriggerTarget> targets=record.getTargets();
+		List<ExecuteTarget> targets=record.getTargets();
 
 		targets.forEach(target->{
 
