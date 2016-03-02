@@ -23,6 +23,7 @@ import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
 import com.kii.beehive.portal.service.BeehiveUserDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
+import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.beehive.portal.web.entity.UserGroupRestBean;
 import com.kii.beehive.portal.web.exception.BeehiveUnAuthorizedException;
 import com.kii.beehive.portal.web.exception.PortalException;
@@ -90,9 +91,15 @@ public class UserGroupController extends AbstractController{
 	 */
 	@RequestMapping(path="/{userGroupID}/user/{userIDs}",method={RequestMethod.DELETE})
 	public ResponseEntity removeUsersFromUserGroup(@PathVariable("userGroupID") Long userGroupID, @PathVariable("userIDs") String userIDs, HttpServletRequest httpRequest){
-
-		if(checkUserGroup(getLoginUserID(), userGroupID)){
-
+		UserGroup ug = this.userGroupDao.findByID(userGroupID);
+		if(ug == null){
+			throw new PortalException("UserGroup Not Found", "UserGroup with userGroupID:" + userGroupID + " Not Found", HttpStatus.NOT_FOUND);
+		}else if(ug.getName().equals(Constants.ADMIN_GROUP)){
+			List<GroupUserRelation> gurList = this.groupUserRelationDao.findByUserGroupID(userGroupID);
+			if(gurList.size() <= 1){
+				throw new PortalException("UserGroup can't delete", "ADMIN GROUP has at least one user" + userGroupID + " Not Found", HttpStatus.NOT_FOUND);
+			}
+		}else if(checkUserGroup(getLoginUserID(), userGroupID)){
 			List<String> userIDList = Arrays.asList(userIDs.split(","));
 			groupUserRelationDao.deleteUsers(userIDList, userGroupID);
 		}
@@ -115,6 +122,8 @@ public class UserGroupController extends AbstractController{
 		
 		if(orig == null){
 			throw new PortalException("UserGroup Not Found", "UserGroup with userGroupID:" + userGroupID + " Not Found", HttpStatus.NOT_FOUND);
+		}else if(orig.getName().equals(Constants.ADMIN_GROUP)){
+			throw new PortalException("Admin UserGroup can't delete", "", HttpStatus.NOT_FOUND);
 		}
 		
 		userManager.deleteUserGroup(userGroupID);

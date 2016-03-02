@@ -155,7 +155,7 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 		List<Object> params = new ArrayList<Object>();
 		params.add(type);
 		if(AuthInfoStore.getTeamID() != null){
-			sql.append(" INNER JOIN rel_team_thing r ON id_global_thing=r.thing_id WHERE r.team_id = " +AuthInfoStore.getTeamID());
+			sql.append(" INNER JOIN rel_team_thing r ON g.id_global_thing=r.thing_id WHERE r.team_id = " +AuthInfoStore.getTeamID());
 			params.add(AuthInfoStore.getTeamID());
 		}
 		sql.append(where);

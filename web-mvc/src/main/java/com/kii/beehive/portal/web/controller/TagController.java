@@ -1,5 +1,6 @@
 package com.kii.beehive.portal.web.controller;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -154,6 +155,38 @@ public class TagController {
 	@RequestMapping(path = "/locations", method = { RequestMethod.GET }, consumes = { "*" })
 	public ResponseEntity<List<String>> findAllLocations() {
 		return findLocations("");
+	}
+	
+	/**
+	 * 绑定tag及usergroup
+	 * POST /tags/{tagIDs}/userGroups/{userGroupIDs}
+	 *
+	 * refer to doc "Beehive API - Thing API" for request/response details
+	 *
+	 * @param globalThingIDs
+     */
+	@RequestMapping(path="/{tagIDs}/userGroups/{userGroupIDs}",method={RequestMethod.POST})
+	public void addThingTeam(@PathVariable("tagIDs") String tagIDs,@PathVariable("userGroupIDs") String userGroupIDs){
+		Arrays.asList(tagIDs.split(","));
+		List<String> tagIDList = Arrays.asList(tagIDs.split(","));
+		List<String> userGroupIDList = Arrays.asList(userGroupIDs.split(","));
+		thingTagManager.bindTagToUserGroup(tagIDList, userGroupIDList);
+
+	}
+	
+	/**
+	 * 解除绑定tag及usergroup
+	 * DELETE /tags/{tagIDs}/userGroups/{userGroupIDs}
+	 *
+	 * refer to doc "Beehive API - Thing API" for request/response details
+	 *
+	 * @param tagIDs
+     */
+	@RequestMapping(path="/{tagIDs}/userGroups/{userGroupIDs}",method={RequestMethod.DELETE},consumes={"*"})
+	public void removeThingTeam(@PathVariable("tagIDs") String tagIDs,@PathVariable("userGroupIDs") String userGroupIDs){
+		List<String> tagIDList = Arrays.asList(tagIDs.split(","));
+		List<String> userGroupIDList = Arrays.asList(userGroupIDs.split(","));
+		thingTagManager.unbindTagToUserGroup(tagIDList, userGroupIDList);
 	}
 
 }
