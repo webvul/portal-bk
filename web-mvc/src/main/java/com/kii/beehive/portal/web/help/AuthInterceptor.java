@@ -157,6 +157,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 			}else {
 
 				AuthInfoEntry authInfo = authManager.validateAndBindUserToken(token);
+				log.debug(authInfo.toString());
 				list.set(1, authInfo.getUserID());
 
 				// if not auth APIs and don't have permission, throw exception

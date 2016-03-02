@@ -166,7 +166,7 @@ public class TagController {
 	 * @param globalThingIDs
      */
 	@RequestMapping(path="/{tagIDs}/userGroups/{userGroupIDs}",method={RequestMethod.POST})
-	public void addThingTeam(@PathVariable("tagIDs") String tagIDs,@PathVariable("userGroupIDs") String userGroupIDs){
+	public void addTagToUserGroup(@PathVariable("tagIDs") String tagIDs,@PathVariable("userGroupIDs") String userGroupIDs){
 		Arrays.asList(tagIDs.split(","));
 		List<String> tagIDList = Arrays.asList(tagIDs.split(","));
 		List<String> userGroupIDList = Arrays.asList(userGroupIDs.split(","));
@@ -183,7 +183,7 @@ public class TagController {
 	 * @param tagIDs
      */
 	@RequestMapping(path="/{tagIDs}/userGroups/{userGroupIDs}",method={RequestMethod.DELETE},consumes={"*"})
-	public void removeThingTeam(@PathVariable("tagIDs") String tagIDs,@PathVariable("userGroupIDs") String userGroupIDs){
+	public void removeTagToUserGroup(@PathVariable("tagIDs") String tagIDs,@PathVariable("userGroupIDs") String userGroupIDs){
 		List<String> tagIDList = Arrays.asList(tagIDs.split(","));
 		List<String> userGroupIDList = Arrays.asList(userGroupIDs.split(","));
 		thingTagManager.unbindTagToUserGroup(tagIDList, userGroupIDList);

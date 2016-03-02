@@ -86,7 +86,6 @@ public class TagIndexDao extends SpringBaseDao<TagIndex> {
 		sql.append(where);
 		
 		Object[] params = new Object[] {TagType.Location.toString(), parentLocation + "%"};
-		System.out.println(sql.toString());
 		List<String> rows = jdbcTemplate.queryForList(sql.toString(), params, String.class);
 
 		return rows;

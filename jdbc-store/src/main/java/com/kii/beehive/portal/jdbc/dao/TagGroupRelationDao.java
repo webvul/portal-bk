@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
+import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
 import com.kii.beehive.portal.jdbc.entity.TagGroupRelation;
 
 @Repository
@@ -65,4 +66,8 @@ public class TagGroupRelationDao extends SpringBaseDao<TagGroupRelation> {
 		}
         return null;
     }
+	
+	public List<TagGroupRelation> findByUserGroupID(Long userGroupID) {
+		return super.findBySingleField(TagGroupRelation.USER_GROUP_ID, userGroupID);
+	}
 }

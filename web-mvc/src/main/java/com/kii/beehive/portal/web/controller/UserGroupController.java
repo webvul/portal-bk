@@ -19,7 +19,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kii.beehive.portal.jdbc.dao.TagGroupRelationDao;
+import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
+import com.kii.beehive.portal.jdbc.entity.TagGroupRelation;
+import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
 import com.kii.beehive.portal.service.BeehiveUserDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
@@ -39,6 +43,12 @@ public class UserGroupController extends AbstractController{
 	
 	@Autowired
 	private BeehiveUserDao beehiveUserDao;
+	
+	@Autowired
+	private TagGroupRelationDao tagGroupRelationDao;
+	
+	@Autowired
+	private TagIndexDao tagIndexDao;
 	
     /**
      * 创建用户群组
@@ -160,6 +170,34 @@ public class UserGroupController extends AbstractController{
 			throw new PortalException("UserGroup Not Found", "UserGroup with userGroupID:" + userGroupID + " Not Found", HttpStatus.NOT_FOUND);
 		}
         return new ResponseEntity<>(ugrb, HttpStatus.OK);
+    }
+    
+    /**
+     * 取得群組內的tags
+     * GET /usergroup/{userGroupID}/tags
+     *
+     * refer to doc "Beehive API - User API" for request/response details
+     * refer to doc "Tech Design - Beehive API", section "Detail User Group" for more details
+     *
+     * @param userGroupID
+     */
+    @RequestMapping(path="/{userGroupID}/tags",method={RequestMethod.GET})
+    public ResponseEntity<List<TagIndex>> getUserGroupTag(@PathVariable("userGroupID") Long userGroupID, HttpServletRequest httpRequest){
+    	List<TagIndex> tagList = null;
+		if(checkUserGroup(getLoginUserID(), userGroupID)){
+			List<Long> tagIDList = new ArrayList<Long>(); 
+			List<TagGroupRelation> relList = tagGroupRelationDao.findByUserGroupID(userGroupID);
+			if(relList.size() > 0){
+				for(TagGroupRelation gur:relList){
+					tagIDList.add(gur.getTagID());
+				}
+				tagList = tagIndexDao.findByIDs(tagIDList);
+			}
+		}
+		if(tagList == null){
+			throw new PortalException("UserGroup Not Found", "UserGroup with userGroupID:" + userGroupID + " Not Found", HttpStatus.NOT_FOUND);
+		}
+        return new ResponseEntity<>(tagList, HttpStatus.OK);
     }
     
     /**
