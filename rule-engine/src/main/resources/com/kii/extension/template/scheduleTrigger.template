@@ -1,0 +1,19 @@
+package com.kii.extension.ruleengine.drools.rule
+
+import com.kii.extension.ruleengine.drools.entity.*;
+
+global CurrThing currThing;
+
+
+
+/////////////////////////////////////
+//schedule trigger custom segment
+/////////////////////////////////////
+
+rule "${triggerID} user custom segment"
+   ${timer}
+when
+    Trigger( $triggerID:triggerID=="${triggerID}")
+then
+	insertLogical(new MatchResult($triggerID));
+end

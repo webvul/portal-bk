@@ -1,0 +1,64 @@
+package com.kii.extension.ruleengine.drools.rule
+
+import com.kii.extension.ruleengine.drools.entity.*;
+
+global CurrThing currThing;
+
+
+
+rule "summary of  true  result:all"
+when
+	$trigger:Trigger(policy =="All",$triggerID:triggerID,$things:things)
+    CurrThing(thing memberOf $things) from currThing
+    $match:MemberMatchResult(triggerID==$triggerID)
+	accumulate(MemberMatchResult(triggerID==$triggerID,$thingID:thingID);
+                        $thingCount : count($thingID);
+                        $thingCount==$trigger.things.size()
+              )
+then
+	System.out.println("trigger all "+$trigger.getTriggerID()+" been fire");
+	insertLogical(new MatchResult($triggerID));
+end
+
+
+rule "summary of  true  result:any  ->true"
+when
+	$trigger:Trigger(policy =="Any",$triggerID:triggerID,$things:things)
+    CurrThing(thing memberOf $things) from currThing
+	accumulate( MemberMatchResult(triggerID==$triggerID,thingID memberOf  $things, $thingID:thingID );
+                      $thingCount : count($thingID);
+					  $thingCount>0
+                  )
+then
+	System.out.println("trigger any true "+$trigger.getTriggerID()+" been fire");
+	insertLogical(new MatchResult($triggerID));
+end
+
+rule "summary of  true  result:number"
+when
+	$trigger:Trigger(policy =="Some",$triggerID:triggerID,$things:things)
+    CurrThing(thing memberOf $things) from currThing
+    $match:MemberMatchResult(triggerID==$triggerID)
+	accumulate( MemberMatchResult(triggerID==$triggerID,$thingID:thingID );
+                    $thingCount : count($thingID);
+                    $thingCount>=$trigger.number
+                    )
+then
+	System.out.println("trigger number  "+$trigger.getTriggerID()+" been fire");
+	insertLogical(new MatchResult($triggerID));
+end
+
+
+rule "summary of  true  result:precert"
+when
+	$trigger:Trigger(policy =="Percent",$triggerID:triggerID,$things:things)
+    CurrThing(thing memberOf $things) from currThing
+    $match:MemberMatchResult(triggerID==$triggerID)
+	accumulate( MemberMatchResult(triggerID==$triggerID,$thingID:thingID );
+                    $thingCount : count($thingID);
+                    $thingCount>=$trigger.number*$things.length()/100
+                    )
+then
+	System.out.println("trigger number  "+$trigger.getTriggerID()+" been fire");
+	insertLogical(new MatchResult($triggerID));
+end

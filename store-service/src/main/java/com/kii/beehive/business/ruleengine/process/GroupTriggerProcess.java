@@ -9,9 +9,9 @@ import com.kii.beehive.business.event.BusinessEventListenerService;
 import com.kii.beehive.business.event.impl.TagChangeProcess;
 import com.kii.beehive.business.manager.ThingStateManager;
 import com.kii.beehive.portal.event.EventListener;
-import com.kii.beehive.portal.service.TriggerRecordDao;
-import com.kii.beehive.portal.store.entity.trigger.GroupTriggerRecord;
-import com.kii.extension.ruleengine.EngineService;
+import com.kii.extension.service.TriggerRecordDao;
+import com.kii.extension.store.trigger.GroupTriggerRecord;
+import com.kii.extension.EngineService;
 
 @Component(BusinessEventListenerService.REFRESH_THING_GROUP)
 public class GroupTriggerProcess implements TagChangeProcess {

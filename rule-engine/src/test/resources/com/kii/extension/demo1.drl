@@ -1,0 +1,10 @@
+package com.kii.extension.ruleengine.demo
+
+import Applicant;
+
+rule "compute express"
+when
+    $a : Applicant( age < 18 )
+then
+    $a.setValid( false );
+end

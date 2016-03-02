@@ -14,14 +14,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.kii.beehive.portal.store.entity.trigger.TriggerGroupPolicyType;
-import com.kii.extension.ruleengine.StatelessRuleExecute;
-import com.kii.extension.ruleengine.demo.Applicant;
-import com.kii.extension.ruleengine.demo.Message;
-import com.kii.extension.ruleengine.drools.entity.Summary;
-import com.kii.extension.ruleengine.drools.entity.SummaryValueMap;
-import com.kii.extension.ruleengine.drools.entity.Trigger;
-import com.kii.extension.ruleengine.drools.entity.TriggerType;
+import com.kii.extension.store.trigger.TriggerGroupPolicyType;
+import com.kii.extension.StatelessRuleExecute;
+import com.kii.extension.demo.Applicant;
+import com.kii.extension.demo.Message;
+import com.kii.extension.drools.entity.Summary;
+import com.kii.extension.drools.entity.SummaryValueMap;
+import com.kii.extension.drools.entity.Trigger;
+import com.kii.extension.drools.entity.TriggerType;
 
 public class TestDemo extends InitTest {
 

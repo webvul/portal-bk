@@ -7,11 +7,11 @@ import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.kii.beehive.portal.store.entity.trigger.TriggerWhen;
-import com.kii.extension.ruleengine.drools.entity.Summary;
-import com.kii.extension.ruleengine.drools.entity.SummaryValueMap;
-import com.kii.extension.ruleengine.drools.entity.Trigger;
-import com.kii.extension.ruleengine.drools.entity.TriggerType;
+import com.kii.extension.store.trigger.TriggerWhen;
+import com.kii.extension.drools.entity.Summary;
+import com.kii.extension.drools.entity.SummaryValueMap;
+import com.kii.extension.drools.entity.Trigger;
+import com.kii.extension.drools.entity.TriggerType;
 
 public class TestSlideSummary extends InitTest{
 

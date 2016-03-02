@@ -7,12 +7,12 @@ import org.springframework.stereotype.Component;
 
 import com.kii.beehive.business.event.BusinessEventListenerService;
 import com.kii.beehive.business.manager.ThingStateManager;
-import com.kii.beehive.portal.service.TriggerRecordDao;
-import com.kii.beehive.portal.store.entity.trigger.GroupTriggerRecord;
-import com.kii.beehive.portal.store.entity.trigger.SimpleTriggerRecord;
-import com.kii.beehive.portal.store.entity.trigger.SummaryTriggerRecord;
-import com.kii.beehive.portal.store.entity.trigger.TriggerRecord;
-import com.kii.extension.ruleengine.EngineService;
+import com.kii.extension.service.TriggerRecordDao;
+import com.kii.extension.store.trigger.GroupTriggerRecord;
+import com.kii.extension.store.trigger.SimpleTriggerRecord;
+import com.kii.extension.store.trigger.SummaryTriggerRecord;
+import com.kii.extension.store.trigger.TriggerRecord;
+import com.kii.extension.EngineService;
 
 @Component
 public class TriggerManager {
@@ -39,9 +39,10 @@ public class TriggerManager {
 
 		String triggerID=triggerDao.addEntity(record).getObjectID();
 
-
-		String thingID=thingTagService.getThingByID(record.getSource().getThingID()).getFullKiiThingID();
-
+		String thingID=null;
+		if(record.getSource()!=null) {
+			thingID = thingTagService.getThingByID(record.getSource().getThingID()).getFullKiiThingID();
+		}
 		service.createSimpleTrigger(thingID,triggerID,record.getPredicate());
 
 		eventService.addBeehiveTriggerChangeListener(triggerID);

@@ -1,0 +1,89 @@
+package com.kii.extension.ruleengine.drools.rule
+
+import com.kii.extension.ruleengine.drools.entity.*;
+import CommandExec;
+
+global CurrThing currThing;
+
+query "get Match Result by TriggerID" ()
+	Trigger($triggerID:triggerID,when=="CONDITION_TRUE")
+    results : MatchResult( triggerID == $triggerID )
+end
+
+
+rule "fire all trigger:when false->true,trigger  fire"
+when
+	$trigger:Trigger($triggerID:triggerID, $things:things, when == "CONDITION_FALSE_TO_TRUE",enable==true )
+    CurrThing(thing memberOf $things) from currThing
+    MatchResult(triggerID==$triggerID)
+    not ( TriggerResult(triggerID==$triggerID) )
+then
+	System.out.println("false-true "+$triggerID+" been fired");
+	insert(new TriggerResult($triggerID));
+	CommandExec exec=(CommandExec)kcontext.getKieRuntime().getEnvironment().get("exec");
+    exec.doExecute($triggerID);
+end
+
+
+rule "fire all trigger:when false->true,trigger not fire"
+when
+	$trigger:Trigger($triggerID:triggerID,$things:things,when == "CONDITION_FALSE_TO_TRUE",enable==true )
+    CurrThing(thing memberOf $things) from currThing
+    not ( exists MatchResult(triggerID==$triggerID) )
+    $result:TriggerResult(triggerID==$triggerID)
+then
+	System.out.println("false-true "+$triggerID+" not been fired");
+	delete($result);
+end
+
+rule "fire all trigger:when false->true change,trigger  fire"
+when
+	$trigger:Trigger($triggerID:triggerID, $things:things, when == "CONDITION_CHANGED",enable==true )
+    CurrThing(thing memberOf $things) from currThing
+    MatchResult(triggerID==$triggerID)
+    not ( TriggerResult(triggerID==$triggerID) )
+then
+	System.out.println("change "+$triggerID+" been fired");
+	insert(new TriggerResult($triggerID));
+	CommandExec exec=(CommandExec)kcontext.getKieRuntime().getEnvironment().get("exec");
+    exec.doExecute($triggerID);
+end
+
+rule "fire all trigger:when true->false change,trigger  fire"
+when
+	$trigger:Trigger($triggerID:triggerID, $things:things, when == "CONDITION_CHANGED",enable==true )
+    CurrThing(thing memberOf $things) from currThing
+    not (MatchResult(triggerID==$triggerID))
+    $result:TriggerResult(triggerID==$triggerID)
+then
+	System.out.println("change "+$triggerID+" been fired");
+	delete($result);
+	CommandExec exec=(CommandExec)kcontext.getKieRuntime().getEnvironment().get("exec");
+    exec.doExecute($triggerID);
+end
+
+
+rule "fire trigger:when true->false,trigger fire "
+when
+	$trigger:Trigger($triggerID:triggerID,$things:things ,when == "CONDITION_TRUE_TO_FALSE" ,enable==true )
+    CurrThing(thing memberOf $things) from currThing
+    not( MatchResult(triggerID==$triggerID) )
+    $result:TriggerResult(triggerID==$triggerID)
+then
+	System.out.println("true-false "+ $triggerID +" fired ");
+	delete($result);
+    CommandExec exec=(CommandExec)kcontext.getKieRuntime().getEnvironment().get("exec");
+    exec.doExecute($triggerID);
+end
+
+
+rule "fire trigger:when true->false,trigger not fire "
+when
+	$trigger:Trigger($triggerID:triggerID,$things:things ,when == "CONDITION_TRUE_TO_FALSE" ,enable==true  )
+    CurrThing(thing memberOf $things) from currThing
+    MatchResult(triggerID==$triggerID)
+    not ( TriggerResult(triggerID==$triggerID) )
+then
+	System.out.println("true-false "+ $triggerID +" not fired");
+	insert(new TriggerResult($triggerID));
+end

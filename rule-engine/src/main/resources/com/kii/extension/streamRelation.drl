@@ -1,0 +1,17 @@
+package com.kii.extension.ruleengine.drools.rule
+
+import com.kii.extension.ruleengine.drools.entity.*;
+import CommandExec;
+
+global CurrThing currThing;
+
+declare ThingStatusInRule
+    @role( event )
+	@timestamp( createAt )
+
+    thingID : String @key
+    values  : java.util.Map
+	createAt: java.util.Date
+
+end
+

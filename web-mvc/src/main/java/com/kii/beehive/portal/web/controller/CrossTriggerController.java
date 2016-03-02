@@ -14,10 +14,10 @@
 //
 //import com.kii.beehive.business.ruleengine.TriggerManager;
 //import com.kii.beehive.portal.auth.AuthInfoStore;
-//import com.kii.beehive.portal.store.entity.trigger.GroupTriggerRecord;
-//import com.kii.beehive.portal.store.entity.trigger.SimpleTriggerRecord;
-//import com.kii.beehive.portal.store.entity.trigger.SummaryTriggerRecord;
-//import com.kii.beehive.portal.store.entity.trigger.TriggerRecord;
+//import GroupTriggerRecord;
+//import SimpleTriggerRecord;
+//import SummaryTriggerRecord;
+//import TriggerRecord;
 //import com.kii.beehive.portal.web.exception.BeehiveUnAuthorizedException;
 //
 //@RestController

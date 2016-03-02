@@ -1,0 +1,23 @@
+package com.kii.extension.ruleengine.drools.rule
+
+import com.kii.extension.ruleengine.drools.entity.*;
+
+global CurrThing currThing;
+
+
+
+/////////////////////////////////////
+//simple trigger custom segment
+/////////////////////////////////////
+
+rule "${triggerID} user custom segment"
+   ${timer}
+when
+    Trigger( $triggerID:triggerID=="${triggerID}",$things:things  )
+    CurrThing(thing memberOf $things) from currThing
+    ThingStatusInRule( $thingID:thingID memberOf $things,${express}  )
+then
+	insertLogical(new MatchResult($triggerID));
+end
+
+

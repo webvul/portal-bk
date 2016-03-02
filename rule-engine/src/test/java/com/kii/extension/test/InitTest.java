@@ -14,11 +14,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.StreamUtils;
 
-import com.kii.extension.ruleengine.drools.CommandExec;
-import com.kii.extension.ruleengine.drools.DroolsRuleService;
-import com.kii.extension.ruleengine.drools.entity.CurrThing;
-import com.kii.extension.ruleengine.drools.entity.MatchResult;
-import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
+import com.kii.extension.drools.CommandExec;
+import com.kii.extension.drools.DroolsRuleService;
+import com.kii.extension.drools.entity.CurrThing;
+import com.kii.extension.drools.entity.MatchResult;
+import com.kii.extension.drools.entity.ThingStatusInRule;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={

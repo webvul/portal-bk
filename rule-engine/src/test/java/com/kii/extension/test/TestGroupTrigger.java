@@ -9,11 +9,11 @@ import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.kii.beehive.portal.store.entity.trigger.TriggerGroupPolicyType;
-import com.kii.beehive.portal.store.entity.trigger.TriggerWhen;
-import com.kii.extension.ruleengine.drools.entity.MemberCountResult;
-import com.kii.extension.ruleengine.drools.entity.Trigger;
-import com.kii.extension.ruleengine.drools.entity.TriggerType;
+import com.kii.extension.store.trigger.TriggerGroupPolicyType;
+import com.kii.extension.store.trigger.TriggerWhen;
+import com.kii.extension.drools.entity.MemberCountResult;
+import com.kii.extension.drools.entity.Trigger;
+import com.kii.extension.drools.entity.TriggerType;
 
 public class TestGroupTrigger extends InitTest {
 

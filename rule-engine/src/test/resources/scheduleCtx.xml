@@ -10,7 +10,7 @@
 
     <bean:annotation-config />
 
-    <bean class="com.kii.extension.ruleengine.RuleEngineConfig" />
+    <bean class="com.kii.extension.RuleEngineConfig" />
 
 
 </beans>
