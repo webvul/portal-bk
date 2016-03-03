@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.drools.compiler.kie.builder.impl.MemoryKieModule;
 import org.kie.api.KieBase;
 import org.kie.api.KieBaseConfiguration;
 import org.kie.api.KieServices;
@@ -62,12 +61,10 @@ public class DroolsRuleService {
 
 		kb.buildAll();
 
-		MemoryKieModule kieModule= (MemoryKieModule) kb.getKieModule();
-
-		kieContainer= ks.newKieContainer(kieModule.getReleaseId());
+		kieContainer= ks.newKieContainer(kb.getKieModule().getReleaseId());
 
 		KieBase kieBase=null;
-//
+
 		if(isStream) {
 			KieBaseConfiguration config = KieServices.Factory.get().newKieBaseConfiguration();
 			config.setOption(EventProcessingOption.STREAM);
