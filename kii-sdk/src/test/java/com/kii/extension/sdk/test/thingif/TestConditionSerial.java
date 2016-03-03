@@ -1,4 +1,4 @@
-package com.kii.extension.ruleengine.sdk.test.thingif;
+package com.kii.extension.sdk.test.thingif;
 
 import java.io.IOException;
 

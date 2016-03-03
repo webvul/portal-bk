@@ -1,4 +1,4 @@
-package com.kii.extension.ruleengine.sdk.test;
+package com.kii.extension.sdk.test;
 
 
 import org.junit.runner.RunWith;

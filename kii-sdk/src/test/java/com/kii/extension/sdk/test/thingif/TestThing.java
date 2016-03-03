@@ -1,4 +1,4 @@
-package com.kii.extension.ruleengine.sdk.test.thingif;
+package com.kii.extension.sdk.test.thingif;
 
 import static junit.framework.TestCase.assertEquals;
 
@@ -23,7 +23,7 @@ import com.kii.extension.ruleengine.sdk.query.ConditionBuilder;
 import com.kii.extension.ruleengine.sdk.service.FederatedAuthService;
 import com.kii.extension.ruleengine.sdk.service.ThingIFService;
 import com.kii.extension.ruleengine.sdk.service.TriggerService;
-import com.kii.extension.ruleengine.sdk.test.TestTemplate;
+import com.kii.extension.sdk.test.TestTemplate;
 
 public class TestThing extends TestTemplate {
 

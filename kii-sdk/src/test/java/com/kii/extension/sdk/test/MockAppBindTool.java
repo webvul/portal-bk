@@ -1,4 +1,4 @@
-package com.kii.extension.ruleengine.sdk.test;
+package com.kii.extension.sdk.test;
 
 import com.kii.extension.ruleengine.sdk.context.AppBindTool;
 import com.kii.extension.ruleengine.sdk.entity.SiteType;
