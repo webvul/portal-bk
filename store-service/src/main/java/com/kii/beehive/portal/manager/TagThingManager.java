@@ -169,7 +169,7 @@ public class TagThingManager {
 				for(TagIndex tag:tagList){
 					TagGroupRelation tgr = tagGroupRelationDao.findByTagIDAndUserGroupID(tag.getId(), ugID);
 					if(tgr == null){
-						tagGroupRelationDao.insert(new TagGroupRelation(tag.getId(), ugID));
+						tagGroupRelationDao.insert(new TagGroupRelation(tag.getId(), ugID, "1"));
 					}
 				}
 			}
@@ -310,15 +310,6 @@ public class TagThingManager {
 			return null;
 		}
 		return list.get(0);
-	}
-
-	private TagIndex findCustomTag(String displayName) {
-		List<TagIndex> tagIndexList = tagIndexDao.findTagByTagTypeAndName(TagType.Custom.toString(), displayName);
-
-		if(tagIndexList == null || tagIndexList.isEmpty()) {
-			return null;
-		}
-		return tagIndexList.get(0);
 	}
 
 	public List<TagIndex> findTagIndexByGlobalThingID(Long globalThingID) {

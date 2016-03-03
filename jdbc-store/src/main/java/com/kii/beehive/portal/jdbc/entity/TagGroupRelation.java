@@ -19,10 +19,11 @@ public class TagGroupRelation extends DBEntity{
 	
 	public TagGroupRelation() {}
 	
-	public TagGroupRelation(Long tagID, Long userGroupID) {
+	public TagGroupRelation(Long tagID, Long userGroupID, String type) {
 		super();
 		this.tagID = tagID;
 		this.userGroupID = userGroupID;
+		this.type =type;
 	}
 
 	@JdbcField(column=ID)
