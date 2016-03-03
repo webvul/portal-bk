@@ -1,0 +1,6 @@
+dependencies {
+
+	compile project(":cloud-store")
+
+	compile project(":jdbc-store")
+}
