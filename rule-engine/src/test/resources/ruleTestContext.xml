@@ -13,9 +13,9 @@
 
     <bean:annotation-config />
 
-    <bean class="com.kii.extension.ruleengine.MockEventBus" />
 
     <bean class="com.kii.extension.ruleengine.drools.CommandExec" />
+    <bean class="com.kii.extension.ruleengine.MockEventBus" />
 
 
 </beans>

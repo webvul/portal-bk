@@ -15,7 +15,7 @@ when
     CurrThing(thing memberOf $things) from currThing
     ThingStatusInRule( $thingID:thingID memberOf $things,${express}  )
 then
-	insertLogical(new MemberMatchResult($triggerID));
+	insertLogical(new MemberMatchResult($triggerID,$thingID));
 end
 
 

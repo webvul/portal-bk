@@ -14,5 +14,5 @@ when
     Trigger( $triggerID:triggerID=="${triggerID}" )
     SummaryValueMap( triggerID==$triggerID, ${express}  )
 then
-	insertLogical(new MemberMatchResult($triggerID));
+	insertLogical(new MatchResult($triggerID));
 end

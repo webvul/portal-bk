@@ -1,5 +1,6 @@
 package com.kii.extension.ruleengine;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 
@@ -12,10 +13,10 @@ import com.kii.extension.ruleengine.drools.RuleGeneral;
 import com.kii.extension.ruleengine.drools.entity.Summary;
 import com.kii.extension.ruleengine.drools.entity.Trigger;
 import com.kii.extension.ruleengine.drools.entity.TriggerType;
-import com.kii.extension.sdk.entity.thingif.ThingStatus;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerGroupPolicy;
+import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
 @Component
 public class EngineService {
@@ -62,7 +63,7 @@ public class EngineService {
 
 	}
 
-	public void createGroupTrigger(Set<String> thingIDs, TriggerGroupPolicy policy, String triggerID, RuleEnginePredicate predicate){
+	public void createGroupTrigger(Collection<String> thingIDs, TriggerGroupPolicy policy, String triggerID, RuleEnginePredicate predicate){
 
 
 		Trigger trigger=new Trigger();

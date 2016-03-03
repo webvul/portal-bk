@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.business.event.BusinessEventListenerService;
-import com.kii.beehive.business.manager.ThingStateManager;
+import com.kii.beehive.business.manager.ThingTagManager;
 import com.kii.extension.ruleengine.service.TriggerRecordDao;
 import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
@@ -29,7 +29,7 @@ public class TriggerManager {
 	private EngineService  service;
 
 	@Autowired
-	private ThingStateManager thingTagService;
+	private ThingTagManager thingTagService;
 
 
 //

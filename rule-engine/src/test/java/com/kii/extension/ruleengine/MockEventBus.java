@@ -15,7 +15,8 @@ import com.kii.extension.ruleengine.drools.DroolsRuleService;
 
 
 @Configuration
-public class MockEventBus  {
+public class MockEventBus implements EventCallback  {
+
 
 
 	@Autowired
@@ -39,7 +40,7 @@ public class MockEventBus  {
 	}
 
 
-	@Bean(name="cloudDroolsService")
+	@Bean(name="testDroolsService")
 	public DroolsRuleService getCloudService(){
 
 		DroolsRuleService droolsService= new DroolsRuleService(false,
@@ -54,5 +55,8 @@ public class MockEventBus  {
 	}
 
 
+	@Override
+	public void onTriggerFire(String triggerID) {
 
+	}
 }

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.business.manager.AppInfoManager;
-import com.kii.beehive.business.manager.ThingStateManager;
+import com.kii.beehive.business.manager.ThingTagManager;
 import com.kii.extension.ruleengine.service.TriggerRecordDao;
 import com.kii.extension.ruleengine.store.trigger.TargetAction;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
@@ -35,7 +35,7 @@ public class CommandExecuteService {
 
 
 	@Autowired
-	private ThingStateManager thingTagService;
+	private ThingTagManager thingTagService;
 
 
 

@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.kii.beehive.business.event.BusinessEventBus;
+import com.kii.extension.ruleengine.EventCallback;
 
 @Component
 public class CommandExec {
@@ -18,7 +18,7 @@ public class CommandExec {
 	private Logger log= LoggerFactory.getLogger(CommandExec.class);
 
 	@Autowired
-	private BusinessEventBus eventBus;
+	private EventCallback callback;
 
 
 	private Map<String,AtomicInteger> map=new HashMap<>();
@@ -29,7 +29,7 @@ public class CommandExec {
 		int oldValue=map.computeIfAbsent(triggerID,(id)->new AtomicInteger(0)).incrementAndGet();
 		log.info("execute trigger  " + triggerID+" been fire "+oldValue);
 
-		eventBus.onTriggerFire(triggerID);
+		callback.onTriggerFire(triggerID);
 
 	}
 

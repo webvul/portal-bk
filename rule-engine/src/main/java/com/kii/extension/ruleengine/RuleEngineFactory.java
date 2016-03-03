@@ -47,6 +47,8 @@ public class RuleEngineFactory {
 
 
 
+
+
 	private String getDrlContent(String fileName) {
 
 		try {
@@ -57,6 +59,7 @@ public class RuleEngineFactory {
 		}
 
 	}
+
 
 
 	@Bean(name="cloudDroolsService")

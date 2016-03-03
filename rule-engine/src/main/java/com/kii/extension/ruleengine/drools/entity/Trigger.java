@@ -1,7 +1,7 @@
 package com.kii.extension.ruleengine.drools.entity;
 
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.Set;
 
 import org.springframework.beans.BeanUtils;
 
@@ -16,7 +16,7 @@ public class Trigger {
 
 	private int number;
 
-	private Set<String> things=new HashSet<>();
+	private Collection<String> things=new HashSet<>();
 
 	private TriggerGroupPolicyType policy=TriggerGroupPolicyType.None;
 
@@ -94,11 +94,11 @@ public class Trigger {
 		this.triggerID = triggerID;
 	}
 
-	public Set<String> getThings() {
+	public Collection<String> getThings() {
 		return things;
 	}
 
-	public void setThings(Set<String> things) {
+	public void setThings(Collection<String> things) {
 		this.things = things;
 	}
 

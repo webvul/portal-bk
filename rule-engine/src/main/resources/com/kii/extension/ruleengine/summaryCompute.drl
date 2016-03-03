@@ -15,7 +15,7 @@ then
 	modify($map){
     	setNumber($summary.getSummaryField(),$summary.getValue());
     };
-    System.out.println("compute  summary:"+$map.getNumberMap());
+    System.out.println("compute  summary:"+$map.getValues());
 end
 
 

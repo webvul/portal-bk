@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 import com.kii.beehive.business.event.BusinessEventListenerService;
 import com.kii.beehive.business.event.impl.TagChangeProcess;
-import com.kii.beehive.business.manager.ThingStateManager;
+import com.kii.beehive.business.manager.ThingTagManager;
 import com.kii.beehive.portal.event.EventListener;
 import com.kii.extension.ruleengine.service.TriggerRecordDao;
 import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
@@ -18,7 +18,7 @@ public class GroupTriggerProcess implements TagChangeProcess {
 
 
 	@Autowired
-	private ThingStateManager thingTagService;
+	private ThingTagManager thingTagService;
 
 	@Autowired
 	private TriggerRecordDao triggerRecordDao;

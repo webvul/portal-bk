@@ -21,7 +21,7 @@ import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
 @Component
 @Transactional
-public class ThingStateManager {
+public class ThingTagManager {
 
 
 	@Autowired

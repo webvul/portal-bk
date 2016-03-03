@@ -11,7 +11,7 @@ public class SummaryValueMap {
 
 	private Map<String,Number> numberMap=new HashMap<>();
 
-	public Map<String, Number> getNumberMap() {
+	public Map<String, Number> getValues() {
 		return numberMap;
 	}
 
@@ -23,7 +23,7 @@ public class SummaryValueMap {
 		numberMap.put(field,value);
 	}
 
-	public void setNumberMap(Map<String, Number> numberMap) {
+	public void setValues(Map<String, Number> numberMap) {
 		this.numberMap = numberMap;
 	}
 
