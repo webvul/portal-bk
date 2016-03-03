@@ -73,6 +73,7 @@ public class Trigger {
 		return type;
 	}
 
+
 	public void setType(TriggerType type) {
 		this.type = type;
 	}

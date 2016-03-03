@@ -13,20 +13,9 @@
 
     <bean:annotation-config />
 
-    <context:component-scan base-package="com.kii.extension.ruleengine" />
+    <bean class="com.kii.extension.ruleengine.MockEventBus" />
 
-    <task:annotation-driven executor="myExecutor" scheduler="myScheduler"/>
-    <task:executor id="myExecutor" pool-size="5"/>
-    <task:scheduler id="myScheduler" pool-size="10"/>
-
-    <!-- kie:kmodule id="drools" >
-        <kie:kbase name="state-rule" packages="com.kii.extension.ruleengine"  >
-            <kie:ksession name="demo" type="stateful" />
-        </kie:kbase>
-    </kie:kmodule  -->
-
-    <!-- bean id="kiePostProcessor"
-          class="org.kie.spring.annotations.KModuleAnnotationPostProcessor"/  -->
+    <bean class="com.kii.extension.ruleengine.drools.CommandExec" />
 
 
 </beans>

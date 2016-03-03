@@ -2,18 +2,20 @@ package com.kii.extension.ruleengine.drools.rule
 
 import com.kii.extension.ruleengine.drools.entity.*;
 import com.kii.extension.ruleengine.drools.CommandExec;
+import com.kii.extension.ruleengine.store.trigger.WhenType;
+
 
 global CurrThing currThing;
 
 query "get Match Result by TriggerID" ()
-	Trigger($triggerID:triggerID,when=="CONDITION_TRUE")
+	Trigger($triggerID:triggerID,when==WhenType.CONDITION_TRUE)
     results : MatchResult( triggerID == $triggerID )
 end
 
 
 rule "fire all trigger:when false->true,trigger  fire"
 when
-	$trigger:Trigger($triggerID:triggerID, $things:things, when == "CONDITION_FALSE_TO_TRUE",enable==true )
+	$trigger:Trigger($triggerID:triggerID, $things:things, when == WhenType.CONDITION_FALSE_TO_TRUE,enable==true )
     CurrThing(thing memberOf $things) from currThing
     MatchResult(triggerID==$triggerID)
     not ( TriggerResult(triggerID==$triggerID) )
@@ -27,7 +29,7 @@ end
 
 rule "fire all trigger:when false->true,trigger not fire"
 when
-	$trigger:Trigger($triggerID:triggerID,$things:things,when == "CONDITION_FALSE_TO_TRUE",enable==true )
+	$trigger:Trigger($triggerID:triggerID,$things:things,when == WhenType.CONDITION_FALSE_TO_TRUE,enable==true )
     CurrThing(thing memberOf $things) from currThing
     not ( exists MatchResult(triggerID==$triggerID) )
     $result:TriggerResult(triggerID==$triggerID)
@@ -38,7 +40,7 @@ end
 
 rule "fire all trigger:when false->true change,trigger  fire"
 when
-	$trigger:Trigger($triggerID:triggerID, $things:things, when == "CONDITION_CHANGED",enable==true )
+	$trigger:Trigger($triggerID:triggerID, $things:things, when == WhenType.CONDITION_CHANGED,enable==true )
     CurrThing(thing memberOf $things) from currThing
     MatchResult(triggerID==$triggerID)
     not ( TriggerResult(triggerID==$triggerID) )
@@ -51,7 +53,7 @@ end
 
 rule "fire all trigger:when true->false change,trigger  fire"
 when
-	$trigger:Trigger($triggerID:triggerID, $things:things, when == "CONDITION_CHANGED",enable==true )
+	$trigger:Trigger($triggerID:triggerID, $things:things, when == WhenType.CONDITION_CHANGED,enable==true )
     CurrThing(thing memberOf $things) from currThing
     not (MatchResult(triggerID==$triggerID))
     $result:TriggerResult(triggerID==$triggerID)
@@ -65,7 +67,7 @@ end
 
 rule "fire trigger:when true->false,trigger fire "
 when
-	$trigger:Trigger($triggerID:triggerID,$things:things ,when == "CONDITION_TRUE_TO_FALSE" ,enable==true )
+	$trigger:Trigger($triggerID:triggerID,$things:things ,when == WhenType.CONDITION_TRUE_TO_FALSE ,enable==true )
     CurrThing(thing memberOf $things) from currThing
     not( MatchResult(triggerID==$triggerID) )
     $result:TriggerResult(triggerID==$triggerID)
@@ -79,7 +81,7 @@ end
 
 rule "fire trigger:when true->false,trigger not fire "
 when
-	$trigger:Trigger($triggerID:triggerID,$things:things ,when == "CONDITION_TRUE_TO_FALSE" ,enable==true  )
+	$trigger:Trigger($triggerID:triggerID,$things:things ,when == WhenType.CONDITION_TRUE_TO_FALSE ,enable==true  )
     CurrThing(thing memberOf $things) from currThing
     MatchResult(triggerID==$triggerID)
     not ( TriggerResult(triggerID==$triggerID) )
