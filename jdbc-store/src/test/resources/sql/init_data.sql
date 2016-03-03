@@ -9,6 +9,7 @@ INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('1', 'DeleteTag
 INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('1', 'SearchTag', 'GET /tags/search*');
 INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('1', 'SearchLocationTag', 'GET /tags/locations/*');
 INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('1', 'GetAllLocationTag', 'GET /tags/locations');
+INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('1', 'GetTagFromUserGroup', 'GET /usergroup/*/tags');
 INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('1', 'BindTagToUserGroup', 'POST /tags/*/userGroups/*');
 INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('1', 'RemoveTagFromUserGroup', 'DELETE /tags/*/userGroups/*');
 INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('2', 'CreateThing', 'POST /things');

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.CollectUtils;
 import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
@@ -162,7 +163,7 @@ public class TagThingManager {
 
 		for(String userGroupID:userGroupIDs){
 			Long ugID = Long.parseLong(userGroupID);
-			List<UserGroup> userGroupList = usergroupDao.findUserGroup(null, ugID , null);
+			List<UserGroup> userGroupList = usergroupDao.findUserGroup(AuthInfoStore.getUserID(), ugID , null);
 			if(userGroupList.size() == 0){
 				log.warn("UserGroup is null, UserGroupID = " + userGroupID);
 			}else{
@@ -215,7 +216,7 @@ public class TagThingManager {
 
 		for(String userGroupID:userGroupIDs){
 			Long ugID = Long.parseLong(userGroupID);
-			List<UserGroup> userGroupList = usergroupDao.findUserGroup(null, ugID , null);
+			List<UserGroup> userGroupList = usergroupDao.findUserGroup(AuthInfoStore.getUserID(), ugID , null);
 			if(userGroupList.size() == 0){
 				log.warn("UserGroup is null, UserGroupID = " + userGroupID);
 			}else{
