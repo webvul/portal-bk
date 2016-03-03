@@ -11,15 +11,15 @@ public class RuleEnginePredicate {
 
 
 
-	private TriggerWhen triggersWhen;
+	private WhenType triggersWhen;
 
 	private Condition condition;
 
-	public TriggerWhen getTriggersWhen() {
+	public WhenType getTriggersWhen() {
 		return triggersWhen;
 	}
 
-	public void setTriggersWhen(TriggerWhen triggersWhen) {
+	public void setTriggersWhen(WhenType triggersWhen) {
 		this.triggersWhen = triggersWhen;
 	}
 

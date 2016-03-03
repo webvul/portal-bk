@@ -6,21 +6,17 @@ import static junit.framework.TestCase.assertEquals;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.kii.extension.ruleengine.EngineService;
 import com.kii.extension.ruleengine.TriggerConditionBuilder;
 import com.kii.extension.ruleengine.drools.CommandExec;
 import com.kii.extension.ruleengine.service.TriggerRecordDao;
 import com.kii.extension.ruleengine.store.trigger.Condition;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.TriggerWhen;
+import com.kii.extension.ruleengine.store.trigger.WhenType;
 
 public class TestSimpleTrigger extends TestInit{
 
 
-
-	@Autowired
-	private EngineService service;
 
 
 	@Autowired
@@ -49,13 +45,16 @@ public class TestSimpleTrigger extends TestInit{
 		Condition condition= TriggerConditionBuilder.andCondition().great("foo",0).less("bar",0).getConditionInstance();
 		perdicate.setCondition(condition);
 
-		perdicate.setTriggersWhen(TriggerWhen.CONDITION_TRUE);
+		perdicate.setTriggersWhen(WhenType.CONDITION_TRUE);
 
 
 		record.setPredicate(perdicate);
 
 
 		String triggerID=dao.addKiiEntity(record);
+
+
+		engine.createSimpleTrigger(kiiThingID,triggerID,perdicate);
 
 		sendGoodThingStatus(kiiThingID);
 

@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
@@ -33,6 +35,8 @@ import com.kii.extension.ruleengine.store.trigger.condition.SimpleCondition;
 @Component
 public class RuleGeneral {
 
+	private Logger log= LoggerFactory.getLogger(RuleGeneral.class);
+
 	@Autowired
 	private ResourceLoader  loader;
 
@@ -40,7 +44,7 @@ public class RuleGeneral {
 
 		try {
 			return StreamUtils.copyToString(
-					loader.getResource("classpath:com/kii/extension/ruleengine/template/" + name + ".template").getInputStream(),
+					loader.getResource("classpath:com/kii/extension/ruleengine/template/" + name + "Trigger.template").getInputStream(),
 					StandardCharsets.UTF_8);
 		}catch(IOException e){
 			throw new IllegalArgumentException(e);
@@ -67,6 +71,7 @@ public class RuleGeneral {
 
 		String fullDrl=generDrl(template,predicate,triggerID);
 
+		log.info(triggerID+"\n"+fullDrl);
 		return fullDrl;
 	}
 
@@ -142,8 +147,10 @@ public class RuleGeneral {
 			case and:
 			case or:
 				sb.append(getLogicExpress((LogicCol)condition));
+				break;
 			case not:
 				sb.append(getNotExpress((NotLogic)condition));
+				break;
 			default:
 				sb.append(getSimpleExpress((SimpleCondition)condition));
 		}
@@ -164,7 +171,7 @@ public class RuleGeneral {
 					sb.append(express);
 					sb.append(" && ");
 				}
-				sb.delete(sb.length()-5,sb.length()-1);
+				sb.delete(sb.length()-4,sb.length());
 
 				break;
 			case or:
@@ -175,7 +182,7 @@ public class RuleGeneral {
 					sb.append(express);
 					sb.append(" || ");
 				}
-				sb.delete(sb.length()-5,sb.length()-1);
+				sb.delete(sb.length()-4,sb.length());
 				break;
 		}
 		return sb.toString();
@@ -199,6 +206,13 @@ public class RuleGeneral {
 		return getSimpleExpress(condition,false);
 	}
 
+	private static final String FIELD=" values[\"${0}\"] ";
+
+	private String getFieldStr(SimpleCondition cond){
+
+		return StrTemplate.gener(FIELD, cond.getField());
+	}
+
 
 	private String getSimpleExpress(SimpleCondition condition,boolean isNot){
 
@@ -214,7 +228,7 @@ public class RuleGeneral {
 					sb.append(" true ");
 				}
 			case eq:
-				sb.append(condition.getField()).append(" ");
+				sb.append(getFieldStr(condition));
 				if(isNot){
 					sb.append(" != ");
 				}else {
@@ -227,7 +241,7 @@ public class RuleGeneral {
 
 				break;
 			case range:
-				sb.append(condition.getField()).append(" ");
+				sb.append(getFieldStr(condition));
 				Range range=(Range)condition;
 
 				if (range.isExistLower()) {
@@ -255,7 +269,7 @@ public class RuleGeneral {
 
 				break;
 			case like:
-				sb.append(condition.getField()).append(" ");
+				sb.append(getFieldStr(condition));
 				if(isNot){
 					sb.append(" not contains ");
 				}else {
@@ -265,7 +279,7 @@ public class RuleGeneral {
 				sb.append(getFinalValue(like));
 				break;
 			case in:
-				sb.append(condition.getField()).append(" ");
+				sb.append(getFieldStr(condition));
 				if(isNot){
 					sb.append(" not in ");
 				}else{

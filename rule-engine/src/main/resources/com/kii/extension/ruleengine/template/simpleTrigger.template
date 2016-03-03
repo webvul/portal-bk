@@ -10,7 +10,7 @@ global CurrThing currThing;
 //simple trigger custom segment
 /////////////////////////////////////
 
-rule "${triggerID} user custom segment"
+rule "${triggerID} user custom segment:simple"
    ${timer}
 when
     Trigger( $triggerID:triggerID=="${triggerID}",$things:things  )

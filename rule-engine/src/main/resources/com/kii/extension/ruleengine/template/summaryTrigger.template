@@ -8,7 +8,7 @@ global CurrThing currThing;
 //summary trigger custom segment
 /////////////////////////////////////
 
-rule "${triggerID} user custom segment"
+rule "${triggerID} user custom segment:summary"
    ${timer}
 when
     Trigger( $triggerID:triggerID=="${triggerID}" )

@@ -8,7 +8,7 @@ import org.springframework.beans.BeanUtils;
 import com.google.common.base.Objects;
 
 import com.kii.extension.ruleengine.store.trigger.TriggerGroupPolicyType;
-import com.kii.extension.ruleengine.store.trigger.TriggerWhen;
+import com.kii.extension.ruleengine.store.trigger.WhenType;
 
 public class Trigger {
 
@@ -22,7 +22,7 @@ public class Trigger {
 
 	private TriggerType type;
 
-	private TriggerWhen when;
+	private WhenType when;
 
 	private boolean enable=true;
 
@@ -53,11 +53,11 @@ public class Trigger {
 		this.enable = enable;
 	}
 
-	public TriggerWhen getWhen() {
+	public WhenType getWhen() {
 		return when;
 	}
 
-	public void setWhen(TriggerWhen when) {
+	public void setWhen(WhenType when) {
 		this.when = when;
 	}
 

@@ -6,7 +6,9 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
+import com.kii.beehive.portal.store.entity.CustomProperty;
 import com.kii.extension.sdk.entity.KiiEntity;
 
 
@@ -19,6 +21,10 @@ import com.kii.extension.sdk.entity.KiiEntity;
 		@JsonSubTypes.Type(value = SummaryTriggerRecord.class,name="Summary"),
 })
 public abstract  class TriggerRecord extends KiiEntity {
+
+	private String triggerName;
+
+	private CustomProperty  custom;
 
 	private String userID;
 
@@ -107,5 +113,22 @@ public abstract  class TriggerRecord extends KiiEntity {
 
 	public enum StatusType{
 		enable,disable,deleted;
+	}
+
+	public String getTriggerName() {
+		return triggerName;
+	}
+
+	public void setTriggerName(String triggerName) {
+		this.triggerName = triggerName;
+	}
+
+	@JsonUnwrapped
+	public CustomProperty getCustom() {
+		return custom;
+	}
+
+	public void setCustom(CustomProperty custom) {
+		this.custom = custom;
 	}
 }

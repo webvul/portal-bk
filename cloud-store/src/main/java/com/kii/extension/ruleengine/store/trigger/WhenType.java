@@ -1,6 +1,6 @@
 package com.kii.extension.ruleengine.store.trigger;
 
-public enum TriggerWhen {
+public enum WhenType {
 
 
 	CONDITION_TRUE,

@@ -12,7 +12,7 @@ import org.junit.Test;
 import com.kii.extension.ruleengine.drools.entity.MemberCountResult;
 import com.kii.extension.ruleengine.drools.entity.TriggerType;
 import com.kii.extension.ruleengine.store.trigger.TriggerGroupPolicyType;
-import com.kii.extension.ruleengine.store.trigger.TriggerWhen;
+import com.kii.extension.ruleengine.store.trigger.WhenType;
 import com.kii.extension.ruleengine.drools.entity.Trigger;
 
 public class TestGroupTrigger extends InitTest {
@@ -44,7 +44,7 @@ public class TestGroupTrigger extends InitTest {
 		}
 		trigger.setType(TriggerType.group);
 		trigger.setPolicy(TriggerGroupPolicyType.All);
-		trigger.setWhen(TriggerWhen.CONDITION_FALSE_TO_TRUE);
+		trigger.setWhen(WhenType.CONDITION_FALSE_TO_TRUE);
 //		trigger.setPreviousResult(false);
 
 		String triggerID = "200";
@@ -94,7 +94,7 @@ public class TestGroupTrigger extends InitTest {
 		trigger.setPolicy(TriggerGroupPolicyType.Any);
 		trigger.setType(TriggerType.group);
 
-		trigger.setWhen(TriggerWhen.CONDITION_TRUE);
+		trigger.setWhen(WhenType.CONDITION_TRUE);
 //		trigger.setPreviousResult(false);
 
 		String triggerID = "201";
@@ -151,7 +151,7 @@ public class TestGroupTrigger extends InitTest {
 		trigger.setType(TriggerType.group);
 
 		trigger.setNumber(3);
-		trigger.setWhen(TriggerWhen.CONDITION_FALSE_TO_TRUE);
+		trigger.setWhen(WhenType.CONDITION_FALSE_TO_TRUE);
 //		trigger.setPreviousResult(false);
 
 		String triggerID = "202";

@@ -8,7 +8,7 @@ global CurrThing currThing;
 //group trigger custom segment
 /////////////////////////////////////
 
-rule "${triggerID} user custom segment"
+rule "${triggerID} user custom segment:group"
    ${timer}
 when
     Trigger( $triggerID:triggerID=="${triggerID}",$things:things  )

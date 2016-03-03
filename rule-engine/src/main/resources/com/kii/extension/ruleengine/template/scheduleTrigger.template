@@ -10,7 +10,7 @@ global CurrThing currThing;
 //schedule trigger custom segment
 /////////////////////////////////////
 
-rule "${triggerID} user custom segment"
+rule "${triggerID} user custom segment:schedule"
    ${timer}
 when
     Trigger( $triggerID:triggerID=="${triggerID}")

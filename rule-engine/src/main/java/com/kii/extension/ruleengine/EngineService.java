@@ -103,6 +103,7 @@ public class EngineService {
 
 		String rule=ruleGeneral.generDrlConfig(triggerID,TriggerType.simple,predicate);
 
+
 		droolsTriggerService.addTrigger(trigger,rule);
 
 	}

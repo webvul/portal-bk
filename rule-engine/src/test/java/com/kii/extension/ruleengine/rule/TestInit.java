@@ -5,20 +5,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.kii.beehive.business.event.BusinessEventBus;
-import com.kii.extension.sdk.entity.thingif.ThingCommand;
+import com.kii.extension.ruleengine.EngineService;
+import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
 import com.kii.extension.ruleengine.store.trigger.TargetAction;
 import com.kii.extension.sdk.entity.thingif.Action;
+import com.kii.extension.sdk.entity.thingif.ThingCommand;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
-import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
-		"classpath:scheduleCtx.xml"})
+		"classpath:ruleEngineCtx.xml"})
 public class TestInit {
 
 	@Autowired
-	private BusinessEventBus eventBus;
+	protected EngineService engine;
 
 
 	public void sendGoodThingStatus(String id){
@@ -51,7 +51,7 @@ public class TestInit {
 
 	private void sendThingStatus(String id, ThingStatus status){
 
-		eventBus.onStatusUploadFire(id,status);
+		engine.updateThingStatus(id,status);
 
 	}
 

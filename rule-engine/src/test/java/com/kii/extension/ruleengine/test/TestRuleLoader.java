@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import com.kii.extension.ruleengine.drools.entity.Trigger;
 import com.kii.extension.ruleengine.drools.entity.TriggerType;
-import com.kii.extension.ruleengine.store.trigger.TriggerWhen;
+import com.kii.extension.ruleengine.store.trigger.WhenType;
 
 public class TestRuleLoader extends InitTest {
 
@@ -37,7 +37,7 @@ public class TestRuleLoader extends InitTest {
 		trigger.addThing(String.valueOf(0));
 
 		trigger.setType(TriggerType.simple);
-		trigger.setWhen(TriggerWhen.CONDITION_FALSE_TO_TRUE);
+		trigger.setWhen(WhenType.CONDITION_FALSE_TO_TRUE);
 //		trigger.setPreviousResult(false);
 
 		String i = "100";

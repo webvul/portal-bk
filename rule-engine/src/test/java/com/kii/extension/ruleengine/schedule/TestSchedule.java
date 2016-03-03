@@ -14,7 +14,7 @@ import com.kii.extension.ruleengine.store.trigger.SchedulePeriod;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
-		"classpath:scheduleCtx.xml"})
+		"classpath:ruleEngineCtx.xml"})
 public class TestSchedule {
 
 	@Autowired
