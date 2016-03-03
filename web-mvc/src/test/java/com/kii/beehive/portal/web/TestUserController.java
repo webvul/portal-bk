@@ -27,7 +27,7 @@ import com.kii.beehive.portal.service.BeehiveUserDao;
 import com.kii.beehive.portal.service.KiiUserSyncDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.controller.UserController;
-import com.kii.extension.ruleengine.sdk.exception.UserAlreadyExistsException;
+import com.kii.extension.sdk.exception.UserAlreadyExistsException;
 
 
 public class TestUserController extends WebTestTemplate{

@@ -7,7 +7,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:com/kii/beehive/business/testStoreContext.xml" })
+@ContextConfiguration(locations = { "classpath:com/kii/beehive/business/testComponentContext.xml" })
 public class TestCache {
 
 	@Autowired

@@ -26,7 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kii.beehive.portal.service.UserSyncMsgDao;
 import com.kii.beehive.portal.store.entity.usersync.SupplierPushMsgTask;
 import com.kii.beehive.portal.store.entity.usersync.UserSyncMsg;
-import com.kii.extension.ruleengine.sdk.impl.KiiCloudClient;
+import com.kii.extension.sdk.impl.KiiCloudClient;
 
 @Component
 public class NotifySenderTool {

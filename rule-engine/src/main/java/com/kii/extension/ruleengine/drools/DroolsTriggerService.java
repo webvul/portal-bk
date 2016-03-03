@@ -17,7 +17,7 @@ import com.kii.extension.ruleengine.drools.entity.Summary;
 import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
 import com.kii.extension.ruleengine.drools.entity.Trigger;
 import com.kii.extension.ruleengine.drools.entity.MatchResult;
-import com.kii.extension.ruleengine.sdk.entity.thingif.ThingStatus;
+import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
 @Component
 public class DroolsTriggerService {

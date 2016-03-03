@@ -17,11 +17,11 @@ import com.kii.beehive.portal.service.BeehiveParameterDao;
 import com.kii.beehive.portal.service.ExtensionCodeDao;
 import com.kii.beehive.portal.store.entity.CallbackUrlParameter;
 import com.kii.beehive.portal.store.entity.ExtensionCodeEntity;
-import com.kii.extension.ruleengine.sdk.entity.serviceextension.BucketWhenType;
-import com.kii.extension.ruleengine.sdk.entity.serviceextension.EventTriggerConfig;
-import com.kii.extension.ruleengine.sdk.entity.serviceextension.ThingWhenType;
-import com.kii.extension.ruleengine.sdk.entity.serviceextension.TriggerFactory;
-import com.kii.extension.ruleengine.sdk.entity.serviceextension.TriggerScopeType;
+import com.kii.extension.sdk.entity.serviceextension.BucketWhenType;
+import com.kii.extension.sdk.entity.serviceextension.EventTriggerConfig;
+import com.kii.extension.sdk.entity.serviceextension.ThingWhenType;
+import com.kii.extension.sdk.entity.serviceextension.TriggerFactory;
+import com.kii.extension.sdk.entity.serviceextension.TriggerScopeType;
 
 @Component
 public class ListenerEnvInitService {

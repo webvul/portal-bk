@@ -16,13 +16,13 @@ import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.service.BeehiveParameterDao;
 import com.kii.beehive.portal.service.KiiUserSyncDao;
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
-import com.kii.extension.ruleengine.sdk.context.AppBindTool;
-import com.kii.extension.ruleengine.sdk.context.AppBindToolResolver;
-import com.kii.extension.ruleengine.sdk.entity.AppInfo;
-import com.kii.extension.ruleengine.sdk.entity.FederatedAuthResult;
-import com.kii.extension.ruleengine.sdk.service.AppMasterSalveService;
-import com.kii.extension.ruleengine.sdk.service.DevPortalService;
-import com.kii.extension.ruleengine.sdk.service.FederatedAuthService;
+import com.kii.extension.sdk.context.AppBindTool;
+import com.kii.extension.sdk.context.AppBindToolResolver;
+import com.kii.extension.sdk.entity.AppInfo;
+import com.kii.extension.sdk.entity.FederatedAuthResult;
+import com.kii.extension.sdk.service.AppMasterSalveService;
+import com.kii.extension.sdk.service.DevPortalService;
+import com.kii.extension.sdk.service.FederatedAuthService;
 
 @Component
 public class AppInfoManager {

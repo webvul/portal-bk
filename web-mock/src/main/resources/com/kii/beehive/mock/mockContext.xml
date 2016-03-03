@@ -29,14 +29,14 @@
 
 
     <!-- aop -->
-    <bean id="appBindAspect"  class="com.kii.extension.ruleengine.sdk.aop.AppBindAspect" />
+    <bean id="appBindAspect"  class="com.kii.extension.sdk.aop.AppBindAspect" />
 
 
     <!-- kiicloud connect -->
-    <bean class="com.kii.extension.ruleengine.factory.KiiCloudSDKConfig" />
+    <bean class="com.kii.extension.factory.KiiCloudSDKConfig" />
 
 
-    <bean name="propAppBindTool" class="com.kii.extension.ruleengine.factory.LocalPropertyBindTool" >
+    <bean name="propAppBindTool" class="com.kii.extension.factory.LocalPropertyBindTool" >
         <property name="propFileName" value="classpath:com/kii/beehive/mock/beehive.mock.store.properties" />
     </bean>
 

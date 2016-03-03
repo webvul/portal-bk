@@ -5,8 +5,8 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
-import com.kii.extension.ruleengine.sdk.query.ConditionBuilder;
-import com.kii.extension.ruleengine.sdk.query.QueryParam;
+import com.kii.extension.sdk.query.ConditionBuilder;
+import com.kii.extension.sdk.query.QueryParam;
 
 @Component
 public class SimpleQueryTool {

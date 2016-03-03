@@ -26,7 +26,7 @@ import com.kii.beehive.portal.service.BeehiveUserDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.WebTestTemplate;
 import com.kii.beehive.portal.web.constant.Constants;
-import com.kii.extension.ruleengine.sdk.entity.KiiUser;
+import com.kii.extension.sdk.entity.KiiUser;
 
 /**
  * Created by USER on 12/1/15.

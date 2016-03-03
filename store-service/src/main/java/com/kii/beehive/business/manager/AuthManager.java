@@ -10,12 +10,12 @@ import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.helper.AuthInfoCacheService;
 import com.kii.beehive.portal.store.entity.AuthInfoEntry;
-import com.kii.extension.ruleengine.sdk.annotation.BindAppByName;
-import com.kii.extension.ruleengine.sdk.context.UserTokenBindTool;
-import com.kii.extension.ruleengine.sdk.entity.LoginInfo;
-import com.kii.extension.ruleengine.sdk.exception.KiiCloudException;
-import com.kii.extension.ruleengine.sdk.exception.UnauthorizedAccessException;
-import com.kii.extension.ruleengine.sdk.service.UserService;
+import com.kii.extension.sdk.annotation.BindAppByName;
+import com.kii.extension.sdk.context.UserTokenBindTool;
+import com.kii.extension.sdk.entity.LoginInfo;
+import com.kii.extension.sdk.exception.KiiCloudException;
+import com.kii.extension.sdk.exception.UnauthorizedAccessException;
+import com.kii.extension.sdk.service.UserService;
 
 @BindAppByName(appName="master")
 @Component

@@ -21,13 +21,13 @@
         <property name="configLocation" value="classpath:com/kii/beehive/config/ehcache.xml" />
     </bean>
 
-    <bean class="com.kii.extension.ruleengine.factory.KiiCloudSDKConfig" />
+    <bean class="com.kii.extension.factory.KiiCloudSDKConfig" />
 
-    <bean id="appBindAspect"  class="com.kii.extension.ruleengine.sdk.aop.AppBindAspect" />
+    <bean id="appBindAspect"  class="com.kii.extension.sdk.aop.AppBindAspect" />
 
     <bean id="appLogAspect" class="com.kii.beehive.portal.aop.LogAspect" />
 
-    <bean class="com.kii.extension.ruleengine.sdk.service.DevPortalService" >
+    <bean class="com.kii.extension.sdk.service.DevPortalService" >
         <property name="devPortalUrl"  value="${beehive.kiicloud.dev-portal.url}" />
     </bean>
 
@@ -35,11 +35,11 @@
             <property name="locations" value="classpath:com/kii/beehive/portal/web/config.test.properties"/>
         </bean>
 
-    <bean class="com.kii.extension.ruleengine.sdk.service.DevPortalService" >
+    <bean class="com.kii.extension.sdk.service.DevPortalService" >
         <property name="devPortalUrl"  value="${beehive.kiicloud.dev-portal.url}" />
     </bean>
 
-        <bean class="com.kii.extension.ruleengine.factory.LocalPropertyBindTool" >
+        <bean class="com.kii.extension.factory.LocalPropertyBindTool" >
             <property name="propFileName" value="classpath:com/kii/beehive/portal/web/beehive.portal.store.test.properties" />
         </bean>
 

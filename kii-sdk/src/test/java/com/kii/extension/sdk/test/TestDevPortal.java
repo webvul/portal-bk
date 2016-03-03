@@ -8,9 +8,9 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.kii.extension.ruleengine.sdk.entity.AppDetail;
-import com.kii.extension.ruleengine.sdk.entity.AppInfoEntity;
-import com.kii.extension.ruleengine.sdk.service.DevPortalService;
+import com.kii.extension.sdk.entity.AppDetail;
+import com.kii.extension.sdk.entity.AppInfoEntity;
+import com.kii.extension.sdk.service.DevPortalService;
 
 public class TestDevPortal extends TestTemplate {
 

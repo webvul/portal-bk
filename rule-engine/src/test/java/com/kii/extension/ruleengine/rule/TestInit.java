@@ -6,10 +6,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.kii.beehive.business.event.BusinessEventBus;
-import com.kii.extension.ruleengine.sdk.entity.thingif.ThingCommand;
+import com.kii.extension.sdk.entity.thingif.ThingCommand;
 import com.kii.extension.ruleengine.store.trigger.TargetAction;
-import com.kii.extension.ruleengine.sdk.entity.thingif.Action;
-import com.kii.extension.ruleengine.sdk.entity.thingif.ThingStatus;
+import com.kii.extension.sdk.entity.thingif.Action;
+import com.kii.extension.sdk.entity.thingif.ThingStatus;
 import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
 
 @RunWith(SpringJUnit4ClassRunner.class)

@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kii.beehive.portal.common.utils.CollectUtils;
 import com.kii.beehive.portal.exception.StoreServiceException;
 import com.kii.beehive.portal.web.exception.PortalException;
-import com.kii.extension.ruleengine.sdk.exception.KiiCloudException;
+import com.kii.extension.sdk.exception.KiiCloudException;
 
 @ControllerAdvice
 public class ExceptionController {

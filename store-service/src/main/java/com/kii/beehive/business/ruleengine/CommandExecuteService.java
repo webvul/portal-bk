@@ -13,7 +13,7 @@ import com.kii.extension.ruleengine.service.TriggerRecordDao;
 import com.kii.extension.ruleengine.store.trigger.TargetAction;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
-import com.kii.extension.ruleengine.sdk.entity.thingif.ThingCommand;
+import com.kii.extension.sdk.entity.thingif.ThingCommand;
 
 
 

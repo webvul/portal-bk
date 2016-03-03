@@ -2,7 +2,7 @@ package com.kii.beehive.portal.web.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import com.kii.extension.ruleengine.sdk.entity.thingif.ThingStatus;
+import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
 public class StateUpload {
 

@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.kii.extension.ruleengine.sdk.query.ConditionBuilder;
-import com.kii.extension.ruleengine.sdk.query.FieldType;
-import com.kii.extension.ruleengine.sdk.query.QueryParam;
+import com.kii.extension.sdk.query.ConditionBuilder;
+import com.kii.extension.sdk.query.FieldType;
+import com.kii.extension.sdk.query.QueryParam;
 
 public class TestQuery extends TestTemplate{
 

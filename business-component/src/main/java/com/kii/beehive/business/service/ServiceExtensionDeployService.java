@@ -10,9 +10,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.beehive.portal.service.ExtensionCodeDao;
 import com.kii.beehive.portal.store.entity.ExtensionCodeEntity;
-import com.kii.extension.ruleengine.sdk.annotation.AppBindParam;
-import com.kii.extension.ruleengine.sdk.entity.serviceextension.HookGeneral;
-import com.kii.extension.ruleengine.sdk.service.ServiceExtensionService;
+import com.kii.extension.sdk.annotation.AppBindParam;
+import com.kii.extension.sdk.entity.serviceextension.HookGeneral;
+import com.kii.extension.sdk.service.ServiceExtensionService;
 
 @Component
 public class ServiceExtensionDeployService {

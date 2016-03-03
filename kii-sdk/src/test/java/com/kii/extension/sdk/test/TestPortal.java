@@ -3,7 +3,7 @@ package com.kii.extension.sdk.test;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.kii.extension.ruleengine.sdk.service.AppMasterSalveService;
+import com.kii.extension.sdk.service.AppMasterSalveService;
 
 public class TestPortal extends TestTemplate{
 

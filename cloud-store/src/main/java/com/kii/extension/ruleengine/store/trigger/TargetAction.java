@@ -1,7 +1,7 @@
 package com.kii.extension.ruleengine.store.trigger;
 
-import com.kii.extension.ruleengine.sdk.entity.thingif.ServiceCode;
-import com.kii.extension.ruleengine.sdk.entity.thingif.ThingCommand;
+import com.kii.extension.sdk.entity.thingif.ServiceCode;
+import com.kii.extension.sdk.entity.thingif.ThingCommand;
 
 public class TargetAction {
 

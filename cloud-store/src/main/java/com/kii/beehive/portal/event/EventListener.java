@@ -7,7 +7,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import com.kii.extension.ruleengine.sdk.entity.KiiEntity;
+import com.kii.extension.sdk.entity.KiiEntity;
 
 public class EventListener extends KiiEntity {
 

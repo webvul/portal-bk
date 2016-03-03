@@ -1,8 +1,8 @@
 package com.kii.extension.sdk.test;
 
-import com.kii.extension.ruleengine.sdk.context.AppBindTool;
-import com.kii.extension.ruleengine.sdk.entity.SiteType;
-import com.kii.extension.ruleengine.sdk.entity.AppInfo;
+import com.kii.extension.sdk.context.AppBindTool;
+import com.kii.extension.sdk.entity.SiteType;
+import com.kii.extension.sdk.entity.AppInfo;
 
 //@Component
 public class MockAppBindTool implements AppBindTool {

@@ -5,9 +5,9 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.store.entity.BeehiveGuestLog;
-import com.kii.extension.ruleengine.sdk.annotation.BindAppByName;
-import com.kii.extension.ruleengine.sdk.entity.BucketInfo;
-import com.kii.extension.ruleengine.sdk.service.AbstractDataAccess;
+import com.kii.extension.sdk.annotation.BindAppByName;
+import com.kii.extension.sdk.entity.BucketInfo;
+import com.kii.extension.sdk.service.AbstractDataAccess;
 
 @BindAppByName(appName="portal",appBindSource="propAppBindTool")
 @Component

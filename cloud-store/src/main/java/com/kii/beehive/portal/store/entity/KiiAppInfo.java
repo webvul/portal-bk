@@ -1,8 +1,8 @@
 package com.kii.beehive.portal.store.entity;
 
-import com.kii.extension.ruleengine.sdk.entity.AppInfo;
-import com.kii.extension.ruleengine.sdk.entity.FederatedAuthResult;
-import com.kii.extension.ruleengine.sdk.entity.KiiEntity;
+import com.kii.extension.sdk.entity.AppInfo;
+import com.kii.extension.sdk.entity.FederatedAuthResult;
+import com.kii.extension.sdk.entity.KiiEntity;
 
 public class KiiAppInfo extends KiiEntity{
 

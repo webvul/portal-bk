@@ -4,8 +4,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.kii.extension.ruleengine.sdk.entity.KiiUser;
-import com.kii.extension.ruleengine.sdk.service.UserService;
+import com.kii.extension.sdk.entity.KiiUser;
+import com.kii.extension.sdk.service.UserService;
 
 public class TestUserAdd extends  TestTemplate {
 

@@ -6,13 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.kii.extension.ruleengine.sdk.entity.serviceextension.BucketWhenType;
-import com.kii.extension.ruleengine.sdk.entity.serviceextension.EventTriggerConfig;
-import com.kii.extension.ruleengine.sdk.entity.serviceextension.ScheduleTriggerConfig;
-import com.kii.extension.ruleengine.sdk.entity.serviceextension.TriggerScopeType;
-import com.kii.extension.ruleengine.sdk.entity.serviceextension.HookGeneral;
-import com.kii.extension.ruleengine.sdk.entity.serviceextension.TriggerFactory;
-import com.kii.extension.ruleengine.sdk.service.ServiceExtensionService;
+import com.kii.extension.sdk.entity.serviceextension.BucketWhenType;
+import com.kii.extension.sdk.entity.serviceextension.EventTriggerConfig;
+import com.kii.extension.sdk.entity.serviceextension.ScheduleTriggerConfig;
+import com.kii.extension.sdk.entity.serviceextension.TriggerScopeType;
+import com.kii.extension.sdk.entity.serviceextension.HookGeneral;
+import com.kii.extension.sdk.entity.serviceextension.TriggerFactory;
+import com.kii.extension.sdk.service.ServiceExtensionService;
 
 public class TestServerExten extends TestTemplate{
 

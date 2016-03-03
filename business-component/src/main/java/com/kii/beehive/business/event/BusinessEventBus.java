@@ -13,7 +13,7 @@ import com.kii.beehive.business.event.impl.TriggerFireProcess;
 import com.kii.beehive.portal.event.EventListener;
 import com.kii.beehive.portal.event.EventType;
 import com.kii.beehive.portal.service.EventListenerDao;
-import com.kii.extension.ruleengine.sdk.entity.thingif.ThingStatus;
+import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
 @Component
 public class BusinessEventBus {

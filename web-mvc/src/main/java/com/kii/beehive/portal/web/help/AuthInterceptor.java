@@ -24,7 +24,7 @@ import com.kii.beehive.portal.store.entity.DeviceSupplier;
 import com.kii.beehive.portal.web.constant.CallbackNames;
 import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.beehive.portal.web.exception.BeehiveUnAuthorizedException;
-import com.kii.extension.ruleengine.sdk.exception.ObjectNotFoundException;
+import com.kii.extension.sdk.exception.ObjectNotFoundException;
 
 public class AuthInterceptor extends HandlerInterceptorAdapter {
 

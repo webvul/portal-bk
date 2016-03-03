@@ -8,11 +8,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import com.kii.beehive.portal.store.entity.BeehiveUser;
-import com.kii.extension.ruleengine.sdk.annotation.BindAppByName;
-import com.kii.extension.ruleengine.sdk.entity.KiiUser;
-import com.kii.extension.ruleengine.sdk.entity.LoginInfo;
-import com.kii.extension.ruleengine.sdk.exception.UserNotFoundException;
-import com.kii.extension.ruleengine.sdk.service.UserService;
+import com.kii.extension.sdk.annotation.BindAppByName;
+import com.kii.extension.sdk.entity.KiiUser;
+import com.kii.extension.sdk.entity.LoginInfo;
+import com.kii.extension.sdk.exception.UserNotFoundException;
+import com.kii.extension.sdk.service.UserService;
 
 
 /**

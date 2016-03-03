@@ -9,12 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.kii.extension.ruleengine.sdk.context.AppBindTool;
-import com.kii.extension.ruleengine.sdk.context.AppBindToolResolver;
-import com.kii.extension.ruleengine.sdk.context.UserTokenBindTool;
-import com.kii.extension.ruleengine.sdk.service.UserService;
-import com.kii.extension.ruleengine.sdk.entity.BucketInfo;
-import com.kii.extension.ruleengine.sdk.service.DataService;
+import com.kii.extension.sdk.context.AppBindTool;
+import com.kii.extension.sdk.context.AppBindToolResolver;
+import com.kii.extension.sdk.context.UserTokenBindTool;
+import com.kii.extension.sdk.service.UserService;
+import com.kii.extension.sdk.entity.BucketInfo;
+import com.kii.extension.sdk.service.DataService;
 
 public class TestOAuth extends TestTemplate{
 

@@ -6,11 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.kii.extension.ruleengine.sdk.context.AppBindToolResolver;
+import com.kii.extension.sdk.context.AppBindToolResolver;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
-		"classpath:com/kii/extension/sdk/testContext.xml"})
+		"classpath:com/kii/extension/sdk/sdkTestContext.xml"})
 public class TestTemplate {
 
 

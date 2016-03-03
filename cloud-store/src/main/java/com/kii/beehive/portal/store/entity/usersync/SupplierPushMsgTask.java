@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import com.kii.extension.ruleengine.sdk.entity.KiiEntity;
+import com.kii.extension.sdk.entity.KiiEntity;
 
 public class SupplierPushMsgTask extends KiiEntity{
 

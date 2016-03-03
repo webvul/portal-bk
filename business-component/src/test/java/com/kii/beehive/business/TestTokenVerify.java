@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.kii.beehive.business.manager.AppInfoManager;
-import com.kii.extension.ruleengine.sdk.service.UserService;
+import com.kii.extension.sdk.service.UserService;
 
 public class TestTokenVerify extends TestInit {
 

@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
-import com.kii.extension.ruleengine.sdk.entity.KiiEntity;
+import com.kii.extension.sdk.entity.KiiEntity;
 
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME,

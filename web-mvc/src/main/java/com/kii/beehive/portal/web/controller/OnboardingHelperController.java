@@ -24,7 +24,7 @@ import com.kii.beehive.portal.store.entity.CallbackUrlParameter;
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
 import com.kii.beehive.portal.web.constant.CallbackNames;
 import com.kii.beehive.portal.web.exception.PortalException;
-import com.kii.extension.ruleengine.sdk.entity.FederatedAuthResult;
+import com.kii.extension.sdk.entity.FederatedAuthResult;
 
 /**
  * Beehive API - Thing API

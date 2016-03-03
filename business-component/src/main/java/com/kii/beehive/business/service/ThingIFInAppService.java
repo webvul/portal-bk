@@ -12,14 +12,14 @@ import com.kii.beehive.business.manager.ThingStateManager;
 import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
-import com.kii.extension.ruleengine.sdk.context.AppBindToolResolver;
-import com.kii.extension.ruleengine.sdk.entity.thingif.OnBoardingParam;
-import com.kii.extension.ruleengine.sdk.entity.thingif.OnBoardingResult;
-import com.kii.extension.ruleengine.sdk.entity.thingif.ThingCommand;
-import com.kii.extension.ruleengine.sdk.entity.thingif.ThingStatus;
-import com.kii.extension.ruleengine.sdk.entity.thingif.ThingTrigger;
-import com.kii.extension.ruleengine.sdk.service.ThingIFService;
-import com.kii.extension.ruleengine.sdk.service.TriggerService;
+import com.kii.extension.sdk.context.AppBindToolResolver;
+import com.kii.extension.sdk.entity.thingif.OnBoardingParam;
+import com.kii.extension.sdk.entity.thingif.OnBoardingResult;
+import com.kii.extension.sdk.entity.thingif.ThingCommand;
+import com.kii.extension.sdk.entity.thingif.ThingStatus;
+import com.kii.extension.sdk.entity.thingif.ThingTrigger;
+import com.kii.extension.sdk.service.ThingIFService;
+import com.kii.extension.sdk.service.TriggerService;
 
 @Component
 public class ThingIFInAppService {

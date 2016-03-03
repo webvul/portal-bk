@@ -4,11 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.store.entity.CallbackUrlParameter;
-import com.kii.extension.ruleengine.sdk.annotation.AppBindParam;
-import com.kii.extension.ruleengine.sdk.context.AppBindToolResolver;
-import com.kii.extension.ruleengine.sdk.entity.AppInfo;
-import com.kii.extension.ruleengine.sdk.entity.BucketInfo;
-import com.kii.extension.ruleengine.sdk.service.AbstractDataAccess;
+import com.kii.extension.sdk.annotation.AppBindParam;
+import com.kii.extension.sdk.context.AppBindToolResolver;
+import com.kii.extension.sdk.entity.AppInfo;
+import com.kii.extension.sdk.entity.BucketInfo;
+import com.kii.extension.sdk.service.AbstractDataAccess;
 
 //@BindAppByName(appName="portal",appBindSource="propAppBindTool")
 @Component
