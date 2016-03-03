@@ -3,12 +3,11 @@ package com.kii.beehive.portal.event;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import com.kii.extension.sdk.entity.KiiEntity;
+import com.kii.extension.ruleengine.sdk.entity.KiiEntity;
 
 public class EventListener extends KiiEntity {
 

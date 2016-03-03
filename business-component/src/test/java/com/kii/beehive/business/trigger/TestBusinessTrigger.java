@@ -13,11 +13,11 @@
 //import com.kii.beehive.business.event.BusinessEventBus;
 //import com.kii.beehive.business.service.BusinessTriggerService;
 //import com.kii.beehive.business.service.ThingIFInAppService;
-//import com.kii.extension.sdk.entity.thingif.StatePredicate;
-//import com.kii.extension.sdk.entity.thingif.ThingStatus;
-//import com.kii.extension.sdk.entity.thingif.TriggerWhen;
-//import com.kii.extension.sdk.query.Condition;
-//import com.kii.extension.sdk.query.ConditionBuilder;
+//import StatePredicate;
+//import ThingStatus;
+//import TriggerWhen;
+//import Condition;
+//import ConditionBuilder;
 //
 //
 //public class TestBusinessTrigger extends TestInit {

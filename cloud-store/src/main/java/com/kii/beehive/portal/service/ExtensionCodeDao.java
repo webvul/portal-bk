@@ -10,11 +10,11 @@ import org.springframework.util.StringUtils;
 import com.kii.beehive.portal.common.utils.JavaScriptCheck;
 import com.kii.beehive.portal.exception.JSFormatErrorException;
 import com.kii.beehive.portal.store.entity.ExtensionCodeEntity;
-import com.kii.extension.sdk.annotation.BindAppByName;
-import com.kii.extension.sdk.entity.BucketInfo;
-import com.kii.extension.sdk.query.ConditionBuilder;
-import com.kii.extension.sdk.query.QueryParam;
-import com.kii.extension.sdk.service.AbstractDataAccess;
+import com.kii.extension.ruleengine.sdk.annotation.BindAppByName;
+import com.kii.extension.ruleengine.sdk.entity.BucketInfo;
+import com.kii.extension.ruleengine.sdk.query.ConditionBuilder;
+import com.kii.extension.ruleengine.sdk.query.QueryParam;
+import com.kii.extension.ruleengine.sdk.service.AbstractDataAccess;
 
 @BindAppByName(appName="portal",appBindSource="propAppBindTool")
 @Component

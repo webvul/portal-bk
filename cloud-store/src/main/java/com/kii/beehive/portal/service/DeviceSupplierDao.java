@@ -10,9 +10,9 @@ import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.config.CacheConfig;
 import com.kii.beehive.portal.store.entity.DeviceSupplier;
-import com.kii.extension.sdk.annotation.BindAppByName;
-import com.kii.extension.sdk.entity.BucketInfo;
-import com.kii.extension.sdk.service.AbstractDataAccess;
+import com.kii.extension.ruleengine.sdk.annotation.BindAppByName;
+import com.kii.extension.ruleengine.sdk.entity.BucketInfo;
+import com.kii.extension.ruleengine.sdk.service.AbstractDataAccess;
 
 @BindAppByName(appName="portal",appBindSource="propAppBindTool")
 @Component

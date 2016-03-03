@@ -13,11 +13,11 @@ import org.springframework.stereotype.Component;
 
 import com.kii.beehive.business.helper.SimpleQueryTool;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
-import com.kii.extension.sdk.annotation.BindAppByName;
-import com.kii.extension.sdk.entity.BucketInfo;
-import com.kii.extension.sdk.exception.ObjectNotFoundException;
-import com.kii.extension.sdk.query.QueryParam;
-import com.kii.extension.sdk.service.AbstractDataAccess;
+import com.kii.extension.ruleengine.sdk.annotation.BindAppByName;
+import com.kii.extension.ruleengine.sdk.entity.BucketInfo;
+import com.kii.extension.ruleengine.sdk.exception.ObjectNotFoundException;
+import com.kii.extension.ruleengine.sdk.query.QueryParam;
+import com.kii.extension.ruleengine.sdk.service.AbstractDataAccess;
 
 
 @BindAppByName(appName="portal",appBindSource="propAppBindTool")

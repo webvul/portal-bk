@@ -7,8 +7,8 @@ import com.kii.beehive.business.event.BusinessEventListenerService;
 import com.kii.beehive.business.event.impl.TriggerFireProcess;
 import com.kii.beehive.business.ruleengine.CommandExecuteService;
 import com.kii.beehive.portal.event.EventListener;
-import com.kii.extension.service.TriggerRecordDao;
-import com.kii.extension.store.trigger.TriggerRecord;
+import com.kii.extension.ruleengine.service.TriggerRecordDao;
+import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 
 @Component(BusinessEventListenerService.FIRE_TRIGGER_WHEN_MATCH)
 public class RuleFireProcess implements TriggerFireProcess {

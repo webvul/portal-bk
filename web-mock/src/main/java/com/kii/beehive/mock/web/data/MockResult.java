@@ -2,7 +2,7 @@ package com.kii.beehive.mock.web.data;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import com.kii.extension.sdk.entity.KiiEntity;
+import com.kii.extension.ruleengine.sdk.entity.KiiEntity;
 
 public class MockResult extends KiiEntity {
 

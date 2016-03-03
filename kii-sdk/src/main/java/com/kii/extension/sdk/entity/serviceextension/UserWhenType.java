@@ -1,8 +1,0 @@
-package com.kii.extension.sdk.entity.serviceextension;
-
-public enum UserWhenType {
-
-	USER_CREATED,USER_EMAIL_VERIFIED,USER_PHONE_VERIFIED,USER_PASSWORD_RESET_COMPLETED,
-	USER_PASSWORD_CHANGED,USER_DELETED,USER_UPDATED;
-
-}

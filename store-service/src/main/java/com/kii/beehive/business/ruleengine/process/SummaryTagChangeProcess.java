@@ -7,10 +7,10 @@ import com.kii.beehive.business.event.BusinessEventListenerService;
 import com.kii.beehive.business.event.impl.TagChangeProcess;
 import com.kii.beehive.business.manager.ThingStateManager;
 import com.kii.beehive.portal.event.EventListener;
-import com.kii.extension.service.TriggerRecordDao;
-import com.kii.extension.store.trigger.SummarySource;
-import com.kii.extension.store.trigger.SummaryTriggerRecord;
-import com.kii.extension.EngineService;
+import com.kii.extension.ruleengine.service.TriggerRecordDao;
+import com.kii.extension.ruleengine.store.trigger.SummarySource;
+import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
+import com.kii.extension.ruleengine.EngineService;
 
 @Component(BusinessEventListenerService.REFRESH_SUMMARY_GROUP)
 public class SummaryTagChangeProcess implements TagChangeProcess {

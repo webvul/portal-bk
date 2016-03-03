@@ -3,9 +3,9 @@ package com.kii.beehive.portal.store.entity;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.kii.extension.sdk.entity.KiiEntity;
-import com.kii.extension.sdk.entity.serviceextension.EventTriggerConfig;
-import com.kii.extension.sdk.entity.serviceextension.ScheduleTriggerConfig;
+import com.kii.extension.ruleengine.sdk.entity.KiiEntity;
+import com.kii.extension.ruleengine.sdk.entity.serviceextension.EventTriggerConfig;
+import com.kii.extension.ruleengine.sdk.entity.serviceextension.ScheduleTriggerConfig;
 
 public class ExtensionCodeEntity extends KiiEntity{
 

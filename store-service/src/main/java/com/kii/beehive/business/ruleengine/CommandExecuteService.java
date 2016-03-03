@@ -9,11 +9,11 @@ import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.business.manager.AppInfoManager;
 import com.kii.beehive.business.manager.ThingStateManager;
-import com.kii.extension.service.TriggerRecordDao;
-import com.kii.extension.store.trigger.TargetAction;
-import com.kii.extension.store.trigger.TriggerRecord;
-import com.kii.extension.store.trigger.ExecuteTarget;
-import com.kii.extension.sdk.entity.thingif.ThingCommand;
+import com.kii.extension.ruleengine.service.TriggerRecordDao;
+import com.kii.extension.ruleengine.store.trigger.TargetAction;
+import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
+import com.kii.extension.ruleengine.sdk.entity.thingif.ThingCommand;
 
 
 

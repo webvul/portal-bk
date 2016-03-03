@@ -27,7 +27,7 @@ import com.kii.beehive.portal.service.BeehiveUserDao;
 import com.kii.beehive.portal.service.KiiUserSyncDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.store.entity.CustomProperty;
-import com.kii.extension.sdk.exception.ObjectNotFoundException;
+import com.kii.extension.ruleengine.sdk.exception.ObjectNotFoundException;
 
 @Component
 public class UserManager {

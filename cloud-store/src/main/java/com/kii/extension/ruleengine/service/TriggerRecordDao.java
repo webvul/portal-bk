@@ -1,0 +1,64 @@
+package com.kii.extension.ruleengine.service;
+
+import java.util.Collections;
+import java.util.List;
+
+import org.springframework.stereotype.Component;
+
+import com.kii.extension.ruleengine.sdk.service.AbstractDataAccess;
+import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
+import com.kii.extension.ruleengine.sdk.annotation.BindAppByName;
+import com.kii.extension.ruleengine.sdk.entity.BucketInfo;
+import com.kii.extension.ruleengine.sdk.query.ConditionBuilder;
+import com.kii.extension.ruleengine.sdk.query.QueryParam;
+
+@Component
+@BindAppByName(appName = "portal",appBindSource="propAppBindTool")
+public class TriggerRecordDao extends AbstractDataAccess<TriggerRecord> {
+
+
+
+	@Override
+	protected Class<TriggerRecord> getTypeCls() {
+		return TriggerRecord.class;
+	}
+
+	@Override
+	protected BucketInfo getBucketInfo() {
+		return new BucketInfo("triggerRecord");
+	}
+
+	public TriggerRecord getTriggerRecord(String id){
+
+		QueryParam query= ConditionBuilder.andCondition().equal("_id",id).equal("recordStatus", TriggerRecord.StatusType.enable).getFinalQueryParam();
+
+		List<TriggerRecord> list=super.query(query);
+
+		if(list.isEmpty()){
+			return null;
+		}
+		return list.get(0);
+
+	}
+
+
+
+	public void deleteTriggerRecord(String id){
+
+		super.updateEntity(Collections.singletonMap("recordStatus", TriggerRecord.StatusType.deleted), id);
+
+	}
+
+
+	
+	public void enableTrigger(String triggerID) {
+
+		super.updateEntity(Collections.singletonMap("recordStatus", TriggerRecord.StatusType.enable), triggerID);
+
+	}
+
+	public void disableTrigger(String triggerID) {
+			super.updateEntity(Collections.singletonMap("recordStatus", TriggerRecord.StatusType.disable), triggerID);
+
+	}
+}

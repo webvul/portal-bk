@@ -6,8 +6,8 @@ import org.springframework.stereotype.Component;
 import com.kii.beehive.business.event.BusinessEventListenerService;
 import com.kii.beehive.business.event.impl.ThingStatusChangeProcess;
 import com.kii.beehive.portal.event.EventListener;
-import com.kii.extension.EngineService;
-import com.kii.extension.sdk.entity.thingif.ThingStatus;
+import com.kii.extension.ruleengine.EngineService;
+import com.kii.extension.ruleengine.sdk.entity.thingif.ThingStatus;
 
 @Component(BusinessEventListenerService.REFRESH_THING_FOR_TRIGGER)
 public class ThingStatusUploadProcess implements ThingStatusChangeProcess {

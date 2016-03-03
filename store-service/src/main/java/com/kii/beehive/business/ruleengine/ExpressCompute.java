@@ -4,14 +4,14 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
-import com.kii.extension.sdk.query.Condition;
-import com.kii.extension.sdk.query.condition.AndLogic;
-import com.kii.extension.sdk.query.condition.Equal;
-import com.kii.extension.sdk.query.condition.FieldExist;
-import com.kii.extension.sdk.query.condition.NotLogic;
-import com.kii.extension.sdk.query.condition.OrLogic;
-import com.kii.extension.sdk.query.condition.PrefixLike;
-import com.kii.extension.sdk.query.condition.Range;
+import com.kii.extension.ruleengine.sdk.query.Condition;
+import com.kii.extension.ruleengine.sdk.query.condition.AndLogic;
+import com.kii.extension.ruleengine.sdk.query.condition.Equal;
+import com.kii.extension.ruleengine.sdk.query.condition.FieldExist;
+import com.kii.extension.ruleengine.sdk.query.condition.NotLogic;
+import com.kii.extension.ruleengine.sdk.query.condition.OrLogic;
+import com.kii.extension.ruleengine.sdk.query.condition.PrefixLike;
+import com.kii.extension.ruleengine.sdk.query.condition.Range;
 
 @Component
 public class ExpressCompute {

@@ -7,7 +7,7 @@
 //import com.kii.beehive.portal.store.entity.DeviceSupplier;
 //import com.kii.beehive.portal.store.entity.Token.PortalTokenType;
 //import com.kii.beehive.portal.store.entity.Token.TokenInfo;
-//import com.kii.extension.sdk.exception.UnauthorizedAccessException;
+//import UnauthorizedAccessException;
 //
 //@Component
 //public class PortalTokenService {

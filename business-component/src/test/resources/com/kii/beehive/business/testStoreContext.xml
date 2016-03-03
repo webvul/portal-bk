@@ -20,17 +20,17 @@
     <bean:annotation-config />
 
 
-    <bean id="propAppBindTool" class="com.kii.extension.factory.LocalPropertyBindTool" >
+    <bean id="propAppBindTool" class="com.kii.extension.ruleengine.factory.LocalPropertyBindTool" >
         <property name="propFileName" value="classpath:com/kii/beehive/business/beehive.portal.store.properties" />
     </bean>
 
-    <bean class="com.kii.extension.factory.KiiCloudSDKConfig" />
+    <bean class="com.kii.extension.ruleengine.factory.KiiCloudSDKConfig" />
 
-    <bean id="appBindAspect"  class="com.kii.extension.sdk.aop.AppBindAspect" />
+    <bean id="appBindAspect"  class="com.kii.extension.ruleengine.sdk.aop.AppBindAspect" />
 
 
 
-    <bean class="com.kii.extension.sdk.service.DevPortalService" >
+    <bean class="com.kii.extension.ruleengine.sdk.service.DevPortalService" >
         <property name="devPortalUrl"  value="${beehive.kiicloud.dev-portal.url}" />
     </bean>
 

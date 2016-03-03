@@ -9,7 +9,7 @@
 //
 //import com.kii.beehive.business.helper.PortalTokenService;
 //import com.kii.beehive.portal.store.entity.Token.PortalTokenType;
-//import com.kii.extension.sdk.exception.UnauthorizedAccessException;
+//import UnauthorizedAccessException;
 //
 //public class TokenInterceptor extends HandlerInterceptorAdapter {
 //

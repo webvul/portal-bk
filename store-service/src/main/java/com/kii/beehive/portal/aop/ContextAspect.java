@@ -14,18 +14,18 @@ import com.kii.beehive.portal.auth.AuthInfoStore;
 @Aspect
 public class ContextAspect {
 
-	@Pointcut("execution (* com.kii.extension.sdk.service.DataService.createObject(..)  ) ")
+	@Pointcut("execution (* DataService.createObject(..)  ) ")
 	private void commDataAdd(){
 
 	}
 
 
-	@Pointcut("execution (* com.kii.extension.sdk.service.DataService.update*(..)  ) ")
+	@Pointcut("execution (* DataService.update*(..)  ) ")
 	private void commDataUpdate(){
 
 	}
 
-	@Pointcut("execution (* com.kii.extension.sdk.service.DataService.fullUpdate*(..)  ) ")
+	@Pointcut("execution (* DataService.fullUpdate*(..)  ) ")
 	private void commDataFullUpdate(){
 
 	}

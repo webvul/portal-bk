@@ -11,13 +11,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-import org.apache.http.auth.AUTH;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,8 +27,7 @@ import com.kii.beehive.portal.service.BeehiveUserDao;
 import com.kii.beehive.portal.service.KiiUserSyncDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.controller.UserController;
-import com.kii.beehive.portal.web.help.AuthInterceptor;
-import com.kii.extension.sdk.exception.UserAlreadyExistsException;
+import com.kii.extension.ruleengine.sdk.exception.UserAlreadyExistsException;
 
 
 public class TestUserController extends WebTestTemplate{

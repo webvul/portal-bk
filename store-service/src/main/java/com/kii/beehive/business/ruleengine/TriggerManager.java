@@ -7,12 +7,12 @@ import org.springframework.stereotype.Component;
 
 import com.kii.beehive.business.event.BusinessEventListenerService;
 import com.kii.beehive.business.manager.ThingStateManager;
-import com.kii.extension.service.TriggerRecordDao;
-import com.kii.extension.store.trigger.GroupTriggerRecord;
-import com.kii.extension.store.trigger.SimpleTriggerRecord;
-import com.kii.extension.store.trigger.SummaryTriggerRecord;
-import com.kii.extension.store.trigger.TriggerRecord;
-import com.kii.extension.EngineService;
+import com.kii.extension.ruleengine.service.TriggerRecordDao;
+import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
+import com.kii.extension.ruleengine.EngineService;
 
 @Component
 public class TriggerManager {

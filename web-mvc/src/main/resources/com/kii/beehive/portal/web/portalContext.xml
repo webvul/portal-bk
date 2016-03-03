@@ -48,20 +48,20 @@
 
 
     <!-- aop -->
-    <bean id="appBindAspect"  class="com.kii.extension.sdk.aop.AppBindAspect" />
+    <bean id="appBindAspect"  class="com.kii.extension.ruleengine.sdk.aop.AppBindAspect" />
     <bean class="com.kii.beehive.portal.aop.ContextAspect" />
     <bean id="appLogAspect" class="com.kii.beehive.portal.aop.LogAspect" />
 
     <bean id="controllerLogAspect" class="com.kii.beehive.portal.web.aop.ControllerLogAspect" />
 
     <!-- kiicloud connect -->
-    <bean class="com.kii.extension.factory.KiiCloudSDKConfig" />
+    <bean class="com.kii.extension.ruleengine.factory.KiiCloudSDKConfig" />
 
-    <bean class="com.kii.extension.sdk.service.DevPortalService" >
+    <bean class="com.kii.extension.ruleengine.sdk.service.DevPortalService" >
         <property name="devPortalUrl"  value="${beehive.kiicloud.dev-portal.url}" />
     </bean>
 
-    <bean name="propAppBindTool" class="com.kii.extension.factory.LocalPropertyBindTool" >
+    <bean name="propAppBindTool" class="com.kii.extension.ruleengine.factory.LocalPropertyBindTool" >
             <property name="propFileName" value="classpath:com/kii/beehive/portal/web/beehive.portal.store.${spring.profile}.properties" />
     </bean>
 
