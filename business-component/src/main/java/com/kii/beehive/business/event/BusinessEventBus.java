@@ -2,6 +2,9 @@ package com.kii.beehive.business.event;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.Async;
@@ -25,6 +28,8 @@ public class BusinessEventBus {
 	@Autowired
 	private EventListenerDao eventDao;
 
+	private Logger log= LoggerFactory.getLogger(BusinessEventBus.class);
+
 
 	@Async
 	public void onTriggerFire(String triggerID){
@@ -36,9 +41,15 @@ public class BusinessEventBus {
 
 			String name=listener.getRelationBeanName();
 
-			TriggerFireProcess process= (TriggerFireProcess) context.getBean(name);
+			try {
+				TriggerFireProcess process= (TriggerFireProcess) context.getBean(name);
 
-			process.onEventFire(listener,triggerID);
+				process.onEventFire(listener,triggerID);
+			}catch(NoSuchBeanDefinitionException ex){
+
+				log.error("the process not found:"+name);
+
+			}
 
 		});
 
@@ -55,9 +66,15 @@ public class BusinessEventBus {
 		listenerList.forEach(listener->{
 			String name=listener.getRelationBeanName();
 
-			TagChangeProcess process= (TagChangeProcess) context.getBean(name);
+			try {
+				TagChangeProcess process= (TagChangeProcess) context.getBean(name);
 
-			process.onEventFire(listener);
+				process.onEventFire(listener);
+			}catch(NoSuchBeanDefinitionException ex){
+
+				log.error("the process not found:"+name);
+
+			}
 
 		});
 
@@ -74,9 +91,16 @@ public class BusinessEventBus {
 
 			String relationBeanName=listener.getRelationBeanName();
 
-			ThingStatusChangeProcess process= (ThingStatusChangeProcess) context.getBean(relationBeanName);
+			try {
 
-			process.onEventFire(listener,status,thingID);
+				ThingStatusChangeProcess process = (ThingStatusChangeProcess) context.getBean(relationBeanName);
+
+				process.onEventFire(listener, status, thingID);
+			}catch(NoSuchBeanDefinitionException ex){
+
+				log.error("the process not found:"+relationBeanName);
+
+			}
 		});
 
 	}

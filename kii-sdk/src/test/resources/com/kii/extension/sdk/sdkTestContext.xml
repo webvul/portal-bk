@@ -11,6 +11,7 @@
     <bean name="propAppBindTool" class="com.kii.extension.factory.LocalPropertyBindTool" >
         <property name="propFileName" value="classpath:com/kii/extension/sdk/beehiveAppConfig.properties" />
     </bean>
+    <bean id="appBindAspect"  class="com.kii.extension.sdk.aop.AppBindAspect" />
 
     <bean class="com.kii.extension.factory.KiiCloudSDKConfig" />
 
