@@ -43,6 +43,15 @@ public class TriggerConditionBuilder {
 		return this;
 	}
 
+	public TriggerConditionBuilder equalExpress(String field, String express) {
+
+		Equal eq = new Equal(field, null);
+		eq.setExpress(express);
+		fill(eq);
+
+		return this;
+	}
+
 
 
 	public TriggerConditionBuilder In(String field, List<?> objList) {
@@ -73,6 +82,15 @@ public class TriggerConditionBuilder {
 		return this;
 	}
 
+	public TriggerConditionBuilder likeExp(String field, String value) {
+		Like q = new Like();
+		q.setField(field);
+		q.setExpress(value);
+
+		fill(q);
+		return this;
+	}
+
 	private <T> TriggerConditionBuilder range(String field, T lower, boolean withLower,
 											  T upper, boolean withUpper) {
 
@@ -88,6 +106,27 @@ public class TriggerConditionBuilder {
 		}
 		if (lower != null) {
 			q.setLowerLimit(lower);
+		}
+
+		q.setUpperIncluded(withUpper);
+		q.setLowerIncluded(withLower);
+
+
+		fill(q);
+
+		return this;
+	}
+
+	private  TriggerConditionBuilder rangeExp(String field, String lower, boolean withLower,
+											  String upper, boolean withUpper) {
+
+		Range q = new Range();
+		q.setField(field);
+		if (upper != null) {
+			q.setUpperExpress(upper);
+		}
+		if (lower != null) {
+			q.setLowerExpress(lower);
 		}
 
 		q.setUpperIncluded(withUpper);
@@ -127,10 +166,28 @@ public class TriggerConditionBuilder {
 		return range(field, value, true, null, false);
 	}
 
-	public <T> TriggerConditionBuilder betweenIn(String field, T lower, boolean withLower,
-												 T upper, boolean withUpper) {
-		return range(field, lower, withLower, upper, withUpper);
+
+	public <T> TriggerConditionBuilder lessExp(String field, String value) {
+		return rangeExp(field, null, false, value, false);
+
 	}
+
+	public <T> TriggerConditionBuilder greatExp(String field, String value) {
+		return rangeExp(field, value, false, null, false);
+	}
+
+	public <T> TriggerConditionBuilder lessAndEqExp(String field, String value) {
+		return rangeExp(field, null, false, value, true);
+	}
+
+	public <T> TriggerConditionBuilder greatAndEqExp(String field, String value) {
+		return rangeExp(field, value, true, null, false);
+	}
+
+//	public <T> TriggerConditionBuilder betweenIn(String field, T lower, boolean withLower,
+//												 T upper, boolean withUpper) {
+//		return range(field, lower, withLower, upper, withUpper);
+//	}
 
 	
 	public static TriggerConditionBuilder andCondition() {

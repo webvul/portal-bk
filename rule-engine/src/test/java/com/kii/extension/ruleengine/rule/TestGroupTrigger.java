@@ -54,7 +54,8 @@ public class TestGroupTrigger extends TestInit {
 		record.setPolicy(policy);
 
 
-		String triggerID=dao.addKiiEntity(record);
+		String triggerID="202";
+		record.setId(triggerID);
 
 
 		Set<String> thingIDs=tagService.getKiiThingIDs(selector);
@@ -112,7 +113,8 @@ public class TestGroupTrigger extends TestInit {
 		record.setPolicy(policy);
 
 
-		String triggerID=dao.addKiiEntity(record);
+		String triggerID="200";
+		record.setId(triggerID);
 
 
 		Set<String> thingIDs=tagService.getKiiThingIDs(selector);
@@ -169,7 +171,8 @@ public class TestGroupTrigger extends TestInit {
 		record.setPolicy(policy);
 
 
-		String triggerID=dao.addKiiEntity(record);
+		String triggerID="201";
+		record.setId(triggerID);
 
 
 

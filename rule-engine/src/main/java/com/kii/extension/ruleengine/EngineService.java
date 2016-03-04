@@ -2,6 +2,7 @@ package com.kii.extension.ruleengine;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,7 @@ public class EngineService {
 
 
 
-	public void createSummaryTrigger(SummaryTriggerRecord  record){
+	public void createSummaryTrigger(SummaryTriggerRecord record, Map<String,Set<String> > summaryMap){
 
 
 		Trigger trigger=new Trigger();
@@ -41,10 +42,9 @@ public class EngineService {
 		trigger.setWhen(record.getPredicate().getTriggersWhen());
 		trigger.setStream(false);
 
-		String 	rule = ruleGeneral.generDrlConfig(record.getId(), TriggerType.group, record.getPredicate());
+		String 	rule = ruleGeneral.generDrlConfig(record.getId(), TriggerType.summary, record.getPredicate());
 
 		droolsTriggerService.addTrigger(trigger,rule);
-
 
 		record.getSummarySource().forEach((k,v)->{
 
@@ -55,6 +55,7 @@ public class EngineService {
 				summary.setFieldName(exp.getStateName());
 				summary.setFunName(exp.getFunction().name());
 				summary.setSummaryField(k+"."+exp.getSummaryAlias());
+				summary.setThings(summaryMap.get(k));
 				droolsTriggerService.addSummary(summary);
 			});
 

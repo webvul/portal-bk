@@ -54,6 +54,8 @@ public abstract class AbstractDataAccess<T> {
 		if(entity.getId()==null){
 			CreateResponse resp=service.createObject(entity, bucketInfo);
 
+			entity.setId(resp.getObjectID());
+
 			return resp.getObjectID();
 
 		}else {

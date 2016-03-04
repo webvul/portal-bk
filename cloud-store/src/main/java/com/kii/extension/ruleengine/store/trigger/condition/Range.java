@@ -79,7 +79,7 @@ public class Range extends SimpleCondition {
 
 	@JsonIgnore
 	public boolean isExistUpper(){
-		return (upperLimit!=null)&&(StringUtils.isEmpty(upperExpress));
+		return (upperLimit!=null)||(!StringUtils.isEmpty(upperExpress));
 	}
 
 	public void setUpperIncluded(Boolean upperIncluded) {
@@ -94,7 +94,7 @@ public class Range extends SimpleCondition {
 
 	@JsonIgnore
 	public boolean isExistLower(){
-		return (lowerLimit!=null)&&StringUtils.isEmpty(lowerExpress);
+		return (lowerLimit!=null)||!StringUtils.isEmpty(lowerExpress);
 	}
 
 	public void setLowerIncluded(Boolean lowerIncluded) {

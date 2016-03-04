@@ -302,6 +302,8 @@ public class RuleGeneral {
 		return list.toString();
 	}
 
+	private ExpressConvert replace;
+
 	private String getFinalValue(String express,Object obj){
 
 
@@ -312,11 +314,15 @@ public class RuleGeneral {
 				return String.valueOf(obj);
 			}
 		}else if(!StringUtils.isEmpty(express)){
-			return express;
+
+			return replace.convertExpress(express);
 		}else{
 			throw new IllegalArgumentException("condition invalidFormat ,exp:"+express+" obj:"+obj);
 		}
 	}
+
+
+
 
 	private String getFinalValue(ExpressCondition cond){
 

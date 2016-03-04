@@ -41,7 +41,8 @@ public class TestSimpleTrigger extends TestInit{
 		record.setPredicate(perdicate);
 
 
-		String triggerID=dao.addKiiEntity(record);
+		String triggerID="100";
+		record.setId(triggerID);
 
 		engine.createSimpleTrigger(kiiThingID,triggerID,perdicate);
 
@@ -87,7 +88,8 @@ public class TestSimpleTrigger extends TestInit{
 		record.setPredicate(perdicate);
 
 
-		String triggerID=dao.addKiiEntity(record);
+		String triggerID="101";
+		record.setId(triggerID);
 
 
 		engine.createSimpleTrigger(kiiThingID,triggerID,perdicate);
