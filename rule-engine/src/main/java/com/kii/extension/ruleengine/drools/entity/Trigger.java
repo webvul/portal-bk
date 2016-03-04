@@ -128,6 +128,7 @@ public class Trigger {
 				", type='" + type + '\'' +
 				", when='" + when + '\'' +
 				", enable=" + enable +
+				", policy="+policy.name()+
 				'}';
 	}
 }
