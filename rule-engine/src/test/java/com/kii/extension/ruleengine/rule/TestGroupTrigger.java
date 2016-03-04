@@ -79,4 +79,118 @@ public class TestGroupTrigger extends TestInit {
 
 
 	}
+
+
+
+	@Test
+	public void testAllTrigger(){
+
+
+		GroupTriggerRecord record=new GroupTriggerRecord();
+
+
+		TagSelector  selector=new TagSelector();
+		selector.addTag("Location-2F-room1");
+		selector.addTag("Location-2F_room1");
+		selector.setAndExpress(false);
+
+		TriggerSource source=new TriggerSource();
+		source.setSelector(selector);
+		record.setSource(source);
+
+		record.addTarget(getTarget() );
+
+		RuleEnginePredicate perdicate=new RuleEnginePredicate();
+		Condition condition= TriggerConditionBuilder.andCondition().great("foo",0).less("bar",0).getConditionInstance();
+		perdicate.setCondition(condition);
+
+		perdicate.setTriggersWhen(WhenType.CONDITION_TRUE);
+		record.setPredicate(perdicate);
+
+		TriggerGroupPolicy policy=new TriggerGroupPolicy();
+		policy.setGroupPolicy(TriggerGroupPolicyType.All);
+		record.setPolicy(policy);
+
+
+		String triggerID=dao.addKiiEntity(record);
+
+
+		Set<String> thingIDs=tagService.getKiiThingIDs(selector);
+
+		engine.createGroupTrigger(thingIDs,policy,triggerID,perdicate);
+
+		thingIDs.forEach(id->sendBadThingStatus(id));
+
+		assertEquals(0,exec.getHitCount(triggerID));
+
+		thingIDs.forEach(id->sendGoodThingStatus(id));
+
+		assertEquals(1,exec.getHitCount(triggerID));
+
+		sendBadThingStatus(thingIDs.iterator().next());
+
+		assertEquals(1,exec.getHitCount(triggerID));
+
+		sendGoodThingStatus(thingIDs.iterator().next());
+
+		assertEquals(2,exec.getHitCount(triggerID));
+
+
+	}
+
+	@Test
+	public void testPercentTrigger(){
+
+
+		GroupTriggerRecord record=new GroupTriggerRecord();
+
+
+		TagSelector  selector=new TagSelector();
+		selector.addTag("Location-2F-room1");
+		selector.addTag("Location-2F_room1");
+		selector.setAndExpress(false);
+
+		TriggerSource source=new TriggerSource();
+		source.setSelector(selector);
+		record.setSource(source);
+
+		record.addTarget(getTarget() );
+
+		RuleEnginePredicate perdicate=new RuleEnginePredicate();
+		Condition condition= TriggerConditionBuilder.andCondition().great("foo",0).less("bar",0).getConditionInstance();
+		perdicate.setCondition(condition);
+
+		perdicate.setTriggersWhen(WhenType.CONDITION_TRUE);
+		record.setPredicate(perdicate);
+
+		TriggerGroupPolicy policy=new TriggerGroupPolicy();
+		policy.setGroupPolicy(TriggerGroupPolicyType.Percent);
+		policy.setCriticalNumber(30);
+		record.setPolicy(policy);
+
+
+		String triggerID=dao.addKiiEntity(record);
+
+
+
+		Set<String> thingIDs=tagService.getKiiThingIDs(selector);
+
+
+		int num=30*thingIDs.size()/100;
+
+		engine.createGroupTrigger(thingIDs,policy,triggerID,perdicate);
+
+		thingIDs.forEach(id->sendBadThingStatus(id));
+
+		assertEquals(0,exec.getHitCount(triggerID));
+
+		thingIDs.forEach(id->sendGoodThingStatus(id));
+
+		assertEquals(3,exec.getHitCount(triggerID));
+
+		sendBadThingStatus(thingIDs.iterator().next());
+
+		assertEquals(4,exec.getHitCount(triggerID));
+
+	}
 }
