@@ -8,13 +8,13 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.entity.BucketInfo;
 import com.kii.extension.sdk.exception.ObjectNotFoundException;
+import com.kii.extension.sdk.query.ConditionBuilder;
 import com.kii.extension.sdk.query.QueryParam;
 import com.kii.extension.sdk.service.AbstractDataAccess;
 
@@ -26,8 +26,8 @@ public class BeehiveUserDao extends AbstractDataAccess<BeehiveUser> {
 	private Logger log= LoggerFactory.getLogger(BeehiveUserDao.class);
 
 
-	@Autowired
-	private SimpleQueryTool queryTool;
+//	@Autowired
+//	private SimpleQueryTool queryTool;
 
 	public String createUser(BeehiveUser user){
 
@@ -94,11 +94,25 @@ public class BeehiveUserDao extends AbstractDataAccess<BeehiveUser> {
 	}
 
 	public List<BeehiveUser>  getUsersBySimpleQuery(Map<String,Object> params){
-		QueryParam query=queryTool.getEntitysByFields(params);
+		QueryParam query=getEntitysByFields(params);
 
 		return super.fullQuery(query);
 	}
 
+
+	public QueryParam getEntitysByFields(Map<String,Object> fields){
+
+		ConditionBuilder builder= ConditionBuilder.andCondition();
+
+		fields.forEach((k,v)->{
+
+
+			builder.equal(k,v);
+		});
+
+		return builder.getFinalCondition().build();
+
+	}
 	public List<BeehiveUser> getAllUsers(){
 		return super.getAll();
 	}

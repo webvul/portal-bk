@@ -14,7 +14,7 @@ public class GlobalThingInfo extends DBEntity{
 
 	private String status;
 
-	private String custom;
+	private String consumer;
 
 	private String fullKiiThingID;
 
@@ -75,11 +75,11 @@ public class GlobalThingInfo extends DBEntity{
 
 	@JdbcField(column = "custom_info",type= JdbcFieldType.Json)
 	public String getCustom() {
-		return custom;
+		return consumer;
 	}
 
 	public void setCustom(String custom) {
-		this.custom = custom;
+		this.consumer = custom;
 	}
 
 	@JdbcField(column="full_kii_thing_id")
@@ -157,7 +157,7 @@ public class GlobalThingInfo extends DBEntity{
 		builder.append(", status=");
 		builder.append(status);
 		builder.append(", custom=");
-		builder.append(custom);
+		builder.append(consumer);
 		builder.append("]");
 		return builder.toString();
 	}

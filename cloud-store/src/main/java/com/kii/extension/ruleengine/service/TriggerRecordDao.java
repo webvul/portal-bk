@@ -61,4 +61,13 @@ public class TriggerRecordDao extends AbstractDataAccess<TriggerRecord> {
 			super.updateEntity(Collections.singletonMap("recordStatus", TriggerRecord.StatusType.disable), triggerID);
 
 	}
+	
+	public List<TriggerRecord> getAllTrigger() {
+
+		QueryParam query= ConditionBuilder.orCondition().equal("recordStatus",TriggerRecord.StatusType.disable).equal("recordStatus", TriggerRecord.StatusType.enable).getFinalQueryParam();
+
+		List<TriggerRecord> list=super.query(query);
+
+		return list;
+	}
 }

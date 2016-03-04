@@ -131,4 +131,18 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 
 
 	}
+	
+	public List<GlobalThingInfo> getAllThing(PagerTag pager) {
+
+		String sql = "SELECT g.* "
+				+ "FROM global_thing g ";
+
+
+		List<GlobalThingInfo> list= super.queryWithPage(sql,new Object[]{},pager);
+
+		pager.setStartRow(pager.getStartRow()+list.size());
+
+		return list;
+
+	}
 }

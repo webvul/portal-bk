@@ -3,6 +3,7 @@ package com.kii.beehive.business.manager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
+import com.kii.beehive.portal.jdbc.dao.PagerTag;
 import com.kii.beehive.portal.jdbc.dao.TagIndexSpringDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.extension.ruleengine.store.trigger.TagSelector;
@@ -88,6 +90,25 @@ public class ThingTagManager {
 		List<GlobalThingInfo> thingList=getThingInfos(source);
 
 		return thingList.stream().map(thing->thing.getFullKiiThingID()).collect(Collectors.toSet());
+
+	}
+	
+	public void  iteratorAllThingsStatus(Consumer<GlobalThingInfo> consumer) {
+
+		 PagerTag pager=new PagerTag();
+		 pager.setPageSize(50);
+		 pager.setStartRow(0);
+
+		 List<GlobalThingInfo> list= globalThingDao.getAllThing(pager);
+
+
+		 while(pager.hasNext()){
+
+			 list.forEach(consumer);
+			 list=globalThingDao.getAllThing(pager);
+		 }
+
+		 list.forEach(consumer);
 
 	}
 }

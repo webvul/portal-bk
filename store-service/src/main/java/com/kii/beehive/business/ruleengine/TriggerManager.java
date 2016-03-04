@@ -1,18 +1,28 @@
 package com.kii.beehive.business.ruleengine;
 
+import javax.annotation.PostConstruct;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.beehive.business.event.BusinessEventListenerService;
 import com.kii.beehive.business.manager.ThingTagManager;
+import com.kii.extension.ruleengine.EngineService;
 import com.kii.extension.ruleengine.service.TriggerRecordDao;
 import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
-import com.kii.extension.ruleengine.EngineService;
+import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
 @Component
 public class TriggerManager {
@@ -30,6 +40,55 @@ public class TriggerManager {
 
 	@Autowired
 	private ThingTagManager thingTagService;
+
+
+	@Autowired
+	private TriggerFireCallback callback;
+
+	@Autowired
+	private ObjectMapper mapper;
+
+
+
+	@PostConstruct
+	public void init(){
+
+
+		List<TriggerRecord> recordList=triggerDao.getAllTrigger();
+
+		recordList.forEach(t->createTrigger(t));
+
+		thingTagService.iteratorAllThingsStatus( s->{
+
+			if(StringUtils.isEmpty(s.getStatus())){
+				return;
+			}
+			try {
+				ThingStatus status = mapper.readValue(s.getStatus(),ThingStatus.class);
+				String id=s.getFullKiiThingID();
+
+				service.updateThingStatus(id,status);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		});
+
+
+	}
+
+	public String createTrigger(TriggerRecord record){
+
+		if(record instanceof SimpleTriggerRecord){
+			return createSimpleTrigger((SimpleTriggerRecord)record);
+		}else if(record instanceof GroupTriggerRecord){
+			return createGroupTrigger((GroupTriggerRecord)record);
+		}else if(record instanceof  SummaryTriggerRecord){
+			return createSummaryTrigger((SummaryTriggerRecord)record);
+		}else{
+			throw new IllegalArgumentException("unsupport trigger type");
+		}
+
+	}
 
 
 //
@@ -87,7 +146,14 @@ public class TriggerManager {
 
 		String triggerID=triggerDao.addEntity(record).getObjectID();
 
-		service.createSummaryTrigger(record);
+		Map<String,Set<String>> thingMap=new HashMap<>();
+
+		record.getSummarySource().forEach((k,v)->{
+
+			thingMap.put(k,thingTagService.getKiiThingIDs(v.getSource().getSelector()));
+		});
+
+		service.createSummaryTrigger(record,thingMap);
 
 		record.getSummarySource().forEach((k,v)->{
 			eventService.addSummaryTagChangeListener(v.getSource().getSelector().getTagList(),triggerID,k);

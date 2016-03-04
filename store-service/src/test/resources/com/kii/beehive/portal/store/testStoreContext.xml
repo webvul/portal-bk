@@ -10,52 +10,26 @@
 		http://www.springframework.org/schema/cache  http://www.springframework.org/schema/cache/spring-cache.xsd"
 >
 
-    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="locations" value="classpath:com/kii/beehive/portal/store/testConfig.properties"/>
+    <bean:annotation-config />
+
+    <bean   class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="properties">
-            <value>foo=bar</value>
+            <value>beehive.portal.oplog.file=./build/op.log</value>
         </property>
     </bean>
 
-    <bean:annotation-config />
-
-
-    <bean id="propAppBindTool" class="com.kii.extension.factory.LocalPropertyBindTool" >
-        <property name="propFileName" value="classpath:com/kii/beehive/portal/store/beehive.portal.store.properties" />
-    </bean>
-
-    <bean class="com.kii.extension.factory.KiiCloudSDKConfig" />
-
-    <bean id="appBindAspect"  class="com.kii.extension.sdk.aop.AppBindAspect" />
-
-    <bean id="logAspect" class="com.kii.beehive.portal.aop.LogAspect" />
-
     <bean id="contextAspect" class="com.kii.beehive.portal.aop.ContextAspect" />
 
-    <bean class="com.kii.extension.sdk.service.DevPortalService" >
-        <property name="devPortalUrl"  value="${beehive.kiicloud.dev-portal.url}" />
-    </bean>
 
     <context:component-scan base-package="com.kii.beehive" />
 
-    <!-- <task:annotation-driven executor="myExecutor" scheduler="myScheduler"/>
-    <task:executor id="myExecutor" pool-size="5"/>
-    <task:scheduler id="myScheduler" pool-size="10"/> -->
+
+    <import resource="classpath:com/kii/beehive/business/testComponentContext.xml" />
+
+    <import resource="classpath:com/kii/beehive/portal/jdbc/portaljdbcContext.xml" />
+
+    <bean class="com.kii.extension.ruleengine.RuleEngineConfig" />
 
 
-    <cache:annotation-driven />
 
-    <bean id="cacheManager"
-          class="org.springframework.cache.guava.GuavaCacheManager"/>
-
-    <bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
-    	<property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="jdbcUrl" value="${beehive.jdbc.url}" />
-        <property name="username" value="${beehive.jdbc.username}"/>
-        <property name="password" value="${beehive.jdbc.password}"/>
-    </bean>
-
-    <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-        <property name="dataSource" ref="dataSource"/>
-    </bean>
 </beans>

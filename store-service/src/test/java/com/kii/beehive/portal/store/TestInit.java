@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:com/kii/beehive/portal/store/testComponentContext.xml" })
+@ContextConfiguration(locations = { "classpath:com/kii/beehive/portal/store/testStoreContext.xml" })
 @Transactional
 @Rollback
 public class TestInit {
