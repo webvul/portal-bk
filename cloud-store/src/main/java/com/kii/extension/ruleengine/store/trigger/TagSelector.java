@@ -13,7 +13,15 @@ public class TagSelector {
 
 	private boolean isAndExpress=false;
 
+	private String type;
 
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
 
 	public List<String> getTagList() {
 		return tagList;
