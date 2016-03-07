@@ -1,18 +1,19 @@
 package com.kii.beehive.portal.jdbc.entity;
 
 import java.util.Date;
-import java.util.Set;
 
 import com.kii.beehive.portal.jdbc.annotation.JdbcField;
 
 public class AuthInfo extends DBEntity {
 
     private String userID;
+    private Long teamID;
     private String token;
     private Date expireTime;
 
     public final static String ID = "id";
     public final static String USER_ID = "user_id";
+    public final static String ITEM_ID = "team_id";
     public final static String TOKEN = "token";
     public final static String EXPIRE_TIME = "expire_time";
 
@@ -48,4 +49,15 @@ public class AuthInfo extends DBEntity {
     public void setExpireTime(Date expireTime) {
         this.expireTime = expireTime;
     }
+
+    @JdbcField(column=ITEM_ID)
+	public Long getTeamID() {
+		return teamID;
+	}
+
+	public void setTeamID(Long teamID) {
+		this.teamID = teamID;
+	}
+    
+    
 }

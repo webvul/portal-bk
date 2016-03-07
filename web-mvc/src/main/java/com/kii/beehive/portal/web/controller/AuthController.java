@@ -105,7 +105,6 @@ public class AuthController {
         if(team != null){
         	authRestBean.setTeamID(team.getId());
         	authRestBean.setTeamName(team.getName());
-        	AuthInfoStore.setTeamID(team.getId());
         }
 
         // get access token

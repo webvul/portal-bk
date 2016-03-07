@@ -16,6 +16,8 @@ import com.kii.beehive.portal.common.utils.CollectUtils;
 import com.kii.beehive.portal.config.CacheConfig;
 import com.kii.beehive.portal.jdbc.dao.AuthInfoDao;
 import com.kii.beehive.portal.jdbc.entity.AuthInfo;
+import com.kii.beehive.portal.jdbc.entity.Team;
+import com.kii.beehive.portal.manager.UserManager;
 import com.kii.beehive.portal.store.entity.AuthInfoEntry;
 
 /**
@@ -35,6 +37,9 @@ public class AuthInfoPermanentTokenService {
 
     @Autowired
     private AuthInfoDao authInfoDao;
+    
+    @Autowired
+    private UserManager userManager;
 
     /**
      * get auth info entry from permanent token cache, if not found in permanent token cache, try to get from DB
@@ -60,8 +65,7 @@ public class AuthInfoPermanentTokenService {
         }
 
         // construct AuthInfoEntry
-        String userID = authInfo.getUserID();
-        AuthInfoEntry authInfoEntry = authInfoService.createAuthInfoEntry(userID, token);
+        AuthInfoEntry authInfoEntry = authInfoService.createAuthInfoEntry(authInfo.getUserID(), authInfo.getTeamID(), token);
 
         log.debug("authInfoEntry: " + authInfoEntry);
 
@@ -81,18 +85,26 @@ public class AuthInfoPermanentTokenService {
     public AuthInfoEntry saveToken(String userID, String token) {
 
         log.debug("save(into cache/DB) token: " + token + " for userID: " + userID);
-
+        
+        Team team = userManager.getTeamByID(userID);
+        Long teamId = null;
+        if(team != null){
+        	teamId = team.getId();
+        }
+        
         // save auth info into DB
         AuthInfo authInfo = new AuthInfo();
         authInfo.setUserID(userID);
         authInfo.setToken(token);
+        authInfo.setTeamID(teamId);
+        
 
         long id = authInfoDao.insert(authInfo);
         authInfo.setId(id);
         log.debug("authInfo: " + authInfo);
 
         // construct AuthInfoEntry
-        AuthInfoEntry authInfoEntry = authInfoService.createAuthInfoEntry(userID, token);
+        AuthInfoEntry authInfoEntry = authInfoService.createAuthInfoEntry(userID, teamId, token);
 
         log.debug("authInfoEntry: " + authInfoEntry);
 
