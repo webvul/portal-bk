@@ -17,7 +17,7 @@ import com.kii.beehive.portal.config.CacheConfig;
 import com.kii.beehive.portal.jdbc.dao.AuthInfoDao;
 import com.kii.beehive.portal.jdbc.entity.AuthInfo;
 import com.kii.beehive.portal.jdbc.entity.Team;
-import com.kii.beehive.portal.manager.UserManager;
+import com.kii.beehive.business.manager.UserManager;
 import com.kii.beehive.portal.store.entity.AuthInfoEntry;
 
 /**
