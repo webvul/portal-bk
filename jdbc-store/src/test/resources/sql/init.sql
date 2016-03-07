@@ -279,11 +279,17 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `auth_info` (
   id INT NOT NULL AUTO_INCREMENT COMMENT '',
   user_id VARCHAR(45) NOT NULL COMMENT '',
+  team_id INT(11) NOT NULL,
   token VARCHAR(45) NULL COMMENT '',
   expire_time DATETIME NULL COMMENT '', -- this field is not used for now
   create_by VARCHAR(45) NULL COMMENT '',
   create_date DATETIME NULL COMMENT '',
   modify_by VARCHAR(45) NULL COMMENT '',
   modify_date DATETIME NULL COMMENT '',
-  PRIMARY KEY (id) COMMENT ''
-) ENGINE=InnoDB AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8mb4;
+  PRIMARY KEY (id) COMMENT '',
+  CONSTRAINT `fk_auth_info_team_id`
+    FOREIGN KEY (`team_id`)
+    REFERENCES `team` (`team_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE) 
+ENGINE=InnoDB AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8mb4;
