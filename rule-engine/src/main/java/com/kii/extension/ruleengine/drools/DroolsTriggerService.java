@@ -13,10 +13,11 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import com.kii.extension.ruleengine.drools.entity.CurrThing;
+import com.kii.extension.ruleengine.drools.entity.MatchResult;
 import com.kii.extension.ruleengine.drools.entity.Summary;
+import com.kii.extension.ruleengine.drools.entity.SummaryValueMap;
 import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
 import com.kii.extension.ruleengine.drools.entity.Trigger;
-import com.kii.extension.ruleengine.drools.entity.MatchResult;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
 @Component
@@ -70,6 +71,21 @@ public class DroolsTriggerService {
 		getService(trigger).addCondition("rule"+trigger.getTriggerID(),ruleContent);
 
 		getService(trigger).addOrUpdateData(trigger);
+
+	}
+
+	public void addSummaryTrigger(Trigger triggerInput,String ruleContent){
+
+		Trigger trigger=new Trigger(triggerInput);
+		triggerMap.put(trigger.getTriggerID(),trigger);
+
+		getService(trigger).addCondition("rule"+trigger.getTriggerID(),ruleContent);
+
+		getService(trigger).addOrUpdateData(trigger);
+
+		SummaryValueMap map=new SummaryValueMap();
+		map.setTriggerID(trigger.getTriggerID());
+		getService(trigger).addOrUpdateData(map);
 
 	}
 
@@ -164,7 +180,6 @@ public class DroolsTriggerService {
 		results.forEach(r-> exec.doExecute(r.getTriggerID()));
 
 	}
-	
 	
 
 }

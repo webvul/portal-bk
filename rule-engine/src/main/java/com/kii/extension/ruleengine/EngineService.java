@@ -44,7 +44,7 @@ public class EngineService {
 
 		String 	rule = ruleGeneral.generDrlConfig(record.getId(), TriggerType.summary, record.getPredicate());
 
-		droolsTriggerService.addTrigger(trigger,rule);
+		droolsTriggerService.addSummaryTrigger(trigger,rule);
 
 		record.getSummarySource().forEach((k,v)->{
 

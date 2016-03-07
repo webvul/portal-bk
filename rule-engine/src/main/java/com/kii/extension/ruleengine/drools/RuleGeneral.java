@@ -140,7 +140,7 @@ public class RuleGeneral {
 	public String generExpress(Condition condition){
 
 
-		StringBuilder  sb=new StringBuilder("(");
+		StringBuilder  sb=new StringBuilder();
 
 		switch(condition.getType()){
 
@@ -152,10 +152,12 @@ public class RuleGeneral {
 				sb.append(getNotExpress((NotLogic)condition));
 				break;
 			default:
+				sb.append("(");
 				sb.append(getSimpleExpress((SimpleCondition)condition));
+				sb.append(")");
 		}
 
-		return sb.append(")").toString();
+		return sb.toString();
 	}
 
 	private String getLogicExpress(LogicCol condition){
@@ -302,7 +304,7 @@ public class RuleGeneral {
 		return list.toString();
 	}
 
-	private ExpressConvert replace;
+	private ExpressConvert replace=new ExpressConvert();
 
 	private String getFinalValue(String express,Object obj){
 

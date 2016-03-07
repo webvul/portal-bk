@@ -18,5 +18,6 @@
 
     <bean class="com.kii.extension.ruleengine.RuleEngineConfig" />
 
+    <bean class="test.mock.MockEventBus" />
 
 </beans>

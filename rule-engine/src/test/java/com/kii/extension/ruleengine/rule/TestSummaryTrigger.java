@@ -28,7 +28,7 @@ public class TestSummaryTrigger extends  TestInit{
 	@Autowired
 	private ThingTagManager tagService;
 	@Test
-	public void testGroupTrigger(){
+	public void testSummaryTrigger(){
 
 
 		SummaryTriggerRecord record=new SummaryTriggerRecord();
@@ -54,7 +54,8 @@ public class TestSummaryTrigger extends  TestInit{
 		thingMap.put("source",tagService.getKiiThingIDs(selector));
 
 		TagSelector selector2=new TagSelector();
-		selector2.addTag("Location-2F_room1");
+		selector2.addTag("Location-2F-room1");
+		selector2.setAndExpress(false);
 
 		SummarySource target=new SummarySource();
 		target.setSourceSelector(selector2);
@@ -72,7 +73,7 @@ public class TestSummaryTrigger extends  TestInit{
 
 
 		RuleEnginePredicate perdicate=new RuleEnginePredicate();
-		Condition condition= TriggerConditionBuilder.andCondition().greatExp("source.sum_foo","#s{target.sum_bar}").getConditionInstance();
+		Condition condition= TriggerConditionBuilder.andCondition().greatExp("source.foo_sum","$s{target.bar_sum}").getConditionInstance();
 		perdicate.setCondition(condition);
 
 		perdicate.setTriggersWhen(WhenType.CONDITION_TRUE);
@@ -93,11 +94,11 @@ public class TestSummaryTrigger extends  TestInit{
 
 		thingIDs.forEach(id->sendGoodThingStatus(id));
 
-		assertEquals(1,exec.getHitCount(triggerID));
+		assertEquals(4,exec.getHitCount(triggerID));
 
 		thingIDs.forEach(id->sendBadThingStatus(id));
 
-		assertEquals(1,exec.getHitCount(triggerID));
+		assertEquals(5,exec.getHitCount(triggerID));
 
 
 

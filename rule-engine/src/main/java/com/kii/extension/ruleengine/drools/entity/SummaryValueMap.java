@@ -47,4 +47,12 @@ public class SummaryValueMap {
 	public int hashCode() {
 		return Objects.hashCode(triggerID);
 	}
+
+	@Override
+	public String toString() {
+		return "SummaryValueMap{" +
+				"triggerID='" + triggerID + '\'' +
+				", numberMap=" + numberMap +
+				'}';
+	}
 }

@@ -76,5 +76,14 @@ public class Summary {
 		return Objects.hashCode(triggerID, summaryField);
 	}
 
-
+	@Override
+	public String toString() {
+		return "Summary{" +
+				"triggerID='" + triggerID + '\'' +
+				", funName='" + funName + '\'' +
+				", fieldName='" + fieldName + '\'' +
+				", summaryField='" + summaryField + '\'' +
+				", things=" + things +
+				'}';
+	}
 }

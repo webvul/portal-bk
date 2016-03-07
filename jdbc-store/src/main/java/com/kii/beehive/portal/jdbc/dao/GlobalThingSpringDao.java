@@ -55,6 +55,7 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 
 	}
 
+
 	public Set<GlobalThingInfo> queryThingByUnionTags(List<String> tagCollect){
 
 		String sql = "SELECT g.* "
@@ -70,14 +71,44 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 	public Set<GlobalThingInfo>  queryThingByIntersectionTags(List<String> tagCollect){
 
 		String sql = "select th.* from global_thing th where th.id_global_thing in  " +
-				"  (SELECT g.id_global_thing "
-				+ "FROM global_thing g "
-				+ "INNER JOIN rel_thing_tag r ON g.id_global_thing=r.thing_id "
+				"  (SELECT r.thing_id from  rel_thing_tag r  "
 				+ "INNER JOIN tag_index t ON t.tag_id=r.tag_id "
-				+ " WHERE t.full_tag_name in (:names) group by g.id_global_thing having  count(r.tag_id) = :count )";
+				+ " WHERE t.full_tag_name in (:names) group by r.thing_id having  count(r.tag_id) = :count )";
 		Map<String,Object> params=new HashMap<>();
 		params.put("names",tagCollect);
 		params.put("count",tagCollect.size());
+
+		return new HashSet<>(namedJdbcTemplate.query(sql,params,getRowMapper()));
+
+	}
+
+	public Set<GlobalThingInfo> queryThingByUnionTags(List<String> tagCollect,String type){
+
+		String sql = "SELECT g.* "
+				+ "FROM  global_thing  g "
+				+ "INNER JOIN rel_thing_tag r ON g.id_global_thing=r.thing_id "
+				+ "INNER JOIN tag_index t ON t.tag_id=r.tag_id "
+				+ " WHERE t.full_tag_name in (:names) and g.thing_type = :type ";
+
+		Map<String,Object> params=new HashMap<>();
+		params.put("names",tagCollect);
+		params.put("type",type);
+		return new HashSet<>(namedJdbcTemplate.query(sql,params,getRowMapper()));
+
+	}
+
+	public Set<GlobalThingInfo>  queryThingByIntersectionTags(List<String> tagCollect,String type){
+
+		String sql = "select th.* from global_thing th where th.id_global_thing in  " +
+				"  (SELECT  r.thing_id from rel_thing_tag r  "
+				+ "INNER JOIN tag_index t ON t.tag_id=r.tag_id "
+				+ " WHERE t.full_tag_name in (:names) group by r.thing_id having  count(r.tag_id) = :count )" +
+				"  and  th.thing_type = :type ";
+		Map<String,Object> params=new HashMap<>();
+
+		params.put("names",tagCollect);
+		params.put("count",tagCollect.size());
+		params.put("type",type);
 
 		return new HashSet<>(namedJdbcTemplate.query(sql,params,getRowMapper()));
 

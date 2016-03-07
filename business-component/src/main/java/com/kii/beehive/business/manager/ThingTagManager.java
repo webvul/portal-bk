@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -75,10 +76,20 @@ public class ThingTagManager {
 		}
 
 		if(!source.getTagList().isEmpty()) {
-			if (source.isAndExpress() ) {
-				things.addAll(globalThingDao.queryThingByIntersectionTags(source.getTagList()));
-			} else {
-				things.addAll(globalThingDao.queryThingByUnionTags(source.getTagList()));
+			if(StringUtils.isEmpty(source.getType())) {
+
+				if (source.isAndExpress()) {
+					things.addAll(globalThingDao.queryThingByIntersectionTags(source.getTagList()));
+				} else {
+					things.addAll(globalThingDao.queryThingByUnionTags(source.getTagList()));
+				}
+			}else{
+
+				if (source.isAndExpress()) {
+					things.addAll(globalThingDao.queryThingByIntersectionTags(source.getTagList(),source.getType()));
+				} else {
+					things.addAll(globalThingDao.queryThingByUnionTags(source.getTagList(),source.getType()));
+				}
 			}
 		}
 		return things;
