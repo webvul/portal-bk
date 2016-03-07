@@ -158,14 +158,14 @@ public abstract class SpringBaseDao<T extends DBEntity> {
 
 	public List<T> queryWithPage(String sql,Object[] params,PagerTag pager){
 
-		String fullSql=sql+" limit ?,?"+pager.getStartRow()+" , "+pager.getPageSize();
+		String fullSql=sql+" limit ?,? ";
 
 		Object[] newParams=new Object[params.length+2];
 		System.arraycopy(params,0,newParams,0,params.length);
 		newParams[params.length]=pager.getStartRow();
 		newParams[params.length+1]=pager.getPageSize();
 
-		List<T> list= jdbcTemplate.query(fullSql,params,getRowMapper());
+		List<T> list= jdbcTemplate.query(fullSql,newParams,getRowMapper());
 
 		pager.addStartRow(list.size());
 
@@ -179,7 +179,7 @@ public abstract class SpringBaseDao<T extends DBEntity> {
 
 	public List<T> queryWithPage(String sql,Map<String,Object> params,PagerTag pager){
 
-		String fullSql=sql+" limit :startRow ,:pageSize ";
+		String fullSql=sql+" limit :startRow,:pageSize ";
 
 		params.put("startRow",pager.getStartRow());
 		params.put("pageSize",pager.getPageSize());

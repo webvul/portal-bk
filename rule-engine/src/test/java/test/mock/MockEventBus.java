@@ -1,4 +1,4 @@
-package com.kii.extension.ruleengine;
+package test.mock;
 
 
 import java.io.IOException;
@@ -10,12 +10,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.StreamUtils;
 
+import com.kii.extension.ruleengine.EventCallback;
 import com.kii.extension.ruleengine.drools.CommandExec;
 import com.kii.extension.ruleengine.drools.DroolsRuleService;
 
 
 @Configuration
-public class MockEventBus implements EventCallback  {
+public class MockEventBus implements EventCallback {
 
 
 

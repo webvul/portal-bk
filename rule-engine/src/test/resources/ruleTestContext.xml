@@ -15,7 +15,7 @@
 
 
     <bean class="com.kii.extension.ruleengine.drools.CommandExec" />
-    <bean class="com.kii.extension.ruleengine.MockEventBus" />
+    <bean class="test.mock.MockEventBus" />
 
 
 </beans>
