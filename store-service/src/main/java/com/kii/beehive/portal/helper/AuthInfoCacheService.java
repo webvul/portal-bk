@@ -1,8 +1,5 @@
 package com.kii.beehive.portal.helper;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +9,8 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.config.CacheConfig;
-import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
-import com.kii.beehive.portal.jdbc.dao.PermissionDao;
-import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
-import com.kii.beehive.portal.jdbc.entity.Permission;
+import com.kii.beehive.portal.jdbc.entity.Team;
+import com.kii.beehive.portal.manager.UserManager;
 import com.kii.beehive.portal.store.entity.AuthInfoEntry;
 
 /**
@@ -31,6 +26,9 @@ public class AuthInfoCacheService {
 
     @Autowired
     private AuthInfoService authInfoService;
+    
+    @Autowired
+    private UserManager userManager;
 
     /**
      * get auth info entry from auth info cache
@@ -60,8 +58,12 @@ public class AuthInfoCacheService {
     public AuthInfoEntry saveToken(String userID, String token) {
 
         log.debug("save(into cache) token: " + token + " for userID: " + userID);
-
-        return authInfoService.createAuthInfoEntry(userID, token);
+        Team team = userManager.getTeamByID(userID);
+        Long teamId = null;
+        if(team != null){
+        	teamId = team.getId();
+        }
+        return authInfoService.createAuthInfoEntry(userID, teamId, token);
     }
 
     /**

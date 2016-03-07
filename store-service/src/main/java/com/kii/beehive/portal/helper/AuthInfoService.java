@@ -36,7 +36,7 @@ public class AuthInfoService {
      * @param userID
      * @param token
      */
-    public AuthInfoEntry createAuthInfoEntry(String userID, String token) {
+    public AuthInfoEntry createAuthInfoEntry(String userID,Long teamID, String token) {
 
         log.debug("createAuthInfoEntry token: " + token + " for userID: " + userID);
 
@@ -51,7 +51,7 @@ public class AuthInfoService {
         	}
         }
 
-        return new AuthInfoEntry(userID, token, pSet);
+        return new AuthInfoEntry(userID, teamID, token, pSet);
     }
 
 

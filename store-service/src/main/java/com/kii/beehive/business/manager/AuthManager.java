@@ -94,6 +94,8 @@ public class AuthManager {
             log.debug("Login failed", e);
             return null;
         }
+        
+        
 
         // if permanent token is required, save the auth info into permanent token cache and DB;
         // else, save the auth info into auth info cache

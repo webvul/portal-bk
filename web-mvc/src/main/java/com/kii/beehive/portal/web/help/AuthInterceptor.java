@@ -166,6 +166,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 					throw new BeehiveUnAuthorizedException("access url not been authorized:"+subUrl);
 				} else {
 					AuthInfoStore.setAuthInfo(authInfo.getUserID());
+					AuthInfoStore.setTeamID(authInfo.getTeamID());
 				}
 			}
 

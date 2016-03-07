@@ -9,10 +9,23 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
 
 public class AuthInfoEntry {
+	
+	private String userID;
 
-	public AuthInfoEntry(String userID, String token, Set<String> permissionSet){
+	private String token;
+	
+	private Long teamID;
+	
+	private Set<String> permissionSet;
+	
+	private Map<String,Set<String>> headerMap=new HashMap<>();
+
+	private Map<String,Set<String>> methodMap=new HashMap<>();
+
+	public AuthInfoEntry(String userID,Long teamID, String token, Set<String> permissionSet){
 
 		this.userID = userID;
+		this.teamID = teamID;
 		this.token = token;
 		this.permissionSet = permissionSet;
 
@@ -50,11 +63,6 @@ public class AuthInfoEntry {
 		return url.substring(solIdx1,solIdx2).trim();
 	}
 
-	private Map<String,Set<String>> headerMap=new HashMap<>();
-
-	private Map<String,Set<String>> methodMap=new HashMap<>();
-
-
 	/**
 	 * validate whether user has permission to access to the method and subUrl
 	 *
@@ -81,12 +89,6 @@ public class AuthInfoEntry {
 				.count()>0;
 	}
 
-	private String userID;
-
-	private String token;
-	
-	private Set<String> permissionSet;
-
 	public String getUserID() {
 		return userID;
 	}
@@ -110,6 +112,14 @@ public class AuthInfoEntry {
 	public void setPermissionSet(Set<String> permissionSet) {
 		this.permissionSet = permissionSet;
 	}
+	
+	public Long getTeamID() {
+		return teamID;
+	}
+
+	public void setTeamID(Long teamID) {
+		this.teamID = teamID;
+	}
 
 	@Override
 	public String toString() {
@@ -118,6 +128,8 @@ public class AuthInfoEntry {
 		builder.append(userID);
 		builder.append(", token=");
 		builder.append(token);
+		builder.append(", teamID=");
+		builder.append(teamID);
 		builder.append("]");
 		return builder.toString();
 	}

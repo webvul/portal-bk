@@ -23,7 +23,7 @@ public class TestAuthVerify {
 			"GET /things/*","GET /things/types","POST /things/*/tags/*","DELETE /things/*/tags/*"
 		};
 
-		entry=new AuthInfoEntry("foo", "some_token", new HashSet<>(Arrays.asList(permissArray)));
+		entry=new AuthInfoEntry("foo", null, "some_token", new HashSet<>(Arrays.asList(permissArray)));
 
 	}
 
