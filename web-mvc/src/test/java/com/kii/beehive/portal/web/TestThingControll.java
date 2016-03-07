@@ -4,10 +4,6 @@ import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertNull;
 import static junit.framework.TestCase.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
@@ -17,14 +13,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
+import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.dao.TagThingRelationDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
@@ -40,7 +35,7 @@ public class TestThingControll extends WebTestTemplate{
 	private TagIndexDao tagIndexDao;
 
 	@Autowired
-	private GlobalThingDao globalThingDao;
+	private GlobalThingSpringDao globalThingDao;
 
 	@Autowired
 	private TagThingRelationDao tagThingRelationDao;
@@ -62,7 +57,7 @@ public class TestThingControll extends WebTestTemplate{
 
 	private String[] displayNames = new String[]{"A", "B"};
 
-	private String tokenForTest = "Bearer " + Constants.SUPER_TOKEN;
+	private String tokenForTest = BEARER_SUPER_TOKEN;
 
 	@Before
 	public void before() {
@@ -775,17 +770,17 @@ public class TestThingControll extends WebTestTemplate{
 		TagThingRelation relation = new TagThingRelation();
 		relation.setTagID(tagID1);
 		relation.setThingID(globalThingIDs[0]);
-		tagThingRelationDao.saveOrUpdate(relation);
+		tagThingRelationDao.insert(relation);
 
 		relation = new TagThingRelation();
 		relation.setTagID(tagID1);
 		relation.setThingID(globalThingIDs[1]);
-		tagThingRelationDao.saveOrUpdate(relation);
+		tagThingRelationDao.insert(relation);
 
 		relation = new TagThingRelation();
 		relation.setTagID(tagID2);
 		relation.setThingID(globalThingIDs[2]);
-		tagThingRelationDao.saveOrUpdate(relation);
+		tagThingRelationDao.insert(relation);
 
 
 		// search custom tag

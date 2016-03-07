@@ -1,5 +1,6 @@
 package com.kii.beehive.portal.jdbc.entity;
 
+import com.kii.beehive.portal.jdbc.annotation.DisplayField;
 import com.kii.beehive.portal.jdbc.annotation.JdbcField;
 
 public class Permission extends DBEntity {
@@ -59,6 +60,7 @@ public class Permission extends DBEntity {
 		this.action = action;
 	}
 
+	@DisplayField(column=SOURCE_NAME)
 	public String getSourceName() {
 		return sourceName;
 	}

@@ -4,10 +4,6 @@ package com.kii.beehive.portal.web.controller;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
@@ -45,7 +41,7 @@ public class TestUserGroupController extends WebTestTemplate {
 
     private List<String> userGroupNameListForTest = new ArrayList<>();
 
-    private String tokenForTest = "Bearer " + Constants.SUPER_TOKEN;
+    private String tokenForTest = BEARER_SUPER_TOKEN;
 
     @Before
     public void before() {

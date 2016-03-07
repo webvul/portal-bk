@@ -13,14 +13,21 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-
 import com.kii.beehive.business.helper.SyncMsgService;
-import com.kii.beehive.portal.exception.UserNotExistException;
+import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.exception.EntryNotFoundException;
+import com.kii.beehive.portal.exception.UserNotExistException;
 import com.kii.beehive.portal.jdbc.dao.GroupPermissionRelationDao;
 import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
+import com.kii.beehive.portal.jdbc.dao.PermissionDao;
+import com.kii.beehive.portal.jdbc.dao.TeamDao;
+import com.kii.beehive.portal.jdbc.dao.TeamGroupRelationDao;
 import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
+import com.kii.beehive.portal.jdbc.entity.GroupPermissionRelation;
 import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
+import com.kii.beehive.portal.jdbc.entity.Permission;
+import com.kii.beehive.portal.jdbc.entity.Team;
+import com.kii.beehive.portal.jdbc.entity.TeamGroupRelation;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
 import com.kii.beehive.portal.service.ArchiveBeehiveUserDao;
 import com.kii.beehive.portal.service.BeehiveUserDao;
@@ -44,10 +51,19 @@ public class UserManager {
 	private UserGroupDao userGroupDao;
 	
 	@Autowired
+	private TeamDao teamDao;
+	
+	@Autowired
 	private GroupUserRelationDao groupUserRelationDao;
 	
 	@Autowired
 	private GroupPermissionRelationDao groupPermissionRelationDao;
+	
+	@Autowired
+    protected TeamGroupRelationDao teamGroupRelationDao;
+	
+	@Autowired
+	protected PermissionDao permissionDao;
 
 	@Autowired
 	private KiiUserSyncDao kiiUserDao;
@@ -132,12 +148,14 @@ public class UserManager {
 	
 	public Long createUserGroup(UserGroup userGroup,String loginUserID) {
 		 // create user group
-		Date today = new Date();
-		userGroup.setCreateDate(today);
-		userGroup.setCreateBy(loginUserID);
 	    Long userGroupID = userGroupDao.saveOrUpdate(userGroup);
 	    GroupUserRelation gur = new GroupUserRelation(loginUserID,userGroupID);
-	    groupUserRelationDao.saveOrUpdate(gur);
+	    groupUserRelationDao.insert(gur);
+	    
+	    if(AuthInfoStore.getTeamID() != null){
+    		TeamGroupRelation tgr = new TeamGroupRelation(AuthInfoStore.getTeamID(), userGroupID);
+    		teamGroupRelationDao.insert(tgr);
+    	}
 	    
 	    return userGroupID;
 	}
@@ -176,7 +194,7 @@ public class UserManager {
 			List<UserGroup> orgiList = userGroupDao.findUserGroup(userIDList.get(0), userGroupID, null);
 			if(orgiList.size() == 0){
 				GroupUserRelation gur = new GroupUserRelation(userIDList.get(0), userGroupID);
-	    		groupUserRelationDao.saveOrUpdate(gur);
+	    		groupUserRelationDao.insert(gur);
 			}
 		}else{
 			List<String> existingUserIDList = groupUserRelationDao.findUserIDByUserGroupID(userGroupID);
@@ -259,6 +277,25 @@ public class UserManager {
 
 			throw new UserNotExistException(buffer.toString());
 		}
-
+	}
+	
+	public Team getTeamByID(String userID) {
+		List<Team> teamList = teamDao.findTeamByUserID(userID);
+		if(teamList != null && teamList.size() > 0){
+			return teamList.get(0);
+		}else{
+			return null;
+		}
+	}
+	
+	public void setDefaultPermission(Long userGroupID){
+		List<Permission> pList = permissionDao.findAll();
+	    if(pList.size() > 0){
+	    	List<GroupPermissionRelation> gprList = new ArrayList<GroupPermissionRelation>();
+		    for(Permission p:pList){
+			    gprList.add(new GroupPermissionRelation(p.getId(), userGroupID));
+		    }
+		    groupPermissionRelationDao.batchInsert(gprList);
+	    }
 	}
 }

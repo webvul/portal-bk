@@ -38,20 +38,19 @@ public class PermissionController extends AbstractController{
      */
     @RequestMapping(path="/{permissionID}/userGroup/{userGroupID}",method={RequestMethod.POST})
     public ResponseEntity addPermissionToUserGroup(@PathVariable("userGroupID") Long userGroupID, @PathVariable("permissionID") Long permissionID, HttpServletRequest httpRequest){
-    	String loginUserID = getLoginUserID(httpRequest);
     	
     	UserGroup ug = userGroupDao.findByID(userGroupID);
     	if(ug == null){
     		throw new PortalException("UserGroup Not Found", "UserGroup with userGroupID:" + userGroupID + " Not Found", HttpStatus.NOT_FOUND);
     	}
     	//loginUser can edit, when loginUser is in this group , 
-    	List<UserGroup> checkAuth = userGroupDao.findUserGroup(loginUserID, userGroupID, null);
+    	List<UserGroup> checkAuth = userGroupDao.findUserGroup(getLoginUserID(), userGroupID, null);
 		
 		if(checkAuth.size() == 1){
 			List<UserGroup> orgiList = userGroupDao.findUserGroup(permissionID, userGroupID);
 			if(orgiList.size() == 0){
 				GroupPermissionRelation gpr = new GroupPermissionRelation(permissionID, userGroupID);
-	    		groupPermissionRelationDao.saveOrUpdate(gpr);
+	    		groupPermissionRelationDao.insert(gpr);
 			}
 		}else{
 			throw new BeehiveUnAuthorizedException("loginUser isn't in the group");
@@ -68,10 +67,9 @@ public class PermissionController extends AbstractController{
      */
     @RequestMapping(path="/{permissionID}/userGroup/{userGroupID}",method={RequestMethod.DELETE})
     public ResponseEntity removePermissionToUserGroup(@PathVariable("userGroupID") Long userGroupID, @PathVariable("permissionID") Long permissionID, HttpServletRequest httpRequest){
-    	String loginUserID = getLoginUserID(httpRequest);
     	
     	//loginUser can edit, when loginUser is in this group , 
-    	List<UserGroup> checkAuth = userGroupDao.findUserGroup(loginUserID, userGroupID, null);
+    	List<UserGroup> checkAuth = userGroupDao.findUserGroup(getLoginUserID(), userGroupID, null);
 		
 		if(checkAuth.size() == 1){
 			groupPermissionRelationDao.delete(permissionID, userGroupID);

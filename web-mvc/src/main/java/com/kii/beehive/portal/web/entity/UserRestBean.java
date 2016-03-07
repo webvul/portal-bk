@@ -15,7 +15,9 @@ import com.kii.beehive.portal.store.entity.CustomProperty;
 import com.kii.beehive.portal.web.exception.PortalException;
 
 public class UserRestBean  extends BeehiveUser {
-
+	
+	private String teamName;
+	
 	public UserRestBean(){
 
 	}
@@ -82,6 +84,14 @@ public class UserRestBean  extends BeehiveUser {
 			throw new PortalException("RequiredFieldsMissing","role cannot been null", HttpStatus.BAD_REQUEST);
 		}
 
+	}
+
+	public String getTeamName() {
+		return teamName;
+	}
+
+	public void setTeamName(String teamName) {
+		this.teamName = teamName;
 	}
 
 }

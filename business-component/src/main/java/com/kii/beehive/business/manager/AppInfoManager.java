@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.service.AppInfoDao;
@@ -102,11 +101,24 @@ public class AppInfoManager {
 
 	}
 
+
+	public AppInfo  addAppInfo(String appID,String userName,String pwd,String masterID){
+
+		portalService.login(userName,pwd);
+
+		AppInfo appInfo=portalService.getAppInfoByID(appID);
+
+		AppInfo master=portalService.getAppInfoByID(masterID);
+
+		setSalveApp(master,appInfo);
+
+		return appInfo;
+
+	}
 	/**
 	 * important:
 	 * this API is supposed to be called only when initialize the environment
 	 */
-	@Async
 	public void initAppInfos(String userName,String pwd,String masterID){
 
 
@@ -134,29 +146,33 @@ public class AppInfoManager {
 		masterAppInfo.setAppInfo(master);
 		masterAppInfo.setMasterApp(true);
 
-		appDao.addAppInfo(masterAppInfo);
+		appDao.setMasterAppInfo(masterAppInfo);
 
 		appInfoMap.values().forEach((app)->{
 
-			KiiAppInfo appInfo=new KiiAppInfo();
-			appInfo.setMasterApp(false);
-			appInfo.setAppInfo(app);
-			appInfo.setId(app.getAppID());
-
-			String currMaster=masterSalveService.checkMaster(app);
-
-			if(!masterID.equals(currMaster)){
-
-				AppMasterSalveService.ClientInfo  clientInfo=masterSalveService.addSalveApp(master,app);
-				masterSalveService.registInSalve(clientInfo,master,app);
-			}
-
-			FederatedAuthResult  result=federatedAuthService.loginSalveApp(app,DEFAULT_NAME,DEFAULT_PWD);
-			appInfo.setFederatedAuthResult(result);
-			appDao.addAppInfo(appInfo);
+			setSalveApp(master, app);
 
 		});
 
+	}
+
+	private void setSalveApp(AppInfo master, AppInfo app) {
+		KiiAppInfo appInfo=new KiiAppInfo();
+		appInfo.setMasterApp(false);
+		appInfo.setAppInfo(app);
+		appInfo.setId(app.getAppID());
+
+		String currMaster=masterSalveService.checkMaster(app);
+
+		if(!master.getAppID().equals(currMaster)){
+
+			AppMasterSalveService.ClientInfo  clientInfo=masterSalveService.addSalveApp(master,app);
+			masterSalveService.registInSalve(clientInfo,master,app);
+		}
+
+		FederatedAuthResult result=federatedAuthService.loginSalveApp(app,DEFAULT_NAME,DEFAULT_PWD);
+		appInfo.setFederatedAuthResult(result);
+		appDao.addAppInfo(appInfo);
 	}
 
 

@@ -182,6 +182,11 @@ public class TriggerManager {
 
 		return triggerDao.getTriggerRecord(triggerID);
 	}
+	
+	public void deleteTrigger(String triggerID) {
+
+		triggerDao.deleteTriggerRecord(triggerID);
+	}
 //	public void deleteTrigger(String triggerID){
 //
 //		triggerDao.deleteTriggerRecord(triggerID);

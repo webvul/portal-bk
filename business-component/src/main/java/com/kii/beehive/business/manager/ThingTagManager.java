@@ -13,11 +13,10 @@ import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.PagerTag;
-import com.kii.beehive.portal.jdbc.dao.TagIndexSpringDao;
+import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.extension.ruleengine.store.trigger.TagSelector;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
@@ -28,7 +27,7 @@ public class ThingTagManager {
 
 
 	@Autowired
-	private TagIndexSpringDao tagDao;
+	private TagIndexDao tagDao;
 
 	@Autowired
 	private GlobalThingSpringDao globalThingDao;

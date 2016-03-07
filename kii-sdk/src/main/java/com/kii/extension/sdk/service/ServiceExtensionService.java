@@ -125,7 +125,7 @@ public class ServiceExtensionService {
 			public void completed(HttpResponse httpResponse) {
 
 				int status=httpResponse.getStatusLine().getStatusCode();
-				if(status!=201){
+				if(status>=200&&status<300){
 					throw new IllegalArgumentException();
 				}
 
@@ -147,7 +147,6 @@ public class ServiceExtensionService {
 					@Override
 					public void completed(HttpResponse httpResponse) {
 						bindToolResolver.setAppInfoDirectly(appInfo,adminToken);
-
 
 						HttpUriRequest setVerRequest=getBuilder().setCurrentVersion(version).generRequest(mapper);
 

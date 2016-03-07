@@ -19,10 +19,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kii.beehive.portal.jdbc.dao.TagGroupRelationDao;
+import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
+import com.kii.beehive.portal.jdbc.entity.TagGroupRelation;
+import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
 import com.kii.beehive.portal.service.BeehiveUserDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
+import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.beehive.portal.web.entity.UserGroupRestBean;
 import com.kii.beehive.portal.web.exception.BeehiveUnAuthorizedException;
 import com.kii.beehive.portal.web.exception.PortalException;
@@ -39,6 +44,12 @@ public class UserGroupController extends AbstractController{
 	@Autowired
 	private BeehiveUserDao beehiveUserDao;
 	
+	@Autowired
+	private TagGroupRelationDao tagGroupRelationDao;
+	
+	@Autowired
+	private TagIndexDao tagIndexDao;
+	
     /**
      * 创建用户群组
      * POST /usergroup
@@ -54,12 +65,11 @@ public class UserGroupController extends AbstractController{
 		userGroupRestBean.verifyInput();
 
 		UserGroup userGroup = userGroupRestBean.getUserGroup();
-        String loginUserID = getLoginUserID(httpRequest);
         Long userGroupID = null;
         if(userGroup.getId() == null){//create
-        	userGroupID = userManager.createUserGroup(userGroup, loginUserID);
+        	userGroupID = userManager.createUserGroup(userGroup, getLoginUserID());
         }else{//update
-        	userGroupID = userManager.updateUserGroup(userGroup, loginUserID);
+        	userGroupID = userManager.updateUserGroup(userGroup, getLoginUserID());
         }
 
         Map<String,Object> resultMap = new HashMap<>();
@@ -75,9 +85,8 @@ public class UserGroupController extends AbstractController{
 	 */
 	@RequestMapping(path="/{userGroupID}/user/{userIDs}",method={RequestMethod.POST})
 	public ResponseEntity addUsersToUserGroup(@PathVariable("userGroupID") Long userGroupID, @PathVariable("userIDs") String userIDs, HttpServletRequest httpRequest){
-		String loginUserID = getLoginUserID(httpRequest);
 
-		if(checkUserGroup(loginUserID, userGroupID)){
+		if(checkUserGroup(getLoginUserID(), userGroupID)){
 			List<String> userIDList = Arrays.asList(userIDs.split(","));
 			userManager.addUserToUserGroup(userIDList, userGroupID);
 		}
@@ -92,10 +101,15 @@ public class UserGroupController extends AbstractController{
 	 */
 	@RequestMapping(path="/{userGroupID}/user/{userIDs}",method={RequestMethod.DELETE})
 	public ResponseEntity removeUsersFromUserGroup(@PathVariable("userGroupID") Long userGroupID, @PathVariable("userIDs") String userIDs, HttpServletRequest httpRequest){
-		String loginUserID = getLoginUserID(httpRequest);
-
-		if(checkUserGroup(loginUserID, userGroupID)){
-
+		UserGroup ug = this.userGroupDao.findByID(userGroupID);
+		if(ug == null){
+			throw new PortalException("UserGroup Not Found", "UserGroup with userGroupID:" + userGroupID + " Not Found", HttpStatus.NOT_FOUND);
+		}else if(ug.getName().equals(Constants.ADMIN_GROUP)){
+			List<GroupUserRelation> gurList = this.groupUserRelationDao.findByUserGroupID(userGroupID);
+			if(gurList.size() <= 1){
+				throw new PortalException("UserGroup can't delete", "ADMIN GROUP has at least one user" + userGroupID + " Not Found", HttpStatus.NOT_FOUND);
+			}
+		}else if(checkUserGroup(getLoginUserID(), userGroupID)){
 			List<String> userIDList = Arrays.asList(userIDs.split(","));
 			groupUserRelationDao.deleteUsers(userIDList, userGroupID);
 		}
@@ -118,6 +132,8 @@ public class UserGroupController extends AbstractController{
 		
 		if(orig == null){
 			throw new PortalException("UserGroup Not Found", "UserGroup with userGroupID:" + userGroupID + " Not Found", HttpStatus.NOT_FOUND);
+		}else if(orig.getName().equals(Constants.ADMIN_GROUP)){
+			throw new PortalException("Admin UserGroup can't delete", "", HttpStatus.NOT_FOUND);
 		}
 		
 		userManager.deleteUserGroup(userGroupID);
@@ -135,10 +151,9 @@ public class UserGroupController extends AbstractController{
      * @param userGroupID
      */
     @RequestMapping(path="/{userGroupID}",method={RequestMethod.GET})
-    public ResponseEntity getUserGroupDetail(@PathVariable("userGroupID") Long userGroupID, HttpServletRequest httpRequest){
-    	String loginUserID = getLoginUserID(httpRequest);
+    public ResponseEntity<UserGroupRestBean> getUserGroupDetail(@PathVariable("userGroupID") Long userGroupID, HttpServletRequest httpRequest){
     	UserGroupRestBean ugrb = null;
-		if(checkUserGroup(loginUserID, userGroupID)){
+		if(checkUserGroup(getLoginUserID(), userGroupID)){
 			List<String> userIdList = new ArrayList<String>(); 
 			List<GroupUserRelation> relList = groupUserRelationDao.findByUserGroupID(userGroupID);
 			if(relList.size() > 0){
@@ -158,6 +173,34 @@ public class UserGroupController extends AbstractController{
     }
     
     /**
+     * 取得群組內的tags
+     * GET /usergroup/{userGroupID}/tags
+     *
+     * refer to doc "Beehive API - User API" for request/response details
+     * refer to doc "Tech Design - Beehive API", section "Detail User Group" for more details
+     *
+     * @param userGroupID
+     */
+    @RequestMapping(path="/{userGroupID}/tags",method={RequestMethod.GET})
+    public ResponseEntity<List<TagIndex>> getUserGroupTag(@PathVariable("userGroupID") Long userGroupID, HttpServletRequest httpRequest){
+    	List<TagIndex> tagList = null;
+		if(checkUserGroup(getLoginUserID(), userGroupID)){
+			List<Long> tagIDList = new ArrayList<Long>(); 
+			List<TagGroupRelation> relList = tagGroupRelationDao.findByUserGroupID(userGroupID);
+			if(relList.size() > 0){
+				for(TagGroupRelation gur:relList){
+					tagIDList.add(gur.getTagID());
+				}
+				tagList = tagIndexDao.findByIDs(tagIDList);
+			}
+		}
+		if(tagList == null){
+			throw new PortalException("UserGroup Not Found", "UserGroup with userGroupID:" + userGroupID + " Not Found", HttpStatus.NOT_FOUND);
+		}
+        return new ResponseEntity<>(tagList, HttpStatus.OK);
+    }
+    
+    /**
      * 列出用户群组
      * POST /usergroup/list
      *
@@ -168,8 +211,12 @@ public class UserGroupController extends AbstractController{
      */
     @RequestMapping(path = "/list", method = {RequestMethod.GET})
 	public ResponseEntity<List<UserGroupRestBean>> getUserGroupList(HttpServletRequest httpRequest) {
-    	String loginUserID = getLoginUserID(httpRequest);
-		List<UserGroup> list = userGroupDao.findUserGroup(loginUserID, null , null);
+		List<UserGroup> list = null;
+		if(this.isTeamIDExist()){
+			list = userGroupDao.findUserGroup(null, null , null);
+		}else{
+			list = userGroupDao.findUserGroup(getLoginUserID(), null , null);
+		}
 		List<UserGroupRestBean> restBeanList = this.convertList(list);
 		return new ResponseEntity<>(restBeanList, HttpStatus.OK);
 	}
@@ -182,8 +229,14 @@ public class UserGroupController extends AbstractController{
 	}
     
     private boolean checkUserGroup(String loginUserID, Long userGroupID){
-    	//loginUser can edit, when loginUser is in this group ,
-    	List<UserGroup> checkAuth = userGroupDao.findUserGroup(loginUserID, userGroupID, null);
+    	List<UserGroup> checkAuth = null;
+    	if(this.isTeamIDExist()){
+    		checkAuth = userGroupDao.findUserGroup(null, userGroupID, null);
+    	}else{
+    		//loginUser can edit, when loginUser is in this group ,
+    		checkAuth = userGroupDao.findUserGroup(loginUserID, userGroupID, null);
+    	}
+    	
 		if(checkAuth.size() == 1){
 			return true;
 		}else{

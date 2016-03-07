@@ -1,6 +1,7 @@
 package com.kii.beehive.portal.jdbc.helper;
 
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
@@ -15,6 +16,7 @@ import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.jdbc.core.RowMapper;
 
+import com.kii.beehive.portal.jdbc.annotation.DisplayField;
 import com.kii.beehive.portal.jdbc.annotation.JdbcField;
 import com.kii.beehive.portal.jdbc.annotation.JdbcFieldType;
 
@@ -42,16 +44,16 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 		Map<String,JdbcFieldType> typeMap=new HashMap<>();
 
 		for(PropertyDescriptor descriptor: beanWrapper.getPropertyDescriptors()){
-
-			JdbcField fieldDesc=descriptor.getReadMethod().getDeclaredAnnotation(JdbcField.class);
-
-			if(fieldDesc==null){
-				continue;
+			Method method = descriptor.getReadMethod();
+			if(method.isAnnotationPresent(JdbcField.class)){
+				JdbcField fieldDesc=method.getDeclaredAnnotation(JdbcField.class);
+				searchMap.put(fieldDesc.column(),descriptor.getDisplayName());//create_by, createBy
+				typeMap.put(fieldDesc.column(),fieldDesc.type());//create_by, Auto
+			}else if(method.isAnnotationPresent(DisplayField.class)){
+				DisplayField fieldDesc=method.getDeclaredAnnotation(DisplayField.class);
+				searchMap.put(fieldDesc.column(),descriptor.getDisplayName());
+				typeMap.put(fieldDesc.column(),fieldDesc.type());
 			}
-			searchMap.put(fieldDesc.column(),descriptor.getDisplayName());
-
-			typeMap.put(fieldDesc.column(),fieldDesc.type());
-
 		}
 
 		fieldMapper= Collections.unmodifiableMap(searchMap);
@@ -113,17 +115,23 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 	private Object autoConvert(ResultSet rs,String key,Class target) throws SQLException {
 
 		Object result=null;
-		if(target.equals(Date.class)){
-				java.sql.Date date=rs.getDate(key);
-				if(date!=null) {
-					result = new Date(date.getTime());
-				}
-		}else if(target.isPrimitive()){
-			result=rs.getObject(key,target);
-		}else if(target.equals(String.class)){
-			result=rs.getString(key);
-		}else if( Number.class.isAssignableFrom(target)){
-			result=rs.getObject(key);
+		try{
+			if(target.equals(Date.class)){
+					java.sql.Date date=rs.getDate(key);
+					if(date!=null) {
+						result = new Date(date.getTime());
+					}
+			}else if(target.isPrimitive()){
+				result=rs.getObject(key,target);
+			}else if(target.equals(String.class)){
+				
+					result=rs.getString(key);
+				
+			}else if( Number.class.isAssignableFrom(target)){
+				result=rs.getObject(key);
+			}
+		} catch (SQLException sqlex){
+			result = null;
 		}
 		return result;
 	}

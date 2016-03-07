@@ -3,7 +3,7 @@ package com.kii.beehive.portal.jdbc.dao;
 import javax.sql.DataSource;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -27,8 +27,6 @@ import com.kii.beehive.portal.jdbc.helper.BindClsRowMapper;
 
 public abstract class SpringBaseDao<T extends DBEntity> {
 
-
-
 	private Logger log= LoggerFactory.getLogger(BaseDao.class);
 
 	protected JdbcTemplate jdbcTemplate;
@@ -40,15 +38,15 @@ public abstract class SpringBaseDao<T extends DBEntity> {
 
 	private RowMapper<T> rowMapper;
 
-	private BindClsFullUpdateTool updateTool;
+	private BindClsFullUpdateTool<T> updateTool;
 
 
 	protected abstract String getTableName();
 
 	protected  abstract String getKey();
 
-	protected abstract Class<T> getEntityCls();
-
+	
+	private Class<T> entityClass;
 
 	@Autowired
 	public void setDataSource(DataSource dataSource) {
@@ -60,12 +58,14 @@ public abstract class SpringBaseDao<T extends DBEntity> {
 				.withTableName(getTableName())
 				.usingGeneratedKeyColumns(getKey());
 
-		this.updateTool= BindClsFullUpdateTool.newInstance(dataSource,getTableName(),"id",getEntityCls(),getKey());
-		this.rowMapper=new BindClsRowMapper<T>(getEntityCls());
+		ParameterizedType type = (ParameterizedType) getClass().getGenericSuperclass();
+		this.entityClass = (Class<T>) type.getActualTypeArguments()[0];
+		this.updateTool= BindClsFullUpdateTool.newInstance(dataSource,getTableName(),"id",entityClass,getKey());
+		this.rowMapper=new BindClsRowMapper<T>(entityClass);
 	}
 
 
-	protected RowMapper getRowMapper(){
+	protected RowMapper<T> getRowMapper(){
 		return rowMapper;
 	}
 
@@ -80,22 +80,33 @@ public abstract class SpringBaseDao<T extends DBEntity> {
 		Number id=insertTool.executeAndReturnKey(parameters);
 		return id.longValue();
 	}
+	
+	public List<T> findAll() {  
+        String sql = "SELECT * FROM " + this.getTableName();  
+        return (List<T>) jdbcTemplate.query(sql,getRowMapper());
+    }
 
 	public T findByID(Serializable id){
 		String sql = "SELECT t.* FROM " + this.getTableName() + " t WHERE t."+ getKey() +"=?";
-		Object[] param=new Object[]{id};
 
-		return (T) jdbcTemplate.queryForObject(sql, param, getRowMapper());
-
+		List<T> rows = jdbcTemplate.query(sql, new Object[]{id}, getRowMapper());
+		if(rows.size() > 0){
+			 return rows.get(0);
+		}else{
+			return null;
+		}
 	}
 
 	public List<T> findByIDs(List<Long> ids){
-
 			String sql = "select t.* from " + this.getTableName() + " t where t."+ getKey() +" in (:list) ";
-			Map<String,Collection> param= Collections.singletonMap("list", new ArrayList<Long>(ids));
+			Map<String,Collection> param= Collections.singletonMap("list", ids);
 			return  namedJdbcTemplate.query(sql, param,getRowMapper());
-
 	}
+	
+	public List<T> findBySingleField(String fieldName, Object value) {  
+		String sql = "SELECT * FROM " + this.getTableName() + " WHERE "+ fieldName +"=?";
+        return jdbcTemplate.query(sql, new Object[]{value}, getRowMapper());
+    }
 
 	public int deleteByID(Serializable id){
 		String sql = "DELETE FROM " + this.getTableName() + " WHERE "+ getKey() +"=?";
@@ -154,6 +165,39 @@ public abstract class SpringBaseDao<T extends DBEntity> {
 
 		return jdbcTemplate.update(newUpdateSql, newParams);
 
+	}
+	
+	public long saveOrUpdate(T entity){
+		if(entity.getId() == null || entity.getId() == 0){
+			return this.insert(entity);
+		}else{
+			return this.updateEntityAllByID(entity);
+		}
+	}
+	
+	public boolean IsIdExist(Serializable id){
+		boolean result = false;
+		String sql = "SELECT count(1) FROM " + this.getTableName() + " WHERE "+ getKey() +"=?";  
+		Long count =  jdbcTemplate.queryForObject(sql,new Object[]{id}, Long.class);
+        if (count > 0) {
+    		result = true;
+    	}
+
+    	return result;
+	}
+	
+	public int[] batchInsert(List<T> entityList){
+		if(entityList == null) {
+			return new int[0];
+		}
+
+		SqlParameterSource[] sqlParameterSources = new SqlParameterSource[entityList.size()];
+
+		for(int i=0;i<sqlParameterSources.length;i++){
+			sqlParameterSources[i] = new AnnationBeanSqlParameterSource(entityList.get(i));
+		}
+
+		return insertTool.executeBatch(sqlParameterSources);
 	}
 
 	public List<T> queryWithPage(String sql,Object[] params,PagerTag pager){

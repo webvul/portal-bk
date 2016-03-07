@@ -23,6 +23,13 @@
            timeToLiveSeconds="3600">
     </cache>
 
+    <!--for permanent token-->
+    <cache name="permanent_token_cache"
+           maxEntriesLocalHeap="10000"
+           maxEntriesLocalDisk="10000000"
+           timeToLiveSeconds="3600">
+    </cache>
+
     <!--for testing only-->
     <cache name="demo_cache"
            maxEntriesLocalHeap="10"

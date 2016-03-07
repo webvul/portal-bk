@@ -1,6 +1,7 @@
 package com.kii.beehive.portal.web.controller;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -14,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,10 +25,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.business.manager.TagThingManager;
-import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
+import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
+import com.kii.beehive.portal.jdbc.dao.TeamThingRelationDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagType;
+import com.kii.beehive.portal.jdbc.entity.TeamThingRelation;
 import com.kii.beehive.portal.web.entity.ThingRestBean;
 import com.kii.beehive.portal.web.exception.PortalException;
 
@@ -40,44 +42,20 @@ import com.kii.beehive.portal.web.exception.PortalException;
  */
 @RestController
 @RequestMapping(path="/things",consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
-public class ThingController {
+public class ThingController extends AbstractController{
 
 	@Autowired
 	private TagThingManager thingTagManager;
+//
+	@Autowired
+	private GlobalThingSpringDao globalThingDao;
 	
 	@Autowired
-	private GlobalThingDao globalThingDao;
-
+	private TeamThingRelationDao teamThingRelationDao;
 
 	@Autowired
 	private ThingIFInAppService  thingIFService;
 
-	
-	
-	/**
-	 * @deprecated this is internal API for Kii only
-	 *
-	 * 查询所有设备
-	 * GET /things/all
-	 *
-	 * refer to doc "Beehive API - Thing API" for request/response details
-	 *
-     * @return
-     */
-	@RequestMapping(path = "/all", method = {RequestMethod.GET})
-	public ResponseEntity<List<ThingRestBean>> getThingsByAll() {
-		List<GlobalThingInfo> list = globalThingDao.findAll();
-		List<ThingRestBean> resultList = new ArrayList<>();
-		if(list != null) {
-			for (GlobalThingInfo thingInfo : list) {
-				ThingRestBean input = new ThingRestBean();
-				BeanUtils.copyProperties(thingInfo,input);
-				resultList.add(input);
-			}
-		}
-
-		return new ResponseEntity<>(resultList, HttpStatus.OK);
-	}
 	
 	/**
 	 * type下的所有设备
@@ -133,6 +111,11 @@ public class ThingController {
 		GlobalThingInfo thing =  globalThingDao.findByID(globalThingID);
 		if(thing == null) {
 			throw new PortalException("Thing Not Found", "Thing with globalThingID:" + globalThingID + " Not Found", HttpStatus.NOT_FOUND);
+		}else if(this.isTeamIDExist()){
+			TeamThingRelation ttr = teamThingRelationDao.findByTeamIDAndThingID(this.getLoginTeamID(), thing.getId());
+			if(ttr == null){
+				throw new PortalException("Thing Not Found", "Thing with globalThingID:" + globalThingID + " Not Found", HttpStatus.NOT_FOUND);
+			}
 		}
 
 		// get tag
@@ -178,6 +161,10 @@ public class ThingController {
 		BeanUtils.copyProperties(input,thingInfo);
 
 		Long thingID = thingTagManager.createThing(thingInfo, input.getLocation(), input.getInputTags());
+		
+		if(isTeamIDExist()){
+    		teamThingRelationDao.saveOrUpdate(new TeamThingRelation(getLoginTeamID(), thingID));
+    	}
 
 //		input.getInputTags().
 
@@ -217,8 +204,8 @@ public class ThingController {
 	@RequestMapping(path="/{globalThingIDs}/tags/{tagIDs}",method={RequestMethod.POST})
 	public void addThingTag(@PathVariable("globalThingIDs") String globalThingIDs,@PathVariable("tagIDs") String tagIDs){
 		
-		List<String> thingIDList = CollectionUtils.arrayToList(globalThingIDs.split(","));
-		List<String> tagIDList = CollectionUtils.arrayToList(tagIDs.split(","));
+		List<String> thingIDList = Arrays.asList(globalThingIDs.split(","));
+		List<String> tagIDList = Arrays.asList(tagIDs.split(","));
 		thingTagManager.bindTagToThing(tagIDList, thingIDList);
 
 		List<Long> tagIDsInLong=tagIDList.stream().mapToLong(id->Long.parseLong(id)).boxed().collect(Collectors.toList());
@@ -236,14 +223,13 @@ public class ThingController {
      */
 	@RequestMapping(path="/{globalThingIDs}/tags/{tagIDs}",method={RequestMethod.DELETE},consumes={"*"})
 	public void removeThingTag(@PathVariable("globalThingIDs") String globalThingIDs,@PathVariable("tagIDs") String tagIDs){
-		List<String> thingIDList = CollectionUtils.arrayToList(globalThingIDs.split(","));
-		List<String> tagIDList = CollectionUtils.arrayToList(tagIDs.split(","));
+		List<String> thingIDList = Arrays.asList(globalThingIDs.split(","));
+		List<String> tagIDList = Arrays.asList(tagIDs.split(","));
 		thingTagManager.unbindTagToThing(tagIDList, thingIDList);
 
 		List<Long> tagIDsInLong=tagIDList.stream().mapToLong(id->Long.parseLong(id)).boxed().collect(Collectors.toList());
 
 		thingIFService.onTagIDsChangeFire(tagIDsInLong,false);
-
 	}
 
 	/**
@@ -258,13 +244,13 @@ public class ThingController {
 	@RequestMapping(path="/{globalThingIDs}/tags/custom/{displayNames}",method={RequestMethod.POST})
 	public void addThingCustomTag(@PathVariable("globalThingIDs") String globalThingIDs,@PathVariable("displayNames") String displayNames){
 
-		List<String> list = CollectionUtils.arrayToList(globalThingIDs.split(","));
+		List<String> list = Arrays.asList(globalThingIDs.split(","));
 		List<Long> globalThingIDList = new ArrayList<>();
 		for(String id : list) {
 			globalThingIDList.add(Long.valueOf(id));
 		}
 
-		List<String> displayNameList = CollectionUtils.arrayToList(displayNames.split(","));
+		List<String> displayNameList = Arrays.asList(displayNames.split(","));
 		thingTagManager.bindCustomTagToThing(displayNameList, globalThingIDList);
 
 		displayNameList.forEach(name->{
@@ -285,19 +271,50 @@ public class ThingController {
 	@RequestMapping(path="/{globalThingIDs}/tags/custom/{displayNames}",method={RequestMethod.DELETE},consumes={"*"})
 	public void removeThingCustomTag(@PathVariable("globalThingIDs") String globalThingIDs,@PathVariable("displayNames") String displayNames){
 
-		List<String> list = CollectionUtils.arrayToList(globalThingIDs.split(","));
+		List<String> list = Arrays.asList(globalThingIDs.split(","));
 		List<Long> globalThingIDList = new ArrayList<>();
 		for(String id : list) {
 			globalThingIDList.add(Long.valueOf(id));
 		}
 
-		List<String> displayNameList = CollectionUtils.arrayToList(displayNames.split(","));
+		List<String> displayNameList = Arrays.asList(displayNames.split(","));
 		thingTagManager.unbindCustomTagToThing(displayNameList, globalThingIDList);
 
 		displayNameList.forEach(name->{
 			String fullName=TagType.Custom.getTagName(name);
 			thingIFService.onTagChangeFire(fullName,false);
 		});
+	}
+	
+	/**
+	 * 绑定设备及team
+	 * POST /things/{globalThingIDs}/teams/{teamID}
+	 *
+	 * refer to doc "Beehive API - Thing API" for request/response details
+	 *
+	 * @param globalThingIDs
+     */
+	@RequestMapping(path="/{globalThingIDs}/teams/{teamIDs}",method={RequestMethod.POST})
+	public void addThingTeam(@PathVariable("globalThingIDs") String globalThingIDs,@PathVariable("teamIDs") String teamIDs){
+		
+		List<String> thingIDList = Arrays.asList(globalThingIDs.split(","));
+		List<String> teamIDList = Arrays.asList(teamIDs.split(","));
+		thingTagManager.bindTeamToThing(teamIDList, thingIDList);
+	}
+	
+	/**
+	 * 解除绑定设备及team
+	 * DELETE /things/{globalThingIDs}/teams/{teamIDs...}
+	 *
+	 * refer to doc "Beehive API - Thing API" for request/response details
+	 *
+	 * @param globalThingIDs
+     */
+	@RequestMapping(path="/{globalThingIDs}/teams/{teamIDs}",method={RequestMethod.DELETE},consumes={"*"})
+	public void removeThingTeam(@PathVariable("globalThingIDs") String globalThingIDs,@PathVariable("teamIDs") String teamIDs){
+		List<String> thingIDList = Arrays.asList(globalThingIDs.split(","));
+		List<String> teamIDList = Arrays.asList(teamIDs.split(","));
+		thingTagManager.unbindTeamToThing(teamIDList, thingIDList);
 	}
 
 	/**

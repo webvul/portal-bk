@@ -18,6 +18,10 @@ public class AuthRestBean extends UserRestBean {
     private String accessToken;
     
     private Set<String> permissions;
+    
+    private Long teamID;
+    
+    private String teamName;
 
     public String getAccessToken() {
         return accessToken;
@@ -33,6 +37,22 @@ public class AuthRestBean extends UserRestBean {
 
 	public void setPermissions(Set<String> permissions) {
 		this.permissions = permissions;
+	}
+
+	public Long getTeamID() {
+		return teamID;
+	}
+
+	public void setTeamID(Long teamID) {
+		this.teamID = teamID;
+	}
+
+	public String getTeamName() {
+		return teamName;
+	}
+
+	public void setTeamName(String teamName) {
+		this.teamName = teamName;
 	}
     
     

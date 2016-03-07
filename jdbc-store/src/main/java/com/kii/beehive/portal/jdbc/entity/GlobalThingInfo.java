@@ -18,9 +18,6 @@ public class GlobalThingInfo extends DBEntity{
 
 	private String fullKiiThingID;
 
-//	private String schema;
-//
-//	private int schemaVersion;
 	
 	public final static String ID_GLOBAL_THING = "id_global_thing";
 	public final static String VANDOR_THING_ID = "vendor_thing_id";
@@ -28,11 +25,11 @@ public class GlobalThingInfo extends DBEntity{
 	public final static String THING_TYPE = "thing_type";
 	public final static String STATUS = "status";
 	public final static String CUSTOM_INFO = "custom_info";
-	
+	public final static String FULL_KII_THING_ID = "full_kii_thing_id";
 
 
 	@Override
-	@JdbcField(column="id_global_thing")
+	@JdbcField(column=ID_GLOBAL_THING)
 	public Long getId(){
 		return super.getId();
 	}
@@ -64,7 +61,7 @@ public class GlobalThingInfo extends DBEntity{
 		this.type = type;
 	}
 
-	@JdbcField(column = "status",type= JdbcFieldType.Json)
+	@JdbcField(column = STATUS,type= JdbcFieldType.Json)
 	public String getStatus() {
 		return status;
 	}
@@ -73,7 +70,7 @@ public class GlobalThingInfo extends DBEntity{
 		this.status = status;
 	}
 
-	@JdbcField(column = "custom_info",type= JdbcFieldType.Json)
+	@JdbcField(column = CUSTOM_INFO ,type= JdbcFieldType.Json)
 	public String getCustom() {
 		return consumer;
 	}
@@ -82,7 +79,7 @@ public class GlobalThingInfo extends DBEntity{
 		this.consumer = custom;
 	}
 
-	@JdbcField(column="full_kii_thing_id")
+	@JdbcField(column=FULL_KII_THING_ID)
 	public String getFullKiiThingID() {
 		return fullKiiThingID;
 	}
@@ -91,23 +88,6 @@ public class GlobalThingInfo extends DBEntity{
 		return kiiThingID;
 	}
 
-//	@JdbcField(column="thing_schema")
-//	public String getSchema() {
-//		return schema;
-//	}
-//
-//	public void setSchema(String schema) {
-//		this.schema = schema;
-//	}
-//
-//	@JdbcField(column="thing_schema_version")
-//	public int getSchemaVersion() {
-//		return schemaVersion;
-//	}
-//
-//	public void setSchemaVersion(int schemaVersion) {
-//		this.schemaVersion = schemaVersion;
-//	}
 
 	private String kiiThingID;
 
@@ -119,7 +99,6 @@ public class GlobalThingInfo extends DBEntity{
 		this.kiiThingID=idCombine.kiiThingID;
 		this.kiiAppID=idCombine.kiiAppID;
 	}
-
 
 	@Override
 	public boolean equals(Object obj){

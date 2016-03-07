@@ -33,10 +33,10 @@ public class ExtensionCallbackController {
 								  @RequestHeader("Authorization") String token,
 								  @RequestBody StateUpload status){
 
-		tagManager.updateState(status.getState(),status.getTarget(),appID);
+		tagManager.updateState(status.getState(),status.getThingID(),appID);
 
 
-		stateNotifyService.onThingStateChange(appID,status.getTarget(), status.getState());
+		stateNotifyService.onThingStateChange(appID,status.getThingID(), status.getState());
 
 	}
 

@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
 
@@ -17,6 +18,7 @@ import com.kii.beehive.portal.service.BeehiveParameterDao;
 import com.kii.beehive.portal.service.ExtensionCodeDao;
 import com.kii.beehive.portal.store.entity.CallbackUrlParameter;
 import com.kii.beehive.portal.store.entity.ExtensionCodeEntity;
+import com.kii.extension.sdk.entity.AppInfo;
 import com.kii.extension.sdk.entity.serviceextension.BucketWhenType;
 import com.kii.extension.sdk.entity.serviceextension.EventTriggerConfig;
 import com.kii.extension.sdk.entity.serviceextension.ThingWhenType;
@@ -59,6 +61,9 @@ public class ListenerEnvInitService {
 		}
 
 	}
+
+
+
 
 
 	private void initStateUpload() throws IOException {
@@ -136,6 +141,14 @@ public class ListenerEnvInitService {
 			parameterDao.saveTriggerCallbackParam(appInfo.getAppID(),param);
 
 		});
+	}
+
+	public void deployTrigger(AppInfo appInfo,CallbackUrlParameter param){
+
+
+		extensionService.deployScriptToApp(appInfo.getAppID());
+
+		parameterDao.saveTriggerCallbackParam(appInfo.getAppID(),param);
 	}
 
 

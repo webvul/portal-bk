@@ -9,4 +9,6 @@ public class CacheConfig {
 
 	public static final String AUTH_INFO_CACHE = "auth_into_cache";
 
+	public static final String PERMANENT_TOKEN_CACHE = "permanent_token_cache";
+
 }

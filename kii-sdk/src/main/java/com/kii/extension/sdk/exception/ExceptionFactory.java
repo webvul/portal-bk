@@ -49,36 +49,29 @@ public class ExceptionFactory {
 			AppParameterCodeNotFoundException.class
 	};
 
+	private void initExceptionMap(Class[] exceptionClassArray, OperateType operateType) {
+		Map map = new HashMap<>();
+
+
+		for(Class<KiiCloudException>  ex : exceptionClassArray){
+
+			KiiCloudException  inst = BeanUtils.instantiate(ex);
+			int statusCode = inst.getStatusCode();
+			map.put(statusCode, ex);
+		}
+
+		exceptionMap.put(operateType, map);
+	}
 
 	@PostConstruct
 	public void init(){
 
-		for(Class<KiiCloudException>  ex:bucketArray){
-
-			KiiCloudException  inst= BeanUtils.instantiate(ex);
-
-			exceptionMap.computeIfAbsent(OperateType.bucket,k->new HashMap<>())
-					.put(inst.getStatusCode(),ex);
-		}
-
-		for(Class<KiiCloudException>  ex:userArray){
-
-			KiiCloudException  inst= BeanUtils.instantiate(ex);
-
-			exceptionMap.computeIfAbsent(OperateType.user,k->new HashMap<>())
-					.put(inst.getStatusCode(),ex);
-
-		}
+		this.initExceptionMap(bucketArray, OperateType.bucket);
 
 
-		for(Class<KiiCloudException>  ex:appArray){
+		this.initExceptionMap(userArray, OperateType.user);
 
-			KiiCloudException  inst= BeanUtils.instantiate(ex);
-
-			exceptionMap.computeIfAbsent(OperateType.app,k->new HashMap<>())
-					.put(inst.getStatusCode(),ex);
-
-		}
+		this.initExceptionMap(appArray, OperateType.app);
 
 	}
 
@@ -90,7 +83,7 @@ public class ExceptionFactory {
 
 		if(url.getPath().contains("/buckets/")){
 			return OperateType.bucket;
-		}else if(url.getPath().contains("/users")){
+		}else if(url.getPath().contains("/users") || url.getPath().contains("/oauth2")){
 			return OperateType.user;
 		}else if(url.getPath().contains("/configuration/")){
 			return OperateType.app;

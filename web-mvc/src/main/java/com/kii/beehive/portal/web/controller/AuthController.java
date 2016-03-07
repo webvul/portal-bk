@@ -12,10 +12,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.CollectUtils;
 import com.kii.beehive.business.manager.AuthManager;
 import com.kii.beehive.business.manager.UserManager;
+import com.kii.beehive.portal.jdbc.entity.Team;
+import com.kii.beehive.portal.store.entity.AuthInfoEntry;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
+import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.entity.AuthRestBean;
 import com.kii.beehive.portal.web.exception.PortalException;
@@ -31,14 +35,12 @@ import com.kii.extension.sdk.entity.LoginInfo;
         MediaType.APPLICATION_JSON_UTF8_VALUE })
 public class AuthController {
 
-	private  static final String AUTH_HEADER = "Authorization";
-
 	@Autowired
     private AuthManager authManager;
 
     @Autowired
     private UserManager userManager;
-
+    
     /**
      * 用户注册
      * POST /oauth2/register
@@ -56,13 +58,12 @@ public class AuthController {
         if(CollectUtils.containsBlank(userID, password)) {
             throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "userID or password empty", HttpStatus.BAD_REQUEST);
         }
-
+        
         boolean result = authManager.register(userID, password);
 
         if(result == false) {
             throw new PortalException(ErrorCode.AUTH_FAIL, "userID incorrect or already registered", HttpStatus.BAD_REQUEST);
         }
-
     }
 
     /**
@@ -78,12 +79,17 @@ public class AuthController {
 
         String userID = (String)request.get("userID");
         String password = (String)request.get("password");
+        Boolean permanentToken = (Boolean)request.get("permanentToken");
+        // if permanentToken is not set, make it false as default
+        if(permanentToken == null) {
+            permanentToken = false;
+        }
 
         if(CollectUtils.containsBlank(userID, password)) {
             throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "userID or password empty", HttpStatus.BAD_REQUEST);
         }
 
-        LoginInfo loginInfo = authManager.login(userID, password);
+        LoginInfo loginInfo = authManager.login(userID, password, permanentToken);
 
         if(loginInfo == null) {
             throw new PortalException(ErrorCode.AUTH_FAIL, "Authentication failed", HttpStatus.BAD_REQUEST);
@@ -91,7 +97,15 @@ public class AuthController {
         
         // get user info
         BeehiveUser beehiveUser = userManager.getUserByID(userID);
+        
         AuthRestBean authRestBean = new AuthRestBean(beehiveUser);
+        
+        Team team = userManager.getTeamByID(userID);
+        if(team != null){
+        	authRestBean.setTeamID(team.getId());
+        	authRestBean.setTeamName(team.getName());
+        	AuthInfoStore.setTeamID(team.getId());
+        }
 
         // get access token
         String accessToken = loginInfo.getToken();
@@ -109,21 +123,71 @@ public class AuthController {
      * @return
      */
     @RequestMapping(path = "/logout", method = { RequestMethod.POST })
-    public void login(HttpServletRequest request) {
+    public void logout(HttpServletRequest request) {
 
-        String auth = request.getHeader(AUTH_HEADER);
+        String token = getTokenFromHttpHeader(request);
+
+        if(token == null) {
+            return;
+        }
+
+        authManager.logout(token);
+
+    }
+
+    private String getTokenFromHttpHeader(HttpServletRequest request) {
+        String auth = request.getHeader(Constants.ACCESS_TOKEN);
 
         if (auth == null || !auth.startsWith("Bearer ")) {
-            return;
+            return null;
         }
 
         auth = auth.trim();
 
         String token = auth.substring(auth.indexOf(" ") + 1).trim();
 
-        authManager.logout(token);
-
+        return token;
     }
+
+    /**
+     * 验证用户（令牌）
+     * POST /oauth2/validatetoken
+     *
+     * refer to doc "Beehive API - User API" for request/response details
+     *
+     * @return
+     */
+    @RequestMapping(path = "/validatetoken", method = { RequestMethod.POST })
+    public AuthRestBean validateUserToken(HttpServletRequest request) {
+
+        String token = getTokenFromHttpHeader(request);
+        AuthInfoEntry entry = authManager.getAuthInfoEntry(token);
+
+        // this case would rarely happen, because token is validated in AuthInterceptor before coming here
+        if(entry == null) {
+            throw new PortalException(ErrorCode.AUTH_FAIL, "Authentication failed", HttpStatus.BAD_REQUEST);
+        }
+
+        String userID = entry.getUserID();
+
+        // get user info
+        BeehiveUser beehiveUser = userManager.getUserByID(userID);
+
+        AuthRestBean authRestBean = new AuthRestBean(beehiveUser);
+
+        Team team = userManager.getTeamByID(userID);
+        if(team != null){
+            authRestBean.setTeamID(team.getId());
+            authRestBean.setTeamName(team.getName());
+        }
+
+        // get access token
+        String accessToken = entry.getToken();
+        authRestBean.setAccessToken(accessToken);
+        authRestBean.setPermissions(entry.getPermissionSet());
+        return authRestBean;
+    }
+
 
     /**
      * 用户修改密码

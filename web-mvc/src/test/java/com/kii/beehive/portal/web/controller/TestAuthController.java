@@ -17,8 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.ResultActions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
@@ -29,7 +28,8 @@ import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.extension.sdk.entity.KiiUser;
 
 /**
- * Created by USER on 12/1/15.
+ * the test cases in this class is to test the scenarios of the token stored in auth info cache,
+ * the token stored in auth info cache has an expiration
  */
 public class TestAuthController extends WebTestTemplate {
 
@@ -55,12 +55,14 @@ public class TestAuthController extends WebTestTemplate {
 
     private String accessToken;
 
+    private String superTokenForTest = BEARER_SUPER_TOKEN;
+
     private List<Integer> getAllPermissions() throws Exception {
         String result = this.mockMvc.perform(
                 get("/permission/list")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
-                        .header(AUTH_HEADER, "Bearer super_token")
+                        .header(AUTH_HEADER, superTokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -90,7 +92,7 @@ public class TestAuthController extends WebTestTemplate {
                 post("/usergroup").content(ctx)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
-                        .header(AUTH_HEADER, "Bearer super_token")
+                        .header(AUTH_HEADER, superTokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -106,7 +108,7 @@ public class TestAuthController extends WebTestTemplate {
                 post("/usergroup/" + userGroupID + "/user/" + userID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
-                        .header(AUTH_HEADER, "Bearer super_token")
+                        .header(AUTH_HEADER, superTokenForTest)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -127,7 +129,7 @@ public class TestAuthController extends WebTestTemplate {
                     post("/permission/" + permissionID + "/userGroup/" + userGroupID)
                             .contentType(MediaType.APPLICATION_JSON)
                             .characterEncoding("UTF-8")
-                            .header(AUTH_HEADER, "Bearer super_token")
+                            .header(AUTH_HEADER, superTokenForTest)
             )
                     .andExpect(status().isOk())
                     .andReturn().getResponse().getContentAsString();
@@ -135,26 +137,6 @@ public class TestAuthController extends WebTestTemplate {
             System.out.println("Response: " + result);
         }
 
-    }
-
-    /**
-     * this method is added to resolve the problem that HttpServletRequest.getRequestURI() doesn't include the context path
-     *
-     * @param uri
-     * @return
-     */
-    private MockHttpServletRequestBuilder post(String uri) {
-        return MockMvcRequestBuilders.post(WEB_CONTEXT_PATH_FOR_TEST + uri).contextPath(WEB_CONTEXT_PATH_FOR_TEST);
-    }
-
-    /**
-     * this method is added to resolve the problem that HttpServletRequest.getRequestURI() doesn't include the context path
-     *
-     * @param uri
-     * @return
-     */
-    private MockHttpServletRequestBuilder get(String uri) {
-        return MockMvcRequestBuilders.get(WEB_CONTEXT_PATH_FOR_TEST + uri).contextPath(WEB_CONTEXT_PATH_FOR_TEST);
     }
 
     @Before
@@ -214,6 +196,89 @@ public class TestAuthController extends WebTestTemplate {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private String login(String userID, String password) throws Exception {
+
+        Map<String, Object> request = new HashMap<>();
+        request.put("userID", userID);
+        request.put("password", password);
+
+        String ctx= mapper.writeValueAsString(request);
+
+        String result=this.mockMvc.perform(
+                post("/oauth2/login").content(ctx)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("UTF-8")
+        )
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        Map<String,Object> map=mapper.readValue(result, Map.class);
+
+        System.out.println("Response:" + result);
+
+        // assert
+        String accessToken = (String)map.get("accessToken");
+        assertNotNull(map.get("accessToken"));
+        assertTrue(accessToken.length() > 0);
+
+        assertEquals(userID, map.get("userID"));
+        assertEquals("someUserNameForTest", map.get("userName"));
+        assertEquals("somePhoneNumberForTest", map.get("phone"));
+        assertEquals("someMailForTest", map.get("mail"));
+        assertEquals("someCompanyForTest", map.get("company"));
+
+        return accessToken;
+    }
+
+    private void logout(String token) throws Exception {
+
+        this.mockMvc.perform(
+                post("/oauth2/logout")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("UTF-8")
+                        .header(AUTH_HEADER, "Bearer " + token)
+        )
+                .andExpect(status().isOk());
+
+    }
+
+    private void validateTokenAvailable(String token) throws Exception {
+
+        ResultActions resultActions = this.mockMvc.perform(
+                post("/oauth2/validatetoken")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("UTF-8")
+                        .header(AUTH_HEADER, "Bearer " + token)
+        )
+                .andExpect(status().isOk());
+
+        String result = resultActions.andReturn().getResponse().getContentAsString();
+
+        Map<String, Object> map = (Map<String, Object>)mapper.readValue(result, Map.class);
+
+        String accessToken = (String)map.get("accessToken");
+        assertTrue(accessToken.length() > 0);
+
+        String userID = (String)map.get("userID");
+        assertTrue(userID.length() > 0);
+
+        List<String> list = (List<String>)map.get("permissions");
+        assertTrue(list.size() > 0);
+
+    }
+
+    private void validateTokenUnavailable(String token) throws Exception {
+
+        this.mockMvc.perform(
+                post("/oauth2/validatetoken")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("UTF-8")
+                        .header(AUTH_HEADER, "Bearer " + token)
+        )
+                .andExpect(status().isUnauthorized());
+
     }
 
     @Test
@@ -383,33 +448,6 @@ public class TestAuthController extends WebTestTemplate {
         )
                 .andExpect(status().isUnauthorized());
 
-    }
-
-    private String login(String userID, String password) throws Exception {
-        Map<String, Object> request = new HashMap<>();
-        request.put("userID", userID);
-        request.put("password", password);
-
-        String ctx= mapper.writeValueAsString(request);
-
-        String result=this.mockMvc.perform(
-                post("/oauth2/login").content(ctx)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .characterEncoding("UTF-8")
-        )
-                .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString();
-
-        Map<String,Object> map=mapper.readValue(result, Map.class);
-
-        System.out.println("Response:" + result);
-
-        // assert
-        String accessToken = (String)map.get("accessToken");
-        assertNotNull(map.get("accessToken"));
-        assertTrue(accessToken.length() > 0);
-
-        return accessToken;
     }
 
     /**

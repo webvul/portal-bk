@@ -1,6 +1,8 @@
 package com.kii.beehive.business.manager;
 
 
+import java.util.List;
+
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
@@ -8,7 +10,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.helper.AuthInfoCacheService;
+import com.kii.beehive.portal.helper.AuthInfoPermanentTokenService;
 import com.kii.beehive.portal.store.entity.AuthInfoEntry;
 import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.context.UserTokenBindTool;
@@ -28,6 +32,9 @@ public class AuthManager {
 
     @Autowired
     private AuthInfoCacheService authInfoCacheService;
+
+    @Autowired
+    private AuthInfoPermanentTokenService authInfoPermanentTokenService;
 
     @Autowired
     private UserTokenBindTool userTokenBindTool;
@@ -69,12 +76,14 @@ public class AuthManager {
     }
 
     /**
-     * login Kii Cloud and save the token info into DB
+     * login Kii Cloud and save the auth info
      * @param userID
      * @param password
+     * @param permanentToken true: save auth info into permanent token cache and DB;
+     *                       false: save auth info into auth info cache only
      * @return
      */
-    public LoginInfo login(String userID, String password) {
+    public LoginInfo login(String userID, String password, boolean permanentToken) {
 
         // login Kii Cloud
         LoginInfo loginInfo = null;
@@ -86,14 +95,17 @@ public class AuthManager {
             return null;
         }
 
-        // insert or update the auth info into DB and cache, the expire time doesn't follow LoginInfo
-        AuthInfoEntry authInfoEntry = authInfoCacheService.saveToken(userID, loginInfo.getToken());
+        // if permanent token is required, save the auth info into permanent token cache and DB;
+        // else, save the auth info into auth info cache
+        AuthInfoEntry authInfoEntry = null;
+        if(permanentToken) {
+            authInfoEntry = authInfoPermanentTokenService.saveToken(userID, loginInfo.getToken());
+        } else {
+            authInfoEntry = authInfoCacheService.saveToken(userID, loginInfo.getToken());
+        }
+
         loginInfo.setPermissionSet(authInfoEntry.getPermissionSet());
         return loginInfo;
-    }
-    
-    public void saveToken(String userID, String token){
-    	authInfoCacheService.saveToken(userID, token);
     }
 
     /**
@@ -107,8 +119,28 @@ public class AuthManager {
 
         userService.changePassword(oldPassword, newPassword);
 
+        // remove the auth info from auth info cache
         String token = userTokenBindTool.getToken();
         authInfoCacheService.removeToken(token);
+
+        // remove the auth info from permanent token cache and DB
+        String userID = AuthInfoStore.getUserID();
+        this.removePermanentToken(userID);
+    }
+
+    /**
+     * remove token from permanent token cache and DB
+     * @param userID
+     */
+    private void removePermanentToken(String userID) {
+
+        // remove token from DB
+        List<String> tokenList = authInfoPermanentTokenService.removeTokenFromDBByUserID(userID);
+
+        // remove token from cache
+        for(String token : tokenList) {
+            authInfoPermanentTokenService.removeTokenFromCache(token);
+        }
 
     }
 
@@ -120,12 +152,19 @@ public class AuthManager {
      */
     public AuthInfoEntry validateAndBindUserToken(String token) {
 
+        // try to get auth info from auth info cache by token
         AuthInfoEntry authInfo = authInfoCacheService.getAuthInfo(token);
 
+        // if auth info not found in auth info cache, try to get it from permanent token cache or DB
+        if(authInfo == null) {
+            authInfo = authInfoPermanentTokenService.getAuthInfo(token);
+        }
+
+        // if auth info not found in both cache and DB, throw Exception
         if(authInfo == null) {
 			throw new UnauthorizedAccessException();
         }
-        
+
         userTokenBindTool.bindToken(authInfo.getToken());
 
         return authInfo;
@@ -137,7 +176,11 @@ public class AuthManager {
      */
     public void logout(String token) {
 
+        // remove token from auth info cache
         authInfoCacheService.removeToken(token);
+
+        // remove token from permanent token cache and DB
+        authInfoPermanentTokenService.removeToken(token);
     }
 
     /**
@@ -158,8 +201,14 @@ public class AuthManager {
     	if(Strings.isBlank(token)){
     		return null;
     	}
-    	
-        return authInfoCacheService.getAuthInfo(token);
+
+        AuthInfoEntry authInfoEntry = authInfoCacheService.getAuthInfo(token);
+
+        if(authInfoEntry == null) {
+            authInfoEntry = authInfoPermanentTokenService.getAuthInfo(token);
+        }
+
+        return authInfoEntry;
     }
 
 }

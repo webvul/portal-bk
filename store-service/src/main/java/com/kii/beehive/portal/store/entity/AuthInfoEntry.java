@@ -110,6 +110,17 @@ public class AuthInfoEntry {
 	public void setPermissionSet(Set<String> permissionSet) {
 		this.permissionSet = permissionSet;
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("AuthInfoEntry [userID=");
+		builder.append(userID);
+		builder.append(", token=");
+		builder.append(token);
+		builder.append("]");
+		return builder.toString();
+	}
 	
 	
 }

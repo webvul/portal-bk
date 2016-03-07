@@ -1,5 +1,7 @@
 package com.kii.beehive.business.cache;
 
+import static junit.framework.TestCase.assertEquals;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,16 +20,29 @@ public class TestCache {
 	@Test
 	public void test() throws InterruptedException {
 
-		int i=0;
-		while(true){
 
+		for(int i=0;i<5;i++){
 
-			System.out.println(demo.getFoo(i));
-
-			Thread.sleep(1000);
-
-
+			demo.addFoo(i,"str"+i);
 		}
+
+		assertEquals("str3",demo.getValue(3));
+
+		demo.addFoo(10,"str10");
+
+
+		assertEquals("str10",demo.getValue(10));
+
+		assertEquals("str4",demo.getValue(4));
+
+		demo.addFoo(4,"str40");
+
+		assertEquals("str40",demo.getValue(4));
+
+		demo.setZero("zero");
+
+		assertEquals("zero",demo.getZero());
+
 
 
 	}

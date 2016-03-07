@@ -2,7 +2,7 @@ package com.kii.beehive.portal.jdbc.entity;
 
 import com.kii.beehive.portal.jdbc.annotation.JdbcField;
 
-public class GroupUserRelation extends DBEntity {
+public class GroupUserRelation extends DBEntity{
 
 	private Long id;
 	

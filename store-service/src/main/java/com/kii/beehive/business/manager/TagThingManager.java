@@ -11,15 +11,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.CollectUtils;
 import com.kii.beehive.portal.exception.EntryNotFoundException;
-import com.kii.beehive.portal.jdbc.dao.GlobalThingDao;
+import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
+import com.kii.beehive.portal.jdbc.dao.TagGroupRelationDao;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.dao.TagThingRelationDao;
+import com.kii.beehive.portal.jdbc.dao.TeamDao;
+import com.kii.beehive.portal.jdbc.dao.TeamThingRelationDao;
+import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
+import com.kii.beehive.portal.jdbc.entity.TagGroupRelation;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
 import com.kii.beehive.portal.jdbc.entity.TagType;
+import com.kii.beehive.portal.jdbc.entity.Team;
+import com.kii.beehive.portal.jdbc.entity.TeamThingRelation;
+import com.kii.beehive.portal.jdbc.entity.UserGroup;
 import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
 
@@ -31,15 +40,26 @@ public class TagThingManager {
 	public final static String DEFAULT_LOCATION = "Unknown";
 
 	@Autowired
-	private GlobalThingDao globalThingDao;
+	private GlobalThingSpringDao globalThingDao;
 
 	@Autowired
 	private TagIndexDao tagIndexDao;
 	
 	@Autowired
 	private TagThingRelationDao tagThingRelationDao;
-
 	
+	@Autowired
+	private TeamDao teamDao;
+	
+	@Autowired
+	private TeamThingRelationDao teamThingRelationDao;
+	
+	@Autowired
+	private TagGroupRelationDao tagGroupRelationDao;
+	
+	@Autowired
+	private UserGroupDao usergroupDao;
+
 	@Autowired
 	private AppInfoDao appInfoDao;
 
@@ -104,7 +124,6 @@ public class TagThingManager {
 	
 	public void bindTagToThing(Collection<String> tagIDs,Collection<String> thingIDs) {
 		List<TagIndex> tagList = this.findTagList(tagIDs);
-		
 
 		for(String thingID:thingIDs){
 			GlobalThingInfo thing = globalThingDao.findByID(thingID);
@@ -114,7 +133,44 @@ public class TagThingManager {
 				for(TagIndex tag:tagList){
 					TagThingRelation ttr = tagThingRelationDao.findByThingIDAndTagID(thing.getId(), tag.getId());
 					if(ttr == null){
-						tagThingRelationDao.saveOrUpdate(new TagThingRelation(tag.getId(),thing.getId()));
+						tagThingRelationDao.insert(new TagThingRelation(tag.getId(),thing.getId()));
+					}
+				}
+			}
+		}
+	}
+	
+	public void bindTeamToThing(Collection<String> teamIDs,Collection<String> thingIDs) {
+		List<Team> teamList = this.findTeamList(teamIDs);
+
+		for(String thingID:thingIDs){
+			GlobalThingInfo thing = globalThingDao.findByID(thingID);
+			if(thing == null){
+				log.warn("Thing is null, ThingId = " + thingID);
+			}else{
+				for(Team team:teamList){
+					TeamThingRelation ttr = teamThingRelationDao.findByTeamIDAndThingID(team.getId(), thing.getId());
+					if(ttr == null){
+						teamThingRelationDao.insert(new TeamThingRelation(team.getId(), thing.getId()));
+					}
+				}
+			}
+		}
+	}
+	
+	public void bindTagToUserGroup(Collection<String> tagIDs,Collection<String> userGroupIDs) {
+		List<TagIndex> tagList = this.findTagList(tagIDs);
+
+		for(String userGroupID:userGroupIDs){
+			Long ugID = Long.parseLong(userGroupID);
+			List<UserGroup> userGroupList = usergroupDao.findUserGroup(AuthInfoStore.getUserID(), ugID , null);
+			if(userGroupList.size() == 0){
+				log.warn("UserGroup is null, UserGroupID = " + userGroupID);
+			}else{
+				for(TagIndex tag:tagList){
+					TagGroupRelation tgr = tagGroupRelationDao.findByTagIDAndUserGroupID(tag.getId(), ugID);
+					if(tgr == null){
+						tagGroupRelationDao.insert(new TagGroupRelation(tag.getId(), ugID, "1"));
 					}
 				}
 			}
@@ -133,7 +189,7 @@ public class TagThingManager {
 				for(TagIndex tag : tagIndexList){
 					TagThingRelation ttr = tagThingRelationDao.findByThingIDAndTagID(globalThingID, tag.getId());
 					if(ttr == null){
-						tagThingRelationDao.saveOrUpdate(new TagThingRelation(tag.getId(), globalThingID));
+						tagThingRelationDao.insert(new TagThingRelation(tag.getId(), globalThingID));
 					}
 				}
 			}
@@ -142,7 +198,6 @@ public class TagThingManager {
 	
 	public void unbindTagToThing(Collection<String> tagIDs,Collection<String> thingIDs) {
 		List<TagIndex> tagList = this.findTagList(tagIDs);
-		
 
 		for(String thingID:thingIDs){
 			GlobalThingInfo thing = globalThingDao.findByID(thingID);
@@ -151,6 +206,37 @@ public class TagThingManager {
 			}else{
 				for(TagIndex tag:tagList){
 					tagThingRelationDao.delete(tag.getId(),thing.getId());
+				}
+			}
+		}
+	}
+	
+	public void unbindTagToUserGroup(Collection<String> tagIDs,Collection<String> userGroupIDs) {
+		List<TagIndex> tagList = this.findTagList(tagIDs);
+
+		for(String userGroupID:userGroupIDs){
+			Long ugID = Long.parseLong(userGroupID);
+			List<UserGroup> userGroupList = usergroupDao.findUserGroup(AuthInfoStore.getUserID(), ugID , null);
+			if(userGroupList.size() == 0){
+				log.warn("UserGroup is null, UserGroupID = " + userGroupID);
+			}else{
+				for(TagIndex tag:tagList){
+					tagGroupRelationDao.delete(tag.getId(),ugID);
+				}
+			}
+		}
+	}
+	
+	public void unbindTeamToThing(Collection<String> teamIDs,Collection<String> thingIDs) {
+		List<Team> teamList = this.findTeamList(teamIDs);
+
+		for(String thingID:thingIDs){
+			GlobalThingInfo thing = globalThingDao.findByID(thingID);
+			if(thing == null){
+				log.warn("Thing is null, ThingId = " + thingID);
+			}else{
+				for(Team team:teamList){
+					teamThingRelationDao.delete(team.getId(), thing.getId());
 				}
 			}
 		}
@@ -214,12 +300,9 @@ public class TagThingManager {
 		
 		if(relation == null) {
 			relation = new TagThingRelation(tagIndex.getId(), globalThingID);
-		} else {
-			relation.setTagID(tagIndex.getId());
+			tagThingRelationDao.insert(relation);
 		}
-
-		// update tag-thing relation
-		tagThingRelationDao.saveOrUpdate(relation);
+		
 	}
 
 	public GlobalThingInfo findThingByVendorThingID(String vendorThingID) {
@@ -228,15 +311,6 @@ public class TagThingManager {
 			return null;
 		}
 		return list.get(0);
-	}
-
-	private TagIndex findCustomTag(String displayName) {
-		List<TagIndex> tagIndexList = tagIndexDao.findTagByTagTypeAndName(TagType.Custom.toString(), displayName);
-
-		if(tagIndexList == null || tagIndexList.isEmpty()) {
-			return null;
-		}
-		return tagIndexList.get(0);
 	}
 
 	public List<TagIndex> findTagIndexByGlobalThingID(Long globalThingID) {
@@ -255,6 +329,19 @@ public class TagThingManager {
 			}
 		}
 		return tagList;
+	}
+	
+	private List<Team> findTeamList(Collection<String> teamIDs){
+		List<Team> teamList = new ArrayList<Team>();
+		for(String teamID:teamIDs){
+			Team team = teamDao.findByID(teamID);
+			if(team != null){
+				teamList.add(team);
+			}else{
+				log.warn("Team is null, TeamId = " + teamID);
+			}
+		}
+		return teamList;
 	}
 
 	private List<TagIndex> findCustomTagList(Collection<String> displayNames) {

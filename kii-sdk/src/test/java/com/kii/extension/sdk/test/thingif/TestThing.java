@@ -69,6 +69,8 @@ public class TestThing extends TestTemplate {
 
 	private String triggerID="a8b20b40-9e24-11e5-a93c-00163e007aba";
 
+
+
 	@Test
 	public void testThingAdd(){
 

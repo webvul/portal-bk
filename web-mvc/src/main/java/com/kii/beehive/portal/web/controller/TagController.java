@@ -1,5 +1,6 @@
 package com.kii.beehive.portal.web.controller;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kii.beehive.business.event.BusinessEventBus;
 import com.kii.beehive.business.manager.TagThingManager;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
@@ -40,27 +40,6 @@ public class TagController {
 
 	@Autowired
 	private TagThingManager thingTagManager;
-
-	@Autowired
-	private BusinessEventBus eventBus;
-
-
-	/**
-	 * @deprecated this method should not be exposed to external;<br>
-	 *     if required to get all tags, "查询tag" API should be used to inquiry all the tags under certain tag type
-	 *
-	 * 列出所有tag
-	 * GET /tags/all
-	 *
-	 * refer to doc "Beehive API - Thing API" for request/response details
-	 *
-	 * @return
-	 */
-	@RequestMapping(path = "/all", method = { RequestMethod.GET })
-	public List<TagIndex> getAllTag() {
-		List<TagIndex> list = tagIndexDao.findAll();
-		return list;
-	}
 
 	/**
 	 * 创建tag
@@ -86,7 +65,7 @@ public class TagController {
 			old.setDescription(tag.getDescription());
 			tag = old;
 		}
-
+		tag.setFullTagName(tag.getTagType().name()+"-"+tag.getDisplayName());
 		long tagID = tagIndexDao.saveOrUpdate(tag);
 		Map<String, Object> map = new HashMap<>();
 		map.put("id", tagID);
@@ -176,6 +155,38 @@ public class TagController {
 	@RequestMapping(path = "/locations", method = { RequestMethod.GET }, consumes = { "*" })
 	public ResponseEntity<List<String>> findAllLocations() {
 		return findLocations("");
+	}
+	
+	/**
+	 * 绑定tag及usergroup
+	 * POST /tags/{tagIDs}/userGroups/{userGroupIDs}
+	 *
+	 * refer to doc "Beehive API - Thing API" for request/response details
+	 *
+	 * @param globalThingIDs
+     */
+	@RequestMapping(path="/{tagIDs}/userGroups/{userGroupIDs}",method={RequestMethod.POST})
+	public void addTagToUserGroup(@PathVariable("tagIDs") String tagIDs,@PathVariable("userGroupIDs") String userGroupIDs){
+		Arrays.asList(tagIDs.split(","));
+		List<String> tagIDList = Arrays.asList(tagIDs.split(","));
+		List<String> userGroupIDList = Arrays.asList(userGroupIDs.split(","));
+		thingTagManager.bindTagToUserGroup(tagIDList, userGroupIDList);
+
+	}
+	
+	/**
+	 * 解除绑定tag及usergroup
+	 * DELETE /tags/{tagIDs}/userGroups/{userGroupIDs}
+	 *
+	 * refer to doc "Beehive API - Thing API" for request/response details
+	 *
+	 * @param tagIDs
+     */
+	@RequestMapping(path="/{tagIDs}/userGroups/{userGroupIDs}",method={RequestMethod.DELETE},consumes={"*"})
+	public void removeTagToUserGroup(@PathVariable("tagIDs") String tagIDs,@PathVariable("userGroupIDs") String userGroupIDs){
+		List<String> tagIDList = Arrays.asList(tagIDs.split(","));
+		List<String> userGroupIDList = Arrays.asList(userGroupIDs.split(","));
+		thingTagManager.unbindTagToUserGroup(tagIDList, userGroupIDList);
 	}
 
 }
