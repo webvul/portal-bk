@@ -20,7 +20,7 @@ INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('2', 'SearchThi
 INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('2', 'GetAllThingType', 'GET /things/types');
 INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('2', 'BindThingTag', 'POST /things/*/tags/*');
 INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('2', 'RemoveThingTag', 'DELETE /things/*/tags/*');
-INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('2', 'BindThingTagCustom', 'PUT /things/*/tags/custom/*');
+INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('2', 'BindThingTagCustom', 'POST /things/*/tags/custom/*');
 INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('2', 'RemoveThingCustomTag', 'DELETE /things/*/tags/custom/*');
 INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('3', 'CreateUserGroup', 'POST /usergroup');
 INSERT INTO `permission` (`source_id`, `name`, `action`) VALUES ('3', 'DeleteUserGroup', 'DELETE /usergroup/*');
