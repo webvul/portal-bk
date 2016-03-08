@@ -54,4 +54,13 @@
         <servlet-name>SpringMVC</servlet-name>
     </filter-mapping>
 
+    <filter>
+        <filter-name>bufferFilter</filter-name>
+        <filter-class>org.springframework.web.filter.ShallowEtagHeaderFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>bufferFilter</filter-name>
+        <servlet-name>SpringMVC</servlet-name>
+    </filter-mapping>
+
 </web-app>
