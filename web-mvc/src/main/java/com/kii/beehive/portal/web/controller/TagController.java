@@ -20,8 +20,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.business.manager.TagThingManager;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
+import com.kii.beehive.portal.jdbc.dao.TeamTagRelationDao;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagType;
+import com.kii.beehive.portal.jdbc.entity.TeamTagRelation;
 import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
 
@@ -33,10 +35,13 @@ import com.kii.beehive.portal.web.exception.PortalException;
 @RestController
 @RequestMapping(path = "/tags", consumes = { MediaType.APPLICATION_JSON_UTF8_VALUE }, produces = {
 		MediaType.APPLICATION_JSON_UTF8_VALUE })
-public class TagController {
+public class TagController  extends AbstractController{
 
 	@Autowired
 	private TagIndexDao tagIndexDao;
+	
+	@Autowired
+	private TeamTagRelationDao teamTagRelationDao;
 
 	@Autowired
 	private TagThingManager thingTagManager;
@@ -67,6 +72,11 @@ public class TagController {
 		}
 		tag.setFullTagName(tag.getTagType().name()+"-"+tag.getDisplayName());
 		long tagID = tagIndexDao.saveOrUpdate(tag);
+		
+		if(isTeamIDExist()){
+			teamTagRelationDao.saveOrUpdate(new TeamTagRelation(getLoginTeamID(), tagID));
+    	}
+		
 		Map<String, Object> map = new HashMap<>();
 		map.put("id", tagID);
 		map.put("tagName", TagType.Custom.getTagName(tag.getDisplayName()));
