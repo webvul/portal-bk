@@ -5,6 +5,21 @@ import com.kii.extension.ruleengine.drools.entity.*;
 global CurrThing currThing;
 
 
+rule "summary all multiple value in map"
+  no-loop true
+when
+	Trigger(type ==TriggerType.multiple,$triggerID:triggerID)
+	$result:UnitResult(triggerID==$triggerID)
+	$map:MultipleValueMap(triggerID==$triggerID)
+then
+	$map.clear();
+	modify($map){
+    	setValue($result.getUnitName());
+    };
+    System.out.println("compute  multiple:"+$map);
+end
+
+
 rule "summary all summary value in map"
   no-loop true
 when
