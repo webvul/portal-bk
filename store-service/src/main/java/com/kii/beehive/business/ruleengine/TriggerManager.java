@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -148,12 +149,18 @@ public class TriggerManager {
 
 		Map<String,Set<String>> thingMap=new HashMap<>();
 
+		final AtomicBoolean isStream=new AtomicBoolean(false);
+
 		record.getSummarySource().forEach((k,v)->{
+
+			if(v.getExpressList().stream().filter((exp)->exp.getSlideFuntion()!=null).findAny().isPresent() && !isStream.get()){
+				isStream.set(true);
+			};
 
 			thingMap.put(k,thingTagService.getKiiThingIDs(v.getSource().getSelector()));
 		});
 
-		service.createSummaryTrigger(record,thingMap);
+		service.createSummaryTrigger(record,thingMap,isStream.get());
 
 		record.getSummarySource().forEach((k,v)->{
 			eventService.addSummaryTagChangeListener(v.getSource().getSelector().getTagList(),triggerID,k);

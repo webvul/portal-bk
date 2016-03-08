@@ -14,4 +14,9 @@ public enum TimerUnitType {
 		return String.valueOf(value)+val;
 	}
 
+	public String getFullDescrtion(float value){
+
+		return String.valueOf(value)+val;
+	}
+
 }

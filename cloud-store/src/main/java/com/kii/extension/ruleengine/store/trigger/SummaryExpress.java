@@ -1,5 +1,7 @@
 package com.kii.extension.ruleengine.store.trigger;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class SummaryExpress {
 
 	private String stateName;
@@ -8,7 +10,22 @@ public class SummaryExpress {
 
 	private String summaryAlias;
 
+	private SlideFuntion  slideFuntion;
 
+	@JsonIgnore
+	public String getFullSlideFunName(){
+
+		return function.name()+"-"+slideFuntion.getType().name();
+
+	}
+
+	public SlideFuntion getSlideFuntion() {
+		return slideFuntion;
+	}
+
+	public void setSlideFuntion(SlideFuntion slideFuntion) {
+		this.slideFuntion = slideFuntion;
+	}
 
 	public String getStateName() {
 		return stateName;

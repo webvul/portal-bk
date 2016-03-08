@@ -21,6 +21,7 @@ import com.kii.extension.ruleengine.store.trigger.CronPrefix;
 import com.kii.extension.ruleengine.store.trigger.IntervalPrefix;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.SchedulePrefix;
+import com.kii.extension.ruleengine.store.trigger.SummaryExpress;
 import com.kii.extension.ruleengine.store.trigger.condition.AndLogic;
 import com.kii.extension.ruleengine.store.trigger.condition.Equal;
 import com.kii.extension.ruleengine.store.trigger.condition.ExpressCondition;
@@ -62,6 +63,40 @@ public class RuleGeneral {
 
 		return StrTemplate.generByMap(template,params);
 
+	}
+
+	public String generSlideConfig(String triggerID,String summaryField,SummaryExpress express){
+
+		String template=loadTemplate("slideSummary");
+
+		Map<String,String> params=new HashMap<>();
+
+/*
+rule "${triggerID} summary unit:slide windows"
+when
+	Trigger(type =="summary",$triggerID:triggerID=="${triggerID}" )
+	$summary:Summary(triggerID==$triggerID ,$things:things, funName=="${slide-fun-name}" )
+	CurrThing(thing memberOf $things) from currThing
+	accumulate( ThingStatusInRule(thingID memberOf $things , $status:values) over window:${sum-suffix}( ${windowSize});
+                    $sum : ${funName}($status.get($summary.getFieldName()))
+                  )
+then
+	System.out.println("compute  sum summary by slide length"+$sum);
+	insert(new SummaryResult($triggerID,$summary.getSummaryField(),$sum));
+end
+ */
+		params.put("triggerID",triggerID);
+		params.put("funName",express.getFunction().name());
+		params.put("sum-suffix",express.getSlideFuntion().getType().name());
+		params.put("slide-fun-name",express.getFullSlideFunName());
+		params.put("windowSize",express.getSlideFuntion().getWindowDefine());
+		params.put("summaryField",summaryField);
+
+		String fullDrl= StrTemplate.generByMap(template,params);
+
+		log.info("slide drl\n"+fullDrl);
+
+		return fullDrl;
 	}
 
 	public String generDrlConfig(String triggerID, TriggerType type, RuleEnginePredicate predicate){

@@ -2,6 +2,7 @@ package com.kii.extension.ruleengine;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
@@ -29,10 +30,7 @@ public class EngineService {
 	@Autowired
 	private RuleGeneral  ruleGeneral;
 
-
-
-
-	public void createSummaryTrigger(SummaryTriggerRecord record, Map<String,Set<String> > summaryMap){
+	public void createSummaryTrigger(SummaryTriggerRecord record, Map<String,Set<String> > summaryMap,boolean isStream){
 
 
 		Trigger trigger=new Trigger();
@@ -40,7 +38,7 @@ public class EngineService {
 		trigger.setTriggerID(record.getId());
 		trigger.setType(TriggerType.summary);
 		trigger.setWhen(record.getPredicate().getTriggersWhen());
-		trigger.setStream(false);
+		trigger.setStream(isStream);
 
 		String 	rule = ruleGeneral.generDrlConfig(record.getId(), TriggerType.summary, record.getPredicate());
 
@@ -53,14 +51,23 @@ public class EngineService {
 				Summary summary=new Summary();
 				summary.setTriggerID(trigger.getTriggerID());
 				summary.setFieldName(exp.getStateName());
-				summary.setFunName(exp.getFunction().name());
+
 				summary.setSummaryField(k+"."+exp.getSummaryAlias());
 				summary.setThings(summaryMap.get(k));
-				droolsTriggerService.addSummary(summary);
+
+				if(exp.getSlideFuntion()!=null){
+					String drl=ruleGeneral.generSlideConfig(trigger.getTriggerID(),k,exp);
+					summary.setFunName(exp.getFunction().name());
+					droolsTriggerService.addSummary(summary,drl);
+
+				}else{
+					summary.setFunName(exp.getFunction().name());
+					droolsTriggerService.addSummary(summary);
+				}
+
 			});
 
 		});
-
 
 	}
 
@@ -126,6 +133,11 @@ public class EngineService {
 	public void updateThingStatus(String thingID,ThingStatus status) {
 
 		droolsTriggerService.addThingStatus(thingID,status);
+	}
+
+	public void updateThingStatus(String thingID,ThingStatus status,Date time) {
+
+		droolsTriggerService.addThingStatus(thingID,status,time);
 	}
 	
 	public void disableTrigger(String triggerID) {
