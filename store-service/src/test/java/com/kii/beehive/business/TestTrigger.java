@@ -4,6 +4,7 @@ import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.fail;
 
 import java.io.IOException;
+import java.util.Date;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +48,7 @@ public class TestTrigger extends com.kii.beehive.portal.store.TestInit {
 
 		ThingIDTools.ThingIDCombine combine=ThingIDTools.splitFullKiiThingID(id);
 
-		stateNotifyService.onThingStateChange(combine.kiiAppID,combine.kiiThingID,status);
+		stateNotifyService.onThingStateChange(combine.kiiAppID,combine.kiiThingID,status,new Date());
 
 	}
 	

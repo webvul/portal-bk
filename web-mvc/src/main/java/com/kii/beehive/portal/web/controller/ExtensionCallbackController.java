@@ -1,5 +1,7 @@
 package com.kii.beehive.portal.web.controller;
 
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -8,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kii.beehive.business.service.ThingStateNotifyCallbackService;
 import com.kii.beehive.business.manager.ThingTagManager;
+import com.kii.beehive.business.service.ThingStateNotifyCallbackService;
 import com.kii.beehive.portal.web.constant.CallbackNames;
 import com.kii.beehive.portal.web.entity.CreatedThing;
 import com.kii.beehive.portal.web.entity.StateUpload;
@@ -36,7 +38,7 @@ public class ExtensionCallbackController {
 		tagManager.updateState(status.getState(),status.getThingID(),appID);
 
 
-		stateNotifyService.onThingStateChange(appID,status.getThingID(), status.getState());
+		stateNotifyService.onThingStateChange(appID,status.getThingID(), status.getState(),new Date());
 
 	}
 

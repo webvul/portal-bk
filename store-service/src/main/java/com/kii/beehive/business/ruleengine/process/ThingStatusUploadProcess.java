@@ -1,5 +1,7 @@
 package com.kii.beehive.business.ruleengine.process;
 
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,8 +19,9 @@ public class ThingStatusUploadProcess implements ThingStatusChangeProcess {
 
 
 	@Override
-	public void onEventFire(EventListener listener, ThingStatus status, String thingID) {
+	public void onEventFire(EventListener listener, ThingStatus status, String thingID,Date timestamp) {
 
-		engine.updateThingStatus(thingID,status);
+
+		engine.updateThingStatus(thingID,status,timestamp);
 	}
 }

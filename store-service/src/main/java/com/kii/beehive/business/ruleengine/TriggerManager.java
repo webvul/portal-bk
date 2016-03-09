@@ -69,7 +69,7 @@ public class TriggerManager {
 				ThingStatus status = mapper.readValue(s.getStatus(),ThingStatus.class);
 				String id=s.getFullKiiThingID();
 
-				service.updateThingStatus(id,status);
+				service.updateThingStatus(id,status,s.getModifyDate());
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

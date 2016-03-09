@@ -1,5 +1,6 @@
 package com.kii.beehive.business.event;
 
+import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -82,7 +83,7 @@ public class BusinessEventBus {
 
 
 	@Async
-	public void onStatusUploadFire(String thingID, ThingStatus status){
+	public void onStatusUploadFire(String thingID, ThingStatus status,Date timestamp){
 
 
 		List<EventListener> listenerList=eventDao.getEventListenerByTypeAndKey(EventType.ThingStateChange,thingID);
@@ -95,7 +96,7 @@ public class BusinessEventBus {
 
 				ThingStatusChangeProcess process = (ThingStatusChangeProcess) context.getBean(relationBeanName);
 
-				process.onEventFire(listener, status, thingID);
+				process.onEventFire(listener, status, thingID,timestamp);
 			}catch(NoSuchBeanDefinitionException ex){
 
 				log.error("the process not found:"+relationBeanName);

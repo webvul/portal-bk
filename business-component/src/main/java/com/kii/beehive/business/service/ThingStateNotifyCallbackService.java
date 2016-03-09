@@ -1,5 +1,7 @@
 package com.kii.beehive.business.service;
 
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,12 +17,12 @@ public class ThingStateNotifyCallbackService {
 	private BusinessEventBus eventBus;
 
 
-	public void onThingStateChange(String kiiAppID,String kiiThingID, ThingStatus  status){
+	public void onThingStateChange(String kiiAppID,String kiiThingID, ThingStatus  status,Date timestamp){
 
 
 		String fullThingID=ThingIDTools.joinFullKiiThingID(kiiThingID,kiiAppID);
 
-		eventBus.onStatusUploadFire(fullThingID,status);
+		eventBus.onStatusUploadFire(fullThingID,status,timestamp);
 
 	}
 }
