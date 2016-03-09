@@ -1,7 +1,5 @@
 package com.kii.beehive.business.ruleengine;
 
-import javax.annotation.PostConstruct;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -52,7 +50,7 @@ public class TriggerManager {
 
 
 
-	@PostConstruct
+//	@PostConstruct
 	public void init(){
 
 

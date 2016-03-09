@@ -4,7 +4,9 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.kii.beehive.portal.web.entity.HelloEntry;
 
@@ -13,14 +15,19 @@ import com.kii.beehive.portal.web.entity.HelloEntry;
 public class DemoController {
 
 
+	@ResponseBody
 	@RequestMapping(path="/hello",method={RequestMethod.GET})
-	public HelloEntry hello(){
+	public ModelAndView hello(){
 
 		HelloEntry entry=new HelloEntry();
 		entry.setName("hello");
 		entry.setValue("world");
 
-		return entry;
+		ModelAndView model=new ModelAndView();
+		model.addObject(entry);
+		model.setViewName("jsonView");
+
+		return model;
 
 	}
 
