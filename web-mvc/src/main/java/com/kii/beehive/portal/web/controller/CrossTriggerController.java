@@ -107,7 +107,7 @@ public class CrossTriggerController {
 	}
 
 	@RequestMapping(path="/{triggerID}",method={RequestMethod.GET})
-	public TriggerRecord getTriggerList(@PathVariable("triggerID") String triggerID){
+	public TriggerRecord getTriggerById(@PathVariable("triggerID") String triggerID){
 
 		return mang.getTriggerByID(triggerID);
 
