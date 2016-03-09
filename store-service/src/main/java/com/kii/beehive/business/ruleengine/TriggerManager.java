@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.beehive.business.event.BusinessEventListenerService;
 import com.kii.beehive.business.manager.ThingTagManager;
+import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.extension.ruleengine.EngineService;
 import com.kii.extension.ruleengine.service.TriggerRecordDao;
 import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
@@ -78,6 +79,8 @@ public class TriggerManager {
 	}
 
 	public String createTrigger(TriggerRecord record){
+
+		record.setRecordStatus(TriggerRecord.StatusType.enable);
 
 		if(record instanceof SimpleTriggerRecord){
 			return createSimpleTrigger((SimpleTriggerRecord)record);
@@ -187,21 +190,17 @@ public class TriggerManager {
 
 	public TriggerRecord  getTriggerByID(String triggerID){
 
-		return triggerDao.getTriggerRecord(triggerID);
+		TriggerRecord record= triggerDao.getTriggerRecord(triggerID);
+		if(record==null){
+			throw new EntryNotFoundException(triggerID);
+		}
+		return record;
 	}
 	
 	public void deleteTrigger(String triggerID) {
 
 		triggerDao.deleteTriggerRecord(triggerID);
 	}
-//	public void deleteTrigger(String triggerID){
-//
-//		triggerDao.deleteTriggerRecord(triggerID);
-//
-//		service.removeTrigger(triggerID);
-//
-//		eventService.removeListener();
-//
-//	}
+
 
 }

@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.business.ruleengine.TriggerManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
-import com.kii.beehive.portal.web.exception.BeehiveUnAuthorizedException;
 import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
@@ -85,11 +84,12 @@ public class CrossTriggerController {
 	}
 
 	private void verify(TriggerRecord record) {
-		if(!record.getUserID().equals(AuthInfoStore.getUserID())
-				&&!AuthInfoStore.isAmin()){
-
-			throw new BeehiveUnAuthorizedException("only owner can operate trigger");
-		}
+//		if(!record.getUserID().equals(AuthInfoStore.getUserID())
+//				||!AuthInfoStore.isAmin()){
+//
+//			throw new BeehiveUnAuthorizedException("only owner can operate trigger");
+//		}
+		return;
 	}
 
 	@RequestMapping(path="/{triggerID}/enable",method = { RequestMethod.PUT })
