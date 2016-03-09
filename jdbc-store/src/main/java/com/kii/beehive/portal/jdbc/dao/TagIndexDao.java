@@ -19,7 +19,47 @@ public class TagIndexDao extends SpringBaseDao<TagIndex> {
 	public static final String TABLE_NAME = "tag_index";
 	public static final String KEY = "tag_id";
 	
-
+	/**
+	 * find tag list by tagType and displayName
+	 *
+	 * @param tagType
+	 * @param displayName if it's null or empty, will query all displayName under the tagType
+     * @return
+     */
+	public List<TagIndex> findTag(Long tagID, String tagType,String displayName) {
+		List<Object> params = new ArrayList<Object>();
+		StringBuilder sql = new StringBuilder();
+		sql.append("SELECT t.* FROM " + this.getTableName() +" t "
+					+ " LEFT JOIN rel_tag_group rt ON t.tag_id = rt.tag_id "
+					+ " LEFT JOIN user_group u ON u.user_group_id = rt.user_group_id "
+					+ " LEFT JOIN rel_group_user rg ON u.user_group_id = rg.user_group_id  ");
+		
+		StringBuilder where = new StringBuilder();
+		where.append( " WHERE (rg.user_id = ? OR t.create_by=?)" );
+		params.add(AuthInfoStore.getUserID());
+		params.add(AuthInfoStore.getUserID());
+		
+		if(tagID != null){
+			where.append(" AND t.").append(TagIndex.TAG_ID).append(" = ? ");
+			params.add(tagID);
+		}
+		
+		if(!Strings.isBlank(tagType)){
+			where.append(" AND t.").append(TagIndex.TAG_TYPE).append(" = ? ");
+			params.add(tagType);
+		}
+		
+		if(!Strings.isBlank(displayName)){
+			where.append(" AND t.").append(TagIndex.DISPLAY_NAME).append(" = ? ");
+			params.add(displayName);
+		}
+		
+		sql.append(where);
+		List<TagIndex> rows = jdbcTemplate.query(sql.toString(), params.toArray(new Object[params.size()]), getRowMapper());
+	    return rows;
+	}
+	
+	
 	/**
 	 * find tag list by tagType and displayName
 	 *

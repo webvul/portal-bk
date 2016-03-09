@@ -3,6 +3,7 @@ package com.kii.beehive.business.manager;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
@@ -120,6 +121,28 @@ public class TagThingManager {
 		}*/
 
 		return thingID;
+	}
+	
+	public List<String> findThingTypeByTagIDs(Collection<String> tagIDs) {
+		StringBuilder sb = new StringBuilder();
+		for(String tagID:tagIDs){
+			List<TagIndex> tagList = this.tagIndexDao.findTag(Long.parseLong(tagID), null, null);
+			if(tagList.size()>0){
+				if(sb.length() > 0) sb.append(",");
+				sb.append(tagID);
+			}
+		}
+		
+		List<String> result = new ArrayList<String>();
+		if(sb.length() > 0){
+			List<Map<String, Object>> typeList = globalThingDao.findThingTypeBytagIDs(sb.toString());
+			if(typeList.size() > 0){
+				typeList.forEach(map->{
+					result.add(map.get("type").toString());
+				});
+			}
+		}
+		return result;
 	}
 	
 	public void bindTagToThing(Collection<String> tagIDs,Collection<String> thingIDs) {

@@ -50,7 +50,7 @@ public class TestThingDao extends TestTemplate{
 		thing.setVendorThingID("demo_vendor_thing_id");
 		thing.setKiiAppID("appID");
 		thing.setCustom("custom");
-		thing.setType("type");
+		thing.setType("thingType");
 		thing.setStatus("this is a test about long text,we don't know the final required,so....");
 
 		String fullKiiThingID= ThingIDTools.joinFullKiiThingID("abcdefghijk","appID");
@@ -205,6 +205,28 @@ public class TestThingDao extends TestTemplate{
 		assertEquals(thing.getCustom(),entity.getCustom());
 		assertEquals(thing.getType(),entity.getType());
 		assertEquals(thing.getStatus(),entity.getStatus());
+	}
+	
+	@Test
+	public void testfindThingTypeBytagIDs() {
+		TagIndex tag = createTagRel();
+		TagIndex tag2 = createTagRel();
+		
+		List<Map<String, Object>> list = dao.findThingTypeBytagIDs(tag.getId()+","+tag2.getId());
+		
+		assertTrue(list.size() > 0);
+	}
+	
+	@Test
+	public void testfindThingTypeBytagIDsWithTeamID() {
+		TagIndex tag = createTagRel();
+		TagIndex tag2 = createTagRel();
+		Long teamID = createTeamRel();
+		
+		AuthInfoStore.setTeamID(teamID);
+		List<Map<String, Object>> list = dao.findThingTypeBytagIDs(tag.getId()+","+tag2.getId());
+		
+		assertTrue(list.size() > 0);
 	}
 	
 	private TagIndex createTagRel(){

@@ -96,6 +96,22 @@ public class ThingController extends AbstractController{
 	}
 	
 	/**
+	 * 所有设备的type
+	 * GET /things/types/tagID/{tagIDs}
+	 *
+	 * refer to doc "Beehive API - Thing API" for request/response details
+	 *
+     * @return
+     */
+	@RequestMapping(path = "/types/tagID/{tagIDs}", method = {RequestMethod.GET})
+	public ResponseEntity<List<String>> getThingTypeByTagIDs(@PathVariable("tagIDs") String tagIDs) {
+		List<String> tagIDList = Arrays.asList(tagIDs.split(","));
+		
+		List<String> result = thingTagManager.findThingTypeByTagIDs(tagIDList);
+		return new ResponseEntity<>(result, HttpStatus.OK);
+	}
+	
+	/**
 	 * 查询设备（globalThingID）
 	 * GET /things/{globalThingID}
 	 *
