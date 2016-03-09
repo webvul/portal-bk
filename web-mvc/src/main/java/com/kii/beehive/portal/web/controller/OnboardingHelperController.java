@@ -144,7 +144,7 @@ public class OnboardingHelperController {
 		map.put("ownerToken",result.getAppAuthToken());
 
 		ModelAndView  model=new ModelAndView();
-		model.addObject(map);
+		model.addAllObjects(map);
 		model.setViewName("jsonView");
 
 		return model;
