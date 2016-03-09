@@ -50,7 +50,7 @@ end
 rule "add trigger 300's  express "
 when
 	Trigger($triggerID:triggerID,triggerID=="300")
-    SummaryValueMap( triggerID==$triggerID, numberMap["sum_foo"]>numberMap["count_bar"]  )
+    SummaryValueMap( triggerID==$triggerID, values["sum_foo"]>values["count_bar"]  )
 then
 	System.out.println("fire summary trigger 300");
 	insertLogical(new MatchResult($triggerID));
@@ -62,7 +62,7 @@ end
 rule "add trigger 400's  express "
 when
 	Trigger($triggerID:triggerID,triggerID=="400")
-    SummaryValueMap( triggerID==$triggerID, numberMap["sum_foo"]>numberMap["sum_bar"]  )
+    SummaryValueMap( triggerID==$triggerID, values["sum_foo"]>values["sum_bar"]  )
 then
 	System.out.println("fire summary trigger 400");
 	insertLogical(new MatchResult($triggerID));

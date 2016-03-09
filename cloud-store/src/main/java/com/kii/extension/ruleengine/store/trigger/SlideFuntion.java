@@ -10,7 +10,7 @@ public class SlideFuntion {
 
 	private TimerUnitType timeUnit;
 
-	private float interval;
+	private int interval;
 
 	private int length;
 
@@ -32,11 +32,11 @@ public class SlideFuntion {
 
 	}
 
-	public float getInterval() {
+	public int getInterval() {
 		return interval;
 	}
 
-	public void setInterval(float interval) {
+	public void setInterval(int interval) {
 		this.interval = interval;
 	}
 
