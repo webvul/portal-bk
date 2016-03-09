@@ -56,7 +56,7 @@ public class TriggerManager {
 	public void init(){
 
 
-		List<TriggerRecord> recordList=triggerDao.getAllTrigger();
+		List<TriggerRecord> recordList=triggerDao.getAllEnableTrigger();
 
 		recordList.forEach(t->createTrigger(t));
 

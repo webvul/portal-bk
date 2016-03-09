@@ -3,10 +3,14 @@ package com.kii.beehive.business;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.fail;
 
+import java.io.IOException;
+
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.kii.beehive.business.ruleengine.TriggerManager;
+import com.kii.beehive.business.service.ThingStateNotifyCallbackService;
+import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.extension.ruleengine.TriggerConditionBuilder;
 import com.kii.extension.ruleengine.store.trigger.Condition;
@@ -27,6 +31,9 @@ public class TestTrigger extends com.kii.beehive.portal.store.TestInit {
 	private TriggerManager  manager;
 
 
+	@Autowired
+	private ThingStateNotifyCallbackService stateNotifyService;
+
 	public void sendGoodThingStatus(String id){
 		ThingStatus status=new ThingStatus();
 		status.setField("foo",101);
@@ -38,6 +45,9 @@ public class TestTrigger extends com.kii.beehive.portal.store.TestInit {
 	
 	private void sendThingStatus(String id, ThingStatus status) {
 
+		ThingIDTools.ThingIDCombine combine=ThingIDTools.splitFullKiiThingID(id);
+
+		stateNotifyService.onThingStateChange(combine.kiiAppID,combine.kiiThingID,status);
 
 	}
 	
@@ -60,8 +70,6 @@ public class TestTrigger extends com.kii.beehive.portal.store.TestInit {
 
 	}
 
-
-
 	public ExecuteTarget getTarget(){
 
 		ExecuteTarget target=new ExecuteTarget();
@@ -77,17 +85,64 @@ public class TestTrigger extends com.kii.beehive.portal.store.TestInit {
 		return target;
 	}
 
-	@Test
-	public void testCRUD(){
 
-		String kiiThingID="0af7a7e7-th.f83120e36100-a269-5e11-e5bb-0bc2e136";
+	@Test
+	public void testSend() throws IOException {
+
+		sendGoodThingStatus(kiiThingID);
+
+		sendBadThingStatus(kiiThingID);
+
+
+		sendGoodThingStatus(kiiThingID);
+
+		sendBadThingStatus(kiiThingID);
+
+		sendGoodThingStatus(kiiThingID);
+
+		sendBadThingStatus(kiiThingID);
+
+		System.in.read();
+	}
+
+	String kiiThingID="0af7a7e7-th.f83120e36100-a269-5e11-e5bb-0bc2e136";
+
+	long thingID=1052l;
+
+	public void insertTrigger(){
+
 
 		SimpleTriggerRecord record=new SimpleTriggerRecord();
 
-		SimpleTriggerRecord.ThingID thingID=new SimpleTriggerRecord.ThingID();
-		thingID.setThingID(1049);
+		SimpleTriggerRecord.ThingID id=new SimpleTriggerRecord.ThingID();
+		id.setThingID(thingID);
 
-		record.setSource(thingID);
+		record.setSource(id);
+
+		record.addTarget(getTarget() );
+
+		RuleEnginePredicate perdicate=new RuleEnginePredicate();
+		Condition condition= TriggerConditionBuilder.andCondition().great("foo",0).less("bar",0).getConditionInstance();
+		perdicate.setCondition(condition);
+
+		perdicate.setTriggersWhen(WhenType.CONDITION_FALSE_TO_TRUE);
+
+
+		record.setPredicate(perdicate);
+
+	}
+
+	@Test
+	public void testCRUD(){
+
+
+
+		SimpleTriggerRecord record=new SimpleTriggerRecord();
+
+		SimpleTriggerRecord.ThingID id=new SimpleTriggerRecord.ThingID();
+		id.setThingID(thingID);
+
+		record.setSource(id);
 
 		record.addTarget(getTarget() );
 

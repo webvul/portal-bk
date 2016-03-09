@@ -46,12 +46,8 @@ public class ExtensionCallbackController {
 								  @RequestHeader("Authorization") String token,
 								  @RequestBody CreatedThing thing){
 
-
-
 		tagManager.updateKiicloudRelation(thing.getVendorThingID(),appID+"-"+thing.getThingID());
 	}
-
-
 
 
 }

@@ -70,4 +70,13 @@ public class TriggerRecordDao extends AbstractDataAccess<TriggerRecord> {
 
 		return list;
 	}
+
+	public List<TriggerRecord> getAllEnableTrigger() {
+
+		QueryParam query= ConditionBuilder.newCondition().equal("recordStatus", TriggerRecord.StatusType.enable).getFinalQueryParam();
+
+		List<TriggerRecord> list=super.query(query);
+
+		return list;
+	}
 }

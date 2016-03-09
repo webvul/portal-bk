@@ -15,11 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kii.beehive.business.event.ListenerEnvInitService;
-import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.business.manager.AppInfoManager;
 import com.kii.beehive.business.manager.TagThingManager;
-
+import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.store.entity.CallbackUrlParameter;
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
@@ -94,6 +92,7 @@ public class OnboardingHelperController {
 		CallbackUrlParameter param=new CallbackUrlParameter();
 		param.setStateChange(CallbackNames.STATE_CHANGED);
 		param.setThingCreated(CallbackNames.THING_CREATED);
+
 
 
 		String url=request.getRequestURL().toString();
