@@ -380,6 +380,21 @@ public class ApiAccessBuilder {
 		return this;
 	}
 
+	//================================
+	//thing relation
+	//================================
+
+	/**
+	 * generate request for delete thing by Kii thing id
+	 * @param thingID Kii thing id
+	 * @return
+     */
+	public ApiAccessBuilder deleteThing(String thingID) {
+		request=new HttpDelete(appInfo.getAppSubUrl()+"/things/"+thingID);
+
+		return this;
+	}
+
 	public ApiAccessBuilder thingOnboarding(OnBoardingParam onboardParam){
 
 		/*
