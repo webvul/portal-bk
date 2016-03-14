@@ -76,7 +76,7 @@ public class TestThingControll extends WebTestTemplate{
 			TagIndex tagIndex = new TagIndex();
 			tagIndex.setTagType(TagType.Custom);
 			tagIndex.setDisplayName(displayName);
-			tagIndex.setFullTagName(TagType.Custom + displayName);
+			tagIndex.setFullTagName(TagType.Custom.getTagName(displayName));
 
 			tagIndexDao.saveOrUpdate(tagIndex);
 		}

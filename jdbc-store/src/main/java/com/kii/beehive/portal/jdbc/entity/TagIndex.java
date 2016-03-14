@@ -37,14 +37,19 @@ public class TagIndex extends DBEntity {
 		this.tagType = tagType;
 		this.displayName = displayName;
 		this.description = description;
+		this.setFullTagName(tagType, displayName);
 	}
 
-
+	private void setFullTagName(TagType tagType, String displayName) {
+		if(tagType == null || displayName == null) {
+			this.fullTagName = null;
+		} else {
+			this.fullTagName = tagType.getTagName(displayName);
+		}
+	}
 
 	public TagIndex(String fullTagName){
-		String[] arrays= StringUtils.split(fullTagName,"-");
-		tagType=TagType.valueOf(arrays[0]);
-		displayName=arrays[1];
+		this.setFullTagName(fullTagName);
 	}
 	@Override
 	@JdbcField(column=TAG_ID)
@@ -58,8 +63,11 @@ public class TagIndex extends DBEntity {
 		return fullTagName;
 	}
 
-	public void setFullTagName(String name){
-		this.fullTagName=name;
+	public void setFullTagName(String fullTagName){
+		String[] arrays= StringUtils.split(fullTagName,"-");
+		this.tagType=TagType.valueOf(arrays[0]);
+		this.displayName=arrays[1];
+		this.fullTagName=fullTagName;
 	}
 	
 	@JdbcField(column = TAG_TYPE,type= JdbcFieldType.EnumStr)
@@ -69,6 +77,9 @@ public class TagIndex extends DBEntity {
 
 	public void setTagType(TagType tagType) {
 		this.tagType = tagType;
+
+		// sync fullTagName
+		this.setFullTagName(this.tagType, this.displayName);
 	}
 
 	@JdbcField(column=DISPLAY_NAME)
@@ -78,6 +89,9 @@ public class TagIndex extends DBEntity {
 
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;
+
+		// sync fullTagName
+		this.setFullTagName(this.tagType, this.displayName);
 	}
 	
 	@JdbcField(column=DESCRIPTION)

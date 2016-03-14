@@ -58,7 +58,8 @@ public class TagController  extends AbstractController{
 	@RequestMapping(path = "/custom", method = { RequestMethod.POST })
 	public Map<String, Object> createTag(@RequestBody TagIndex tag) {
 
-		if (Strings.isBlank(tag.getDisplayName())) {
+		String displayName = tag.getDisplayName();
+		if (Strings.isBlank(displayName)) {
 			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "DisplayName is empty",
 					HttpStatus.BAD_REQUEST);
 		}
@@ -70,7 +71,7 @@ public class TagController  extends AbstractController{
 			old.setDescription(tag.getDescription());
 			tag = old;
 		}
-		tag.setFullTagName(tag.getTagType().name()+"-"+tag.getDisplayName());
+		tag.setFullTagName(TagType.Custom.getTagName(displayName));
 		long tagID = tagIndexDao.saveOrUpdate(tag);
 		
 		if(isTeamIDExist()){

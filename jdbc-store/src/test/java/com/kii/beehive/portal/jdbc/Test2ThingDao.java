@@ -242,15 +242,14 @@ public class Test2ThingDao extends TestTemplate {
 
 	@Test
 	public void testGetThingByTagIneAndType(){
-		String[] tags={"Custom-name1"};
+		String[] tags={"Custom-name1","Custom-name3"};
 
-		Set<GlobalThingInfo> thingList=thingDao.queryThingByUnionTags(Arrays.asList(tags),"Custom-name3");
+		Set<GlobalThingInfo> thingList=thingDao.queryThingByUnionTags(Arrays.asList(tags), "1");
 
-		assertEquals(8,thingList.size());
+		// only one thing in thing type "1"
+		assertEquals(1,thingList.size());
 
-		long count=thingList.stream().map(thing->Integer.parseInt(thing.getType())).filter(i->(i>=1&&i<=4)||(i>=6&&i<=9)
-		).count();
-		assertEquals(8,count);
+		assertEquals("1", thingList.iterator().next().getType());
 
 	}
 
