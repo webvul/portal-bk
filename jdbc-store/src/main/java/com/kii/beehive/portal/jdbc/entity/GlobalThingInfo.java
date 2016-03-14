@@ -129,6 +129,8 @@ public class GlobalThingInfo extends DBEntity{
 		StringBuilder builder = new StringBuilder();
 		builder.append("GlobalThingInfo [vendorThingID=");
 		builder.append(vendorThingID);
+		builder.append(", globalThingID=");
+		builder.append(getId());
 		builder.append(", kiiAppID=");
 		builder.append(kiiAppID);
 		builder.append(", type=");
@@ -137,6 +139,8 @@ public class GlobalThingInfo extends DBEntity{
 		builder.append(status);
 		builder.append(", custom=");
 		builder.append(consumer);
+		builder.append(", fullKiiThingID=");
+		builder.append(fullKiiThingID);
 		builder.append("]");
 		return builder.toString();
 	}

@@ -19,7 +19,7 @@ public class BeehiveParameterDao extends AbstractDataAccess<CallbackUrlParameter
 
 	private static final String CALLBACK_URL = "beehive_callback_url";
 
-	public void saveTriggerCallbackParam(@AppBindParam  String appName, CallbackUrlParameter param){
+	public void saveTriggerCallbackParam(@AppBindParam  String appID, CallbackUrlParameter param){
 
 		super.addEntity(param, CALLBACK_URL);
 	}

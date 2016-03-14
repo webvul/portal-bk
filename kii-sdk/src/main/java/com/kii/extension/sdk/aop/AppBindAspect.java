@@ -10,6 +10,8 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
@@ -23,6 +25,7 @@ import com.kii.extension.sdk.annotation.AppBindParam;
 @Aspect
 public class AppBindAspect {
 
+	private Logger log= LoggerFactory.getLogger(AppBindAspect.class);
 
 	@Autowired
 	private AppBindToolResolver bindTool;
@@ -64,6 +67,8 @@ public class AppBindAspect {
 
 		bindTool.setAppChoice(choice);
 
+		log.debug("@@@@@@@@@ bindTool.setAppChoice: " + choice);
+
 	}
 
 
@@ -76,12 +81,15 @@ public class AppBindAspect {
 		}
 		bindTool.clean();
 
+		log.debug("@@@@@@@@@ bindTool.clean");
 	}
 
 
 	@After("bindWithParam()")
 	public void  afterCallBindParam(JoinPoint joinPoint ){
 		bindTool.clean();
+
+		log.debug("@@@@@@@@@ bindTool.clean");
 	}
 
 
@@ -103,10 +111,16 @@ public class AppBindAspect {
 					Object arg=args[i];
 					if(arg instanceof AppInfo){
 						bindTool.setAppInfoDirectly((AppInfo)arg);
+
+						log.debug("@@@@@@@@@ bindTool.setAppInfoDirectly: " + arg);
+
 						break;
 					}else if(arg instanceof  String) {
 						param = String.valueOf(args[i]);
 						bindTool.setAppInfoDirectly(param);
+
+						log.debug("@@@@@@@@@ bindTool.setAppInfoDirectly: " + param);
+
 						break;
 					}
 //					annotation=(AppBindParam)anno;

@@ -113,4 +113,25 @@ public class AppInfo {
 	public void setSiteUrl(String siteUrl) {
 		this.siteUrl = siteUrl;
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("AppInfo [name=");
+		builder.append(name);
+		builder.append(", appID=");
+		builder.append(appID);
+		builder.append(", appKey=");
+		builder.append(appKey);
+		builder.append(", clientID=");
+		builder.append(clientID);
+		builder.append(", clientSecret=");
+		builder.append(clientSecret);
+		builder.append(", site=");
+		builder.append(site);
+		builder.append(", siteUrl=");
+		builder.append(siteUrl);
+		builder.append("]");
+		return builder.toString();
+	}
 }
