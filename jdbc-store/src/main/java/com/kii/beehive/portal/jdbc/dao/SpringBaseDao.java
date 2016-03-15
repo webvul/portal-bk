@@ -1,7 +1,5 @@
 package com.kii.beehive.portal.jdbc.dao;
 
-import javax.sql.DataSource;
-
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
@@ -9,6 +7,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import javax.sql.DataSource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -167,11 +167,12 @@ public abstract class SpringBaseDao<T extends DBEntity> {
 
 	}
 	
-	public long saveOrUpdate(T entity){
+	public Long saveOrUpdate(T entity){
 		if(entity.getId() == null || entity.getId() == 0){
 			return this.insert(entity);
 		}else{
-			return this.updateEntityAllByID(entity);
+			this.updateEntityAllByID(entity);
+			return entity.getId();
 		}
 	}
 	
