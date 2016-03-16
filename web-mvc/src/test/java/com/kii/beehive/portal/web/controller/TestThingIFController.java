@@ -343,6 +343,15 @@ public class TestThingIFController extends WebTestTemplate {
         return kiiThingID;
     }
 
+    private String[] combineArray(String[] oriArr, String... elements) {
+
+        String[] newArr = new String[oriArr.length + elements.length];
+        System.arraycopy(oriArr, 0, newArr, 0, oriArr.length);
+        System.arraycopy(elements, 0, newArr, oriArr.length, elements.length);
+
+        return newArr;
+    }
+
 //    private boolean checkCommandExist(String vendorThingID, Map<String, Object> onboardingInfo) throws IOException {
 //
 //        String kiiAppID = (String)onboardingInfo.get("kiiAppID");
@@ -725,6 +734,83 @@ public class TestThingIFController extends WebTestTemplate {
 
             assertTrue(!Strings.isBlank((String)commandBMap.get("commandID")));
         }
+
+    }
+
+    /**
+     * below scenario will be tested:
+     *
+     * 1. try to create below things
+     *  - vendor thing id "someVendorThingIDX", thing type "type1", do onboaridng
+     *  - vendor thing id "someVendorThingIDY", thing type "type1", don't do onboarding
+     *
+     * 2. try to send command to above things
+     *
+     * 3. actually the command will be send to "someVendorThingIDX" only, as "someVendorThingIDY" is not boarded yet so got skipped
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testSendCommandToThingWithoutOnboarding() throws Exception {
+
+        // 1. try to create below things
+        //  - vendor thing id "someVendorThingIDX", thing type "type1", do onboaridng
+        //  - vendor thing id "someVendorThingIDY", thing type "type1", don't do onboarding
+
+        // for the clear after test case completed
+        this.vendorThingIDsForTest = this.combineArray(this.vendorThingIDsForTest, "someVendorThingIDX", "someVendorThingIDY");
+        this.thingTypesForTest = this.combineArray(this.thingTypesForTest, "type1", "type2");
+        this.kiiAppIDForTest = this.combineArray(this.kiiAppIDForTest, kiiAppIDForTest[0], kiiAppIDForTest[1]);
+
+        // create "someVendorThingIDX"
+        Long globalThingIDX = this.createThing("someVendorThingIDX", "type1", kiiAppIDForTest[0]);
+        this.globalThingIDListForTests.add(globalThingIDX);
+
+        Map<String, Object> onboardingInfo = this.getOnboardingInfo("someVendorThingIDX");
+        this.onboarding("someVendorThingIDX", onboardingInfo);
+        System.out.println("thing with global thing id : someVendorThingIDX is onboarded");
+
+        // create "someVendorThingIDY"
+        Long globalThingIDY = this.createThing("someVendorThingIDY", "type1", kiiAppIDForTest[0]);
+        this.globalThingIDListForTests.add(globalThingIDY);
+
+        // 2. try to send command to above things
+        List<HashMap<String, Object>> requestList = new ArrayList<>();
+        HashMap<String, Object> command = new HashMap<>();
+
+        command.put("thingList", new Long[] {globalThingIDX, globalThingIDY});
+        command.put("command", this.createCommand());
+
+        requestList.add(command);
+
+        String ctx= mapper.writeValueAsString(requestList);
+
+        String result=this.mockMvc.perform(
+                post("/thing-if/command").content(ctx)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("UTF-8")
+                        .header(Constants.ACCESS_TOKEN, tokenForTest)
+        )
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        List<List<Map<String, Object>>> list=mapper.readValue(result, List.class);
+
+        System.out.println("========================================================");
+        System.out.println("Response: " + result);
+        System.out.println("========================================================");
+
+        // 3. actually the command will be send to "someVendorThingIDX" only, as "someVendorThingIDY" is not boarded yet so got skipped
+        assertTrue(list.size() == 1);
+
+        // two things in type "type1"
+        List<Map<String, Object>> subList = list.get(0);
+        assertTrue(subList.size() == 1);
+
+        Map<String, Object> map = subList.get(0);
+        Long globalThingID = Long.valueOf((Integer)map.get("globalThingID"));
+        assertEquals(globalThingIDX, globalThingID);
+
 
     }
 

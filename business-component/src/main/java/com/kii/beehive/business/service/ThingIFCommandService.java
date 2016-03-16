@@ -5,11 +5,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.util.Strings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.business.manager.AppInfoManager;
 import com.kii.beehive.business.manager.ThingTagManager;
+import com.kii.beehive.portal.jdbc.dao.BaseDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
 import com.kii.extension.ruleengine.store.trigger.TargetAction;
@@ -21,6 +25,8 @@ import com.kii.extension.sdk.entity.thingif.ThingCommand;
  */
 @Component
 public class ThingIFCommandService {
+
+    private Logger log= LoggerFactory.getLogger(ThingIFCommandService.class);
 
     @Autowired
     private AppInfoManager appInfoManager;
@@ -74,13 +80,15 @@ public class ThingIFCommandService {
 
             // skip empty command
             if(command == null) {
+                log.debug("empty command of thing: " + thing);
                 continue;
             }
 
-//            // skip non target thing type
-//            if(!Strings.isBlank(thingType) && !thingType.equals(thing.getType())) {
-//                continue;
-//            }
+            // skip thing without onboarding
+            if(Strings.isBlank(thing.getFullKiiThingID())) {
+                log.debug("non-boarded thing: " + thing);
+                continue;
+            }
 
             // send command
             String commandID = sendCmd(command, thing, userID);
