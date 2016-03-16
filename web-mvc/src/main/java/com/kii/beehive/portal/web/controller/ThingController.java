@@ -110,6 +110,22 @@ public class ThingController extends AbstractController{
 		List<String> result = thingTagManager.findThingTypeByTagIDs(tagIDList);
 		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
+
+	/**
+	 * 查询指定tag下所有的设备类型
+	 * GET /things/types/fulltagname/{fullTagNames}
+	 *
+	 * refer to doc "Beehive API - Thing API" for request/response details
+	 *
+	 * @return
+	 */
+	@RequestMapping(path = "/types/fulltagname/{fullTagNames}", method = {RequestMethod.GET})
+	public ResponseEntity<List<String>> getThingTypeByTagFullName(@PathVariable("fullTagNames") String fullTagNames) {
+		List<String> fullTagNameList = Arrays.asList(fullTagNames.split(","));
+
+		List<String> result = globalThingDao.findThingTypeByFullTagNames(fullTagNameList);
+		return new ResponseEntity<>(result, HttpStatus.OK);
+	}
 	
 	/**
 	 * 查询设备（globalThingID）

@@ -228,6 +228,38 @@ public class TestThingDao extends TestTemplate{
 		
 		assertTrue(list.size() > 0);
 	}
+
+	@Test
+	public void testfindThingTypeByFullTagNames() {
+		TagIndex tag = createTagRel();
+		TagIndex tag2 = createTagRel();
+
+		List<String> tagCollect = new ArrayList<>();
+		tagCollect.add(tag.getFullTagName());
+		tagCollect.add(tag2.getFullTagName());
+
+		List<String> list = dao.findThingTypeByFullTagNames(tagCollect);
+
+		assertTrue(list.size() == 1);
+		assertTrue("thingType".equals(list.get(0)));
+	}
+
+	@Test
+	public void testfindThingTypeByFullTagNamesWithTeamID() {
+		TagIndex tag = createTagRel();
+		TagIndex tag2 = createTagRel();
+		Long teamID = createTeamRel();
+
+		List<String> tagCollect = new ArrayList<>();
+		tagCollect.add(tag.getFullTagName());
+		tagCollect.add(tag2.getFullTagName());
+
+		AuthInfoStore.setTeamID(teamID);
+		List<String> list = dao.findThingTypeByFullTagNames(tagCollect);
+
+		assertTrue(list.size() == 1);
+		assertTrue("thingType".equals(list.get(0)));
+	}
 	
 	private TagIndex createTagRel(){
 		TagIndex  tag =new TagIndex();

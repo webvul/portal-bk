@@ -1071,4 +1071,74 @@ public class TestThingControll extends WebTestTemplate{
 		return globalThingIDs;
 	}
 
+
+	@Test
+	public void testGetThingTypeByTagNames() throws Exception {
+
+
+		// create thing
+		String[] vendorThingIDs = new String[]{"vendorThingIDForTest1", "vendorThingIDForTest2", "vendorThingIDForTest3"};
+		List<String> types = new ArrayList<>();
+		types.add("type1");
+		types.add("type2");
+		types.add("type3");
+
+		long[] globalThingIDs = new long[3];
+
+		for(int i = 0; i<vendorThingIDs.length;i++) {
+			GlobalThingInfo thingInfo = new GlobalThingInfo();
+			thingInfo.setVendorThingID(vendorThingIDs[i]);
+			thingInfo.setKiiAppID(KII_APP_ID);
+			thingInfo.setType(types.get(i));
+			globalThingIDs[i] = globalThingDao.saveOrUpdate(thingInfo);
+		}
+
+		// create tag
+		String[] displayNames = new String[]{"displayNameForCustom", "displayNameForLocation"};
+
+		TagIndex tagIndex = new TagIndex(TagType.Custom, displayNames[0], null);
+		long tagID1 = tagIndexDao.saveOrUpdate(tagIndex);
+
+		tagIndex = new TagIndex(TagType.Location, displayNames[1], null);
+		long tagID2 = tagIndexDao.saveOrUpdate(tagIndex);
+
+		// create relation
+		TagThingRelation relation = new TagThingRelation();
+		relation.setTagID(tagID1);
+		relation.setThingID(globalThingIDs[0]);
+		tagThingRelationDao.insert(relation);
+
+		relation = new TagThingRelation();
+		relation.setTagID(tagID1);
+		relation.setThingID(globalThingIDs[1]);
+		tagThingRelationDao.insert(relation);
+
+		relation = new TagThingRelation();
+		relation.setTagID(tagID2);
+		relation.setThingID(globalThingIDs[2]);
+		tagThingRelationDao.insert(relation);
+
+		String fullTagName = TagType.Custom.getTagName(displayNames[0]) + "," + TagType.Location.getTagName(displayNames[1]);
+
+		// query
+		String result=this.mockMvc.perform(
+				get("/things/types/fulltagname/"+fullTagName)
+						.contentType(MediaType.APPLICATION_JSON)
+						.characterEncoding("UTF-8")
+						.header(Constants.ACCESS_TOKEN, tokenForTest)
+		)
+				.andExpect(status().isOk())
+				.andReturn().getResponse().getContentAsString();
+
+		List<String> list = mapper.readValue(result, List.class);
+
+		System.out.println("Response: " + list);
+
+		// assert
+		assertEquals(3, list.size());
+
+		assertTrue(list.containsAll(types));
+
+	}
+
 }

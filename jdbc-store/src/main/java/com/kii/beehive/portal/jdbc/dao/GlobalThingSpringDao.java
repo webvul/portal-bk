@@ -197,6 +197,30 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 
 		return rows;
 	}
+
+	/**
+	 * find thing type by tags
+	 *
+	 * @param tagCollect list of full tag name
+	 * @return list of thing type under the tags
+     */
+	public List<String> findThingTypeByFullTagNames(List<String> tagCollect) {
+		StringBuilder sql = new StringBuilder("SELECT DISTINCT "+ GlobalThingInfo.THING_TYPE +" as type FROM " + this.getTableName() +" g ");
+		StringBuilder where = new StringBuilder(" WHERE t.full_tag_name in (:names) ");
+		Map<String,Object> params=new HashMap<>();
+		params.put("names",tagCollect);
+		if(AuthInfoStore.getTeamID() != null){
+			sql.append(" INNER JOIN rel_team_thing rt ON g.id_global_thing=rt.thing_id ");
+			where.append(" AND rt.team_id = :teamid ");
+			params.put("teamid",AuthInfoStore.getTeamID());
+		}
+		sql.append(" INNER JOIN rel_thing_tag r ON g.id_global_thing=r.thing_id ");
+		sql.append(" INNER JOIN tag_index t ON t.tag_id=r.tag_id ");
+		sql.append(where);
+
+		return namedJdbcTemplate.queryForList(sql.toString(),params,String.class);
+
+	}
 	
 	public List<GlobalThingInfo> getThingByType(String type) {
 		StringBuilder sql = new StringBuilder("SELECT g.* from " + this.getTableName() +" g ");
