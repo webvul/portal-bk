@@ -1,0 +1,19 @@
+package com.kii.extension.ruleengine.drools.rule
+
+import com.kii.extension.ruleengine.drools.entity.*;
+
+global CurrThing currThing;
+
+
+rule "${triggerID} summary unit:slide windows ${summaryField}"
+when
+	Trigger(type =="summary",$triggerID:triggerID=="${triggerID}" )
+	$summary:Summary(triggerID==$triggerID ,$things:things, funName=="${funName}-${sum-suffix}" )
+	CurrThing(thing memberOf $things) from currThing
+	accumulate( ThingStatusInRule(thingID memberOf $things , $status:values) over window:${sum-suffix}( ${windowSize});
+                    $sum : ${funName}($status.get($summary.getFieldName()))
+                  )
+then
+	System.out.println("compute  sum summary by slide length"+$sum);
+	insert(new SummaryResult($triggerID,$summary.getSummaryField(),$sum));
+end

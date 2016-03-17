@@ -81,7 +81,10 @@ public class RuleEngineFactory {
 
 		DroolsRuleService droolsService= new DroolsRuleService(true,
 				getDrlContent("triggerComm"),
-				getDrlContent("groupPolicy"));
+				getDrlContent("groupPolicy"),
+				getDrlContent("summaryCompute"),
+				getDrlContent("streamRelation"))
+				;
 
 		droolsService.bindWithInstance("exec",exec);
 

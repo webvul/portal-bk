@@ -4,8 +4,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.kie.api.definition.type.Role;
+import org.kie.api.definition.type.Timestamp;
+
 import com.google.common.base.Objects;
 
+@Role(Role.Type.EVENT)
+@Timestamp("createAt")
 public class ThingStatusInRule {
 	@Override
 	public boolean equals(Object o) {
@@ -25,6 +30,7 @@ public class ThingStatusInRule {
 	private Date createAt;
 
 	private Map<String,Object> values=new HashMap<>();
+
 
 	public Date getCreateAt() {
 		return createAt;

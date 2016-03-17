@@ -1,7 +1,7 @@
 #!/bin/sh
 echo  "[app.info]  [deploy|listSchedule|showLog]  <serviceName>  "
 
-exec_base=./kii-cli/bin
+exec_base=../kii-cli/bin
 
 exec=$exec_base/kii-servercode.js
 

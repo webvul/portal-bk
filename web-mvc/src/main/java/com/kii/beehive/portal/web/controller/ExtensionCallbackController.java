@@ -8,8 +8,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kii.beehive.business.service.ThingStateNotifyCallbackService;
+import com.kii.beehive.business.event.BusinessEventBus;
 import com.kii.beehive.business.manager.ThingTagManager;
+import com.kii.beehive.business.ruleengine.ThingStatusChangeCallback;
+import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.web.constant.CallbackNames;
 import com.kii.beehive.portal.web.entity.CreatedThing;
 import com.kii.beehive.portal.web.entity.StateUpload;
@@ -20,12 +22,15 @@ import com.kii.beehive.portal.web.entity.StateUpload;
 public class ExtensionCallbackController {
 
 
-	@Autowired
-	private ThingStateNotifyCallbackService stateNotifyService;
 
 	@Autowired
 	private ThingTagManager tagManager;
 
+	@Autowired
+	private ThingStatusChangeCallback statusChangeCallback;
+
+	@Autowired
+	private BusinessEventBus eventBus;
 
 
 	@RequestMapping(path= "/" + CallbackNames.STATE_CHANGED,method = { RequestMethod.POST })
@@ -35,9 +40,11 @@ public class ExtensionCallbackController {
 
 		tagManager.updateState(status.getState(),status.getThingID(),appID);
 
+		String fullThingID= ThingIDTools.joinFullKiiThingID(appID,status.getThingID());
 
-		stateNotifyService.onThingStateChange(appID,status.getThingID(), status.getState());
+		statusChangeCallback.onEventFire(status.getState(),fullThingID,status.getTimestamp());
 
+		eventBus.onStatusUploadFire(fullThingID,status.getState(),status.getTimestamp());
 	}
 
 
@@ -46,12 +53,8 @@ public class ExtensionCallbackController {
 								  @RequestHeader("Authorization") String token,
 								  @RequestBody CreatedThing thing){
 
-
-
 		tagManager.updateKiicloudRelation(thing.getVendorThingID(),appID+"-"+thing.getThingID());
 	}
-
-
 
 
 }

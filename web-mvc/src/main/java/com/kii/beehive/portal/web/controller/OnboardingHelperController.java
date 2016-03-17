@@ -14,12 +14,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
-import com.kii.beehive.business.event.ListenerEnvInitService;
-import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.kii.beehive.business.manager.AppInfoManager;
 import com.kii.beehive.business.manager.TagThingManager;
-
+import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.store.entity.CallbackUrlParameter;
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
@@ -56,6 +57,9 @@ public class OnboardingHelperController {
 
 	@Autowired
 	private AppInfoManager appManager;
+
+	@Autowired
+	private ObjectMapper mapper;
 
 
 	/**
@@ -96,6 +100,7 @@ public class OnboardingHelperController {
 		param.setThingCreated(CallbackNames.THING_CREATED);
 
 
+
 		String url=request.getRequestURL().toString();
 		String subUrl=url.substring(0,url.indexOf("/appRegist"))+CallbackNames.CALLBACK_URL;
 		param.setBaseUrl(subUrl);
@@ -118,7 +123,7 @@ public class OnboardingHelperController {
      * @param vendorThingID
      */
     @RequestMapping(path="/onboardinghelper/{vendorThingID}",method={RequestMethod.GET},consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
-    public Map<String,Object> getOnboardingInfo(@PathVariable("vendorThingID") String vendorThingID){
+    public ModelAndView getOnboardingInfo(@PathVariable("vendorThingID") String vendorThingID){
 
         GlobalThingInfo globalThingInfo = tagThingManager.findThingByVendorThingID(vendorThingID);
 
@@ -138,7 +143,12 @@ public class OnboardingHelperController {
 		map.put("ownerID",result.getUserID());
 		map.put("ownerToken",result.getAppAuthToken());
 
-		return map;
+		ModelAndView  model=new ModelAndView();
+		model.addObject(map);
+		model.setViewName("jsonView");
+
+		return model;
+
 
     }
 

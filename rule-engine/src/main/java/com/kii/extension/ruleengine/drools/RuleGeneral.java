@@ -22,6 +22,7 @@ import com.kii.extension.ruleengine.store.trigger.IntervalPrefix;
 import com.kii.extension.ruleengine.store.trigger.MultipleSrcTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.SchedulePrefix;
+import com.kii.extension.ruleengine.store.trigger.SummaryExpress;
 import com.kii.extension.ruleengine.store.trigger.condition.AndLogic;
 import com.kii.extension.ruleengine.store.trigger.condition.Equal;
 import com.kii.extension.ruleengine.store.trigger.condition.ExpressCondition;
@@ -67,16 +68,17 @@ public class RuleGeneral {
 
 	}
 
-	public String generMultipleDrlConfig(MultipleSrcTriggerRecord  record){
+	//TODO:not finish
+	public String generMultipleDrlConfig(MultipleSrcTriggerRecord  record) {
 
-		String unitTemplate=loadTemplate("unitCondition");
+		String unitTemplate = loadTemplate("unitCondition");
 
-		String fullTemplate=loadTemplate("multiple");
+		String fullTemplate = loadTemplate("multiple");
 
-		Map<String,Object> params=new HashMap<>();
-		params.put("triggerID",record.getId());
+		Map<String, Object> params = new HashMap<>();
+		params.put("triggerID", record.getId());
 
-		record.getSummarySource().forEach((k,v)->{
+		record.getSummarySource().forEach((k, v) -> {
 
 			/*
 			rule "${triggerID} unit {$unitName} custom segment:unit"
@@ -88,21 +90,55 @@ then
 	insertLogical(new UnitResult($triggerID,$unitName));
 end
 			 */
-			Condition cond=v.getCondition();
-			if(!StringUtils.isEmpty(v.getExpress())){
-				params.put("express",replace.convertExpress(v.getExpress()));
-			}else if(v.getCondition()!=null){
-				params.put("express",generExpress(cond));
-			}else{
-				params.put("express"," eval(true) ");
+			Condition cond = v.getCondition();
+			if (!StringUtils.isEmpty(v.getExpress())) {
+				params.put("express", replace.convertExpress(v.getExpress()));
+			} else if (v.getCondition() != null) {
+				params.put("express", generExpress(cond));
+			} else {
+				params.put("express", " eval(true) ");
 			}
-
 
 
 		});
 
+		return null;
+
+	}
 
 
+	public String generSlideConfig(String triggerID,String summaryField,SummaryExpress express){
+
+		String template=loadTemplate("slideSummary");
+
+		Map<String,String> params=new HashMap<>();
+
+/*
+rule "${triggerID} summary unit:slide windows"
+when
+	Trigger(type =="summary",$triggerID:triggerID=="${triggerID}" )
+	$summary:Summary(triggerID==$triggerID ,$things:things, funName=="${slide-fun-name}" )
+	CurrThing(thing memberOf $things) from currThing
+	accumulate( ThingStatusInRule(thingID memberOf $things , $status:values) over window:${sum-suffix}( ${windowSize});
+                    $sum : ${funName}($status.get($summary.getFieldName()))
+                  )
+then
+	System.out.println("compute  sum summary by slide length"+$sum);
+	insert(new SummaryResult($triggerID,$summary.getSummaryField(),$sum));
+end
+ */
+		params.put("triggerID",triggerID);
+		params.put("funName",express.getFunction().name());
+		params.put("sum-suffix",express.getSlideFuntion().getType().name());
+		params.put("slide-fun-name",express.getFullSlideFunName());
+		params.put("windowSize",express.getSlideFuntion().getWindowDefine());
+		params.put("summaryField",summaryField);
+
+		String fullDrl= StrTemplate.generByMap(template,params);
+
+		log.info("slide drl\n"+fullDrl);
+
+		return fullDrl;
 	}
 
 	public String generDrlConfig(String triggerID, TriggerType type, RuleEnginePredicate predicate){

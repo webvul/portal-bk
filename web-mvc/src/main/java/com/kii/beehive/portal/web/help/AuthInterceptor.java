@@ -126,6 +126,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 //				authManager.saveToken(USER_ID, token);
 
 				AuthInfoStore.setAuthInfo(USER_ID);
+				AuthInfoStore.setTeamID(null);
 				list.set(1,USER_ID);
 				logTool.write(list);
 

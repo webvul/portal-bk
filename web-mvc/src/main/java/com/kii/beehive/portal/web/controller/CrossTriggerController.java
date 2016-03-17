@@ -15,10 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.business.ruleengine.TriggerManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
-import com.kii.beehive.portal.web.exception.BeehiveUnAuthorizedException;
-import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 
 @RestController
@@ -42,17 +38,7 @@ public class CrossTriggerController {
 
 		String triggerID = null;
 
-		switch(record.getType()){
-			case Simple:
-				triggerID = mang.createSimpleTrigger((SimpleTriggerRecord)record);
-				break;
-			case Group:
-				triggerID = mang.createGroupTrigger((GroupTriggerRecord)record);
-				break;
-			case Summary:
-				triggerID = mang.createSummaryTrigger((SummaryTriggerRecord)record);
-				break;
-		}
+		triggerID=mang.createTrigger(record);
 
 		Map<String, Object> result = new HashMap<>();
 		result.put("triggerID", triggerID);
@@ -85,11 +71,12 @@ public class CrossTriggerController {
 	}
 
 	private void verify(TriggerRecord record) {
-		if(!record.getUserID().equals(AuthInfoStore.getUserID())
-				&&!AuthInfoStore.isAmin()){
-
-			throw new BeehiveUnAuthorizedException("only owner can operate trigger");
-		}
+//		if(!record.getUserID().equals(AuthInfoStore.getUserID())
+//				||!AuthInfoStore.isAmin()){
+//
+//			throw new BeehiveUnAuthorizedException("only owner can operate trigger");
+//		}
+		return;
 	}
 
 	@RequestMapping(path="/{triggerID}/enable",method = { RequestMethod.PUT })

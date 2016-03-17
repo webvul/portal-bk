@@ -2,6 +2,7 @@ package com.kii.extension.ruleengine.drools;
 
 import javax.annotation.PostConstruct;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -101,6 +102,18 @@ public class DroolsTriggerService {
 
 	}
 
+	public void addSummary(Summary summary,String drl) {
+
+		Trigger trigger=triggerMap.get(summary.getTriggerID());
+
+		getService(trigger).addOrUpdateData(summary);
+
+		getService(trigger).addCondition("slide-rule"+summary.getTriggerID()+summary.getSummaryField(),drl);
+
+		summaryMap.computeIfAbsent(trigger.getTriggerID(),(id)->new HashMap<>()).put(summary.getSummaryField(),summary);
+
+	}
+
 	public void updateThingsInTrigger(String triggerID, Set<String> newThings) {
 
 		Trigger trigger=triggerMap.get(triggerID);
@@ -157,6 +170,21 @@ public class DroolsTriggerService {
 		ThingStatusInRule newStatus=new ThingStatusInRule();
 		newStatus.setThingID(fullThingID);
 		newStatus.setValues(status.getFields());
+
+		curr.setThing(fullThingID);
+
+		cloudService.addOrUpdateData(newStatus);
+		streamService.addOrUpdateData(newStatus);
+
+		fireCondition();
+	}
+
+	public void addThingStatus(String fullThingID,ThingStatus status,Date date){
+
+		ThingStatusInRule newStatus=new ThingStatusInRule();
+		newStatus.setThingID(fullThingID);
+		newStatus.setValues(status.getFields());
+		newStatus.setCreateAt(date);
 
 		curr.setThing(fullThingID);
 

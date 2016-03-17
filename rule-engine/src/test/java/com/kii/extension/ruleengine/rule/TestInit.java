@@ -1,5 +1,7 @@
 package com.kii.extension.ruleengine.rule;
 
+import java.util.Date;
+
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -61,7 +63,7 @@ public class TestInit {
 
 	private void sendThingStatus(String id, ThingStatus status){
 
-		engine.updateThingStatus(id,status);
+		engine.updateThingStatus(id,status,new Date());
 
 	}
 
