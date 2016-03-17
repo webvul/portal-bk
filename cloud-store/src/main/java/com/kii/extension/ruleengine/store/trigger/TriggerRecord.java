@@ -19,6 +19,7 @@ import com.kii.extension.sdk.entity.KiiEntity;
 		@JsonSubTypes.Type(value = SimpleTriggerRecord.class,name="Simple"),
 		@JsonSubTypes.Type(value = GroupTriggerRecord.class,name="Group"),
 		@JsonSubTypes.Type(value = SummaryTriggerRecord.class,name="Summary"),
+		@JsonSubTypes.Type(value=MultipleSrcTriggerRecord.class,name="Multiple")
 })
 public abstract  class TriggerRecord extends KiiEntity {
 

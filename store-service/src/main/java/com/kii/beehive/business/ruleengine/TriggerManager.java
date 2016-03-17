@@ -1,5 +1,7 @@
 package com.kii.beehive.business.ruleengine;
 
+import javax.annotation.PostConstruct;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -50,13 +52,29 @@ public class TriggerManager {
 
 
 
-//	@PostConstruct
+	@PostConstruct
 	public void init(){
 
 
 		List<TriggerRecord> recordList=triggerDao.getAllEnableTrigger();
 
-		recordList.forEach(t->createTrigger(t));
+		recordList.forEach(record->{
+
+			if(record instanceof SimpleTriggerRecord){
+				addSimpleToEngine((SimpleTriggerRecord)record);
+			}else if(record instanceof GroupTriggerRecord){
+				GroupTriggerRecord groupRecord=((GroupTriggerRecord)record);
+				addGroupToEngine(groupRecord);
+
+			}else if(record instanceof  SummaryTriggerRecord){
+				SummaryTriggerRecord  summaryRecord=(SummaryTriggerRecord)record;
+				addSummaryToEngine(summaryRecord);
+
+			}else{
+				throw new IllegalArgumentException("unsupport trigger type");
+			}
+
+		});
 
 		thingTagService.iteratorAllThingsStatus( s->{
 
@@ -80,74 +98,64 @@ public class TriggerManager {
 
 		record.setRecordStatus(TriggerRecord.StatusType.enable);
 
+		String triggerID=triggerDao.addEntity(record).getObjectID();
+
+		record.setId(triggerID);
+
 		if(record instanceof SimpleTriggerRecord){
-			return createSimpleTrigger((SimpleTriggerRecord)record);
+			addSimpleToEngine((SimpleTriggerRecord)record);
 		}else if(record instanceof GroupTriggerRecord){
-			return createGroupTrigger((GroupTriggerRecord)record);
+			GroupTriggerRecord groupRecord=((GroupTriggerRecord)record);
+			if(!groupRecord.getSource().getSelector().getTagList().isEmpty()) {
+
+				eventService.addGroupTagChangeListener(groupRecord.getSource().getSelector().getTagList(), triggerID);
+			}
+			addGroupToEngine(groupRecord);
+
 		}else if(record instanceof  SummaryTriggerRecord){
-			return createSummaryTrigger((SummaryTriggerRecord)record);
+			SummaryTriggerRecord  summaryRecord=(SummaryTriggerRecord)record;
+
+			summaryRecord.getSummarySource().forEach((k,v)->{
+				eventService.addSummaryTagChangeListener(v.getSource().getSelector().getTagList(),triggerID,k);
+			});
+
+			addSummaryToEngine(summaryRecord);
+
 		}else{
 			throw new IllegalArgumentException("unsupport trigger type");
 		}
 
+		eventService.addBeehiveTriggerChangeListener(triggerID);
+
+		return triggerID;
+
 	}
 
 
-//
-	public String createSimpleTrigger(SimpleTriggerRecord record){
 
-
-
-		String triggerID=triggerDao.addEntity(record).getObjectID();
-
+	private void addSimpleToEngine(SimpleTriggerRecord record) {
+		String triggerID=record.getId();
 		String thingID=null;
 		if(record.getSource()!=null) {
 			thingID = thingTagService.getThingByID(record.getSource().getThingID()).getFullKiiThingID();
 		}
 		service.createSimpleTrigger(thingID,triggerID,record.getPredicate());
-
-		eventService.addBeehiveTriggerChangeListener(triggerID);
-
-		return triggerID;
-
 	}
 
-	public String createGroupTrigger(GroupTriggerRecord record){
 
+	private void addGroupToEngine(GroupTriggerRecord record) {
 
-		String triggerID=triggerDao.addEntity(record).getObjectID();
+		Set<String> thingIDs;
+		if(!record.getSource().getSelector().getThingList().isEmpty()) {
 
-
-		if(!record.getSource().getSelector().getThingList().isEmpty()){
-
-			Set<String> thingIDs=thingTagService.getTagNamesByIDs(record.getSource().getSelector().getThingList());
-
-			service.createGroupTrigger(thingIDs,record.getPolicy(),triggerID,record.getPredicate());
-
-			eventService.addBeehiveTriggerChangeListener(triggerID);
-			return triggerID;
-
+			thingIDs = thingTagService.getTagNamesByIDs(record.getSource().getSelector().getThingList());
+		}else {
+			thingIDs = thingTagService.getKiiThingIDs(record.getSource().getSelector());
 		}
-
-
-		Set<String> thingIDs=thingTagService.getKiiThingIDs(record.getSource().getSelector());
-
-		service.createGroupTrigger(thingIDs,record.getPolicy(),triggerID,record.getPredicate());
-
-		eventService.addGroupTagChangeListener(record.getSource().getSelector().getTagList(),triggerID);
-
-		eventService.addBeehiveTriggerChangeListener(triggerID);
-		return triggerID;
-
-
-
+		service.createGroupTrigger(thingIDs,record.getPolicy(),record.getId(),record.getPredicate());
 	}
 
-	public String createSummaryTrigger(SummaryTriggerRecord record){
-
-
-		String triggerID=triggerDao.addEntity(record).getObjectID();
-
+	private void addSummaryToEngine(SummaryTriggerRecord record) {
 		Map<String,Set<String>> thingMap=new HashMap<>();
 
 		final AtomicBoolean isStream=new AtomicBoolean(false);
@@ -162,15 +170,6 @@ public class TriggerManager {
 		});
 
 		service.createSummaryTrigger(record,thingMap,isStream.get());
-
-		record.getSummarySource().forEach((k,v)->{
-			eventService.addSummaryTagChangeListener(v.getSource().getSelector().getTagList(),triggerID,k);
-		});
-
-		eventService.addBeehiveTriggerChangeListener(triggerID);
-
-		return triggerID;
-
 	}
 
 	public void disableTrigger(String triggerID){
