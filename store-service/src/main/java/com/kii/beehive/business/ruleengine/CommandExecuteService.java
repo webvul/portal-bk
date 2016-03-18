@@ -62,7 +62,7 @@ public class CommandExecuteService {
 
 	public void doCommand(String triggerID){
 
-		TriggerRecord record=triggerDao.getTriggerRecord(triggerID);
+		TriggerRecord record=triggerDao.getEnableTriggerRecord(triggerID);
 
 		if(record==null){
 			return;
