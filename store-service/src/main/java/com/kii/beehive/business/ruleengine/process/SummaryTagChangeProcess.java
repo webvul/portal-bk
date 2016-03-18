@@ -38,7 +38,7 @@ public class SummaryTagChangeProcess implements TagChangeProcess {
 
 		String triggerID=listener.getTargetKey();
 
-		SummaryTriggerRecord record = (SummaryTriggerRecord) triggerDao.getTriggerRecord(triggerID);
+		SummaryTriggerRecord record = (SummaryTriggerRecord) triggerDao.getEnableTriggerRecord(triggerID);
 
 
 		SummarySource summary=record.getSummarySource().get(groupID);

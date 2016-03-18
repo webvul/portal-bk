@@ -28,7 +28,7 @@ public class RuleFireProcess implements TriggerFireProcess {
 	public void onEventFire(EventListener listener, String triggerID) {
 
 
-		TriggerRecord trigger=triggerRecordDao.getTriggerRecord(triggerID);
+		TriggerRecord trigger=triggerRecordDao.getEnableTriggerRecord(triggerID);
 
 		if(trigger==null){
 
