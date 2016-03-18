@@ -101,6 +101,9 @@ public class TriggerRecordDao extends AbstractDataAccess<TriggerRecord> {
 		QueryParam query= ConditionBuilder.newCondition().equal("recordStatus", TriggerRecord.StatusType.enable).getFinalQueryParam();
 
 		List<TriggerRecord> list=super.query(query);
+		while(query.getPaginationKey() != null ) {
+			list.addAll(super.query(query));
+		}
 
 		return list;
 	}
