@@ -143,4 +143,10 @@ public class CrossTriggerController {
 
 	}
 
+	@RequestMapping(path="/triggerList/{thingId}",method={RequestMethod.GET})
+	public List<SimpleTriggerRecord> getTriggerListByThingIdAndUserId(@PathVariable("thingId") String thingId){
+		String currentUserId = AuthInfoStore.getUserID();
+		return mang.getTriggerListByUserIdAndThingId(currentUserId,thingId);
+	}
+
 }
