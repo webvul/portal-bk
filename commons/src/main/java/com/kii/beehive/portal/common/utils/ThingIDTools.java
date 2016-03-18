@@ -4,7 +4,7 @@ import org.springframework.util.StringUtils;
 
 public class ThingIDTools {
 
-	public static final String  joinFullKiiThingID(String kiiThingID,String kiiAppID) {
+	public static final String  joinFullKiiThingID(String kiiAppID,String kiiThingID) {
 		return kiiAppID + "-" + kiiThingID;
 	}
 
