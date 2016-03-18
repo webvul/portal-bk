@@ -42,6 +42,19 @@ public class TriggerRecordDao extends AbstractDataAccess<TriggerRecord> {
 
 	}
 
+	public TriggerRecord getEnableTriggerRecord(String id){
+
+		QueryParam query= ConditionBuilder.andCondition().equal("_id",id).equal("recordStatus", TriggerRecord.StatusType.enable).getFinalQueryParam();
+
+		List<TriggerRecord> list=super.query(query);
+
+		if(list.isEmpty()){
+			return null;
+		}
+		return list.get(0);
+
+	}
+
 	public List<TriggerRecord> getTriggerListByUserId(String userId){
 
 		QueryParam query= ConditionBuilder.andCondition().equal("userID",userId).getFinalQueryParam();
@@ -88,6 +101,9 @@ public class TriggerRecordDao extends AbstractDataAccess<TriggerRecord> {
 		QueryParam query= ConditionBuilder.newCondition().equal("recordStatus", TriggerRecord.StatusType.enable).getFinalQueryParam();
 
 		List<TriggerRecord> list=super.query(query);
+		while(query.getPaginationKey() != null ) {
+			list.addAll(super.query(query));
+		}
 
 		return list;
 	}
