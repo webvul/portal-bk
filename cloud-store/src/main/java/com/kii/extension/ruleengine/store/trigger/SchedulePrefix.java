@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 		property = "type")
 @JsonSubTypes({
 		@JsonSubTypes.Type(value = IntervalPrefix.class,name="Interval"),
-		@JsonSubTypes.Type(value = SchedulePrefix.class,name="Cron"),
+		@JsonSubTypes.Type(value = CronPrefix.class,name="Cron"),
 })
 public interface SchedulePrefix {
 
