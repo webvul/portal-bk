@@ -38,7 +38,7 @@ public class GroupTriggerProcess implements TagChangeProcess {
 
 		String listenerID=listener.getId();
 
-		GroupTriggerRecord trigger= (GroupTriggerRecord) triggerRecordDao.getTriggerRecord(listener.getTargetKey());
+		GroupTriggerRecord trigger= (GroupTriggerRecord) triggerRecordDao.getEnableTriggerRecord(listener.getTargetKey());
 
 		if(trigger==null){
 			listenerService.disableTrigger(listenerID);
