@@ -185,6 +185,12 @@ public class TriggerManager {
 		eventService.enableTriggerByTargetID(triggerID);
 	}
 
+	public List<TriggerRecord> getTriggerListByUserId(String userId){
+		List<TriggerRecord> triggerList= triggerDao.getTriggerListByUserId(userId);
+
+		return triggerList;
+	}
+
 	public TriggerRecord  getTriggerByID(String triggerID){
 
 		TriggerRecord record= triggerDao.getTriggerRecord(triggerID);
