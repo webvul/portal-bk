@@ -3,6 +3,7 @@ package com.kii.extension.ruleengine.service;
 import java.util.Collections;
 import java.util.List;
 
+import org.springframework.scheduling.Trigger;
 import org.springframework.stereotype.Component;
 
 import com.kii.extension.sdk.service.AbstractDataAccess;
@@ -30,7 +31,7 @@ public class TriggerRecordDao extends AbstractDataAccess<TriggerRecord> {
 
 	public TriggerRecord getTriggerRecord(String id){
 
-		QueryParam query= ConditionBuilder.andCondition().equal("_id",id).equal("recordStatus", TriggerRecord.StatusType.enable).getFinalQueryParam();
+		QueryParam query= ConditionBuilder.andCondition().equal("_id",id).getFinalQueryParam();
 
 		List<TriggerRecord> list=super.query(query);
 
@@ -41,7 +42,18 @@ public class TriggerRecordDao extends AbstractDataAccess<TriggerRecord> {
 
 	}
 
+	public List<TriggerRecord> getTriggerListByUserId(String userId){
 
+		QueryParam query= ConditionBuilder.andCondition().equal("userID",userId).getFinalQueryParam();
+
+		List<TriggerRecord> list=super.query(query);
+
+		if(list.isEmpty()){
+			return null;
+		}
+		return list;
+
+	}
 
 	public void deleteTriggerRecord(String id){
 
@@ -50,7 +62,7 @@ public class TriggerRecordDao extends AbstractDataAccess<TriggerRecord> {
 	}
 
 
-	
+
 	public void enableTrigger(String triggerID) {
 
 		super.updateEntity(Collections.singletonMap("recordStatus", TriggerRecord.StatusType.enable), triggerID);
@@ -58,10 +70,10 @@ public class TriggerRecordDao extends AbstractDataAccess<TriggerRecord> {
 	}
 
 	public void disableTrigger(String triggerID) {
-			super.updateEntity(Collections.singletonMap("recordStatus", TriggerRecord.StatusType.disable), triggerID);
+		super.updateEntity(Collections.singletonMap("recordStatus", TriggerRecord.StatusType.disable), triggerID);
 
 	}
-	
+
 	public List<TriggerRecord> getAllTrigger() {
 
 		QueryParam query= ConditionBuilder.orCondition().equal("recordStatus",TriggerRecord.StatusType.disable).equal("recordStatus", TriggerRecord.StatusType.enable).getFinalQueryParam();
