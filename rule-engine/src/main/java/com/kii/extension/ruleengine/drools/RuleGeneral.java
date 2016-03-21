@@ -19,6 +19,7 @@ import com.kii.extension.ruleengine.drools.entity.TriggerType;
 import com.kii.extension.ruleengine.store.trigger.Condition;
 import com.kii.extension.ruleengine.store.trigger.CronPrefix;
 import com.kii.extension.ruleengine.store.trigger.IntervalPrefix;
+import com.kii.extension.ruleengine.store.trigger.MultipleSrcTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.SchedulePrefix;
 import com.kii.extension.ruleengine.store.trigger.SummaryExpress;
@@ -53,6 +54,8 @@ public class RuleGeneral {
 	}
 
 
+
+
 	private String generScheduleDrl(SchedulePrefix schedule, String triggerID){
 
 		String template=loadTemplate("schedule");
@@ -64,6 +67,45 @@ public class RuleGeneral {
 		return StrTemplate.generByMap(template,params);
 
 	}
+
+	//TODO:not finish
+	public String generMultipleDrlConfig(MultipleSrcTriggerRecord  record) {
+
+		String unitTemplate = loadTemplate("unitCondition");
+
+		String fullTemplate = loadTemplate("multiple");
+
+		Map<String, Object> params = new HashMap<>();
+		params.put("triggerID", record.getId());
+
+		record.getSummarySource().forEach((k, v) -> {
+
+			/*
+			rule "${triggerID} unit {$unitName} custom segment:unit"
+when
+    UnitSource ( $unitName:unitName=="${unitName}", $triggerID:triggerID=="${triggerID}",$thingID:thingID  )
+    CurrThing(thing==$thingID ) from currThing
+    ThingStatusInRule( thingID == $thingID,${express}  )
+then
+	insertLogical(new UnitResult($triggerID,$unitName));
+end
+			 */
+			Condition cond = v.getCondition();
+			if (!StringUtils.isEmpty(v.getExpress())) {
+				params.put("express", replace.convertExpress(v.getExpress()));
+			} else if (v.getCondition() != null) {
+				params.put("express", generExpress(cond));
+			} else {
+				params.put("express", " eval(true) ");
+			}
+
+
+		});
+
+		return null;
+
+	}
+
 
 	public String generSlideConfig(String triggerID,String summaryField,SummaryExpress express){
 
@@ -144,7 +186,7 @@ end
 			Map<String,String> params=new HashMap<>();
 
 			if(!StringUtils.isEmpty(predicate.getExpress())) {
-				params.put("express",predicate.getExpress());
+				params.put("express",replace.convertExpress(predicate.getExpress()));
 				params.put("timer",generTimer(predicate.getSchedule()));
 
 			}else if(predicate.getCondition()!=null){

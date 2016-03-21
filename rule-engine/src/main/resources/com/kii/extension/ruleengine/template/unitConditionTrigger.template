@@ -1,0 +1,8 @@
+rule "${triggerID} unit {$unitName} custom segment:unit"
+when
+    UnitSource ( $unitName:unitName=="${unitName}", $triggerID:triggerID=="${triggerID}",$thingID:thingID  )
+    CurrThing(thing==$thingID ) from currThing
+    ThingStatusInRule( thingID == $thingID,${express}  )
+then
+	insertLogical(new UnitResult($triggerID,$unitName));
+end

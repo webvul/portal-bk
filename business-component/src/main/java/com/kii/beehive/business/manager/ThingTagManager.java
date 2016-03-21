@@ -47,7 +47,7 @@ public class ThingTagManager {
 
 	public void updateState(ThingStatus status,String thingID, String appID){
 
-		String fullThingID= ThingIDTools.joinFullKiiThingID(thingID,appID);
+		String fullThingID= ThingIDTools.joinFullKiiThingID(appID, thingID);
 
 		try {
 			String stateJson = mapper.writeValueAsString(status);
