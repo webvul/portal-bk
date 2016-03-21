@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.business.ruleengine.TriggerManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 
 @RestController
@@ -128,6 +129,12 @@ public class CrossTriggerController {
 		return mang.getTriggerListByUserId(currentUserId);
 //		return null;
 
+	}
+
+	@RequestMapping(path="/triggerList/{thingId}",method={RequestMethod.GET})
+	public List<SimpleTriggerRecord> getTriggerListByThingIdAndUserId(@PathVariable("thingId") String thingId){
+		String currentUserId = AuthInfoStore.getUserID();
+		return mang.getTriggerListByUserIdAndThingId(currentUserId,thingId);
 	}
 
 }

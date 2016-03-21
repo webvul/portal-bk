@@ -3,6 +3,7 @@ package com.kii.beehive.business.ruleengine;
 import javax.annotation.PostConstruct;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -193,6 +194,26 @@ public class TriggerManager {
 		List<TriggerRecord> triggerList= triggerDao.getTriggerListByUserId(userId);
 
 		return triggerList;
+	}
+
+	public List<SimpleTriggerRecord> getTriggerListByUserIdAndThingId(String userId,String thingId){
+		List<SimpleTriggerRecord> resultTriggerList = new ArrayList<SimpleTriggerRecord>();
+		List<TriggerRecord> triggerList= triggerDao.getTriggerListByUserId(userId);
+		for(TriggerRecord trigger : triggerList){
+			if(trigger instanceof SimpleTriggerRecord){
+				SimpleTriggerRecord simpleTriggerRecord = (SimpleTriggerRecord)trigger;
+
+				if(simpleTriggerRecord.getSource()==null ){
+					continue;
+				}
+				String currThingId = simpleTriggerRecord.getSource().getThingID()+"";
+				if(thingId.equals(currThingId)){
+					resultTriggerList.add(simpleTriggerRecord);
+				}
+			}
+		}
+
+		return resultTriggerList;
 	}
 
 	public TriggerRecord  getTriggerByID(String triggerID){
