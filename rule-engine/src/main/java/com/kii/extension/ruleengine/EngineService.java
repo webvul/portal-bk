@@ -15,6 +15,7 @@ import com.kii.extension.ruleengine.drools.RuleGeneral;
 import com.kii.extension.ruleengine.drools.entity.Summary;
 import com.kii.extension.ruleengine.drools.entity.Trigger;
 import com.kii.extension.ruleengine.drools.entity.TriggerType;
+import com.kii.extension.ruleengine.store.trigger.MultipleSrcTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerGroupPolicy;
@@ -29,6 +30,22 @@ public class EngineService {
 
 	@Autowired
 	private RuleGeneral  ruleGeneral;
+
+
+	//TODO:need been finish
+	public void createMultipleSourceTrigger(MultipleSrcTriggerRecord record){
+
+
+		Trigger trigger=new Trigger();
+		trigger.setType(TriggerType.multiple);
+		trigger.setTriggerID(record.getId());
+		trigger.setStream(false);
+
+
+
+
+
+	}
 
 	public void createSummaryTrigger(SummaryTriggerRecord record, Map<String,Set<String> > summaryMap,boolean isStream){
 

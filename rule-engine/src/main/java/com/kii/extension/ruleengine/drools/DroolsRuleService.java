@@ -112,7 +112,13 @@ public class DroolsRuleService {
 		KieBuilder kb=ks.newKieBuilder(kfs);
 		kb.buildAll();
 
-		kieContainer.updateToVersion(kb.getKieModule().getReleaseId());
+		//临时增加, 如果规则文件有错误,则删除 避免rule engine 异常崩溃
+		try {
+			kieContainer.updateToVersion(kb.getKieModule().getReleaseId());
+		} catch (Exception e) {
+			e.printStackTrace();
+			this.removeCondition(name);
+		}
 
 		getSession().getObjects().forEach((obj)->{
 

@@ -3,7 +3,10 @@ package com.kii.extension.ruleengine.store.trigger;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 import com.kii.beehive.portal.store.entity.CustomProperty;
 import com.kii.extension.sdk.entity.KiiEntity;
@@ -16,10 +19,10 @@ import com.kii.extension.sdk.entity.KiiEntity;
 		@JsonSubTypes.Type(value = SimpleTriggerRecord.class,name="Simple"),
 		@JsonSubTypes.Type(value = GroupTriggerRecord.class,name="Group"),
 		@JsonSubTypes.Type(value = SummaryTriggerRecord.class,name="Summary"),
+		@JsonSubTypes.Type(value=MultipleSrcTriggerRecord.class,name="Multiple")
 })
 public abstract  class TriggerRecord extends KiiEntity {
 
-//	private String id;
 	private String triggerName;
 
 	private CustomProperty  custom;

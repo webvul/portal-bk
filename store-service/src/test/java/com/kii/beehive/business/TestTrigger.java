@@ -9,8 +9,8 @@ import java.util.Date;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.kii.beehive.business.ruleengine.ThingStatusChangeCallback;
 import com.kii.beehive.business.ruleengine.TriggerManager;
-import com.kii.beehive.business.service.ThingStateNotifyCallbackService;
 import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.extension.ruleengine.TriggerConditionBuilder;
@@ -33,7 +33,7 @@ public class TestTrigger extends com.kii.beehive.portal.store.TestInit {
 
 
 	@Autowired
-	private ThingStateNotifyCallbackService stateNotifyService;
+	private ThingStatusChangeCallback stateNotifyService;
 
 	public void sendGoodThingStatus(String id){
 		ThingStatus status=new ThingStatus();
@@ -48,7 +48,7 @@ public class TestTrigger extends com.kii.beehive.portal.store.TestInit {
 
 		ThingIDTools.ThingIDCombine combine=ThingIDTools.splitFullKiiThingID(id);
 
-		stateNotifyService.onThingStateChange(combine.kiiAppID,combine.kiiThingID,status,new Date());
+		stateNotifyService.onEventFire(status,id,new Date());
 
 	}
 	

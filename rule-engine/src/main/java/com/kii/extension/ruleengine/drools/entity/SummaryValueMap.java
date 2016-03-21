@@ -27,6 +27,8 @@ public class SummaryValueMap {
 		this.numberMap = numberMap;
 	}
 
+
+
 	public String getTriggerID() {
 		return triggerID;
 	}

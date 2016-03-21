@@ -53,7 +53,7 @@ public class TestThingDao extends TestTemplate{
 		thing.setType("thingType");
 		thing.setStatus("this is a test about long text,we don't know the final required,so....");
 
-		String fullKiiThingID= ThingIDTools.joinFullKiiThingID("abcdefghijk","appID");
+		String fullKiiThingID= ThingIDTools.joinFullKiiThingID("appID", "abcdefghijk");
 		thing.setFullKiiThingID(fullKiiThingID);
 		long id=dao.saveOrUpdate(thing);
 		thing.setId(id);
