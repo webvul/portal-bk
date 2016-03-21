@@ -1,137 +1,141 @@
 package com.kii.beehive.portal.web.controller;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.kii.beehive.business.manager.TagThingManager;
+import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
+import com.kii.beehive.portal.jdbc.dao.TagUserRelationDao;
+import com.kii.beehive.portal.jdbc.dao.TeamTagRelationDao;
+import com.kii.beehive.portal.jdbc.entity.*;
+import com.kii.beehive.portal.web.constant.ErrorCode;
+import com.kii.beehive.portal.web.exception.BeehiveUnAuthorizedException;
+import com.kii.beehive.portal.web.exception.PortalException;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.kii.beehive.business.manager.TagThingManager;
-import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
-import com.kii.beehive.portal.jdbc.dao.TeamTagRelationDao;
-import com.kii.beehive.portal.jdbc.entity.TagIndex;
-import com.kii.beehive.portal.jdbc.entity.TagType;
-import com.kii.beehive.portal.jdbc.entity.TeamTagRelation;
-import com.kii.beehive.portal.web.constant.ErrorCode;
-import com.kii.beehive.portal.web.exception.PortalException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Beehive API - Thing API
- *
+ * <p>
  * refer to doc "Beehive API - Tech Design" section "Thing API" for details
  */
 @RestController
-@RequestMapping(path = "/tags", consumes = { MediaType.APPLICATION_JSON_UTF8_VALUE }, produces = {
-		MediaType.APPLICATION_JSON_UTF8_VALUE })
-public class TagController  extends AbstractController{
+@RequestMapping(path = "/tags", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {
+        MediaType.APPLICATION_JSON_UTF8_VALUE})
+public class TagController extends AbstractController {
 
-	@Autowired
-	private TagIndexDao tagIndexDao;
-	
-	@Autowired
-	private TeamTagRelationDao teamTagRelationDao;
+    @Autowired
+    private TagIndexDao tagIndexDao;
 
-	@Autowired
-	private TagThingManager thingTagManager;
+    @Autowired
+    private TeamTagRelationDao teamTagRelationDao;
 
-	/**
-	 * 创建tag
-	 * POST /tags/custom
-	 *
-	 * refer to doc "Beehive API - Thing API" for request/response details refer
-	 * to doc "Tech Design - Beehive API", section
-	 * "Create/Update Tag (创建/更新tag)" for more details
-	 *
-	 */
-	@RequestMapping(path = "/custom", method = { RequestMethod.POST })
-	public Map<String, Object> createTag(@RequestBody TagIndex tag) {
+    @Autowired
+    private TagThingManager thingTagManager;
 
-		String displayName = tag.getDisplayName();
-		if (Strings.isBlank(displayName)) {
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "DisplayName is empty",
-					HttpStatus.BAD_REQUEST);
-		}
+    @Autowired
+    private TagUserRelationDao tagUserRelationDao;
 
-		tag.setTagType(TagType.Custom);
-		List<TagIndex> tagList = tagIndexDao.findTagByTagTypeAndName(tag.getTagType().name(), tag.getDisplayName());
-		if(tagList.size() > 0){//update
-			TagIndex old = tagList.get(0);
-			old.setDescription(tag.getDescription());
-			tag = old;
-		}
-		tag.setFullTagName(TagType.Custom.getTagName(displayName));
-		long tagID = tagIndexDao.saveOrUpdate(tag);
-		
-		if(isTeamIDExist()){
-			teamTagRelationDao.saveOrUpdate(new TeamTagRelation(getLoginTeamID(), tagID));
-    	}
-		
-		Map<String, Object> map = new HashMap<>();
-		map.put("id", tagID);
-		map.put("tagName", TagType.Custom.getTagName(tag.getDisplayName()));
-		return map;
-	}
+    /**
+     * 创建tag
+     * POST /tags/custom
+     * <p>
+     * refer to doc "Beehive API - Thing API" for request/response details refer
+     * to doc "Tech Design - Beehive API", section
+     * "Create/Update Tag (创建/更新tag)" for more details
+     */
+    @RequestMapping(path = "/custom", method = {RequestMethod.POST})
+    public Map<String, Object> createTag(@RequestBody TagIndex tag) {
 
-	/**
-	 * 移除tag
-	 * DELETE /tags/custom/{displayName}
-	 *
-	 * refer to doc "Beehive API - Thing API" for request/response details refer
-	 * to doc "Tech Design - Beehive API", section "Delete Tag (移除tag)" for more
-	 * details
-	 *
-	 */
-	@RequestMapping(path = "/custom/{displayName}", method = { RequestMethod.DELETE }, consumes = { "*" })
-	public void removeTag(@PathVariable("displayName") String displayName) {
+        String displayName = tag.getDisplayName();
+        if (Strings.isBlank(displayName)) {
+            throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "DisplayName is empty",
+                    HttpStatus.BAD_REQUEST);
+        }
 
-		if (Strings.isBlank(displayName)) {
-			throw new PortalException("RequiredFieldsMissing", "displayName is empty", HttpStatus.BAD_REQUEST);
-		}
+        tag.setTagType(TagType.Custom);
+        List<TagIndex> tagList = tagIndexDao.findTagByTagTypeAndName(tag.getTagType().name(), tag.getDisplayName());
+        if (tagList.size() > 0) {//update
+            TagIndex old = tagList.get(0);
+            old.setDescription(tag.getDescription());
+            tag = old;
+        }
+        tag.setFullTagName(TagType.Custom.getTagName(displayName));
+        long tagID = tagIndexDao.saveOrUpdate(tag);
 
-		List<TagIndex> orig = tagIndexDao.findTagByTagTypeAndName(TagType.Custom.toString(), displayName);
-		
-		if(orig.size() == 0){
-			throw new PortalException("Tag Not Found", "Tag with displayName:" + displayName + " Not Found", HttpStatus.NOT_FOUND);
-		}
+        if (isTeamIDExist()) {
+            teamTagRelationDao.saveOrUpdate(new TeamTagRelation(getLoginTeamID(), tagID));
+        }
 
-		thingTagManager.removeTag(orig.get(0));
+        TagUserRelation tagUserRelation = new TagUserRelation();
+        tagUserRelation.setTagId(tagID);
+        tagUserRelation.setUserId(getLoginUserID());
+        tagUserRelation.setCreateBy(getLoginUserID());
+        tagUserRelationDao.saveOrUpdate(tagUserRelation);
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", tagID);
+        map.put("tagName", TagType.Custom.getTagName(tag.getDisplayName()));
+        return map;
+    }
+
+    /**
+     * 移除tag
+     * DELETE /tags/custom/{displayName}
+     * <p>
+     * refer to doc "Beehive API - Thing API" for request/response details refer
+     * to doc "Tech Design - Beehive API", section "Delete Tag (移除tag)" for more
+     * details
+     */
+    @RequestMapping(path = "/custom/{displayName}", method = {RequestMethod.DELETE}, consumes = {"*"})
+    public void removeTag(@PathVariable("displayName") String displayName) {
+
+        if (Strings.isBlank(displayName)) {
+            throw new PortalException("RequiredFieldsMissing", "displayName is empty", HttpStatus.BAD_REQUEST);
+        }
+
+        List<TagIndex> orig = tagIndexDao.findTagByTagTypeAndName(TagType.Custom.toString(), displayName);
+
+        if (orig.size() == 0) {
+            throw new PortalException("Tag Not Found", "Tag with displayName:" + displayName + " Not Found",
+                    HttpStatus.NOT_FOUND);
+        }
+
+        TagIndex toBeRemoved = orig.get(0);
+
+        checkIsCreator(toBeRemoved);
+
+        thingTagManager.removeTag(toBeRemoved);
 
 //		eventBus.onTagChangeFire();
-	}
+    }
 
-	/**
-	 * 查询tag
-	 * GET /tags/search?tagType={tagType}&displayName={displayName}
-	 *
-	 * refer to doc "Beehive API - Thing API" for request/response details refer
-	 * to doc "Tech Design - Beehive API", section "Inquire Tag (查询tag)" for
-	 * more details
-	 *
-	 * @return
-	 */
-	@RequestMapping(path = "/search", method = { RequestMethod.GET })
-	public List<TagIndex> findTags(@RequestParam(value="tagType", required = false) String tagType,
-										@RequestParam(value="displayName", required = false) String displayName) {
-		
-		List<TagIndex> list = tagIndexDao.findTagByTagTypeAndName(StringUtils.capitalize(tagType), displayName);
-		return list;
+    /**
+     * 查询tag
+     * GET /tags/search?tagType={tagType}&displayName={displayName}
+     * <p>
+     * refer to doc "Beehive API - Thing API" for request/response details refer
+     * to doc "Tech Design - Beehive API", section "Inquire Tag (查询tag)" for
+     * more details
+     *
+     * @return
+     */
+    @RequestMapping(path = "/search", method = {RequestMethod.GET})
+    public List<TagIndex> findTags(@RequestParam(value = "tagType", required = false) String tagType,
+                                   @RequestParam(value = "displayName", required = false) String displayName) {
 
-	}
+        List<TagIndex> list = tagIndexDao.findTagByTagTypeAndName(StringUtils.capitalize(tagType), displayName);
+        return list;
+
+    }
 
 	/*@RequestMapping(path = "/{tagName}/operation/{operation}", method = { RequestMethod.GET })
-	public List<GlobalThingInfo> getThingsByTagExpress(@PathVariable("tagName") String tagName,
+    public List<GlobalThingInfo> getThingsByTagExpress(@PathVariable("tagName") String tagName,
 			@PathVariable("operation") String operation) {
 
 		List<GlobalThingInfo> list = this.thingManager.findThingByTagName(tagName.split(","), operation);
@@ -139,65 +143,134 @@ public class TagController  extends AbstractController{
 		return list;
 	}*/
 
-	/**
-	 * 查询位置信息
-	 * GET /tags/locations/{parentLocation}
-	 *
-	 * refer to doc "Beehive API - Thing API" for request/response details
-	 *
-	 * @return
-	 */
-	@RequestMapping(path = "/locations/{parentLocation}", method = { RequestMethod.GET }, consumes = { "*" })
-	public ResponseEntity<List<String>> findLocations(@PathVariable("parentLocation") String parentLocation) {
-
-		List<String> locations = thingTagManager.findLocations(parentLocation);
-
-		return new ResponseEntity<>(locations, HttpStatus.OK);
-	}
-
-	/**
-	 * 查询位置信息(所有)
-	 * GET /tags/locations/{parentLocation}
-	 *
-	 * refer to doc "Beehive API - Thing API" for request/response details
-	 *
-	 * @return
-	 */
-	@RequestMapping(path = "/locations", method = { RequestMethod.GET }, consumes = { "*" })
-	public ResponseEntity<List<String>> findAllLocations() {
-		return findLocations("");
-	}
-	
-	/**
-	 * 绑定tag及usergroup
-	 * POST /tags/{tagIDs}/userGroups/{userGroupIDs}
-	 *
-	 * refer to doc "Beehive API - Thing API" for request/response details
-	 *
-	 * @param globalThingIDs
+    /**
+     * 查询位置信息
+     * GET /tags/locations/{parentLocation}
+     * <p>
+     * refer to doc "Beehive API - Thing API" for request/response details
+     *
+     * @return
      */
-	@RequestMapping(path="/{tagIDs}/userGroups/{userGroupIDs}",method={RequestMethod.POST})
-	public void addTagToUserGroup(@PathVariable("tagIDs") String tagIDs,@PathVariable("userGroupIDs") String userGroupIDs){
-		Arrays.asList(tagIDs.split(","));
-		List<String> tagIDList = Arrays.asList(tagIDs.split(","));
-		List<String> userGroupIDList = Arrays.asList(userGroupIDs.split(","));
-		thingTagManager.bindTagToUserGroup(tagIDList, userGroupIDList);
+    @RequestMapping(path = "/locations/{parentLocation}", method = {RequestMethod.GET}, consumes = {"*"})
+    public ResponseEntity<List<String>> findLocations(@PathVariable("parentLocation") String parentLocation) {
 
-	}
-	
-	/**
-	 * 解除绑定tag及usergroup
-	 * DELETE /tags/{tagIDs}/userGroups/{userGroupIDs}
-	 *
-	 * refer to doc "Beehive API - Thing API" for request/response details
-	 *
-	 * @param tagIDs
+        List<String> locations = thingTagManager.findLocations(parentLocation);
+
+        return new ResponseEntity<>(locations, HttpStatus.OK);
+    }
+
+    /**
+     * 查询位置信息(所有)
+     * GET /tags/locations/{parentLocation}
+     * <p>
+     * refer to doc "Beehive API - Thing API" for request/response details
+     *
+     * @return
      */
-	@RequestMapping(path="/{tagIDs}/userGroups/{userGroupIDs}",method={RequestMethod.DELETE},consumes={"*"})
-	public void removeTagToUserGroup(@PathVariable("tagIDs") String tagIDs,@PathVariable("userGroupIDs") String userGroupIDs){
-		List<String> tagIDList = Arrays.asList(tagIDs.split(","));
-		List<String> userGroupIDList = Arrays.asList(userGroupIDs.split(","));
-		thingTagManager.unbindTagToUserGroup(tagIDList, userGroupIDList);
-	}
+    @RequestMapping(path = "/locations", method = {RequestMethod.GET}, consumes = {"*"})
+    public ResponseEntity<List<String>> findAllLocations() {
+        return findLocations("");
+    }
 
+    /**
+     * 绑定tag及usergroup
+     * POST /tags/{tagIDs}/userGroups/{userGroupIDs}
+     * <p>
+     * refer to doc "Beehive API - Thing API" for request/response details
+     *
+     * @param globalThingIDs
+     */
+    @RequestMapping(path = "/{tagIDs}/userGroups/{userGroupIDs}", method = {RequestMethod.POST})
+    public void addTagToUserGroup(@PathVariable("tagIDs") String tagIDs, @PathVariable("userGroupIDs") String
+            userGroupIDs) {
+        if (Strings.isBlank(tagIDs) || Strings.isBlank(userGroupIDs)) {
+            throw new PortalException("RequiredFieldsMissing", "tagIDs or userGroupIDs is empty", HttpStatus
+                    .BAD_REQUEST);
+        }
+        List<String> tagIDList = Arrays.asList(tagIDs.split(","));
+        List<TagIndex> tagIndexes = getTagIndexes(tagIDList);
+        tagIndexes.forEach(index -> checkIsCreator(index));
+
+        List<String> userGroupIDList = Arrays.asList(userGroupIDs.split(","));
+        getUserGroups(userGroupIDList);
+
+        thingTagManager.bindTagToUserGroup(tagIDList, userGroupIDList);
+
+    }
+
+    /**
+     * 解除绑定tag及usergroup
+     * DELETE /tags/{tagIDs}/userGroups/{userGroupIDs}
+     * <p>
+     * refer to doc "Beehive API - Thing API" for request/response details
+     *
+     * @param tagIDs
+     */
+    @RequestMapping(path = "/{tagIDs}/userGroups/{userGroupIDs}", method = {RequestMethod.DELETE}, consumes = {"*"})
+    public void removeTagToUserGroup(@PathVariable("tagIDs") String tagIDs, @PathVariable("userGroupIDs") String userGroupIDs) {
+        if (Strings.isBlank(tagIDs) || Strings.isBlank(userGroupIDs)) {
+            throw new PortalException("RequiredFieldsMissing", "tagIDs or userGroupIDs is empty", HttpStatus
+                    .BAD_REQUEST);
+        }
+        List<String> tagIDList = Arrays.asList(tagIDs.split(","));
+        List<TagIndex> tagIndexes = getTagIndexes(tagIDList);
+        tagIndexes.forEach(index -> checkIsCreator(index));
+
+        List<String> userGroupIDList = Arrays.asList(userGroupIDs.split(","));
+        getUserGroups(userGroupIDList);
+        thingTagManager.unbindTagToUserGroup(tagIDList, userGroupIDList);
+    }
+
+    private void checkIsCreator(final TagIndex tag) throws PortalException {
+        if (Strings.isBlank(tag.getCreateBy())) {
+            throw new PortalException("RequiredFieldsMissing", "createBy is null or empty", HttpStatus.BAD_REQUEST);
+        }
+
+        if (!tag.getCreateBy().equals(getLoginUserID())) {
+            throw new BeehiveUnAuthorizedException("Current user is not the creator of the tag.");
+        }
+    }
+
+    private void checkIsOwner(final TagIndex tag) throws PortalException {
+        TagUserRelation relation = tagUserRelationDao.find(tag.getId(), getLoginUserID());
+
+        if (null == relation) {
+            throw new BeehiveUnAuthorizedException("Current user is not the owner of the tag.");
+        }
+    }
+
+    private String listToString(Collection<?> collection) {
+        StringBuilder sb = new StringBuilder();
+        collection.forEach(data -> {
+            if (0 != sb.length()) {
+                sb.append(", ");
+            }
+            sb.append(data);
+        });
+        return sb.toString();
+    }
+
+    private List<TagIndex> getTagIndexes(List<String> tagIDList) throws PortalException {
+        List<Long> tagIds = tagIDList.stream().map(Long::valueOf).collect(Collectors.toList());
+        List<TagIndex> tagIndexes = tagIndexDao.findByIDs(tagIds);
+        if (null == tagIndexes || tagIndexes.stream().map(TagIndex::getId).collect(Collectors.toSet()).containsAll
+                (tagIds)) {
+            tagIds.removeAll(tagIndexes.stream().map(TagIndex::getId).collect(Collectors.toList()));
+            throw new PortalException("Requested tag doesn't exist", "Invalid tag id(s): [" + listToString(tagIds) +
+                    "]", HttpStatus.BAD_REQUEST);
+        }
+        return tagIndexes;
+    }
+
+    private List<UserGroup> getUserGroups(List<String> userGroupIDList) throws PortalException {
+        List<Long> userGroupIds = userGroupIDList.stream().map(Long::valueOf).collect(Collectors.toList());
+        List<UserGroup> userGroups = userGroupDao.findByIDs(userGroupIds);
+        if (null == userGroups || userGroups.stream().map(UserGroup::getId).collect(Collectors.toSet()).containsAll
+                (userGroupIds)) {
+            userGroupIds.removeAll(userGroups.stream().map(UserGroup::getId).collect(Collectors.toList()));
+            throw new PortalException("Requested user group doesn't exist", "Invalid user group id(s): [" +
+                    listToString(userGroupIds) + "]", HttpStatus.BAD_REQUEST);
+        }
+        return userGroups;
+    }
 }
