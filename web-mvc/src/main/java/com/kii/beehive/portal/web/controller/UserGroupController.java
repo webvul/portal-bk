@@ -9,6 +9,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.kii.beehive.portal.exception.InvalidAuthException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -84,12 +85,14 @@ public class UserGroupController extends AbstractController{
 	 * @param userGroupID
 	 */
 	@RequestMapping(path="/{userGroupID}/user/{userIDs}",method={RequestMethod.POST})
-	public ResponseEntity addUsersToUserGroup(@PathVariable("userGroupID") Long userGroupID, @PathVariable("userIDs") String userIDs, HttpServletRequest httpRequest){
+	public ResponseEntity addUsersToUserGroup(@PathVariable("userGroupID") Long userGroupID, @PathVariable("userIDs") String userIDs){
+        UserGroup ug = this.userGroupDao.findByID(userGroupID);
+        if(!ug.getCreateBy().equals(getLoginUserID())){
+            throw new InvalidAuthException(ug.getCreateBy(), getLoginUserID());
+        }
 
-		if(checkUserGroup(getLoginUserID(), userGroupID)){
-			List<String> userIDList = Arrays.asList(userIDs.split(","));
-			userManager.addUserToUserGroup(userIDList, userGroupID);
-		}
+        List<String> userIDList = Arrays.asList(userIDs.split(","));
+        userManager.addUserToUserGroup(userIDList, userGroupID);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
@@ -100,18 +103,24 @@ public class UserGroupController extends AbstractController{
 	 * @param userGroupID
 	 */
 	@RequestMapping(path="/{userGroupID}/user/{userIDs}",method={RequestMethod.DELETE})
-	public ResponseEntity removeUsersFromUserGroup(@PathVariable("userGroupID") Long userGroupID, @PathVariable("userIDs") String userIDs, HttpServletRequest httpRequest){
+	public ResponseEntity removeUsersFromUserGroup(@PathVariable("userGroupID") Long userGroupID, @PathVariable("userIDs") String userIDs){
 		UserGroup ug = this.userGroupDao.findByID(userGroupID);
 		if(ug == null){
 			throw new PortalException("UserGroup Not Found", "UserGroup with userGroupID:" + userGroupID + " Not Found", HttpStatus.NOT_FOUND);
-		}else if(ug.getName().equals(Constants.ADMIN_GROUP)){
-			List<GroupUserRelation> gurList = this.groupUserRelationDao.findByUserGroupID(userGroupID);
-			if(gurList.size() <= 1){
-				throw new PortalException("UserGroup can't delete", "ADMIN GROUP has at least one user" + userGroupID + " Not Found", HttpStatus.NOT_FOUND);
-			}
-		}else if(checkUserGroup(getLoginUserID(), userGroupID)){
-			List<String> userIDList = Arrays.asList(userIDs.split(","));
-			groupUserRelationDao.deleteUsers(userIDList, userGroupID);
+		}else if(!ug.getCreateBy().equals(getLoginUserID())){
+            throw new InvalidAuthException(ug.getCreateBy(), getLoginUserID());
+        }else {
+            List<String> userIDList = new ArrayList<String>();
+            String[] userIDArray = userIDs.split(",");
+            for(String uID : userIDArray){
+                if(!uID.equals(getLoginUserID())){
+                    userIDList.add(uID);
+                }
+            }
+            if(userIDList.size() > 0){
+                groupUserRelationDao.deleteUsers(userIDList, userGroupID);
+            }
+
 		}
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
@@ -129,12 +138,12 @@ public class UserGroupController extends AbstractController{
     public ResponseEntity deleteUserGroup(@PathVariable("userGroupID") Long userGroupID){
 
     	UserGroup orig =  userGroupDao.findByID(userGroupID);
-		
+
 		if(orig == null){
 			throw new PortalException("UserGroup Not Found", "UserGroup with userGroupID:" + userGroupID + " Not Found", HttpStatus.NOT_FOUND);
-		}else if(orig.getName().equals(Constants.ADMIN_GROUP)){
-			throw new PortalException("Admin UserGroup can't delete", "", HttpStatus.NOT_FOUND);
-		}
+		}else if(!orig.getCreateBy().equals(getLoginUserID())){
+            throw new InvalidAuthException(orig.getCreateBy(), getLoginUserID());
+        }
 		
 		userManager.deleteUserGroup(userGroupID);
 
@@ -151,15 +160,13 @@ public class UserGroupController extends AbstractController{
      * @param userGroupID
      */
     @RequestMapping(path="/{userGroupID}",method={RequestMethod.GET})
-    public ResponseEntity<UserGroupRestBean> getUserGroupDetail(@PathVariable("userGroupID") Long userGroupID, HttpServletRequest httpRequest){
+    public ResponseEntity<UserGroupRestBean> getUserGroupDetail(@PathVariable("userGroupID") Long userGroupID){
     	UserGroupRestBean ugrb = null;
-		if(checkUserGroup(getLoginUserID(), userGroupID)){
-			List<String> userIdList = new ArrayList<String>(); 
+		if(isGroupOfUser(getLoginUserID(), userGroupID)){
 			List<GroupUserRelation> relList = groupUserRelationDao.findByUserGroupID(userGroupID);
 			if(relList.size() > 0){
-				for(GroupUserRelation gur:relList){
-					userIdList.add(gur.getUserID());
-				}
+                List<String> userIdList = new ArrayList<String>();
+                relList.forEach(gur -> userIdList.add(gur.getUserID()));
 				List<BeehiveUser> list = beehiveUserDao.getUserByIDs(userIdList);
 				UserGroup ug = userGroupDao.findByID(userGroupID);
 				ugrb = new UserGroupRestBean(ug);
@@ -184,13 +191,11 @@ public class UserGroupController extends AbstractController{
     @RequestMapping(path="/{userGroupID}/tags",method={RequestMethod.GET})
     public ResponseEntity<List<TagIndex>> getUserGroupTag(@PathVariable("userGroupID") Long userGroupID, HttpServletRequest httpRequest){
     	List<TagIndex> tagList = null;
-		if(checkUserGroup(getLoginUserID(), userGroupID)){
-			List<Long> tagIDList = new ArrayList<Long>(); 
+		if(isGroupOfUser(getLoginUserID(), userGroupID)){
+			List<Long> tagIDList = new ArrayList<Long>();
 			List<TagGroupRelation> relList = tagGroupRelationDao.findByUserGroupID(userGroupID);
 			if(relList.size() > 0){
-				for(TagGroupRelation gur:relList){
-					tagIDList.add(gur.getTagID());
-				}
+                relList.forEach(tgr -> tagIDList.add(tgr.getTagID()));
 				tagList = tagIndexDao.findByIDs(tagIDList);
 			}
 		}
@@ -228,15 +233,9 @@ public class UserGroupController extends AbstractController{
 		return new ResponseEntity<>(restBeanList, HttpStatus.OK);
 	}
     
-    private boolean checkUserGroup(String loginUserID, Long userGroupID){
-    	List<UserGroup> checkAuth = null;
-    	if(this.isTeamIDExist()){
-    		checkAuth = userGroupDao.findUserGroup(null, userGroupID, null);
-    	}else{
-    		//loginUser can edit, when loginUser is in this group ,
-    		checkAuth = userGroupDao.findUserGroup(loginUserID, userGroupID, null);
-    	}
-    	
+    private boolean isGroupOfUser(String loginUserID, Long userGroupID){
+    	List<UserGroup> checkAuth = userGroupDao.findUserGroup(loginUserID, userGroupID, null);
+
 		if(checkAuth.size() == 1){
 			return true;
 		}else{

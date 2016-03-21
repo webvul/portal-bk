@@ -75,13 +75,6 @@ public class UserController  extends AbstractController{
             	TeamUserRelation tur = new TeamUserRelation(teamID, userID, 1);
             	teamUserRelationDao.saveOrUpdate(tur);
             	
-            	//first user add to admin userGroup
-            	UserGroup userGroup = new UserGroup();
-            	userGroup.setName(Constants.ADMIN_GROUP);
-            	Long userGroupID = userManager.createUserGroup(userGroup,userID);
-            	
-            	userManager.setDefaultPermission(userGroupID);
-            	
         	}else{// user add to team
         		teamID = teamList.get(0).getId();
         		TeamUserRelation tur = new TeamUserRelation(teamID, userID, 0);
