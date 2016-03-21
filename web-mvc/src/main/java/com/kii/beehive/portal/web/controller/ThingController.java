@@ -1,14 +1,18 @@
 package com.kii.beehive.portal.web.controller;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
+import com.kii.beehive.business.manager.TagThingManager;
+import com.kii.beehive.business.service.ThingIFInAppService;
+import com.kii.beehive.portal.exception.InvalidAuthException;
+import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
+import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
+import com.kii.beehive.portal.jdbc.dao.TeamThingRelationDao;
+import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
+import com.kii.beehive.portal.jdbc.entity.TagIndex;
+import com.kii.beehive.portal.jdbc.entity.TagType;
+import com.kii.beehive.portal.jdbc.entity.TeamThingRelation;
+import com.kii.beehive.portal.web.entity.ThingRestBean;
+import com.kii.beehive.portal.web.exception.BeehiveUnAuthorizedException;
+import com.kii.beehive.portal.web.exception.PortalException;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,23 +20,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.kii.beehive.business.service.ThingIFInAppService;
-import com.kii.beehive.business.manager.TagThingManager;
-import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
-import com.kii.beehive.portal.jdbc.dao.TeamThingRelationDao;
-import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
-import com.kii.beehive.portal.jdbc.entity.TagIndex;
-import com.kii.beehive.portal.jdbc.entity.TagType;
-import com.kii.beehive.portal.jdbc.entity.TeamThingRelation;
-import com.kii.beehive.portal.web.entity.ThingRestBean;
-import com.kii.beehive.portal.web.exception.PortalException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Beehive API - Thing API
@@ -49,7 +40,10 @@ public class ThingController extends AbstractController{
 //
 	@Autowired
 	private GlobalThingSpringDao globalThingDao;
-	
+
+	@Autowired
+	private TagIndexDao tagIndexDao;
+
 	@Autowired
 	private TeamThingRelationDao teamThingRelationDao;
 
@@ -359,14 +353,19 @@ public class ThingController extends AbstractController{
      * @return
      */
 	@RequestMapping(path = "/search", method = {RequestMethod.GET})
-	public ResponseEntity<List<ThingRestBean>> getThingsByTagExpress(@RequestParam(value="tagType", required = false) String tagType,
-																		@RequestParam(value="displayName", required = false) String displayName) {
+	public ResponseEntity<List<ThingRestBean>> getThingsByTagExpress(@RequestParam(value="tagType") String tagType,
+																		@RequestParam(value="displayName") String displayName) {
 		List<GlobalThingInfo> list = null;
 
-		if(Strings.isBlank(tagType) && Strings.isBlank(displayName)){
-			list = globalThingDao.findAll();
-		}else{
-			list = globalThingDao.findThingByTag(StringUtils.capitalize(tagType)+"-"+displayName);
+		List<TagIndex> tagList = tagIndexDao.findTagByTagTypeAndName(StringUtils.capitalize(tagType),displayName);
+
+		if(tagList.size() > 0){
+			TagIndex tag = tagList.get(0);
+			if(thingTagManager.isTagCreator(tag) || thingTagManager.isTagOwner(tag)){
+				list = globalThingDao.findThingByTag(StringUtils.capitalize(tagType)+"-"+displayName);
+			}else{
+				throw new BeehiveUnAuthorizedException("loginUser isn't a tag creator or owner");
+			}
 		}
 
 		List<ThingRestBean> resultList = new ArrayList<>();

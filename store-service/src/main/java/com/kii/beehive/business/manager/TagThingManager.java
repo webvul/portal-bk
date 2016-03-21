@@ -1,10 +1,14 @@
 package com.kii.beehive.business.manager;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
+import com.kii.beehive.business.service.ThingIFInAppService;
+import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.common.utils.CollectUtils;
+import com.kii.beehive.portal.exception.EntryNotFoundException;
+import com.kii.beehive.portal.jdbc.dao.*;
+import com.kii.beehive.portal.jdbc.entity.*;
+import com.kii.beehive.portal.service.AppInfoDao;
+import com.kii.beehive.portal.store.entity.KiiAppInfo;
+import com.kii.extension.sdk.exception.ObjectNotFoundException;
 import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,28 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kii.beehive.business.service.ThingIFInAppService;
-import com.kii.beehive.portal.auth.AuthInfoStore;
-import com.kii.beehive.portal.common.utils.CollectUtils;
-import com.kii.beehive.portal.exception.EntryNotFoundException;
-import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
-import com.kii.beehive.portal.jdbc.dao.TagGroupRelationDao;
-import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
-import com.kii.beehive.portal.jdbc.dao.TagThingRelationDao;
-import com.kii.beehive.portal.jdbc.dao.TeamDao;
-import com.kii.beehive.portal.jdbc.dao.TeamThingRelationDao;
-import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
-import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
-import com.kii.beehive.portal.jdbc.entity.TagGroupRelation;
-import com.kii.beehive.portal.jdbc.entity.TagIndex;
-import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
-import com.kii.beehive.portal.jdbc.entity.TagType;
-import com.kii.beehive.portal.jdbc.entity.Team;
-import com.kii.beehive.portal.jdbc.entity.TeamThingRelation;
-import com.kii.beehive.portal.jdbc.entity.UserGroup;
-import com.kii.beehive.portal.service.AppInfoDao;
-import com.kii.beehive.portal.store.entity.KiiAppInfo;
-import com.kii.extension.sdk.exception.ObjectNotFoundException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 @Component
 @Transactional
@@ -59,6 +45,15 @@ public class TagThingManager {
 
 	@Autowired
 	private TagGroupRelationDao tagGroupRelationDao;
+
+	@Autowired
+	private TagUserRelationDao tagUserRelationDao;
+
+	@Autowired
+	private ThingUserGroupRelationDao thingUserGroupRelationDao;
+
+	@Autowired
+	private ThingUserRelationDao thingUserRelationDao;
 
 	@Autowired
 	private UserGroupDao usergroupDao;
@@ -371,12 +366,61 @@ public class TagThingManager {
 		return tagIndexDao.findTagByGlobalThingID(globalThingID);
 	}
 
+	public boolean isTagOwner(TagIndex tag) {
+		TagUserRelation tur = tagUserRelationDao.find(tag.getId(),AuthInfoStore.getUserID());
+		if(tur != null){
+			return true;
+		}else{
+			List<UserGroup> userGroupList = usergroupDao.findUserGroup(AuthInfoStore.getUserID(), null , null);
+			for(UserGroup ug:userGroupList){
+				TagGroupRelation tgr = tagGroupRelationDao.findByTagIDAndUserGroupID(tag.getId(),ug.getId());
+				if(tgr != null) return true;
+			}
+			return false;
+		}
+	}
+
+	public boolean isTagCreator(TagIndex tag) {
+		if(tag.getCreateBy().equals(AuthInfoStore.getUserID())){
+			return true;
+		}else{
+			return false;
+		}
+	}
+
+	public boolean isThingCreator(GlobalThingInfo thing) {
+		if(thing.getCreateBy().equals(AuthInfoStore.getUserID())){
+			return true;
+		}else{
+			return false;
+		}
+	}
+
+	public boolean isThingOwner(GlobalThingInfo thing) {
+		ThingUserRelation tur = thingUserRelationDao.find(thing.getId(),AuthInfoStore.getUserID());
+		if(tur != null){
+			return true;
+		}else{
+			List<UserGroup> userGroupList = usergroupDao.findUserGroup(AuthInfoStore.getUserID(), null , null);
+			for(UserGroup ug:userGroupList){
+				ThingUserGroupRelation tgr = thingUserGroupRelationDao.find(thing.getId(),ug.getId());
+				if(tgr != null) return true;
+			}
+			return false;
+		}
+	}
+
+
 	private List<TagIndex> findTagList(Collection<String> tagIDs){
 		List<TagIndex> tagList = new ArrayList<TagIndex>();
 		for(String tagID:tagIDs){
 			TagIndex tag = tagIndexDao.findByID(tagID);
 			if(tag != null){
-				tagList.add(tag);
+				if(this.isTagCreator(tag) || this.isTagOwner(tag)){
+					tagList.add(tag);
+				}else{
+					tagIDs.remove(tagID);
+				}
 			}else{
 				log.warn("Tag is null, TagId = " + tagID);
 			}
