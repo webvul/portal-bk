@@ -50,9 +50,6 @@ public class TagThingManager {
     @Autowired
     private UserGroupDao usergroupDao;
 
-	@Autowired
-	private TagUserRelationDao tagUserRelationDao;
-
     @Autowired
     private AppInfoDao appInfoDao;
 
@@ -61,8 +58,6 @@ public class TagThingManager {
 
 	@Autowired
 	private ThingUserRelationDao thingUserRelationDao;
-
-	@Autowired
 
     @Autowired
     private ThingIFInAppService thingIFInAppService;
