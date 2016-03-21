@@ -22,6 +22,9 @@ public class TagUserRelationDao extends SpringBaseDao<TagUserRelation> {
     final private static String SQL_FIND_BY_TAGID_AND_USERID = "SELECT * FROM " + TABLE_NAME + " WHERE " +
             "" + TagUserRelation.TAG_ID + " = ? AND " + TagUserRelation.USER_ID + " = ?";
 
+    final private static String SQL_DELETE_BY_TAGID = "DELETE t.* FROM " + TABLE_NAME + " t WHERE " + TagUserRelation
+            .TAG_ID + " = ?";
+
     @Override
     protected String getTableName() {
         return TABLE_NAME;
@@ -32,14 +35,14 @@ public class TagUserRelationDao extends SpringBaseDao<TagUserRelation> {
         return KEY;
     }
 
-    public List<Long> fingTagIds(String userId) {
+    public List<Long> findTagIds(String userId) {
         if (null == userId) {
             return null;
         }
         return jdbcTemplate.queryForList(SQL_FIND_TAGIDS, new Object[]{userId}, Long.class);
     }
 
-    public List<String> fingUserIds(Long tagId) {
+    public List<String> findUserIds(Long tagId) {
         if (null == tagId) {
             return null;
         }
@@ -47,10 +50,7 @@ public class TagUserRelationDao extends SpringBaseDao<TagUserRelation> {
     }
 
     public List<TagUserRelation> findByTagId(Long tagId) {
-        if (null == tagId) {
-            return null;
-        }
-        return findBySingleField(TagUserRelation.TAG_ID, tagId);
+        return null;
     }
 
     public List<TagUserRelation> findByUserId(String userId) {
@@ -70,5 +70,12 @@ public class TagUserRelationDao extends SpringBaseDao<TagUserRelation> {
             return list.get(0);
         }
         return null;
+    }
+
+    public void deleteByTagId(Long tagId) {
+        if (null == tagId) {
+            return;
+        }
+        jdbcTemplate.update(SQL_DELETE_BY_TAGID, tagId);
     }
 }
