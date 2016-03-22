@@ -15,5 +15,8 @@ rule "${triggerID} user custom segment:schedule"
 when
     Trigger( $triggerID:triggerID=="${triggerID}")
 then
-	insertLogical(new MatchResult($triggerID));
+	//insertLogical(new MatchResult($triggerID));
+	//System.out.println(" ============================= schedule trigger custom segment " + $triggerID);
+	CommandExec exec=(CommandExec)kcontext.getKieRuntime().getEnvironment().get("exec");
+    exec.doExecute($triggerID);
 end
