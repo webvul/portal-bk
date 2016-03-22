@@ -191,14 +191,12 @@ end
 
 			}else if(predicate.getCondition()!=null){
 				Condition cond=predicate.getCondition();
-				if(cond==null){
-					params.put("express"," eval(true) ");
-				}else{
-					params.put("express",generExpress(cond));
-				}
+
+				params.put("express",generExpress(cond));
+
 				params.put("timer",generTimer(predicate.getSchedule()));
 
-			}else if(predicate.getSchedule()!=null){
+			}else if(predicate.getSchedule()!=null&& predicate.getCondition()==null){
 
 				return generScheduleDrl(predicate.getSchedule(),triggerID);
 
