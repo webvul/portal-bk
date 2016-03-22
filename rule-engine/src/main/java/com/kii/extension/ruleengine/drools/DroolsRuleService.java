@@ -118,6 +118,7 @@ public class DroolsRuleService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			this.removeCondition(name);
+//			kfs.delete("src/main/resources/user_"+name+".drl");
 		}
 
 		getSession().getObjects().forEach((obj)->{

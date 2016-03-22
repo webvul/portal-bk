@@ -200,14 +200,14 @@ public class DroolsTriggerService {
 
 		cloudService.fireCondition();
 
-//		List<MatchResult> results=cloudService.doQuery("get Match Result by TriggerID");
-//
-//		results.forEach(r-> exec.doExecute(r.getTriggerID()));
-//
-//		streamService.fireCondition();
-//		results=streamService.doQuery("get Match Result by TriggerID");
-//
-//		results.forEach(r-> exec.doExecute(r.getTriggerID()));
+		List<MatchResult> results=cloudService.doQuery("get Match Result by TriggerID");
+
+		results.forEach(r-> exec.doExecute(r.getTriggerID()));
+
+		streamService.fireCondition();
+		results=streamService.doQuery("get Match Result by TriggerID");
+
+		results.forEach(r-> exec.doExecute(r.getTriggerID()));
 
 	}
 	

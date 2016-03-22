@@ -110,7 +110,29 @@ public class EngineService {
 	}
 
 
-	public void createSimpleTrigger(String thingID, String triggerID, RuleEnginePredicate predicate){
+//	public void createSimpleTrigger(String thingID, String triggerID, RuleEnginePredicate predicate){
+//
+//
+//		Trigger trigger=new Trigger();
+//
+//		trigger.setTriggerID(triggerID);
+//		trigger.setType(TriggerType.simple);
+//		trigger.setStream(false);
+//		trigger.setWhen(predicate.getTriggersWhen());
+//
+//		trigger.setEnable(Boolean.FALSE);
+//
+//		if(!StringUtils.isEmpty(thingID)) {
+//			trigger.setThings(Collections.singleton(thingID));
+//		}
+//
+//		String rule=ruleGeneral.generDrlConfig(triggerID,TriggerType.simple,predicate);
+//
+//
+//		droolsTriggerService.addTrigger(trigger,rule);
+//
+//	}
+	public void createSimpleTrigger(String thingID, String triggerID, SimpleTriggerRecord record){
 
 
 		Trigger trigger=new Trigger();
@@ -118,15 +140,15 @@ public class EngineService {
 		trigger.setTriggerID(triggerID);
 		trigger.setType(TriggerType.simple);
 		trigger.setStream(false);
-		trigger.setWhen(predicate.getTriggersWhen());
+		trigger.setWhen(record.getPredicate().getTriggersWhen());
 
-		trigger.setEnable(Boolean.FALSE);
+		trigger.setEnable(TriggerRecord.StatusType.enable == record.getRecordStatus()  ? Boolean.TRUE : Boolean.FALSE);
 
 		if(!StringUtils.isEmpty(thingID)) {
 			trigger.setThings(Collections.singleton(thingID));
 		}
 
-		String rule=ruleGeneral.generDrlConfig(triggerID,TriggerType.simple,predicate);
+		String rule=ruleGeneral.generDrlConfig(triggerID,TriggerType.simple,record.getPredicate());
 
 
 		droolsTriggerService.addTrigger(trigger,rule);

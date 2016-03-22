@@ -145,7 +145,7 @@ public class TriggerManager {
 				thingID = thingInfo.getFullKiiThingID();
 			}
 		}
-		service.createSimpleTrigger(thingID,triggerID,record.getPredicate());
+		service.createSimpleTrigger(thingID,triggerID,record);
 	}
 
 
