@@ -47,6 +47,11 @@ public class OpLogTools {
 		int idx = fullPath.lastIndexOf("/");
 
 		path = fullPath.substring(0, idx);
+        //如果目录不存在,创建
+		File pathFile = new File(path);
+		if( ! pathFile.exists()){
+			pathFile.mkdirs();
+		}
 
 		String fileName = fullPath.substring(idx + 1, fullPath.length());
 
