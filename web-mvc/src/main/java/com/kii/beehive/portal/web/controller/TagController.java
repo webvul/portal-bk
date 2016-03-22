@@ -17,6 +17,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -251,9 +252,10 @@ public class TagController extends AbstractController {
     }
 
     private List<TagIndex> getTagIndexes(List<String> tagIDList) throws PortalException {
-        List<Long> tagIds = tagIDList.stream().map(Long::valueOf).collect(Collectors.toList());
+        List<Long> tagIds = tagIDList.stream().filter(Pattern.compile("^[0-9]+$").asPredicate()).map(Long::valueOf)
+                .collect(Collectors.toList());
         List<TagIndex> tagIndexes = tagIndexDao.findByIDs(tagIds);
-        if (null == tagIndexes || tagIndexes.stream().map(TagIndex::getId).collect(Collectors.toSet()).containsAll
+        if (null == tagIndexes || !tagIndexes.stream().map(TagIndex::getId).collect(Collectors.toSet()).containsAll
                 (tagIds)) {
             tagIds.removeAll(tagIndexes.stream().map(TagIndex::getId).collect(Collectors.toList()));
             throw new PortalException("Requested tag doesn't exist", "Invalid tag id(s): [" + listToString(tagIds) +
@@ -263,9 +265,10 @@ public class TagController extends AbstractController {
     }
 
     private List<UserGroup> getUserGroups(List<String> userGroupIDList) throws PortalException {
-        List<Long> userGroupIds = userGroupIDList.stream().map(Long::valueOf).collect(Collectors.toList());
+        List<Long> userGroupIds = userGroupIDList.stream().filter(Pattern.compile("^[0-9]+$").asPredicate())
+                .map(Long::valueOf).collect(Collectors.toList());
         List<UserGroup> userGroups = userGroupDao.findByIDs(userGroupIds);
-        if (null == userGroups || userGroups.stream().map(UserGroup::getId).collect(Collectors.toSet()).containsAll
+        if (null == userGroups || !userGroups.stream().map(UserGroup::getId).collect(Collectors.toSet()).containsAll
                 (userGroupIds)) {
             userGroupIds.removeAll(userGroups.stream().map(UserGroup::getId).collect(Collectors.toList()));
             throw new PortalException("Requested user group doesn't exist", "Invalid user group id(s): [" +

@@ -1,49 +1,49 @@
 package com.kii.beehive.portal.web.controller;
 
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertNotNull;
-import static junit.framework.TestCase.assertNull;
-import static junit.framework.TestCase.assertTrue;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.jdbc.dao.*;
+import com.kii.beehive.portal.jdbc.entity.*;
+import com.kii.beehive.portal.web.WebTestTemplate;
+import com.kii.beehive.portal.web.constant.Constants;
+import com.kii.beehive.portal.web.exception.PortalException;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
-import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
-import com.kii.beehive.portal.jdbc.dao.TagThingRelationDao;
-import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
-import com.kii.beehive.portal.jdbc.entity.TagIndex;
-import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
-import com.kii.beehive.portal.jdbc.entity.TagType;
-import com.kii.beehive.portal.web.WebTestTemplate;
-import com.kii.beehive.portal.web.constant.Constants;
+import static junit.framework.TestCase.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Created by USER on 12/1/15.
  */
 public class TestTagController extends WebTestTemplate {
 
+    private final static String KII_APP_ID = "0af7a7e7";
     @Autowired
     private ObjectMapper mapper;
-
     @Autowired
     private TagIndexDao tagIndexDao;
-
     @Autowired
     private GlobalThingSpringDao globalThingDao;
-
     @Autowired
     private TagThingRelationDao tagThingRelationDao;
 
-    private final static String KII_APP_ID = "0af7a7e7";
+    @Autowired
+    private TagController tagController;
+
+    @Autowired
+    private TagUserRelationDao tagUserRelationDao;
+
+    @Autowired
+    private UserGroupDao userGroupDao;
 
     private String displayName = "someDisplayName";
 
@@ -51,16 +51,162 @@ public class TestTagController extends WebTestTemplate {
 
     private String tokenForTest = BEARER_SUPER_TOKEN;
 
+    @Before
+    public void setUp() throws Exception {
+        List<TagIndex> tags = tagIndexDao.findAll();
+        for (TagIndex tag : tags) {
+            tagIndexDao.deleteByID(tag.getId());
+        }
+    }
+
     @Test
     public void testCreateTag() throws Exception {
+        String keyId = "id";
+        String keyName = "tagName";
+
+        TagIndex tagIndex = new TagIndex();
+        tagIndex.setDisplayName("Tag 1");
+        tagIndex.setDescription("Tag");
+        tagIndex.setTagType(TagType.Custom);
+
+        AuthInfoStore.setAuthInfo("user1");
+
+        Map<String, Object> result = tagController.createTag(tagIndex);
+        assertNotNull("Result of createTag should not be null", result);
+        Long id = (Long) result.get(keyId);
+        String name = result.get(keyName).toString();
+        assertEquals("Name doesn't match", TagType.Custom.getTagName(tagIndex.getDisplayName()), name);
+
+        List<TagUserRelation> relations = tagUserRelationDao.findByUserId("user1");
+        assertNotNull("Relations should exist.", relations);
+        assertEquals("There should be only one relation.", 1, relations.size());
+        assertEquals("Tag id doesn't match", id, relations.get(0).getTagId());
+        assertEquals("User id doesn't match", "user1", relations.get(0).getUserId());
+
+        TagIndex tag = tagIndexDao.findByID(id);
+        assertEquals("Creator doesn't match.", "user1", tag.getCreateBy());
+    }
+
+    @Test
+    public void testRemoveTag() throws Exception {
+        try {
+            tagController.removeTag("Random");
+            fail("Expect a PortalException");
+        } catch (PortalException e) {
+            assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
+        }
+
+        String keyId = "id";
+
+        TagIndex tagIndex = new TagIndex();
+        tagIndex.setDisplayName("Tag 1");
+        tagIndex.setDescription("Tag");
+        tagIndex.setTagType(TagType.Custom);
+
+        AuthInfoStore.setAuthInfo("user1");
+
+        Map<String, Object> result = tagController.createTag(tagIndex);
+        TagIndex tagFromDB = tagIndexDao.findByID((Long) result.get(keyId));
+        assertNotNull("Cannot find the created tag.", tagFromDB);
+
+        AuthInfoStore.setAuthInfo("user2");
+
+        try {
+            tagController.removeTag(tagIndex.getDisplayName());
+            fail("Expect a PortalException");
+        } catch (PortalException e) {
+            assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
+        }
+
+        AuthInfoStore.setAuthInfo("user1");
+        try {
+            tagController.removeTag(tagIndex.getDisplayName());
+        } catch (Exception e) {
+            fail("Should not throw any exception");
+        }
+
+        tagFromDB = tagIndexDao.findByID((Long) result.get(keyId));
+        assertNull("Should not find the created tag.", tagFromDB);
+
+        TagUserRelation relation = tagUserRelationDao.find((Long) result.get(keyId), "user1");
+        assertNull("Should not have the relation", relation);
+    }
+
+    @Test
+    public void testBindUserGroupToTag() throws Exception {
+        TagIndex tagIndex = new TagIndex();
+        tagIndex.setDisplayName("Tag 1");
+        tagIndex.setDescription("Tag");
+        tagIndex.setTagType(TagType.Custom);
+        tagIndex.setCreateBy("TagCreator");
+        Long tagId = tagIndexDao.saveOrUpdate(tagIndex);
+
+        UserGroup userGroup = new UserGroup();
+        userGroup.setName("User Group");
+        userGroup.setCreateBy("Someone");
+        Long userGroupId = userGroupDao.saveOrUpdate(userGroup);
+
+        AuthInfoStore.setAuthInfo("Someone");
+
+        // Error test
+        String[] blankTagIds = new String[]{null, " "};
+        String[] blankUserGroupIds = new String[]{null, " "};
+        for (String tagIds : blankTagIds) {
+            for (String userGroupIds : blankUserGroupIds) {
+                try {
+                    tagController.addTagToUserGroup(tagIds, userGroupIds);
+                    fail("Expect a PortalException");
+                } catch (PortalException e) {
+                    assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+                }
+            }
+        }
+
+        // Existence test
+        try {
+            tagController.addTagToUserGroup(tagId + ",test2", userGroupId + "");
+            fail("Expect a PortalException");
+        } catch (PortalException e) {
+            assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+        }
+
+        try {
+            tagController.addTagToUserGroup(tagId + "", userGroupId + ",userGroup1");
+            fail("Expect a PortalException");
+        } catch (PortalException e) {
+            assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+        }
+
+        try {
+            tagController.addTagToUserGroup(tagId + "", userGroupId + "");
+            fail("Expect a PortalException");
+        } catch (PortalException e) {
+            assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+        }
+
+        AuthInfoStore.setAuthInfo(tagIndex.getCreateBy());
+        try {
+            tagController.addTagToUserGroup(tagId + "", userGroupId + "");
+        } catch (Exception e) {
+            fail("Should not throw any exception");
+        }
+    }
+
+    @Test
+    public void testUnbindUserGroupFromTag() throws Exception {
+
+    }
+
+    @Test
+    public void testWebCreateTag() throws Exception {
 
         Map<String, Object> request = new HashMap<>();
         request.put("displayName", displayName);
         request.put("description", "some description");
 
-        String ctx= mapper.writeValueAsString(request);
+        String ctx = mapper.writeValueAsString(request);
 
-        String result=this.mockMvc.perform(
+        String result = this.mockMvc.perform(
                 post("/tags/custom").content(ctx)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
@@ -69,31 +215,31 @@ public class TestTagController extends WebTestTemplate {
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        Map<String,Object> map=mapper.readValue(result, Map.class);
+        Map<String, Object> map = mapper.readValue(result, Map.class);
 
         System.out.println("Response:" + result);
 
-        tagIDForTest = Long.valueOf((int)map.get("id"));
+        tagIDForTest = Long.valueOf((int) map.get("id"));
 
         // assert http return
-        String tagName = (String)map.get("tagName");
+        String tagName = (String) map.get("tagName");
         assertEquals(TagType.Custom + "-" + displayName, tagName);
 
     }
 
     @Test
-    public void testUpdateTag() throws Exception {
+    public void testWebUpdateTag() throws Exception {
 
-        this.testCreateTag();
+        this.testWebCreateTag();
 
         // update the tag
         Map<String, Object> request = new HashMap<>();
         request.put("displayName", displayName);
         request.put("description", "some description new");
 
-        String ctx= mapper.writeValueAsString(request);
+        String ctx = mapper.writeValueAsString(request);
 
-        String result=this.mockMvc.perform(
+        String result = this.mockMvc.perform(
                 post("/tags/custom").content(ctx)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
@@ -102,31 +248,31 @@ public class TestTagController extends WebTestTemplate {
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        Map<String,Object> map=mapper.readValue(result, Map.class);
+        Map<String, Object> map = mapper.readValue(result, Map.class);
 
         System.out.println("Response:" + result);
 
         // assert http return
-        Long tagID = Long.valueOf((int)map.get("id"));
+        Long tagID = Long.valueOf((int) map.get("id"));
         assertEquals(tagIDForTest, tagID);
 
-        String tagName = (String)map.get("tagName");
+        String tagName = (String) map.get("tagName");
         assertEquals(TagType.Custom + "-" + displayName, tagName);
 
         TagIndex tagIndex = tagIndexDao.findByID(tagID);
-        assertEquals(tagIDForTest, (Long)tagIndex.getId());
+        assertEquals(tagIDForTest, (Long) tagIndex.getId());
         assertEquals(displayName, tagIndex.getDisplayName());
         assertEquals("some description new", tagIndex.getDescription());
 
 
         // create another tag as displayName changed
         request = new HashMap<>();
-        request.put("displayName", displayName+"_new");
+        request.put("displayName", displayName + "_new");
         request.put("description", "some description new");
 
-        ctx= mapper.writeValueAsString(request);
+        ctx = mapper.writeValueAsString(request);
 
-        result=this.mockMvc.perform(
+        result = this.mockMvc.perform(
                 post("/tags/custom").content(ctx)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
@@ -135,33 +281,33 @@ public class TestTagController extends WebTestTemplate {
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        map=mapper.readValue(result, Map.class);
+        map = mapper.readValue(result, Map.class);
 
         System.out.println("Response:" + result);
 
         // assert http return
-        tagID = Long.valueOf((int)map.get("id"));
+        tagID = Long.valueOf((int) map.get("id"));
         assertEquals(Long.valueOf(tagIDForTest + 1), tagID);
 
-        tagName = (String)map.get("tagName");
-        assertEquals(TagType.Custom + "-" + displayName+"_new", tagName);
+        tagName = (String) map.get("tagName");
+        assertEquals(TagType.Custom + "-" + displayName + "_new", tagName);
 
         tagIndex = tagIndexDao.findByID(tagID);
-        assertEquals(Long.valueOf(tagIDForTest + 1), (Long)tagIndex.getId());
-        assertEquals(displayName+"_new", tagIndex.getDisplayName());
+        assertEquals(Long.valueOf(tagIDForTest + 1), (Long) tagIndex.getId());
+        assertEquals(displayName + "_new", tagIndex.getDisplayName());
         assertEquals("some description new", tagIndex.getDescription());
 
     }
 
     @Test
-    public void testCreateTagException() throws Exception {
+    public void testWebCreateTagException() throws Exception {
 
         Map<String, Object> request = new HashMap<>();
         request.put("description", "some description");
 
-        String ctx= mapper.writeValueAsString(request);
+        String ctx = mapper.writeValueAsString(request);
 
-        String result=this.mockMvc.perform(
+        String result = this.mockMvc.perform(
                 post("/tags/custom").content(ctx)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
@@ -173,14 +319,14 @@ public class TestTagController extends WebTestTemplate {
     }
 
     @Test
-    public void testRemoveTag() throws Exception {
+    public void testWebRemoveTag() throws Exception {
 
-        this.testCreateTag();
+        this.testWebCreateTag();
 
         TagIndex tagIndex = tagIndexDao.findByID(tagIDForTest);
         assertNotNull(tagIndex);
 
-        String result=this.mockMvc.perform(
+        String result = this.mockMvc.perform(
                 delete("/tags/custom/" + displayName)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
@@ -195,9 +341,9 @@ public class TestTagController extends WebTestTemplate {
     }
 
     @Test
-    public void testRemoveTagException() throws Exception {
+    public void testWebRemoveTagException() throws Exception {
 
-        String result=this.mockMvc.perform(
+        String result = this.mockMvc.perform(
                 delete("/tags/custom/" + "some_non_existing_displayName")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
@@ -209,10 +355,10 @@ public class TestTagController extends WebTestTemplate {
     }
 
     @Test
-    public void testGetAllTag() throws Exception {
+    public void testWebGetAllTag() throws Exception {
 
         // test no tag
-        String result=this.mockMvc.perform(
+        String result = this.mockMvc.perform(
                 get("/tags/search")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
@@ -221,7 +367,7 @@ public class TestTagController extends WebTestTemplate {
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        List<Map<String, Object>> list=mapper.readValue(result, List.class);
+        List<Map<String, Object>> list = mapper.readValue(result, List.class);
         assertEquals(0, list.size());
 
         // test tag existing
@@ -251,7 +397,7 @@ public class TestTagController extends WebTestTemplate {
         long tagID3 = tagIndexDao.saveOrUpdate(tagIndex);
         tagIDs.add(tagID3);
 
-        result=this.mockMvc.perform(
+        result = this.mockMvc.perform(
                 get("/tags/all")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
@@ -260,15 +406,15 @@ public class TestTagController extends WebTestTemplate {
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        list=mapper.readValue(result, List.class);
+        list = mapper.readValue(result, List.class);
 
         // assert http return
         assertEquals(3, list.size());
 
-        for(Map<String, Object> map : list) {
+        for (Map<String, Object> map : list) {
             System.out.println("response: " + map);
 
-            assertTrue(tagIDs.contains(Long.valueOf((int)map.get("id"))));
+            assertTrue(tagIDs.contains(Long.valueOf((int) map.get("id"))));
             assertTrue(map.get("tagType").equals(TagType.Custom.toString()) || map.get("tagType").equals(TagType.Location.toString()));
             assertTrue(displayNames.contains(map.get("displayName")));
         }
@@ -276,7 +422,7 @@ public class TestTagController extends WebTestTemplate {
     }
 
     @Test
-    public void testFindLocations() throws Exception {
+    public void testWebFindLocations() throws Exception {
 
         // create location
         List<String> displayNames = new ArrayList<>();
@@ -288,7 +434,7 @@ public class TestTagController extends WebTestTemplate {
         List<Long> tagIDs = new ArrayList<>();
 
         // create tag
-        for(int i=0;i<displayNames.size();i++){
+        for (int i = 0; i < displayNames.size(); i++) {
             TagIndex tagIndex = new TagIndex();
             tagIndex.setTagType(TagType.Location);
             tagIndex.setDisplayName(displayNames.get(i));
@@ -296,7 +442,7 @@ public class TestTagController extends WebTestTemplate {
         }
 
         // find location floor1
-        String result=this.mockMvc.perform(
+        String result = this.mockMvc.perform(
                 get("/tags/locations/" + "floor1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
@@ -314,7 +460,7 @@ public class TestTagController extends WebTestTemplate {
         assertEquals(displayNames.get(2), list.get(2));
 
         // find location floor1-room1
-        result=this.mockMvc.perform(
+        result = this.mockMvc.perform(
                 get("/tags/locations/" + "floor1-room1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
@@ -331,7 +477,7 @@ public class TestTagController extends WebTestTemplate {
         assertEquals(displayNames.get(2), list.get(1));
 
         // find all locations
-        result=this.mockMvc.perform(
+        result = this.mockMvc.perform(
                 get("/tags/locations/")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
@@ -354,7 +500,7 @@ public class TestTagController extends WebTestTemplate {
 
 
     @Test
-    public void testFindTags() throws Exception {
+    public void testWebFindTags() throws Exception {
 
         // create thing
         String[] vendorThingIDs = new String[]{"vendorThingIDForTest1", "vendorThingIDForTest2", "vendorThingIDForTest3"};
@@ -382,7 +528,7 @@ public class TestTagController extends WebTestTemplate {
 
 
         // search custom tag
-        String result=this.mockMvc.perform(
+        String result = this.mockMvc.perform(
                 get("/tags/search?" + "tagType=" + TagType.Custom)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
@@ -395,27 +541,27 @@ public class TestTagController extends WebTestTemplate {
 
         assertEquals(3, list.size());
 
-        for(Map<String, Object> map : list) {
+        for (Map<String, Object> map : list) {
             System.out.println("Response Map: " + map);
-            long tagID = ((Integer)map.get("id")).longValue();
+            long tagID = ((Integer) map.get("id")).longValue();
             int count = (Integer) map.get("count");
-            List<Integer> intThings = (List<Integer>)map.get("things");
+            List<Integer> intThings = (List<Integer>) map.get("things");
             List<Long> things = new ArrayList<>();
-            if(intThings != null) {
+            if (intThings != null) {
                 for (Integer i : intThings) {
                     things.add(i.longValue());
                 }
             }
 
-            if(tagID == tagIDs[0]) {
+            if (tagID == tagIDs[0]) {
                 assertEquals(2, count);
                 System.out.println(things.contains(globalThingIDs[0]));
                 assertTrue(things.contains(globalThingIDs[0]));
                 assertTrue(things.contains(globalThingIDs[1]));
-            } else if(tagID == tagIDs[1]) {
+            } else if (tagID == tagIDs[1]) {
                 assertEquals(1, count);
                 assertTrue(things.contains(globalThingIDs[2]));
-            } else if(tagID == tagIDs[2]) {
+            } else if (tagID == tagIDs[2]) {
                 assertEquals(0, count);
                 assertTrue(things.isEmpty());
             }
@@ -427,7 +573,7 @@ public class TestTagController extends WebTestTemplate {
 
         Long[] globalThingIDs = new Long[vendorThingIDs.length];
 
-        for(int i = 0; i<vendorThingIDs.length;i++) {
+        for (int i = 0; i < vendorThingIDs.length; i++) {
             GlobalThingInfo thingInfo = new GlobalThingInfo();
             thingInfo.setVendorThingID(vendorThingIDs[i]);
             thingInfo.setKiiAppID(kiiAppID);
@@ -444,7 +590,7 @@ public class TestTagController extends WebTestTemplate {
 
         Long[] tagIDs = new Long[displayNames.length];
 
-        for(int i = 0; i<displayNames.length;i++) {
+        for (int i = 0; i < displayNames.length; i++) {
             TagIndex tagIndex = new TagIndex(tagType, displayNames[i], null);
             tagIDs[i] = tagIndexDao.saveOrUpdate(tagIndex);
 
