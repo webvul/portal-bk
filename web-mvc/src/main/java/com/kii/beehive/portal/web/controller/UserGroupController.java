@@ -39,7 +39,7 @@ import com.kii.beehive.portal.web.exception.PortalException;
  * refer to doc "Tech Design - Beehive API" section "User API" for details
  */
 @RestController
-@RequestMapping(path = "/usergroup",  consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+@RequestMapping(path = "/usergroup")
 public class UserGroupController extends AbstractController{
 	
 	@Autowired
@@ -142,7 +142,7 @@ public class UserGroupController extends AbstractController{
 		if(orig == null){
 			throw new PortalException("UserGroup Not Found", "UserGroup with userGroupID:" + userGroupID + " Not Found", HttpStatus.NOT_FOUND);
 		}else if(!orig.getCreateBy().equals(getLoginUserID())){
-            throw new InvalidAuthException(orig.getCreateBy(), getLoginUserID());
+            throw new InvalidAuthException(getLoginUserID(), orig.getCreateBy());
         }
 		
 		userManager.deleteUserGroup(userGroupID);
@@ -207,27 +207,21 @@ public class UserGroupController extends AbstractController{
     
     /**
      * 列出用户群组
-     * POST /usergroup/list
+     * GET /usergroup/list
      *
      * refer to doc "Beehive API - User API" for request/response details
      * refer to doc "Tech Design - Beehive API", section "Inquire User Group (查询用户群组)" for more details
      *
-     * @param httpRequest
      */
     @RequestMapping(path = "/list", method = {RequestMethod.GET})
-	public ResponseEntity<List<UserGroupRestBean>> getUserGroupList(HttpServletRequest httpRequest) {
-		List<UserGroup> list = null;
-		if(this.isTeamIDExist()){
-			list = userGroupDao.findUserGroup(null, null , null);
-		}else{
-			list = userGroupDao.findUserGroup(getLoginUserID(), null , null);
-		}
+	public ResponseEntity<List<UserGroupRestBean>> getUserGroupList() {
+		List<UserGroup> list = userGroupDao.findUserGroup(getLoginUserID(), null , null);
 		List<UserGroupRestBean> restBeanList = this.convertList(list);
 		return new ResponseEntity<>(restBeanList, HttpStatus.OK);
 	}
     
     @RequestMapping(path = "/all", method = {RequestMethod.GET})
-	public ResponseEntity<List<UserGroupRestBean>> getUserGroupAll(HttpServletRequest httpRequest) {
+	public ResponseEntity<List<UserGroupRestBean>> getUserGroupAll() {
 		List<UserGroup> list = userGroupDao.findAll();
 		List<UserGroupRestBean> restBeanList = this.convertList(list);
 		return new ResponseEntity<>(restBeanList, HttpStatus.OK);

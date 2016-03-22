@@ -161,14 +161,8 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 				log.debug(authInfo.toString());
 				list.set(1, authInfo.getUserID());
 
-				// if not auth APIs and don't have permission, throw exception
-				// in other words, while calling auth APIs, only token will be checked, permission will not be checked
-				if (!subUrl.startsWith(Constants.URL_OAUTH2)) {
-					throw new BeehiveUnAuthorizedException("access url not been authorized:"+subUrl);
-				} else {
-					AuthInfoStore.setAuthInfo(authInfo.getUserID());
-					AuthInfoStore.setTeamID(authInfo.getTeamID());
-				}
+				AuthInfoStore.setAuthInfo(authInfo.getUserID());
+				AuthInfoStore.setTeamID(authInfo.getTeamID());
 			}
 
 			list.add("authSuccess");
