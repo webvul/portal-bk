@@ -196,6 +196,12 @@ public class TriggerManager {
 		return triggerList;
 	}
 
+	public List<TriggerRecord> getDeleteTriggerListByUserId(String userId){
+		List<TriggerRecord> triggerList= triggerDao.getDeleteTriggerListByUserId(userId);
+
+		return triggerList;
+	}
+
 	public List<SimpleTriggerRecord> getTriggerListByUserIdAndThingId(String userId,String thingId){
 		List<SimpleTriggerRecord> resultTriggerList = new ArrayList<SimpleTriggerRecord>();
 		List<TriggerRecord> triggerList= triggerDao.getTriggerListByUserId(userId);

@@ -58,9 +58,16 @@ public class CrossTriggerController {
 	}
 
 	@RequestMapping(path="/{triggerID}",method = { RequestMethod.DELETE })
-	public void deleteTrigger(@PathVariable("triggerID") String triggerID){
-
+	public Map<String, Object> deleteTrigger(@PathVariable("triggerID") String triggerID){
+		Map<String, Object> result = new HashMap<>();
+		result.put("result", "success");
 		TriggerRecord record=mang.getTriggerByID(triggerID);
+
+		if(!TriggerRecord.StatusType.disable.equals(record.getRecordStatus())){
+
+			result.put("result", "only can delete disable Trigger");
+			return result;
+		}
 
 		verify(record);
 
@@ -74,6 +81,8 @@ public class CrossTriggerController {
 		list.add("delete");
 		list.add(triggerID);
 		logTool.write(list);
+
+		return result;
 	}
 
 	private void verify(TriggerRecord record) {
@@ -86,10 +95,17 @@ public class CrossTriggerController {
 	}
 
 	@RequestMapping(path="/{triggerID}/enable",method = { RequestMethod.PUT })
-	public void enableTrigger(@PathVariable("triggerID") String triggerID){
+	public Map<String, Object> enableTrigger(@PathVariable("triggerID") String triggerID){
+		Map<String, Object> result = new HashMap<>();
+		result.put("result", "success");
+		TriggerRecord record=mang.getTriggerByID(triggerID);
+		if(!TriggerRecord.StatusType.disable.equals(record.getRecordStatus())){
+			result.put("result", "only can operator disable Trigger");
+			return result;
+		}
+
 		mang.enableTrigger(triggerID);
 
-		TriggerRecord record=mang.getTriggerByID(triggerID);
 		//日期时间+当前用户ID+"trigger”+trigger type(simple/group/summary)+”enable"+当前triggerID
 		List<String> list=new LinkedList<>();
 		list.add(AuthInfoStore.getUserID());
@@ -98,13 +114,22 @@ public class CrossTriggerController {
 		list.add("enable");
 		list.add(triggerID);
 		logTool.write(list);
+
+		return result;
 	}
 
 	@RequestMapping(path="/{triggerID}/disable",method = { RequestMethod.PUT })
-	public void disableTrigger(@PathVariable("triggerID") String triggerID){
+	public Map<String, Object> disableTrigger(@PathVariable("triggerID") String triggerID){
+		Map<String, Object> result = new HashMap<>();
+		result.put("result", "success");
+		TriggerRecord record=mang.getTriggerByID(triggerID);
+		if(!TriggerRecord.StatusType.enable.equals(record.getRecordStatus())){
+			result.put("result", "only can operator enable Trigger");
+			return result;
+		}
+
 		mang.disableTrigger(triggerID);
 
-		TriggerRecord record=mang.getTriggerByID(triggerID);
 		//日期时间+当前用户ID+"trigger”+trigger type(simple/group/summary)+”disable"+当前triggerID
 		List<String> list=new LinkedList<>();
 		list.add(AuthInfoStore.getUserID());
@@ -113,6 +138,7 @@ public class CrossTriggerController {
 		list.add("disable");
 		list.add(triggerID);
 		logTool.write(list);
+		return result;
 	}
 
 	@RequestMapping(path="/{triggerID}",method={RequestMethod.GET})
@@ -127,6 +153,16 @@ public class CrossTriggerController {
 		String currentUserId = AuthInfoStore.getUserID();
 
 		return mang.getTriggerListByUserId(currentUserId);
+//		return null;
+
+	}
+
+	@RequestMapping(path="/deleteTrigger",method={RequestMethod.GET})
+	public List<TriggerRecord> getDeleteTriggerListByCurrentUser(){
+
+		String currentUserId = AuthInfoStore.getUserID();
+
+		return mang.getDeleteTriggerListByUserId(currentUserId);
 //		return null;
 
 	}
