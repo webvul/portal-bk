@@ -86,6 +86,8 @@ public class EngineService {
 
 		});
 
+		droolsTriggerService.fireCondition();
+
 	}
 
 	public void createGroupTrigger(Collection<String> thingIDs, TriggerGroupPolicy policy, String triggerID, RuleEnginePredicate predicate){
@@ -110,6 +112,9 @@ public class EngineService {
 
 		droolsTriggerService.addTrigger(trigger,rule);
 
+		droolsTriggerService.fireCondition();
+
+
 	}
 
 
@@ -132,6 +137,9 @@ public class EngineService {
 
 		droolsTriggerService.addTrigger(trigger,rule);
 
+		droolsTriggerService.fireCondition();
+
+
 	}
 
 	public void changeThingsInTrigger(String triggerID,Set<String> newThings){
@@ -146,10 +154,11 @@ public class EngineService {
 		droolsTriggerService.updateThingsInSummary( triggerID,summaryName,newThings);
 
 	}
-	
-	public void updateThingStatus(String thingID,ThingStatus status) {
 
-		droolsTriggerService.addThingStatus(thingID,status);
+
+	public void initThingStatus(String thingID,ThingStatus status,Date date) {
+
+		droolsTriggerService.initThingStatus(thingID,status,date);
 	}
 
 	public void updateThingStatus(String thingID,ThingStatus status,Date time) {
@@ -167,6 +176,9 @@ public class EngineService {
 	public void enableTrigger(String triggerID) {
 
 		droolsTriggerService.enableTrigger(triggerID);
+
+		droolsTriggerService.fireCondition();
+
 
 	}
 }
