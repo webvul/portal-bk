@@ -13,7 +13,7 @@ global CurrThing currThing;
 rule "${triggerID} user custom segment:schedule"
    ${timer}
 when
-    Trigger( $triggerID:triggerID=="${triggerID}")
+    Trigger( $triggerID:triggerID=="${triggerID}" && enable == true )
 then
 	//insertLogical(new MatchResult($triggerID));
 	//System.out.println(" ============================= schedule trigger custom segment " + $triggerID);

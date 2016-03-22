@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
+import com.kii.extension.ruleengine.store.trigger.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -15,10 +16,6 @@ import com.kii.extension.ruleengine.drools.RuleGeneral;
 import com.kii.extension.ruleengine.drools.entity.Summary;
 import com.kii.extension.ruleengine.drools.entity.Trigger;
 import com.kii.extension.ruleengine.drools.entity.TriggerType;
-import com.kii.extension.ruleengine.store.trigger.MultipleSrcTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
-import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.TriggerGroupPolicy;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
 @Component
@@ -122,6 +119,8 @@ public class EngineService {
 		trigger.setType(TriggerType.simple);
 		trigger.setStream(false);
 		trigger.setWhen(predicate.getTriggersWhen());
+
+		trigger.setEnable(Boolean.FALSE);
 
 		if(!StringUtils.isEmpty(thingID)) {
 			trigger.setThings(Collections.singleton(thingID));

@@ -98,7 +98,8 @@ public class TriggerManager {
 
 	public String createTrigger(TriggerRecord record){
 
-		record.setRecordStatus(TriggerRecord.StatusType.enable);
+//		record.setRecordStatus(TriggerRecord.StatusType.enable);
+		record.setRecordStatus(TriggerRecord.StatusType.disable);
 
 		String triggerID=triggerDao.addEntity(record).getObjectID();
 
