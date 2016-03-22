@@ -65,7 +65,7 @@ public class CrossTriggerController {
 
 		if(!TriggerRecord.StatusType.disable.equals(record.getRecordStatus())){
 
-			result.put("result", "only can delete disable Trigger");
+			result.put("result", "only can operating disable Trigger");
 			return result;
 		}
 
@@ -79,6 +79,34 @@ public class CrossTriggerController {
 		list.add("trigger");
 		list.add(record.getType().name());
 		list.add("delete");
+		list.add(triggerID);
+		logTool.write(list);
+
+		return result;
+	}
+
+	@RequestMapping(path="/clear/{triggerID}",method = { RequestMethod.DELETE })
+	public Map<String, Object> clearTrigger(@PathVariable("triggerID") String triggerID){
+		Map<String, Object> result = new HashMap<>();
+		result.put("result", "success");
+		TriggerRecord record=mang.getTriggerByID(triggerID);
+
+		if(!TriggerRecord.StatusType.deleted.equals(record.getRecordStatus())){
+
+			result.put("result", "only can operating deleted Trigger");
+			return result;
+		}
+
+		verify(record);
+
+		mang.clearTrigger(triggerID);
+
+		//日期时间+当前用户ID+"trigger”+trigger type(simple/group/summary)+”delete"+当前triggerID
+		List<String> list=new LinkedList<>();
+		list.add(AuthInfoStore.getUserID());
+		list.add("trigger");
+		list.add(record.getType().name());
+		list.add("clear");
 		list.add(triggerID);
 		logTool.write(list);
 
@@ -100,7 +128,7 @@ public class CrossTriggerController {
 		result.put("result", "success");
 		TriggerRecord record=mang.getTriggerByID(triggerID);
 		if(!TriggerRecord.StatusType.disable.equals(record.getRecordStatus())){
-			result.put("result", "only can operator disable Trigger");
+			result.put("result", "only can operating disable Trigger");
 			return result;
 		}
 
@@ -124,7 +152,7 @@ public class CrossTriggerController {
 		result.put("result", "success");
 		TriggerRecord record=mang.getTriggerByID(triggerID);
 		if(!TriggerRecord.StatusType.enable.equals(record.getRecordStatus())){
-			result.put("result", "only can operator enable Trigger");
+			result.put("result", "only can operating enable Trigger");
 			return result;
 		}
 

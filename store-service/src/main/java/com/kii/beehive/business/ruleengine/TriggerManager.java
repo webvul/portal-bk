@@ -237,5 +237,8 @@ public class TriggerManager {
 		triggerDao.deleteTriggerRecord(triggerID);
 	}
 
+	public void clearTrigger(String triggerID) {
 
+		triggerDao.clearTriggerRecord(triggerID);
+	}
 }

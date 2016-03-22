@@ -90,7 +90,11 @@ public class TriggerRecordDao extends AbstractDataAccess<TriggerRecord> {
 
 	}
 
+	public void clearTriggerRecord(String id){
 
+		super.removeEntity(id);
+
+	}
 
 	public void enableTrigger(String triggerID) {
 
