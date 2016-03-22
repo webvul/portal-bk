@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 @Transactional
@@ -53,11 +54,11 @@ public class TagThingManager {
     @Autowired
     private AppInfoDao appInfoDao;
 
-	@Autowired
-	private ThingUserGroupRelationDao thingUserGroupRelationDao;
+    @Autowired
+    private ThingUserGroupRelationDao thingUserGroupRelationDao;
 
-	@Autowired
-	private ThingUserRelationDao thingUserRelationDao;
+    @Autowired
+    private ThingUserRelationDao thingUserRelationDao;
 
     @Autowired
     private ThingIFInAppService thingIFInAppService;
@@ -182,20 +183,18 @@ public class TagThingManager {
 
     public void bindTagToUserGroup(Collection<String> tagIDs, Collection<String> userGroupIDs) {
         List<TagIndex> tagList = this.findTagList(tagIDs);
-
-        for (String userGroupID : userGroupIDs) {
-            Long ugID = Long.parseLong(userGroupID);
-            List<UserGroup> userGroupList = usergroupDao.findUserGroup(AuthInfoStore.getUserID(), ugID, null);
-            if (userGroupList.size() == 0) {
-                log.warn("UserGroup is null, UserGroupID = " + userGroupID);
-            } else {
-                for (TagIndex tag : tagList) {
-                    TagGroupRelation tgr = tagGroupRelationDao.findByTagIDAndUserGroupID(tag.getId(), ugID);
-                    if (tgr == null) {
-                        tagGroupRelationDao.insert(new TagGroupRelation(tag.getId(), ugID, "1"));
+        List<UserGroup> userGroupList = usergroupDao.findByIDs(userGroupIDs.stream().map(Long::valueOf).
+                collect(Collectors.toList()));
+        if (null != userGroupList) {
+            userGroupList.forEach(userGroup -> {
+                tagList.forEach(tagIndex -> {
+                    TagGroupRelation relation = tagGroupRelationDao.findByTagIDAndUserGroupID(tagIndex.getId(),
+                            userGroup.getId());
+                    if (null == relation) {
+                        tagGroupRelationDao.insert(new TagGroupRelation(tagIndex.getId(), userGroup.getId(), "1"));
                     }
-                }
-            }
+                });
+            });
         }
     }
 
@@ -235,17 +234,12 @@ public class TagThingManager {
 
     public void unbindTagToUserGroup(Collection<String> tagIDs, Collection<String> userGroupIDs) {
         List<TagIndex> tagList = this.findTagList(tagIDs);
-
-        for (String userGroupID : userGroupIDs) {
-            Long ugID = Long.parseLong(userGroupID);
-            List<UserGroup> userGroupList = usergroupDao.findUserGroup(AuthInfoStore.getUserID(), ugID, null);
-            if (userGroupList.size() == 0) {
-                log.warn("UserGroup is null, UserGroupID = " + userGroupID);
-            } else {
-                for (TagIndex tag : tagList) {
-                    tagGroupRelationDao.delete(tag.getId(), ugID);
-                }
-            }
+        List<UserGroup> userGroupList = usergroupDao.findByIDs(userGroupIDs.stream().map(Long::valueOf).
+                collect(Collectors.toList()));
+        if (null != userGroupList) {
+            userGroupList.forEach(userGroup -> {
+                tagList.forEach(tagIndex -> tagGroupRelationDao.delete(tagIndex.getId(), userGroup.getId()));
+            });
         }
     }
 
@@ -367,67 +361,67 @@ public class TagThingManager {
         return tagIndexDao.findTagByGlobalThingID(globalThingID);
     }
 
-	public boolean isTagOwner(TagIndex tag) {
-		TagUserRelation tur = tagUserRelationDao.find(tag.getId(),AuthInfoStore.getUserID());
-		if(tur != null){
-			return true;
-		}else{
-			List<UserGroup> userGroupList = usergroupDao.findUserGroup(AuthInfoStore.getUserID(), null , null);
-			for(UserGroup ug:userGroupList){
-				TagGroupRelation tgr = tagGroupRelationDao.findByTagIDAndUserGroupID(tag.getId(),ug.getId());
-				if(tgr != null) return true;
-			}
-			return false;
-		}
-	}
+    public boolean isTagOwner(TagIndex tag) {
+        TagUserRelation tur = tagUserRelationDao.find(tag.getId(), AuthInfoStore.getUserID());
+        if (tur != null) {
+            return true;
+        } else {
+            List<UserGroup> userGroupList = usergroupDao.findUserGroup(AuthInfoStore.getUserID(), null, null);
+            for (UserGroup ug : userGroupList) {
+                TagGroupRelation tgr = tagGroupRelationDao.findByTagIDAndUserGroupID(tag.getId(), ug.getId());
+                if (tgr != null) return true;
+            }
+            return false;
+        }
+    }
 
-	public boolean isTagCreator(TagIndex tag) {
-		if(tag.getCreateBy().equals(AuthInfoStore.getUserID())){
-			return true;
-		}else{
-			return false;
-		}
-	}
+    public boolean isTagCreator(TagIndex tag) {
+        if (tag.getCreateBy().equals(AuthInfoStore.getUserID())) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
-	public boolean isThingCreator(GlobalThingInfo thing) {
-		if(thing.getCreateBy().equals(AuthInfoStore.getUserID())){
-			return true;
-		}else{
-			return false;
-		}
-	}
+    public boolean isThingCreator(GlobalThingInfo thing) {
+        if (thing.getCreateBy().equals(AuthInfoStore.getUserID())) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
-	public boolean isThingOwner(GlobalThingInfo thing) {
-		ThingUserRelation tur = thingUserRelationDao.find(thing.getId(),AuthInfoStore.getUserID());
-		if(tur != null){
-			return true;
-		}else{
-			List<UserGroup> userGroupList = usergroupDao.findUserGroup(AuthInfoStore.getUserID(), null , null);
-			for(UserGroup ug:userGroupList){
-				ThingUserGroupRelation tgr = thingUserGroupRelationDao.find(thing.getId(),ug.getId());
-				if(tgr != null) return true;
-			}
-			return false;
-		}
-	}
+    public boolean isThingOwner(GlobalThingInfo thing) {
+        ThingUserRelation tur = thingUserRelationDao.find(thing.getId(), AuthInfoStore.getUserID());
+        if (tur != null) {
+            return true;
+        } else {
+            List<UserGroup> userGroupList = usergroupDao.findUserGroup(AuthInfoStore.getUserID(), null, null);
+            for (UserGroup ug : userGroupList) {
+                ThingUserGroupRelation tgr = thingUserGroupRelationDao.find(thing.getId(), ug.getId());
+                if (tgr != null) return true;
+            }
+            return false;
+        }
+    }
 
-	
-private List<TagIndex> findTagList(Collection<String> tagIDs){
-		List<TagIndex> tagList = new ArrayList<TagIndex>();
-		for(String tagID:tagIDs){
-			TagIndex tag = tagIndexDao.findByID(tagID);
-			if(tag != null){
-				if(this.isTagCreator(tag) || this.isTagOwner(tag)){
-					tagList.add(tag);
-				}else{
-					tagIDs.remove(tagID);
-				}
-			}else{
-				log.warn("Tag is null, TagId = " + tagID);
-			}
-		}
-		return tagList;
-	}
+
+    private List<TagIndex> findTagList(Collection<String> tagIDs) {
+        List<TagIndex> tagList = new ArrayList<TagIndex>();
+        for (String tagID : tagIDs) {
+            TagIndex tag = tagIndexDao.findByID(tagID);
+            if (tag != null) {
+                if (this.isTagCreator(tag) || this.isTagOwner(tag)) {
+                    tagList.add(tag);
+                } else {
+                    tagIDs.remove(tagID);
+                }
+            } else {
+                log.warn("Tag is null, TagId = " + tagID);
+            }
+        }
+        return tagList;
+    }
 
     private List<Team> findTeamList(Collection<String> teamIDs) {
         List<Team> teamList = new ArrayList<Team>();

@@ -208,7 +208,7 @@ public class TagController extends AbstractController {
      * @param tagIDs
      */
     @RequestMapping(path = "/{tagIDs}/userGroups/{userGroupIDs}", method = {RequestMethod.DELETE}, consumes = {"*"})
-    public void removeTagToUserGroup(@PathVariable("tagIDs") String tagIDs, @PathVariable("userGroupIDs") String userGroupIDs) {
+    public void removeTagFromUserGroup(@PathVariable("tagIDs") String tagIDs, @PathVariable("userGroupIDs") String userGroupIDs) {
         if (Strings.isBlank(tagIDs) || Strings.isBlank(userGroupIDs)) {
             throw new PortalException("RequiredFieldsMissing", "tagIDs or userGroupIDs is empty", HttpStatus
                     .BAD_REQUEST);
@@ -255,8 +255,8 @@ public class TagController extends AbstractController {
         List<Long> tagIds = tagIDList.stream().filter(Pattern.compile("^[0-9]+$").asPredicate()).map(Long::valueOf)
                 .collect(Collectors.toList());
         List<TagIndex> tagIndexes = tagIndexDao.findByIDs(tagIds);
-        if (null == tagIndexes || !tagIndexes.stream().map(TagIndex::getId).collect(Collectors.toSet()).containsAll
-                (tagIds)) {
+        if (null == tagIndexes || !tagIndexes.stream().map(TagIndex::getId).map(Object::toString).
+                collect(Collectors.toSet()).containsAll(tagIDList)) {
             tagIds.removeAll(tagIndexes.stream().map(TagIndex::getId).collect(Collectors.toList()));
             throw new PortalException("Requested tag doesn't exist", "Invalid tag id(s): [" + listToString(tagIds) +
                     "]", HttpStatus.BAD_REQUEST);
@@ -268,8 +268,8 @@ public class TagController extends AbstractController {
         List<Long> userGroupIds = userGroupIDList.stream().filter(Pattern.compile("^[0-9]+$").asPredicate())
                 .map(Long::valueOf).collect(Collectors.toList());
         List<UserGroup> userGroups = userGroupDao.findByIDs(userGroupIds);
-        if (null == userGroups || !userGroups.stream().map(UserGroup::getId).collect(Collectors.toSet()).containsAll
-                (userGroupIds)) {
+        if (null == userGroups || !userGroups.stream().map(UserGroup::getId).map(Object::toString).
+                collect(Collectors.toSet()).containsAll(userGroupIDList)) {
             userGroupIds.removeAll(userGroups.stream().map(UserGroup::getId).collect(Collectors.toList()));
             throw new PortalException("Requested user group doesn't exist", "Invalid user group id(s): [" +
                     listToString(userGroupIds) + "]", HttpStatus.BAD_REQUEST);

@@ -40,6 +40,9 @@ public class TestTagController extends WebTestTemplate {
     private TagController tagController;
 
     @Autowired
+    private TagGroupRelationDao tagGroupRelationDao;
+
+    @Autowired
     private TagUserRelationDao tagUserRelationDao;
 
     @Autowired
@@ -171,6 +174,14 @@ public class TestTagController extends WebTestTemplate {
         }
 
         try {
+            tagController.addTagToUserGroup(tagId + "", userGroupId + "");
+            fail("Expect a PortalException");
+        } catch (PortalException e) {
+            assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
+        }
+
+        AuthInfoStore.setAuthInfo(tagIndex.getCreateBy());
+        try {
             tagController.addTagToUserGroup(tagId + "", userGroupId + ",userGroup1");
             fail("Expect a PortalException");
         } catch (PortalException e) {
@@ -179,22 +190,81 @@ public class TestTagController extends WebTestTemplate {
 
         try {
             tagController.addTagToUserGroup(tagId + "", userGroupId + "");
+        } catch (Exception e) {
+            fail("Should not throw any exception");
+        }
+
+        TagGroupRelation relation = tagGroupRelationDao.findByTagIDAndUserGroupID(tagId, userGroupId);
+        assertNotNull("Should have the relation", relation);
+    }
+
+    @Test
+    public void testUnbindUserGroupFromTag() throws Exception {
+        TagIndex tagIndex = new TagIndex();
+        tagIndex.setDisplayName("Tag 1");
+        tagIndex.setDescription("Tag");
+        tagIndex.setTagType(TagType.Custom);
+        tagIndex.setCreateBy("TagCreator");
+        Long tagId = tagIndexDao.saveOrUpdate(tagIndex);
+
+        UserGroup userGroup = new UserGroup();
+        userGroup.setName("User Group");
+        userGroup.setCreateBy("Someone");
+        Long userGroupId = userGroupDao.saveOrUpdate(userGroup);
+
+        AuthInfoStore.setAuthInfo(tagIndex.getCreateBy());
+        tagController.addTagToUserGroup(tagId + "", userGroupId + "");
+
+        TagGroupRelation relation = tagGroupRelationDao.findByTagIDAndUserGroupID(tagId, userGroupId);
+        assertNotNull("Should have the relation", relation);
+
+        AuthInfoStore.setAuthInfo("Someone");
+
+        // Error test
+        String[] blankTagIds = new String[]{null, " "};
+        String[] blankUserGroupIds = new String[]{null, " "};
+        for (String tagIds : blankTagIds) {
+            for (String userGroupIds : blankUserGroupIds) {
+                try {
+                    tagController.removeTagFromUserGroup(tagIds, userGroupIds);
+                    fail("Expect a PortalException");
+                } catch (PortalException e) {
+                    assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+                }
+            }
+        }
+
+        // Existence test
+        try {
+            tagController.removeTagFromUserGroup(tagId + ",test2", userGroupId + "");
             fail("Expect a PortalException");
         } catch (PortalException e) {
             assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
         }
 
+        try {
+            tagController.removeTagFromUserGroup(tagId + "", userGroupId + "");
+            fail("Expect a PortalException");
+        } catch (PortalException e) {
+            assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
+        }
+
         AuthInfoStore.setAuthInfo(tagIndex.getCreateBy());
         try {
-            tagController.addTagToUserGroup(tagId + "", userGroupId + "");
+            tagController.removeTagFromUserGroup(tagId + "", userGroupId + ",userGroup1");
+            fail("Expect a PortalException");
+        } catch (PortalException e) {
+            assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+        }
+
+        try {
+            tagController.removeTagFromUserGroup(tagId + "", userGroupId + "");
         } catch (Exception e) {
             fail("Should not throw any exception");
         }
-    }
 
-    @Test
-    public void testUnbindUserGroupFromTag() throws Exception {
-
+        relation = tagGroupRelationDao.findByTagIDAndUserGroupID(tagId, userGroupId);
+        assertNull("Should not have the relation", relation);
     }
 
     @Test
