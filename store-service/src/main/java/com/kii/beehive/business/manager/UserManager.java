@@ -2,11 +2,15 @@ package com.kii.beehive.business.manager;
 
 import com.kii.beehive.business.helper.SyncMsgService;
 import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.exception.DuplicateException;
 import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.beehive.portal.exception.InvalidAuthException;
 import com.kii.beehive.portal.exception.UserNotExistException;
 import com.kii.beehive.portal.jdbc.dao.*;
-import com.kii.beehive.portal.jdbc.entity.*;
+import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
+import com.kii.beehive.portal.jdbc.entity.Team;
+import com.kii.beehive.portal.jdbc.entity.TeamGroupRelation;
+import com.kii.beehive.portal.jdbc.entity.UserGroup;
 import com.kii.beehive.portal.service.ArchiveBeehiveUserDao;
 import com.kii.beehive.portal.service.BeehiveUserDao;
 import com.kii.beehive.portal.service.KiiUserSyncDao;
@@ -51,6 +55,9 @@ public class UserManager {
 
 	@Autowired
 	private KiiUserSyncDao kiiUserDao;
+
+	@Autowired
+	private BeehiveUserDao beehiveUserDao;
 
 	@Autowired
 	private SyncMsgService msgService;
@@ -132,7 +139,14 @@ public class UserManager {
 	
 	public Long createUserGroup(UserGroup userGroup,String loginUserID) {
 		 // create user group
-	    Long userGroupID = userGroupDao.saveOrUpdate(userGroup);
+
+		List<UserGroup> userGroupList = userGroupDao.findUserGroupByName(userGroup.getName());
+
+		if(userGroupList.size() > 0){
+			throw new  DuplicateException(userGroup.getName());
+		}
+
+		Long userGroupID = userGroupDao.saveOrUpdate(userGroup);
 	    GroupUserRelation gur = new GroupUserRelation(loginUserID,userGroupID);
 	    groupUserRelationDao.insert(gur);
 	    
@@ -146,9 +160,13 @@ public class UserManager {
 	
 	public Long updateUserGroup(UserGroup userGroup,String loginUserID) {
 		List<UserGroup> orgiList = userGroupDao.findUserGroup(loginUserID, userGroup.getId(), null);
-		
 		if(orgiList.size() == 0){
 			throw new EntryNotFoundException(userGroup.getId().toString());
+		}
+
+		List<UserGroup> userGroupList = userGroupDao.findUserGroupByName(userGroup.getName());
+		if(userGroupList.size() > 0){
+			throw new  DuplicateException(userGroup.getName());
 		}
 
 		UserGroup orgi = orgiList.get(0);
@@ -176,22 +194,24 @@ public class UserManager {
 	 * @param userGroupID
      */
 	public void addUserToUserGroup(List<String> userIDList, Long userGroupID) {
-		if(userIDList.size() == 1){
-			List<UserGroup> orgiList = userGroupDao.findUserGroup(userIDList.get(0), userGroupID, null);
+
+		List<BeehiveUser> userList = beehiveUserDao.getUserByIDs(userIDList);
+		if(userList.size() == 1){
+			List<UserGroup> orgiList = userGroupDao.findUserGroup(userList.get(0).getKiiLoginName(), userGroupID, null);
 			if(orgiList.size() == 0){
-				GroupUserRelation gur = new GroupUserRelation(userIDList.get(0), userGroupID);
+				GroupUserRelation gur = new GroupUserRelation(userList.get(0).getKiiLoginName(), userGroupID);
 	    		groupUserRelationDao.insert(gur);
 			}
-		}else{
+		}else if(userList.size() > 1){
 			List<String> existingUserIDList = groupUserRelationDao.findUserIDByUserGroupID(userGroupID);
 			
-			List<String> userIDListToInsert = new ArrayList<>(userIDList);
+			List<String> userIDListToInsert = new ArrayList<>();
+			userList.forEach(beehiveUser -> userIDListToInsert.add(beehiveUser.getKiiLoginName()));
 			userIDListToInsert.removeAll(existingUserIDList);
 	
 			List<GroupUserRelation> relationList = new ArrayList<>();
-			for(String userID : userIDListToInsert) {
-				relationList.add(new GroupUserRelation(userID, userGroupID));
-			}
+			userIDListToInsert.forEach(newUserId -> new GroupUserRelation(newUserId, userGroupID));
+
 			groupUserRelationDao.batchInsert(relationList);
 		}
 	}

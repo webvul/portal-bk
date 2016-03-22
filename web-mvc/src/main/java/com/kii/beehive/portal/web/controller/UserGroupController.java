@@ -199,9 +199,7 @@ public class UserGroupController extends AbstractController{
 				tagList = tagIndexDao.findByIDs(tagIDList);
 			}
 		}
-		if(tagList == null){
-			throw new PortalException("UserGroup Not Found", "UserGroup with userGroupID:" + userGroupID + " Not Found", HttpStatus.NOT_FOUND);
-		}
+
         return new ResponseEntity<>(tagList, HttpStatus.OK);
     }
     
@@ -215,7 +213,7 @@ public class UserGroupController extends AbstractController{
      */
     @RequestMapping(path = "/list", method = {RequestMethod.GET})
 	public ResponseEntity<List<UserGroupRestBean>> getUserGroupList() {
-		List<UserGroup> list = userGroupDao.findUserGroup(getLoginUserID(), null , null);
+		List<UserGroup> list =  list = userGroupDao.findUserGroup(getLoginUserID(), null , null);
 		List<UserGroupRestBean> restBeanList = this.convertList(list);
 		return new ResponseEntity<>(restBeanList, HttpStatus.OK);
 	}

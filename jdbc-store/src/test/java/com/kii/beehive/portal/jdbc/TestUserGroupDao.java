@@ -139,6 +139,12 @@ public class TestUserGroupDao extends TestTemplate {
 		list = dao.findUserGroup(null, null , null);
 		assertNull(list);
 	}
+
+	@Test
+	public void testFindUserGroupByName() {
+		List<UserGroup> list = dao.findUserGroupByName(userGroup.getName());
+		assertTrue(list.size() > 0);
+	}
 	
 	@Test
 	public void testFindUserGroupByUserIDWithTeamID() {
