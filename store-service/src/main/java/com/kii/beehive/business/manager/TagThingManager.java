@@ -4,13 +4,13 @@ import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.CollectUtils;
 import com.kii.beehive.portal.exception.EntryNotFoundException;
+import com.kii.beehive.portal.exception.ObjectNotFoundException;
 import com.kii.beehive.portal.jdbc.dao.*;
 import com.kii.beehive.portal.jdbc.entity.*;
 import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.service.BeehiveUserDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
-import com.kii.extension.sdk.exception.ObjectNotFoundException;
 import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Component
@@ -150,22 +151,15 @@ public class TagThingManager {
         return result;
     }
 
-    public void bindTagToThing(Collection<String> tagIDs, Collection<String> thingIDs) {
-        List<TagIndex> tagList = this.findTagList(tagIDs);
-
-        for (String thingID : thingIDs) {
-            GlobalThingInfo thing = globalThingDao.findByID(thingID);
-            if (thing == null) {
-                log.warn("Thing is null, ThingId = " + thingID);
-            } else {
-                for (TagIndex tag : tagList) {
-                    TagThingRelation ttr = tagThingRelationDao.findByThingIDAndTagID(thing.getId(), tag.getId());
-                    if (ttr == null) {
-                        tagThingRelationDao.insert(new TagThingRelation(tag.getId(), thing.getId()));
-                    }
+    public void bindTagToThing(List<TagIndex> tags, List<GlobalThingInfo> things) {
+        tags.forEach(tagIndex -> {
+            things.forEach(thing -> {
+                TagThingRelation relation = tagThingRelationDao.findByThingIDAndTagID(thing.getId(), tagIndex.getId());
+                if (null == relation) {
+                    tagThingRelationDao.insert(new TagThingRelation(tagIndex.getId(), thing.getId()));
                 }
-            }
-        }
+            });
+        });
     }
 
     public void bindTeamToThing(Collection<String> teamIDs, Collection<String> thingIDs) {
@@ -222,19 +216,12 @@ public class TagThingManager {
         }
     }
 
-    public void unbindTagToThing(Collection<String> tagIDs, Collection<String> thingIDs) {
-        List<TagIndex> tagList = this.findTagList(tagIDs);
-
-        for (String thingID : thingIDs) {
-            GlobalThingInfo thing = globalThingDao.findByID(thingID);
-            if (thing == null) {
-                log.warn("Thing is null, ThingId = " + thingID);
-            } else {
-                for (TagIndex tag : tagList) {
-                    tagThingRelationDao.delete(tag.getId(), thing.getId());
-                }
-            }
-        }
+    public void unbindTagFromThing(List<TagIndex> tags, List<GlobalThingInfo> things) {
+        tags.forEach(tag -> {
+            things.forEach(thing -> {
+                tagThingRelationDao.delete(tag.getId(), thing.getId());
+            });
+        });
     }
 
     public void unbindTagToUserGroup(Collection<String> tagIDs, Collection<String> userGroupIDs) {
@@ -311,7 +298,7 @@ public class TagThingManager {
 
         try {
             thingIFInAppService.removeThing(fullKiiThingID);
-        } catch (ObjectNotFoundException e) {
+        } catch (com.kii.extension.sdk.exception.ObjectNotFoundException e) {
             log.error("not found in Kii Cloud, full kii thing id: " + fullKiiThingID, e);
         }
     }
@@ -487,5 +474,30 @@ public class TagThingManager {
                 tagList.forEach(tagIndex -> tagUserRelationDao.deleteByTagIdAndUserId(tagIndex.getId(), user.getId()));
             });
         }
+    }
+
+    public List<GlobalThingInfo> getThings(List<String> thingIDList) throws ObjectNotFoundException {
+        List<Long> thingIds = thingIDList.stream().filter(Pattern.compile("^[0-9]+$").asPredicate()).map(Long::valueOf)
+                .collect(Collectors.toList());
+        List<GlobalThingInfo> things = globalThingDao.getThingsByIDArray(thingIds);
+        if (null == things || !things.stream().map(GlobalThingInfo::getId).map(Object::toString).
+                collect(Collectors.toSet()).containsAll(thingIDList)) {
+            thingIds.removeAll(things.stream().map(GlobalThingInfo::getId).collect(Collectors.toList()));
+            throw new ObjectNotFoundException("Invalid thing id(s): [" + CollectUtils.collectionToString(thingIds) +
+                    "]");
+        }
+        return things;
+    }
+
+    public List<TagIndex> getTagIndexes(List<String> tagIDList) throws ObjectNotFoundException {
+        List<Long> tagIds = tagIDList.stream().filter(Pattern.compile("^[0-9]+$").asPredicate()).map(Long::valueOf)
+                .collect(Collectors.toList());
+        List<TagIndex> tagIndexes = tagIndexDao.findByIDs(tagIds);
+        if (null == tagIndexes || !tagIndexes.stream().map(TagIndex::getId).map(Object::toString).
+                collect(Collectors.toSet()).containsAll(tagIDList)) {
+            tagIds.removeAll(tagIndexes.stream().map(TagIndex::getId).collect(Collectors.toList()));
+            throw new ObjectNotFoundException("Invalid tag id(s): [" + CollectUtils.collectionToString(tagIds) + "]");
+        }
+        return tagIndexes;
     }
 }

@@ -1,6 +1,8 @@
 package com.kii.beehive.portal.web.controller;
 
 import com.kii.beehive.business.manager.TagThingManager;
+import com.kii.beehive.portal.common.utils.CollectUtils;
+import com.kii.beehive.portal.exception.ObjectNotFoundException;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.dao.TagUserRelationDao;
 import com.kii.beehive.portal.jdbc.dao.TeamTagRelationDao;
@@ -189,7 +191,7 @@ public class TagController extends AbstractController {
         Set<String> nonExistUsers = userManager.checkNonExistingUserID(userIDList);
         if (null != nonExistUsers && !nonExistUsers.isEmpty()) {
             throw new PortalException("Requested user group doesn't exist", "Invalid user id(s): [" +
-                    listToString(nonExistUsers) + "]", HttpStatus.BAD_REQUEST);
+                    CollectUtils.collectionToString(nonExistUsers) + "]", HttpStatus.BAD_REQUEST);
         }
         tagThingManager.bindTagToUser(tagIDList, userIDList);
     }
@@ -212,7 +214,7 @@ public class TagController extends AbstractController {
         Set<String> nonExistUsers = userManager.checkNonExistingUserID(userIDList);
         if (null != nonExistUsers && !nonExistUsers.isEmpty()) {
             throw new PortalException("Requested user group doesn't exist", "Invalid user id(s): [" +
-                    listToString(nonExistUsers) + "]", HttpStatus.BAD_REQUEST);
+                    CollectUtils.collectionToString(nonExistUsers) + "]", HttpStatus.BAD_REQUEST);
         }
         tagThingManager.unbindTagFromUser(tagIDList, userIDList);
     }
@@ -256,30 +258,6 @@ public class TagController extends AbstractController {
         tagThingManager.unbindTagToUserGroup(tagIDList, userGroupIDList);
     }
 
-    private String listToString(Collection<?> collection) {
-        StringBuilder sb = new StringBuilder();
-        collection.forEach(data -> {
-            if (0 != sb.length()) {
-                sb.append(", ");
-            }
-            sb.append(data);
-        });
-        return sb.toString();
-    }
-
-    private List<TagIndex> getTagIndexes(List<String> tagIDList) throws PortalException {
-        List<Long> tagIds = tagIDList.stream().filter(Pattern.compile("^[0-9]+$").asPredicate()).map(Long::valueOf)
-                .collect(Collectors.toList());
-        List<TagIndex> tagIndexes = tagIndexDao.findByIDs(tagIds);
-        if (null == tagIndexes || !tagIndexes.stream().map(TagIndex::getId).map(Object::toString).
-                collect(Collectors.toSet()).containsAll(tagIDList)) {
-            tagIds.removeAll(tagIndexes.stream().map(TagIndex::getId).collect(Collectors.toList()));
-            throw new PortalException("Requested tag doesn't exist", "Invalid tag id(s): [" + listToString(tagIds) +
-                    "]", HttpStatus.BAD_REQUEST);
-        }
-        return tagIndexes;
-    }
-
     private List<UserGroup> getUserGroups(List<String> userGroupIDList) throws PortalException {
         List<Long> userGroupIds = userGroupIDList.stream().filter(Pattern.compile("^[0-9]+$").asPredicate())
                 .map(Long::valueOf).collect(Collectors.toList());
@@ -288,14 +266,19 @@ public class TagController extends AbstractController {
                 collect(Collectors.toSet()).containsAll(userGroupIDList)) {
             userGroupIds.removeAll(userGroups.stream().map(UserGroup::getId).collect(Collectors.toList()));
             throw new PortalException("Requested user group doesn't exist", "Invalid user group id(s): [" +
-                    listToString(userGroupIds) + "]", HttpStatus.BAD_REQUEST);
+                    CollectUtils.collectionToString(userGroupIds) + "]", HttpStatus.BAD_REQUEST);
         }
         return userGroups;
     }
 
     private List<String> parseAndCheckTagIds(String tagIds) {
         List<String> tagIDList = Arrays.asList(tagIds.split(","));
-        List<TagIndex> tagIndexes = getTagIndexes(tagIDList);
+        List<TagIndex> tagIndexes;
+        try {
+            tagIndexes = tagThingManager.getTagIndexes(tagIDList);
+        } catch (ObjectNotFoundException e) {
+            throw new PortalException("Requested tag doesn't exist", e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
         tagIndexes.forEach(index -> {
             if (!tagThingManager.isTagCreator(index)) {
                 throw new BeehiveUnAuthorizedException("Current user is not the creator of the tag.");
