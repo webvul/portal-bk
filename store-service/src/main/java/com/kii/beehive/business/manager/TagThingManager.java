@@ -7,6 +7,8 @@ import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.beehive.portal.jdbc.dao.*;
 import com.kii.beehive.portal.jdbc.entity.*;
 import com.kii.beehive.portal.service.AppInfoDao;
+import com.kii.beehive.portal.service.BeehiveUserDao;
+import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
 import com.kii.extension.sdk.exception.ObjectNotFoundException;
 import org.apache.logging.log4j.util.Strings;
@@ -62,6 +64,9 @@ public class TagThingManager {
 
     @Autowired
     private ThingIFInAppService thingIFInAppService;
+
+    @Autowired
+    private BeehiveUserDao userDao;
 
 
     /**
@@ -317,6 +322,12 @@ public class TagThingManager {
 
     }
 
+    public List<String> findUserLocations(String userId, String parentLocation) {
+
+        return tagIndexDao.findUserLocations(userId, parentLocation);
+
+    }
+
 
     /**
      * save the thing-location relation
@@ -450,4 +461,31 @@ public class TagThingManager {
         return tagList;
     }
 
+    public void bindTagToUser(List<String> tagIDList, List<String> userIDList) {
+        List<TagIndex> tagList = findTagList(tagIDList);
+        List<BeehiveUser> users = userDao.getUserByIDs(userIDList);
+        if (null != users) {
+            users.forEach(user -> {
+                tagList.forEach(tagIndex -> {
+                    TagUserRelation relation = tagUserRelationDao.find(tagIndex.getId(), user.getKiiLoginName());
+                    if (null == relation) {
+                        relation = new TagUserRelation();
+                        relation.setUserId(user.getKiiLoginName());
+                        relation.setTagId(tagIndex.getId());
+                        tagUserRelationDao.insert(relation);
+                    }
+                });
+            });
+        }
+    }
+
+    public void unbindTagFromUser(List<String> tagIDList, List<String> userIDList) {
+        List<TagIndex> tagList = findTagList(tagIDList);
+        List<BeehiveUser> users = userDao.getUserByIDs(userIDList);
+        if (null != users) {
+            users.forEach(user -> {
+                tagList.forEach(tagIndex -> tagUserRelationDao.deleteByTagIdAndUserId(tagIndex.getId(), user.getId()));
+            });
+        }
+    }
 }

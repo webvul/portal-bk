@@ -154,4 +154,16 @@ public class TestTagUserRelationDao extends TestTemplate {
         assertEquals("There should be two tag ids", 1, tagIds.size());
         assertEquals("Tag id doesn't match", this.allTagIds.get(2), tagIds.get(0));
     }
+
+    @Test
+    public void testDeleteByTagIdAndUserId() throws Exception {
+        List<Long> tagIds = tagUserRelationDao.findTagIds("user1");
+        assertNotNull("Tag ids should not be null", tagIds);
+        assertEquals("There should be two tag ids", 2, tagIds.size());
+        tagUserRelationDao.deleteByTagIdAndUserId(this.allTagIds.get(1), "user1");
+        tagIds = tagUserRelationDao.findTagIds("user1");
+        assertNotNull("Tag ids should not be null", tagIds);
+        assertEquals("There should be one tag id", 1, tagIds.size());
+        assertEquals("Tag id doesn't match", this.allTagIds.get(0), tagIds.get(0));
+    }
 }

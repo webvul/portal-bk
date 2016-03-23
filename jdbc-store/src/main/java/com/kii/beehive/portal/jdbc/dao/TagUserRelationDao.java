@@ -25,6 +25,9 @@ public class TagUserRelationDao extends SpringBaseDao<TagUserRelation> {
     final private static String SQL_DELETE_BY_TAGID = "DELETE t.* FROM " + TABLE_NAME + " t WHERE " + TagUserRelation
             .TAG_ID + " = ?";
 
+    final private static String SQL_DELETE_BY_TAGID_AND_USERID = SQL_DELETE_BY_TAGID + " AND " + TagUserRelation
+            .USER_ID + " = ?";
+
     @Override
     protected String getTableName() {
         return TABLE_NAME;
@@ -77,5 +80,12 @@ public class TagUserRelationDao extends SpringBaseDao<TagUserRelation> {
             return;
         }
         jdbcTemplate.update(SQL_DELETE_BY_TAGID, tagId);
+    }
+
+    public void deleteByTagIdAndUserId(Long tagId, String userId) {
+        if (null == tagId || null == userId) {
+            return;
+        }
+        jdbcTemplate.update(SQL_DELETE_BY_TAGID_AND_USERID, tagId, userId);
     }
 }

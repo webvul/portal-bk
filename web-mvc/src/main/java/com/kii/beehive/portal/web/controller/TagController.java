@@ -12,7 +12,6 @@ import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,7 +36,7 @@ public class TagController extends AbstractController {
     private TeamTagRelationDao teamTagRelationDao;
 
     @Autowired
-    private TagThingManager thingTagManager;
+    private TagThingManager tagThingManager;
 
     @Autowired
     private TagUserRelationDao tagUserRelationDao;
@@ -108,10 +107,10 @@ public class TagController extends AbstractController {
         }
 
         TagIndex toBeRemoved = orig.get(0);
-
-        checkIsCreator(toBeRemoved);
-
-        thingTagManager.removeTag(toBeRemoved);
+        if (!tagThingManager.isTagCreator(toBeRemoved)) {
+            throw new BeehiveUnAuthorizedException("Current user is not the creator of the tag.");
+        }
+        tagThingManager.removeTag(toBeRemoved);
 
 //		eventBus.onTagChangeFire();
     }
@@ -130,7 +129,8 @@ public class TagController extends AbstractController {
     public List<TagIndex> findTags(@RequestParam(value = "tagType", required = false) String tagType,
                                    @RequestParam(value = "displayName", required = false) String displayName) {
 
-        List<TagIndex> list = tagIndexDao.findTagByTagTypeAndName(StringUtils.capitalize(tagType), displayName);
+        List<TagIndex> list = tagIndexDao.findUserTagByTypeAndName(getLoginUserID(),
+                StringUtils.capitalize(tagType), displayName);
         return list;
 
     }
@@ -153,11 +153,8 @@ public class TagController extends AbstractController {
      * @return
      */
     @RequestMapping(path = "/locations/{parentLocation}", method = {RequestMethod.GET}, consumes = {"*"})
-    public ResponseEntity<List<String>> findLocations(@PathVariable("parentLocation") String parentLocation) {
-
-        List<String> locations = thingTagManager.findLocations(parentLocation);
-
-        return new ResponseEntity<>(locations, HttpStatus.OK);
+    public List<String> findLocations(@PathVariable("parentLocation") String parentLocation) {
+        return tagThingManager.findUserLocations(getLoginUserID(), parentLocation);
     }
 
     /**
@@ -169,8 +166,55 @@ public class TagController extends AbstractController {
      * @return
      */
     @RequestMapping(path = "/locations", method = {RequestMethod.GET}, consumes = {"*"})
-    public ResponseEntity<List<String>> findAllLocations() {
+    public List<String> findAllLocations() {
         return findLocations("");
+    }
+
+
+    /**
+     * Bind tags to users.
+     * POST /{tagIDs}/users/{userIDs}
+     *
+     * @param tagIds
+     * @param userIds
+     */
+    @RequestMapping(path = "/{tagIDs}/users/{userIDs}", method = {RequestMethod.POST})
+    public void bindTagToUser(@PathVariable("tagIDs") String tagIds, @PathVariable("userIDs") String userIds) {
+        if (Strings.isBlank(tagIds) || Strings.isBlank(userIds)) {
+            throw new PortalException("RequiredFieldsMissing", "tagIDs or userIDs is empty", HttpStatus
+                    .BAD_REQUEST);
+        }
+        List<String> tagIDList = parseAndCheckTagIds(tagIds);
+        List<String> userIDList = Arrays.asList(userIds.split(","));
+        Set<String> nonExistUsers = userManager.checkNonExistingUserID(userIDList);
+        if (null != nonExistUsers && !nonExistUsers.isEmpty()) {
+            throw new PortalException("Requested user group doesn't exist", "Invalid user id(s): [" +
+                    listToString(nonExistUsers) + "]", HttpStatus.BAD_REQUEST);
+        }
+        tagThingManager.bindTagToUser(tagIDList, userIDList);
+    }
+
+    /**
+     * Unbind tags to users.
+     * POST /{tagIDs}/users/{userIDs}
+     *
+     * @param tagIds
+     * @param userIds
+     */
+    @RequestMapping(path = "/{tagIDs}/users/{userIDs}", method = {RequestMethod.DELETE})
+    public void unbindTagFromUser(@PathVariable("tagIDs") String tagIds, @PathVariable("userIDs") String userIds) {
+        if (Strings.isBlank(tagIds) || Strings.isBlank(userIds)) {
+            throw new PortalException("RequiredFieldsMissing", "tagIDs or userIDs is empty", HttpStatus
+                    .BAD_REQUEST);
+        }
+        List<String> tagIDList = parseAndCheckTagIds(tagIds);
+        List<String> userIDList = Arrays.asList(userIds.split(","));
+        Set<String> nonExistUsers = userManager.checkNonExistingUserID(userIDList);
+        if (null != nonExistUsers && !nonExistUsers.isEmpty()) {
+            throw new PortalException("Requested user group doesn't exist", "Invalid user id(s): [" +
+                    listToString(nonExistUsers) + "]", HttpStatus.BAD_REQUEST);
+        }
+        tagThingManager.unbindTagFromUser(tagIDList, userIDList);
     }
 
     /**
@@ -178,25 +222,18 @@ public class TagController extends AbstractController {
      * POST /tags/{tagIDs}/userGroups/{userGroupIDs}
      * <p>
      * refer to doc "Beehive API - Thing API" for request/response details
-     *
-     * @param globalThingIDs
      */
     @RequestMapping(path = "/{tagIDs}/userGroups/{userGroupIDs}", method = {RequestMethod.POST})
-    public void addTagToUserGroup(@PathVariable("tagIDs") String tagIDs, @PathVariable("userGroupIDs") String
+    public void bindTagToUserGroup(@PathVariable("tagIDs") String tagIDs, @PathVariable("userGroupIDs") String
             userGroupIDs) {
         if (Strings.isBlank(tagIDs) || Strings.isBlank(userGroupIDs)) {
             throw new PortalException("RequiredFieldsMissing", "tagIDs or userGroupIDs is empty", HttpStatus
                     .BAD_REQUEST);
         }
-        List<String> tagIDList = Arrays.asList(tagIDs.split(","));
-        List<TagIndex> tagIndexes = getTagIndexes(tagIDList);
-        tagIndexes.forEach(index -> checkIsCreator(index));
-
+        List<String> tagIDList = parseAndCheckTagIds(tagIDs);
         List<String> userGroupIDList = Arrays.asList(userGroupIDs.split(","));
         getUserGroups(userGroupIDList);
-
-        thingTagManager.bindTagToUserGroup(tagIDList, userGroupIDList);
-
+        tagThingManager.bindTagToUserGroup(tagIDList, userGroupIDList);
     }
 
     /**
@@ -208,36 +245,15 @@ public class TagController extends AbstractController {
      * @param tagIDs
      */
     @RequestMapping(path = "/{tagIDs}/userGroups/{userGroupIDs}", method = {RequestMethod.DELETE}, consumes = {"*"})
-    public void removeTagFromUserGroup(@PathVariable("tagIDs") String tagIDs, @PathVariable("userGroupIDs") String userGroupIDs) {
+    public void unbindTagFromUserGroup(@PathVariable("tagIDs") String tagIDs, @PathVariable("userGroupIDs") String userGroupIDs) {
         if (Strings.isBlank(tagIDs) || Strings.isBlank(userGroupIDs)) {
             throw new PortalException("RequiredFieldsMissing", "tagIDs or userGroupIDs is empty", HttpStatus
                     .BAD_REQUEST);
         }
-        List<String> tagIDList = Arrays.asList(tagIDs.split(","));
-        List<TagIndex> tagIndexes = getTagIndexes(tagIDList);
-        tagIndexes.forEach(index -> checkIsCreator(index));
-
+        List<String> tagIDList = parseAndCheckTagIds(tagIDs);
         List<String> userGroupIDList = Arrays.asList(userGroupIDs.split(","));
         getUserGroups(userGroupIDList);
-        thingTagManager.unbindTagToUserGroup(tagIDList, userGroupIDList);
-    }
-
-    private void checkIsCreator(final TagIndex tag) throws PortalException {
-        if (Strings.isBlank(tag.getCreateBy())) {
-            throw new PortalException("RequiredFieldsMissing", "createBy is null or empty", HttpStatus.BAD_REQUEST);
-        }
-
-        if (!tag.getCreateBy().equals(getLoginUserID())) {
-            throw new BeehiveUnAuthorizedException("Current user is not the creator of the tag.");
-        }
-    }
-
-    private void checkIsOwner(final TagIndex tag) throws PortalException {
-        TagUserRelation relation = tagUserRelationDao.find(tag.getId(), getLoginUserID());
-
-        if (null == relation) {
-            throw new BeehiveUnAuthorizedException("Current user is not the owner of the tag.");
-        }
+        tagThingManager.unbindTagToUserGroup(tagIDList, userGroupIDList);
     }
 
     private String listToString(Collection<?> collection) {
@@ -275,5 +291,16 @@ public class TagController extends AbstractController {
                     listToString(userGroupIds) + "]", HttpStatus.BAD_REQUEST);
         }
         return userGroups;
+    }
+
+    private List<String> parseAndCheckTagIds(String tagIds) {
+        List<String> tagIDList = Arrays.asList(tagIds.split(","));
+        List<TagIndex> tagIndexes = getTagIndexes(tagIDList);
+        tagIndexes.forEach(index -> {
+            if (!tagThingManager.isTagCreator(index)) {
+                throw new BeehiveUnAuthorizedException("Current user is not the creator of the tag.");
+            }
+        });
+        return tagIDList;
     }
 }
