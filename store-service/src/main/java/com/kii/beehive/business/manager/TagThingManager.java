@@ -537,8 +537,8 @@ public class TagThingManager {
         List<UserGroup> userGroupList = usergroupDao.findByIDs(userGroupIDs.stream().map(Long::valueOf).
                 collect(Collectors.toList()));
         if (null != userGroupList) {
-            userGroupList.forEach(user -> {
-                thingList.forEach(thing -> thingUserGroupRelationDao.deleteByThingIdAndUserGroupId(thing.getId(), userGroupList.getId()));
+            userGroupList.forEach(userGroup -> {
+                thingList.forEach(thing -> thingUserGroupRelationDao.deleteByThingIdAndUserGroupId(thing.getId(), userGroup.getId()));
             });
         }
     }

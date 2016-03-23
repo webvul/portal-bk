@@ -2,6 +2,7 @@ package com.kii.beehive.portal.web.controller;
 
 import com.kii.beehive.business.manager.TagThingManager;
 import com.kii.beehive.business.service.ThingIFInAppService;
+import com.kii.beehive.portal.exception.InvalidAuthException;
 import com.kii.beehive.portal.exception.ObjectNotFoundException;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
@@ -13,6 +14,7 @@ import com.kii.beehive.portal.jdbc.entity.TeamThingRelation;
 import com.kii.beehive.portal.web.entity.ThingRestBean;
 import com.kii.beehive.portal.web.exception.BeehiveUnAuthorizedException;
 import com.kii.beehive.portal.web.exception.PortalException;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -62,14 +64,16 @@ public class ThingController extends AbstractController {
 
 	@RequestMapping(path = "/types/{type}", method = {RequestMethod.GET})
 	public ResponseEntity<List<ThingRestBean>> getThingsByType(@PathVariable("type") String type) {
-		List<GlobalThingInfo> list = globalThingDao.getThingByType(type);
-		List<ThingRestBean> resultList = new ArrayList<>();
-		list.stream().filter(thingInfo -> thingTagManager.isThingCreator(thingInfo) || thingTagManager.isThingOwner(thingInfo)).forEach(thingInfo -> {
-			ThingRestBean input = new ThingRestBean();
-			BeanUtils.copyProperties(thingInfo, input);
-			resultList.add(input);
-		});
+        List<GlobalThingInfo> list = globalThingDao.getThingByType(type);
+        List<ThingRestBean> resultList = new ArrayList<>();
+        list.stream().filter(thingInfo -> thingTagManager.isThingCreator(thingInfo) || thingTagManager.isThingOwner(thingInfo)).forEach(thingInfo -> {
+            ThingRestBean input = new ThingRestBean();
+            BeanUtils.copyProperties(thingInfo, input);
+            resultList.add(input);
+        });
 
+        return new ResponseEntity<>(resultList, HttpStatus.OK);
+    }
 
     /**
      * 所有设备的type
@@ -95,7 +99,7 @@ public class ThingController extends AbstractController {
 	 *
 	 * refer to doc "Beehive API - Thing API" for request/response details
 	 *
-    
+     */
 	@RequestMapping(path = "/types/tagID/{tagIDs}", method = {RequestMethod.GET})
 	public ResponseEntity<List<String>> getThingTypeByTagIDs(@PathVariable("tagIDs") String tagIDs) {
 		List<String> tagIDList = Arrays.asList(tagIDs.split(","));
@@ -134,32 +138,6 @@ public class ThingController extends AbstractController {
 	 * GET /things/{globalThingID}
 	 *
 	 * refer to doc "Beehive API - Thing API" for request/response details
-	
-	/**
-	 * 查询设备（globalThingID）
-	 * GET /things/{globalThingID}
-	 *
-	 * refer to doc "Beehive API - Thing API" for request/response details
-	 *
-	 * @param globalThingID
-	 * @return
-	 */
-	@RequestMapping(path = "/{globalThingID}", method = {RequestMethod.GET})
-	public ThingRestBean getThingByGlobalID(@PathVariable("globalThingID") Long globalThingID) {
-		for(String name:fullTagNameList){
-			List<TagIndex> tagList = tagIndexDao.findTagByFullTagName(name);
-			if(tagList.size() > 0 && !thingTagManager.isTagCreator(tagList.get(0)) && !thingTagManager.isTagOwner(tagList.get(0))){
-				throw new BeehiveUnAuthorizedException("Current user is not the creator or owner of the tag.");
-			} else {
-				throw new PortalException("Tag Not Found", "Tag with fullTagName:" + name + " Not Found", HttpStatus.NOT_FOUND);
-			}
-		}
-
-		List<St	/**
-	 * 查询设备（globalThingID）
-	 * GET /things/{globalThingID}
-	 *
-	 * refer to doc "Beehive API - Thing API" for request/response details
 	 *
 	 * @param globalThingID
 	 * @return
@@ -177,7 +155,7 @@ public class ThingController extends AbstractController {
 				throw new PortalException("Thing Not Found", "Thing with globalThingID:" + globalThingID + " Not Found", HttpStatus.NOT_FOUND);
 			}
 		}else if(!thingTagManager.isThingCreator(thing) && thingTagManager.isThingOwner(thing)){
-			throw new InvalidAuthException("not creator or owner");
+			throw new BeehiveUnAuthorizedException("not creator or owner");
 		}
 
 		// get tag
@@ -204,35 +182,36 @@ public class ThingController extends AbstractController {
 		return thingRestBean;
 	}
 
-       thingRestBean.setLocation(location);
-        thingRestBean.setInputTags(customDisplayNameList);
-        thingRestBean.setInputTags(customDisplayNameList);
-
-        return thingRestBean;
-    }
-
-
     /**
      * 创建设备信息
      * POST /things
-     * <p>
+     *
      * refer to doc "Beehive API - Thing API" for request/response details
      *
      * @param input
      */
-    @RequestMapping(path = "", method = {RequestMethod.POST})
-    public Map<String, Long> createThing(@RequestBody ThingRestBean input) {
+    @RequestMapping(path="",method={RequestMethod.POST})
+    public Map<String,Long> createThing(@RequestBody ThingRestBean input){
 
         input.verifyInput();
 
         GlobalThingInfo thingInfo = new GlobalThingInfo();
 
-        BeanUtils.copyProperties(input, thingInfo);
+        BeanUtils.copyProperties(input,thingInfo);
 
         Long thingID = thingTagManager.createThing(thingInfo, input.getLocation(), input.getInputTags());
 
-        if (isTeamIDExist()) {
-            teamThingRelationDao.saveOrUpdate(new TeamTh/**
+        if(isTeamIDExist()){
+            teamThingRelationDao.saveOrUpdate(new TeamThingRelation(getLoginTeamID(), thingID));
+        }
+
+        Map<String,Long> map=new HashMap<>();
+        map.put("globalThingID",thingID);
+        return map;
+    }
+
+
+    /**
 	 * 移除设备
 	 * DELETE /things/{globalThingID}
 	 *
@@ -240,32 +219,25 @@ public class ThingController extends AbstractController {
 	 *
 	 * @param globalThingID
      */
-	@RequestMapping(path="/{globalThingID}",method={RequestMethod.DELETE},consumes={"*"})
-	public void removeThing(@PathVariable("globalThingID") Long globalThingID){
+    @RequestMapping(path="/{globalThingID}",method={RequestMethod.DELETE},consumes={"*"})
+    public void removeThing(@PathVariable("globalThingID") Long globalThingID){
 
-		GlobalThingInfo orig =  globalThingDao.findByID(globalThingID);
-		if(orig == null){
-			throw new PortalException("Thing Not Found", "Thing with globalThingID:" + globalThingID + " Not Found", HttpStatus.NOT_FOUND);
-		}
+        GlobalThingInfo orig =  globalThingDao.findByID(globalThingID);
+        if(orig == null){
+            throw new PortalException("Thing Not Found", "Thing with globalThingID:" + globalThingID + " Not Found", HttpStatus.NOT_FOUND);
+        }
 
-		if(thingTagManager.isThingCreator(orig)){
-			throw new InvalidAuthException(orig.getCreateBy(), getLoginUserID());
-		}
+        if(thingTagManager.isThingCreator(orig)){
+            throw new InvalidAuthException(orig.getCreateBy(), getLoginUserID());
+        }
 
-		if(thingTagManager.isThingCreator(orig)){
-			thingTagManager.removeThing(orig);
-		}else{
-			throw new InvalidAuthException("not tag creator or thing creator");
-		}
-		
+        if(thingTagManager.isThingCreator(orig)){
+            thingTagManager.removeThing(orig);
+        }else{
+            throw new InvalidAuthException("not tag creator or thing creator");
+        }
 
-	}r.isThingCreator(orig)){
-			thingTagManager.removeThing(orig);
-		}else{
-			throw new InvalidAuthException("not tag creator or thing creator");
-		}
-		
-        thingTagManager.removeThing(orig);
+
     }
 
 

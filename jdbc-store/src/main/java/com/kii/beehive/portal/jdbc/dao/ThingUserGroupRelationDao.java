@@ -72,7 +72,7 @@ public class ThingUserGroupRelationDao extends SpringBaseDao<ThingUserGroupRelat
         return null;
     }
 
-    public void deleteByThingIdAndUserGroupId(Long thingId, String userGroupId) {
+    public void deleteByThingIdAndUserGroupId(Long thingId, Long userGroupId) {
         if (null == thingId || null == userGroupId) {
             return;
         }
