@@ -2,7 +2,7 @@ package com.kii.beehive.portal.web.controller;
 
 import com.kii.beehive.business.manager.TagThingManager;
 import com.kii.beehive.business.service.ThingIFInAppService;
-import com.kii.beehive.portal.exception.InvalidAuthException;
+import com.kii.beehive.portal.exception.ObjectNotFoundException;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.dao.TeamThingRelationDao;
@@ -24,40 +24,42 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.util.Arrays.asList;
+
 /**
  * Beehive API - Thing API
- *
+ * <p>
  * refer to doc "Beehive API - Tech Design" section "Thing API" for details
- *
  */
 @RestController
-@RequestMapping(path="/things",consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
-public class ThingController extends AbstractController{
+@RequestMapping(path = "/things", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+public class ThingController extends AbstractController {
 
-	@Autowired
-	private TagThingManager thingTagManager;
-//
-	@Autowired
-	private GlobalThingSpringDao globalThingDao;
+    @Autowired
+    private TagThingManager thingTagManager;
+    //
+    @Autowired
+    private GlobalThingSpringDao globalThingDao;
 
-	@Autowired
-	private TagIndexDao tagIndexDao;
+    @Autowired
+    private TagIndexDao tagIndexDao;
 
-	@Autowired
-	private TeamThingRelationDao teamThingRelationDao;
+    @Autowired
+    private TeamThingRelationDao teamThingRelationDao;
 
-	@Autowired
-	private ThingIFInAppService  thingIFService;
+    @Autowired
+    private ThingIFInAppService thingIFService;
 
-	
-	/**
-	 * type下的所有设备
-	 * GET /things/types/{type}
-	 *
-	 * refer to doc "Beehive API - Thing API" for request/response details
-	 *
+
+    /**
+     * type下的所有设备
+     * GET /things/types/{type}
+     * <p>
+     * refer to doc "Beehive API - Thing API" for request/response details
+     *
      * @return
      */
+
 	@RequestMapping(path = "/types/{type}", method = {RequestMethod.GET})
 	public ResponseEntity<List<ThingRestBean>> getThingsByType(@PathVariable("type") String type) {
 		List<GlobalThingInfo> list = globalThingDao.getThingByType(type);
@@ -68,22 +70,24 @@ public class ThingController extends AbstractController{
 			resultList.add(input);
 		});
 
-		return new ResponseEntity<>(resultList, HttpStatus.OK);
-	}
-	
-	/**
-	 * 所有设备的type
-	 * GET /things/types
-	 *
-	 * refer to doc "Beehive API - Thing API" for request/response details
-	 *
+
+    /**
+     * 所有设备的type
+     * GET /things/types
+     * <p>
+     * refer to doc "Beehive API - Thing API" for request/response details
+     *
      * @return
      */
-	@RequestMapping(path = "/types", method = {RequestMethod.GET})
-	public ResponseEntity<List<Map<String, Object>>> getAllType() {
-		List<Map<String, Object>> list = globalThingDao.findAllThingTypesWithThingCount();
-		return new ResponseEntity<>(list, HttpStatus.OK);
-	}
+    @RequestMapping(path = "/types", method = {RequestMethod.GET})
+    public ResponseEntity<List<Map<String, Object>>> getAllType() {
+        List<Map<String, Object>> list = globalThingDao.findAllThingTypesWithThingCount();
+
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
+
+
 	
 	/**
 	 * tagID查thingType
@@ -91,25 +95,24 @@ public class ThingController extends AbstractController{
 	 *
 	 * refer to doc "Beehive API - Thing API" for request/response details
 	 *
-     * @return
-     */
+    
 	@RequestMapping(path = "/types/tagID/{tagIDs}", method = {RequestMethod.GET})
 	public ResponseEntity<List<String>> getThingTypeByTagIDs(@PathVariable("tagIDs") String tagIDs) {
 		List<String> tagIDList = Arrays.asList(tagIDs.split(","));
-		//TODO
+		
 		List<String> result = thingTagManager.findThingTypeByTagIDs(tagIDList);
 		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
 
 	/**
-	 * 查询指定tag下所有的设备类型
-	 * GET /things/types/fulltagname/{fullTagNames}
-	 *
-	 * refer to doc "Beehive API - Thing API" for request/response details
-	 *
-	 * @return
-	 */
-	@RequestMapping(path = "/types/fulltagname/{fullTagNames}", method = {RequestMethod.GET})
+     * 查询指定tag下所有的设备类型
+     * GET /things/types/fulltagname/{fullTagNames}
+     * <p>
+     * refer to doc "Beehive API - Thing API" for request/response details
+     *
+     * @return
+     */
+    @RequestMapping(path = "/types/fulltagname/{fullTagNames}", method = {RequestMethod.GET})
 	public ResponseEntity<List<String>> getThingTypeByTagFullName(@PathVariable("fullTagNames") String fullTagNames) {
 		List<String> fullTagNameList = Arrays.asList(fullTagNames.split(","));
 
@@ -127,6 +130,32 @@ public class ThingController extends AbstractController{
 	}
 	
 	/**
+	 * 查询设备（globalThingID）
+	 * GET /things/{globalThingID}
+	 *
+	 * refer to doc "Beehive API - Thing API" for request/response details
+	
+	/**
+	 * 查询设备（globalThingID）
+	 * GET /things/{globalThingID}
+	 *
+	 * refer to doc "Beehive API - Thing API" for request/response details
+	 *
+	 * @param globalThingID
+	 * @return
+	 */
+	@RequestMapping(path = "/{globalThingID}", method = {RequestMethod.GET})
+	public ThingRestBean getThingByGlobalID(@PathVariable("globalThingID") Long globalThingID) {
+		for(String name:fullTagNameList){
+			List<TagIndex> tagList = tagIndexDao.findTagByFullTagName(name);
+			if(tagList.size() > 0 && !thingTagManager.isTagCreator(tagList.get(0)) && !thingTagManager.isTagOwner(tagList.get(0))){
+				throw new BeehiveUnAuthorizedException("Current user is not the creator or owner of the tag.");
+			} else {
+				throw new PortalException("Tag Not Found", "Tag with fullTagName:" + name + " Not Found", HttpStatus.NOT_FOUND);
+			}
+		}
+
+		List<St	/**
 	 * 查询设备（globalThingID）
 	 * GET /things/{globalThingID}
 	 *
@@ -175,38 +204,35 @@ public class ThingController extends AbstractController{
 		return thingRestBean;
 	}
 
+       thingRestBean.setLocation(location);
+        thingRestBean.setInputTags(customDisplayNameList);
+        thingRestBean.setInputTags(customDisplayNameList);
 
-	/**
-	 * 创建设备信息
-	 * POST /things
-	 *
-	 * refer to doc "Beehive API - Thing API" for request/response details
-	 *
-	 * @param input
+        return thingRestBean;
+    }
+
+
+    /**
+     * 创建设备信息
+     * POST /things
+     * <p>
+     * refer to doc "Beehive API - Thing API" for request/response details
+     *
+     * @param input
      */
-	@RequestMapping(path="",method={RequestMethod.POST})
-	public Map<String,Long> createThing(@RequestBody ThingRestBean input){
+    @RequestMapping(path = "", method = {RequestMethod.POST})
+    public Map<String, Long> createThing(@RequestBody ThingRestBean input) {
 
-		input.verifyInput();
-		
-		GlobalThingInfo thingInfo = new GlobalThingInfo();
+        input.verifyInput();
 
-		BeanUtils.copyProperties(input,thingInfo);
+        GlobalThingInfo thingInfo = new GlobalThingInfo();
 
-		Long thingID = thingTagManager.createThing(thingInfo, input.getLocation(), input.getInputTags());
-		
-		if(isTeamIDExist()){
-    		teamThingRelationDao.saveOrUpdate(new TeamThingRelation(getLoginTeamID(), thingID));
-    	}
+        BeanUtils.copyProperties(input, thingInfo);
 
-//		input.getInputTags().
+        Long thingID = thingTagManager.createThing(thingInfo, input.getLocation(), input.getInputTags());
 
-		Map<String,Long> map=new HashMap<>();
-		map.put("globalThingID",thingID);
-		return map;
-	}
-
-	/**
+        if (isTeamIDExist()) {
+            teamThingRelationDao.saveOrUpdate(new TeamTh/**
 	 * 移除设备
 	 * DELETE /things/{globalThingID}
 	 *
@@ -233,168 +259,211 @@ public class ThingController extends AbstractController{
 		}
 		
 
-	}
-
-	/**
-	 * 绑定设备及tag
-	 * POST /things/{globalThingIDs}/tags/{tagID...}
-	 *
-	 * refer to doc "Beehive API - Thing API" for request/response details
-	 *
-	 * @param globalThingIDs
-     */
-	@RequestMapping(path="/{globalThingIDs}/tags/{tagIDs}",method={RequestMethod.POST})
-	public void addThingTag(@PathVariable("globalThingIDs") String globalThingIDs,@PathVariable("tagIDs") String tagIDs){
-		
-		List<String> thingIDList = Arrays.asList(globalThingIDs.split(","));
-		List<String> tagIDList = Arrays.asList(tagIDs.split(","));
-		thingTagManager.bindTagToThing(tagIDList, thingIDList);
-
-		List<Long> tagIDsInLong=tagIDList.stream().mapToLong(id->Long.parseLong(id)).boxed().collect(Collectors.toList());
-
-		thingIFService.onTagIDsChangeFire(tagIDsInLong,true);
-	}
-
-	/**
-	 * 解除绑定设备及tag
-	 * DELETE /things/{globalThingIDs}/tags/{tagID...}
-	 *
-	 * refer to doc "Beehive API - Thing API" for request/response details
-	 *
-	 * @param globalThingIDs
-     */
-	@RequestMapping(path="/{globalThingIDs}/tags/{tagIDs}",method={RequestMethod.DELETE},consumes={"*"})
-	public void removeThingTag(@PathVariable("globalThingIDs") String globalThingIDs,@PathVariable("tagIDs") String tagIDs){
-		List<String> thingIDList = Arrays.asList(globalThingIDs.split(","));
-		List<String> tagIDList = Arrays.asList(tagIDs.split(","));
-		thingTagManager.unbindTagToThing(tagIDList, thingIDList);
-
-		List<Long> tagIDsInLong=tagIDList.stream().mapToLong(id->Long.parseLong(id)).boxed().collect(Collectors.toList());
-
-		thingIFService.onTagIDsChangeFire(tagIDsInLong,false);
-	}
-
-	/**
-	 * 绑定设备及custom tag
-	 * POST /things/{globalThingID ...}/tags/custom/{tagName ...}
-	 *
-	 * refer to doc "Beehive API - Thing API" for request/response details
-	 *
-	 * @param globalThingIDs
-	 * @param displayNames
-	 */
-	@RequestMapping(path="/{globalThingIDs}/tags/custom/{displayNames}",method={RequestMethod.POST})
-	public void addThingCustomTag(@PathVariable("globalThingIDs") String globalThingIDs,@PathVariable("displayNames") String displayNames){
-
-		List<String> list = Arrays.asList(globalThingIDs.split(","));
-		List<Long> globalThingIDList = new ArrayList<>();
-		for(String id : list) {
-			globalThingIDList.add(Long.valueOf(id));
+	}r.isThingCreator(orig)){
+			thingTagManager.removeThing(orig);
+		}else{
+			throw new InvalidAuthException("not tag creator or thing creator");
 		}
-
-		List<String> displayNameList = Arrays.asList(displayNames.split(","));
-		thingTagManager.bindCustomTagToThing(displayNameList, globalThingIDList);
-
-		displayNameList.forEach(name->{
-			String fullName=TagType.Custom.getTagName(name);
-			thingIFService.onTagChangeFire(fullName,true);
-		});
-	}
-
-	/**
-	 * 解除绑定设备及custom tag
-	 * DELETE /things/{globalThingID ...}/tags/custom/{tagName ...}
-	 *
-	 * refer to doc "Beehive API - Thing API" for request/response details
-	 *
-	 * @param globalThingIDs
-	 * @param displayNames
-	 */
-	@RequestMapping(path="/{globalThingIDs}/tags/custom/{displayNames}",method={RequestMethod.DELETE},consumes={"*"})
-	public void removeThingCustomTag(@PathVariable("globalThingIDs") String globalThingIDs,@PathVariable("displayNames") String displayNames){
-
-		List<String> list = Arrays.asList(globalThingIDs.split(","));
-		List<Long> globalThingIDList = new ArrayList<>();
-		for(String id : list) {
-			globalThingIDList.add(Long.valueOf(id));
-		}
-
-		List<String> displayNameList = Arrays.asList(displayNames.split(","));
-		thingTagManager.unbindCustomTagToThing(displayNameList, globalThingIDList);
-
-		displayNameList.forEach(name->{
-			String fullName=TagType.Custom.getTagName(name);
-			thingIFService.onTagChangeFire(fullName,false);
-		});
-	}
-	
-	/**
-	 * 绑定设备及team
-	 * POST /things/{globalThingIDs}/teams/{teamID}
-	 *
-	 * refer to doc "Beehive API - Thing API" for request/response details
-	 *
-	 * @param globalThingIDs
-     */
-	@RequestMapping(path="/{globalThingIDs}/teams/{teamIDs}",method={RequestMethod.POST})
-	public void addThingTeam(@PathVariable("globalThingIDs") String globalThingIDs,@PathVariable("teamIDs") String teamIDs){
 		
-		List<String> thingIDList = Arrays.asList(globalThingIDs.split(","));
-		List<String> teamIDList = Arrays.asList(teamIDs.split(","));
-		thingTagManager.bindTeamToThing(teamIDList, thingIDList);
-	}
-	
-	/**
-	 * 解除绑定设备及team
-	 * DELETE /things/{globalThingIDs}/teams/{teamIDs...}
-	 *
-	 * refer to doc "Beehive API - Thing API" for request/response details
-	 *
-	 * @param globalThingIDs
-     */
-	@RequestMapping(path="/{globalThingIDs}/teams/{teamIDs}",method={RequestMethod.DELETE},consumes={"*"})
-	public void removeThingTeam(@PathVariable("globalThingIDs") String globalThingIDs,@PathVariable("teamIDs") String teamIDs){
-		List<String> thingIDList = Arrays.asList(globalThingIDs.split(","));
-		List<String> teamIDList = Arrays.asList(teamIDs.split(","));
-		thingTagManager.unbindTeamToThing(teamIDList, thingIDList);
-	}
+        thingTagManager.removeThing(orig);
+    }
 
-	/**
-	 * 查询tag下的设备
-	 * GET /things/search?tagType={tagType}&displayName={displayName}
-	 * tags和location信息不会被返回
-	 *
-	 * refer to doc "Beehive API - Thing API" for request/response details
-	 *
+
+    /**
+     * 绑定设备及tag
+     * POST /things/{globalThingIDs}/tags/{tagID...}
+     * <p>
+     * refer to doc "Beehive API - Thing API" for request/response details
+     *
+     * @param globalThingIDs
+     */
+    @RequestMapping(path = "/{globalThingIDs}/tags/{tagIDs}", method = {RequestMethod.POST})
+    public void addThingTag(@PathVariable("globalThingIDs") String globalThingIDs, @PathVariable("tagIDs") String
+            tagIDs) {
+        if (Strings.isBlank(globalThingIDs) || Strings.isBlank(tagIDs)) {
+            throw new PortalException("RequiredFieldsMissing", "globalThingIDs or tagIDs is empty", HttpStatus
+                    .BAD_REQUEST);
+        }
+        List<GlobalThingInfo> things = parseAndCheckThingIds(globalThingIDs);
+        List<TagIndex> tags = parseAndCheckTagIds(tagIDs);
+        thingTagManager.bindTagToThing(tags, things);
+        thingIFService.onTagIDsChangeFire(tags.stream().map(TagIndex::getId).collect(Collectors.toList()), true);
+    }
+
+
+    /**
+     * 解除绑定设备及tag
+     * DELETE /things/{globalThingIDs}/tags/{tagID...}
+     * <p>
+     * refer to doc "Beehive API - Thing API" for request/response details
+     *
+     * @param globalThingIDs
+     */
+    @RequestMapping(path = "/{globalThingIDs}/tags/{tagIDs}", method = {RequestMethod.DELETE}, consumes = {"*"})
+    public void removeThingTag(@PathVariable("globalThingIDs") String globalThingIDs, @PathVariable("tagIDs") String
+            tagIDs) {
+        if (Strings.isBlank(globalThingIDs) || Strings.isBlank(tagIDs)) {
+            throw new PortalException("RequiredFieldsMissing", "globalThingIDs or tagIDs is empty", HttpStatus
+                    .BAD_REQUEST);
+        }
+        List<GlobalThingInfo> things = parseAndCheckThingIds(globalThingIDs);
+        List<TagIndex> tags = parseAndCheckTagIds(tagIDs);
+        thingTagManager.unbindTagFromThing(tags, things);
+        thingIFService.onTagIDsChangeFire(tags.stream().map(TagIndex::getId).collect(Collectors.toList()), false);
+    }
+
+    /**
+     * 绑定设备及custom tag
+     * POST /things/{globalThingID ...}/tags/custom/{tagName ...}
+     * <p>
+     * refer to doc "Beehive API - Thing API" for request/response details
+     *
+     * @param globalThingIDs
+     * @param displayNames
+     */
+    @RequestMapping(path = "/{globalThingIDs}/tags/custom/{displayNames}", method = {RequestMethod.POST})
+    public void addThingCustomTag(@PathVariable("globalThingIDs") String globalThingIDs, @PathVariable("displayNames") String displayNames) {
+
+        List<String> list = asList(globalThingIDs.split(","));
+        List<Long> globalThingIDList = new ArrayList<>();
+        for (String id : list) {
+            globalThingIDList.add(Long.valueOf(id));
+        }
+
+        List<String> displayNameList = asList(displayNames.split(","));
+        thingTagManager.bindCustomTagToThing(displayNameList, globalThingIDList);
+
+        displayNameList.forEach(name -> {
+            String fullName = TagType.Custom.getTagName(name);
+            thingIFService.onTagChangeFire(fullName, true);
+        });
+    }
+
+    /**
+     * 解除绑定设备及custom tag
+     * DELETE /things/{globalThingID ...}/tags/custom/{tagName ...}
+     * <p>
+     * refer to doc "Beehive API - Thing API" for request/response details
+     *
+     * @param globalThingIDs
+     * @param displayNames
+     */
+    @RequestMapping(path = "/{globalThingIDs}/tags/custom/{displayNames}", method = {RequestMethod.DELETE}, consumes = {"*"})
+    public void removeThingCustomTag(@PathVariable("globalThingIDs") String globalThingIDs, @PathVariable("displayNames") String displayNames) {
+
+        List<String> list = asList(globalThingIDs.split(","));
+        List<Long> globalThingIDList = new ArrayList<>();
+        for (String id : list) {
+            globalThingIDList.add(Long.valueOf(id));
+        }
+
+        List<String> displayNameList = asList(displayNames.split(","));
+        thingTagManager.unbindCustomTagToThing(displayNameList, globalThingIDList);
+
+        displayNameList.forEach(name -> {
+            String fullName = TagType.Custom.getTagName(name);
+            thingIFService.onTagChangeFire(fullName, false);
+        });
+    }
+
+    /**
+     * 绑定设备及team
+     * POST /things/{globalThingIDs}/teams/{teamID}
+     * <p>
+     * refer to doc "Beehive API - Thing API" for request/response details
+     *
+     * @param globalThingIDs
+     */
+    @RequestMapping(path = "/{globalThingIDs}/teams/{teamIDs}", method = {RequestMethod.POST})
+    public void addThingTeam(@PathVariable("globalThingIDs") String globalThingIDs, @PathVariable("teamIDs") String teamIDs) {
+
+        List<String> thingIDList = asList(globalThingIDs.split(","));
+        List<String> teamIDList = asList(teamIDs.split(","));
+        thingTagManager.bindTeamToThing(teamIDList, thingIDList);
+    }
+
+    /**
+     * 解除绑定设备及team
+     * DELETE /things/{globalThingIDs}/teams/{teamIDs...}
+     * <p>
+     * refer to doc "Beehive API - Thing API" for request/response details
+     *
+     * @param globalThingIDs
+     */
+    @RequestMapping(path = "/{globalThingIDs}/teams/{teamIDs}", method = {RequestMethod.DELETE}, consumes = {"*"})
+    public void removeThingTeam(@PathVariable("globalThingIDs") String globalThingIDs, @PathVariable("teamIDs") String teamIDs) {
+        List<String> thingIDList = asList(globalThingIDs.split(","));
+        List<String> teamIDList = asList(teamIDs.split(","));
+        thingTagManager.unbindTeamToThing(teamIDList, thingIDList);
+    }
+
+    /**
+     * 查询tag下的设备
+     * GET /things/search?tagType={tagType}&displayName={displayName}
+     * tags和location信息不会被返回
+     * <p>
+     * refer to doc "Beehive API - Thing API" for request/response details
+     *
      * @return
      */
-	@RequestMapping(path = "/search", method = {RequestMethod.GET})
-	public ResponseEntity<List<ThingRestBean>> getThingsByTagExpress(@RequestParam(value="tagType") String tagType,
-																		@RequestParam(value="displayName") String displayName) {
-		List<GlobalThingInfo> list = null;
+    @RequestMapping(path = "/search", method = {RequestMethod.GET})
+    public ResponseEntity<List<ThingRestBean>> getThingsByTagExpress(@RequestParam(value = "tagType") String tagType,
+                                                                     @RequestParam(value = "displayName") String displayName) {
+        List<GlobalThingInfo> list = null;
 
-		List<TagIndex> tagList = tagIndexDao.findTagByTagTypeAndName(StringUtils.capitalize(tagType),displayName);
+        List<TagIndex> tagList = tagIndexDao.findTagByTagTypeAndName(StringUtils.capitalize(tagType), displayName);
 
-		if(tagList.size() > 0){
-			TagIndex tag = tagList.get(0);
-			if(thingTagManager.isTagCreator(tag) || thingTagManager.isTagOwner(tag)){
-				list = globalThingDao.findThingByTag(StringUtils.capitalize(tagType)+"-"+displayName);
-			}else{
-				throw new BeehiveUnAuthorizedException("loginUser isn't a tag creator or owner");
-			}
-		}
+        if (tagList.size() > 0) {
+            TagIndex tag = tagList.get(0);
+            if (thingTagManager.isTagCreator(tag) || thingTagManager.isTagOwner(tag)) {
+                list = globalThingDao.findThingByTag(StringUtils.capitalize(tagType) + "-" + displayName);
+            } else {
+                throw new BeehiveUnAuthorizedException("loginUser isn't a tag creator or owner");
+            }
+        }
 
-		List<ThingRestBean> resultList = new ArrayList<>();
-		if(list != null) {
-			for (GlobalThingInfo thingInfo : list) {
-				ThingRestBean input = new ThingRestBean();
-				BeanUtils.copyProperties(thingInfo,input);
-				resultList.add(input);
-			}
-		}
+        List<ThingRestBean> resultList = new ArrayList<>();
+        if (list != null) {
+            for (GlobalThingInfo thingInfo : list) {
+                ThingRestBean input = new ThingRestBean();
+                BeanUtils.copyProperties(thingInfo, input);
+                resultList.add(input);
+            }
+        }
 
-		return new ResponseEntity<>(resultList, HttpStatus.OK);
-	}
+        return new ResponseEntity<>(resultList, HttpStatus.OK);
+    }
 
+    private List<TagIndex> parseAndCheckTagIds(String tagIDs) {
+        List<String> tagIDList = asList(tagIDs.split(","));
+        List<TagIndex> tagIndexes;
+        try {
+            tagIndexes = thingTagManager.getTagIndexes(tagIDList);
+        } catch (ObjectNotFoundException e) {
+            throw new PortalException("Requested tag doesn't exist", e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+        tagIndexes.forEach(index -> {
+            if (!thingTagManager.isTagCreator(index)) {
+                throw new BeehiveUnAuthorizedException("Current user is not the creator of the tag.");
+            }
+        });
+        return tagIndexes;
+    }
+
+    private List<GlobalThingInfo> parseAndCheckThingIds(String globalThingIDs) {
+        List<String> thingIDList = Arrays.asList(globalThingIDs.split(","));
+        List<GlobalThingInfo> things;
+        try {
+            things = thingTagManager.getThings(thingIDList);
+        } catch (ObjectNotFoundException e) {
+            throw new PortalException("Requested thing doesn't exist", e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+        things.forEach(thing -> {
+            if (!thingTagManager.isThingCreator(thing)) {
+                throw new BeehiveUnAuthorizedException("Current user is not the creator of the tag.");
+            }
+        });
+        return things;
+    }
 
 }
