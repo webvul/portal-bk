@@ -2,6 +2,7 @@ package com.kii.beehive.business.manager;
 
 import com.kii.beehive.business.helper.SyncMsgService;
 import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.exception.DuplicateException;
 import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.beehive.portal.exception.InvalidAuthException;
 import com.kii.beehive.portal.exception.UserNotExistException;
@@ -26,33 +27,46 @@ import java.util.*;
 @Component
 public class UserManager {
 
-    @Autowired
+	private Logger logger= LoggerFactory.getLogger(UserManager.class);
+
+	@Autowired
+	private ArchiveBeehiveUserDao archiveUserDao;
+
+	@Autowired
+	private BeehiveUserDao userDao;
+
+	@Autowired
+	private UserGroupDao userGroupDao;
+	
+	@Autowired
+	private TeamDao teamDao;
+	
+	@Autowired
+	private GroupUserRelationDao groupUserRelationDao;
+	
+	@Autowired
+	private GroupPermissionRelationDao groupPermissionRelationDao;
+	
+	@Autowired
     protected TeamGroupRelationDao teamGroupRelationDao;
-    @Autowired
-    protected PermissionDao permissionDao;
-    private Logger logger = LoggerFactory.getLogger(UserManager.class);
-    @Autowired
-    private ArchiveBeehiveUserDao archiveUserDao;
-    @Autowired
-    private BeehiveUserDao userDao;
-    @Autowired
-    private UserGroupDao userGroupDao;
-    @Autowired
-    private TeamDao teamDao;
-    @Autowired
-    private GroupUserRelationDao groupUserRelationDao;
-    @Autowired
-    private GroupPermissionRelationDao groupPermissionRelationDao;
-    @Autowired
-    private KiiUserSyncDao kiiUserDao;
+	
+	@Autowired
+	protected PermissionDao permissionDao;
 
-    @Autowired
-    private SyncMsgService msgService;
+	@Autowired
+	private KiiUserSyncDao kiiUserDao;
+
+	@Autowired
+	private BeehiveUserDao beehiveUserDao;
+
+	@Autowired
+	private SyncMsgService msgService;
 
 
-    public String addUser(BeehiveUser user) {
 
-        BeehiveUser archiveUser = archiveUserDao.queryInArchive(user);
+	public String addUser(BeehiveUser user){
+
+		BeehiveUser archiveUser=archiveUserDao.queryInArchive(user);
 
         //old user restore
         if (archiveUser != null) {
@@ -66,11 +80,11 @@ public class UserManager {
 
         }
 
-        String id = userDao.createUser(user);
+		String id=userDao.createUser(user);
 
-        msgService.addInsertMsg(id, user);
-        return id;
-    }
+		msgService.addInsertMsg(id,user);
+		return id;
+	}
 
 
     public void updateUser(BeehiveUser user, String userID) {
@@ -117,42 +131,53 @@ public class UserManager {
                 }
             });
 
-            return userDao.getUsersBySimpleQuery(map);
-        }
-    }
+			return userDao.getUsersBySimpleQuery(map);
+		}
+	}
+	
+	public Long createUserGroup(UserGroup userGroup,String loginUserID) {
+		 // create user group
 
-    public Long createUserGroup(UserGroup userGroup, String loginUserID) {
-        // create user group
-        Long userGroupID = userGroupDao.saveOrUpdate(userGroup);
-        GroupUserRelation gur = new GroupUserRelation(loginUserID, userGroupID);
-        groupUserRelationDao.insert(gur);
+		List<UserGroup> userGroupList = userGroupDao.findUserGroupByName(userGroup.getName());
 
-        if (AuthInfoStore.getTeamID() != null) {
-            TeamGroupRelation tgr = new TeamGroupRelation(AuthInfoStore.getTeamID(), userGroupID);
-            teamGroupRelationDao.insert(tgr);
-        }
+		if(userGroupList.size() > 0){
+			throw new  DuplicateException(userGroup.getName());
+		}
 
-        return userGroupID;
-    }
+		Long userGroupID = userGroupDao.saveOrUpdate(userGroup);
+	    GroupUserRelation gur = new GroupUserRelation(loginUserID,userGroupID);
+	    groupUserRelationDao.insert(gur);
 
-    public Long updateUserGroup(UserGroup userGroup, String loginUserID) {
-        List<UserGroup> orgiList = userGroupDao.findUserGroup(loginUserID, userGroup.getId(), null);
+	    if(AuthInfoStore.getTeamID() != null){
+    		TeamGroupRelation tgr = new TeamGroupRelation(AuthInfoStore.getTeamID(), userGroupID);
+    		teamGroupRelationDao.insert(tgr);
+    	}
 
-        if (orgiList.size() == 0) {
-            throw new EntryNotFoundException(userGroup.getId().toString());
-        }
+	    return userGroupID;
+	}
 
-        UserGroup orgi = orgiList.get(0);
-        if (!orgi.getCreateBy().equals(loginUserID)) {
-            throw new InvalidAuthException(orgi.getCreateBy(), loginUserID);
-        }
-        orgi.setName(userGroup.getName());
-        orgi.setDescription(userGroup.getDescription());
-        orgi.setModifyDate(new Date());
-        orgi.setModifyBy(loginUserID);
-        Long userGroupID = userGroupDao.saveOrUpdate(orgi);
-        return userGroupID;
-    }
+	public Long updateUserGroup(UserGroup userGroup,String loginUserID) {
+		List<UserGroup> orgiList = userGroupDao.findUserGroup(loginUserID, userGroup.getId(), null);
+		if(orgiList.size() == 0){
+			throw new EntryNotFoundException(userGroup.getId().toString());
+		}
+
+		List<UserGroup> userGroupList = userGroupDao.findUserGroupByName(userGroup.getName());
+		if(userGroupList.size() > 0){
+			throw new  DuplicateException(userGroup.getName());
+		}
+
+		UserGroup orgi = orgiList.get(0);
+		if(!orgi.getCreateBy().equals(loginUserID)){
+			throw new InvalidAuthException(orgi.getCreateBy(), loginUserID);
+		}
+		orgi.setName(userGroup.getName());
+		orgi.setDescription(userGroup.getDescription());
+		orgi.setModifyDate(new Date());
+		orgi.setModifyBy(loginUserID);
+		Long userGroupID = userGroupDao.saveOrUpdate(orgi);
+		return userGroupID;
+	}
 
 
     public void deleteUserGroup(Long userGroupID) {
@@ -166,26 +191,28 @@ public class UserManager {
      * @param userIDList  the already existing userIDs under the user group will not be added again
      * @param userGroupID
      */
-    public void addUserToUserGroup(List<String> userIDList, Long userGroupID) {
-        if (userIDList.size() == 1) {
-            List<UserGroup> orgiList = userGroupDao.findUserGroup(userIDList.get(0), userGroupID, null);
-            if (orgiList.size() == 0) {
-                GroupUserRelation gur = new GroupUserRelation(userIDList.get(0), userGroupID);
-                groupUserRelationDao.insert(gur);
-            }
-        } else {
-            List<String> existingUserIDList = groupUserRelationDao.findUserIDByUserGroupID(userGroupID);
+	public void addUserToUserGroup(List<String> userIDList, Long userGroupID) {
 
-            List<String> userIDListToInsert = new ArrayList<>(userIDList);
-            userIDListToInsert.removeAll(existingUserIDList);
+		List<BeehiveUser> userList = beehiveUserDao.getUserByIDs(userIDList);
+		if(userList.size() == 1){
+			List<UserGroup> orgiList = userGroupDao.findUserGroup(userList.get(0).getKiiLoginName(), userGroupID, null);
+			if(orgiList.size() == 0){
+				GroupUserRelation gur = new GroupUserRelation(userList.get(0).getKiiLoginName(), userGroupID);
+	    		groupUserRelationDao.insert(gur);
+			}
+		}else if(userList.size() > 1){
+			List<String> existingUserIDList = groupUserRelationDao.findUserIDByUserGroupID(userGroupID);
 
-            List<GroupUserRelation> relationList = new ArrayList<>();
-            for (String userID : userIDListToInsert) {
-                relationList.add(new GroupUserRelation(userID, userGroupID));
-            }
-            groupUserRelationDao.batchInsert(relationList);
-        }
-    }
+			List<String> userIDListToInsert = new ArrayList<>();
+			userList.forEach(beehiveUser -> userIDListToInsert.add(beehiveUser.getKiiLoginName()));
+			userIDListToInsert.removeAll(existingUserIDList);
+
+			List<GroupUserRelation> relationList = new ArrayList<>();
+			userIDListToInsert.forEach(newUserId -> new GroupUserRelation(newUserId, userGroupID));
+
+			groupUserRelationDao.batchInsert(relationList);
+		}
+	}
 
     public void deleteUser(String userID) {
 

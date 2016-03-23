@@ -61,6 +61,36 @@ public class UserGroupDao extends SpringBaseDao<UserGroup> {
 		List<UserGroup> rows = jdbcTemplate.query(sql.toString(), params.toArray(new Object[params.size()]) ,getRowMapper());
 	    return rows;
 	}
+
+	public List<UserGroup> findUserGroupByName(String userGroupName){
+
+		List<Object> params = new ArrayList<Object>();
+
+		StringBuilder sql = new StringBuilder("SELECT u.* FROM " + this.getTableName() +" u ");
+		StringBuilder where = new StringBuilder();
+
+		if(AuthInfoStore.getTeamID() != null){
+			sql.append(" INNER JOIN rel_team_group rt ON u.user_group_id = rt.user_group_id ");
+			if(where.length() > 0) where.append(" AND ");
+			where.append(" rt.team_id = ? ");
+			params.add(AuthInfoStore.getTeamID());
+		}
+
+
+		if(!Strings.isBlank(userGroupName)){
+			if(where.length() > 0) where.append(" AND ");
+			where.append(" u.name = ? ");
+			params.add(userGroupName);
+		}
+
+		if(where.length() == 0){
+			return null;
+		}
+
+		sql.append(" WHERE ").append(where);
+		List<UserGroup> rows = jdbcTemplate.query(sql.toString(), params.toArray(new Object[params.size()]) ,getRowMapper());
+		return rows;
+	}
 	
 	public List<UserGroup> findUserGroup(Long permissionID, Long userGroupID) {
 		if(permissionID == null){
