@@ -3,6 +3,7 @@ package com.kii.beehive.business.manager;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.CollectUtils;
 import com.kii.beehive.portal.exception.EntryNotFoundException;
@@ -31,6 +33,7 @@ import com.kii.beehive.portal.jdbc.entity.TeamThingRelation;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
 import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
+import com.kii.extension.sdk.exception.ObjectNotFoundException;
 
 @Component
 @Transactional
@@ -44,24 +47,27 @@ public class TagThingManager {
 
 	@Autowired
 	private TagIndexDao tagIndexDao;
-	
+
 	@Autowired
 	private TagThingRelationDao tagThingRelationDao;
-	
+
 	@Autowired
 	private TeamDao teamDao;
-	
+
 	@Autowired
 	private TeamThingRelationDao teamThingRelationDao;
-	
+
 	@Autowired
 	private TagGroupRelationDao tagGroupRelationDao;
-	
+
 	@Autowired
 	private UserGroupDao usergroupDao;
 
 	@Autowired
 	private AppInfoDao appInfoDao;
+
+	@Autowired
+	private ThingIFInAppService thingIFInAppService;
 
 
 	/**
@@ -121,7 +127,29 @@ public class TagThingManager {
 
 		return thingID;
 	}
-	
+
+	public List<String> findThingTypeByTagIDs(Collection<String> tagIDs) {
+		StringBuilder sb = new StringBuilder();
+		for(String tagID:tagIDs){
+			List<TagIndex> tagList = this.tagIndexDao.findTag(Long.parseLong(tagID), null, null);
+			if(tagList.size()>0){
+				if(sb.length() > 0) sb.append(",");
+				sb.append(tagID);
+			}
+		}
+
+		List<String> result = new ArrayList<String>();
+		if(sb.length() > 0){
+			List<Map<String, Object>> typeList = globalThingDao.findThingTypeBytagIDs(sb.toString());
+			if(typeList.size() > 0){
+				typeList.forEach(map->{
+					result.add(map.get("type").toString());
+				});
+			}
+		}
+		return result;
+	}
+
 	public void bindTagToThing(Collection<String> tagIDs,Collection<String> thingIDs) {
 		List<TagIndex> tagList = this.findTagList(tagIDs);
 
@@ -139,7 +167,7 @@ public class TagThingManager {
 			}
 		}
 	}
-	
+
 	public void bindTeamToThing(Collection<String> teamIDs,Collection<String> thingIDs) {
 		List<Team> teamList = this.findTeamList(teamIDs);
 
@@ -157,7 +185,7 @@ public class TagThingManager {
 			}
 		}
 	}
-	
+
 	public void bindTagToUserGroup(Collection<String> tagIDs,Collection<String> userGroupIDs) {
 		List<TagIndex> tagList = this.findTagList(tagIDs);
 
@@ -176,7 +204,7 @@ public class TagThingManager {
 			}
 		}
 	}
-	
+
 	public void bindCustomTagToThing(Collection<String> displayNames, Collection<Long> globalThingIDs) {
 
 		List<TagIndex> tagIndexList = this.findCustomTagList(displayNames);
@@ -195,7 +223,7 @@ public class TagThingManager {
 			}
 		}
 	}
-	
+
 	public void unbindTagToThing(Collection<String> tagIDs,Collection<String> thingIDs) {
 		List<TagIndex> tagList = this.findTagList(tagIDs);
 
@@ -210,7 +238,7 @@ public class TagThingManager {
 			}
 		}
 	}
-	
+
 	public void unbindTagToUserGroup(Collection<String> tagIDs,Collection<String> userGroupIDs) {
 		List<TagIndex> tagList = this.findTagList(tagIDs);
 
@@ -226,7 +254,7 @@ public class TagThingManager {
 			}
 		}
 	}
-	
+
 	public void unbindTeamToThing(Collection<String> teamIDs,Collection<String> thingIDs) {
 		List<Team> teamList = this.findTeamList(teamIDs);
 
@@ -241,7 +269,7 @@ public class TagThingManager {
 			}
 		}
 	}
-	
+
 	public void unbindCustomTagToThing(Collection<String> displayNames, Collection<Long> globalThingIDs) {
 
 		List<TagIndex> tagIndexList = this.findCustomTagList(displayNames);
@@ -262,10 +290,35 @@ public class TagThingManager {
 		tagThingRelationDao.delete(tag.getId(), null);
 		tagIndexDao.deleteByID(tag.getId());
 	}
-	
+
 	public void removeThing(GlobalThingInfo thing) {
 		tagThingRelationDao.delete(null, thing.getId());
 		globalThingDao.deleteByID(thing.getId());
+
+		// remove thing from Kii Cloud
+		this.removeThingFromKiiCloud(thing);
+	}
+
+	/**
+	 * remove thing from Kii Cloud
+	 * @param thingInfo
+	 */
+	private void removeThingFromKiiCloud(GlobalThingInfo thingInfo) {
+
+		log.debug("removeThingFromKiiCloud: " + thingInfo);
+
+		String fullKiiThingID = thingInfo.getFullKiiThingID();
+
+		// if thing not onboarding yet
+		if(Strings.isBlank(fullKiiThingID)) {
+			return;
+		}
+
+		try {
+			thingIFInAppService.removeThing(fullKiiThingID);
+		} catch (ObjectNotFoundException e) {
+			log.error("not found in Kii Cloud, full kii thing id: " + fullKiiThingID, e);
+		}
 	}
 
 	public List<String> findLocations(String parentLocation) {
@@ -297,12 +350,12 @@ public class TagThingManager {
 
 		// get tag-thing relation
 		TagThingRelation relation = tagThingRelationDao.findByThingIDAndTagID(globalThingID, tagIndex.getId());
-		
+
 		if(relation == null) {
 			relation = new TagThingRelation(tagIndex.getId(), globalThingID);
 			tagThingRelationDao.insert(relation);
 		}
-		
+
 	}
 
 	public GlobalThingInfo findThingByVendorThingID(String vendorThingID) {
@@ -317,7 +370,7 @@ public class TagThingManager {
 
 		return tagIndexDao.findTagByGlobalThingID(globalThingID);
 	}
-	
+
 	private List<TagIndex> findTagList(Collection<String> tagIDs){
 		List<TagIndex> tagList = new ArrayList<TagIndex>();
 		for(String tagID:tagIDs){
@@ -330,7 +383,7 @@ public class TagThingManager {
 		}
 		return tagList;
 	}
-	
+
 	private List<Team> findTeamList(Collection<String> teamIDs){
 		List<Team> teamList = new ArrayList<Team>();
 		for(String teamID:teamIDs){

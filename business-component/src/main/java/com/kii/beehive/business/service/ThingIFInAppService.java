@@ -106,7 +106,16 @@ public class ThingIFInAppService {
 		triggerService.deleteTrigger(thingID,triggerID);
 	}
 
+	/**
+	 * remove thing
+	 *
+	 * @param fullThingID
+     */
+	public void removeThing(String fullThingID) {
 
+		String thingID=getRealThingID(fullThingID);
+		service.removeThing(thingID);
+	}
 
 
 }

@@ -43,6 +43,9 @@ public abstract  class TriggerRecord extends KiiEntity {
 
 	private String description;
 
+
+	public String getTriggerID() {return super.getId();}
+
 	public PreparedCondition getPreparedCondition() {
 		return preparedCondition;
 	}

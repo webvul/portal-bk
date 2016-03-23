@@ -154,6 +154,8 @@ public class DroolsTriggerService {
 		trigger.setEnable(true);
 
 		getService(trigger).addOrUpdateData(trigger);
+
+		cloudService.fireCondition();
 	}
 
 	public void disableTrigger(String triggerID) {

@@ -2,6 +2,7 @@ package com.kii.beehive.business.ruleengine;
 
 import java.util.List;
 
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -61,7 +62,7 @@ public class CommandExecuteService {
 
 	public void doCommand(String triggerID){
 
-		TriggerRecord record=triggerDao.getTriggerRecord(triggerID);
+		TriggerRecord record=triggerDao.getEnableTriggerRecord(triggerID);
 
 		if(record==null){
 			return;
@@ -74,8 +75,8 @@ public class CommandExecuteService {
 	public  void sendCmdToThing(GlobalThingInfo thingInfo,TargetAction target,String triggerID){
 
 
-
-		if(target.getCommand()!=null) {
+		// send command only when command is not null and thing completed onboarding
+		if(target.getCommand()!=null && !Strings.isBlank(thingInfo.getFullKiiThingID())) {
 
 			sendCmd(target.getCommand(), thingInfo);
 		}

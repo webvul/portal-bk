@@ -29,4 +29,15 @@ public class AppChoice implements Serializable{
 		}
 		return this;
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("AppChoice [bindName=");
+		builder.append(bindName);
+		builder.append(", appName=");
+		builder.append(appName);
+		builder.append("]");
+		return builder.toString();
+	}
 }

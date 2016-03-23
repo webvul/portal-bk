@@ -128,4 +128,16 @@ public class ThingIFService {
 
 	}
 
+	/**
+	 * remove thing by Kii thing id
+	 * @param thingID Kii thing id
+     */
+	public void removeThing(String thingID) {
+
+		HttpUriRequest request=getBuilder().deleteThing(thingID).generRequest(mapper);
+
+		client.executeRequest(request);
+
+	}
+
 }

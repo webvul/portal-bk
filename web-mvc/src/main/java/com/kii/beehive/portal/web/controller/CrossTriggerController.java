@@ -1,10 +1,9 @@
-
 package com.kii.beehive.portal.web.controller;
 
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
+import com.kii.beehive.business.helper.OpLogTools;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.business.ruleengine.TriggerManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 
 @RestController
@@ -25,11 +25,14 @@ public class CrossTriggerController {
 	@Autowired
 	private TriggerManager mang;
 
+	@Autowired
+	private OpLogTools logTool;
+
 	/**
 	 * onboarding should be already done on the things in the param
 	 *
 	 * @param record
-     */
+	 */
 	@RequestMapping(path="/createTrigger",method = { RequestMethod.POST })
 	public Map<String, Object> createTrigger(@RequestBody TriggerRecord record){
 
@@ -43,31 +46,71 @@ public class CrossTriggerController {
 		Map<String, Object> result = new HashMap<>();
 		result.put("triggerID", triggerID);
 
+		//日期时间+当前用户ID+"trigger”+trigger type(simple/group/summary)+”create"+当前triggerID
+		List<String> list=new LinkedList<>();
+		list.add(AuthInfoStore.getUserID());
+		list.add("trigger");
+		list.add(record.getType().name());
+		list.add("create");
+		list.add(triggerID);
+		logTool.write(list);
 		return result;
 	}
 
 	@RequestMapping(path="/{triggerID}",method = { RequestMethod.DELETE })
-	public void deleteTrigger(@PathVariable("triggerID") String triggerID){
-
+	public Map<String, Object> deleteTrigger(@PathVariable("triggerID") String triggerID){
+		Map<String, Object> result = new HashMap<>();
+		result.put("result", "success");
 		TriggerRecord record=mang.getTriggerByID(triggerID);
+
+		if(!TriggerRecord.StatusType.disable.equals(record.getRecordStatus())){
+
+			result.put("result", "only can operating disable Trigger");
+			return result;
+		}
 
 		verify(record);
 
 		mang.deleteTrigger(triggerID);
 
-//
-//		switch(record.getType()){
-//			case Simple:
-//				mang.removeSimpleTrigger(triggerID);
-//				break;
-//			case Group:
-//				groupMang.removeTrigger(triggerID);
-//				break;
-//			case Summary:
-//				summaryMang.removeTrigger(triggerID);
-//				break;
-//		}
+		//日期时间+当前用户ID+"trigger”+trigger type(simple/group/summary)+”delete"+当前triggerID
+		List<String> list=new LinkedList<>();
+		list.add(AuthInfoStore.getUserID());
+		list.add("trigger");
+		list.add(record.getType().name());
+		list.add("delete");
+		list.add(triggerID);
+		logTool.write(list);
 
+		return result;
+	}
+
+	@RequestMapping(path="/clear/{triggerID}",method = { RequestMethod.DELETE })
+	public Map<String, Object> clearTrigger(@PathVariable("triggerID") String triggerID){
+		Map<String, Object> result = new HashMap<>();
+		result.put("result", "success");
+		TriggerRecord record=mang.getTriggerByID(triggerID);
+
+		if(!TriggerRecord.StatusType.deleted.equals(record.getRecordStatus())){
+
+			result.put("result", "only can operating deleted Trigger");
+			return result;
+		}
+
+		verify(record);
+
+		mang.clearTrigger(triggerID);
+
+		//日期时间+当前用户ID+"trigger”+trigger type(simple/group/summary)+”delete"+当前triggerID
+		List<String> list=new LinkedList<>();
+		list.add(AuthInfoStore.getUserID());
+		list.add("trigger");
+		list.add(record.getType().name());
+		list.add("clear");
+		list.add(triggerID);
+		logTool.write(list);
+
+		return result;
 	}
 
 	private void verify(TriggerRecord record) {
@@ -80,17 +123,50 @@ public class CrossTriggerController {
 	}
 
 	@RequestMapping(path="/{triggerID}/enable",method = { RequestMethod.PUT })
-	public void enableTrigger(@PathVariable("triggerID") String triggerID){
-
+	public Map<String, Object> enableTrigger(@PathVariable("triggerID") String triggerID){
+		Map<String, Object> result = new HashMap<>();
+		result.put("result", "success");
+		TriggerRecord record=mang.getTriggerByID(triggerID);
+		if(!TriggerRecord.StatusType.disable.equals(record.getRecordStatus())){
+			result.put("result", "only can operating disable Trigger");
+			return result;
+		}
 
 		mang.enableTrigger(triggerID);
 
+		//日期时间+当前用户ID+"trigger”+trigger type(simple/group/summary)+”enable"+当前triggerID
+		List<String> list=new LinkedList<>();
+		list.add(AuthInfoStore.getUserID());
+		list.add("trigger");
+		list.add(record.getType().name());
+		list.add("enable");
+		list.add(triggerID);
+		logTool.write(list);
+
+		return result;
 	}
 
 	@RequestMapping(path="/{triggerID}/disable",method = { RequestMethod.PUT })
-	public void disableTrigger(@PathVariable("triggerID") String triggerID){
+	public Map<String, Object> disableTrigger(@PathVariable("triggerID") String triggerID){
+		Map<String, Object> result = new HashMap<>();
+		result.put("result", "success");
+		TriggerRecord record=mang.getTriggerByID(triggerID);
+		if(!TriggerRecord.StatusType.enable.equals(record.getRecordStatus())){
+			result.put("result", "only can operating enable Trigger");
+			return result;
+		}
 
 		mang.disableTrigger(triggerID);
+
+		//日期时间+当前用户ID+"trigger”+trigger type(simple/group/summary)+”disable"+当前triggerID
+		List<String> list=new LinkedList<>();
+		list.add(AuthInfoStore.getUserID());
+		list.add("trigger");
+		list.add(record.getType().name());
+		list.add("disable");
+		list.add(triggerID);
+		logTool.write(list);
+		return result;
 	}
 
 	@RequestMapping(path="/{triggerID}",method={RequestMethod.GET})
@@ -98,6 +174,31 @@ public class CrossTriggerController {
 
 		return mang.getTriggerByID(triggerID);
 
+	}
+	@RequestMapping(path="/all",method={RequestMethod.GET})
+	public List<TriggerRecord> getTriggerListByCurrentUser(){
+
+		String currentUserId = AuthInfoStore.getUserID();
+
+		return mang.getTriggerListByUserId(currentUserId);
+//		return null;
+
+	}
+
+	@RequestMapping(path="/deleteTrigger",method={RequestMethod.GET})
+	public List<TriggerRecord> getDeleteTriggerListByCurrentUser(){
+
+		String currentUserId = AuthInfoStore.getUserID();
+
+		return mang.getDeleteTriggerListByUserId(currentUserId);
+//		return null;
+
+	}
+
+	@RequestMapping(path="/things/{thingId}",method={RequestMethod.GET})
+	public List<SimpleTriggerRecord> getTriggerListByThingIdAndUserId(@PathVariable("thingId") String thingId){
+		String currentUserId = AuthInfoStore.getUserID();
+		return mang.getTriggerListByUserIdAndThingId(currentUserId,thingId);
 	}
 
 }

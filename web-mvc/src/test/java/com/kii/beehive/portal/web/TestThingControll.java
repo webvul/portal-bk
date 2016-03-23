@@ -1,5 +1,6 @@
 package com.kii.beehive.portal.web;
 
+import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertNull;
@@ -13,12 +14,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.dao.TagThingRelationDao;
@@ -28,6 +32,8 @@ import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
 import com.kii.beehive.portal.jdbc.entity.TagType;
 import com.kii.beehive.business.manager.TagThingManager;
 import com.kii.beehive.portal.web.constant.Constants;
+import com.kii.extension.sdk.entity.thingif.OnBoardingParam;
+import com.kii.extension.sdk.entity.thingif.OnBoardingResult;
 
 public class TestThingControll extends WebTestTemplate{
 
@@ -39,6 +45,9 @@ public class TestThingControll extends WebTestTemplate{
 
 	@Autowired
 	private TagThingRelationDao tagThingRelationDao;
+
+	@Autowired
+	private ThingIFInAppService thingIFInAppService;
 
 	@Autowired
 	private ObjectMapper mapper;
@@ -67,6 +76,7 @@ public class TestThingControll extends WebTestTemplate{
 			TagIndex tagIndex = new TagIndex();
 			tagIndex.setTagType(TagType.Custom);
 			tagIndex.setDisplayName(displayName);
+			tagIndex.setFullTagName(TagType.Custom.getTagName(displayName));
 
 			tagIndexDao.saveOrUpdate(tagIndex);
 		}
@@ -100,6 +110,66 @@ public class TestThingControll extends WebTestTemplate{
 		assertNotNull(globalThingIDForTest);
 		assertTrue(globalThingIDForTest > 0);
 
+	}
+
+	private Map<String, Object> getOnboardingInfo(String vendorThingID) throws Exception {
+		// get onboarding info
+		String result=this.mockMvc.perform(
+				get("/onboardinghelper/" + vendorThingID)
+						.contentType(MediaType.APPLICATION_JSON)
+						.characterEncoding("UTF-8")
+						.header("Authorization", super.BEARER_SUPER_TOKEN)
+		)
+				.andExpect(status().isOk())
+				.andReturn().getResponse().getContentAsString();
+
+		Map<String,Object> map=mapper.readValue(result, Map.class);
+
+		System.out.println(map);
+
+		// assert http return
+		assertEquals("f973edcaaec9aeac36dd01ebe1c3bc49", map.get("kiiAppKey"));
+		assertEquals("https://api-development-beehivecn3.internal.kii.com", map.get("kiiSiteUrl"));
+		assertNotNull(map.get("ownerID"));
+		assertNotNull(map.get("ownerToken"));
+
+		return map;
+	}
+
+	private String onboarding(String vendorThingID, Map<String, Object> onboardingInfo) throws Exception {
+
+		// do onboarding
+		OnBoardingParam param=new OnBoardingParam();
+
+		param.setVendorThingID(vendorThingID);
+		param.setThingPassword(vendorThingID);
+		param.setUserID((String)onboardingInfo.get("ownerID"));
+
+		OnBoardingResult onBoardingResult = thingIFInAppService.onBoarding(param, (String)onboardingInfo.get("kiiAppID"));
+		String kiiThingID = onBoardingResult.getThingID();
+		System.out.println("Kii Thing ID: " + kiiThingID);
+
+		assertTrue(kiiThingID.length() > 0);
+
+		return kiiThingID;
+	}
+
+	private boolean checkThingExist(String vendorThingID, Map<String, Object> onboardingInfo) throws Exception {
+
+		String kiiAppID = (String)onboardingInfo.get("kiiAppID");
+
+		String url = onboardingInfo.get("kiiSiteUrl") + "/api/apps/" + kiiAppID + "/things/VENDOR_THING_ID:" + vendorThingID;
+
+		HttpGet httpGet = new HttpGet(url);
+
+		httpGet.setHeader("X-Kii-AppID", kiiAppID);
+		httpGet.setHeader("X-Kii-AppKey", (String)onboardingInfo.get("kiiAppKey"));
+		httpGet.setHeader("Authorization", "Bearer " + onboardingInfo.get("ownerToken"));
+
+		int status = HttpClientBuilder.create().build().execute(httpGet).getStatusLine().getStatusCode();
+		System.out.println("status: " + status);
+
+		return status < 400;
 	}
 
 	@Test
@@ -374,8 +444,9 @@ public class TestThingControll extends WebTestTemplate{
 	@Test
 	public void testGetThingByGlobalIDException() throws Exception {
 
+		// 999 is not supposed to be existing
 		String result=this.mockMvc.perform(
-				get("/things/" + "some_non_existing_globalthingid")
+				get("/things/" + "999")
 						.contentType(MediaType.APPLICATION_JSON)
 						.characterEncoding("UTF-8")
 						.header(Constants.ACCESS_TOKEN, tokenForTest)
@@ -404,6 +475,44 @@ public class TestThingControll extends WebTestTemplate{
 		thingInfo = globalThingDao.findByID(globalThingIDForTest);
 		assertNull(thingInfo);
 
+	}
+
+	@Test
+	public void testRemoveThingAlreadyOnboarding() throws Exception {
+
+		// create thing in global reference table
+		this.testCreatThing();
+
+		Map<String, Object> onboardingInfo = this.getOnboardingInfo(vendorThingIDsForTest[0]);
+
+		// create thing in Kii Cloud and do onboarding
+		String kiiThingID = this.onboarding(vendorThingIDsForTest[0], onboardingInfo);
+
+		GlobalThingInfo thingInfo = globalThingDao.findByID(globalThingIDForTest);
+		assertNotNull(thingInfo);
+
+		// need to check the thing is created in Kii Cloud
+		boolean thingExist = this.checkThingExist(vendorThingIDsForTest[0], onboardingInfo);
+		assertTrue(thingExist);
+
+		// add the full kii thing id to local table, as the Kii Cloud server code will update the full kii thing id to the table in internal dev
+		// this operation is only for unit test, to check the scenario that thing in Kii Cloud will also be removed while deleting thing from Beehive
+		globalThingDao.updateKiiThingID(vendorThingIDsForTest[0], onboardingInfo.get("kiiAppID") + "-" + kiiThingID);
+
+		// delete thing
+		String result=this.mockMvc.perform(
+				delete("/things/" + globalThingIDForTest)
+						.header(Constants.ACCESS_TOKEN, tokenForTest)
+		)
+				.andExpect(status().isOk())
+				.andReturn().getResponse().getContentAsString();
+
+		thingInfo = globalThingDao.findByID(globalThingIDForTest);
+		assertNull(thingInfo);
+
+		// need to check the thing is removed already in Kii Cloud
+		thingExist = this.checkThingExist(vendorThingIDsForTest[0], onboardingInfo);
+		assertFalse(thingExist);
 	}
 
 	@Test
@@ -445,7 +554,7 @@ public class TestThingControll extends WebTestTemplate{
 
 		String url="/things/"+globalThingIDForTest+"/tags/custom/"+displayName;
 
-		this.mockMvc.perform(put(url).content("{}")
+		this.mockMvc.perform(post(url).content("{}")
 				.contentType(MediaType.APPLICATION_JSON)
 				.characterEncoding("UTF-8")
 				.header(Constants.ACCESS_TOKEN, tokenForTest)
@@ -474,7 +583,7 @@ public class TestThingControll extends WebTestTemplate{
 
 		url="/things/"+globalThingIDForTest+"/tags/custom/"+displayName;
 
-		this.mockMvc.perform(put(url).content("{}")
+		this.mockMvc.perform(post(url).content("{}")
 				.contentType(MediaType.APPLICATION_JSON)
 				.characterEncoding("UTF-8")
 				.header(Constants.ACCESS_TOKEN, tokenForTest)
@@ -616,7 +725,7 @@ public class TestThingControll extends WebTestTemplate{
 
 		String url="/things/"+globalThingIDs.toString()+"/tags/custom/"+displayNames[0];
 
-		this.mockMvc.perform(put(url).content("{}")
+		this.mockMvc.perform(post(url).content("{}")
 				.contentType(MediaType.APPLICATION_JSON)
 				.characterEncoding("UTF-8")
 				.header(Constants.ACCESS_TOKEN, tokenForTest)
@@ -646,7 +755,7 @@ public class TestThingControll extends WebTestTemplate{
 
 		url="/things/"+globalThingIDs.toString()+"/tags/custom/"+displayNames[0];
 
-		this.mockMvc.perform(put(url).content("{}")
+		this.mockMvc.perform(post(url).content("{}")
 				.contentType(MediaType.APPLICATION_JSON)
 				.characterEncoding("UTF-8")
 				.header(Constants.ACCESS_TOKEN, tokenForTest)
@@ -756,14 +865,10 @@ public class TestThingControll extends WebTestTemplate{
 		// create tag
 		String[] displayNames = new String[]{"displayNameForCustom", "displayNameForLocation"};
 
-		TagIndex tagIndex = new TagIndex();
-		tagIndex.setTagType(TagType.Custom);
-		tagIndex.setDisplayName(displayNames[0]);
+		TagIndex tagIndex = new TagIndex(TagType.Custom, displayNames[0], null);
 		long tagID1 = tagIndexDao.saveOrUpdate(tagIndex);
 
-		tagIndex = new TagIndex();
-		tagIndex.setTagType(TagType.Location);
-		tagIndex.setDisplayName(displayNames[1]);
+		tagIndex = new TagIndex(TagType.Location, displayNames[1], null);
 		long tagID2 = tagIndexDao.saveOrUpdate(tagIndex);
 
 		// create relation
@@ -964,6 +1069,76 @@ public class TestThingControll extends WebTestTemplate{
 		}
 
 		return globalThingIDs;
+	}
+
+
+	@Test
+	public void testGetThingTypeByTagNames() throws Exception {
+
+
+		// create thing
+		String[] vendorThingIDs = new String[]{"vendorThingIDForTest1", "vendorThingIDForTest2", "vendorThingIDForTest3"};
+		List<String> types = new ArrayList<>();
+		types.add("type1");
+		types.add("type2");
+		types.add("type3");
+
+		long[] globalThingIDs = new long[3];
+
+		for(int i = 0; i<vendorThingIDs.length;i++) {
+			GlobalThingInfo thingInfo = new GlobalThingInfo();
+			thingInfo.setVendorThingID(vendorThingIDs[i]);
+			thingInfo.setKiiAppID(KII_APP_ID);
+			thingInfo.setType(types.get(i));
+			globalThingIDs[i] = globalThingDao.saveOrUpdate(thingInfo);
+		}
+
+		// create tag
+		String[] displayNames = new String[]{"displayNameForCustom", "displayNameForLocation"};
+
+		TagIndex tagIndex = new TagIndex(TagType.Custom, displayNames[0], null);
+		long tagID1 = tagIndexDao.saveOrUpdate(tagIndex);
+
+		tagIndex = new TagIndex(TagType.Location, displayNames[1], null);
+		long tagID2 = tagIndexDao.saveOrUpdate(tagIndex);
+
+		// create relation
+		TagThingRelation relation = new TagThingRelation();
+		relation.setTagID(tagID1);
+		relation.setThingID(globalThingIDs[0]);
+		tagThingRelationDao.insert(relation);
+
+		relation = new TagThingRelation();
+		relation.setTagID(tagID1);
+		relation.setThingID(globalThingIDs[1]);
+		tagThingRelationDao.insert(relation);
+
+		relation = new TagThingRelation();
+		relation.setTagID(tagID2);
+		relation.setThingID(globalThingIDs[2]);
+		tagThingRelationDao.insert(relation);
+
+		String fullTagName = TagType.Custom.getTagName(displayNames[0]) + "," + TagType.Location.getTagName(displayNames[1]);
+
+		// query
+		String result=this.mockMvc.perform(
+				get("/things/types/fulltagname/"+fullTagName)
+						.contentType(MediaType.APPLICATION_JSON)
+						.characterEncoding("UTF-8")
+						.header(Constants.ACCESS_TOKEN, tokenForTest)
+		)
+				.andExpect(status().isOk())
+				.andReturn().getResponse().getContentAsString();
+
+		List<String> list = mapper.readValue(result, List.class);
+
+		System.out.println("Response: " + list);
+
+		// assert
+		assertEquals(3, list.size());
+
+		assertTrue(list.containsAll(types));
+
 	}
 
 }

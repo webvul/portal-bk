@@ -3,6 +3,7 @@ package com.kii.extension.ruleengine.service;
 import java.util.Collections;
 import java.util.List;
 
+import org.springframework.scheduling.Trigger;
 import org.springframework.stereotype.Component;
 
 import com.kii.extension.sdk.service.AbstractDataAccess;
@@ -30,6 +31,19 @@ public class TriggerRecordDao extends AbstractDataAccess<TriggerRecord> {
 
 	public TriggerRecord getTriggerRecord(String id){
 
+		QueryParam query= ConditionBuilder.andCondition().equal("_id",id).getFinalQueryParam();
+
+		List<TriggerRecord> list=super.query(query);
+
+		if(list.isEmpty()){
+			return null;
+		}
+		return list.get(0);
+
+	}
+
+	public TriggerRecord getEnableTriggerRecord(String id){
+
 		QueryParam query= ConditionBuilder.andCondition().equal("_id",id).equal("recordStatus", TriggerRecord.StatusType.enable).getFinalQueryParam();
 
 		List<TriggerRecord> list=super.query(query);
@@ -41,7 +55,34 @@ public class TriggerRecordDao extends AbstractDataAccess<TriggerRecord> {
 
 	}
 
+	public List<TriggerRecord> getTriggerListByUserId(String userId){
 
+		String[] params= new String[2];
+		params[0] = TriggerRecord.StatusType.enable.name();
+		params[1] = TriggerRecord.StatusType.disable.name();
+		QueryParam query= ConditionBuilder.andCondition().equal("userID",userId).In("recordStatus",params).getFinalQueryParam();
+
+		List<TriggerRecord> list=super.query(query);
+
+		if(list.isEmpty()){
+			return null;
+		}
+		return list;
+
+	}
+
+	public List<TriggerRecord> getDeleteTriggerListByUserId(String userId){
+
+		QueryParam query= ConditionBuilder.andCondition().equal("userID",userId).equal("recordStatus", TriggerRecord.StatusType.deleted).getFinalQueryParam();
+
+		List<TriggerRecord> list=super.query(query);
+
+		if(list.isEmpty()){
+			return null;
+		}
+		return list;
+
+	}
 
 	public void deleteTriggerRecord(String id){
 
@@ -49,8 +90,12 @@ public class TriggerRecordDao extends AbstractDataAccess<TriggerRecord> {
 
 	}
 
+	public void clearTriggerRecord(String id){
 
-	
+		super.removeEntity(id);
+
+	}
+
 	public void enableTrigger(String triggerID) {
 
 		super.updateEntity(Collections.singletonMap("recordStatus", TriggerRecord.StatusType.enable), triggerID);
@@ -58,10 +103,10 @@ public class TriggerRecordDao extends AbstractDataAccess<TriggerRecord> {
 	}
 
 	public void disableTrigger(String triggerID) {
-			super.updateEntity(Collections.singletonMap("recordStatus", TriggerRecord.StatusType.disable), triggerID);
+		super.updateEntity(Collections.singletonMap("recordStatus", TriggerRecord.StatusType.disable), triggerID);
 
 	}
-	
+
 	public List<TriggerRecord> getAllTrigger() {
 
 		QueryParam query= ConditionBuilder.orCondition().equal("recordStatus",TriggerRecord.StatusType.disable).equal("recordStatus", TriggerRecord.StatusType.enable).getFinalQueryParam();
@@ -75,7 +120,7 @@ public class TriggerRecordDao extends AbstractDataAccess<TriggerRecord> {
 
 		QueryParam query= ConditionBuilder.newCondition().equal("recordStatus", TriggerRecord.StatusType.enable).getFinalQueryParam();
 
-		List<TriggerRecord> list=super.query(query);
+		List<TriggerRecord> list=super.fullQuery(query);
 
 		return list;
 	}

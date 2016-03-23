@@ -3,6 +3,7 @@ package com.kii.beehive.business.ruleengine;
 import javax.annotation.PostConstruct;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kii.beehive.business.event.BusinessEventListenerService;
 import com.kii.beehive.business.manager.ThingTagManager;
 import com.kii.beehive.portal.exception.EntryNotFoundException;
+import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.extension.ruleengine.EngineService;
 import com.kii.extension.ruleengine.service.TriggerRecordDao;
 import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
@@ -96,7 +98,8 @@ public class TriggerManager {
 
 	public String createTrigger(TriggerRecord record){
 
-		record.setRecordStatus(TriggerRecord.StatusType.enable);
+//		record.setRecordStatus(TriggerRecord.StatusType.enable);
+		record.setRecordStatus(TriggerRecord.StatusType.disable);
 
 		String triggerID=triggerDao.addEntity(record).getObjectID();
 
@@ -137,9 +140,12 @@ public class TriggerManager {
 		String triggerID=record.getId();
 		String thingID=null;
 		if(record.getSource()!=null) {
-			thingID = thingTagService.getThingByID(record.getSource().getThingID()).getFullKiiThingID();
+			GlobalThingInfo thingInfo = thingTagService.getThingByID(record.getSource().getThingID());
+			if(thingInfo != null) {
+				thingID = thingInfo.getFullKiiThingID();
+			}
 		}
-		service.createSimpleTrigger(thingID,triggerID,record.getPredicate());
+		service.createSimpleTrigger(thingID,triggerID,record);
 	}
 
 
@@ -185,6 +191,38 @@ public class TriggerManager {
 		eventService.enableTriggerByTargetID(triggerID);
 	}
 
+	public List<TriggerRecord> getTriggerListByUserId(String userId){
+		List<TriggerRecord> triggerList= triggerDao.getTriggerListByUserId(userId);
+
+		return triggerList;
+	}
+
+	public List<TriggerRecord> getDeleteTriggerListByUserId(String userId){
+		List<TriggerRecord> triggerList= triggerDao.getDeleteTriggerListByUserId(userId);
+
+		return triggerList;
+	}
+
+	public List<SimpleTriggerRecord> getTriggerListByUserIdAndThingId(String userId,String thingId){
+		List<SimpleTriggerRecord> resultTriggerList = new ArrayList<SimpleTriggerRecord>();
+		List<TriggerRecord> triggerList= triggerDao.getTriggerListByUserId(userId);
+		for(TriggerRecord trigger : triggerList){
+			if(trigger instanceof SimpleTriggerRecord){
+				SimpleTriggerRecord simpleTriggerRecord = (SimpleTriggerRecord)trigger;
+
+				if(simpleTriggerRecord.getSource()==null ){
+					continue;
+				}
+				String currThingId = simpleTriggerRecord.getSource().getThingID()+"";
+				if(thingId.equals(currThingId)){
+					resultTriggerList.add(simpleTriggerRecord);
+				}
+			}
+		}
+
+		return resultTriggerList;
+	}
+
 	public TriggerRecord  getTriggerByID(String triggerID){
 
 		TriggerRecord record= triggerDao.getTriggerRecord(triggerID);
@@ -199,5 +237,8 @@ public class TriggerManager {
 		triggerDao.deleteTriggerRecord(triggerID);
 	}
 
+	public void clearTrigger(String triggerID) {
 
+		triggerDao.clearTriggerRecord(triggerID);
+	}
 }

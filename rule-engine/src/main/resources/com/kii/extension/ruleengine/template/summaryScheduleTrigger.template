@@ -12,7 +12,7 @@ global CurrThing currThing;
 rule "${triggerID} user custom segment:summary"
    ${timer}
 when
-    Trigger( $triggerID:triggerID=="${triggerID}",type ==TriggerType.summary )
+    Trigger( $triggerID:triggerID=="${triggerID}"  && enable == true ,type ==TriggerType.summary )
     SummaryValueMap( triggerID==$triggerID, ${express}  )
 then
 	CommandExec exec=(CommandExec)kcontext.getKieRuntime().getEnvironment().get("exec");

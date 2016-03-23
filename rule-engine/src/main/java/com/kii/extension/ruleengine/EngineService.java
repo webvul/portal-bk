@@ -17,8 +17,10 @@ import com.kii.extension.ruleengine.drools.entity.Trigger;
 import com.kii.extension.ruleengine.drools.entity.TriggerType;
 import com.kii.extension.ruleengine.store.trigger.MultipleSrcTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
+import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerGroupPolicy;
+import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
 @Component
@@ -118,7 +120,29 @@ public class EngineService {
 	}
 
 
-	public void createSimpleTrigger(String thingID, String triggerID, RuleEnginePredicate predicate){
+//	public void createSimpleTrigger(String thingID, String triggerID, RuleEnginePredicate predicate){
+//
+//
+//		Trigger trigger=new Trigger();
+//
+//		trigger.setTriggerID(triggerID);
+//		trigger.setType(TriggerType.simple);
+//		trigger.setStream(false);
+//		trigger.setWhen(predicate.getTriggersWhen());
+//
+//		trigger.setEnable(Boolean.FALSE);
+//
+//		if(!StringUtils.isEmpty(thingID)) {
+//			trigger.setThings(Collections.singleton(thingID));
+//		}
+//
+//		String rule=ruleGeneral.generDrlConfig(triggerID,TriggerType.simple,predicate);
+//
+//
+//		droolsTriggerService.addTrigger(trigger,rule);
+//
+//	}
+	public void createSimpleTrigger(String thingID, String triggerID, SimpleTriggerRecord record){
 
 
 		Trigger trigger=new Trigger();
@@ -126,13 +150,15 @@ public class EngineService {
 		trigger.setTriggerID(triggerID);
 		trigger.setType(TriggerType.simple);
 		trigger.setStream(false);
-		trigger.setWhen(predicate.getTriggersWhen());
+		trigger.setWhen(record.getPredicate().getTriggersWhen());
+
+		trigger.setEnable(TriggerRecord.StatusType.enable == record.getRecordStatus()  ? Boolean.TRUE : Boolean.FALSE);
 
 		if(!StringUtils.isEmpty(thingID)) {
 			trigger.setThings(Collections.singleton(thingID));
 		}
 
-		String rule=ruleGeneral.generDrlConfig(triggerID,TriggerType.simple,predicate);
+		String rule=ruleGeneral.generDrlConfig(triggerID,TriggerType.simple,record.getPredicate());
 
 
 		droolsTriggerService.addTrigger(trigger,rule);

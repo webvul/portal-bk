@@ -78,6 +78,7 @@ public class TestOnboardingHelperController extends WebTestTemplate {
                 get("/onboardinghelper/" + vendorThingIDForTest)
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
+                        .header("Authorization", BEARER_SUPER_TOKEN)
         )
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
@@ -102,7 +103,7 @@ public class TestOnboardingHelperController extends WebTestTemplate {
                 get("/onboardinghelper/" + "some_non_existing_vendorThingID")
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
-						.header("Authorization","Bearer super_token")
+                        .header("Authorization", BEARER_SUPER_TOKEN)
         )
                 .andExpect(status().isNotFound())
                 .andReturn().getResponse().getContentAsString();

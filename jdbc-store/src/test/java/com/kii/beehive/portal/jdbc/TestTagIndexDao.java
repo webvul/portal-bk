@@ -23,7 +23,6 @@ import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
 import com.kii.beehive.portal.jdbc.entity.TagType;
 import com.kii.beehive.portal.jdbc.entity.Team;
 import com.kii.beehive.portal.jdbc.entity.TeamTagRelation;
-import com.kii.beehive.portal.jdbc.entity.TeamThingRelation;
 
 public class TestTagIndexDao extends TestTemplate{
 
