@@ -108,14 +108,16 @@ public class UserGroupController extends AbstractController{
 		if(ug == null){
 			throw new PortalException("UserGroup Not Found", "UserGroup with userGroupID:" + userGroupID + " Not Found", HttpStatus.NOT_FOUND);
 		}else if(!ug.getCreateBy().equals(getLoginUserID())){
-            throw new InvalidAuthException(ug.getCreateBy(), getLoginUserID());
+			throw new BeehiveUnAuthorizedException("Current user is not the creator of the user group.");
         }else {
             List<String> userIDList = new ArrayList<String>();
             String[] userIDArray = userIDs.split(",");
             for(String uID : userIDArray){
                 if(!uID.equals(getLoginUserID())){
                     userIDList.add(uID);
-                }
+                }else{
+					throw new BeehiveUnAuthorizedException("the creator can't remove");
+				}
             }
             if(userIDList.size() > 0){
                 groupUserRelationDao.deleteUsers(userIDList, userGroupID);
@@ -142,7 +144,7 @@ public class UserGroupController extends AbstractController{
 		if(orig == null){
 			throw new PortalException("UserGroup Not Found", "UserGroup with userGroupID:" + userGroupID + " Not Found", HttpStatus.NOT_FOUND);
 		}else if(!orig.getCreateBy().equals(getLoginUserID())){
-            throw new InvalidAuthException(getLoginUserID(), orig.getCreateBy());
+			throw new BeehiveUnAuthorizedException("Current user is not the creator of the user group.");
         }
 		
 		userManager.deleteUserGroup(userGroupID);
@@ -172,6 +174,8 @@ public class UserGroupController extends AbstractController{
 				ugrb = new UserGroupRestBean(ug);
 				ugrb.setUsers(list);
 			}
+		}else{
+			throw new BeehiveUnAuthorizedException("Current user is not in the user group.");
 		}
 		if(ugrb == null){
 			throw new PortalException("UserGroup Not Found", "UserGroup with userGroupID:" + userGroupID + " Not Found", HttpStatus.NOT_FOUND);
@@ -198,8 +202,12 @@ public class UserGroupController extends AbstractController{
                 relList.forEach(tgr -> tagIDList.add(tgr.getTagID()));
 				tagList = tagIndexDao.findByIDs(tagIDList);
 			}
+		}else{
+			throw new BeehiveUnAuthorizedException("Current user is not in the user group.");
 		}
-
+		if(tagList == null){
+			throw new PortalException("UserGroup Not Found", "UserGroup with userGroupID:" + userGroupID + " Not Found", HttpStatus.NOT_FOUND);
+		}
         return new ResponseEntity<>(tagList, HttpStatus.OK);
     }
     

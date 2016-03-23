@@ -13,6 +13,11 @@ public class ThingUserGroupRelation extends DBEntity {
     private Long thingId;
     private Long userGroupId;
 
+    public ThingUserGroupRelation(Long thingId, Long userGroupId) {
+        this.thingId = thingId;
+        this.userGroupId = userGroupId;
+    }
+
     @Override
     @JdbcField(column = ID)
     public Long getId() {

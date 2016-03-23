@@ -72,11 +72,7 @@ public class TagController extends AbstractController {
             teamTagRelationDao.saveOrUpdate(new TeamTagRelation(getLoginTeamID(), tagID));
         }
 
-        TagUserRelation tagUserRelation = new TagUserRelation();
-        tagUserRelation.setTagId(tagID);
-        tagUserRelation.setUserId(getLoginUserID());
-        tagUserRelation.setCreateBy(getLoginUserID());
-        tagUserRelationDao.saveOrUpdate(tagUserRelation);
+        tagUserRelationDao.saveOrUpdate(new TagUserRelation(tagID, getLoginUserID()));
 
         Map<String, Object> map = new HashMap<>();
         map.put("id", tagID);

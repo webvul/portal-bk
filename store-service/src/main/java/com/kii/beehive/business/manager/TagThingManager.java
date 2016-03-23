@@ -416,6 +416,23 @@ public class TagThingManager {
         }
     }
 
+    private List<GlobalThingInfo> findThingList(Collection<String> thingIDs) {
+        List<GlobalThingInfo> thingList = new ArrayList<GlobalThingInfo>();
+        thingIDs.forEach(thignID -> {
+            GlobalThingInfo thing = globalThingDao.findByID(thignID);
+            if (thing != null) {
+                if(this.isThingCreator(thing)){
+                    thingList.add(thing);
+                } else {
+                    thingIDs.remove(thignID);
+                }
+            }else {
+                log.warn("thing is null, ThignID = " + thignID);
+            }
+        });
+        return thingList;
+    }
+
 
     private List<TagIndex> findTagList(Collection<String> tagIDs) {
         List<TagIndex> tagList = new ArrayList<TagIndex>();
@@ -469,10 +486,7 @@ public class TagThingManager {
                 tagList.forEach(tagIndex -> {
                     TagUserRelation relation = tagUserRelationDao.find(tagIndex.getId(), user.getKiiLoginName());
                     if (null == relation) {
-                        relation = new TagUserRelation();
-                        relation.setUserId(user.getKiiLoginName());
-                        relation.setTagId(tagIndex.getId());
-                        tagUserRelationDao.insert(relation);
+                        tagUserRelationDao.insert(new TagUserRelation(tagIndex.getId(), user.getKiiLoginName()));
                     }
                 });
             });
@@ -485,6 +499,59 @@ public class TagThingManager {
         if (null != users) {
             users.forEach(user -> {
                 tagList.forEach(tagIndex -> tagUserRelationDao.deleteByTagIdAndUserId(tagIndex.getId(), user.getId()));
+            });
+        }
+    }
+
+    public void bindThingToUser(List<String> thingIDList, List<String> userIDList) {
+        List<GlobalThingInfo> thingList = findThingList(thingIDList);
+        List<BeehiveUser> users = userDao.getUserByIDs(userIDList);
+        if (null != users) {
+            users.forEach(user -> {
+                thingList.forEach(thing -> {
+                    ThingUserRelation relation = thingUserRelationDao.find(thing.getId(), user.getKiiLoginName());
+                    if (null == relation) {
+                        tagUserRelationDao.insert(new TagUserRelation(thing.getId(), user.getKiiLoginName()));
+                    }
+                });
+            });
+        }
+    }
+
+
+    public void unbindThingFromUser(List<String> thingIDList, List<String> userIDList) {
+        List<GlobalThingInfo> thingList = findThingList(thingIDList);
+        List<BeehiveUser> users = userDao.getUserByIDs(userIDList);
+        if (null != users) {
+            users.forEach(user -> {
+                thingList.forEach(thing -> thingUserRelationDao.deleteByThingIdAndUserId(thing.getId(), user.getId()));
+            });
+        }
+    }
+
+    public void bindThingToUserGroup(List<String> thingIDList, List<String> userGroupIDs) {
+        List<GlobalThingInfo> thingList = findThingList(thingIDList);
+        List<UserGroup> userGroupList = usergroupDao.findByIDs(userGroupIDs.stream().map(Long::valueOf).
+                collect(Collectors.toList()));
+        if (null != userGroupList) {
+            userGroupList.forEach(userGroup -> {
+                thingList.forEach(thing -> {
+                    ThingUserGroupRelation relation = thingUserGroupRelationDao.find(thing.getId(), userGroup.getId());
+                    if (null == relation) {
+                        thingUserGroupRelationDao.insert(new ThingUserGroupRelation(thing.getId(), userGroup.getId()));
+                    }
+                });
+            });
+        }
+    }
+
+    public void unbindThingFromUserGroup(List<String> thingIDList, List<String> userGroupIDs) {
+        List<GlobalThingInfo> thingList = findThingList(thingIDList);
+        List<UserGroup> userGroupList = usergroupDao.findByIDs(userGroupIDs.stream().map(Long::valueOf).
+                collect(Collectors.toList()));
+        if (null != userGroupList) {
+            userGroupList.forEach(user -> {
+                thingList.forEach(thing -> thingUserGroupRelationDao.deleteByThingIdAndUserGroupId(thing.getId(), userGroupList.getId()));
             });
         }
     }

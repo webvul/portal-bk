@@ -11,8 +11,14 @@ public class InvalidAuthException extends StoreServiceException {
 		super.setStatusCode(401);
 
 		super.setMessage(" curr user "+userID+" no right to access "+owner+"'s data");
+	}
 
+	public InvalidAuthException(String msg){
 
+		super.setErrorCode("AuthNoRight");
 
+		super.setStatusCode(401);
+
+		super.setMessage(msg);
 	}
 }

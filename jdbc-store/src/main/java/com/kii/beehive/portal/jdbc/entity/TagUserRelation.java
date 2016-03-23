@@ -16,6 +16,11 @@ public class TagUserRelation extends DBEntity {
 
     private String userId;
 
+    public TagUserRelation(Long tagId, String userId) {
+        this.userId = userId;
+        this.tagId = tagId;
+    }
+
     @Override
     @JdbcField(column = ID)
     public Long getId() {

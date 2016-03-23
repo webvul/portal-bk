@@ -13,7 +13,6 @@ import com.kii.beehive.portal.jdbc.entity.TeamThingRelation;
 import com.kii.beehive.portal.web.entity.ThingRestBean;
 import com.kii.beehive.portal.web.exception.BeehiveUnAuthorizedException;
 import com.kii.beehive.portal.web.exception.PortalException;
-import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -63,13 +62,11 @@ public class ThingController extends AbstractController{
 	public ResponseEntity<List<ThingRestBean>> getThingsByType(@PathVariable("type") String type) {
 		List<GlobalThingInfo> list = globalThingDao.getThingByType(type);
 		List<ThingRestBean> resultList = new ArrayList<>();
-		if(list != null) {
-			for (GlobalThingInfo thingInfo : list) {
-				ThingRestBean input = new ThingRestBean();
-				BeanUtils.copyProperties(thingInfo,input);
-				resultList.add(input);
-			}
-		}
+		list.stream().filter(thingInfo -> thingTagManager.isThingCreator(thingInfo) || thingTagManager.isThingOwner(thingInfo)).forEach(thingInfo -> {
+			ThingRestBean input = new ThingRestBean();
+			BeanUtils.copyProperties(thingInfo, input);
+			resultList.add(input);
+		});
 
 		return new ResponseEntity<>(resultList, HttpStatus.OK);
 	}
@@ -85,12 +82,11 @@ public class ThingController extends AbstractController{
 	@RequestMapping(path = "/types", method = {RequestMethod.GET})
 	public ResponseEntity<List<Map<String, Object>>> getAllType() {
 		List<Map<String, Object>> list = globalThingDao.findAllThingTypesWithThingCount();
-
 		return new ResponseEntity<>(list, HttpStatus.OK);
 	}
 	
 	/**
-	 * 所有设备的type
+	 * tagID查thingType
 	 * GET /things/types/tagID/{tagIDs}
 	 *
 	 * refer to doc "Beehive API - Thing API" for request/response details
@@ -100,7 +96,7 @@ public class ThingController extends AbstractController{
 	@RequestMapping(path = "/types/tagID/{tagIDs}", method = {RequestMethod.GET})
 	public ResponseEntity<List<String>> getThingTypeByTagIDs(@PathVariable("tagIDs") String tagIDs) {
 		List<String> tagIDList = Arrays.asList(tagIDs.split(","));
-		
+		//TODO
 		List<String> result = thingTagManager.findThingTypeByTagIDs(tagIDList);
 		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
@@ -116,6 +112,15 @@ public class ThingController extends AbstractController{
 	@RequestMapping(path = "/types/fulltagname/{fullTagNames}", method = {RequestMethod.GET})
 	public ResponseEntity<List<String>> getThingTypeByTagFullName(@PathVariable("fullTagNames") String fullTagNames) {
 		List<String> fullTagNameList = Arrays.asList(fullTagNames.split(","));
+
+		for(String name:fullTagNameList){
+			List<TagIndex> tagList = tagIndexDao.findTagByFullTagName(name);
+			if(tagList.size() > 0 && !thingTagManager.isTagCreator(tagList.get(0)) && !thingTagManager.isTagOwner(tagList.get(0))){
+				throw new BeehiveUnAuthorizedException("Current user is not the creator or owner of the tag.");
+			} else {
+				throw new PortalException("Tag Not Found", "Tag with fullTagName:" + name + " Not Found", HttpStatus.NOT_FOUND);
+			}
+		}
 
 		List<String> result = globalThingDao.findThingTypeByFullTagNames(fullTagNameList);
 		return new ResponseEntity<>(result, HttpStatus.OK);
@@ -142,6 +147,8 @@ public class ThingController extends AbstractController{
 			if(ttr == null){
 				throw new PortalException("Thing Not Found", "Thing with globalThingID:" + globalThingID + " Not Found", HttpStatus.NOT_FOUND);
 			}
+		}else if(!thingTagManager.isThingCreator(thing) && thingTagManager.isThingOwner(thing)){
+			throw new InvalidAuthException("not creator or owner");
 		}
 
 		// get tag
@@ -209,14 +216,23 @@ public class ThingController extends AbstractController{
      */
 	@RequestMapping(path="/{globalThingID}",method={RequestMethod.DELETE},consumes={"*"})
 	public void removeThing(@PathVariable("globalThingID") Long globalThingID){
-		
+
 		GlobalThingInfo orig =  globalThingDao.findByID(globalThingID);
-		
 		if(orig == null){
 			throw new PortalException("Thing Not Found", "Thing with globalThingID:" + globalThingID + " Not Found", HttpStatus.NOT_FOUND);
 		}
+
+		if(thingTagManager.isThingCreator(orig)){
+			throw new InvalidAuthException(orig.getCreateBy(), getLoginUserID());
+		}
+
+		if(thingTagManager.isThingCreator(orig)){
+			thingTagManager.removeThing(orig);
+		}else{
+			throw new InvalidAuthException("not tag creator or thing creator");
+		}
 		
-		thingTagManager.removeThing(orig);
+
 	}
 
 	/**

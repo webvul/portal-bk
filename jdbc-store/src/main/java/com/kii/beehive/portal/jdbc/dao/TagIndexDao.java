@@ -166,6 +166,37 @@ public class TagIndexDao extends SpringBaseDao<TagIndex> {
         return rows;
     }
 
+    public List<TagIndex> findTagByFullTagName(String fullTagName) {
+        List<Object> params = new ArrayList<Object>();
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT t.* "
+                + "FROM " + this.getTableName() +" t ");
+
+        StringBuilder where = new StringBuilder();
+        if(AuthInfoStore.getTeamID() != null){
+            sql.append(" INNER JOIN rel_team_tag rt ON t.tag_id=rt.tag_id ");
+            where.append(" rt.team_id = ? ");
+            params.add(AuthInfoStore.getTeamID());
+        }
+
+        if(!Strings.isBlank(fullTagName)){
+            if(where.length() > 0){
+                where.append(" AND ");
+            }
+            where.append("t.").append(TagIndex.FULL_TAG_NAME).append(" = ? ");
+            params.add(fullTagName);
+        }
+
+        if(where.length() > 0){
+            where.insert(0, " WHERE ");
+        }
+
+        sql.append(where);
+
+        List<TagIndex> rows = jdbcTemplate.query(sql.toString(), params.toArray(new Object[params.size()]), getRowMapper());
+        return rows;
+    }
+
 
     /**
      * get the list of tags related to the thing

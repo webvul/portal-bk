@@ -176,6 +176,12 @@ public class TestTagIndexDao extends TestTemplate{
 		assertEquals(tag.getTagType(),list.get(0).getTagType());
 		assertEquals(tag.getDescription(),list.get(0).getDescription());
 	}
+	@Test
+	public void testFindTagByFullTagName(){
+		List<TagIndex> list = dao.findTagByFullTagName(tag.getFullTagName());
+		assertEquals(1,list.size());
+	}
+
 	
 	private Long createTeamRel(){
 		Team t = new Team();
