@@ -6,44 +6,47 @@ import com.kii.beehive.portal.jdbc.annotation.JdbcField;
  * Created by hdchen on 3/18/16.
  */
 public class ThingUserGroupRelation extends DBEntity {
-    final public static String ID = "id";
-    final public static String THING_ID = "thing_id";
-    final public static String USER_GROUP_ID = "user_group_id";
-    private Long id;
-    private Long thingId;
-    private Long userGroupId;
+	final public static String ID = "id";
+	final public static String THING_ID = "thing_id";
+	final public static String USER_GROUP_ID = "user_group_id";
+	private Long id;
+	private Long thingId;
+	private Long userGroupId;
 
-    public ThingUserGroupRelation(Long thingId, Long userGroupId) {
-        this.thingId = thingId;
-        this.userGroupId = userGroupId;
-    }
+	public ThingUserGroupRelation() {
+	}
 
-    @Override
-    @JdbcField(column = ID)
-    public Long getId() {
-        return id;
-    }
+	public ThingUserGroupRelation(Long thingId, Long userGroupId) {
+		this.thingId = thingId;
+		this.userGroupId = userGroupId;
+	}
 
-    @Override
-    public void setId(Long id) {
-        this.id = id;
-    }
+	@Override
+	@JdbcField(column = ID)
+	public Long getId() {
+		return id;
+	}
 
-    @JdbcField(column = THING_ID)
-    public Long getThingId() {
-        return thingId;
-    }
+	@Override
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public void setThingId(Long thingId) {
-        this.thingId = thingId;
-    }
+	@JdbcField(column = THING_ID)
+	public Long getThingId() {
+		return thingId;
+	}
 
-    @JdbcField(column = USER_GROUP_ID)
-    public Long getUserGroupId() {
-        return userGroupId;
-    }
+	public void setThingId(Long thingId) {
+		this.thingId = thingId;
+	}
 
-    public void setUserGroupId(Long userGroupId) {
-        this.userGroupId = userGroupId;
-    }
+	@JdbcField(column = USER_GROUP_ID)
+	public Long getUserGroupId() {
+		return userGroupId;
+	}
+
+	public void setUserGroupId(Long userGroupId) {
+		this.userGroupId = userGroupId;
+	}
 }

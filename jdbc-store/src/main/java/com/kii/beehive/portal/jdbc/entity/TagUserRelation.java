@@ -6,47 +6,51 @@ import com.kii.beehive.portal.jdbc.annotation.JdbcField;
  * Created by hdchen on 3/18/16.
  */
 public class TagUserRelation extends DBEntity {
-    final public static String ID = "id";
-    final public static String TAG_ID = "tag_id";
-    final public static String USER_ID = "user_id";
+	final public static String ID = "id";
+	final public static String TAG_ID = "tag_id";
+	final public static String USER_ID = "user_id";
 
-    private Long id;
+	private Long id;
 
-    private Long tagId;
+	private Long tagId;
 
-    private String userId;
+	private String userId;
 
-    public TagUserRelation(Long tagId, String userId) {
-        this.userId = userId;
-        this.tagId = tagId;
-    }
+	public TagUserRelation() {
 
-    @Override
-    @JdbcField(column = ID)
-    public Long getId() {
-        return id;
-    }
+	}
 
-    @Override
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public TagUserRelation(Long tagId, String userId) {
+		this.userId = userId;
+		this.tagId = tagId;
+	}
 
-    @JdbcField(column = TAG_ID)
-    public Long getTagId() {
-        return tagId;
-    }
+	@Override
+	@JdbcField(column = ID)
+	public Long getId() {
+		return id;
+	}
 
-    public void setTagId(Long tagId) {
-        this.tagId = tagId;
-    }
+	@Override
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    @JdbcField(column = USER_ID)
-    public String getUserId() {
-        return userId;
-    }
+	@JdbcField(column = TAG_ID)
+	public Long getTagId() {
+		return tagId;
+	}
 
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
+	public void setTagId(Long tagId) {
+		this.tagId = tagId;
+	}
+
+	@JdbcField(column = USER_ID)
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
 }
