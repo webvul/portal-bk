@@ -101,12 +101,12 @@ public class EngineService {
 		trigger.setPolicy(policy.getGroupPolicy());
 		trigger.setNumber(policy.getCriticalNumber());
 
-
 		trigger.setStream(false);
 		trigger.setWhen(predicate.getTriggersWhen());
 
 		trigger.setThings(thingIDs);
 
+		predicate.setSchedule(null);
 
 		String rule=ruleGeneral.generDrlConfig(triggerID,TriggerType.group,predicate);
 

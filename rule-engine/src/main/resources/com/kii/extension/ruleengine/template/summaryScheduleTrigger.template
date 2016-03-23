@@ -3,14 +3,17 @@ package com.kii.extension.ruleengine.drools.rule
 import com.kii.extension.ruleengine.drools.entity.*;
 import com.kii.extension.ruleengine.drools.CommandExec;
 
+global CurrThing currThing;
+
 /////////////////////////////////////
-//schedule trigger custom segment
+//summary trigger custom segment
 /////////////////////////////////////
 
-rule "${triggerID} user custom segment:schedule"
+rule "${triggerID} user custom segment:summary"
    ${timer}
 when
-    Trigger( $triggerID:triggerID=="${triggerID}")
+    Trigger( $triggerID:triggerID=="${triggerID}",type ==TriggerType.summary )
+    SummaryValueMap( triggerID==$triggerID, ${express}  )
 then
 	CommandExec exec=(CommandExec)kcontext.getKieRuntime().getEnvironment().get("exec");
     exec.doExecute($triggerID);

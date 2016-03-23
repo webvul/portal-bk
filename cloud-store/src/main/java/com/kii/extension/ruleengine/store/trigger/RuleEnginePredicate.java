@@ -9,8 +9,6 @@ public class RuleEnginePredicate {
 
 	private String  express;
 
-
-
 	private WhenType triggersWhen;
 
 	private Condition condition;
