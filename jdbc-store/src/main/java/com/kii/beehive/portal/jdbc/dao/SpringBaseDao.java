@@ -85,6 +85,9 @@ public abstract class SpringBaseDao<T extends DBEntity> {
 	}
 
 	public List<T> findByIDs(List<Long> ids) {
+		if (null == ids || ids.isEmpty()) {
+			return Collections.EMPTY_LIST;
+		}
 		String sql = "select t.* from " + this.getTableName() + " t where t." + getKey() + " in (:list) ";
 		Map<String, Collection> param = Collections.singletonMap("list", ids);
 		return namedJdbcTemplate.query(sql, param, getRowMapper());
