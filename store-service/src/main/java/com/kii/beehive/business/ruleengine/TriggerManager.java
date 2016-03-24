@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.kii.beehive.portal.event.EventListener;
+import com.kii.beehive.portal.service.EventListenerDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -51,6 +53,9 @@ public class TriggerManager {
 
 	@Autowired
 	private ObjectMapper mapper;
+
+	@Autowired
+	private EventListenerDao eventListenerDao;
 
 
 
@@ -238,7 +243,12 @@ public class TriggerManager {
 	}
 
 	public void clearTrigger(String triggerID) {
-
+		//删除triggerRecord
 		triggerDao.clearTriggerRecord(triggerID);
+		//删除eventListener(kii cloud只支持单个删除)
+		List<EventListener> eventListenerList = eventListenerDao.getEventListenerByTargetKey(triggerID);
+		for(EventListener eventListener: eventListenerList){
+			eventListenerDao.removeEntity(eventListener.getId());
+		}
 	}
 }

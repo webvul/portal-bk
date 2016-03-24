@@ -28,6 +28,7 @@ public class CrossTriggerController {
 	@Autowired
 	private OpLogTools logTool;
 
+
 	/**
 	 * onboarding should be already done on the things in the param
 	 *
@@ -57,11 +58,15 @@ public class CrossTriggerController {
 		return result;
 	}
 
-	@RequestMapping(path="/{triggerID}",method = { RequestMethod.DELETE })
+	@RequestMapping(path="/{triggerID}/delete",method = { RequestMethod.PUT })
 	public Map<String, Object> deleteTrigger(@PathVariable("triggerID") String triggerID){
 		Map<String, Object> result = new HashMap<>();
 		result.put("result", "success");
 		TriggerRecord record=mang.getTriggerByID(triggerID);
+
+		if(TriggerRecord.StatusType.enable.equals(record.getRecordStatus())){
+			mang.disableTrigger(triggerID);
+		}
 
 		if(!TriggerRecord.StatusType.disable.equals(record.getRecordStatus())){
 
@@ -85,7 +90,7 @@ public class CrossTriggerController {
 		return result;
 	}
 
-	@RequestMapping(path="/clear/{triggerID}",method = { RequestMethod.DELETE })
+	@RequestMapping(path="/{triggerID}",method = { RequestMethod.DELETE })
 	public Map<String, Object> clearTrigger(@PathVariable("triggerID") String triggerID){
 		Map<String, Object> result = new HashMap<>();
 		result.put("result", "success");
@@ -140,6 +145,30 @@ public class CrossTriggerController {
 		list.add("trigger");
 		list.add(record.getType().name());
 		list.add("enable");
+		list.add(triggerID);
+		logTool.write(list);
+
+		return result;
+	}
+
+	@RequestMapping(path="/{triggerID}/undo",method = { RequestMethod.PUT })
+	public Map<String, Object> undoTrigger(@PathVariable("triggerID") String triggerID){
+		Map<String, Object> result = new HashMap<>();
+		result.put("result", "success");
+		TriggerRecord record=mang.getTriggerByID(triggerID);
+		if(!TriggerRecord.StatusType.deleted.equals(record.getRecordStatus())){
+			result.put("result", "only can operating deleted Trigger");
+			return result;
+		}
+
+		mang.disableTrigger(triggerID);
+
+		//日期时间+当前用户ID+"trigger”+trigger type(simple/group/summary)+”enable"+当前triggerID
+		List<String> list=new LinkedList<>();
+		list.add(AuthInfoStore.getUserID());
+		list.add("trigger");
+		list.add(record.getType().name());
+		list.add("undo");
 		list.add(triggerID);
 		logTool.write(list);
 
