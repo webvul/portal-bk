@@ -1,16 +1,12 @@
 package com.kii.beehive.portal.web.controller;
 
-import com.kii.beehive.business.manager.TagThingManager;
 import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.portal.exception.InvalidAuthException;
-import com.kii.beehive.portal.exception.ObjectNotFoundException;
+import com.kii.beehive.portal.exception.UnauthorizedException;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.dao.TeamThingRelationDao;
-import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
-import com.kii.beehive.portal.jdbc.entity.TagIndex;
-import com.kii.beehive.portal.jdbc.entity.TagType;
-import com.kii.beehive.portal.jdbc.entity.TeamThingRelation;
+import com.kii.beehive.portal.jdbc.entity.*;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.entity.ThingRestBean;
 import com.kii.beehive.portal.web.exception.BeehiveUnAuthorizedException;
@@ -36,10 +32,8 @@ import static java.util.Arrays.asList;
  */
 @RestController
 @RequestMapping(path = "/things", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
-public class ThingController extends AbstractController {
+public class ThingController extends AbstractThingTagController {
 
-	@Autowired
-	private TagThingManager thingTagManager;
 	//
 	@Autowired
 	private GlobalThingSpringDao globalThingDao;
@@ -254,9 +248,13 @@ public class ThingController extends AbstractController {
 			throw new PortalException("RequiredFieldsMissing", "globalThingIDs or tagIDs is empty", HttpStatus
 					.BAD_REQUEST);
 		}
-		List<GlobalThingInfo> things = parseAndCheckThingIds(globalThingIDs);
-		List<TagIndex> tags = parseAndCheckTagIds(tagIDs);
-		thingTagManager.bindTagToThing(tags, things);
+		List<GlobalThingInfo> things = getThings(globalThingIDs);
+		List<TagIndex> tags = getTags(tagIDs);
+		try {
+			thingTagManager.bindTagToThing(tags, things);
+		} catch (UnauthorizedException e) {
+			throw new BeehiveUnAuthorizedException(e.getMessage());
+		}
 		thingIFService.onTagIDsChangeFire(tags.stream().map(TagIndex::getId).collect(Collectors.toList()), true);
 	}
 
@@ -276,10 +274,63 @@ public class ThingController extends AbstractController {
 			throw new PortalException("RequiredFieldsMissing", "globalThingIDs or tagIDs is empty", HttpStatus
 					.BAD_REQUEST);
 		}
-		List<GlobalThingInfo> things = parseAndCheckThingIds(globalThingIDs);
-		List<TagIndex> tags = parseAndCheckTagIds(tagIDs);
-		thingTagManager.unbindTagFromThing(tags, things);
+		List<GlobalThingInfo> things = getThings(globalThingIDs);
+		List<TagIndex> tags = getTags(tagIDs);
+		try {
+			thingTagManager.unbindTagFromThing(tags, things);
+		} catch (UnauthorizedException e) {
+			throw new BeehiveUnAuthorizedException(e.getMessage());
+		}
 		thingIFService.onTagIDsChangeFire(tags.stream().map(TagIndex::getId).collect(Collectors.toList()), false);
+	}
+
+	/**
+	 * Bind things(devices) to user groups
+	 * POST /{globalThingIDs}/userGroups/{userGroupIDs}
+	 *
+	 * @param globalThingIDs
+	 * @param userGroupIDs
+	 */
+	@RequestMapping(path = "/{globalThingIDs}/userGroups/{userGroupIDs}", method = {RequestMethod.POST})
+	public void bindThingsToUserGroups(@PathVariable("globalThingIDs") String globalThingIDs, @PathVariable
+			("userGroupIDs")
+			String userGroupIDs) {
+		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(userGroupIDs)) {
+			throw new PortalException("RequiredFieldsMissing", "globalThingIDs or userGroupIDs is empty", HttpStatus
+					.BAD_REQUEST);
+		}
+		List<GlobalThingInfo> things = getThings(globalThingIDs);
+		List<UserGroup> userGroups = getUserGroups(userGroupIDs);
+		try {
+			thingTagManager.bindThingToUserGroup(things, userGroups);
+		} catch (UnauthorizedException e) {
+			throw new BeehiveUnAuthorizedException(e.getMessage());
+		}
+	}
+
+	/**
+	 * Bind things(devices) to user groups
+	 * POST /{globalThingIDs}/userGroups/{userGroupIDs}
+	 *
+	 * @param globalThingIDs
+	 * @param userGroupIDs
+	 */
+	@RequestMapping(path = "/{globalThingIDs}/userGroups/{userGroupIDs}", method = {RequestMethod.DELETE}, consumes =
+			{"*"})
+	public void unbindThingsToUserGroups(@PathVariable("globalThingIDs") String globalThingIDs, @PathVariable
+			("userGroupIDs")
+			String userGroupIDs) {
+		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(userGroupIDs)) {
+			throw new PortalException("RequiredFieldsMissing", "globalThingIDs or userGroupIDs is empty", HttpStatus
+					.BAD_REQUEST);
+		}
+		List<GlobalThingInfo> things = getThings(globalThingIDs);
+		List<UserGroup> userGroups = getUserGroups(userGroupIDs);
+		try {
+			thingTagManager.unbindThingFromUserGroup(things, userGroups);
+		} catch (UnauthorizedException e) {
+			throw new BeehiveUnAuthorizedException(e.getMessage());
+		}
 	}
 
 	/**
@@ -296,9 +347,13 @@ public class ThingController extends AbstractController {
 			throw new PortalException("RequiredFieldsMissing", "globalThingIDs or userIDs is empty", HttpStatus
 					.BAD_REQUEST);
 		}
-		List<GlobalThingInfo> things = parseAndCheckThingIds(globalThingIDs);
-		List<BeehiveUser> users = parseAndCheckUserIds(userIDs);
-		thingTagManager.bindThingToUser(things, users);
+		List<GlobalThingInfo> things = getThings(globalThingIDs);
+		List<BeehiveUser> users = getUsers(userIDs);
+		try {
+			thingTagManager.bindThingToUser(things, users);
+		} catch (UnauthorizedException e) {
+			throw new BeehiveUnAuthorizedException(e.getMessage());
+		}
 	}
 
 	/**
@@ -315,9 +370,13 @@ public class ThingController extends AbstractController {
 			throw new PortalException("RequiredFieldsMissing", "globalThingIDs or userIDs is empty", HttpStatus
 					.BAD_REQUEST);
 		}
-		List<GlobalThingInfo> things = parseAndCheckThingIds(globalThingIDs);
-		List<BeehiveUser> users = parseAndCheckUserIds(userIDs);
-		thingTagManager.unbindThingFromUser(things, users);
+		List<GlobalThingInfo> things = getThings(globalThingIDs);
+		List<BeehiveUser> users = getUsers(userIDs);
+		try {
+			thingTagManager.unbindThingFromUser(things, users);
+		} catch (UnauthorizedException e) {
+			throw new BeehiveUnAuthorizedException(e.getMessage());
+		}
 	}
 
 	/**
@@ -440,48 +499,5 @@ public class ThingController extends AbstractController {
 		}
 
 		return new ResponseEntity<>(resultList, HttpStatus.OK);
-	}
-
-	private List<TagIndex> parseAndCheckTagIds(String tagIDs) {
-		List<String> tagIDList = Arrays.asList(tagIDs.split(","));
-		List<TagIndex> tagIndexes;
-		try {
-			tagIndexes = thingTagManager.getTagIndexes(tagIDList);
-		} catch (ObjectNotFoundException e) {
-			throw new PortalException("Requested tag doesn't exist", e.getMessage(), HttpStatus.BAD_REQUEST);
-		}
-		tagIndexes.forEach(index -> {
-			if (!thingTagManager.isTagCreator(index)) {
-				throw new BeehiveUnAuthorizedException("Current user is not the creator of the tag.");
-			}
-		});
-		return tagIndexes;
-	}
-
-	private List<GlobalThingInfo> parseAndCheckThingIds(String globalThingIDs) {
-		List<String> thingIDList = asList(globalThingIDs.split(","));
-		List<GlobalThingInfo> things;
-		try {
-			things = thingTagManager.getThings(thingIDList);
-		} catch (ObjectNotFoundException e) {
-			throw new PortalException("Requested thing doesn't exist", e.getMessage(), HttpStatus.BAD_REQUEST);
-		}
-		things.forEach(thing -> {
-			if (!thingTagManager.isThingCreator(thing)) {
-				throw new BeehiveUnAuthorizedException("Current user is not the creator of the tag.");
-			}
-		});
-		return things;
-	}
-
-	private List<BeehiveUser> parseAndCheckUserIds(String userIDs) {
-		List<String> userIDList = asList(userIDs.split(","));
-		List<BeehiveUser> users;
-		try {
-			users = thingTagManager.getUsers(userIDList);
-		} catch (ObjectNotFoundException e) {
-			throw new PortalException("Requested user doesn't exist", e.getMessage(), HttpStatus.BAD_REQUEST);
-		}
-		return users;
 	}
 }

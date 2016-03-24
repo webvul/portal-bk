@@ -5,6 +5,7 @@ import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.CollectUtils;
 import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.beehive.portal.exception.ObjectNotFoundException;
+import com.kii.beehive.portal.exception.UnauthorizedException;
 import com.kii.beehive.portal.jdbc.dao.*;
 import com.kii.beehive.portal.jdbc.entity.*;
 import com.kii.beehive.portal.service.AppInfoDao;
@@ -68,6 +69,9 @@ public class TagThingManager {
 
 	@Autowired
 	private BeehiveUserDao userDao;
+
+	@Autowired
+	private UserGroupDao userGroupDao;
 
 
 	/**
@@ -151,7 +155,13 @@ public class TagThingManager {
 		return result;
 	}
 
-	public void bindTagToThing(List<TagIndex> tags, List<GlobalThingInfo> things) {
+	public void bindTagToThing(List<TagIndex> tags, List<GlobalThingInfo> things) throws UnauthorizedException {
+		if (!isTagCreator(tags)) {
+			throw new UnauthorizedException("Current user is not the creator of the tag(s).");
+		}
+		if (!isThingCreator(things)) {
+			throw new UnauthorizedException("Current user is not the creator of the thing(s).");
+		}
 		tags.forEach(tagIndex -> {
 			things.forEach(thing -> {
 				TagThingRelation relation = tagThingRelationDao.findByThingIDAndTagID(thing.getId(), tagIndex.getId());
@@ -180,13 +190,13 @@ public class TagThingManager {
 		}
 	}
 
-	public void bindTagToUserGroup(Collection<String> tagIDs, Collection<String> userGroupIDs) {
-		List<TagIndex> tagList = this.findTagList(tagIDs);
-		List<UserGroup> userGroupList = usergroupDao.findByIDs(userGroupIDs.stream().map(Long::valueOf).
-				collect(Collectors.toList()));
-		if (null != userGroupList) {
-			userGroupList.forEach(userGroup -> {
-				tagList.forEach(tagIndex -> {
+	public void bindTagToUserGroup(List<TagIndex> tags, List<UserGroup> userGroups) throws UnauthorizedException {
+		if (!isTagCreator(tags)) {
+			throw new UnauthorizedException("Current user is not the creator of the tag.");
+		}
+		if (null != userGroups) {
+			userGroups.forEach(userGroup -> {
+				tags.forEach(tagIndex -> {
 					TagGroupRelation relation = tagGroupRelationDao.findByTagIDAndUserGroupID(tagIndex.getId(),
 							userGroup.getId());
 					if (null == relation) {
@@ -216,7 +226,13 @@ public class TagThingManager {
 		}
 	}
 
-	public void unbindTagFromThing(List<TagIndex> tags, List<GlobalThingInfo> things) {
+	public void unbindTagFromThing(List<TagIndex> tags, List<GlobalThingInfo> things) throws UnauthorizedException {
+		if (!isTagCreator(tags)) {
+			throw new UnauthorizedException("Current user is not the creator of the tag(s).");
+		}
+		if (!isThingCreator(things)) {
+			throw new UnauthorizedException("Current user is not the creator of the thing(s).");
+		}
 		tags.forEach(tag -> {
 			things.forEach(thing -> {
 				tagThingRelationDao.delete(tag.getId(), thing.getId());
@@ -224,13 +240,13 @@ public class TagThingManager {
 		});
 	}
 
-	public void unbindTagToUserGroup(Collection<String> tagIDs, Collection<String> userGroupIDs) {
-		List<TagIndex> tagList = this.findTagList(tagIDs);
-		List<UserGroup> userGroupList = usergroupDao.findByIDs(userGroupIDs.stream().map(Long::valueOf).
-				collect(Collectors.toList()));
-		if (null != userGroupList) {
-			userGroupList.forEach(userGroup -> {
-				tagList.forEach(tagIndex -> tagGroupRelationDao.delete(tagIndex.getId(), userGroup.getId()));
+	public void unbindTagToUserGroup(List<TagIndex> tags, List<UserGroup> userGroups) throws UnauthorizedException {
+		if (!isTagCreator(tags)) {
+			throw new UnauthorizedException("Current user is not the creator of the tag.");
+		}
+		if (null != userGroups) {
+			userGroups.forEach(userGroup -> {
+				tags.forEach(tagIndex -> tagGroupRelationDao.delete(tagIndex.getId(), userGroup.getId()));
 			});
 		}
 	}
@@ -381,12 +397,29 @@ public class TagThingManager {
 		}
 	}
 
+	public boolean isTagCreator(Collection<TagIndex> tags) {
+		for (TagIndex tag : tags) {
+			if (!isTagCreator(tag))
+				return false;
+		}
+		return true;
+	}
+
 	public boolean isThingCreator(GlobalThingInfo thing) {
 		if (thing.getCreateBy().equals(AuthInfoStore.getUserID())) {
 			return true;
 		} else {
 			return false;
 		}
+	}
+
+	public boolean isThingCreator(Collection<GlobalThingInfo> things) {
+		for (GlobalThingInfo thing : things) {
+			if (!isThingCreator(thing)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public boolean isThingOwner(GlobalThingInfo thing) {
@@ -465,12 +498,13 @@ public class TagThingManager {
 		return tagList;
 	}
 
-	public void bindTagToUser(List<String> tagIDList, List<String> userIDList) {
-		List<TagIndex> tagList = findTagList(tagIDList);
-		List<BeehiveUser> users = userDao.getUserByIDs(userIDList);
+	public void bindTagToUser(List<TagIndex> tags, List<BeehiveUser> users) throws UnauthorizedException {
+		if (!isTagCreator(tags)) {
+			throw new UnauthorizedException("Current user is not the creator of the tag.");
+		}
 		if (null != users) {
 			users.forEach(user -> {
-				tagList.forEach(tagIndex -> {
+				tags.forEach(tagIndex -> {
 					TagUserRelation relation = tagUserRelationDao.find(tagIndex.getId(), user.getKiiLoginName());
 					if (null == relation) {
 						tagUserRelationDao.insert(new TagUserRelation(tagIndex.getId(), user.getKiiLoginName()));
@@ -480,17 +514,21 @@ public class TagThingManager {
 		}
 	}
 
-	public void unbindTagFromUser(List<String> tagIDList, List<String> userIDList) {
-		List<TagIndex> tagList = findTagList(tagIDList);
-		List<BeehiveUser> users = userDao.getUserByIDs(userIDList);
+	public void unbindTagFromUser(List<TagIndex> tags, List<BeehiveUser> users) throws UnauthorizedException {
+		if (!isTagCreator(tags)) {
+			throw new UnauthorizedException("Current user is not the creator of the tag.");
+		}
 		if (null != users) {
 			users.forEach(user -> {
-				tagList.forEach(tagIndex -> tagUserRelationDao.deleteByTagIdAndUserId(tagIndex.getId(), user.getId()));
+				tags.forEach(tagIndex -> tagUserRelationDao.deleteByTagIdAndUserId(tagIndex.getId(), user.getId()));
 			});
 		}
 	}
 
-	public void bindThingToUser(List<GlobalThingInfo> things, List<BeehiveUser> users) {
+	public void bindThingToUser(List<GlobalThingInfo> things, List<BeehiveUser> users) throws UnauthorizedException {
+		if (!isThingCreator(things)) {
+			throw new UnauthorizedException("Current user is not the creator of the thing(s).");
+		}
 		if (null != users) {
 			users.forEach(user -> {
 				things.forEach(thing -> {
@@ -504,7 +542,11 @@ public class TagThingManager {
 	}
 
 
-	public void unbindThingFromUser(List<GlobalThingInfo> things, List<BeehiveUser> users) {
+	public void unbindThingFromUser(List<GlobalThingInfo> things, List<BeehiveUser> users) throws
+			UnauthorizedException {
+		if (!isThingCreator(things)) {
+			throw new UnauthorizedException("Current user is not the creator of the thing(s).");
+		}
 		if (null != users) {
 			users.forEach(user -> {
 				things.forEach(thing -> thingUserRelationDao.deleteByThingIdAndUserId(thing.getId(), user.getId()));
@@ -512,13 +554,14 @@ public class TagThingManager {
 		}
 	}
 
-	public void bindThingToUserGroup(List<String> thingIDList, List<String> userGroupIDs) {
-		List<GlobalThingInfo> thingList = findThingList(thingIDList);
-		List<UserGroup> userGroupList = usergroupDao.findByIDs(userGroupIDs.stream().map(Long::valueOf).
-				collect(Collectors.toList()));
-		if (null != userGroupList) {
-			userGroupList.forEach(userGroup -> {
-				thingList.forEach(thing -> {
+	public void bindThingToUserGroup(List<GlobalThingInfo> things, List<UserGroup> userGroups) throws
+			UnauthorizedException {
+		if (!isThingCreator(things)) {
+			throw new UnauthorizedException("Current user is not the creator of thing(s).");
+		}
+		if (null != userGroups) {
+			userGroups.forEach(userGroup -> {
+				things.forEach(thing -> {
 					ThingUserGroupRelation relation = thingUserGroupRelationDao.find(thing.getId(), userGroup.getId());
 					if (null == relation) {
 						thingUserGroupRelationDao.insert(new ThingUserGroupRelation(thing.getId(), userGroup.getId()));
@@ -528,13 +571,15 @@ public class TagThingManager {
 		}
 	}
 
-	public void unbindThingFromUserGroup(List<String> thingIDList, List<String> userGroupIDs) {
-		List<GlobalThingInfo> thingList = findThingList(thingIDList);
-		List<UserGroup> userGroupList = usergroupDao.findByIDs(userGroupIDs.stream().map(Long::valueOf).
-				collect(Collectors.toList()));
-		if (null != userGroupList) {
-			userGroupList.forEach(userGroup -> {
-				thingList.forEach(thing -> thingUserGroupRelationDao.deleteByThingIdAndUserGroupId(thing.getId(), userGroup.getId()));
+	public void unbindThingFromUserGroup(List<GlobalThingInfo> things, List<UserGroup> userGroups) throws
+			UnauthorizedException {
+		if (!isThingCreator(things)) {
+			throw new UnauthorizedException("Current user is not the creator of thing(s).");
+		}
+		if (null != userGroups) {
+			userGroups.forEach(userGroup -> {
+				things.forEach(thing -> thingUserGroupRelationDao.deleteByThingIdAndUserGroupId(thing.getId(),
+						userGroup.getId()));
 			});
 		}
 	}
@@ -573,6 +618,19 @@ public class TagThingManager {
 					"]");
 		}
 		return users;
+	}
+
+	public List<UserGroup> getUserGroups(List<String> userGroupIDList) throws ObjectNotFoundException {
+		List<Long> userGroupIds = userGroupIDList.stream().filter(Pattern.compile("^[0-9]+$").asPredicate())
+				.map(Long::valueOf).collect(Collectors.toList());
+		List<UserGroup> userGroups = userGroupDao.findByIDs(userGroupIds);
+		if (null == userGroups || !userGroups.stream().map(UserGroup::getId).map(Object::toString).
+				collect(Collectors.toSet()).containsAll(userGroupIDList)) {
+			userGroupIds.removeAll(userGroups.stream().map(UserGroup::getId).collect(Collectors.toList()));
+			throw new ObjectNotFoundException("Invalid user group id(s): [" + CollectUtils.collectionToString
+					(userGroupIds) + "]");
+		}
+		return userGroups;
 	}
 
 }
