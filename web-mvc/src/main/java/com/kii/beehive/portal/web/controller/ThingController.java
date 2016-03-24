@@ -382,6 +382,15 @@ public class ThingController extends AbstractController{
 		return new ResponseEntity<>(resultList, HttpStatus.OK);
 	}
 
+	/**
+	 * 查询gateway下的设备
+	 * GET /things/{globalThingID}/endnodes
+	 *
+	 * // TODO add this API into documents
+	 *
+	 * @param globalThingID
+	 * @return
+     */
 	@RequestMapping(path = "/{globalThingID}/endnodes", method = {RequestMethod.GET})
 	public ResponseEntity<List<ThingRestBean>> getGatewayEndnodes(@PathVariable("globalThingID") long globalThingID) {
 
