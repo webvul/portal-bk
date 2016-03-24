@@ -33,6 +33,7 @@ import com.kii.beehive.portal.jdbc.entity.TagType;
 import com.kii.beehive.portal.jdbc.entity.TeamThingRelation;
 import com.kii.beehive.portal.web.entity.ThingRestBean;
 import com.kii.beehive.portal.web.exception.PortalException;
+import com.kii.extension.sdk.entity.thingif.EndNodeOfGateway;
 
 /**
  * Beehive API - Thing API
@@ -381,5 +382,49 @@ public class ThingController extends AbstractController{
 		return new ResponseEntity<>(resultList, HttpStatus.OK);
 	}
 
+	@RequestMapping(path = "/{globalThingID}/endnodes", method = {RequestMethod.GET})
+	public ResponseEntity<List<ThingRestBean>> getGatewayEndnodes(@PathVariable("globalThingID") long globalThingID) {
+
+		// get gateway info
+		GlobalThingInfo gatewayInfo = globalThingDao.findByID(globalThingID);
+
+		if(gatewayInfo == null) {
+			throw new PortalException("Thing Not Found", "Thing with globalThingID:" + globalThingID + " Not Found", HttpStatus.NOT_FOUND);
+		}
+
+		// check whether onboarding is done
+		String fullKiiThingID = gatewayInfo.getFullKiiThingID();
+
+		if(Strings.isBlank(fullKiiThingID)) {
+			return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
+		}
+
+		// get vendor thing id list of endnodes
+		List<EndNodeOfGateway> list = thingIFService.getAllEndNodesOfGateway(fullKiiThingID);
+
+		List<String> vendorThingIDList = new ArrayList<>();
+		for (EndNodeOfGateway endNodeOfGateway : list) {
+			vendorThingIDList.add(endNodeOfGateway.getVendorThingID());
+		}
+
+		// get thing info of endnodes
+		List<GlobalThingInfo> globalThingInfoList = globalThingDao.getThingsByVendorIDArray(vendorThingIDList);
+		List<ThingRestBean> thingRestBeanList = this.toThingRestBean(globalThingInfoList);
+
+		return new ResponseEntity(thingRestBeanList, HttpStatus.OK);
+	}
+
+	private List<ThingRestBean> toThingRestBean(List<GlobalThingInfo> list) {
+		List<ThingRestBean> resultList = new ArrayList<>();
+		if(list != null) {
+			for (GlobalThingInfo thingInfo : list) {
+				ThingRestBean input = new ThingRestBean();
+				BeanUtils.copyProperties(thingInfo,input);
+				resultList.add(input);
+			}
+		}
+
+		return resultList;
+	}
 
 }

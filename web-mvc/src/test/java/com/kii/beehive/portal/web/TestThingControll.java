@@ -1141,4 +1141,59 @@ public class TestThingControll extends WebTestTemplate{
 
 	}
 
+	// TODO enhance this unit test case
+	// this test case is based on below assumption:
+	// 		1. gateway with vendor thing id "gateway-002" is already onboarded
+	//		2. there are multiple endnodes "endnode-001" and "endnode-002" under gateway "gateway-002"
+	@Test
+	public void testGetGatewayEndnodes() throws Exception {
+
+		// create thing info of gateway in local DB
+		// the data comes from internal dev DB
+		GlobalThingInfo gateway = new GlobalThingInfo();
+		gateway.setVendorThingID("gateway-002");
+		gateway.setKiiAppID("192b49ce");
+		gateway.setFullKiiThingID("192b49ce-th.f83120e36100-e71b-5e11-b3fe-0f785ae8");
+		long globalThingIDOfGateway = globalThingDao.insert(gateway);
+
+		// create thing info of endnodes in local DB
+		GlobalThingInfo endnode1 = new GlobalThingInfo();
+		endnode1.setVendorThingID("endnode-001");
+		endnode1.setKiiAppID("192b49ce");
+		long globalThingIDOfEndnode1 = globalThingDao.insert(endnode1);
+
+		GlobalThingInfo endnode2 = new GlobalThingInfo();
+		endnode2.setVendorThingID("endnode-002");
+		endnode2.setKiiAppID("192b49ce");
+		long globalThingIDOfEndnode2 = globalThingDao.insert(endnode2);
+
+		// query
+		String result=this.mockMvc.perform(
+				get("/things/" + globalThingIDOfGateway + "/endnodes")
+						.contentType(MediaType.APPLICATION_JSON)
+						.characterEncoding("UTF-8")
+						.header(Constants.ACCESS_TOKEN, tokenForTest)
+		)
+				.andExpect(status().isOk())
+				.andReturn().getResponse().getContentAsString();
+
+		List<String> list = mapper.readValue(result, List.class);
+
+		// need to check the output in log
+		System.out.println("Response: " + list);
+
+		// assert
+		assertTrue(list.size() > 0);
+
+		// query and get no result, assuming no global thing id "999"
+		this.mockMvc.perform(
+				get("/things/" + 999 + "/endnodes")
+						.contentType(MediaType.APPLICATION_JSON)
+						.characterEncoding("UTF-8")
+						.header(Constants.ACCESS_TOKEN, tokenForTest)
+		)
+				.andExpect(status().isNotFound());
+
+	}
+
 }

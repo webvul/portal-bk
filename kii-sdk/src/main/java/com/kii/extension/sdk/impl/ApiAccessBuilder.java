@@ -478,6 +478,25 @@ public class ApiAccessBuilder {
 	}
 
 	//================================
+	//gateway relation
+	//================================
+
+	public ApiAccessBuilder getEndNodesOfGateway(String thingID, int bestEffortLimit, String paginationKey) {
+//		/apps/<appID>/things/<thingID>/end-nodes?bestEffortLimit={limit}&paginationKey={paginationKey}
+
+		String subUrl=appInfo.getThingIfSubUrl()+"/things/"+thingID+"/end-nodes?";
+		subUrl+="bestEffortLimit="+bestEffortLimit+"&";
+		if(!StringUtils.isEmpty(paginationKey)){
+			subUrl+="paginationKey="+paginationKey;
+		}
+		request = new HttpGet(subUrl);
+
+		this.setContentType("application/vnd.kii.ThingEndNodesRetrievalResponse+json");
+
+		return this;
+	}
+
+	//================================
 	//business relation
 	//================================
 
