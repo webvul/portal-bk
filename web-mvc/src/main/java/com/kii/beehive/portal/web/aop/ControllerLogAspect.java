@@ -102,6 +102,7 @@ public class ControllerLogAspect {
             try {
                 return mapper.writeValueAsString(obj);
             } catch (JsonProcessingException e) {
+                log.error(e.getMessage(), e);
                 return "";
             }
 
