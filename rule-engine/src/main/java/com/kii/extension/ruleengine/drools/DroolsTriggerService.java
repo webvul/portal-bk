@@ -167,19 +167,17 @@ public class DroolsTriggerService {
 		getService(trigger).addOrUpdateData(trigger);
 	}
 
-	public void addThingStatus(String fullThingID,ThingStatus status){
+	public void initThingStatus(String fullThingID,ThingStatus status,Date date){
 
 		ThingStatusInRule newStatus=new ThingStatusInRule();
 		newStatus.setThingID(fullThingID);
 		newStatus.setValues(status.getFields());
-
-		curr.setThing(fullThingID);
+		newStatus.setCreateAt(date);
 
 		cloudService.addOrUpdateData(newStatus);
 		streamService.addOrUpdateData(newStatus);
-
-		fireCondition();
 	}
+
 
 	public void addThingStatus(String fullThingID,ThingStatus status,Date date){
 
@@ -196,7 +194,7 @@ public class DroolsTriggerService {
 		fireCondition();
 	}
 
-	private  void fireCondition(){
+	public  void fireCondition(){
 
 		cloudService.fireCondition();
 

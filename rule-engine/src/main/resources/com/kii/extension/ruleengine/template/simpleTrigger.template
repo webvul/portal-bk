@@ -11,7 +11,6 @@ global CurrThing currThing;
 /////////////////////////////////////
 
 rule "${triggerID} user custom segment:simple"
-   ${timer}
 when
     Trigger( $triggerID:triggerID=="${triggerID}"  && enable == true ,$things:things  )
     CurrThing(thing memberOf $things) from currThing

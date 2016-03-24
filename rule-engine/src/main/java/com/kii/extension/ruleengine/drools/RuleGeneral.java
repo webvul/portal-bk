@@ -54,20 +54,6 @@ public class RuleGeneral {
 	}
 
 
-
-
-	private String generScheduleDrl(SchedulePrefix schedule, String triggerID){
-
-		String template=loadTemplate("schedule");
-		Map<String,String> params=new HashMap<>();
-		params.put("timer",generTimer(schedule));
-
-		params.put("triggerID",triggerID);
-
-		return StrTemplate.generByMap(template,params);
-
-	}
-
 	//TODO:not finish
 	public String generMultipleDrlConfig(MultipleSrcTriggerRecord  record) {
 
@@ -90,15 +76,12 @@ then
 	insertLogical(new UnitResult($triggerID,$unitName));
 end
 			 */
-			Condition cond = v.getCondition();
-			if (!StringUtils.isEmpty(v.getExpress())) {
-				params.put("express", replace.convertExpress(v.getExpress()));
-			} else if (v.getCondition() != null) {
-				params.put("express", generExpress(cond));
-			} else {
-				params.put("express", " eval(true) ");
-			}
 
+
+			RuleEnginePredicate  predicate=new RuleEnginePredicate();
+			predicate.setCondition(v.getCondition());
+			predicate.setExpress(v.getExpress());
+			params.put("express",generExpress(predicate));
 
 		});
 
@@ -144,9 +127,27 @@ end
 	public String generDrlConfig(String triggerID, TriggerType type, RuleEnginePredicate predicate){
 
 
-		String template=loadTemplate(type.name());
+		Map<String,String> params=new HashMap<>();
 
-		String fullDrl=generDrl(template,predicate,triggerID);
+		String template=null;
+		if(predicate.getSchedule()!=null){
+
+			if(predicate.getCondition()==null){
+
+				template=loadTemplate("schedule");
+			}else {
+				template = loadTemplate(type.name() + "Schedule");
+			}
+			params.put("timer",generTimer(predicate.getSchedule()));
+
+		}else {
+			template=loadTemplate(type.name());
+		}
+
+		params.put("triggerID",triggerID);
+		params.put("express",generExpress(predicate));
+
+		String fullDrl=StrTemplate.generByMap(template,params);
 
 		log.info(triggerID+"\n"+fullDrl);
 		return fullDrl;
@@ -180,42 +181,25 @@ end
 	}
 
 
-	private String generDrl(String template, RuleEnginePredicate predicate, String triggerID){
 
 
-			Map<String,String> params=new HashMap<>();
+	public String generExpress(RuleEnginePredicate predicate) {
 
-			if(!StringUtils.isEmpty(predicate.getExpress())) {
-				params.put("express",replace.convertExpress(predicate.getExpress()));
-				params.put("timer",generTimer(predicate.getSchedule()));
 
-			}else if(predicate.getCondition()!=null){
-				Condition cond=predicate.getCondition();
-				if(cond==null){
-					params.put("express"," eval(true) ");
-				}else{
-					params.put("express",generExpress(cond));
-				}
-				params.put("timer",generTimer(predicate.getSchedule()));
+		if (predicate.getExpress() != null) {
+			return replace.convertExpress(predicate.getExpress());
+		}
 
-			}else if(predicate.getSchedule()!=null){
+		if (predicate.getCondition() == null) {
 
-				return generScheduleDrl(predicate.getSchedule(),triggerID);
+			return " eval( true ) ";
+		}
 
-			}else{
-				throw new IllegalArgumentException("predicate format invalid:"+predicate);
-			}
-
-			params.put("triggerID",triggerID);
-
-		return StrTemplate.generByMap(template,params);
-
+		Condition condition = predicate.getCondition();
+		return generExpress(condition);
 	}
 
-
-
 	public String generExpress(Condition condition){
-
 
 		StringBuilder  sb=new StringBuilder();
 

@@ -50,15 +50,15 @@ public class TestSimpleTrigger extends TestInit{
 		sendGoodThingStatus(kiiThingID);
 
 
-		assertEquals(1,exec.getHitCount(triggerID));
+		assertEquals(2,exec.getHitCount(triggerID));
 
 		sendBadThingStatus(kiiThingID);
 
-		assertEquals(1,exec.getHitCount(triggerID));
+		assertEquals(2,exec.getHitCount(triggerID));
 
 		sendGoodThingStatus(kiiThingID);
 
-		assertEquals(2,exec.getHitCount(triggerID));
+		assertEquals(3,exec.getHitCount(triggerID));
 
 
 	}

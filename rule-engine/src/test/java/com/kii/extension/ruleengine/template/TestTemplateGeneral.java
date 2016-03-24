@@ -51,7 +51,21 @@ public class TestTemplateGeneral {
 		predicate.setCondition(condition);
 		predicate.setSchedule(prefix);
 
+		log.info(general.generDrlConfig("abcSchedule", TriggerType.simple,predicate));
+
+		predicate.setSchedule(null);
+
 		log.info(general.generDrlConfig("abc", TriggerType.simple,predicate));
+
+		log.info(general.generDrlConfig("abc", TriggerType.summary,predicate));
+
+		predicate.setSchedule(prefix);
+		log.info(general.generDrlConfig("abcSchedule", TriggerType.summary,predicate));
+
+
+		predicate.setCondition(null);
+
+		log.info(general.generDrlConfig("schedule", TriggerType.simple,predicate));
 
 	}
 }
