@@ -181,7 +181,7 @@ public class TagController extends AbstractThingTagController {
 		List<TagIndex> tagIndexes = getTags(tagIds);
 		List<BeehiveUser> users = getUsers(userIds);
 		try {
-			thingTagManager.bindTagToUser(tagIndexes, users);
+			thingTagManager.bindTagsToUsers(tagIndexes, users);
 		} catch (UnauthorizedException e) {
 			throw new BeehiveUnAuthorizedException(e.getMessage());
 		}
@@ -203,7 +203,7 @@ public class TagController extends AbstractThingTagController {
 		List<TagIndex> tagIndexes = getTags(tagIds);
 		List<BeehiveUser> users = getUsers(userIds);
 		try {
-			thingTagManager.unbindTagFromUser(tagIndexes, users);
+			thingTagManager.unbindTagsFromUsers(tagIndexes, users);
 		} catch (UnauthorizedException e) {
 			throw new BeehiveUnAuthorizedException(e.getMessage());
 		}
@@ -225,7 +225,7 @@ public class TagController extends AbstractThingTagController {
 		List<TagIndex> tagIndexes = getTags(tagIDs);
 		List<UserGroup> userGroups = getUserGroups(userGroupIDs);
 		try {
-			thingTagManager.bindTagToUserGroup(tagIndexes, userGroups);
+			thingTagManager.bindTagsToUserGroups(tagIndexes, userGroups);
 		} catch (UnauthorizedException e) {
 			throw new BeehiveUnAuthorizedException(e.getMessage());
 		}
@@ -248,7 +248,7 @@ public class TagController extends AbstractThingTagController {
 		List<TagIndex> tagIndexes = getTags(tagIDs);
 		List<UserGroup> userGroups = getUserGroups(userGroupIDs);
 		try {
-			thingTagManager.unbindTagToUserGroup(tagIndexes, userGroups);
+			thingTagManager.unbindTagsFromUserGroups(tagIndexes, userGroups);
 		} catch (UnauthorizedException e) {
 			throw new BeehiveUnAuthorizedException(e.getMessage());
 		}

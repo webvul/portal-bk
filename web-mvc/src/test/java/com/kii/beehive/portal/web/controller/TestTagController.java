@@ -221,7 +221,7 @@ public class TestTagController extends WebTestTemplate {
 				});
 			});
 			return null;
-		}).when(tagThingManager).bindTagToUser(anyList(), anyList());
+		}).when(tagThingManager).bindTagsToUsers(anyList(), anyList());
 
 		try {
 			tagController.bindTagToUser(tagId + "", "Someone");
@@ -261,7 +261,7 @@ public class TestTagController extends WebTestTemplate {
 				});
 			});
 			return null;
-		}).when(tagThingManager).unbindTagFromUser(anyList(), anyList());
+		}).when(tagThingManager).unbindTagsFromUsers(anyList(), anyList());
 
 		BeehiveUser someone = new BeehiveUser();
 		someone.setKiiLoginName("Someone");

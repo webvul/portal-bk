@@ -190,7 +190,7 @@ public class TagThingManager {
 		}
 	}
 
-	public void bindTagToUserGroup(List<TagIndex> tags, List<UserGroup> userGroups) throws UnauthorizedException {
+	public void bindTagsToUserGroups(List<TagIndex> tags, List<UserGroup> userGroups) throws UnauthorizedException {
 		if (!isTagCreator(tags)) {
 			throw new UnauthorizedException("Current user is not the creator of the tag.");
 		}
@@ -240,7 +240,7 @@ public class TagThingManager {
 		});
 	}
 
-	public void unbindTagToUserGroup(List<TagIndex> tags, List<UserGroup> userGroups) throws UnauthorizedException {
+	public void unbindTagsFromUserGroups(List<TagIndex> tags, List<UserGroup> userGroups) throws UnauthorizedException {
 		if (!isTagCreator(tags)) {
 			throw new UnauthorizedException("Current user is not the creator of the tag.");
 		}
@@ -498,7 +498,7 @@ public class TagThingManager {
 		return tagList;
 	}
 
-	public void bindTagToUser(List<TagIndex> tags, List<BeehiveUser> users) throws UnauthorizedException {
+	public void bindTagsToUsers(List<TagIndex> tags, List<BeehiveUser> users) throws UnauthorizedException {
 		if (!isTagCreator(tags)) {
 			throw new UnauthorizedException("Current user is not the creator of the tag.");
 		}
@@ -514,18 +514,19 @@ public class TagThingManager {
 		}
 	}
 
-	public void unbindTagFromUser(List<TagIndex> tags, List<BeehiveUser> users) throws UnauthorizedException {
+	public void unbindTagsFromUsers(List<TagIndex> tags, List<BeehiveUser> users) throws UnauthorizedException {
 		if (!isTagCreator(tags)) {
 			throw new UnauthorizedException("Current user is not the creator of the tag.");
 		}
 		if (null != users) {
 			users.forEach(user -> {
-				tags.forEach(tagIndex -> tagUserRelationDao.deleteByTagIdAndUserId(tagIndex.getId(), user.getId()));
+				tags.forEach(tagIndex -> tagUserRelationDao.deleteByTagIdAndUserId(tagIndex.getId(),
+						user.getKiiLoginName()));
 			});
 		}
 	}
 
-	public void bindThingToUser(List<GlobalThingInfo> things, List<BeehiveUser> users) throws UnauthorizedException {
+	public void bindThingsToUsers(List<GlobalThingInfo> things, List<BeehiveUser> users) throws UnauthorizedException {
 		if (!isThingCreator(things)) {
 			throw new UnauthorizedException("Current user is not the creator of the thing(s).");
 		}
@@ -534,7 +535,10 @@ public class TagThingManager {
 				things.forEach(thing -> {
 					ThingUserRelation relation = thingUserRelationDao.find(thing.getId(), user.getKiiLoginName());
 					if (null == relation) {
-						tagUserRelationDao.insert(new TagUserRelation(thing.getId(), user.getKiiLoginName()));
+						relation = new ThingUserRelation();
+						relation.setThingId(thing.getId());
+						relation.setUserId(user.getKiiLoginName());
+						thingUserRelationDao.insert(relation);
 					}
 				});
 			});
@@ -542,19 +546,20 @@ public class TagThingManager {
 	}
 
 
-	public void unbindThingFromUser(List<GlobalThingInfo> things, List<BeehiveUser> users) throws
+	public void unbindThingsFromUsers(List<GlobalThingInfo> things, List<BeehiveUser> users) throws
 			UnauthorizedException {
 		if (!isThingCreator(things)) {
 			throw new UnauthorizedException("Current user is not the creator of the thing(s).");
 		}
 		if (null != users) {
 			users.forEach(user -> {
-				things.forEach(thing -> thingUserRelationDao.deleteByThingIdAndUserId(thing.getId(), user.getId()));
+				things.forEach(thing -> thingUserRelationDao.deleteByThingIdAndUserId(thing.getId(),
+						user.getKiiLoginName()));
 			});
 		}
 	}
 
-	public void bindThingToUserGroup(List<GlobalThingInfo> things, List<UserGroup> userGroups) throws
+	public void bindThingsToUserGroups(List<GlobalThingInfo> things, List<UserGroup> userGroups) throws
 			UnauthorizedException {
 		if (!isThingCreator(things)) {
 			throw new UnauthorizedException("Current user is not the creator of thing(s).");
@@ -571,7 +576,7 @@ public class TagThingManager {
 		}
 	}
 
-	public void unbindThingFromUserGroup(List<GlobalThingInfo> things, List<UserGroup> userGroups) throws
+	public void unbindThingsFromUserGroups(List<GlobalThingInfo> things, List<UserGroup> userGroups) throws
 			UnauthorizedException {
 		if (!isThingCreator(things)) {
 			throw new UnauthorizedException("Current user is not the creator of thing(s).");

@@ -5,16 +5,16 @@ import com.kii.beehive.business.manager.TagThingManager;
 import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.exception.ObjectNotFoundException;
+import com.kii.beehive.portal.exception.UnauthorizedException;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.dao.TagThingRelationDao;
 import com.kii.beehive.portal.jdbc.dao.TeamThingRelationDao;
-import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
-import com.kii.beehive.portal.jdbc.entity.TagIndex;
-import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
-import com.kii.beehive.portal.jdbc.entity.TagType;
+import com.kii.beehive.portal.jdbc.entity.*;
+import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.beehive.portal.web.controller.ThingController;
+import com.kii.beehive.portal.web.exception.BeehiveUnAuthorizedException;
 import com.kii.beehive.portal.web.exception.PortalException;
 import com.kii.extension.sdk.entity.thingif.OnBoardingParam;
 import com.kii.extension.sdk.entity.thingif.OnBoardingResult;
@@ -100,6 +100,164 @@ public class TestThingController extends WebTestTemplate {
 	}
 
 	@Test
+	public void bindThingsToUserGroups() throws Exception {
+		// Error test
+		String[] blankUserGroupIds = new String[]{null, " "};
+		String[] blankThingIds = new String[]{null, " "};
+		for (String userGroupId : blankUserGroupIds) {
+			for (String thingIds : blankThingIds) {
+				try {
+					thingController.bindThingsToUserGroups(thingIds, userGroupId);
+					fail("Expect a PortalException");
+				} catch (PortalException e) {
+					assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+				}
+			}
+		}
+
+		GlobalThingInfo thingInfo = new GlobalThingInfo();
+		thingInfo.setCreateBy("ThingCreator");
+		thingInfo.setId(1001L);
+		doReturn(Arrays.asList(thingInfo)).when(thingTagManager).getThings(anyListOf(String.class));
+
+		UserGroup userGroup = new UserGroup();
+		userGroup.setCreateBy("Someone");
+		userGroup.setId(200L);
+		doReturn(Arrays.asList(userGroup)).when(thingTagManager).getUserGroups(anyListOf(String.class));
+
+		doThrow(new UnauthorizedException("test")).when(thingTagManager).bindThingsToUserGroups(anyListOf
+				(GlobalThingInfo.class), anyListOf(UserGroup.class));
+		try {
+			thingController.bindThingsToUserGroups("some things", "some userGroups");
+			fail("Expect a PortalException");
+		} catch (BeehiveUnAuthorizedException e) {
+			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
+		}
+
+		doNothing().when(thingTagManager).bindThingsToUserGroups(anyListOf
+				(GlobalThingInfo.class), anyListOf(UserGroup.class));
+		thingController.bindThingsToUserGroups("some things", "some userGroups");
+	}
+
+	@Test
+	public void unbindThingsFromUserGroups() throws Exception {
+		// Error test
+		String[] blankUserGroupIds = new String[]{null, " "};
+		String[] blankThingIds = new String[]{null, " "};
+		for (String userGroupId : blankUserGroupIds) {
+			for (String thingIds : blankThingIds) {
+				try {
+					thingController.unbindThingsFromUserGroups(thingIds, userGroupId);
+					fail("Expect a PortalException");
+				} catch (PortalException e) {
+					assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+				}
+			}
+		}
+
+		GlobalThingInfo thingInfo = new GlobalThingInfo();
+		thingInfo.setCreateBy("ThingCreator");
+		thingInfo.setId(1001L);
+		doReturn(Arrays.asList(thingInfo)).when(thingTagManager).getThings(anyListOf(String.class));
+
+		UserGroup userGroup = new UserGroup();
+		userGroup.setCreateBy("Someone");
+		userGroup.setId(200L);
+		doReturn(Arrays.asList(userGroup)).when(thingTagManager).getUserGroups(anyListOf(String.class));
+
+		doThrow(new UnauthorizedException("test")).when(thingTagManager).unbindThingsFromUserGroups(anyListOf
+				(GlobalThingInfo.class), anyListOf(UserGroup.class));
+		try {
+			thingController.unbindThingsFromUserGroups("some things", "some userGroups");
+			fail("Expect a PortalException");
+		} catch (BeehiveUnAuthorizedException e) {
+			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
+		}
+
+		doNothing().when(thingTagManager).unbindThingsFromUserGroups(anyListOf
+				(GlobalThingInfo.class), anyListOf(UserGroup.class));
+		thingController.unbindThingsFromUserGroups("some things", "some userGroups");
+	}
+
+	@Test
+	public void testBindThingsToUsers() throws Exception {
+		// Error test
+		String[] blankUserIds = new String[]{null, " "};
+		String[] blankThingIds = new String[]{null, " "};
+		for (String userId : blankUserIds) {
+			for (String thingIds : blankThingIds) {
+				try {
+					thingController.bindThingsToUsers(thingIds, userId);
+					fail("Expect a PortalException");
+				} catch (PortalException e) {
+					assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+				}
+			}
+		}
+
+		GlobalThingInfo thingInfo = new GlobalThingInfo();
+		thingInfo.setCreateBy("ThingCreator");
+		thingInfo.setId(1001L);
+		doReturn(Arrays.asList(thingInfo)).when(thingTagManager).getThings(anyListOf(String.class));
+
+		BeehiveUser user = new BeehiveUser();
+		user.setKiiLoginName("Someone");
+		doReturn(Arrays.asList(user)).when(thingTagManager).getUsers(anyListOf(String.class));
+
+		doThrow(new UnauthorizedException("test")).when(thingTagManager).bindThingsToUsers(anyListOf
+				(GlobalThingInfo.class), anyListOf(BeehiveUser.class));
+		try {
+			thingController.bindThingsToUsers("some things", "some userGroups");
+			fail("Expect a PortalException");
+		} catch (BeehiveUnAuthorizedException e) {
+			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
+		}
+
+		doNothing().when(thingTagManager).bindThingsToUsers(anyListOf
+				(GlobalThingInfo.class), anyListOf(BeehiveUser.class));
+		thingController.bindThingsToUsers("some things", "some userGroups");
+	}
+
+	@Test
+	public void testUnbindThingsFromUsers() throws Exception {
+		// Error test
+		String[] blankUserIds = new String[]{null, " "};
+		String[] blankThingIds = new String[]{null, " "};
+		for (String userId : blankUserIds) {
+			for (String thingIds : blankThingIds) {
+				try {
+					thingController.unbindThingsFromUsers(thingIds, userId);
+					fail("Expect a PortalException");
+				} catch (PortalException e) {
+					assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+				}
+			}
+		}
+
+		GlobalThingInfo thingInfo = new GlobalThingInfo();
+		thingInfo.setCreateBy("ThingCreator");
+		thingInfo.setId(1001L);
+		doReturn(Arrays.asList(thingInfo)).when(thingTagManager).getThings(anyListOf(String.class));
+
+		BeehiveUser user = new BeehiveUser();
+		user.setKiiLoginName("Someone");
+		doReturn(Arrays.asList(user)).when(thingTagManager).getUsers(anyListOf(String.class));
+
+		doThrow(new UnauthorizedException("test")).when(thingTagManager).unbindThingsFromUsers(anyListOf
+				(GlobalThingInfo.class), anyListOf(BeehiveUser.class));
+		try {
+			thingController.unbindThingsFromUsers("some things", "some userGroups");
+			fail("Expect a PortalException");
+		} catch (BeehiveUnAuthorizedException e) {
+			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
+		}
+
+		doNothing().when(thingTagManager).unbindThingsFromUsers(anyListOf
+				(GlobalThingInfo.class), anyListOf(BeehiveUser.class));
+		thingController.unbindThingsFromUsers("some things", "some userGroups");
+	}
+
+	@Test
 	public void testAddThingTag() throws Exception {
 		// Error test
 		String[] blankTagIds = new String[]{null, " "};
@@ -130,6 +288,9 @@ public class TestThingController extends WebTestTemplate {
 		thingInfo.setCreateBy("ThingCreator");
 		doReturn(Arrays.asList(thingInfo)).when(thingTagManager).getThings(anyList());
 
+		TagIndex tagIndex = new TagIndex();
+		tagIndex.setCreateBy("ThingCreator");
+		doReturn(Arrays.asList(tagIndex)).when(thingTagManager).getTagIndexes(anyListOf(String.class));
 		AuthInfoStore.setAuthInfo("Someone");
 		try {
 			thingController.addThingTag("thing1", "tag1");
@@ -199,6 +360,9 @@ public class TestThingController extends WebTestTemplate {
 		thingInfo.setCreateBy("ThingCreator");
 		doReturn(Arrays.asList(thingInfo)).when(thingTagManager).getThings(anyList());
 
+		TagIndex tagIndex = new TagIndex();
+		tagIndex.setCreateBy("ThingCreator");
+		doReturn(Arrays.asList(tagIndex)).when(thingTagManager).getTagIndexes(anyListOf(String.class));
 		AuthInfoStore.setAuthInfo("Someone");
 		try {
 			thingController.removeThingTag("thing1", "tag1");

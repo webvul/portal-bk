@@ -302,14 +302,14 @@ public class ThingController extends AbstractThingTagController {
 		List<GlobalThingInfo> things = getThings(globalThingIDs);
 		List<UserGroup> userGroups = getUserGroups(userGroupIDs);
 		try {
-			thingTagManager.bindThingToUserGroup(things, userGroups);
+			thingTagManager.bindThingsToUserGroups(things, userGroups);
 		} catch (UnauthorizedException e) {
 			throw new BeehiveUnAuthorizedException(e.getMessage());
 		}
 	}
 
 	/**
-	 * Bind things(devices) to user groups
+	 * Unbind things(devices) from user groups
 	 * POST /{globalThingIDs}/userGroups/{userGroupIDs}
 	 *
 	 * @param globalThingIDs
@@ -317,7 +317,7 @@ public class ThingController extends AbstractThingTagController {
 	 */
 	@RequestMapping(path = "/{globalThingIDs}/userGroups/{userGroupIDs}", method = {RequestMethod.DELETE}, consumes =
 			{"*"})
-	public void unbindThingsToUserGroups(@PathVariable("globalThingIDs") String globalThingIDs, @PathVariable
+	public void unbindThingsFromUserGroups(@PathVariable("globalThingIDs") String globalThingIDs, @PathVariable
 			("userGroupIDs")
 			String userGroupIDs) {
 		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(userGroupIDs)) {
@@ -327,7 +327,7 @@ public class ThingController extends AbstractThingTagController {
 		List<GlobalThingInfo> things = getThings(globalThingIDs);
 		List<UserGroup> userGroups = getUserGroups(userGroupIDs);
 		try {
-			thingTagManager.unbindThingFromUserGroup(things, userGroups);
+			thingTagManager.unbindThingsFromUserGroups(things, userGroups);
 		} catch (UnauthorizedException e) {
 			throw new BeehiveUnAuthorizedException(e.getMessage());
 		}
@@ -350,14 +350,14 @@ public class ThingController extends AbstractThingTagController {
 		List<GlobalThingInfo> things = getThings(globalThingIDs);
 		List<BeehiveUser> users = getUsers(userIDs);
 		try {
-			thingTagManager.bindThingToUser(things, users);
+			thingTagManager.bindThingsToUsers(things, users);
 		} catch (UnauthorizedException e) {
 			throw new BeehiveUnAuthorizedException(e.getMessage());
 		}
 	}
 
 	/**
-	 * Bind things(devices) to users
+	 * Unbind things(devices) from users
 	 * DELETE /{globalThingIDs}/users/{userIDs}
 	 *
 	 * @param globalThingIDs thing id list, separated by single comma character
@@ -373,7 +373,7 @@ public class ThingController extends AbstractThingTagController {
 		List<GlobalThingInfo> things = getThings(globalThingIDs);
 		List<BeehiveUser> users = getUsers(userIDs);
 		try {
-			thingTagManager.unbindThingFromUser(things, users);
+			thingTagManager.unbindThingsFromUsers(things, users);
 		} catch (UnauthorizedException e) {
 			throw new BeehiveUnAuthorizedException(e.getMessage());
 		}
