@@ -207,26 +207,7 @@ public class TagThingManager {
 		}
 	}
 
-	public void bindCustomTagToThing(Collection<String> displayNames, Collection<Long> globalThingIDs) {
-
-		List<TagIndex> tagIndexList = this.findCustomTagList(displayNames);
-
-		for (Long globalThingID : globalThingIDs) {
-			GlobalThingInfo thing = globalThingDao.findByID(globalThingID);
-			if (thing == null) {
-				log.warn("Thing is null, ThingId = " + globalThingID);
-			} else {
-				for (TagIndex tag : tagIndexList) {
-					TagThingRelation ttr = tagThingRelationDao.findByThingIDAndTagID(globalThingID, tag.getId());
-					if (ttr == null) {
-						tagThingRelationDao.insert(new TagThingRelation(tag.getId(), globalThingID));
-					}
-				}
-			}
-		}
-	}
-
-	public void unbindTagFromThing(List<TagIndex> tags, List<GlobalThingInfo> things) throws UnauthorizedException {
+	public void unbindThingsFromTags(List<TagIndex> tags, List<GlobalThingInfo> things) throws UnauthorizedException {
 		if (!isTagCreator(tags)) {
 			throw new UnauthorizedException("Current user is not the creator of the tag(s).");
 		}
@@ -261,22 +242,6 @@ public class TagThingManager {
 			} else {
 				for (Team team : teamList) {
 					teamThingRelationDao.delete(team.getId(), thing.getId());
-				}
-			}
-		}
-	}
-
-	public void unbindCustomTagToThing(Collection<String> displayNames, Collection<Long> globalThingIDs) {
-
-		List<TagIndex> tagIndexList = this.findCustomTagList(displayNames);
-
-		for (Long globalThingID : globalThingIDs) {
-			GlobalThingInfo thing = globalThingDao.findByID(globalThingID);
-			if (thing == null) {
-				log.warn("Thing is null, ThingId = " + globalThingID);
-			} else {
-				for (TagIndex tag : tagIndexList) {
-					tagThingRelationDao.delete(tag.getId(), globalThingID);
 				}
 			}
 		}
@@ -484,20 +449,6 @@ public class TagThingManager {
 		return teamList;
 	}
 
-	private List<TagIndex> findCustomTagList(Collection<String> displayNames) {
-		List<TagIndex> tagList = new ArrayList<TagIndex>();
-		for (String displayName : displayNames) {
-			List<TagIndex> list = tagIndexDao.findTagByTagTypeAndName(TagType.Custom.toString(), displayName);
-			TagIndex tag = CollectUtils.getFirst(list);
-			if (tag != null) {
-				tagList.add(tag);
-			} else {
-				log.warn("Custom Tag is null, displayName = " + displayName);
-			}
-		}
-		return tagList;
-	}
-
 	public void bindTagsToUsers(List<TagIndex> tags, List<BeehiveUser> users) throws UnauthorizedException {
 		if (!isTagCreator(tags)) {
 			throw new UnauthorizedException("Current user is not the creator of the tag.");
@@ -612,6 +563,20 @@ public class TagThingManager {
 			throw new ObjectNotFoundException("Invalid tag id(s): [" + CollectUtils.collectionToString(tagIds) + "]");
 		}
 		return tagIndexes;
+	}
+
+	public List<TagIndex> getTagIndexes(Collection<String> displayNames, TagType tagType) throws
+			ObjectNotFoundException {
+		List<TagIndex> tags = new ArrayList();
+		for (String name : displayNames) {
+			List<TagIndex> list = tagIndexDao.findTagByTagTypeAndName(tagType.name(), name);
+			if (null == list || list.isEmpty()) {
+				throw new ObjectNotFoundException("Requested tag name " + name + ", type " + tagType +
+						" doesn't exist");
+			}
+			tags.add(CollectUtils.getFirst(list));
+		}
+		return tags;
 	}
 
 	public List<BeehiveUser> getUsers(List<String> userIDList) throws ObjectNotFoundException {

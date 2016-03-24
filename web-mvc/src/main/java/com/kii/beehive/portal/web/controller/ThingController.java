@@ -1,7 +1,7 @@
 package com.kii.beehive.portal.web.controller;
 
 import com.kii.beehive.business.service.ThingIFInAppService;
-import com.kii.beehive.portal.exception.InvalidAuthException;
+import com.kii.beehive.portal.exception.ObjectNotFoundException;
 import com.kii.beehive.portal.exception.UnauthorizedException;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
@@ -213,23 +213,17 @@ public class ThingController extends AbstractThingTagController {
 	 */
 	@RequestMapping(path = "/{globalThingID}", method = {RequestMethod.DELETE}, consumes = {"*"})
 	public void removeThing(@PathVariable("globalThingID") Long globalThingID) {
-
 		GlobalThingInfo orig = globalThingDao.findByID(globalThingID);
 		if (orig == null) {
-			throw new PortalException("Thing Not Found", "Thing with globalThingID:" + globalThingID + " Not Found", HttpStatus.NOT_FOUND);
+			throw new PortalException("Thing Not Found", "Thing with globalThingID:" + globalThingID + " Not Found",
+					HttpStatus.NOT_FOUND);
 		}
 
-		if (thingTagManager.isThingCreator(orig)) {
-			throw new InvalidAuthException(orig.getCreateBy(), getLoginUserID());
+		if (!thingTagManager.isThingCreator(orig)) {
+			throw new BeehiveUnAuthorizedException("Current user is not the creator of the thing");
 		}
 
-		if (thingTagManager.isThingCreator(orig)) {
-			thingTagManager.removeThing(orig);
-		} else {
-			throw new InvalidAuthException("not tag creator or thing creator");
-		}
-
-
+		thingTagManager.removeThing(orig);
 	}
 
 
@@ -242,7 +236,7 @@ public class ThingController extends AbstractThingTagController {
 	 * @param globalThingIDs
 	 */
 	@RequestMapping(path = "/{globalThingIDs}/tags/{tagIDs}", method = {RequestMethod.POST})
-	public void addThingTag(@PathVariable("globalThingIDs") String globalThingIDs, @PathVariable("tagIDs") String
+	public void bindThingsToTags(@PathVariable("globalThingIDs") String globalThingIDs, @PathVariable("tagIDs") String
 			tagIDs) {
 		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(tagIDs)) {
 			throw new PortalException("RequiredFieldsMissing", "globalThingIDs or tagIDs is empty", HttpStatus
@@ -268,7 +262,7 @@ public class ThingController extends AbstractThingTagController {
 	 * @param globalThingIDs
 	 */
 	@RequestMapping(path = "/{globalThingIDs}/tags/{tagIDs}", method = {RequestMethod.DELETE}, consumes = {"*"})
-	public void removeThingTag(@PathVariable("globalThingIDs") String globalThingIDs, @PathVariable("tagIDs") String
+	public void unbindThingsFromTags(@PathVariable("globalThingIDs") String globalThingIDs, @PathVariable("tagIDs") String
 			tagIDs) {
 		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(tagIDs)) {
 			throw new PortalException("RequiredFieldsMissing", "globalThingIDs or tagIDs is empty", HttpStatus
@@ -277,7 +271,7 @@ public class ThingController extends AbstractThingTagController {
 		List<GlobalThingInfo> things = getThings(globalThingIDs);
 		List<TagIndex> tags = getTags(tagIDs);
 		try {
-			thingTagManager.unbindTagFromThing(tags, things);
+			thingTagManager.unbindThingsFromTags(tags, things);
 		} catch (UnauthorizedException e) {
 			throw new BeehiveUnAuthorizedException(e.getMessage());
 		}
@@ -389,21 +383,25 @@ public class ThingController extends AbstractThingTagController {
 	 * @param displayNames
 	 */
 	@RequestMapping(path = "/{globalThingIDs}/tags/custom/{displayNames}", method = {RequestMethod.POST})
-	public void addThingCustomTag(@PathVariable("globalThingIDs") String globalThingIDs, @PathVariable("displayNames") String displayNames) {
-
-		List<String> list = asList(globalThingIDs.split(","));
-		List<Long> globalThingIDList = new ArrayList<>();
-		for (String id : list) {
-			globalThingIDList.add(Long.valueOf(id));
+	public void bindThingsToCustomTags(@PathVariable("globalThingIDs") String globalThingIDs,
+									   @PathVariable("displayNames") String displayNames) {
+		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(displayNames)) {
+			throw new PortalException("RequiredFieldsMissing", "globalThingIDs or displayNames is empty", HttpStatus
+					.BAD_REQUEST);
 		}
-
-		List<String> displayNameList = asList(displayNames.split(","));
-		thingTagManager.bindCustomTagToThing(displayNameList, globalThingIDList);
-
-		displayNameList.forEach(name -> {
-			String fullName = TagType.Custom.getTagName(name);
-			thingIFService.onTagChangeFire(fullName, true);
-		});
+		List<GlobalThingInfo> things = getThings(globalThingIDs);
+		List<TagIndex> tags;
+		try {
+			tags = thingTagManager.getTagIndexes(Arrays.asList(displayNames.split(",")), TagType.Custom);
+		} catch (ObjectNotFoundException e) {
+			throw new PortalException("Requested tag doesn't exist", e.getMessage(), HttpStatus.BAD_REQUEST);
+		}
+		try {
+			thingTagManager.bindTagToThing(tags, things);
+		} catch (UnauthorizedException e) {
+			throw new BeehiveUnAuthorizedException(e.getMessage());
+		}
+		thingIFService.onTagIDsChangeFire(tags.stream().map(TagIndex::getId).collect(Collectors.toList()), true);
 	}
 
 	/**
@@ -416,21 +414,24 @@ public class ThingController extends AbstractThingTagController {
 	 * @param displayNames
 	 */
 	@RequestMapping(path = "/{globalThingIDs}/tags/custom/{displayNames}", method = {RequestMethod.DELETE}, consumes = {"*"})
-	public void removeThingCustomTag(@PathVariable("globalThingIDs") String globalThingIDs, @PathVariable("displayNames") String displayNames) {
-
-		List<String> list = asList(globalThingIDs.split(","));
-		List<Long> globalThingIDList = new ArrayList<>();
-		for (String id : list) {
-			globalThingIDList.add(Long.valueOf(id));
+	public void unbindThingsFromCustomTags(@PathVariable("globalThingIDs") String globalThingIDs, @PathVariable("displayNames") String displayNames) {
+		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(displayNames)) {
+			throw new PortalException("RequiredFieldsMissing", "globalThingIDs or displayNames is empty", HttpStatus
+					.BAD_REQUEST);
 		}
-
-		List<String> displayNameList = asList(displayNames.split(","));
-		thingTagManager.unbindCustomTagToThing(displayNameList, globalThingIDList);
-
-		displayNameList.forEach(name -> {
-			String fullName = TagType.Custom.getTagName(name);
-			thingIFService.onTagChangeFire(fullName, false);
-		});
+		List<GlobalThingInfo> things = getThings(globalThingIDs);
+		List<TagIndex> tags;
+		try {
+			tags = thingTagManager.getTagIndexes(Arrays.asList(displayNames.split(",")), TagType.Custom);
+		} catch (ObjectNotFoundException e) {
+			throw new PortalException("Requested tag doesn't exist", e.getMessage(), HttpStatus.BAD_REQUEST);
+		}
+		try {
+			thingTagManager.unbindThingsFromTags(tags, things);
+		} catch (UnauthorizedException e) {
+			throw new BeehiveUnAuthorizedException(e.getMessage());
+		}
+		thingIFService.onTagIDsChangeFire(tags.stream().map(TagIndex::getId).collect(Collectors.toList()), false);
 	}
 
 	/**

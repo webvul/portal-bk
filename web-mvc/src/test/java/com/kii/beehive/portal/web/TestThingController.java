@@ -30,12 +30,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import java.io.Serializable;
 import java.util.*;
 
 import static junit.framework.TestCase.*;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyList;
 import static org.mockito.Matchers.anyListOf;
+import static org.mockito.Mockito.anyCollectionOf;
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.eq;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class TestThingController extends WebTestTemplate {
@@ -258,14 +262,110 @@ public class TestThingController extends WebTestTemplate {
 	}
 
 	@Test
-	public void testAddThingTag() throws Exception {
+	public void testBindThingsToCustomTags() throws Exception {
+		// Error test
+		String[] blankDisplayNames = new String[]{null, " "};
+		String[] blankThingIds = new String[]{null, " "};
+		for (String names : blankDisplayNames) {
+			for (String thingIds : blankThingIds) {
+				try {
+					thingController.bindThingsToCustomTags(thingIds, names);
+					fail("Expect a PortalException");
+				} catch (PortalException e) {
+					assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+				}
+			}
+		}
+
+		doReturn(Arrays.asList(mock(GlobalThingInfo.class))).when(thingTagManager).getThings(anyListOf(String.class));
+
+		doThrow(new ObjectNotFoundException("test")).when(thingTagManager).getTagIndexes(anyCollectionOf(String
+				.class), any(TagType.class));
+		try {
+			thingController.bindThingsToCustomTags("test", "test");
+			fail("Expect a PortalException");
+		} catch (PortalException e) {
+			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+		}
+
+		doReturn(Arrays.asList(mock(TagIndex.class))).when(thingTagManager).getTagIndexes(anyCollectionOf(String.class),
+				any(TagType.class));
+		doThrow(new UnauthorizedException("test")).when(thingTagManager).unbindThingsFromTags(anyListOf(TagIndex.class)
+				, anyListOf(GlobalThingInfo.class));
+
+		try {
+			thingController.bindThingsToCustomTags("test", "test");
+			fail("Expect a PortalException");
+		} catch (PortalException e) {
+			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
+		}
+
+		doNothing().when(thingTagManager).unbindThingsFromTags(anyListOf(TagIndex.class),
+				anyListOf(GlobalThingInfo.class));
+		doNothing().when(thingIFInAppService).onTagIDsChangeFire(anyListOf(Long.class), eq(true));
+
+		thingController.bindThingsToCustomTags("test", "test");
+
+		verify(thingIFInAppService, times(1)).onTagIDsChangeFire(anyListOf(Long.class), eq(true));
+	}
+
+	@Test
+	public void testUnbindThingsFromCustomTags() throws Exception {
+		// Error test
+		String[] blankDisplayNames = new String[]{null, " "};
+		String[] blankThingIds = new String[]{null, " "};
+		for (String names : blankDisplayNames) {
+			for (String thingIds : blankThingIds) {
+				try {
+					thingController.unbindThingsFromCustomTags(thingIds, names);
+					fail("Expect a PortalException");
+				} catch (PortalException e) {
+					assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+				}
+			}
+		}
+
+		doReturn(Arrays.asList(mock(GlobalThingInfo.class))).when(thingTagManager).getThings(anyListOf(String.class));
+
+		doThrow(new ObjectNotFoundException("test")).when(thingTagManager).getTagIndexes(anyCollectionOf(String
+				.class), any(TagType.class));
+		try {
+			thingController.unbindThingsFromCustomTags("test", "test");
+			fail("Expect a PortalException");
+		} catch (PortalException e) {
+			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+		}
+
+		doReturn(Arrays.asList(mock(TagIndex.class))).when(thingTagManager).getTagIndexes(anyCollectionOf(String.class),
+				any(TagType.class));
+		doThrow(new UnauthorizedException("test")).when(thingTagManager).unbindThingsFromTags(anyListOf(TagIndex.class)
+				, anyListOf(GlobalThingInfo.class));
+
+		try {
+			thingController.unbindThingsFromCustomTags("test", "test");
+			fail("Expect a PortalException");
+		} catch (PortalException e) {
+			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
+		}
+
+		doNothing().when(thingTagManager).unbindThingsFromTags(anyListOf(TagIndex.class),
+				anyListOf(GlobalThingInfo.class));
+		doNothing().when(thingIFInAppService).onTagIDsChangeFire(anyListOf(Long.class), eq(false));
+
+		thingController.unbindThingsFromCustomTags("test", "test");
+
+		verify(thingIFInAppService, times(1)).onTagIDsChangeFire(anyListOf(Long.class), eq(false));
+	}
+
+	@Test
+	public void testBindThingsToTags() throws Exception {
 		// Error test
 		String[] blankTagIds = new String[]{null, " "};
 		String[] blankThingIds = new String[]{null, " "};
 		for (String tagIds : blankTagIds) {
 			for (String thingIds : blankThingIds) {
 				try {
-					thingController.addThingTag(tagIds, thingIds);
+					thingController.bindThingsToTags(tagIds, thingIds);
 					fail("Expect a PortalException");
 				} catch (PortalException e) {
 					assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
@@ -277,7 +377,7 @@ public class TestThingController extends WebTestTemplate {
 		doThrow(new ObjectNotFoundException("test")).when(thingTagManager).getThings(anyListOf(String.class));
 
 		try {
-			thingController.addThingTag("thing1", "tag1");
+			thingController.bindThingsToTags("thing1", "tag1");
 			fail("Expect a PortalException");
 		} catch (PortalException e) {
 			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
@@ -293,7 +393,7 @@ public class TestThingController extends WebTestTemplate {
 		doReturn(Arrays.asList(tagIndex)).when(thingTagManager).getTagIndexes(anyListOf(String.class));
 		AuthInfoStore.setAuthInfo("Someone");
 		try {
-			thingController.addThingTag("thing1", "tag1");
+			thingController.bindThingsToTags("thing1", "tag1");
 			fail("Expect a PortalException");
 		} catch (PortalException e) {
 			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
@@ -304,7 +404,7 @@ public class TestThingController extends WebTestTemplate {
 		doThrow(new ObjectNotFoundException("test")).when(thingTagManager).getTagIndexes(anyList());
 
 		try {
-			thingController.addThingTag("thing1", "tag1");
+			thingController.bindThingsToTags("thing1", "tag1");
 			fail("Expect a PortalException");
 		} catch (PortalException e) {
 			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
@@ -316,7 +416,7 @@ public class TestThingController extends WebTestTemplate {
 		doReturn(Arrays.asList(tag)).when(thingTagManager).getTagIndexes(anyList());
 
 		try {
-			thingController.addThingTag("thing1", "tag1");
+			thingController.bindThingsToTags("thing1", "tag1");
 			fail("Expect a PortalException");
 		} catch (PortalException e) {
 			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
@@ -325,19 +425,19 @@ public class TestThingController extends WebTestTemplate {
 		tag.setCreateBy("ThingCreator");
 		doNothing().when(thingTagManager).bindTagToThing(anyListOf(TagIndex.class), anyListOf(GlobalThingInfo.class));
 		doThrow(new RuntimeException()).when(thingIFInAppService).onTagIDsChangeFire(anyListOf(Long.class), eq(false));
-		thingController.addThingTag("thing1", "tag1");
+		thingController.bindThingsToTags("thing1", "tag1");
 		verify(thingIFInAppService, times(1)).onTagIDsChangeFire(anyListOf(Long.class), eq(true));
 	}
 
 	@Test
-	public void testRemoveThingTag() throws Exception {
+	public void testUnbindThingsFromTags() throws Exception {
 		// Error test
 		String[] blankTagIds = new String[]{null, " "};
 		String[] blankThingIds = new String[]{null, " "};
 		for (String tagIds : blankTagIds) {
 			for (String thingIds : blankThingIds) {
 				try {
-					thingController.removeThingTag(tagIds, thingIds);
+					thingController.unbindThingsFromTags(tagIds, thingIds);
 					fail("Expect a PortalException");
 				} catch (PortalException e) {
 					assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
@@ -349,7 +449,7 @@ public class TestThingController extends WebTestTemplate {
 		doThrow(new ObjectNotFoundException("test")).when(thingTagManager).getThings(anyListOf(String.class));
 
 		try {
-			thingController.removeThingTag("thing1", "tag1");
+			thingController.unbindThingsFromTags("thing1", "tag1");
 			fail("Expect a PortalException");
 		} catch (PortalException e) {
 			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
@@ -365,7 +465,7 @@ public class TestThingController extends WebTestTemplate {
 		doReturn(Arrays.asList(tagIndex)).when(thingTagManager).getTagIndexes(anyListOf(String.class));
 		AuthInfoStore.setAuthInfo("Someone");
 		try {
-			thingController.removeThingTag("thing1", "tag1");
+			thingController.unbindThingsFromTags("thing1", "tag1");
 			fail("Expect a PortalException");
 		} catch (PortalException e) {
 			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
@@ -376,7 +476,7 @@ public class TestThingController extends WebTestTemplate {
 		doThrow(new ObjectNotFoundException("test")).when(thingTagManager).getTagIndexes(anyList());
 
 		try {
-			thingController.removeThingTag("thing1", "tag1");
+			thingController.unbindThingsFromTags("thing1", "tag1");
 			fail("Expect a PortalException");
 		} catch (PortalException e) {
 			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
@@ -388,7 +488,7 @@ public class TestThingController extends WebTestTemplate {
 		doReturn(Arrays.asList(tag)).when(thingTagManager).getTagIndexes(anyList());
 
 		try {
-			thingController.removeThingTag("thing1", "tag1");
+			thingController.unbindThingsFromTags("thing1", "tag1");
 			fail("Expect a PortalException");
 		} catch (PortalException e) {
 			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
@@ -397,7 +497,7 @@ public class TestThingController extends WebTestTemplate {
 		tag.setCreateBy("ThingCreator");
 		doNothing().when(thingTagManager).bindTagToThing(anyListOf(TagIndex.class), anyListOf(GlobalThingInfo.class));
 		doThrow(new RuntimeException()).when(thingIFInAppService).onTagIDsChangeFire(anyListOf(Long.class), eq(true));
-		thingController.removeThingTag("thing1", "tag1");
+		thingController.unbindThingsFromTags("thing1", "tag1");
 		verify(thingIFInAppService, times(1)).onTagIDsChangeFire(anyListOf(Long.class), eq(false));
 	}
 
@@ -776,23 +876,31 @@ public class TestThingController extends WebTestTemplate {
 
 	@Test
 	public void testRemoveThing() throws Exception {
+		doReturn(null).when(globalThingDao).findByID(any(Serializable.class));
+		try {
+			thingController.removeThing(100L);
+			fail("Expect an PortalException");
+		} catch (PortalException e) {
+			assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
+		}
 
-		this.testCreatThing();
+		doReturn(mock(GlobalThingInfo.class)).when(globalThingDao).findByID(any(Serializable.class));
+		doReturn(false).when(thingTagManager).isThingCreator(any(GlobalThingInfo.class));
+		doReturn(false).when(thingTagManager).isThingCreator(anyCollectionOf(GlobalThingInfo.class));
 
-		GlobalThingInfo thingInfo = globalThingDao.findByID(globalThingIDForTest);
-		assertNotNull(thingInfo);
+		try {
+			thingController.removeThing(100L);
+			fail("Expect an PortalException");
+		} catch (PortalException e) {
+			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
+		}
 
-		// delete thing
-		String result = this.mockMvc.perform(
-				delete("/things/" + globalThingIDForTest)
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
-		)
-				.andExpect(status().isOk())
-				.andReturn().getResponse().getContentAsString();
+		doReturn(true).when(thingTagManager).isThingCreator(any(GlobalThingInfo.class));
+		doNothing().when(thingTagManager).removeThing(any(GlobalThingInfo.class));
 
-		thingInfo = globalThingDao.findByID(globalThingIDForTest);
-		assertNull(thingInfo);
+		thingController.removeThing(100L);
 
+		verify(thingTagManager, times(1)).removeThing(any(GlobalThingInfo.class));
 	}
 
 	@Test
