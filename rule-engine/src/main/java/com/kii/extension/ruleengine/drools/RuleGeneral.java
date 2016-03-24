@@ -132,7 +132,12 @@ end
 		String template=null;
 		if(predicate.getSchedule()!=null){
 
-			template=loadTemplate(type.name()+"Schedule");
+			if(predicate.getCondition()==null){
+
+				template=loadTemplate("schedule");
+			}else {
+				template = loadTemplate(type.name() + "Schedule");
+			}
 			params.put("timer",generTimer(predicate.getSchedule()));
 
 		}else {

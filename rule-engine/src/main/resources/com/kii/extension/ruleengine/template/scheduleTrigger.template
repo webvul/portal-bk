@@ -1,0 +1,17 @@
+package com.kii.extension.ruleengine.drools.rule
+
+import com.kii.extension.ruleengine.drools.entity.*;
+import com.kii.extension.ruleengine.drools.CommandExec;
+
+/////////////////////////////////////
+//schedule trigger custom segment
+/////////////////////////////////////
+
+rule "${triggerID} user custom segment:schedule"
+   ${timer}
+when
+    Trigger( $triggerID:triggerID=="${triggerID}" && enable == true )
+then
+	CommandExec exec=(CommandExec)kcontext.getKieRuntime().getEnvironment().get("exec");
+    exec.doExecute($triggerID);
+end

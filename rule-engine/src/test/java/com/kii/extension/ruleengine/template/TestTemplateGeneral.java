@@ -63,5 +63,9 @@ public class TestTemplateGeneral {
 		log.info(general.generDrlConfig("abcSchedule", TriggerType.summary,predicate));
 
 
+		predicate.setCondition(null);
+
+		log.info(general.generDrlConfig("schedule", TriggerType.simple,predicate));
+
 	}
 }
