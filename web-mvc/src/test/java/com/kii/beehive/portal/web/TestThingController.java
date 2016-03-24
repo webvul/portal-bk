@@ -2,6 +2,7 @@ package com.kii.beehive.portal.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kii.beehive.business.manager.TagThingManager;
+import com.kii.beehive.business.service.ThingIFCommandService;
 import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.exception.ObjectNotFoundException;
@@ -14,10 +15,17 @@ import com.kii.beehive.portal.jdbc.entity.*;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.beehive.portal.web.controller.ThingController;
+import com.kii.beehive.portal.web.controller.ThingIFController;
+import com.kii.beehive.portal.web.entity.ThingCommandRestBean;
 import com.kii.beehive.portal.web.exception.BeehiveUnAuthorizedException;
 import com.kii.beehive.portal.web.exception.PortalException;
+import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
+import com.kii.extension.ruleengine.store.trigger.TagSelector;
+import com.kii.extension.ruleengine.store.trigger.TargetAction;
+import com.kii.extension.sdk.entity.thingif.Action;
 import com.kii.extension.sdk.entity.thingif.OnBoardingParam;
 import com.kii.extension.sdk.entity.thingif.OnBoardingResult;
+import com.kii.extension.sdk.entity.thingif.ThingCommand;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.junit.Before;
@@ -38,6 +46,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyList;
 import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Mockito.anyCollectionOf;
+import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.eq;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -72,6 +81,10 @@ public class TestThingController extends WebTestTemplate {
 	@Autowired
 	private ThingIFInAppService thingIFInAppService;
 
+	@Mock
+	@Autowired
+	private ThingIFCommandService thingIFCommandService;
+
 	@Autowired
 	private ObjectMapper mapper;
 	private Long globalThingIDForTest;
@@ -86,6 +99,9 @@ public class TestThingController extends WebTestTemplate {
 
 	@InjectMocks
 	private ThingController thingController;
+
+	@InjectMocks
+	private ThingIFController thingIFController;
 
 	@Before
 	public void before() {
@@ -1476,6 +1492,43 @@ public class TestThingController extends WebTestTemplate {
 				assertEquals(1, map.get("count"));
 			}
 		}
+
+	}
+
+	@Test
+	public void testSendCommandToThingList() throws Exception {
+		Long[] thingGroup1 = this.creatThingsForTest(3, "vendorThingIDForTest", KII_APP_ID, "LED");
+
+		TagSelector ts = new TagSelector();
+		ts.setThingList(Arrays.asList(thingGroup1));
+
+		ThingCommand tc = new ThingCommand();
+		tc.setSchema("some schema");
+		tc.setSchemaVersion(1);
+		Action action = new Action();
+		action.setField("power", "on");
+		tc.addAction("turnPower", action);
+
+		TargetAction ta = new TargetAction();
+		ta.setCommand(tc);
+
+		ThingCommandRestBean rest = new ThingCommandRestBean();
+		rest.setCommand(ta);
+		rest.setSelector(ts);
+
+		List<ThingCommandRestBean> restList = new ArrayList<ThingCommandRestBean>();
+		restList.add(rest);
+
+		List<Map<Long, String>> commandResultList = new ArrayList<>();
+
+		Map<Long, String> commandResult = new HashMap<>();
+		commandResult.put(1L, "commandID");
+		commandResultList.add(commandResult);
+
+		doReturn(commandResultList).when(thingIFCommandService).doCommand(anyListOf(ExecuteTarget.class), anyString());
+
+		thingIFController.sendCommand(restList);
+
 
 	}
 

@@ -1,72 +1,99 @@
 package com.kii.beehive.portal.web.controller;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.kii.beehive.business.service.ThingIFCommandService;
+import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
+import com.kii.beehive.portal.jdbc.entity.TagIndex;
+import com.kii.beehive.portal.web.entity.ThingCommandRestBean;
+import com.kii.beehive.portal.web.exception.BeehiveUnAuthorizedException;
+import com.kii.beehive.portal.web.exception.PortalException;
+import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
+import com.kii.extension.ruleengine.store.trigger.TagSelector;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kii.beehive.business.service.ThingIFCommandService;
-import com.kii.beehive.portal.auth.AuthInfoStore;
-import com.kii.beehive.portal.web.entity.ThingCommandRestBean;
-import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(path = "/thing-if", consumes = { MediaType.APPLICATION_JSON_UTF8_VALUE }, produces = {
-        MediaType.APPLICATION_JSON_UTF8_VALUE })
-public class ThingIFController {
+@RequestMapping(path = "/thing-if")
+public class ThingIFController extends AbstractThingTagController {
 
-    @Autowired
-    private ThingIFCommandService thingIFCommandService;
+	@Autowired
+	private ThingIFCommandService thingIFCommandService;
 
-    /**
-     * send commands to thing list or tag list
-     *
-     * @param restBeanList
-     * @return
-     */
-    @RequestMapping(path = "/command", method = { RequestMethod.POST })
-    public List<List<Map<String, Object>>> sendCommand(@RequestBody List<ThingCommandRestBean> restBeanList) {
+	/**
+	 * send commands to thing list or tag list
+	 *
+	 * @param restBeanList
+	 * @return
+	 */
+	@RequestMapping(path = "/command", method = {RequestMethod.POST})
+	public List<List<Map<String, Object>>> sendCommand(@RequestBody List<ThingCommandRestBean> restBeanList) {
 
-        // construct command request
-        List<ExecuteTarget> targets = new ArrayList<>();
-        for (ThingCommandRestBean restBean : restBeanList) {
-            targets.add(restBean);
-        }
+		// construct command request
+		List<ExecuteTarget> targets = new ArrayList<>();
+		for (ThingCommandRestBean restBean : restBeanList) {
+			TagSelector ts = restBean.getSelector();
+			if (ts != null && (!ts.getTagList().isEmpty() || !ts.getThingList().isEmpty())) {
+				if (!ts.getTagList().isEmpty()) {
+					List<TagIndex> tags = this.getTags(ts.getTagList());
+					tags.forEach(t -> {
+						if (!thingTagManager.isTagCreator(t) && !thingTagManager.isTagOwner(t)) {
+							throw new BeehiveUnAuthorizedException("not tag creator or owner");
+						}
+					});
+				}
 
-        String userID = AuthInfoStore.getUserID();
+				if (!ts.getThingList().isEmpty()) {
+					List<String> tempThingList = ts.getThingList().stream().map(String::valueOf).collect(Collectors
+							.toList());
+					List<GlobalThingInfo> things = this.getThings(tempThingList);
+					things.forEach(t -> {
+						if (!thingTagManager.isThingCreator(t) && !thingTagManager.isThingOwner(t)) {
+							throw new BeehiveUnAuthorizedException("not thing creator or owner");
+						}
+					});
 
-        // send command request
-        List<Map<Long, String>> commandResultList = thingIFCommandService.doCommand(targets, userID);
+				}
+			} else {
+				throw new PortalException("RequiredFieldsMissing", "tagList or ThingList is empty", HttpStatus
+						.BAD_REQUEST);
+			}
 
-        // format command response
-        List<List<Map<String, Object>>> responseList = new ArrayList<>();
+			targets.add(restBean);
+		}
 
-        for(Map<Long, String> commandResult : commandResultList) {
+		String userID = AuthInfoStore.getUserID();
 
-            List<Map<String, Object>> subResponseList = new ArrayList<>();
+		// send command request
+		List<Map<Long, String>> commandResultList = thingIFCommandService.doCommand(targets, userID);
 
-            Set<Map.Entry<Long, String>> entrySet = commandResult.entrySet();
-            for (Map.Entry<Long, String> entry : entrySet) {
-                HashMap<String, Object> map = new HashMap<>();
-                map.put("globalThingID", entry.getKey());
-                map.put("commandID", entry.getValue());
+		// format command response
+		List<List<Map<String, Object>>> responseList = new ArrayList<>();
 
-                subResponseList.add(map);
-            }
+		for (Map<Long, String> commandResult : commandResultList) {
 
-            responseList.add(subResponseList);
-        }
+			List<Map<String, Object>> subResponseList = new ArrayList<>();
 
-        return responseList;
-    }
+			Set<Map.Entry<Long, String>> entrySet = commandResult.entrySet();
+			for (Map.Entry<Long, String> entry : entrySet) {
+				HashMap<String, Object> map = new HashMap<>();
+				map.put("globalThingID", entry.getKey());
+				map.put("commandID", entry.getValue());
+
+				subResponseList.add(map);
+			}
+
+			responseList.add(subResponseList);
+		}
+
+		return responseList;
+	}
 
 
 }

@@ -20,12 +20,16 @@ public abstract class AbstractThingTagController extends AbstractController {
 	@Autowired
 	protected TagThingManager thingTagManager;
 
-	protected List<GlobalThingInfo> getThings(String globalThingIDs) {
+	protected List<GlobalThingInfo> getThings(List<String> thingIDList) {
 		try {
-			return thingTagManager.getThings(Arrays.asList(globalThingIDs.split(",")));
+			return thingTagManager.getThings(thingIDList);
 		} catch (ObjectNotFoundException e) {
 			throw new PortalException("Requested thing doesn't exist", e.getMessage(), HttpStatus.BAD_REQUEST);
 		}
+	}
+
+	protected List<GlobalThingInfo> getThings(String globalThingIDs) {
+		return this.getThings(Arrays.asList(globalThingIDs.split(",")));
 	}
 
 	protected List<BeehiveUser> getUsers(String userIDs) {
@@ -44,11 +48,15 @@ public abstract class AbstractThingTagController extends AbstractController {
 		}
 	}
 
-	protected List<TagIndex> getTags(String tagIDs) {
+	protected List<TagIndex> getTags(List<String> tagIDList) {
 		try {
-			return thingTagManager.getTagIndexes(Arrays.asList(tagIDs.split(",")));
+			return thingTagManager.getTagIndexes(tagIDList);
 		} catch (ObjectNotFoundException e) {
 			throw new PortalException("Requested tag doesn't exist", e.getMessage(), HttpStatus.BAD_REQUEST);
 		}
+	}
+
+	protected List<TagIndex> getTags(String tagIDs) {
+		return this.getTags(Arrays.asList(tagIDs.split(",")));
 	}
 }
