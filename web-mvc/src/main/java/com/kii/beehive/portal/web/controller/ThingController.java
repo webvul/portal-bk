@@ -89,11 +89,16 @@ public class ThingController extends AbstractThingTagController {
 	 * refer to doc "Beehive API - Thing API" for request/response details
 	 */
 	@RequestMapping(path = "/types/tagID/{tagIDs}", method = {RequestMethod.GET})
-	public ResponseEntity<List<String>> getThingTypeByTagIDs(@PathVariable("tagIDs") String tagIDs) {
-		List<String> tagIDList = asList(tagIDs.split(","));
-
-		List<String> result = thingTagManager.findThingTypeByTagIDs(tagIDList);
-		return new ResponseEntity<>(result, HttpStatus.OK);
+	public List<String> getThingTypeByTagIDs(@PathVariable("tagIDs") String tagIDs) {
+		List<String> result;
+		try {
+			result = thingTagManager.getThingTypesOfAccessibleThingsByTagIds(getLoginUserID(),
+					asList(tagIDs.split(",")));
+		} catch (ObjectNotFoundException e) {
+			throw new PortalException("Requested tag doesn't exist or is not accessible", e.getMessage(),
+					HttpStatus.BAD_REQUEST);
+		}
+		return result;
 	}
 
 	/**

@@ -163,4 +163,19 @@ public class TestTagUserRelationDao extends TestTemplate {
 		assertEquals("There should be one tag id", 1, tagIds.size());
 		assertEquals("Tag id doesn't match", this.allTagIds.get(0), tagIds.get(0));
 	}
+
+	@Test
+	public void testFindAccessibleTagIds() throws Exception {
+		List<Long> tagIds = tagUserRelationDao.findAccessibleTagIds("user1", this.allTagIds).
+				orElse(Collections.emptyList());
+		assertNotNull("Tag ids should not be null", tagIds);
+		assertEquals("There should be two tag ids", 2, tagIds.size());
+		assertTrue("The tag ids are incorrect.", new HashSet(tagIds).containsAll(this.allTagIds.subList(0, 2)));
+
+		tagIds = tagUserRelationDao.findAccessibleTagIds("user2", this.allTagIds).
+				orElse(Collections.emptyList());
+		assertNotNull("Tag ids should not be null", tagIds);
+		assertEquals("There should be two tag ids", 2, tagIds.size());
+		assertTrue("The tag ids are incorrect.", new HashSet(tagIds).containsAll(this.allTagIds.subList(1, 3)));
+	}
 }

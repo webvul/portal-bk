@@ -23,6 +23,8 @@ import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static com.kii.beehive.portal.common.utils.CollectUtils.collectionToString;
+
 @Component
 @Transactional
 public class TagThingManager {
@@ -130,17 +132,26 @@ public class TagThingManager {
 		return thingID;
 	}
 
-	public List<String> findThingTypeByTagIDs(Collection<String> tagIDs) {
-		StringBuilder sb = new StringBuilder();
-		for (String tagID : tagIDs) {
-			List<TagIndex> tagList = this.tagIndexDao.findTag(Long.parseLong(tagID), null, null);
-			if (tagList.size() > 0) {
-				if (sb.length() > 0) sb.append(",");
-				sb.append(tagID);
-			}
+	public List<String> getThingTypesOfAccessibleThingsByTagIds(String userId, Collection<String> tagIDs)
+			throws ObjectNotFoundException {
+		Set<Long> targetTagIds = tagIDs.stream().map(Long::valueOf).collect(Collectors.toSet());
+		List<Long> accessibleTagIds = tagUserRelationDao.findAccessibleTagIds(userId, targetTagIds).
+				orElse(Collections.emptyList());
+		if (!accessibleTagIds.containsAll(targetTagIds)) {
+			targetTagIds.removeAll(accessibleTagIds);
+			throw new ObjectNotFoundException("Requested tag doesn't exist or is not accessible. TagIds: " +
+					collectionToString(targetTagIds));
 		}
 
-		List<String> result = new ArrayList<String>();
+		StringBuilder sb = new StringBuilder();
+		for (String tagID : tagIDs) {
+			if (0 != sb.length()) {
+				sb.append(",");
+			}
+			sb.append(tagID);
+		}
+
+		List<String> result = new ArrayList();
 		if (sb.length() > 0) {
 			List<Map<String, Object>> typeList = globalThingDao.findThingTypeBytagIDs(sb.toString());
 			if (typeList.size() > 0) {
@@ -509,7 +520,7 @@ public class TagThingManager {
 		if (null == things || !things.stream().map(GlobalThingInfo::getId).map(Object::toString).
 				collect(Collectors.toSet()).containsAll(thingIDList)) {
 			thingIds.removeAll(things.stream().map(GlobalThingInfo::getId).collect(Collectors.toList()));
-			throw new ObjectNotFoundException("Invalid thing id(s): [" + CollectUtils.collectionToString(thingIds) +
+			throw new ObjectNotFoundException("Invalid thing id(s): [" + collectionToString(thingIds) +
 					"]");
 		}
 		return things;
@@ -522,7 +533,7 @@ public class TagThingManager {
 		if (null == tagIndexes || !tagIndexes.stream().map(TagIndex::getId).map(Object::toString).
 				collect(Collectors.toSet()).containsAll(tagIDList)) {
 			tagIds.removeAll(tagIndexes.stream().map(TagIndex::getId).collect(Collectors.toList()));
-			throw new ObjectNotFoundException("Invalid tag id(s): [" + CollectUtils.collectionToString(tagIds) + "]");
+			throw new ObjectNotFoundException("Invalid tag id(s): [" + collectionToString(tagIds) + "]");
 		}
 		return tagIndexes;
 	}
@@ -546,7 +557,7 @@ public class TagThingManager {
 		if (null == users || !users.stream().map(BeehiveUser::getKiiLoginName).collect(Collectors.toSet())
 				.containsAll(userIDList)) {
 			userIDList.removeAll(users.stream().map(BeehiveUser::getKiiLoginName).collect(Collectors.toList()));
-			throw new ObjectNotFoundException("Invalid user id(s): [" + CollectUtils.collectionToString(userIDList) +
+			throw new ObjectNotFoundException("Invalid user id(s): [" + collectionToString(userIDList) +
 					"]");
 		}
 		return users;
@@ -559,7 +570,7 @@ public class TagThingManager {
 		if (null == userGroups || !userGroups.stream().map(UserGroup::getId).map(Object::toString).
 				collect(Collectors.toSet()).containsAll(userGroupIDList)) {
 			userGroupIds.removeAll(userGroups.stream().map(UserGroup::getId).collect(Collectors.toList()));
-			throw new ObjectNotFoundException("Invalid user group id(s): [" + CollectUtils.collectionToString
+			throw new ObjectNotFoundException("Invalid user group id(s): [" + collectionToString
 					(userGroupIds) + "]");
 		}
 		return userGroups;

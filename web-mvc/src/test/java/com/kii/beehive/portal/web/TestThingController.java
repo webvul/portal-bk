@@ -1419,6 +1419,23 @@ public class TestThingController extends WebTestTemplate {
 	}
 
 	@Test
+	public void testGetThingTypeByTagIDs() throws Exception {
+		doThrow(new ObjectNotFoundException("test")).when(thingTagManager).getThingTypesOfAccessibleThingsByTagIds(
+				anyString(), anyCollectionOf(String.class));
+		try {
+			thingController.getThingTypeByTagIDs("test");
+			fail("Expect an PortalException");
+		} catch (PortalException e) {
+			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+		}
+
+		doReturn(Collections.singletonList("testLED")).when(thingTagManager).getThingTypesOfAccessibleThingsByTagIds(
+				anyString(), anyCollectionOf(String.class));
+		List<String> result = thingController.getThingTypeByTagIDs("test");
+		assertTrue("Unexpected data", null != result && result.size() == 1 && result.get(0).equals("testLED"));
+	}
+
+	@Test
 	public void testSendCommandToThingList() throws Exception {
 		Long[] thingGroup1 = this.creatThingsForTest(3, "vendorThingIDForTest", KII_APP_ID, "LED");
 

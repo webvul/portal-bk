@@ -3,8 +3,7 @@ package com.kii.beehive.portal.jdbc.dao;
 import com.kii.beehive.portal.jdbc.entity.TagUserRelation;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Created by hdchen on 3/18/16.
@@ -16,6 +15,11 @@ public class TagUserRelationDao extends SpringBaseDao<TagUserRelation> {
 
 	final private static String SQL_FIND_TAGIDS = "SELECT " + TagUserRelation.TAG_ID + " FROM " + TABLE_NAME + " WHERE " +
 			"" + TagUserRelation.USER_ID + " = ?";
+
+	final private static String SQL_FIND_ACCESSIBLE_TAGIDS = "SELECT " + TagUserRelation.TAG_ID + " FROM " +
+			TABLE_NAME + " WHERE " + TagUserRelation.USER_ID + " = :userId AND " + TagUserRelation.TAG_ID + " IN " +
+			"(:list)";
+
 
 	final private static String SQL_FIND_USERIDS = "SELECT " + TagUserRelation.USER_ID + " FROM " + TABLE_NAME + " WHERE " +
 			"" + TagUserRelation.TAG_ID + " = ?";
@@ -91,5 +95,15 @@ public class TagUserRelationDao extends SpringBaseDao<TagUserRelation> {
 			return;
 		}
 		jdbcTemplate.update(SQL_DELETE_BY_TAGID_AND_USERID, tagId, userId);
+	}
+
+	public Optional<List<Long>> findAccessibleTagIds(String userId, Collection<Long> tagIds) {
+		if (null == userId || null == tagIds || tagIds.isEmpty()) {
+			return Optional.ofNullable(null);
+		}
+		Map<String, Object> params = new HashMap();
+		params.put("userId", userId);
+		params.put("list", tagIds);
+		return Optional.ofNullable(namedJdbcTemplate.queryForList(SQL_FIND_ACCESSIBLE_TAGIDS, params, Long.class));
 	}
 }

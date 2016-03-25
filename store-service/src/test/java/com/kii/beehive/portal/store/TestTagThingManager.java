@@ -3,6 +3,7 @@ package com.kii.beehive.portal.store;
 
 import com.kii.beehive.business.manager.TagThingManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.exception.ObjectNotFoundException;
 import com.kii.beehive.portal.exception.UnauthorizedException;
 import com.kii.beehive.portal.jdbc.dao.*;
 import com.kii.beehive.portal.jdbc.entity.*;
@@ -25,6 +26,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.anyCollectionOf;
 import static org.mockito.Mockito.anySetOf;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.eq;
@@ -374,6 +376,27 @@ public class TestTagThingManager {
 	}
 
 	@Test
+	public void testGetThingTypesOfAccessibleThingsByTagIds() throws Exception {
+		doReturn(Optional.ofNullable(Collections.emptyList())).when(tagUserRelationDao).
+				findAccessibleTagIds(anyString(), anyCollectionOf(Long.class));
+		try {
+			tagThingManager.getThingTypesOfAccessibleThingsByTagIds("user", Collections.singletonList("100"));
+			fail("Expect an ObjectNotFoundException");
+		} catch (ObjectNotFoundException e) {
+		}
+
+		doReturn(Optional.ofNullable(Arrays.asList(100L, 200L))).when(tagUserRelationDao).
+				findAccessibleTagIds(anyString(), anyCollectionOf(Long.class));
+		final String[] received = new String[1];
+		doAnswer(invocation -> {
+			received[0] = invocation.getArguments()[0].toString();
+			return Collections.emptyList();
+		}).when(globalThingDao).findThingTypeBytagIDs(anyString());
+		tagThingManager.getThingTypesOfAccessibleThingsByTagIds("user", Arrays.asList("100", "200"));
+		assertEquals("100,200", received[0]);
+	}
+
+	@Test
 	public void testGetTypesOfAccessibleThingsWithCount() throws Exception {
 		String user = "Someone";
 
@@ -396,7 +419,7 @@ public class TestTagThingManager {
 		}).when(globalThingDao).findThingTypesWithThingCount(anySetOf(Long.class));
 
 		List<Long> expected = Arrays.asList(11001L, 11002L, 11003L);
-		
+
 		tagThingManager.getTypesOfAccessibleThingsWithCount(user);
 
 		assertTrue("Thing ids don't match", thingIds.containsAll(expected));
