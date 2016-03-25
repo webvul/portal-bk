@@ -11,6 +11,7 @@ import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
 import com.kii.extension.ruleengine.store.trigger.TagSelector;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -39,8 +40,8 @@ public class ThingIFController extends AbstractThingTagController {
 		List<ExecuteTarget> targets = new ArrayList<>();
 		for (ThingCommandRestBean restBean : restBeanList) {
 			TagSelector ts = restBean.getSelector();
-			if (ts != null && (!ts.getTagList().isEmpty() || !ts.getThingList().isEmpty())) {
-				if (!ts.getTagList().isEmpty()) {
+			if (ts != null && (!CollectionUtils.isEmpty(ts.getTagList()) || !CollectionUtils.isEmpty(ts.getThingList()))) {
+				if (!CollectionUtils.isEmpty(ts.getTagList())) {
 					List<TagIndex> tags = this.getTags(ts.getTagList());
 					tags.forEach(t -> {
 						if (!thingTagManager.isTagCreator(t) && !thingTagManager.isTagOwner(t)) {
@@ -49,7 +50,7 @@ public class ThingIFController extends AbstractThingTagController {
 					});
 				}
 
-				if (!ts.getThingList().isEmpty()) {
+				if (!CollectionUtils.isEmpty(ts.getThingList())) {
 					List<String> tempThingList = ts.getThingList().stream().map(String::valueOf).collect(Collectors
 							.toList());
 					List<GlobalThingInfo> things = this.getThings(tempThingList);

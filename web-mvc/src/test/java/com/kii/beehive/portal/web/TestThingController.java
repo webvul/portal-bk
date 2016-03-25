@@ -1472,6 +1472,35 @@ public class TestThingController extends WebTestTemplate {
 
 		thingIFController.sendCommand(restList);
 
+		//error test
+
+		try {
+			ts.setThingList(new ArrayList<Long>());
+			ts.setTagCollect(new ArrayList<String>());
+			thingIFController.sendCommand(restList);
+			fail("Expect a PortalException");
+		} catch (PortalException e) {
+			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+		}
+
+		try {
+			ts.setThingList(null);
+			ts.setTagCollect(null);
+			thingIFController.sendCommand(restList);
+			fail("Expect a PortalException");
+		} catch (PortalException e) {
+			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+		}
+
+
+		try {
+			AuthInfoStore.setAuthInfo("ThingCreator");
+			ts.setThingList(Arrays.asList(thingGroup1));
+			thingIFController.sendCommand(restList);
+			fail("Expect a PortalException");
+		} catch (PortalException e) {
+			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
+		}
 
 	}
 
