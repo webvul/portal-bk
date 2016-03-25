@@ -17,6 +17,7 @@ import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.beehive.portal.web.controller.ThingController;
 import com.kii.beehive.portal.web.controller.ThingIFController;
 import com.kii.beehive.portal.web.entity.ThingCommandRestBean;
+import com.kii.beehive.portal.web.entity.ThingRestBean;
 import com.kii.beehive.portal.web.exception.BeehiveUnAuthorizedException;
 import com.kii.beehive.portal.web.exception.PortalException;
 import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
@@ -1394,51 +1395,21 @@ public class TestThingController extends WebTestTemplate {
 
 	@Test
 	public void testGetThingsByType() throws Exception {
+		GlobalThingInfo thingInfo = new GlobalThingInfo();
+		thingInfo.setId(1001L);
+		thingInfo.setCreateBy("Someone");
+		thingInfo.setType("LED");
 
-		Long[] thingGroup1 = this.creatThingsForTest(3, "vendorThingIDForTest", KII_APP_ID, "LED");
-		Long[] thingGroup2 = this.creatThingsForTest(1, "vendorThingIDForTest", KII_APP_ID, "camera");
-		Long[] thingGroup3 = this.creatThingsForTest(1, "vendorThingIDForTest", KII_APP_ID, null);
+		doReturn(Arrays.asList(thingInfo)).when(thingTagManager).getAccessibleThingsByType(anyString(), anyString());
 
-		// query
-		String result = this.mockMvc.perform(
-				get("/things/types/LED")
-						.contentType(MediaType.APPLICATION_JSON)
-						.characterEncoding("UTF-8")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
-		)
-				.andExpect(status().isOk())
-				.andReturn().getResponse().getContentAsString();
+		List<ThingRestBean> result = thingController.getThingsByType("test");
+		assertNotNull("Should not be null", result);
+		assertEquals("There should be one thing object", 1, result.size());
 
-		List<Map<String, Object>> list = mapper.readValue(result, List.class);
-
-		System.out.println("Response: " + list);
-
-		// assert
-		assertEquals(3, list.size());
-
-		List<Long> globalThingIDList = Arrays.asList(thingGroup1);
-		for (Map<String, Object> map : list) {
-			Long globalThingID = ((Integer) map.get("globalThingID")).longValue();
-			globalThingIDList.contains(globalThingID);
-		}
-
-		// no result
-		result = this.mockMvc.perform(
-				get("/things/types/some_non_existing_type")
-						.contentType(MediaType.APPLICATION_JSON)
-						.characterEncoding("UTF-8")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
-		)
-				.andExpect(status().isOk())
-				.andReturn().getResponse().getContentAsString();
-
-		list = mapper.readValue(result, List.class);
-
-		System.out.println("Response: " + list);
-
-		// assert
-		assertEquals(0, list.size());
-
+		ThingRestBean thing = result.get(0);
+		assertEquals("Property doesn't match", (Long) 1001L, thing.getId());
+		assertEquals("Property doesn't match", "Someone", thing.getCreateBy());
+		assertEquals("Property doesn't match", "LED", thing.getType());
 	}
 
 	@Test

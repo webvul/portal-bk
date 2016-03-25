@@ -7,12 +7,16 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
 
 @Repository
 public class TagThingRelationDao extends SpringBaseDao<TagThingRelation> {
 
 	public static final String TABLE_NAME = "rel_thing_tag";
 	public static final String KEY = "id";
+	private static final String SQL_FIND_THINGIDS = "SELECT " + TagThingRelation.THING_ID + " FROM " + TABLE_NAME + "" +
+			" WHERE " + TagThingRelation.TAG_ID + " = ?";
 	private Logger log = LoggerFactory.getLogger(TagThingRelationDao.class);
 
 	public void delete(Long tagID, Long thingID) {
@@ -63,5 +67,12 @@ public class TagThingRelationDao extends SpringBaseDao<TagThingRelation> {
 			}
 		}
 		return null;
+	}
+
+	public Optional<List<Long>> findThingIds(Long tagId) {
+		if (null == tagId) {
+			return Optional.ofNullable(null);
+		}
+		return Optional.ofNullable(jdbcTemplate.queryForList(SQL_FIND_THINGIDS, new Object[]{tagId}, Long.class));
 	}
 }

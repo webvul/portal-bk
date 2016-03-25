@@ -19,10 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -603,4 +600,17 @@ public class TagThingManager {
 		return userGroups;
 	}
 
+	public List<GlobalThingInfo> getAccessibleThingsByType(String thingType, String user) {
+		Set<Long> thingIds = new HashSet();
+		List<UserGroup> userGroupList = usergroupDao.findUserGroup(user, null, null);
+		if (null != userGroupList) {
+			userGroupList.forEach(userGroup -> thingIds.addAll(thingUserGroupRelationDao.findThingIds(
+					userGroup.getId()).orElse(Collections.emptyList())));
+		}
+		thingIds.addAll(thingUserRelationDao.findThingIds(user).orElse(Collections.emptyList()));
+		tagUserRelationDao.findByUserId(user).orElse(Collections.emptyList()).forEach(tagUserRelation ->
+				thingIds.addAll(tagThingRelationDao.findThingIds(tagUserRelation.getTagId()).
+						orElse(Collections.emptyList())));
+		return globalThingDao.findByIDsAndType(thingIds, thingType).orElse(Collections.emptyList());
+	}
 }

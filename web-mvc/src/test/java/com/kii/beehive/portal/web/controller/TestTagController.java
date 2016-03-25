@@ -111,7 +111,7 @@ public class TestTagController extends WebTestTemplate {
 		String name = result.get(keyName).toString();
 		assertEquals("Name doesn't match", TagType.Custom.getTagName(tagIndex.getDisplayName()), name);
 
-		List<TagUserRelation> relations = tagUserRelationDao.findByUserId("user1");
+		List<TagUserRelation> relations = tagUserRelationDao.findByUserId("user1").get();
 		assertNotNull("Relations should exist.", relations);
 		assertEquals("There should be only one relation.", 1, relations.size());
 		assertEquals("Tag id doesn't match", id, relations.get(0).getTagId());

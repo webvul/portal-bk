@@ -58,16 +58,14 @@ public class ThingController extends AbstractThingTagController {
 	 */
 
 	@RequestMapping(path = "/types/{type}", method = {RequestMethod.GET})
-	public ResponseEntity<List<ThingRestBean>> getThingsByType(@PathVariable("type") String type) {
-		List<GlobalThingInfo> list = globalThingDao.getThingByType(type);
+	public List<ThingRestBean> getThingsByType(@PathVariable("type") String type) {
 		List<ThingRestBean> resultList = new ArrayList<>();
-		list.stream().filter(thingInfo -> thingTagManager.isThingCreator(thingInfo) || thingTagManager.isThingOwner(thingInfo)).forEach(thingInfo -> {
+		thingTagManager.getAccessibleThingsByType(type, getLoginUserID()).forEach(thingInfo -> {
 			ThingRestBean input = new ThingRestBean();
 			BeanUtils.copyProperties(thingInfo, input);
 			resultList.add(input);
 		});
-
-		return new ResponseEntity<>(resultList, HttpStatus.OK);
+		return resultList;
 	}
 
 	/**

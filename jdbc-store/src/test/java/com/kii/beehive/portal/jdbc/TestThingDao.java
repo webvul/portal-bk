@@ -8,13 +8,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static junit.framework.TestCase.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class TestThingDao extends TestTemplate {
 
@@ -51,6 +49,32 @@ public class TestThingDao extends TestTemplate {
 		AuthInfoStore.setTeamID(null);
 	}
 
+	@Test
+	public void testFindByIDsAndType() throws Exception {
+		GlobalThingInfo thingInfo1 = new GlobalThingInfo();
+		thingInfo1.setType("LED");
+		thingInfo1.setVendorThingID("LED123");
+		thingInfo1.setKiiAppID("WhatsApp");
+		Long thingId1 = dao.saveOrUpdate(thingInfo1);
+
+		GlobalThingInfo thingInfo2 = new GlobalThingInfo();
+		thingInfo2.setType("TV");
+		thingInfo2.setVendorThingID("TV123");
+		thingInfo2.setKiiAppID("WhatsApp");
+		Long thingId2 = dao.saveOrUpdate(thingInfo2);
+
+		Optional<List<GlobalThingInfo>> result = dao.findByIDsAndType(Arrays.asList(thingId1, thingId2).stream().
+				collect(Collectors.toSet()), "LED");
+		assertNotNull("Should have a thing", result.get());
+		assertEquals("Number of things is incorrect", 1, result.get().size());
+		assertEquals("Thing id doesn't match", thingId1, result.get().get(0).getId());
+
+		result = dao.findByIDsAndType(Arrays.asList(thingId1, thingId2).stream().
+				collect(Collectors.toSet()), "TV");
+		assertNotNull("Should have a thing", result.get());
+		assertEquals("Number of things is incorrect", 1, result.get().size());
+		assertEquals("Thing id doesn't match", thingId2, result.get().get(0).getId());
+	}
 
 	@Test
 	public void testFindByID() {

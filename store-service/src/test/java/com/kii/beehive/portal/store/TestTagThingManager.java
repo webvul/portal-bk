@@ -7,6 +7,7 @@ import com.kii.beehive.portal.exception.UnauthorizedException;
 import com.kii.beehive.portal.jdbc.dao.*;
 import com.kii.beehive.portal.jdbc.entity.*;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
+import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,18 +19,15 @@ import org.mockito.Spy;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.anySetOf;
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.eq;
 
 @RunWith(JUnit4.class)
 public class TestTagThingManager {
@@ -49,6 +47,10 @@ public class TestTagThingManager {
 
 	@Spy
 	@Autowired
+	private TagThingRelationDao tagThingRelationDao;
+
+	@Spy
+	@Autowired
 	private TagGroupRelationDao tagGroupRelationDao;
 
 	@Spy
@@ -58,6 +60,14 @@ public class TestTagThingManager {
 	@Spy
 	@Autowired
 	private ThingUserGroupRelationDao thingUserGroupRelationDao;
+
+	@Spy
+	@Autowired
+	private UserGroupDao userGroupDao;
+
+	@Spy
+	@Autowired
+	private GlobalThingSpringDao globalThingDao;
 
 	private List<TagIndex> tags;
 
@@ -130,7 +140,7 @@ public class TestTagThingManager {
 		tagThingManager.bindTagsToUsers(tags, users);
 		verify(tagUserRelationDao, Mockito.times(4)).insert(any(TagUserRelation.class));
 		tags.forEach(tagIndex -> {
-			users.forEach(beehiveUser -> assertTrue("Inserted data is incorrect", names.contains(tagIndex.getId() +
+			users.forEach(beehiveUser -> TestCase.assertTrue("Inserted data is incorrect", names.contains(tagIndex.getId() +
 					" " + beehiveUser.getKiiLoginName())));
 		});
 		assertEquals("Should insert 4 entries", 4, names.size());
@@ -158,7 +168,7 @@ public class TestTagThingManager {
 
 		verify(tagUserRelationDao, Mockito.times(4)).deleteByTagIdAndUserId(anyLong(), anyString());
 		tags.forEach(tagIndex -> {
-			users.forEach(beehiveUser -> assertTrue("Inserted data is incorrect", names.contains(tagIndex.getId() +
+			users.forEach(beehiveUser -> TestCase.assertTrue("Inserted data is incorrect", names.contains(tagIndex.getId() +
 					" " + beehiveUser.getKiiLoginName())));
 		});
 		assertEquals("Should insert 4 entries", 4, names.size());
@@ -192,7 +202,7 @@ public class TestTagThingManager {
 		tagThingManager.bindTagsToUserGroups(tags, userGroups);
 		verify(tagGroupRelationDao, Mockito.times(4)).insert(any(TagGroupRelation.class));
 		tags.forEach(tagIndex -> {
-			userGroups.forEach(group -> assertTrue("Inserted data is incorrect", names.contains(tagIndex.getId() +
+			userGroups.forEach(group -> TestCase.assertTrue("Inserted data is incorrect", names.contains(tagIndex.getId() +
 					" " + group.getId())));
 		});
 		assertEquals("Should insert 4 entries", 4, names.size());
@@ -217,7 +227,7 @@ public class TestTagThingManager {
 		tagThingManager.unbindTagsFromUserGroups(tags, userGroups);
 		verify(tagGroupRelationDao, Mockito.times(4)).delete(anyLong(), anyLong());
 		tags.forEach(tagIndex -> {
-			userGroups.forEach(group -> assertTrue("Inserted data is incorrect", names.contains(tagIndex.getId() +
+			userGroups.forEach(group -> TestCase.assertTrue("Inserted data is incorrect", names.contains(tagIndex.getId() +
 					" " + group.getId())));
 		});
 		assertEquals("Should insert 4 entries", 4, names.size());
@@ -251,7 +261,7 @@ public class TestTagThingManager {
 		tagThingManager.bindThingsToUsers(things, users);
 
 		verify(thingUserRelationDao, Mockito.times(4)).insert(any(ThingUserRelation.class));
-		things.forEach(thing -> users.forEach(user -> assertTrue("Inserted data is incorrect", names.contains(thing
+		things.forEach(thing -> users.forEach(user -> TestCase.assertTrue("Inserted data is incorrect", names.contains(thing
 				.getId() + " " + user.getKiiLoginName()))));
 		assertEquals("Should insert 4 entries", 4, names.size());
 	}
@@ -274,7 +284,7 @@ public class TestTagThingManager {
 		}).when(thingUserRelationDao).deleteByThingIdAndUserId(anyLong(), anyString());
 		tagThingManager.unbindThingsFromUsers(things, users);
 		verify(thingUserRelationDao, times(4)).deleteByThingIdAndUserId(anyLong(), anyString());
-		things.forEach(thing -> users.forEach(user -> assertTrue("Inserted data is incorrect", names.contains(thing
+		things.forEach(thing -> users.forEach(user -> TestCase.assertTrue("Inserted data is incorrect", names.contains(thing
 				.getId() + " " + user.getKiiLoginName()))));
 		assertEquals("Should insert 4 entries", 4, names.size());
 	}
@@ -307,7 +317,7 @@ public class TestTagThingManager {
 		tagThingManager.bindThingsToUserGroups(things, userGroups);
 
 		verify(thingUserGroupRelationDao, Mockito.times(4)).insert(any(ThingUserGroupRelation.class));
-		things.forEach(thing -> userGroups.forEach(group -> assertTrue("Inserted data is incorrect", names.contains
+		things.forEach(thing -> userGroups.forEach(group -> TestCase.assertTrue("Inserted data is incorrect", names.contains
 				(thing.getId() + " " + group.getId()))));
 		assertEquals("Should insert 4 entries", 4, names.size());
 	}
@@ -330,9 +340,37 @@ public class TestTagThingManager {
 		}).when(thingUserGroupRelationDao).deleteByThingIdAndUserGroupId(anyLong(), anyLong());
 		tagThingManager.unbindThingsFromUserGroups(things, userGroups);
 		verify(thingUserGroupRelationDao, times(4)).deleteByThingIdAndUserGroupId(anyLong(), anyLong());
-		things.forEach(thing -> userGroups.forEach(group -> assertTrue("Inserted data is incorrect", names.contains
+		things.forEach(thing -> userGroups.forEach(group -> TestCase.assertTrue("Inserted data is incorrect", names.contains
 				(thing.getId() + " " + group.getId()))));
 		assertEquals("Should insert 4 entries", 4, names.size());
+	}
+
+	@Test
+	public void testGetAccessibleThingsByType() throws Exception {
+		String user = "Someone";
+
+		UserGroup userGroup = new UserGroup();
+		userGroup.setId(2200L);
+		doReturn(Arrays.asList(userGroup)).when(userGroupDao).findUserGroup(anyString(), any(), any());
+		doReturn(Optional.ofNullable(Arrays.asList(11001L))).when(thingUserGroupRelationDao).
+				findThingIds(eq(userGroup.getId()));
+		doReturn(Optional.ofNullable(Arrays.asList(11002L))).when(thingUserRelationDao).findThingIds(eq(user));
+
+		TagUserRelation relation = new TagUserRelation();
+		relation.setTagId(2400L);
+		doReturn(Optional.ofNullable(Arrays.asList(relation))).when(tagUserRelationDao).findByUserId(eq(user));
+		doReturn(Optional.ofNullable(Arrays.asList(11003L))).when(tagThingRelationDao).findThingIds(eq(relation
+				.getTagId()));
+		Set<Long> thingIds = new HashSet();
+		doAnswer((Answer<Optional<List<GlobalThingInfo>>>) invocation -> {
+			thingIds.addAll((Collection<? extends Long>) invocation.getArguments()[0]);
+			return Optional.ofNullable(null);
+		}).when(globalThingDao).findByIDsAndType(anySetOf(Long.class), anyString());
+
+		List<Long> expected = Arrays.asList(11001L, 11002L, 11003L);
+		tagThingManager.getAccessibleThingsByType("some type", user);
+		assertTrue("Thing ids don't match", thingIds.containsAll(expected));
+		assertEquals("Number of thing ids doesn't match", expected.size(), thingIds.size());
 	}
 	
 	/*

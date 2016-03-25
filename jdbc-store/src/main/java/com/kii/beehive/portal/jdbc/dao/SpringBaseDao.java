@@ -21,13 +21,13 @@ import java.util.*;
 
 public abstract class SpringBaseDao<T extends DBEntity> {
 
+	protected final String SQL_FIND_BY_IDS = "SELECT t.* FROM " + this.getTableName() + " t WHERE t." +
+			this.getKey() + " IN (:list) ";
 	protected JdbcTemplate jdbcTemplate;
 	protected NamedParameterJdbcTemplate namedJdbcTemplate;
 	private Logger log = LoggerFactory.getLogger(BaseDao.class);
 	private SimpleJdbcInsert insertTool;
-
 	private RowMapper<T> rowMapper;
-
 	private BindClsFullUpdateTool<T> updateTool;
 	private Class<T> entityClass;
 
@@ -86,11 +86,10 @@ public abstract class SpringBaseDao<T extends DBEntity> {
 
 	public List<T> findByIDs(List<Long> ids) {
 		if (null == ids || ids.isEmpty()) {
-			return Collections.EMPTY_LIST;
+			return Collections.emptyList();
 		}
-		String sql = "select t.* from " + this.getTableName() + " t where t." + getKey() + " in (:list) ";
 		Map<String, Collection> param = Collections.singletonMap("list", ids);
-		return namedJdbcTemplate.query(sql, param, getRowMapper());
+		return namedJdbcTemplate.query(SQL_FIND_BY_IDS, param, getRowMapper());
 	}
 
 	public List<T> findBySingleField(String fieldName, Object value) {
