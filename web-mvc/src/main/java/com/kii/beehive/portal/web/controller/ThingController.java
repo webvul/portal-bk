@@ -77,10 +77,8 @@ public class ThingController extends AbstractThingTagController {
 	 * @return
 	 */
 	@RequestMapping(path = "/types", method = {RequestMethod.GET})
-	public ResponseEntity<List<Map<String, Object>>> getAllType() {
-		List<Map<String, Object>> list = globalThingDao.findAllThingTypesWithThingCount();
-
-		return new ResponseEntity<>(list, HttpStatus.OK);
+	public List<Map<String, Object>> getAllType() {
+		return thingTagManager.getTypesOfAccessibleThingsWithCount(getLoginUserID());
 	}
 
 

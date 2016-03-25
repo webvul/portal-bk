@@ -77,6 +77,39 @@ public class TestThingDao extends TestTemplate {
 	}
 
 	@Test
+	public void testFindThingTypesWithThingCount() throws Exception {
+		Set<Long> thingIds = new HashSet();
+		for (int i = 0; i < 3; ++i) {
+			GlobalThingInfo thingInfo1 = new GlobalThingInfo();
+			thingInfo1.setType("LED");
+			thingInfo1.setVendorThingID("LED-" + i);
+			thingInfo1.setKiiAppID("WhatsApp");
+			thingIds.add(dao.saveOrUpdate(thingInfo1));
+		}
+
+		for (int i = 0; i < 2; ++i) {
+			GlobalThingInfo thingInfo2 = new GlobalThingInfo();
+			thingInfo2.setType("TV");
+			thingInfo2.setVendorThingID("TV1-" + i);
+			thingInfo2.setKiiAppID("WhatsApp");
+			thingIds.add(dao.saveOrUpdate(thingInfo2));
+		}
+
+		List<Map<String, Object>> result = dao.findThingTypesWithThingCount(thingIds).orElseThrow(() ->
+				new RuntimeException("Test fail. Can't get thingTypesWithThingCount"));
+		assertEquals("There should be two objects", 2, result.size());
+		result.forEach(data -> {
+			if (data.get("type").equals("LED")) {
+				assertEquals("Should have 3 LEDs", "3", data.get("count").toString());
+			} else if (data.get("type").equals("TV")) {
+				assertEquals("Should have 3 TVs", "2", data.get("count").toString());
+			} else {
+				fail("Unexpected data set");
+			}
+		});
+	}
+
+	@Test
 	public void testFindByID() {
 
 		GlobalThingInfo entity = dao.findByID(thing.getId());

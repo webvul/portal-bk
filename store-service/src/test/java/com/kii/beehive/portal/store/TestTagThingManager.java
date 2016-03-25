@@ -372,7 +372,37 @@ public class TestTagThingManager {
 		assertTrue("Thing ids don't match", thingIds.containsAll(expected));
 		assertEquals("Number of thing ids doesn't match", expected.size(), thingIds.size());
 	}
-	
+
+	@Test
+	public void testGetTypesOfAccessibleThingsWithCount() throws Exception {
+		String user = "Someone";
+
+		UserGroup userGroup = new UserGroup();
+		userGroup.setId(2200L);
+		doReturn(Arrays.asList(userGroup)).when(userGroupDao).findUserGroup(anyString(), any(), any());
+		doReturn(Optional.ofNullable(Arrays.asList(11001L))).when(thingUserGroupRelationDao).
+				findThingIds(eq(userGroup.getId()));
+		doReturn(Optional.ofNullable(Arrays.asList(11002L))).when(thingUserRelationDao).findThingIds(eq(user));
+
+		TagUserRelation relation = new TagUserRelation();
+		relation.setTagId(2400L);
+		doReturn(Optional.ofNullable(Arrays.asList(relation))).when(tagUserRelationDao).findByUserId(eq(user));
+		doReturn(Optional.ofNullable(Arrays.asList(11003L))).when(tagThingRelationDao).findThingIds(eq(relation
+				.getTagId()));
+		Set<Long> thingIds = new HashSet();
+		doAnswer((Answer<Optional<List<Map<String, Object>>>>) invocation -> {
+			thingIds.addAll((Collection<? extends Long>) invocation.getArguments()[0]);
+			return Optional.ofNullable(null);
+		}).when(globalThingDao).findThingTypesWithThingCount(anySetOf(Long.class));
+
+		List<Long> expected = Arrays.asList(11001L, 11002L, 11003L);
+		
+		tagThingManager.getTypesOfAccessibleThingsWithCount(user);
+
+		assertTrue("Thing ids don't match", thingIds.containsAll(expected));
+		assertEquals("Number of thing ids doesn't match", expected.size(), thingIds.size());
+	}
+
 	/*
 	@Test
 	public void testFindLocations() {

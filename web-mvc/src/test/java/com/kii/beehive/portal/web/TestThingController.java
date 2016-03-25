@@ -1414,56 +1414,8 @@ public class TestThingController extends WebTestTemplate {
 
 	@Test
 	public void testGetAllType() throws Exception {
-
-		// no result
-		String result = this.mockMvc.perform(
-				get("/things/types")
-						.contentType(MediaType.APPLICATION_JSON)
-						.characterEncoding("UTF-8")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
-		)
-				.andExpect(status().isOk())
-				.andReturn().getResponse().getContentAsString();
-
-		List<Map<String, Object>> list = mapper.readValue(result, List.class);
-
-		System.out.println("Response: " + list);
-
-		// assert
-		assertEquals(0, list.size());
-
-		Long[] thingGroup1 = this.creatThingsForTest(3, "vendorThingIDForTest", KII_APP_ID, "LED");
-		Long[] thingGroup2 = this.creatThingsForTest(1, "vendorThingIDForTest", KII_APP_ID, "camera");
-		Long[] thingGroup3 = this.creatThingsForTest(1, "vendorThingIDForTest", KII_APP_ID, null);
-
-		// query
-		result = this.mockMvc.perform(
-				get("/things/types")
-						.contentType(MediaType.APPLICATION_JSON)
-						.characterEncoding("UTF-8")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
-		)
-				.andExpect(status().isOk())
-				.andReturn().getResponse().getContentAsString();
-
-		list = mapper.readValue(result, List.class);
-
-		System.out.println("Response: " + list);
-
-		// assert
-		assertEquals(3, list.size());
-
-		for (Map<String, Object> map : list) {
-			String type = (String) map.get("type");
-			if ("LED".equals(type)) {
-				assertEquals(3, map.get("count"));
-			} else if ("camera".equals(type)) {
-				assertEquals(1, map.get("count"));
-			} else if (null == type) {
-				assertEquals(1, map.get("count"));
-			}
-		}
-
+		doReturn(Collections.emptyList()).when(thingTagManager).getTypesOfAccessibleThingsWithCount(anyString());
+		thingController.getAllType();
 	}
 
 	@Test

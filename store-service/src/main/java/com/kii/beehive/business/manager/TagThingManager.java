@@ -398,41 +398,6 @@ public class TagThingManager {
 		}
 	}
 
-	private List<GlobalThingInfo> findThingList(Collection<String> thingIDs) {
-		List<GlobalThingInfo> thingList = new ArrayList<GlobalThingInfo>();
-		thingIDs.forEach(thignID -> {
-			GlobalThingInfo thing = globalThingDao.findByID(thignID);
-			if (thing != null) {
-				if (this.isThingCreator(thing)) {
-					thingList.add(thing);
-				} else {
-					thingIDs.remove(thignID);
-				}
-			} else {
-				log.warn("thing is null, ThignID = " + thignID);
-			}
-		});
-		return thingList;
-	}
-
-
-	private List<TagIndex> findTagList(Collection<String> tagIDs) {
-		List<TagIndex> tagList = new ArrayList<TagIndex>();
-		for (String tagID : tagIDs) {
-			TagIndex tag = tagIndexDao.findByID(tagID);
-			if (tag != null) {
-				if (this.isTagCreator(tag) || this.isTagOwner(tag)) {
-					tagList.add(tag);
-				} else {
-					tagIDs.remove(tagID);
-				}
-			} else {
-				log.warn("Tag is null, TagId = " + tagID);
-			}
-		}
-		return tagList;
-	}
-
 	private List<Team> findTeamList(Collection<String> teamIDs) {
 		List<Team> teamList = new ArrayList<Team>();
 		for (String teamID : teamIDs) {
@@ -601,6 +566,14 @@ public class TagThingManager {
 	}
 
 	public List<GlobalThingInfo> getAccessibleThingsByType(String thingType, String user) {
+		return globalThingDao.findByIDsAndType(getAccessibleThingIds(user), thingType).orElse(Collections.emptyList());
+	}
+
+	public List<Map<String, Object>> getTypesOfAccessibleThingsWithCount(String user) {
+		return globalThingDao.findThingTypesWithThingCount(getAccessibleThingIds(user)).orElse(Collections.emptyList());
+	}
+
+	private Set<Long> getAccessibleThingIds(String user) {
 		Set<Long> thingIds = new HashSet();
 		List<UserGroup> userGroupList = usergroupDao.findUserGroup(user, null, null);
 		if (null != userGroupList) {
@@ -611,6 +584,6 @@ public class TagThingManager {
 		tagUserRelationDao.findByUserId(user).orElse(Collections.emptyList()).forEach(tagUserRelation ->
 				thingIds.addAll(tagThingRelationDao.findThingIds(tagUserRelation.getTagId()).
 						orElse(Collections.emptyList())));
-		return globalThingDao.findByIDsAndType(thingIds, thingType).orElse(Collections.emptyList());
+		return thingIds;
 	}
 }

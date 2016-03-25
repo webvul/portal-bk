@@ -274,4 +274,14 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 		}
 		return Optional.ofNullable(namedJdbcTemplate.query(sb.toString(), params, getRowMapper()));
 	}
+
+	public Optional<List<Map<String, Object>>> findThingTypesWithThingCount(Set<Long> thingIds) {
+		StringBuilder sb = new StringBuilder("SELECT ");
+		sb.append(GlobalThingInfo.THING_TYPE).append(" AS type, COUNT(*) AS count FROM ").append(this.getTableName()).
+				append(" WHERE ").append(this.getKey()).append(" IN (:list) ").append(" GROUP BY ").
+				append(GlobalThingInfo.THING_TYPE);
+		Map<String, Object> params = new HashMap();
+		params.put("list", thingIds);
+		return Optional.ofNullable(namedJdbcTemplate.queryForList(sb.toString(), params));
+	}
 }
