@@ -52,15 +52,15 @@ public class TestTagUserRelationDao extends TestTemplate {
 
 	@Test
 	public void testFindTagIds() throws Exception {
-		List<Long> tagIds = tagUserRelationDao.findTagIds("user1");
+		List<Long> tagIds = tagUserRelationDao.findTagIds("user1").orElse(null);
 		assertNotNull("Tag ids should not be null", tagIds);
 		assertEquals("There should be two tag ids", 2, tagIds.size());
-		assertTrue("The tag ids are incorrect.", new HashSet<Long>(tagIds).containsAll(this.allTagIds.subList(0, 2)));
+		assertTrue("The tag ids are incorrect.", new HashSet(tagIds).containsAll(this.allTagIds.subList(0, 2)));
 
-		tagIds = tagUserRelationDao.findTagIds("user2");
+		tagIds = tagUserRelationDao.findTagIds("user2").orElse(null);
 		assertNotNull("Tag ids should not be null", tagIds);
 		assertEquals("There should be two tag ids", 2, tagIds.size());
-		assertTrue("The tag ids are incorrect.", new HashSet<Long>(tagIds).containsAll(this.allTagIds.subList(1, 3)));
+		assertTrue("The tag ids are incorrect.", new HashSet(tagIds).containsAll(this.allTagIds.subList(1, 3)));
 	}
 
 	@Test
@@ -135,30 +135,30 @@ public class TestTagUserRelationDao extends TestTemplate {
 
 	@Test
 	public void testDeleteByTagId() throws Exception {
-		List<Long> tagIds = tagUserRelationDao.findTagIds("user1");
+		List<Long> tagIds = tagUserRelationDao.findTagIds("user1").orElse(null);
 		assertNotNull("Tag ids should not be null", tagIds);
 		assertEquals("There should be two tag ids", 2, tagIds.size());
-		tagIds = tagUserRelationDao.findTagIds("user2");
+		tagIds = tagUserRelationDao.findTagIds("user2").orElse(null);
 		assertNotNull("Tag ids should not be null", tagIds);
 		assertEquals("There should be two tag ids", 2, tagIds.size());
 		tagUserRelationDao.deleteByTagId(this.allTagIds.get(1));
-		tagIds = tagUserRelationDao.findTagIds("user1");
+		tagIds = tagUserRelationDao.findTagIds("user1").orElse(null);
 		assertNotNull("Tag ids should not be null", tagIds);
-		assertEquals("There should be two tag ids", 1, tagIds.size());
+		assertEquals("There should be one tag id", 1, tagIds.size());
 		assertEquals("Tag id doesn't match", this.allTagIds.get(0), tagIds.get(0));
-		tagIds = tagUserRelationDao.findTagIds("user1");
+		tagIds = tagUserRelationDao.findTagIds("user2").orElse(null);
 		assertNotNull("Tag ids should not be null", tagIds);
-		assertEquals("There should be two tag ids", 1, tagIds.size());
+		assertEquals("There should be one tag id", 1, tagIds.size());
 		assertEquals("Tag id doesn't match", this.allTagIds.get(2), tagIds.get(0));
 	}
 
 	@Test
 	public void testDeleteByTagIdAndUserId() throws Exception {
-		List<Long> tagIds = tagUserRelationDao.findTagIds("user1");
+		List<Long> tagIds = tagUserRelationDao.findTagIds("user1").orElse(null);
 		assertNotNull("Tag ids should not be null", tagIds);
 		assertEquals("There should be two tag ids", 2, tagIds.size());
 		tagUserRelationDao.deleteByTagIdAndUserId(this.allTagIds.get(1), "user1");
-		tagIds = tagUserRelationDao.findTagIds("user1");
+		tagIds = tagUserRelationDao.findTagIds("user1").orElse(null);
 		assertNotNull("Tag ids should not be null", tagIds);
 		assertEquals("There should be one tag id", 1, tagIds.size());
 		assertEquals("Tag id doesn't match", this.allTagIds.get(0), tagIds.get(0));

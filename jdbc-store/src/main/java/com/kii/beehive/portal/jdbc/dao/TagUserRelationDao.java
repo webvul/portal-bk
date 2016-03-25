@@ -39,11 +39,11 @@ public class TagUserRelationDao extends SpringBaseDao<TagUserRelation> {
 		return KEY;
 	}
 
-	public List<Long> findTagIds(String userId) {
+	public Optional<List<Long>> findTagIds(String userId) {
 		if (null == userId) {
-			return null;
+			return Optional.ofNullable(null);
 		}
-		return jdbcTemplate.queryForList(SQL_FIND_TAGIDS, new Object[]{userId}, Long.class);
+		return Optional.ofNullable(jdbcTemplate.queryForList(SQL_FIND_TAGIDS, new Object[]{userId}, Long.class));
 	}
 
 	public List<String> findUserIds(Long tagId) {
@@ -54,7 +54,10 @@ public class TagUserRelationDao extends SpringBaseDao<TagUserRelation> {
 	}
 
 	public List<TagUserRelation> findByTagId(Long tagId) {
-		return null;
+		if (null == tagId) {
+			return null;
+		}
+		return findBySingleField(TagUserRelation.TAG_ID, tagId);
 	}
 
 	public Optional<List<TagUserRelation>> findByUserId(String userId) {
