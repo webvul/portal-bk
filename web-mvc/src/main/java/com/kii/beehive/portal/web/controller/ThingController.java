@@ -246,7 +246,7 @@ public class ThingController extends AbstractThingTagController {
 		List<GlobalThingInfo> things = getThings(globalThingIDs);
 		List<TagIndex> tags = getTags(tagIDs);
 		try {
-			thingTagManager.bindTagToThing(tags, things);
+			thingTagManager.bindTagsToThings(tags, things);
 		} catch (UnauthorizedException e) {
 			throw new BeehiveUnAuthorizedException(e.getMessage());
 		}
@@ -398,7 +398,7 @@ public class ThingController extends AbstractThingTagController {
 			throw new PortalException("Requested tag doesn't exist", e.getMessage(), HttpStatus.BAD_REQUEST);
 		}
 		try {
-			thingTagManager.bindTagToThing(tags, things);
+			thingTagManager.bindTagsToThings(tags, things);
 		} catch (UnauthorizedException e) {
 			throw new BeehiveUnAuthorizedException(e.getMessage());
 		}

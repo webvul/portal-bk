@@ -305,11 +305,14 @@ public class TestThingController extends WebTestTemplate {
 			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
 		}
 
-		doReturn(Arrays.asList(mock(TagIndex.class))).when(thingTagManager).getTagIndexes(anyCollectionOf(String.class),
+		TagIndex tagIndex = new TagIndex();
+		tagIndex.setCreateBy("Someone");
+		doReturn(Arrays.asList(tagIndex)).when(thingTagManager).getTagIndexes(anyCollectionOf(String.class),
 				any(TagType.class));
 		doThrow(new UnauthorizedException("test")).when(thingTagManager).unbindThingsFromTags(anyListOf(TagIndex.class)
 				, anyListOf(GlobalThingInfo.class));
 
+		AuthInfoStore.setAuthInfo("creator");
 		try {
 			thingController.bindThingsToCustomTags("test", "test");
 			fail("Expect a PortalException");
@@ -317,7 +320,7 @@ public class TestThingController extends WebTestTemplate {
 			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
 		}
 
-		doNothing().when(thingTagManager).unbindThingsFromTags(anyListOf(TagIndex.class),
+		doNothing().when(thingTagManager).bindTagsToThings(anyListOf(TagIndex.class),
 				anyListOf(GlobalThingInfo.class));
 		doNothing().when(thingIFInAppService).onTagIDsChangeFire(anyListOf(Long.class), eq(true));
 
@@ -440,7 +443,7 @@ public class TestThingController extends WebTestTemplate {
 		}
 
 		tag.setCreateBy("ThingCreator");
-		doNothing().when(thingTagManager).bindTagToThing(anyListOf(TagIndex.class), anyListOf(GlobalThingInfo.class));
+		doNothing().when(thingTagManager).bindTagsToThings(anyListOf(TagIndex.class), anyListOf(GlobalThingInfo.class));
 		doThrow(new RuntimeException()).when(thingIFInAppService).onTagIDsChangeFire(anyListOf(Long.class), eq(false));
 		thingController.bindThingsToTags("thing1", "tag1");
 		verify(thingIFInAppService, times(1)).onTagIDsChangeFire(anyListOf(Long.class), eq(true));
@@ -512,7 +515,7 @@ public class TestThingController extends WebTestTemplate {
 		}
 
 		tag.setCreateBy("ThingCreator");
-		doNothing().when(thingTagManager).bindTagToThing(anyListOf(TagIndex.class), anyListOf(GlobalThingInfo.class));
+		doNothing().when(thingTagManager).bindTagsToThings(anyListOf(TagIndex.class), anyListOf(GlobalThingInfo.class));
 		doThrow(new RuntimeException()).when(thingIFInAppService).onTagIDsChangeFire(anyListOf(Long.class), eq(true));
 		thingController.unbindThingsFromTags("thing1", "tag1");
 		verify(thingIFInAppService, times(1)).onTagIDsChangeFire(anyListOf(Long.class), eq(false));

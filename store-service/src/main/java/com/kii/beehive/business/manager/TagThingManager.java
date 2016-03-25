@@ -163,7 +163,7 @@ public class TagThingManager {
 		return result;
 	}
 
-	public void bindTagToThing(List<TagIndex> tags, List<GlobalThingInfo> things) throws UnauthorizedException {
+	public void bindTagsToThings(List<TagIndex> tags, List<GlobalThingInfo> things) throws UnauthorizedException {
 		if (!isTagCreator(tags)) {
 			throw new UnauthorizedException("Current user is not the creator of the tag(s).");
 		}
