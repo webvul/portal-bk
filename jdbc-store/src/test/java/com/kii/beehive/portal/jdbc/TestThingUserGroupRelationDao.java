@@ -206,4 +206,12 @@ public class TestThingUserGroupRelationDao extends TestTemplate {
 		assertNotNull("Should find the relations", result);
 		assertEquals("Should have one relation", 1, result.size());
 	}
+
+	@Test
+	public void testDeleteByThingId() throws Exception {
+		assertNotNull(thingUserGroupRelationDao.find(this.allThingIds.get(0), this.userGroupIds.get(0)));
+		thingUserGroupRelationDao.deleteByThingId(this.allThingIds.get(0));
+		assertNull("Relation should be removed", thingUserGroupRelationDao.find(this.allThingIds.get(0), this
+				.userGroupIds.get(0)));
+	}
 }

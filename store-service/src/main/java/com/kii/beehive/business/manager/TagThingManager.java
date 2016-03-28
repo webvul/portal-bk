@@ -254,8 +254,10 @@ public class TagThingManager {
 		tagIndexDao.deleteByID(tag.getId());
 	}
 
-	public void removeThing(GlobalThingInfo thing) {
+	public void removeThing(GlobalThingInfo thing) throws ObjectNotFoundException {
 		tagThingRelationDao.delete(null, thing.getId());
+		thingUserRelationDao.deleteByThingId(thing.getId());
+		thingUserGroupRelationDao.deleteByThingId(thing.getId());
 		globalThingDao.deleteByID(thing.getId());
 
 		// remove thing from Kii Cloud
@@ -267,7 +269,7 @@ public class TagThingManager {
 	 *
 	 * @param thingInfo
 	 */
-	private void removeThingFromKiiCloud(GlobalThingInfo thingInfo) {
+	private void removeThingFromKiiCloud(GlobalThingInfo thingInfo) throws ObjectNotFoundException {
 
 		log.debug("removeThingFromKiiCloud: " + thingInfo);
 
@@ -281,7 +283,7 @@ public class TagThingManager {
 		try {
 			thingIFInAppService.removeThing(fullKiiThingID);
 		} catch (com.kii.extension.sdk.exception.ObjectNotFoundException e) {
-			log.error("not found in Kii Cloud, full kii thing id: " + fullKiiThingID, e);
+			throw new ObjectNotFoundException("not found in Kii Cloud, full kii thing id: " + fullKiiThingID);
 		}
 	}
 

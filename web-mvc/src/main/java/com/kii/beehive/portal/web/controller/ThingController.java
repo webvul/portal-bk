@@ -219,7 +219,11 @@ public class ThingController extends AbstractThingTagController {
 			throw new BeehiveUnAuthorizedException("Current user is not the creator of the thing");
 		}
 
-		thingTagManager.removeThing(orig);
+		try {
+			thingTagManager.removeThing(orig);
+		} catch (ObjectNotFoundException e) {
+			throw new PortalException("Requested thing doesn't exist", e.getMessage(), HttpStatus.NOT_FOUND);
+		}
 	}
 
 

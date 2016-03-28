@@ -83,4 +83,12 @@ public class ThingUserRelationDao extends SpringBaseDao<ThingUserRelation> {
 				.THING_ID + " = ? AND " + ThingUserRelation
 				.USER_ID + " = ?", thingId, userId);
 	}
+
+	public void deleteByThingId(Long thingId) {
+		if (null == thingId) {
+			return;
+		}
+		jdbcTemplate.update("DELETE t.* FROM " + TABLE_NAME + " t WHERE " + ThingUserRelation.THING_ID + " = ?",
+				thingId);
+	}
 }

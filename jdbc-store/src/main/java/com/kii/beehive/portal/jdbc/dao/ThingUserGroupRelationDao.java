@@ -96,4 +96,12 @@ public class ThingUserGroupRelationDao extends SpringBaseDao<ThingUserGroupRelat
 		return Optional.ofNullable(jdbcTemplate.query(SQL_FIND_BY_THINGID_AND_USERID, new Object[]{thingId, userId},
 				getRowMapper())).orElse(Collections.emptyList());
 	}
+
+	public void deleteByThingId(Long thingId) {
+		if (null == thingId) {
+			return;
+		}
+		jdbcTemplate.update("DELETE t.* FROM " + TABLE_NAME + " t WHERE " + ThingUserGroupRelation
+				.THING_ID + " = ?", thingId);
+	}
 }
