@@ -35,19 +35,19 @@ public class AppBindAspect {
 
 	@Pointcut("execution (* com.kii.extension.sdk.service.AbstractDataAccess+.*(..)  ) ")
 	private void commDataAccess(){
-
+		log.debug("Pointcut commDataAccess");
 	}
 
 	@Pointcut("within (@com.kii.extension.sdk.annotation.BindAppByName  com.kii..* ) ")
 	private void appBindWithAnnotation(){
 
-
+		log.debug("Pointcut appBindWithAnnotation");
 	}
 
 
 	@Pointcut("execution (*  com.kii..*(..,@com.kii.extension.sdk.annotation.AppBindParam (*),.. ))")
 	private void bindWithParam(){
-
+		log.debug("Pointcut bindWithParam");
 	}
 
 

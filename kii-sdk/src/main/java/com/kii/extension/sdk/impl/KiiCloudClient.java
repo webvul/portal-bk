@@ -141,7 +141,7 @@ public class KiiCloudClient implements Closeable{
 	public HttpResponse doRequest(HttpUriRequest request,HttpContext context){
 		try{
 			Future<HttpResponse> future=null;
-			log.debug("start do request to "+request.getURI().toASCIIString());
+			log.debug("start do request to " + request.getMethod()  + " " + request.getURI().toASCIIString());
 			if(context==null){
 				future = httpClient.execute(request,callback);
 			}else {

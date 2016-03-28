@@ -60,7 +60,6 @@ public class FederatedAuthService {
 	 * this method will update the token in ThreadLocal of current thread if login success
 	 * please take care of the other handling related to Kii Cloud access (such as query bucket in Kii Portal App)
 	 *
-	 * @param appID
 	 * @param userName
 	 * @param pwd
      * @return
@@ -103,7 +102,7 @@ GET https://<slaveAppId>.<kiiapps-domain>/api/apps/<slaveAppId>/integration/weba
 
 		String currentUrl =  currentHost.toURI()+currentReq.getURI();
 
-		log.info(currentUrl);
+		log.info("getAuthUrl:" + currentUrl);
 
 		/*
 		http://b8ca23d0.development-beehivecn3.internal.kiiapps.com/app/oauth2-frontend/login/b8ca23d0?
