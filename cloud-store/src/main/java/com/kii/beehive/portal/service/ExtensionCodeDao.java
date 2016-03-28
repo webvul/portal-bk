@@ -73,7 +73,7 @@ public class ExtensionCodeDao extends AbstractDataAccess<ExtensionCodeEntity> {
 		super.addEntity(entity,"global_"+entity.getFunctionName());
 	}
 
-	public void addEtensionCodeToApp(ExtensionCodeEntity entity,String appID){
+	public void addExtensionCodeToApp(ExtensionCodeEntity entity,String appID){
 
 		entity.setAppID(appID);
 
