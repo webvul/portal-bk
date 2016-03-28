@@ -60,12 +60,8 @@ public class ThingController extends AbstractThingTagController {
 
 	@RequestMapping(path = "/types/{type}", method = {RequestMethod.GET})
 	public List<ThingRestBean> getThingsByType(@PathVariable("type") String type) {
-		List<ThingRestBean> resultList = new ArrayList<>();
-		thingTagManager.getAccessibleThingsByType(type, getLoginUserID()).forEach(thingInfo -> {
-			ThingRestBean input = new ThingRestBean();
-			BeanUtils.copyProperties(thingInfo, input);
-			resultList.add(input);
-		});
+		List<GlobalThingInfo> thingList = thingTagManager.getAccessibleThingsByType(type, getLoginUserID());
+		List<ThingRestBean> resultList = this.toThingRestBean(thingList);
 		return resultList;
 	}
 
@@ -479,13 +475,7 @@ public class ThingController extends AbstractThingTagController {
 		List<GlobalThingInfo> thingInfos = thingTagManager.getThingsByTagIds(tagIndexes.stream().map(TagIndex::getId).
 				collect(Collectors.toSet()));
 
-		List<ThingRestBean> resultList = new ArrayList();
-
-		thingInfos.forEach(thingInfo -> {
-			ThingRestBean input = new ThingRestBean();
-			BeanUtils.copyProperties(thingInfo, input);
-			resultList.add(input);
-		});
+		List<ThingRestBean> resultList = this.toThingRestBean(thingInfos);
 
 		return resultList;
 	}
@@ -509,6 +499,10 @@ public class ThingController extends AbstractThingTagController {
 			throw new PortalException("Thing Not Found", "Thing with globalThingID:" + globalThingID + " Not Found", HttpStatus.NOT_FOUND);
 		}
 
+		if (!thingTagManager.isThingCreator(gatewayInfo)) {
+			throw new BeehiveUnAuthorizedException("Current user is not the creator of the thing");
+		}
+
 		// check whether onboarding is done
 		String fullKiiThingID = gatewayInfo.getFullKiiThingID();
 
@@ -526,19 +520,19 @@ public class ThingController extends AbstractThingTagController {
 
 		// get thing info of endnodes
 		List<GlobalThingInfo> globalThingInfoList = globalThingDao.getThingsByVendorIDArray(vendorThingIDList);
-		List<ThingRestBean> thingRestBeanList = this.toThingRestBean(globalThingInfoList);
+		List<ThingRestBean> resultList = this.toThingRestBean(globalThingInfoList);
 
-		return new ResponseEntity(thingRestBeanList, HttpStatus.OK);
+		return new ResponseEntity(resultList, HttpStatus.OK);
 	}
 
 	private List<ThingRestBean> toThingRestBean(List<GlobalThingInfo> list) {
 		List<ThingRestBean> resultList = new ArrayList<>();
 		if (list != null) {
-			for (GlobalThingInfo thingInfo : list) {
+			list.forEach(thingInfo -> {
 				ThingRestBean input = new ThingRestBean();
 				BeanUtils.copyProperties(thingInfo, input);
 				resultList.add(input);
-			}
+			});
 		}
 
 		return resultList;
