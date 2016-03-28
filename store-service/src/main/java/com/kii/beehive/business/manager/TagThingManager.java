@@ -250,6 +250,7 @@ public class TagThingManager {
 
 	public void removeTag(TagIndex tag) {
 		tagUserRelationDao.deleteByTagId(tag.getId());
+		tagGroupRelationDao.delete(tag.getId(), null);
 		tagThingRelationDao.delete(tag.getId(), null);
 		tagIndexDao.deleteByID(tag.getId());
 	}

@@ -600,7 +600,23 @@ public class TestTagThingManager {
 		} catch (ObjectNotFoundException e) {
 		}
 	}
-	
+
+	@Test
+	public void testRemoveTag() throws Exception {
+		doNothing().when(tagUserRelationDao).deleteByTagId(anyLong());
+		doNothing().when(tagGroupRelationDao).delete(anyLong(), anyLong());
+		doNothing().when(tagThingRelationDao).delete(anyLong(), anyLong());
+		doReturn(100).when(tagIndexDao).deleteByID(anyLong());
+
+		tagThingManager.removeTag(mock(TagIndex.class));
+
+		verify(tagUserRelationDao, times(1)).deleteByTagId(anyLong());
+		verify(tagGroupRelationDao, times(1)).delete(anyLong(), anyLong());
+		verify(tagThingRelationDao, times(1)).delete(anyLong(), anyLong());
+		verify(tagIndexDao, times(1)).deleteByID(anyLong());
+
+	}
+
 	/*
 	@Test
 	public void testFindLocations() {
