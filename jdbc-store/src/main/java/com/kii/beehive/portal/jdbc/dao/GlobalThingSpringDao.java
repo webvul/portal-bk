@@ -23,20 +23,6 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 		return KEY;
 	}
 
-	public List<GlobalThingInfo> getThingsByIDArray(List<Long> thingIDs) {
-		if (null == thingIDs || thingIDs.isEmpty()) {
-			return Collections.emptyList();
-		}
-		String sql = "SELECT g.* "
-				+ "FROM global_thing g "
-				+ " WHERE g.id_global_thing in (:ids) ";
-
-		Map<String, Object> params = new HashMap<>();
-		params.put("ids", thingIDs);
-
-		return namedJdbcTemplate.query(sql, params, getRowMapper());
-
-	}
 
 	public List<GlobalThingInfo> getThingsByVendorIDArray(List<String> vendorIDs) {
 

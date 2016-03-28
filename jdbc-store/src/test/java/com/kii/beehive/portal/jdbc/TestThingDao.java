@@ -168,6 +168,19 @@ public class TestThingDao extends TestTemplate {
 		assertEquals(thing.getCustom(), entity.getCustom());
 		assertEquals(thing.getType(), entity.getType());
 		assertEquals(thing.getStatus(), entity.getStatus());
+
+		Map<String, Object> map = new HashMap<>();
+		map.put("custom", "updated");
+		map.put("status", "newStatus");
+
+		dao.updateEntityByID(map, thing.getId());
+
+		thing = dao.findByID(thing.getId());
+
+		assertEquals(thing.getVendorThingID(), entity.getVendorThingID());
+		assertEquals(thing.getKiiAppID(), entity.getKiiAppID());
+		assertEquals(thing.getCustom(), "updated");
+		assertEquals(thing.getStatus(), "newStatus");
 	}
 
 	@Test
@@ -255,7 +268,7 @@ public class TestThingDao extends TestTemplate {
 	}
 
 	@Test
-	public void testfindThingTypeBytagIDs() {
+	public void testFindThingTypeBytagIDs() {
 		TagIndex tag = createTagRel();
 		TagIndex tag2 = createTagRel();
 
@@ -265,7 +278,7 @@ public class TestThingDao extends TestTemplate {
 	}
 
 	@Test
-	public void testfindThingTypeBytagIDsWithTeamID() {
+	public void testFindThingTypeBytagIDsWithTeamID() {
 		TagIndex tag = createTagRel();
 		TagIndex tag2 = createTagRel();
 		Long teamID = createTeamRel();
@@ -277,7 +290,7 @@ public class TestThingDao extends TestTemplate {
 	}
 
 	@Test
-	public void testfindThingTypeByFullTagNames() {
+	public void testFindThingTypeByFullTagNames() {
 		TagIndex tag = createTagRel();
 		TagIndex tag2 = createTagRel();
 
@@ -292,7 +305,7 @@ public class TestThingDao extends TestTemplate {
 	}
 
 	@Test
-	public void testfindThingTypeByFullTagNamesWithTeamID() {
+	public void testFindThingTypeByFullTagNamesWithTeamID() {
 		TagIndex tag = createTagRel();
 		TagIndex tag2 = createTagRel();
 		Long teamID = createTeamRel();

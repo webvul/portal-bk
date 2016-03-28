@@ -70,7 +70,7 @@ public class ThingTagManager {
 		List<GlobalThingInfo> things = new ArrayList<>();
 
 		if(!source.getThingList().isEmpty()) {
-			things.addAll(globalThingDao.getThingsByIDArray(source.getThingList()));
+			things.addAll(globalThingDao.findByIDs(source.getThingList()));
 			return things;
 		}
 

@@ -556,7 +556,7 @@ public class TestTagThingManager {
 		doAnswer((Answer<List<GlobalThingInfo>>) invocation -> {
 			received.addAll((Collection<? extends Long>) invocation.getArguments()[0]);
 			return null;
-		}).when(globalThingDao).getThingsByIDArray(anyListOf(Long.class));
+		}).when(globalThingDao).findByIDs(anyListOf(Long.class));
 
 		tagThingManager.getThingsByTagIds(new HashSet(Arrays.asList(100L)));
 

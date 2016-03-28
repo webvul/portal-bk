@@ -505,7 +505,7 @@ public class TagThingManager {
 	public List<GlobalThingInfo> getThings(List<String> thingIDList) throws ObjectNotFoundException {
 		List<Long> thingIds = thingIDList.stream().filter(Pattern.compile("^[0-9]+$").asPredicate()).map(Long::valueOf)
 				.collect(Collectors.toList());
-		List<GlobalThingInfo> things = globalThingDao.getThingsByIDArray(thingIds);
+		List<GlobalThingInfo> things = globalThingDao.findByIDs(thingIds);
 		if (null == things || !things.stream().map(GlobalThingInfo::getId).map(Object::toString).
 				collect(Collectors.toSet()).containsAll(thingIDList)) {
 			thingIds.removeAll(things.stream().map(GlobalThingInfo::getId).collect(Collectors.toList()));
@@ -621,7 +621,7 @@ public class TagThingManager {
 		if (null == tagIds || tagIds.isEmpty()) {
 			return Collections.emptyList();
 		}
-		return globalThingDao.getThingsByIDArray(tagThingRelationDao.findThingIds(tagIds).
+		return globalThingDao.findByIDs(tagThingRelationDao.findThingIds(tagIds).
 				orElse(Collections.emptyList()));
 	}
 }
