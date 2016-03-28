@@ -179,7 +179,14 @@ public class ThingController extends AbstractThingTagController {
 
 		BeanUtils.copyProperties(input, thingInfo);
 
-		Long thingID = thingTagManager.createThing(thingInfo, input.getLocation(), input.getInputTags());
+		Long thingID;
+		try {
+			thingID = thingTagManager.createThing(thingInfo, input.getLocation(), input.getInputTags());
+		} catch (ObjectNotFoundException e) {
+			throw new PortalException(e.getMessage(), e.getMessage(), HttpStatus.BAD_REQUEST);
+		} catch (UnauthorizedException e) {
+			throw new BeehiveUnAuthorizedException(e.getMessage());
+		}
 
 		if (isTeamIDExist()) {
 			teamThingRelationDao.saveOrUpdate(new TeamThingRelation(getLoginTeamID(), thingID));

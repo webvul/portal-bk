@@ -3,7 +3,6 @@ package com.kii.beehive.business.manager;
 import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.CollectUtils;
-import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.beehive.portal.exception.ObjectNotFoundException;
 import com.kii.beehive.portal.exception.UnauthorizedException;
 import com.kii.beehive.portal.jdbc.dao.*;
@@ -78,22 +77,19 @@ public class TagThingManager {
 	 * @param tagList
 	 * @return
 	 */
-	public Long createThing(GlobalThingInfo thingInfo, String location, Collection<String> tagList) {
+	public Long createThing(GlobalThingInfo thingInfo, String location, Collection<String> tagList)
+			throws ObjectNotFoundException, UnauthorizedException {
 
 		KiiAppInfo kiiAppInfo = appInfoDao.getAppInfoByID(thingInfo.getKiiAppID());
 
 		// check whether Kii App ID is existing
 		if (kiiAppInfo == null) {
-			EntryNotFoundException ex = new EntryNotFoundException(thingInfo.getKiiAppID());
-			ex.setMessage("AppID not exist");
-			throw ex;
+			throw new ObjectNotFoundException("AppID doesn't exist");
 		}
 
 		// check whether Kii App ID is Master App
 		if (kiiAppInfo.getMasterApp()) {
-			EntryNotFoundException ex = new EntryNotFoundException(thingInfo.getKiiAppID());
-			ex.setMessage("Can't user Master AppID");
-			throw ex;
+			throw new UnauthorizedException("Can't use Master AppID to create thing");
 		}
 
 		/*Set<TagIndex> tagSet=new HashSet<>();
@@ -315,19 +311,16 @@ public class TagThingManager {
 
 		// get location tag
 		List<TagIndex> list = tagIndexDao.findTagByTagTypeAndName(TagType.Location.toString(), location);
-		TagIndex tagIndex = CollectUtils.getFirst(list);
-		if (tagIndex == null) {
-			tagIndex = new TagIndex(TagType.Location, location, null);
-			long tagID = tagIndexDao.saveOrUpdate(tagIndex);
-			tagIndex.setId(tagID);
+		Long tagId;
+		if (null == list || list.isEmpty()) {
+			tagId = tagIndexDao.saveOrUpdate(new TagIndex(TagType.Location, location, null));
+		} else {
+			tagId = list.get(0).getId();
 		}
 
 		// get tag-thing relation
-		TagThingRelation relation = tagThingRelationDao.findByThingIDAndTagID(globalThingID, tagIndex.getId());
-
-		if (relation == null) {
-			relation = new TagThingRelation(tagIndex.getId(), globalThingID);
-			tagThingRelationDao.insert(relation);
+		if (null == tagThingRelationDao.findByThingIDAndTagID(globalThingID, tagId)) {
+			tagThingRelationDao.insert(new TagThingRelation(tagId, globalThingID));
 		}
 
 	}

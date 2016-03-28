@@ -7,7 +7,9 @@ import com.kii.beehive.portal.exception.ObjectNotFoundException;
 import com.kii.beehive.portal.exception.UnauthorizedException;
 import com.kii.beehive.portal.jdbc.dao.*;
 import com.kii.beehive.portal.jdbc.entity.*;
+import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
+import com.kii.beehive.portal.store.entity.KiiAppInfo;
 import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
@@ -74,6 +76,10 @@ public class TestTagThingManager {
 	@Spy
 	@Autowired
 	private GlobalThingSpringDao globalThingDao;
+
+	@Spy
+	@Autowired
+	private AppInfoDao appInfoDao;
 
 	private List<TagIndex> tags;
 
@@ -475,6 +481,47 @@ public class TestTagThingManager {
 		doReturn(Arrays.asList(mock(ThingUserGroupRelation.class))).when(thingUserGroupRelationDao)
 				.findByThingIdAndUserId(anyLong(), anyString());
 		tagThingManager.getAccessibleThingById("someone", 100L);
+	}
+
+	@Test
+	public void testCreateThing() throws Exception {
+		GlobalThingInfo thingInfo = new GlobalThingInfo();
+
+		// invalid kiiAppID
+		doReturn(null).when(appInfoDao).getAppInfoByID(anyString());
+		thingInfo.setKiiAppID("KiiAppId");
+		try {
+			tagThingManager.createThing(thingInfo, "location", Collections.emptyList());
+			fail("Expect an ObjectNotFoundException");
+		} catch (ObjectNotFoundException e) {
+		}
+
+		KiiAppInfo appInfo = new KiiAppInfo();
+		appInfo.setMasterApp(true);
+		doReturn(appInfo).when(appInfoDao).getAppInfoByID(anyString());
+		try {
+			tagThingManager.createThing(thingInfo, "location", Collections.emptyList());
+			fail("Expect a UnauthorizedException");
+		} catch (UnauthorizedException e) {
+		}
+
+		appInfo.setMasterApp(false);
+		doReturn(appInfo).when(appInfoDao).getAppInfoByID(anyString());
+		doReturn(100L).when(globalThingDao).saveOrUpdate(any(GlobalThingInfo.class));
+		doReturn(null).when(tagIndexDao).findTagByTagTypeAndName(anyString(), anyString());
+		doAnswer((Answer<Long>) invocation -> {
+			if (!((TagIndex) invocation.getArguments()[0]).getDisplayName().equals("location")) {
+				fail("Unexpected location");
+			}
+			return 201L;
+		}).when(tagIndexDao).saveOrUpdate(any(TagIndex.class));
+		doReturn(null).when(tagThingRelationDao).findByThingIDAndTagID(anyLong(), anyLong());
+		doReturn(200L).when(tagThingRelationDao).insert(any(TagThingRelation.class));
+
+		Long thingId = tagThingManager.createThing(thingInfo, "location", Collections.emptyList());
+		assertEquals("Unexpected thing id", (Long) 100L, thingId);
+		verify(tagThingRelationDao, times(1)).insert(any(TagThingRelation.class));
+
 	}
 	
 	/*

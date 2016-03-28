@@ -768,92 +768,52 @@ public class TestThingController extends WebTestTemplate {
 	public void testCreatThingException() throws Exception {
 
 		// no vendorThingID
-		Map<String, Object> request = new HashMap<>();
-		request.put("kiiAppID", KII_APP_ID);
-		request.put("type", "some type");
-		request.put("location", "some location");
+		ThingRestBean thingRestBean = new ThingRestBean();
+		thingRestBean.setKiiAppID("kiiAppID");
+		thingRestBean.setType("Some type");
+		thingRestBean.setLocation("Some location");
 
-		String ctx = mapper.writeValueAsString(request);
+		try {
+			thingController.createThing(thingRestBean);
+			fail("Expect an PortalException");
+		} catch (PortalException e) {
+			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+		}
 
-		String result = this.mockMvc.perform(
-				post("/things").content(ctx)
-						.contentType(MediaType.APPLICATION_JSON)
-						.characterEncoding("UTF-8")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
-		)
-				.andExpect(status().isBadRequest())
-				.andReturn().getResponse().getContentAsString();
 
 		// invalid vendorThingID
-		request = new HashMap<>();
-		request.put("vendorThingID", "qwe.rty");
-		request.put("kiiAppID", KII_APP_ID);
-		request.put("type", "some type");
-		request.put("location", "some location");
+		thingRestBean.setVendorThingID("qwe.rty");
+		try {
+			thingController.createThing(thingRestBean);
+			fail("Expect an PortalException");
+		} catch (PortalException e) {
+			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+		}
 
-		ctx = mapper.writeValueAsString(request);
+		thingRestBean.setKiiAppID(null);
+		try {
+			thingController.createThing(thingRestBean);
+			fail("Expect an PortalException");
+		} catch (PortalException e) {
+			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+		}
 
-		result = this.mockMvc.perform(
-				post("/things").content(ctx)
-						.contentType(MediaType.APPLICATION_JSON)
-						.characterEncoding("UTF-8")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
-		)
-				.andExpect(status().isBadRequest())
-				.andReturn().getResponse().getContentAsString();
+		thingRestBean.setKiiAppID("KiiAppId");
+		thingRestBean.setVendorThingID("123456");
+		doThrow(new UnauthorizedException("test")).when(thingTagManager).createThing(any(GlobalThingInfo.class),
+				anyString(), anyListOf(String.class));
+		try {
+			thingController.createThing(thingRestBean);
+			fail("Expect an PortalException");
+		} catch (PortalException e) {
+			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
+		}
 
-		// no kiiAppID
-		request = new HashMap<>();
-		request.put("vendorThingID", vendorThingIDsForTest[0]);
-		request.put("type", "some type");
-		request.put("location", "some location");
-
-		ctx = mapper.writeValueAsString(request);
-
-		result = this.mockMvc.perform(
-				post("/things").content(ctx)
-						.contentType(MediaType.APPLICATION_JSON)
-						.characterEncoding("UTF-8")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
-		)
-				.andExpect(status().isBadRequest())
-				.andReturn().getResponse().getContentAsString();
-
-		// invalid kiiAppID
-		request = new HashMap<>();
-		request.put("vendorThingID", vendorThingIDsForTest[0]);
-		request.put("kiiAppID", "some_non_existing_kii_app_id");
-		request.put("type", "some type");
-		request.put("location", "some location");
-
-		ctx = mapper.writeValueAsString(request);
-
-		result = this.mockMvc.perform(
-				post("/things").content(ctx)
-						.contentType(MediaType.APPLICATION_JSON)
-						.characterEncoding("UTF-8")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
-		)
-				.andExpect(status().isNotFound())
-				.andReturn().getResponse().getContentAsString();
-
-		// master kiiAppID
-		request = new HashMap<>();
-		request.put("vendorThingID", vendorThingIDsForTest[0]);
-		request.put("kiiAppID", MASTER_KII_APP_ID);
-		request.put("type", "some type");
-		request.put("location", "some location");
-
-		ctx = mapper.writeValueAsString(request);
-
-		result = this.mockMvc.perform(
-				post("/things").content(ctx)
-						.contentType(MediaType.APPLICATION_JSON)
-						.characterEncoding("UTF-8")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
-		)
-				.andExpect(status().isNotFound())
-				.andReturn().getResponse().getContentAsString();
+		doReturn(100L).when(thingTagManager).createThing(any(GlobalThingInfo.class), anyString(), anyCollectionOf
+				(String.class));
+		Map<String, Long> result = thingController.createThing(thingRestBean);
+		assertTrue("Unexpected result", result.containsKey("globalThingID") && result.get("globalThingID").equals
+				(100L));
 
 
 	}
