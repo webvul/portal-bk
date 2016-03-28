@@ -2,6 +2,7 @@ package com.kii.beehive.portal.store;
 
 
 import com.kii.beehive.business.manager.TagThingManager;
+import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.exception.ObjectNotFoundException;
 import com.kii.beehive.portal.exception.UnauthorizedException;
@@ -15,10 +16,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import org.mockito.InjectMocks;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
+import org.mockito.*;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -88,6 +86,9 @@ public class TestTagThingManager {
 	private List<UserGroup> userGroups;
 
 	private List<GlobalThingInfo> things;
+
+	@Mock
+	private ThingIFInAppService thingIFInAppService;
 
 	@Before
 	public void setUp() throws Exception {
@@ -522,6 +523,13 @@ public class TestTagThingManager {
 		assertEquals("Unexpected thing id", (Long) 100L, thingId);
 		verify(tagThingRelationDao, times(1)).insert(any(TagThingRelation.class));
 
+
+		doReturn(299L).when(tagIndexDao).saveOrUpdate(any(TagIndex.class));
+
+		tagThingManager.createThing(thingInfo, null, Collections.emptyList());
+
+		verify(tagIndexDao, times(1)).findTagByTagTypeAndName(eq(TagType.Location.name()),
+				eq(TagThingManager.DEFAULT_LOCATION));
 	}
 
 	@Test
@@ -561,6 +569,52 @@ public class TestTagThingManager {
 		tagThingManager.getThingsByTagIds(new HashSet(Arrays.asList(100L)));
 
 		assertTrue("Received ids don't match", 1 == received.size() && received.contains(200L));
+	}
+
+	@Test
+	public void testRemoveThing() throws Exception {
+		doNothing().when(tagThingRelationDao).delete(anyLong(), anyLong());
+		doNothing().when(thingUserRelationDao).deleteByThingId(anyLong());
+		doNothing().when(thingUserGroupRelationDao).deleteByThingId(anyLong());
+		doReturn(100).when(globalThingDao).deleteByID(eq(100L));
+		doNothing().when(thingIFInAppService).removeThing("kiiAppId-vendorThingId");
+
+		GlobalThingInfo thingInfo = new GlobalThingInfo();
+		thingInfo.setFullKiiThingID("kiiAppId-vendorThingId");
+		thingInfo.setId(100L);
+
+		tagThingManager.removeThing(thingInfo);
+
+		verify(tagThingRelationDao, times(1)).delete(anyLong(), eq(100L));
+		verify(thingUserRelationDao, times(1)).deleteByThingId(eq(100L));
+		verify(thingUserGroupRelationDao, times(1)).deleteByThingId(eq(100L));
+		verify(globalThingDao, times(1)).deleteByID(eq(100L));
+		verify(thingIFInAppService, times(1)).removeThing(eq("kiiAppId-vendorThingId"));
+
+		doThrow(new com.kii.extension.sdk.exception.ObjectNotFoundException()).when(thingIFInAppService).
+				removeThing(anyString());
+
+		try {
+			tagThingManager.removeThing(thingInfo);
+			fail("Expect an ObjectNotFoundException");
+		} catch (ObjectNotFoundException e) {
+		}
+	}
+
+	@Test
+	public void testRemoveTag() throws Exception {
+		doNothing().when(tagUserRelationDao).deleteByTagId(anyLong());
+		doNothing().when(tagGroupRelationDao).delete(anyLong(), anyLong());
+		doNothing().when(tagThingRelationDao).delete(anyLong(), anyLong());
+		doReturn(100).when(tagIndexDao).deleteByID(anyLong());
+
+		tagThingManager.removeTag(mock(TagIndex.class));
+
+		verify(tagUserRelationDao, times(1)).deleteByTagId(anyLong());
+		verify(tagGroupRelationDao, times(1)).delete(anyLong(), anyLong());
+		verify(tagThingRelationDao, times(1)).delete(anyLong(), anyLong());
+		verify(tagIndexDao, times(1)).deleteByID(anyLong());
+
 	}
 
 	/*

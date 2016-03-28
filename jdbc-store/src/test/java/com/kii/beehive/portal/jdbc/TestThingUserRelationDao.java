@@ -153,4 +153,11 @@ public class TestThingUserRelationDao extends TestTemplate {
 		assertNull("Should not find the relation", thingUserRelationDao.find(this.allThingIds.get(2), "user1"));
 		assertNull("Should not find the relation", thingUserRelationDao.find(this.allThingIds.get(0), "user2"));
 	}
+
+	@Test
+	public void testDeleteByThingId() throws Exception {
+		assertNotNull(thingUserRelationDao.find(this.allThingIds.get(0), "user1"));
+		thingUserRelationDao.deleteByThingId(this.allThingIds.get(0));
+		assertNull("Relation should be removed", thingUserRelationDao.find(this.allThingIds.get(0), "user1"));
+	}
 }
