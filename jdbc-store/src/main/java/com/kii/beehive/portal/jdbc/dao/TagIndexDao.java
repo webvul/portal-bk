@@ -7,8 +7,7 @@ import com.kii.beehive.portal.jdbc.entity.TagType;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Repository
 public class TagIndexDao extends SpringBaseDao<TagIndex> {
@@ -23,6 +22,10 @@ public class TagIndexDao extends SpringBaseDao<TagIndex> {
 
 	private static final String SQL_FIND_USER_LOCATION = "SELECT t." + TagIndex.DISPLAY_NAME + " FROM " + TABLE_NAME + "" +
 			" t WHERE " + TagIndex.CREATE_BY + " = ?";
+
+	private static final String SQL_FIND_TAGIDS_BY_TAGIDS_AND_FULLNAMES = "SELECT " + TagIndex.TAG_ID + " FROM " +
+			TABLE_NAME + " WHERE " + TagIndex.TAG_ID + " IN (:tagIds) AND " + TagIndex.FULL_TAG_NAME +
+			" IN (:fullNames)";
 
 	/**
 	 * find tag list by tagType and displayName
@@ -227,5 +230,16 @@ public class TagIndexDao extends SpringBaseDao<TagIndex> {
 	@Override
 	public String getKey() {
 		return KEY;
+	}
+
+	public Optional<List<Long>> findTagIdsByIDsAndFullname(List<Long> tagIds, Collection<String> fullTagNames) {
+		if (null == tagIds || null == fullTagNames || fullTagNames.isEmpty()) {
+			return Optional.ofNullable(null);
+		}
+		Map<String, Object> params = new HashMap();
+		params.put("tagIds", tagIds);
+		params.put("fullNames", fullTagNames);
+		return Optional.ofNullable(namedJdbcTemplate.queryForList(SQL_FIND_TAGIDS_BY_TAGIDS_AND_FULLNAMES, params,
+				Long.class));
 	}
 }

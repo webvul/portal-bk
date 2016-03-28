@@ -5,9 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 
 @Repository
@@ -17,6 +15,9 @@ public class TagThingRelationDao extends SpringBaseDao<TagThingRelation> {
 	public static final String KEY = "id";
 	private static final String SQL_FIND_THINGIDS = "SELECT " + TagThingRelation.THING_ID + " FROM " + TABLE_NAME + "" +
 			" WHERE " + TagThingRelation.TAG_ID + " = ?";
+	private static final String SQL_FIND_THINGIDS_BY_TAGIDS = "SELECT " + TagThingRelation.THING_ID + " FROM " +
+			TABLE_NAME + "" +
+			" WHERE " + TagThingRelation.TAG_ID + " IN (:tagIds)";
 	private Logger log = LoggerFactory.getLogger(TagThingRelationDao.class);
 
 	public void delete(Long tagID, Long thingID) {
@@ -74,5 +75,14 @@ public class TagThingRelationDao extends SpringBaseDao<TagThingRelation> {
 			return Optional.ofNullable(null);
 		}
 		return Optional.ofNullable(jdbcTemplate.queryForList(SQL_FIND_THINGIDS, new Object[]{tagId}, Long.class));
+	}
+
+	public Optional<List<Long>> findThingIds(Collection<Long> tagIds) {
+		if (null == tagIds || tagIds.isEmpty()) {
+			return Optional.ofNullable(null);
+		}
+		Map<String, Object> param = new HashMap();
+		param.put("tagIds", tagIds);
+		return Optional.ofNullable(namedJdbcTemplate.queryForList(SQL_FIND_THINGIDS_BY_TAGIDS, param, Long.class));
 	}
 }

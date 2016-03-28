@@ -584,6 +584,17 @@ public class TagThingManager {
 		return globalThingDao.findThingTypesWithThingCount(getAccessibleThingIds(user)).orElse(Collections.emptyList());
 	}
 
+	public List<String> getTypesOfAccessibleThingsByTagFullName(String user, Set<String> fullTagNames)
+			throws ObjectNotFoundException {
+		List<Long> tagIds = tagUserRelationDao.findTagIds(user).orElse(Collections.emptyList());
+		tagIds = tagIndexDao.findTagIdsByIDsAndFullname(tagIds, fullTagNames).orElse(Collections.emptyList());
+		if (tagIds.size() != fullTagNames.size()) {
+			throw new ObjectNotFoundException("Some requested tags don't exist or are not accessible");
+		}
+		return globalThingDao.findByIDs(tagThingRelationDao.findThingIds(tagIds).orElse(Collections.emptyList())).
+				stream().map(GlobalThingInfo::getType).collect(Collectors.toList());
+	}
+
 	private Set<Long> getAccessibleThingIds(String user) {
 		Set<Long> thingIds = new HashSet();
 		List<UserGroup> userGroupList = usergroupDao.findUserGroup(user, null, null);

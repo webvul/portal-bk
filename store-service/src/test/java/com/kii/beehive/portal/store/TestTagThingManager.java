@@ -21,12 +21,14 @@ import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.anyCollectionOf;
+import static org.mockito.Mockito.anyListOf;
 import static org.mockito.Mockito.anySetOf;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.eq;
@@ -37,6 +39,7 @@ public class TestTagThingManager {
 	@Autowired
 	private TagThingManager thingTagService;
 
+	@Spy
 	@Autowired
 	private TagIndexDao tagIndexDao;
 
@@ -426,6 +429,32 @@ public class TestTagThingManager {
 		assertEquals("Number of thing ids doesn't match", expected.size(), thingIds.size());
 	}
 
+	@Test
+	public void testGetTypesOfAccessibleThingsByTagFullName() throws Exception {
+		List<Long> tagIds = Arrays.asList(1001L, 1002L);
+		doReturn(Optional.ofNullable(tagIds)).when(tagUserRelationDao).findTagIds(anyString());
+		doReturn(Optional.ofNullable(Collections.emptyList())).when(tagIndexDao).
+				findTagIdsByIDsAndFullname(anyListOf(Long.class), anyCollectionOf(String.class));
+		try {
+			tagThingManager.getTypesOfAccessibleThingsByTagFullName("someone", Arrays.asList("test123").
+					stream().collect(Collectors.toSet()));
+			fail("Expect an ObjectNotFoundException");
+		} catch (ObjectNotFoundException e) {
+		}
+
+		Set<Long> received = new HashSet();
+		doReturn(Optional.ofNullable(tagIds)).when(tagIndexDao).findTagIdsByIDsAndFullname(anyListOf(Long.class),
+				anySetOf(String.class));
+		doReturn(Optional.ofNullable(tagIds)).when(tagThingRelationDao).findThingIds(anyListOf(Long.class));
+		doAnswer((Answer<List<GlobalThingInfo>>) invocation -> {
+			received.addAll((Collection<? extends Long>) invocation.getArguments()[0]);
+			return Collections.emptyList();
+		}).when(globalThingDao).findByIDs(anyListOf(Long.class));
+		tagThingManager.getTypesOfAccessibleThingsByTagFullName("someone", Arrays.asList("test1", "test2").
+				stream().collect(Collectors.toSet()));
+		assertTrue("Didn't pass correct thing ids", received.containsAll(tagIds));
+	}
+	
 	/*
 	@Test
 	public void testFindLocations() {

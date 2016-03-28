@@ -110,20 +110,14 @@ public class ThingController extends AbstractThingTagController {
 	 * @return
 	 */
 	@RequestMapping(path = "/types/fulltagname/{fullTagNames}", method = {RequestMethod.GET})
-	public ResponseEntity<List<String>> getThingTypeByTagFullName(@PathVariable("fullTagNames") String fullTagNames) {
-		List<String> fullTagNameList = asList(fullTagNames.split(","));
-
-		for (String name : fullTagNameList) {
-			List<TagIndex> tagList = tagIndexDao.findTagByFullTagName(name);
-			if (tagList.size() > 0 && !thingTagManager.isTagCreator(tagList.get(0)) && !thingTagManager.isTagOwner(tagList.get(0))) {
-				throw new BeehiveUnAuthorizedException("Current user is not the creator or owner of the tag.");
-			} else {
-				throw new PortalException("Tag Not Found", "Tag with fullTagName:" + name + " Not Found", HttpStatus.NOT_FOUND);
-			}
+	public List<String> getThingTypeByTagFullName(@PathVariable("fullTagNames") String fullTagNames) {
+		try {
+			return thingTagManager.getTypesOfAccessibleThingsByTagFullName(getLoginUserID(),
+					asList(fullTagNames.split(",")).stream().collect(Collectors.toSet()));
+		} catch (ObjectNotFoundException e) {
+			throw new PortalException("Some requested tags don't exist or is not accessible", e.getMessage(),
+					HttpStatus.BAD_REQUEST);
 		}
-
-		List<String> result = globalThingDao.findThingTypeByFullTagNames(fullTagNameList);
-		return new ResponseEntity<>(result, HttpStatus.OK);
 	}
 
 	/**

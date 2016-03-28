@@ -47,6 +47,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyList;
 import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Mockito.anyCollectionOf;
+import static org.mockito.Mockito.anySetOf;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.eq;
@@ -118,6 +119,22 @@ public class TestThingController extends WebTestTemplate {
 		}
 
 		MockitoAnnotations.initMocks(this);
+	}
+
+	@Test
+	public void testGetThingTypeByTagFullName() throws Exception {
+		doThrow(new ObjectNotFoundException("test")).when(thingTagManager).getTypesOfAccessibleThingsByTagFullName(
+				anyString(), anySetOf(String.class));
+		try {
+			thingController.getThingTypeByTagFullName("test");
+			fail("Expect a PortalException");
+		} catch (PortalException e) {
+			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+		}
+
+		doReturn(null).when(thingTagManager).getTypesOfAccessibleThingsByTagFullName(
+				anyString(), anySetOf(String.class));
+		thingController.getThingTypeByTagFullName("test");
 	}
 
 	@Test
