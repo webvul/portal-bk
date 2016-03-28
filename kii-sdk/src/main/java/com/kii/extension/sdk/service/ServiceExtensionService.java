@@ -111,7 +111,15 @@ public class ServiceExtensionService {
 		client.executeRequest(request);
 	}
 
-
+	/**
+	 * deploy server code on app, below 3 steps will be done in different threads
+	 * 1. upload server code file
+	 * 2. upload hook file
+	 * 3. set server code version (activate server code)
+	 *
+	 * @param serviceCtx
+	 * @param hookDescription
+	 */
 	public void deployServiceExtension(String serviceCtx,String hookDescription){
 
 		final AppInfo appInfo=bindToolResolver.getAppInfo();
@@ -210,6 +218,18 @@ public class ServiceExtensionService {
 		}
 	}
 
+	/**
+	 * deploy server code on app, below 3 steps will be done in same thread
+	 * 1. upload server code file
+	 * 2. upload hook file
+	 * 3. set server code version (activate server code)
+	 *
+	 * * the function of this method is the same with below method
+	 * 	- public void deployServiceExtension(String serviceCtx,String hookDescription)
+	 *
+	 * @param serviceCtx
+	 * @param hookDescription
+     */
 	public void deployServiceExtensionSync(String serviceCtx,String hookDescription){
 
 		final AppInfo appInfo=bindToolResolver.getAppInfo();
