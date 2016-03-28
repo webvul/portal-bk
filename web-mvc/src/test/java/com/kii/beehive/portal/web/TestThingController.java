@@ -11,7 +11,10 @@ import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.dao.TagThingRelationDao;
 import com.kii.beehive.portal.jdbc.dao.TeamThingRelationDao;
-import com.kii.beehive.portal.jdbc.entity.*;
+import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
+import com.kii.beehive.portal.jdbc.entity.TagIndex;
+import com.kii.beehive.portal.jdbc.entity.TagType;
+import com.kii.beehive.portal.jdbc.entity.UserGroup;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.beehive.portal.web.controller.ThingController;
@@ -1247,104 +1250,20 @@ public class TestThingController extends WebTestTemplate {
 
 	@Test
 	public void testGetThingsByTagExpress() throws Exception {
+		doReturn(Collections.emptyList()).when(thingTagManager).getAccessibleTagsByTagTypeAndName(anyString(),
+				anyString(), anyString());
+		GlobalThingInfo thingInfo = new GlobalThingInfo();
+		thingInfo.setKiiAppID("KiiAppID");
+		thingInfo.setVendorThingID("123456");
+		thingInfo.setCreateBy("Someone");
+		doReturn(Arrays.asList(thingInfo)).when(thingTagManager).getThingsByTagIds(anySetOf(Long.class));
 
-		// create thing
-		String[] vendorThingIDs = new String[]{"vendorThingIDForTest1", "vendorThingIDForTest2", "vendorThingIDForTest3"};
-		long[] globalThingIDs = new long[3];
-
-		for (int i = 0; i < vendorThingIDs.length; i++) {
-			GlobalThingInfo thingInfo = new GlobalThingInfo();
-			thingInfo.setVendorThingID(vendorThingIDs[i]);
-			thingInfo.setKiiAppID(KII_APP_ID);
-			globalThingIDs[i] = globalThingDao.saveOrUpdate(thingInfo);
-		}
-
-		// create tag
-		String[] displayNames = new String[]{"displayNameForCustom", "displayNameForLocation"};
-
-		TagIndex tagIndex = new TagIndex(TagType.Custom, displayNames[0], null);
-		long tagID1 = tagIndexDao.saveOrUpdate(tagIndex);
-
-		tagIndex = new TagIndex(TagType.Location, displayNames[1], null);
-		long tagID2 = tagIndexDao.saveOrUpdate(tagIndex);
-
-		// create relation
-		TagThingRelation relation = new TagThingRelation();
-		relation.setTagID(tagID1);
-		relation.setThingID(globalThingIDs[0]);
-		tagThingRelationDao.insert(relation);
-
-		relation = new TagThingRelation();
-		relation.setTagID(tagID1);
-		relation.setThingID(globalThingIDs[1]);
-		tagThingRelationDao.insert(relation);
-
-		relation = new TagThingRelation();
-		relation.setTagID(tagID2);
-		relation.setThingID(globalThingIDs[2]);
-		tagThingRelationDao.insert(relation);
-
-
-		// search custom tag
-		String result = this.mockMvc.perform(
-				get("/things/search?" + "tagType=" + TagType.Custom + "&displayName=" + displayNames[0])
-						.contentType(MediaType.APPLICATION_JSON)
-						.characterEncoding("UTF-8")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
-		)
-				.andExpect(status().isOk())
-				.andReturn().getResponse().getContentAsString();
-
-		List<Map<String, Object>> list = mapper.readValue(result, List.class);
-
-		assertEquals(2, list.size());
-
-		for (Map<String, Object> map : list) {
-			System.out.println("response: " + map);
-			assertTrue((int) map.get("globalThingID") == globalThingIDs[0] || (int) map.get("globalThingID") == globalThingIDs[1]);
-			assertTrue(map.get("vendorThingID").equals(vendorThingIDs[0]) || map.get("vendorThingID").equals(vendorThingIDs[1]));
-		}
-
-		// search location tag
-		result = this.mockMvc.perform(
-				get("/things/search?" + "tagType=" + TagType.Location + "&displayName=" + displayNames[1])
-						.contentType(MediaType.APPLICATION_JSON)
-						.characterEncoding("UTF-8")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
-		)
-				.andExpect(status().isOk())
-				.andReturn().getResponse().getContentAsString();
-
-		list = mapper.readValue(result, List.class);
-
-		assertEquals(1, list.size());
-
-		for (Map<String, Object> map : list) {
-			System.out.println("response: " + map);
-			assertTrue((int) map.get("globalThingID") == globalThingIDs[2]);
-			assertTrue(map.get("vendorThingID").equals(vendorThingIDs[2]));
-		}
-
-		// search all things
-		result = this.mockMvc.perform(
-				get("/things/search")
-						.contentType(MediaType.APPLICATION_JSON)
-						.characterEncoding("UTF-8")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
-		)
-				.andExpect(status().isOk())
-				.andReturn().getResponse().getContentAsString();
-
-		list = mapper.readValue(result, List.class);
-
-		assertEquals(3, list.size());
-
-		for (Map<String, Object> map : list) {
-			System.out.println("response: " + map);
-			assertTrue((int) map.get("globalThingID") == globalThingIDs[0] || (int) map.get("globalThingID") == globalThingIDs[1] || (int) map.get("globalThingID") == globalThingIDs[2]);
-			assertTrue(map.get("vendorThingID").equals(vendorThingIDs[0]) || map.get("vendorThingID").equals(vendorThingIDs[1]) || map.get("vendorThingID").equals(vendorThingIDs[2]));
-		}
-
+		List<ThingRestBean> result = thingController.getThingsByTagExpress("test", "test");
+		assertNotNull("Result shouldn't be null", result);
+		assertEquals("Number of things doesn't match", 1, result.size());
+		assertEquals("Property doesn't match", thingInfo.getKiiAppID(), result.get(0).getKiiAppID());
+		assertEquals("Property doesn't match", thingInfo.getVendorThingID(), result.get(0).getVendorThingID());
+		assertEquals("Property doesn't match", thingInfo.getCreateBy(), result.get(0).getCreateBy());
 	}
 
 	@Test
@@ -1471,76 +1390,6 @@ public class TestThingController extends WebTestTemplate {
 		}
 
 		return globalThingIDs;
-	}
-
-
-	@Test
-	public void testGetThingTypeByTagNames() throws Exception {
-
-
-		// create thing
-		String[] vendorThingIDs = new String[]{"vendorThingIDForTest1", "vendorThingIDForTest2", "vendorThingIDForTest3"};
-		List<String> types = new ArrayList<>();
-		types.add("type1");
-		types.add("type2");
-		types.add("type3");
-
-		long[] globalThingIDs = new long[3];
-
-		for (int i = 0; i < vendorThingIDs.length; i++) {
-			GlobalThingInfo thingInfo = new GlobalThingInfo();
-			thingInfo.setVendorThingID(vendorThingIDs[i]);
-			thingInfo.setKiiAppID(KII_APP_ID);
-			thingInfo.setType(types.get(i));
-			globalThingIDs[i] = globalThingDao.saveOrUpdate(thingInfo);
-		}
-
-		// create tag
-		String[] displayNames = new String[]{"displayNameForCustom", "displayNameForLocation"};
-
-		TagIndex tagIndex = new TagIndex(TagType.Custom, displayNames[0], null);
-		long tagID1 = tagIndexDao.saveOrUpdate(tagIndex);
-
-		tagIndex = new TagIndex(TagType.Location, displayNames[1], null);
-		long tagID2 = tagIndexDao.saveOrUpdate(tagIndex);
-
-		// create relation
-		TagThingRelation relation = new TagThingRelation();
-		relation.setTagID(tagID1);
-		relation.setThingID(globalThingIDs[0]);
-		tagThingRelationDao.insert(relation);
-
-		relation = new TagThingRelation();
-		relation.setTagID(tagID1);
-		relation.setThingID(globalThingIDs[1]);
-		tagThingRelationDao.insert(relation);
-
-		relation = new TagThingRelation();
-		relation.setTagID(tagID2);
-		relation.setThingID(globalThingIDs[2]);
-		tagThingRelationDao.insert(relation);
-
-		String fullTagName = TagType.Custom.getTagName(displayNames[0]) + "," + TagType.Location.getTagName(displayNames[1]);
-
-		// query
-		String result = this.mockMvc.perform(
-				get("/things/types/fulltagname/" + fullTagName)
-						.contentType(MediaType.APPLICATION_JSON)
-						.characterEncoding("UTF-8")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
-		)
-				.andExpect(status().isOk())
-				.andReturn().getResponse().getContentAsString();
-
-		List<String> list = mapper.readValue(result, List.class);
-
-		System.out.println("Response: " + list);
-
-		// assert
-		assertEquals(3, list.size());
-
-		assertTrue(list.containsAll(types));
-
 	}
 
 }

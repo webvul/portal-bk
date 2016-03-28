@@ -24,7 +24,9 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 	}
 
 	public List<GlobalThingInfo> getThingsByIDArray(List<Long> thingIDs) {
-
+		if (null == thingIDs || thingIDs.isEmpty()) {
+			return Collections.emptyList();
+		}
 		String sql = "SELECT g.* "
 				+ "FROM global_thing g "
 				+ " WHERE g.id_global_thing in (:ids) ";

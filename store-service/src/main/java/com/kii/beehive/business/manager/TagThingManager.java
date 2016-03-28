@@ -606,4 +606,22 @@ public class TagThingManager {
 
 		throw new ObjectNotFoundException("Requested thing doesn't exist or is not accessible");
 	}
+
+	public List<TagIndex> getAccessibleTagsByTagTypeAndName(String userId, String tagType, String displayName) {
+		List<Long> tagIds1 = tagUserRelationDao.findTagIds(userId, tagType, displayName).
+				orElse(Collections.emptyList());
+		List<Long> tagIds2 = tagGroupRelationDao.findTagIds(userId, tagType, displayName).
+				orElse(Collections.emptyList());
+		List<Long> allIds = new ArrayList(tagIds1);
+		allIds.addAll(tagIds2);
+		return tagIndexDao.findByIDs(allIds);
+	}
+
+	public List<GlobalThingInfo> getThingsByTagIds(Set<Long> tagIds) {
+		if (null == tagIds || tagIds.isEmpty()) {
+			return Collections.emptyList();
+		}
+		return globalThingDao.getThingsByIDArray(tagThingRelationDao.findThingIds(tagIds).
+				orElse(Collections.emptyList()));
+	}
 }

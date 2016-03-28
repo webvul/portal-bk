@@ -523,7 +523,46 @@ public class TestTagThingManager {
 		verify(tagThingRelationDao, times(1)).insert(any(TagThingRelation.class));
 
 	}
-	
+
+	@Test
+	public void testGetAccessibleTagsByTagTypeAndName() throws Exception {
+		doReturn(Optional.ofNullable(Arrays.asList(100L))).when(tagUserRelationDao).findTagIds(anyString(),
+				anyString(), anyString());
+		doReturn(Optional.ofNullable(Arrays.asList(200L))).when(tagGroupRelationDao).findTagIds(anyString(),
+				anyString(), anyString());
+		Set<Long> tagIds = new HashSet();
+		doAnswer((Answer<List<TagIndex>>) invocation -> {
+			tagIds.addAll((Collection<? extends Long>) invocation.getArguments()[0]);
+			return null;
+		}).when(tagIndexDao).findByIDs(anyListOf(Long.class));
+
+		tagThingManager.getAccessibleTagsByTagTypeAndName("someone", null, null);
+		assertTrue("Received ids don't match", tagIds.containsAll(Arrays.asList(100L, 200L)) && 2 == tagIds.size());
+	}
+
+	@Test
+	public void testGetThingsByTagIds() throws Exception {
+		List<GlobalThingInfo> result = tagThingManager.getThingsByTagIds(null);
+		assertNotNull("Should not be null", result);
+		assertTrue("Should be empty list", result.isEmpty());
+
+		result = tagThingManager.getThingsByTagIds(Collections.emptySet());
+		assertNotNull("Should not be null", result);
+		assertTrue("Should be empty list", result.isEmpty());
+
+		doReturn(Optional.ofNullable(Arrays.asList(200L))).when(tagThingRelationDao).findThingIds(
+				anyCollectionOf(Long.class));
+		Set<Long> received = new HashSet();
+		doAnswer((Answer<List<GlobalThingInfo>>) invocation -> {
+			received.addAll((Collection<? extends Long>) invocation.getArguments()[0]);
+			return null;
+		}).when(globalThingDao).getThingsByIDArray(anyListOf(Long.class));
+
+		tagThingManager.getThingsByTagIds(new HashSet(Arrays.asList(100L)));
+
+		assertTrue("Received ids don't match", 1 == received.size() && received.contains(200L));
+	}
+
 	/*
 	@Test
 	public void testFindLocations() {

@@ -471,31 +471,23 @@ public class ThingController extends AbstractThingTagController {
 	 * @return
 	 */
 	@RequestMapping(path = "/search", method = {RequestMethod.GET})
-	public ResponseEntity<List<ThingRestBean>> getThingsByTagExpress(@RequestParam(value = "tagType") String tagType,
-																	 @RequestParam(value = "displayName") String displayName) {
-		List<GlobalThingInfo> list = null;
+	public List<ThingRestBean> getThingsByTagExpress(@RequestParam(value = "tagType") String tagType,
+													 @RequestParam(value = "displayName") String displayName) {
+		List<TagIndex> tagIndexes = thingTagManager.getAccessibleTagsByTagTypeAndName(getLoginUserID(),
+				StringUtils.capitalize(tagType), displayName);
 
-		List<TagIndex> tagList = tagIndexDao.findTagByTagTypeAndName(StringUtils.capitalize(tagType), displayName);
+		List<GlobalThingInfo> thingInfos = thingTagManager.getThingsByTagIds(tagIndexes.stream().map(TagIndex::getId).
+				collect(Collectors.toSet()));
 
-		if (tagList.size() > 0) {
-			TagIndex tag = tagList.get(0);
-			if (thingTagManager.isTagCreator(tag) || thingTagManager.isTagOwner(tag)) {
-				list = globalThingDao.findThingByTag(StringUtils.capitalize(tagType) + "-" + displayName);
-			} else {
-				throw new BeehiveUnAuthorizedException("loginUser isn't a tag creator or owner");
-			}
-		}
+		List<ThingRestBean> resultList = new ArrayList();
 
-		List<ThingRestBean> resultList = new ArrayList<>();
-		if (list != null) {
-			for (GlobalThingInfo thingInfo : list) {
-				ThingRestBean input = new ThingRestBean();
-				BeanUtils.copyProperties(thingInfo, input);
-				resultList.add(input);
-			}
-		}
+		thingInfos.forEach(thingInfo -> {
+			ThingRestBean input = new ThingRestBean();
+			BeanUtils.copyProperties(thingInfo, input);
+			resultList.add(input);
+		});
 
-		return new ResponseEntity<>(resultList, HttpStatus.OK);
+		return resultList;
 	}
 
 	/**

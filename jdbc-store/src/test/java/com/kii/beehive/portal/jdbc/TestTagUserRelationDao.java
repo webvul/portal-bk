@@ -1,5 +1,6 @@
 package com.kii.beehive.portal.jdbc;
 
+import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.dao.TagUserRelationDao;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
@@ -28,6 +29,7 @@ public class TestTagUserRelationDao extends TestTemplate {
 
 	@Before
 	public void setUp() throws Exception {
+		AuthInfoStore.setAuthInfo("TestOwner");
 		TagUserRelation relation = new TagUserRelation();
 		TagIndex tag = new TagIndex();
 		for (int i = 1; i <= 3; ++i) {
@@ -61,6 +63,45 @@ public class TestTagUserRelationDao extends TestTemplate {
 		assertNotNull("Tag ids should not be null", tagIds);
 		assertEquals("There should be two tag ids", 2, tagIds.size());
 		assertTrue("The tag ids are incorrect.", new HashSet(tagIds).containsAll(this.allTagIds.subList(1, 3)));
+	}
+
+	@Test
+	public void testFindTagIdsFilterByTagType() throws Exception {
+		TagIndex tag = new TagIndex();
+		for (int i = 1; i <= 3; ++i) {
+			tag.setDisplayName("Location " + i);
+			tag.setTagType(TagType.Location);
+			tag.setDescription("Description");
+			tag.setFullTagName(TagType.Location.getTagName(tag.getDisplayName()));
+			allTagIds.add(tagIndexDao.saveOrUpdate(tag));
+		}
+		for (int i = 1; i <= 3; ++i) {
+			tag.setDisplayName("Location " + i);
+			tag.setTagType(TagType.System);
+			tag.setDescription("Description");
+			tag.setFullTagName(TagType.System.getTagName(tag.getDisplayName()));
+			allTagIds.add(tagIndexDao.saveOrUpdate(tag));
+		}
+		allTagIds.forEach(id -> {
+			TagUserRelation relation = new TagUserRelation();
+			relation.setTagId(id);
+			relation.setUserId("TestOwner");
+			tagUserRelationDao.saveOrUpdate(relation);
+		});
+		Set<Long> tagIds = tagUserRelationDao.findTagIds("TestOwner", TagType.Location.name(), null).
+				orElse(Collections.emptyList()).stream().collect(Collectors.toSet());
+		assertEquals("Should have 3 ids", 3, tagIds.size());
+		assertTrue("Ids don't match", tagIds.containsAll(allTagIds.subList(3, 6)));
+
+		tagIds = tagUserRelationDao.findTagIds("TestOwner", null, "Location 1").
+				orElse(Collections.emptyList()).stream().collect(Collectors.toSet());
+		assertEquals("Should have 2 ids", 2, tagIds.size());
+		assertTrue("Ids don't match", tagIds.contains(allTagIds.get(3)) && tagIds.contains(allTagIds.get(6)));
+
+		tagIds = tagUserRelationDao.findTagIds("TestOwner", TagType.Location.name(), "Location 1").
+				orElse(Collections.emptyList()).stream().collect(Collectors.toSet());
+		assertEquals("Should have 1 id", 1, tagIds.size());
+		assertEquals("Id doesn't match", allTagIds.get(3), tagIds.iterator().next());
 	}
 
 	@Test
