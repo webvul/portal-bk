@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class SummarySource {
+public class SummarySource implements  SourceElement{
 
 	private List<SummaryExpress> expressList=new ArrayList<>();
 
@@ -40,5 +40,10 @@ public class SummarySource {
 		this.source = source;
 	}
 
+
+	@Override
+	public SourceElementType getType() {
+		return SourceElementType.summary;
+	}
 
 }

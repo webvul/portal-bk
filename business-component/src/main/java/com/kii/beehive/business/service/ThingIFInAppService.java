@@ -1,25 +1,20 @@
 package com.kii.beehive.business.service;
 
-import java.util.List;
-import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Component;
-
 import com.kii.beehive.business.event.BusinessEventBus;
 import com.kii.beehive.business.manager.ThingTagManager;
 import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
 import com.kii.extension.sdk.context.AppBindToolResolver;
-import com.kii.extension.sdk.entity.thingif.OnBoardingParam;
-import com.kii.extension.sdk.entity.thingif.OnBoardingResult;
-import com.kii.extension.sdk.entity.thingif.ThingCommand;
-import com.kii.extension.sdk.entity.thingif.ThingStatus;
-import com.kii.extension.sdk.entity.thingif.ThingTrigger;
+import com.kii.extension.sdk.entity.thingif.*;
 import com.kii.extension.sdk.service.ThingIFService;
 import com.kii.extension.sdk.service.TriggerService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.Set;
 
 @Component
 public class ThingIFInAppService {
@@ -115,6 +110,20 @@ public class ThingIFInAppService {
 
 		String thingID=getRealThingID(fullThingID);
 		service.removeThing(thingID);
+	}
+
+	/**
+	 * get all endnodes of gateway
+	 *
+	 * @param fullThingID
+	 * @return example
+	 * 	[ {"thingID": "121323","vendorThingID":"e4746a0b"},
+	 *	{"thingID": "134434","vendorThingID":"f4746a0b"} ]
+	 */
+	public List<EndNodeOfGateway> getAllEndNodesOfGateway(String fullThingID) {
+
+		String thingID = getRealThingID(fullThingID);
+		return service.getAllEndNodesOfGateway(thingID);
 	}
 
 

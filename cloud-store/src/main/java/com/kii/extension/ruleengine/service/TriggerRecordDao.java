@@ -57,7 +57,23 @@ public class TriggerRecordDao extends AbstractDataAccess<TriggerRecord> {
 
 	public List<TriggerRecord> getTriggerListByUserId(String userId){
 
-		QueryParam query= ConditionBuilder.andCondition().equal("userID",userId).getFinalQueryParam();
+		String[] params= new String[2];
+		params[0] = TriggerRecord.StatusType.enable.name();
+		params[1] = TriggerRecord.StatusType.disable.name();
+		QueryParam query= ConditionBuilder.andCondition().equal("userID",userId).In("recordStatus",params).getFinalQueryParam();
+
+		List<TriggerRecord> list=super.query(query);
+
+		if(list.isEmpty()){
+			return null;
+		}
+		return list;
+
+	}
+
+	public List<TriggerRecord> getDeleteTriggerListByUserId(String userId){
+
+		QueryParam query= ConditionBuilder.andCondition().equal("userID",userId).equal("recordStatus", TriggerRecord.StatusType.deleted).getFinalQueryParam();
 
 		List<TriggerRecord> list=super.query(query);
 
@@ -74,7 +90,11 @@ public class TriggerRecordDao extends AbstractDataAccess<TriggerRecord> {
 
 	}
 
+	public void clearTriggerRecord(String id){
 
+		super.removeEntity(id);
+
+	}
 
 	public void enableTrigger(String triggerID) {
 
@@ -100,10 +120,7 @@ public class TriggerRecordDao extends AbstractDataAccess<TriggerRecord> {
 
 		QueryParam query= ConditionBuilder.newCondition().equal("recordStatus", TriggerRecord.StatusType.enable).getFinalQueryParam();
 
-		List<TriggerRecord> list=super.query(query);
-		while(query.getPaginationKey() != null ) {
-			list.addAll(super.query(query));
-		}
+		List<TriggerRecord> list=super.fullQuery(query);
 
 		return list;
 	}

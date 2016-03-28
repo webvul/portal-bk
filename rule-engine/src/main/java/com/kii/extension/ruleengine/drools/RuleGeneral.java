@@ -19,6 +19,7 @@ import com.kii.extension.ruleengine.drools.entity.TriggerType;
 import com.kii.extension.ruleengine.store.trigger.Condition;
 import com.kii.extension.ruleengine.store.trigger.CronPrefix;
 import com.kii.extension.ruleengine.store.trigger.IntervalPrefix;
+import com.kii.extension.ruleengine.store.trigger.MultipleSrcTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.SchedulePrefix;
 import com.kii.extension.ruleengine.store.trigger.SummaryExpress;
@@ -53,17 +54,41 @@ public class RuleGeneral {
 	}
 
 
-	private String generScheduleDrl(SchedulePrefix schedule, String triggerID){
+	//TODO:not finish
+	public String generMultipleDrlConfig(MultipleSrcTriggerRecord  record) {
 
-		String template=loadTemplate("schedule");
-		Map<String,String> params=new HashMap<>();
-		params.put("timer",generTimer(schedule));
+		String unitTemplate = loadTemplate("unitCondition");
 
-		params.put("triggerID",triggerID);
+		String fullTemplate = loadTemplate("multiple");
 
-		return StrTemplate.generByMap(template,params);
+		Map<String, Object> params = new HashMap<>();
+		params.put("triggerID", record.getId());
+
+		record.getSummarySource().forEach((k, v) -> {
+
+			/*
+			rule "${triggerID} unit {$unitName} custom segment:unit"
+when
+    UnitSource ( $unitName:unitName=="${unitName}", $triggerID:triggerID=="${triggerID}",$thingID:thingID  )
+    CurrThing(thing==$thingID ) from currThing
+    ThingStatusInRule( thingID == $thingID,${express}  )
+then
+	insertLogical(new UnitResult($triggerID,$unitName));
+end
+			 */
+
+
+			RuleEnginePredicate  predicate=new RuleEnginePredicate();
+			predicate.setCondition(v.getCondition());
+			predicate.setExpress(v.getExpress());
+			params.put("express",generExpress(predicate));
+
+		});
+
+		return null;
 
 	}
+
 
 	public String generSlideConfig(String triggerID,String summaryField,SummaryExpress express){
 
@@ -102,9 +127,27 @@ end
 	public String generDrlConfig(String triggerID, TriggerType type, RuleEnginePredicate predicate){
 
 
-		String template=loadTemplate(type.name());
+		Map<String,String> params=new HashMap<>();
 
-		String fullDrl=generDrl(template,predicate,triggerID);
+		String template=null;
+		if(predicate.getSchedule()!=null){
+
+			if(predicate.getCondition()==null){
+
+				template=loadTemplate("schedule");
+			}else {
+				template = loadTemplate(type.name() + "Schedule");
+			}
+			params.put("timer",generTimer(predicate.getSchedule()));
+
+		}else {
+			template=loadTemplate(type.name());
+		}
+
+		params.put("triggerID",triggerID);
+		params.put("express",generExpress(predicate));
+
+		String fullDrl=StrTemplate.generByMap(template,params);
 
 		log.info(triggerID+"\n"+fullDrl);
 		return fullDrl;
@@ -138,42 +181,25 @@ end
 	}
 
 
-	private String generDrl(String template, RuleEnginePredicate predicate, String triggerID){
 
 
-			Map<String,String> params=new HashMap<>();
+	public String generExpress(RuleEnginePredicate predicate) {
 
-			if(!StringUtils.isEmpty(predicate.getExpress())) {
-				params.put("express",predicate.getExpress());
-				params.put("timer",generTimer(predicate.getSchedule()));
 
-			}else if(predicate.getCondition()!=null){
-				Condition cond=predicate.getCondition();
-				if(cond==null){
-					params.put("express"," eval(true) ");
-				}else{
-					params.put("express",generExpress(cond));
-				}
-				params.put("timer",generTimer(predicate.getSchedule()));
+		if (predicate.getExpress() != null) {
+			return replace.convertExpress(predicate.getExpress());
+		}
 
-			}else if(predicate.getSchedule()!=null){
+		if (predicate.getCondition() == null) {
 
-				return generScheduleDrl(predicate.getSchedule(),triggerID);
+			return " eval( true ) ";
+		}
 
-			}else{
-				throw new IllegalArgumentException("predicate format invalid:"+predicate);
-			}
-
-			params.put("triggerID",triggerID);
-
-		return StrTemplate.generByMap(template,params);
-
+		Condition condition = predicate.getCondition();
+		return generExpress(condition);
 	}
 
-
-
 	public String generExpress(Condition condition){
-
 
 		StringBuilder  sb=new StringBuilder();
 

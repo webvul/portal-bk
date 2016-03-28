@@ -15,9 +15,12 @@ import com.kii.extension.ruleengine.drools.RuleGeneral;
 import com.kii.extension.ruleengine.drools.entity.Summary;
 import com.kii.extension.ruleengine.drools.entity.Trigger;
 import com.kii.extension.ruleengine.drools.entity.TriggerType;
+import com.kii.extension.ruleengine.store.trigger.MultipleSrcTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
+import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerGroupPolicy;
+import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
 @Component
@@ -29,6 +32,22 @@ public class EngineService {
 
 	@Autowired
 	private RuleGeneral  ruleGeneral;
+
+
+	//TODO:need been finish
+	public void createMultipleSourceTrigger(MultipleSrcTriggerRecord record){
+
+
+		Trigger trigger=new Trigger();
+		trigger.setType(TriggerType.multiple);
+		trigger.setTriggerID(record.getId());
+		trigger.setStream(false);
+
+
+
+
+
+	}
 
 	public void createSummaryTrigger(SummaryTriggerRecord record, Map<String,Set<String> > summaryMap,boolean isStream){
 
@@ -69,6 +88,8 @@ public class EngineService {
 
 		});
 
+		droolsTriggerService.fireCondition();
+
 	}
 
 	public void createGroupTrigger(Collection<String> thingIDs, TriggerGroupPolicy policy, String triggerID, RuleEnginePredicate predicate){
@@ -82,21 +103,46 @@ public class EngineService {
 		trigger.setPolicy(policy.getGroupPolicy());
 		trigger.setNumber(policy.getCriticalNumber());
 
-
 		trigger.setStream(false);
 		trigger.setWhen(predicate.getTriggersWhen());
 
 		trigger.setThings(thingIDs);
 
+		predicate.setSchedule(null);
 
 		String rule=ruleGeneral.generDrlConfig(triggerID,TriggerType.group,predicate);
 
 		droolsTriggerService.addTrigger(trigger,rule);
 
+		droolsTriggerService.fireCondition();
+
+
 	}
 
 
-	public void createSimpleTrigger(String thingID, String triggerID, RuleEnginePredicate predicate){
+//	public void createSimpleTrigger(String thingID, String triggerID, RuleEnginePredicate predicate){
+//
+//
+//		Trigger trigger=new Trigger();
+//
+//		trigger.setTriggerID(triggerID);
+//		trigger.setType(TriggerType.simple);
+//		trigger.setStream(false);
+//		trigger.setWhen(predicate.getTriggersWhen());
+//
+//		trigger.setEnable(Boolean.FALSE);
+//
+//		if(!StringUtils.isEmpty(thingID)) {
+//			trigger.setThings(Collections.singleton(thingID));
+//		}
+//
+//		String rule=ruleGeneral.generDrlConfig(triggerID,TriggerType.simple,predicate);
+//
+//
+//		droolsTriggerService.addTrigger(trigger,rule);
+//
+//	}
+	public void createSimpleTrigger(String thingID, String triggerID, SimpleTriggerRecord record){
 
 
 		Trigger trigger=new Trigger();
@@ -104,16 +150,21 @@ public class EngineService {
 		trigger.setTriggerID(triggerID);
 		trigger.setType(TriggerType.simple);
 		trigger.setStream(false);
-		trigger.setWhen(predicate.getTriggersWhen());
+		trigger.setWhen(record.getPredicate().getTriggersWhen());
+
+		trigger.setEnable(TriggerRecord.StatusType.enable == record.getRecordStatus()  ? Boolean.TRUE : Boolean.FALSE);
 
 		if(!StringUtils.isEmpty(thingID)) {
 			trigger.setThings(Collections.singleton(thingID));
 		}
 
-		String rule=ruleGeneral.generDrlConfig(triggerID,TriggerType.simple,predicate);
+		String rule=ruleGeneral.generDrlConfig(triggerID,TriggerType.simple,record.getPredicate());
 
 
 		droolsTriggerService.addTrigger(trigger,rule);
+
+		droolsTriggerService.fireCondition();
+
 
 	}
 
@@ -129,10 +180,11 @@ public class EngineService {
 		droolsTriggerService.updateThingsInSummary( triggerID,summaryName,newThings);
 
 	}
-	
-	public void updateThingStatus(String thingID,ThingStatus status) {
 
-		droolsTriggerService.addThingStatus(thingID,status);
+
+	public void initThingStatus(String thingID,ThingStatus status,Date date) {
+
+		droolsTriggerService.initThingStatus(thingID,status,date);
 	}
 
 	public void updateThingStatus(String thingID,ThingStatus status,Date time) {
@@ -150,6 +202,9 @@ public class EngineService {
 	public void enableTrigger(String triggerID) {
 
 		droolsTriggerService.enableTrigger(triggerID);
+
+		droolsTriggerService.fireCondition();
+
 
 	}
 }

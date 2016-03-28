@@ -9,7 +9,6 @@ global CurrThing currThing;
 /////////////////////////////////////
 
 rule "${triggerID} user custom segment:group"
-   ${timer}
 when
     Trigger( $triggerID:triggerID=="${triggerID}",$things:things  )
     CurrThing(thing memberOf $things) from currThing

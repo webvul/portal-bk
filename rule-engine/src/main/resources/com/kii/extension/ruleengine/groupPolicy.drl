@@ -49,7 +49,7 @@ then
 end
 
 
-rule "summary of  true  result:precent"
+rule "summary of  true  result:percent"
 when
 	$trigger:Trigger(policy ==TriggerGroupPolicyType.Percent,$triggerID:triggerID,$things:things)
     CurrThing(thing memberOf $things) from currThing
