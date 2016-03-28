@@ -35,8 +35,11 @@ public class BusinessEventBus {
 	@Async
 	public void onTriggerFire(String triggerID){
 
+		log.debug("onTriggerFire triggerID=" + triggerID);
 
 		List<EventListener> listeners=eventDao.getEventListenerByTypeAndKey(EventType.TriggerFire,triggerID);
+
+		log.debug("get event listener list " + listeners);
 
 		listeners.forEach(listener->{
 
@@ -48,7 +51,7 @@ public class BusinessEventBus {
 				process.onEventFire(listener,triggerID);
 			}catch(NoSuchBeanDefinitionException ex){
 
-				log.error("the process not found:"+name);
+				log.error("the process not found:"+name, ex);
 
 			}
 
@@ -59,10 +62,11 @@ public class BusinessEventBus {
 	@Async
 	public void onTagChangeFire(String tagName,boolean isAdd){
 
-
+		log.debug("onTagChangeFire  tagName=" + tagName + ", isAdd=" + isAdd);
 
 		List<EventListener> listenerList=eventDao.getEventListenerByTypeAndKey(EventType.TagChange,tagName);
 
+		log.debug("get event listener list " + listenerList);
 
 		listenerList.forEach(listener->{
 			String name=listener.getRelationBeanName();
@@ -85,8 +89,11 @@ public class BusinessEventBus {
 	@Async
 	public void onStatusUploadFire(String thingID, ThingStatus status,Date timestamp){
 
+		log.debug("onStatusUploadFire  thingID=" + thingID + ", status=" + status + ", timestamp=" + timestamp);
 
 		List<EventListener> listenerList=eventDao.getEventListenerByTypeAndKey(EventType.ThingStateChange,thingID);
+
+		log.debug("get event listener list " + listenerList);
 
 		listenerList.forEach(listener->{
 
@@ -99,7 +106,7 @@ public class BusinessEventBus {
 				process.onEventFire(listener, status, thingID,timestamp);
 			}catch(NoSuchBeanDefinitionException ex){
 
-				log.error("the process not found:"+relationBeanName);
+				log.error("the process not found:"+relationBeanName, ex);
 
 			}
 		});

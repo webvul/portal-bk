@@ -1,5 +1,7 @@
 package com.kii.beehive.portal.web.help;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
@@ -13,7 +15,7 @@ import com.kii.extension.sdk.entity.AppInfo;
 @Component
 public class BeehiveAppInfoManager {
 
-
+	private Logger log= LoggerFactory.getLogger(BeehiveAppInfoManager.class);
 
 	@Value("${beehive.kiicloud.dev-portal.username}")
 	private String portalUserName;
@@ -35,9 +37,13 @@ public class BeehiveAppInfoManager {
 	@Async
 	public void initAllAppInfo(String userName,String pwd,String masterID,CallbackUrlParameter param){
 
+		log.info("initAllAppInfo start");
+
 		appManager.initAppInfos(userName,pwd,masterID);
 
 		eventInitService.deployTriggerToAll(param);
+
+		log.info("initAllAppInfo end");
 
 	}
 

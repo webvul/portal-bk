@@ -116,6 +116,8 @@ public class ServiceExtensionService {
 
 		final AppInfo appInfo=bindToolResolver.getAppInfo();
 
+		log.info("deployServiceExtension start on app " + appInfo.getAppID());
+
 		HttpUriRequest request=getBuilder().deployServiceCode(serviceCtx).generRequest(mapper);
 
 		String adminToken=bindToolResolver.getToken();
@@ -124,10 +126,9 @@ public class ServiceExtensionService {
 			@Override
 			public void completed(HttpResponse httpResponse) {
 
-				int status=httpResponse.getStatusLine().getStatusCode();
-				if(status>=200&&status<300){
-					throw new IllegalArgumentException();
-				}
+				checkResponseCode(httpResponse);
+
+				log.info("deploy server code file completed on app " + appInfo.getAppID());
 
 				bindToolResolver.setAppInfoDirectly(appInfo,adminToken);
 
@@ -146,6 +147,11 @@ public class ServiceExtensionService {
 				client.asyncExecuteRequest(hookRequest, new FutureCallback<HttpResponse>() {
 					@Override
 					public void completed(HttpResponse httpResponse) {
+
+						checkResponseCode(httpResponse);
+
+						log.info("deploy hook file completed on app " + appInfo.getAppID());
+
 						bindToolResolver.setAppInfoDirectly(appInfo,adminToken);
 
 						HttpUriRequest setVerRequest=getBuilder().setCurrentVersion(version).generRequest(mapper);
@@ -153,43 +159,91 @@ public class ServiceExtensionService {
 						client.asyncExecuteRequest(setVerRequest, new FutureCallback<HttpResponse>() {
 							@Override
 							public void completed(HttpResponse httpResponse) {
-								log.info("finish ");
+
+								checkResponseCode(httpResponse);
+
+								log.info("set server code version completed on app " + appInfo.getAppID());
+								log.info("deployServiceExtension end on app " + appInfo.getAppID());
 							}
 
 							@Override
 							public void failed(Exception e) {
-
+								log.error("set server code version failed on app " + appInfo.getAppID(), e);
 							}
 
 							@Override
 							public void cancelled() {
-
+								log.info("set server code version cancelled on app " + appInfo.getAppID());
 							}
 						});
 					}
 
 					@Override
 					public void failed(Exception e) {
-
+						log.error("deploy hook file failed on app " + appInfo.getAppID(), e);
 					}
 
 					@Override
 					public void cancelled() {
-
+						log.info("deploy hook file cancelled on app " + appInfo.getAppID());
 					}
 				});
 			}
 
 			@Override
 			public void failed(Exception e) {
-
+				log.error("deploy server code file failed on app " + appInfo.getAppID(), e);
 			}
 
 			@Override
 			public void cancelled() {
-
+				log.info("deploy server code file cancelled on app " + appInfo.getAppID());
 			}
 		});
+
+	}
+
+	private void checkResponseCode(HttpResponse httpResponse) {
+		int status=httpResponse.getStatusLine().getStatusCode();
+		if(status < 200 || status >= 300){
+			throw new IllegalArgumentException("http status " + status + " is returned");
+		}
+	}
+
+	public void deployServiceExtensionSync(String serviceCtx,String hookDescription){
+
+		final AppInfo appInfo=bindToolResolver.getAppInfo();
+
+		log.info("deployServiceExtension start on app " + appInfo.getAppID());
+
+		// deploy server code file
+		log.info("deploy server code file on app " + appInfo.getAppID());
+
+		HttpUriRequest request=getBuilder().deployServiceCode(serviceCtx).generRequest(mapper);
+		String response = client.executeRequest(request);
+
+		Map<String,Object> result= null;
+		try {
+			result = mapper.readValue(response,Map.class);
+		} catch (IOException e) {
+			throw new IllegalArgumentException(e);
+		}
+		String version= (String) result.get("versionID");
+		log.info("deploy server code file on app " + appInfo.getAppID() + " and get version ID " + version);
+
+		// deploy hook file
+		log.info("deploy hook file on app " + appInfo.getAppID());
+
+		HttpUriRequest hookRequest=getBuilder().deployHook(hookDescription,version).generRequest(mapper);
+		client.doRequest(hookRequest);
+
+		// set server code version
+		log.info("set server code version on app " + appInfo.getAppID());
+
+		HttpUriRequest setVerRequest=getBuilder().setCurrentVersion(version).generRequest(mapper);
+		client.doRequest(setVerRequest);
+
+		log.info("deployServiceExtension end on app " + appInfo.getAppID());
 
 	}
 }
