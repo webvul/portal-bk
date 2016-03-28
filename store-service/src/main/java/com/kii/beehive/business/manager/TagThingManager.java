@@ -52,9 +52,6 @@ public class TagThingManager {
 	private TagUserRelationDao tagUserRelationDao;
 
 	@Autowired
-	private UserGroupDao usergroupDao;
-
-	@Autowired
 	private AppInfoDao appInfoDao;
 
 	@Autowired
@@ -344,8 +341,7 @@ public class TagThingManager {
 	}
 
 	public List<TagIndex> findTagIndexByGlobalThingID(Long globalThingID) {
-
-		return tagIndexDao.findTagByGlobalThingID(globalThingID);
+		return Optional.ofNullable(tagIndexDao.findTagByGlobalThingID(globalThingID)).orElse(Collections.emptyList());
 	}
 
 	public boolean isTagOwner(TagIndex tag) {
@@ -353,7 +349,7 @@ public class TagThingManager {
 		if (tur != null) {
 			return true;
 		} else {
-			List<UserGroup> userGroupList = usergroupDao.findUserGroup(AuthInfoStore.getUserID(), null, null);
+			List<UserGroup> userGroupList = userGroupDao.findUserGroup(AuthInfoStore.getUserID(), null, null);
 			for (UserGroup ug : userGroupList) {
 				TagGroupRelation tgr = tagGroupRelationDao.findByTagIDAndUserGroupID(tag.getId(), ug.getId());
 				if (tgr != null) return true;
@@ -400,7 +396,7 @@ public class TagThingManager {
 		if (tur != null) {
 			return true;
 		} else {
-			List<UserGroup> userGroupList = usergroupDao.findUserGroup(AuthInfoStore.getUserID(), null, null);
+			List<UserGroup> userGroupList = userGroupDao.findUserGroup(AuthInfoStore.getUserID(), null, null);
 			for (UserGroup ug : userGroupList) {
 				ThingUserGroupRelation tgr = thingUserGroupRelationDao.find(thing.getId(), ug.getId());
 				if (tgr != null) return true;
@@ -597,7 +593,7 @@ public class TagThingManager {
 
 	private Set<Long> getAccessibleThingIds(String user) {
 		Set<Long> thingIds = new HashSet();
-		List<UserGroup> userGroupList = usergroupDao.findUserGroup(user, null, null);
+		List<UserGroup> userGroupList = userGroupDao.findUserGroup(user, null, null);
 		if (null != userGroupList) {
 			userGroupList.forEach(userGroup -> thingIds.addAll(thingUserGroupRelationDao.findThingIds(
 					userGroup.getId()).orElse(Collections.emptyList())));
@@ -607,5 +603,14 @@ public class TagThingManager {
 				thingIds.addAll(tagThingRelationDao.findThingIds(tagUserRelation.getTagId()).
 						orElse(Collections.emptyList())));
 		return thingIds;
+	}
+
+	public GlobalThingInfo getAccessibleThingById(String userId, Long thingId) throws ObjectNotFoundException {
+		if (null != thingUserRelationDao.find(thingId, userId) ||
+				!thingUserGroupRelationDao.findByThingIdAndUserId(thingId, userId).isEmpty()) {
+			return globalThingDao.findByID(thingId);
+		}
+
+		throw new ObjectNotFoundException("Requested thing doesn't exist or is not accessible");
 	}
 }

@@ -1,8 +1,10 @@
 package com.kii.beehive.portal.jdbc.dao;
 
+import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
 import com.kii.beehive.portal.jdbc.entity.ThingUserGroupRelation;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,6 +24,11 @@ public class ThingUserGroupRelationDao extends SpringBaseDao<ThingUserGroupRelat
 
 	final private static String SQL_FIND_BY_THINGID_AND_USERGROUPID = "SELECT * FROM " + TABLE_NAME + " " +
 			"WHERE " + ThingUserGroupRelation.THING_ID + " = ? AND " + ThingUserGroupRelation.USER_GROUP_ID + " = ?";
+
+	final private static String SQL_FIND_BY_THINGID_AND_USERID = "SELECT * FROM " + TABLE_NAME + " WHERE " +
+			ThingUserGroupRelation.THING_ID + " = ? AND " + ThingUserGroupRelation.USER_GROUP_ID + " IN (SELECT " +
+			GroupUserRelation.USER_GROUP_ID + " FROM " + GroupUserRelationDao.TABLE_NAME + " WHERE " +
+			GroupUserRelation.USER_ID + " = ?)";
 
 	@Override
 	protected String getTableName() {
@@ -80,5 +87,13 @@ public class ThingUserGroupRelationDao extends SpringBaseDao<ThingUserGroupRelat
 		jdbcTemplate.update("DELETE t.* FROM " + TABLE_NAME + " t WHERE " + ThingUserGroupRelation
 				.THING_ID + " = ? AND " + ThingUserGroupRelation
 				.USER_GROUP_ID + " = ?", thingId, userGroupId);
+	}
+
+	public List<ThingUserGroupRelation> findByThingIdAndUserId(Long thingId, String userId) {
+		if (null == thingId || null == userId) {
+			return Collections.emptyList();
+		}
+		return Optional.ofNullable(jdbcTemplate.query(SQL_FIND_BY_THINGID_AND_USERID, new Object[]{thingId, userId},
+				getRowMapper())).orElse(Collections.emptyList());
 	}
 }

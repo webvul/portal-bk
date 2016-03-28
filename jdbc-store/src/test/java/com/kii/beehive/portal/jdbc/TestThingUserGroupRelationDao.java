@@ -2,9 +2,11 @@ package com.kii.beehive.portal.jdbc;
 
 import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
+import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
 import com.kii.beehive.portal.jdbc.dao.ThingUserGroupRelationDao;
 import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
+import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
 import com.kii.beehive.portal.jdbc.entity.ThingUserGroupRelation;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
 import org.junit.Before;
@@ -28,6 +30,9 @@ public class TestThingUserGroupRelationDao extends TestTemplate {
 
 	@Autowired
 	private ThingUserGroupRelationDao thingUserGroupRelationDao;
+
+	@Autowired
+	private GroupUserRelationDao groupUserRelationDao;
 
 	private List<Long> allThingIds = new ArrayList<Long>();
 
@@ -171,5 +176,34 @@ public class TestThingUserGroupRelationDao extends TestTemplate {
 				.userGroupIds.get(0)));
 		assertNull("Should not find the relation", thingUserGroupRelationDao.find(this.allThingIds.get(0), this
 				.userGroupIds.get(1)));
+	}
+
+	@Test
+	public void testFindByThingIdAndUserId() throws Exception {
+		GlobalThingInfo thingInfo = new GlobalThingInfo();
+		thingInfo.setKiiAppID("KiiAppId");
+		thingInfo.setVendorThingID("vendorThingId");
+		Long thingId = globalThingSpringDao.saveOrUpdate(thingInfo);
+
+		List<Long> userGroupIds = new ArrayList();
+		for (int i = 0; i < 3; ++i) {
+			UserGroup group = new UserGroup();
+			group.setName("Group " + i);
+			userGroupIds.add(userGroupDao.saveOrUpdate(group));
+
+			ThingUserGroupRelation relation = new ThingUserGroupRelation();
+			relation.setThingId(thingId);
+			relation.setUserGroupId(userGroupIds.get(i));
+			thingUserGroupRelationDao.saveOrUpdate(relation);
+		}
+
+		GroupUserRelation groupUserRelation = new GroupUserRelation();
+		groupUserRelation.setUserGroupID(userGroupIds.get(1));
+		groupUserRelation.setUserID("Someone");
+		groupUserRelationDao.saveOrUpdate(groupUserRelation);
+
+		List<ThingUserGroupRelation> result = thingUserGroupRelationDao.findByThingIdAndUserId(thingId, "Someone");
+		assertNotNull("Should find the relations", result);
+		assertEquals("Should have one relation", 1, result.size());
 	}
 }

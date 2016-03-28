@@ -20,6 +20,7 @@ import org.mockito.Spy;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -453,6 +454,27 @@ public class TestTagThingManager {
 		tagThingManager.getTypesOfAccessibleThingsByTagFullName("someone", Arrays.asList("test1", "test2").
 				stream().collect(Collectors.toSet()));
 		assertTrue("Didn't pass correct thing ids", received.containsAll(tagIds));
+	}
+
+	@Test
+	public void testGetAccessibleThingById() throws Exception {
+		doReturn(null).when(thingUserRelationDao).find(anyLong(), anyString());
+		doReturn(Collections.emptyList()).when(thingUserGroupRelationDao).findByThingIdAndUserId(anyLong(),
+				anyString());
+		try {
+			tagThingManager.getAccessibleThingById("someone", 100L);
+			fail("Expect an ObjectNotFoundException");
+		} catch (ObjectNotFoundException e) {
+		}
+
+		doReturn(null).when(globalThingDao).findByID(any(Serializable.class));
+		doReturn(mock(ThingUserRelation.class)).when(thingUserRelationDao).find(anyLong(), anyString());
+		tagThingManager.getAccessibleThingById("someone", 100L);
+
+		doReturn(null).when(thingUserRelationDao).find(anyLong(), anyString());
+		doReturn(Arrays.asList(mock(ThingUserGroupRelation.class))).when(thingUserGroupRelationDao)
+				.findByThingIdAndUserId(anyLong(), anyString());
+		tagThingManager.getAccessibleThingById("someone", 100L);
 	}
 	
 	/*

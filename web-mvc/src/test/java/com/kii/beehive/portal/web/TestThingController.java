@@ -47,6 +47,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyList;
 import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Mockito.anyCollectionOf;
+import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.anySetOf;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.*;
@@ -859,56 +860,29 @@ public class TestThingController extends WebTestTemplate {
 
 	@Test
 	public void testGetThingByGlobalID() throws Exception {
+		doThrow(new ObjectNotFoundException("test")).when(thingTagManager).getAccessibleThingById(anyString(),
+				anyLong());
+		try {
+			thingController.getThingByGlobalID(100L);
+			fail("Expect an PortalException");
+		} catch (PortalException e) {
+			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+		}
 
-		this.testCreatThingWithTagAndCustomFields();
+		doReturn(mock(GlobalThingInfo.class)).when(thingTagManager).getAccessibleThingById(anyString(), anyLong());
+		TagIndex location = new TagIndex();
+		location.setTagType(TagType.Location);
+		location.setDisplayName("location");
+		TagIndex custom = new TagIndex();
+		custom.setTagType(TagType.Custom);
+		custom.setDisplayName("Custom Tag");
+		doReturn(Arrays.asList(location, custom)).when(thingTagManager).findTagIndexByGlobalThingID(eq(100L));
 
-		String result = this.mockMvc.perform(
-				get("/things/" + globalThingIDForTest)
-						.contentType(MediaType.APPLICATION_JSON)
-						.characterEncoding("UTF-8")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
-		)
-				.andExpect(status().isOk())
-				.andReturn().getResponse().getContentAsString();
-
-		Map<String, Object> map = mapper.readValue(result, Map.class);
-
-		System.out.println(map);
-
-		// assert http return
-		assertEquals(this.globalThingIDForTest, Long.valueOf((int) map.get("globalThingID")));
-		assertEquals(vendorThingIDsForTest[1], map.get("vendorThingID"));
-		assertEquals(KII_APP_ID_NEW, map.get("kiiAppID"));
-		assertEquals("some_type_new", map.get("type"));
-		assertEquals("some_location_new", map.get("location"));
-
-		// assert status
-		Map<String, Object> status = (Map<String, Object>) map.get("status");
-		assertEquals(2, status.keySet().size());
-		assertEquals("90", status.get("brightness"));
-		assertEquals("#123456", status.get("color"));
-
-		// assert custom
-		Map<String, Object> custom = (Map<String, Object>) map.get("custom");
-		assertEquals(2, custom.keySet().size());
-		assertEquals("GMT+8", custom.get("time-zone"));
-		assertEquals("20991230", custom.get("produceDate"));
-
-	}
-
-	@Test
-	public void testGetThingByGlobalIDException() throws Exception {
-
-		// 999 is not supposed to be existing
-		String result = this.mockMvc.perform(
-				get("/things/" + "999")
-						.contentType(MediaType.APPLICATION_JSON)
-						.characterEncoding("UTF-8")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
-		)
-				.andExpect(status().isNotFound())
-				.andReturn().getResponse().getContentAsString();
-
+		ThingRestBean bean = thingController.getThingByGlobalID(100L);
+		assertNotNull("Should find the thing", bean);
+		assertEquals("Location doesn't match", "location", bean.getLocation());
+		assertTrue("Input tag doesn't match", bean.getInputTags().contains("Custom Tag") &&
+				1 == bean.getInputTags().size());
 	}
 
 	@Test

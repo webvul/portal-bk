@@ -131,30 +131,23 @@ public class ThingController extends AbstractThingTagController {
 	 */
 	@RequestMapping(path = "/{globalThingID}", method = {RequestMethod.GET})
 	public ThingRestBean getThingByGlobalID(@PathVariable("globalThingID") Long globalThingID) {
-
-		// get thing
-		GlobalThingInfo thing = globalThingDao.findByID(globalThingID);
-		if (thing == null) {
-			throw new PortalException("Thing Not Found", "Thing with globalThingID:" + globalThingID + " Not Found", HttpStatus.NOT_FOUND);
-		} else if (this.isTeamIDExist()) {
-			TeamThingRelation ttr = teamThingRelationDao.findByTeamIDAndThingID(this.getLoginTeamID(), thing.getId());
-			if (ttr == null) {
-				throw new PortalException("Thing Not Found", "Thing with globalThingID:" + globalThingID + " Not Found", HttpStatus.NOT_FOUND);
-			}
-		} else if (!thingTagManager.isThingCreator(thing) && thingTagManager.isThingOwner(thing)) {
-			throw new BeehiveUnAuthorizedException("not creator or owner");
+		GlobalThingInfo thingInfo;
+		try {
+			thingInfo = thingTagManager.getAccessibleThingById(getLoginUserID(), globalThingID);
+		} catch (ObjectNotFoundException e) {
+			throw new PortalException("Requested thing doesn't exist or isn't accessible", e.getMessage(),
+					HttpStatus.BAD_REQUEST);
 		}
-
-		// get tag
-		List<TagIndex> tagIndexList = thingTagManager.findTagIndexByGlobalThingID(globalThingID);
 
 		// set thing into output
 		ThingRestBean thingRestBean = new ThingRestBean();
-		BeanUtils.copyProperties(thing, thingRestBean);
+		BeanUtils.copyProperties(thingInfo, thingRestBean);
 
 		// set location and custom tags into output
 		String location = null;
 		Set<String> customDisplayNameList = new HashSet<>();
+		// get tag
+		List<TagIndex> tagIndexList = thingTagManager.findTagIndexByGlobalThingID(globalThingID);
 		for (TagIndex tag : tagIndexList) {
 			TagType tagType = tag.getTagType();
 			if (tagType == TagType.Location) {
