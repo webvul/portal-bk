@@ -43,7 +43,7 @@ public class ServiceExtensionDeployService {
 		if(StringUtils.isEmpty(combine.hookConfig)) {
 			service.deployServiceExtension(combine.getScript());
 		}else{
-			service.deployServiceExtension(combine.getScript(),combine.getHookConfig());
+			service.deployServiceExtensionSync(combine.getScript(),combine.getHookConfig());
 		}
 
 	}
