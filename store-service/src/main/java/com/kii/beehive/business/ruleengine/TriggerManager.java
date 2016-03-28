@@ -157,12 +157,14 @@ public class TriggerManager {
 	private void addGroupToEngine(GroupTriggerRecord record) {
 
 		Set<String> thingIDs;
-		if(!record.getSource().getSelector().getThingList().isEmpty()) {
-
-			thingIDs = thingTagService.getTagNamesByIDs(record.getSource().getSelector().getThingList());
-		}else {
-			thingIDs = thingTagService.getKiiThingIDs(record.getSource().getSelector());
-		}
+//		if(!record.getSource().getSelector().getThingList().isEmpty()) {
+//
+//			thingIDs = thingTagService.getTagNamesByIDs(record.getSource().getSelector().getThingList());
+//		}else {
+//			thingIDs = thingTagService.getKiiThingIDs(record.getSource().getSelector());
+//		}
+		//carlos modify
+		thingIDs = thingTagService.getKiiThingIDs(record.getSource().getSelector());
 		service.createGroupTrigger(thingIDs,record.getPolicy(),record.getId(),record.getPredicate());
 	}
 
