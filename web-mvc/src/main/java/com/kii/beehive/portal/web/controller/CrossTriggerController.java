@@ -4,6 +4,7 @@ package com.kii.beehive.portal.web.controller;
 import java.util.*;
 
 import com.kii.beehive.business.helper.OpLogTools;
+import com.kii.beehive.portal.web.exception.MethodNotAllowedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -70,8 +71,7 @@ public class CrossTriggerController {
 
 		if(!TriggerRecord.StatusType.disable.equals(record.getRecordStatus())){
 
-			result.put("result", "only can operating disable Trigger");
-			return result;
+			throw new MethodNotAllowedException("only owner can operate trigger");
 		}
 
 		verify(record);
@@ -98,8 +98,8 @@ public class CrossTriggerController {
 
 		if(!TriggerRecord.StatusType.deleted.equals(record.getRecordStatus())){
 
-			result.put("result", "only can operating deleted Trigger");
-			return result;
+			throw new MethodNotAllowedException("only can operating deleted Trigger");
+
 		}
 
 		verify(record);
@@ -133,8 +133,7 @@ public class CrossTriggerController {
 		result.put("result", "success");
 		TriggerRecord record=mang.getTriggerByID(triggerID);
 		if(!TriggerRecord.StatusType.disable.equals(record.getRecordStatus())){
-			result.put("result", "only can operating disable Trigger");
-			return result;
+			throw new MethodNotAllowedException("only can operating disable Trigger");
 		}
 
 		mang.enableTrigger(triggerID);
@@ -157,8 +156,7 @@ public class CrossTriggerController {
 		result.put("result", "success");
 		TriggerRecord record=mang.getTriggerByID(triggerID);
 		if(!TriggerRecord.StatusType.deleted.equals(record.getRecordStatus())){
-			result.put("result", "only can operating deleted Trigger");
-			return result;
+			throw new MethodNotAllowedException("only can operating deleted Trigger");
 		}
 
 		mang.disableTrigger(triggerID);
@@ -181,8 +179,7 @@ public class CrossTriggerController {
 		result.put("result", "success");
 		TriggerRecord record=mang.getTriggerByID(triggerID);
 		if(!TriggerRecord.StatusType.enable.equals(record.getRecordStatus())){
-			result.put("result", "only can operating enable Trigger");
-			return result;
+			throw new MethodNotAllowedException("only can operating enable Trigger");
 		}
 
 		mang.disableTrigger(triggerID);
