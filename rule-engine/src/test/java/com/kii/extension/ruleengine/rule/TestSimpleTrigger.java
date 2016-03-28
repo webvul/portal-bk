@@ -44,21 +44,21 @@ public class TestSimpleTrigger extends TestInit{
 		String triggerID="100";
 		record.setId(triggerID);
 
-		engine.createSimpleTrigger(kiiThingID,triggerID,perdicate);
+		engine.createSimpleTrigger(kiiThingID,triggerID,record);
 
 		sendBadThingStatus(kiiThingID);
 		sendGoodThingStatus(kiiThingID);
 
-
-		assertEquals(1,exec.getHitCount(triggerID));
-
-		sendBadThingStatus(kiiThingID);
-
-		assertEquals(1,exec.getHitCount(triggerID));
-
-		sendGoodThingStatus(kiiThingID);
 
 		assertEquals(2,exec.getHitCount(triggerID));
+
+		sendBadThingStatus(kiiThingID);
+
+		assertEquals(2,exec.getHitCount(triggerID));
+
+		sendGoodThingStatus(kiiThingID);
+
+		assertEquals(3,exec.getHitCount(triggerID));
 
 
 	}
@@ -92,7 +92,7 @@ public class TestSimpleTrigger extends TestInit{
 		record.setId(triggerID);
 
 
-		engine.createSimpleTrigger(kiiThingID,triggerID,perdicate);
+		engine.createSimpleTrigger(kiiThingID,triggerID,record);
 
 		sendGoodThingStatus(kiiThingID);
 

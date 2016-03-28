@@ -36,12 +36,21 @@ public class EventListenerDao extends AbstractDataAccess<EventListener>{
 		return super.fullQuery(query);
 	}
 
-	public List<EventListener> getEventListenerByTargetKey(String targetKey) {
+	public List<EventListener> getEventListenerByTargetKey(String targetKey, boolean enable) {
 
 
 		QueryParam query= ConditionBuilder.andCondition()
 				.equal("targetKey",targetKey)
-				.equal("enable",true).getFinalQueryParam();
+				.equal("enable",enable).getFinalQueryParam();
+
+		return super.fullQuery(query);
+	}
+
+	public List<EventListener> getEventListenerByTargetKey(String targetKey) {
+
+
+		QueryParam query= ConditionBuilder.andCondition()
+				.equal("targetKey",targetKey).getFinalQueryParam();
 
 		return super.fullQuery(query);
 	}

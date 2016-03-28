@@ -7,6 +7,8 @@ public class DeviceSupplier extends PortalEntity {
 
 	private String relationAppName;
 
+	private String relationAppID;
+
 	private String description;
 
 	private String userInfoNotifyUrl="";
@@ -51,5 +53,13 @@ public class DeviceSupplier extends PortalEntity {
 
 	public void setUserInfoNotifyUrl(String userInfoNotifyUrl) {
 		this.userInfoNotifyUrl = userInfoNotifyUrl;
+	}
+
+	public String getRelationAppID() {
+		return relationAppID;
+	}
+
+	public void setRelationAppID(String relationAppID) {
+		this.relationAppID = relationAppID;
 	}
 }

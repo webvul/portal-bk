@@ -110,7 +110,7 @@ public class BusinessEventListenerService {
 
 	public void disableTriggerByTargetID(String triggerID){
 
-		List<EventListener> listener=eventListenerDao.getEventListenerByTargetKey(triggerID);
+		List<EventListener> listener=eventListenerDao.getEventListenerByTargetKey(triggerID, true);
 
 		listener.stream().map(EventListener::getId).forEach(eventListenerDao::disableListener);
 
@@ -118,7 +118,7 @@ public class BusinessEventListenerService {
 
 	public void enableTriggerByTargetID(String triggerID){
 
-		List<EventListener> listener=eventListenerDao.getEventListenerByTargetKey(triggerID);
+		List<EventListener> listener=eventListenerDao.getEventListenerByTargetKey(triggerID, false);
 
 		listener.stream().map(EventListener::getId).forEach(eventListenerDao::enableListener);
 
