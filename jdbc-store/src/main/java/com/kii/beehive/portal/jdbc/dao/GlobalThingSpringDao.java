@@ -249,8 +249,8 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 	}
 
 	public Optional<List<GlobalThingInfo>> findByIDsAndType(Set<Long> thingIds, String thingType) {
-		if (null == thingIds) {
-			return null;
+		if (null == thingIds || thingIds.isEmpty()) {
+			return Optional.ofNullable(null);
 		}
 
 		Map<String, Object> params = new HashMap();

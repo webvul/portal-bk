@@ -74,6 +74,12 @@ public class TestThingDao extends TestTemplate {
 		assertNotNull("Should have a thing", result.get());
 		assertEquals("Number of things is incorrect", 1, result.get().size());
 		assertEquals("Thing id doesn't match", thingId2, result.get().get(0).getId());
+
+		List<GlobalThingInfo> emptyResult = dao.findByIDsAndType(Collections.emptySet(), "TV").
+				orElse(Collections.emptyList());
+		assertTrue(emptyResult.isEmpty());
+		emptyResult = dao.findByIDsAndType(null, "TV").orElse(Collections.emptyList());
+		assertTrue(emptyResult.isEmpty());
 	}
 
 	@Test
