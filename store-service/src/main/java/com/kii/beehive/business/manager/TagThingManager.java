@@ -492,8 +492,9 @@ public class TagThingManager {
 		List<GlobalThingInfo> things = globalThingDao.findByIDs(thingIds);
 		if (null == things || !things.stream().map(GlobalThingInfo::getId).map(Object::toString).
 				collect(Collectors.toSet()).containsAll(thingIDList)) {
-			thingIds.removeAll(things.stream().map(GlobalThingInfo::getId).collect(Collectors.toList()));
-			throw new ObjectNotFoundException("Invalid thing id(s): [" + collectionToString(thingIds) +
+			thingIDList.removeAll(things.stream().map(GlobalThingInfo::getId).map(Object::toString).
+					collect(Collectors.toList()));
+			throw new ObjectNotFoundException("Invalid thing id(s): [" + collectionToString(thingIDList) +
 					"]");
 		}
 		return things;
