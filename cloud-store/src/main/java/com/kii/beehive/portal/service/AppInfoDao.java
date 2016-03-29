@@ -3,6 +3,8 @@ package com.kii.beehive.portal.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -24,6 +26,7 @@ import com.kii.extension.sdk.service.AbstractDataAccess;
 @Component
 public class AppInfoDao extends AbstractDataAccess<KiiAppInfo> {
 
+	private Logger log= LoggerFactory.getLogger(AppInfoDao.class);
 
 	public static final String APP_LIST_CACHE="'app_list'";
 
@@ -54,6 +57,8 @@ public class AppInfoDao extends AbstractDataAccess<KiiAppInfo> {
 	@CachePut(cacheNames={CacheConfig.LONGLIVE_CACHE},key="#appInfo.id")
 	public KiiAppInfo addAppInfo(KiiAppInfo appInfo) {
 
+		log.debug("addAppInfo(cache): " + appInfo.getId());
+
 		super.addEntity(appInfo, appInfo.getAppInfo().getAppID());
 
 		return appInfo;
@@ -61,6 +66,9 @@ public class AppInfoDao extends AbstractDataAccess<KiiAppInfo> {
 
 	@Cacheable(cacheNames={CacheConfig.LONGLIVE_CACHE})
 	public KiiAppInfo getAppInfoByID(String id){
+
+		log.debug("getAppInfoByID(cache): " + id);
+
 		try {
 			return super.getObjectByID(id);
 		}catch(ObjectNotFoundException e){
@@ -70,7 +78,9 @@ public class AppInfoDao extends AbstractDataAccess<KiiAppInfo> {
 
 
 	@Cacheable(cacheNames={CacheConfig.LONGLIVE_CACHE},key=APP_LIST_CACHE)
-	public List<AppInfo> getSalveAppList(){
+	public List<AppInfo> getSlaveAppList(){
+
+		log.debug("getSalveAppList(cache)");
 
 		QueryParam query=ConditionBuilder.notCondition().equal("masterApp",true).getFinalQueryParam();
 
@@ -82,6 +92,7 @@ public class AppInfoDao extends AbstractDataAccess<KiiAppInfo> {
 	@Cacheable(cacheNames= CacheConfig.LONGLIVE_CACHE,key=MASTER_CACHE)
 	public KiiAppInfo getMasterAppInfo(){
 
+		log.debug("getMasterAppInfo(cache)");
 
 		List<KiiAppInfo>  infoList=super.query(ConditionBuilder.newCondition().equal("masterApp", true).getFinalCondition().build());
 		if(infoList.size()==0){
@@ -94,6 +105,8 @@ public class AppInfoDao extends AbstractDataAccess<KiiAppInfo> {
 
 	@CacheEvict(cacheNames=CacheConfig.LONGLIVE_CACHE,key=MASTER_CACHE)
 	public void setMasterAppInfo(KiiAppInfo appInfo){
+
+		log.debug("setMasterAppInfo(cache): " + appInfo.getId());
 
 		appInfo.setMasterApp(true);
 		super.addEntity(appInfo, appInfo.getAppInfo().getAppID());

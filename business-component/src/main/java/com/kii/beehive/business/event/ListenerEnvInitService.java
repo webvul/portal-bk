@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.scheduling.annotation.Async;
@@ -18,6 +20,8 @@ import com.kii.beehive.portal.service.BeehiveParameterDao;
 import com.kii.beehive.portal.service.ExtensionCodeDao;
 import com.kii.beehive.portal.store.entity.CallbackUrlParameter;
 import com.kii.beehive.portal.store.entity.ExtensionCodeEntity;
+import com.kii.extension.sdk.context.AppBindToolResolver;
+import com.kii.extension.sdk.context.TokenBindToolResolver;
 import com.kii.extension.sdk.entity.AppInfo;
 import com.kii.extension.sdk.entity.serviceextension.BucketWhenType;
 import com.kii.extension.sdk.entity.serviceextension.EventTriggerConfig;
@@ -28,11 +32,16 @@ import com.kii.extension.sdk.entity.serviceextension.TriggerScopeType;
 @Component
 public class ListenerEnvInitService {
 
+	private Logger log= LoggerFactory.getLogger(ListenerEnvInitService.class);
 
 	@Autowired
 	private ExtensionCodeDao extensionDao;
 
+	@Autowired
+	private AppBindToolResolver appBindToolResolver;
 
+	@Autowired
+	private TokenBindToolResolver tokenBindToolResolver;
 
 	@Autowired
 	private BeehiveParameterDao parameterDao;
@@ -47,7 +56,7 @@ public class ListenerEnvInitService {
 	@Autowired
 	private ServiceExtensionDeployService extensionService;
 
-	public void initAppForTrigger(){
+	public void initExtensionCodeScript(){
 
 
 		try {
@@ -132,15 +141,34 @@ public class ListenerEnvInitService {
 		return trigger1;
 	}
 
+	/**
+	 * deploy server code to each slave apps,
+	 * and set trigger call back param(bucket)
+	 *
+	 * @param param
+     */
 	public void deployTriggerToAll(CallbackUrlParameter param){
 
-		appInfoDao.getSalveAppList().forEach(appInfo->{
+		log.info("deployTriggerToAll start");
+
+		// upload server code to bucket "extensionCode" of portal app
+		this.initExtensionCodeScript();
+
+		// for each slave app, deploy server code to it, and set trigger call back param(bucket)
+		appInfoDao.getSlaveAppList().forEach(appInfo->{
+
+			// use admin token inside the loop
+			// otherwise, the operation in each slave app may be impacted by the user token set in above this.initExtensionCodeScript();
+			appBindToolResolver.clearAll();
+			tokenBindToolResolver.bindAdmin();
 
 			extensionService.deployScriptToApp(appInfo.getAppID());
 
 			parameterDao.saveTriggerCallbackParam(appInfo.getAppID(),param);
 
 		});
+
+		log.info("deployTriggerToAll end");
 	}
 
 	public void deployTrigger(AppInfo appInfo,CallbackUrlParameter param){

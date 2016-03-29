@@ -1,7 +1,11 @@
 package com.kii.beehive.business.ruleengine;
 
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
+import com.kii.beehive.business.helper.OpLogTools;
+import com.kii.beehive.portal.auth.AuthInfoStore;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -38,6 +42,9 @@ public class CommandExecuteService {
 	@Autowired
 	private ThingTagManager thingTagService;
 
+	@Autowired
+	private OpLogTools logTool;
+
 
 
 
@@ -51,9 +58,20 @@ public class CommandExecuteService {
 
 			List<GlobalThingInfo>  thingList=thingTagService.getThingInfos(target.getSelector());
 
+
 			thingList.forEach(thing->{
 
 				sendCmdToThing(thing,action,record.getId());
+				//日期时间+当前用户ID+"trigger”+trigger type(simple/group/summary)+”fire"+当前triggerID+触发源
+				List<String> list = new LinkedList<>();
+				list.add(AuthInfoStore.getUserID());
+				list.add("trigger");
+				list.add(record.getType().name());
+				list.add("exec");
+				list.add(record.getTriggerID());
+				//触发目标
+				list.add(thing.getId()+"");
+				logTool.write(list);
 			});
 
 		});
