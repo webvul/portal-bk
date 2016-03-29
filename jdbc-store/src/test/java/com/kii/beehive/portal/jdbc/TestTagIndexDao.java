@@ -200,5 +200,8 @@ public class TestTagIndexDao extends TestTemplate {
 		List<Long> result = dao.findTagIdsByIDsAndFullname(tagIds, names).orElse(Collections.emptyList());
 		assertEquals("Should find 3 ids", 3, result.size());
 		assertTrue("Ids don't match", result.containsAll(tagIds) && tagIds.containsAll(result));
+
+		result = dao.findTagIdsByIDsAndFullname(Collections.emptyList(), names).orElse(Collections.emptyList());
+		assertTrue(result.isEmpty());
 	}
 }
