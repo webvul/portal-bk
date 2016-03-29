@@ -106,11 +106,13 @@ public class TagThingManager {
 
 	public List<String> getThingTypesOfAccessibleThingsByTagIds(String userId, Collection<String> tagIDs)
 			throws ObjectNotFoundException {
-		Set<Long> targetTagIds = tagIDs.stream().map(Long::valueOf).collect(Collectors.toSet());
+		Set<Long> targetTagIds = tagIDs.stream().filter(Pattern.compile("^[0-9]+$").asPredicate()).
+				map(Long::valueOf).collect(Collectors.toSet());
 		List<Long> accessibleTagIds = tagUserRelationDao.findAccessibleTagIds(userId, targetTagIds).
 				orElse(Collections.emptyList());
-		if (!accessibleTagIds.containsAll(targetTagIds)) {
-			targetTagIds.removeAll(accessibleTagIds);
+		if (!accessibleTagIds.stream().map(Object::toString).collect(Collectors.toSet()).containsAll(tagIDs)) {
+			tagIDs.stream().collect(Collectors.toSet()).removeAll(accessibleTagIds.stream().
+					map(Object::toString).collect(Collectors.toSet()));
 			throw new ObjectNotFoundException("Requested tag doesn't exist or is not accessible. TagIds: " +
 					collectionToString(targetTagIds));
 		}

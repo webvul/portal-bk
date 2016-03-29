@@ -405,6 +405,12 @@ public class TestTagThingManager {
 		}).when(globalThingDao).findThingTypeBytagIDs(anyString());
 		tagThingManager.getThingTypesOfAccessibleThingsByTagIds("user", Arrays.asList("100", "200"));
 		assertEquals("100,200", received[0]);
+
+		try {
+			tagThingManager.getThingTypesOfAccessibleThingsByTagIds("user", Arrays.asList("100dsf", "200"));
+			fail("Expect an ObjectNotFoundException");
+		} catch (ObjectNotFoundException e) {
+		}
 	}
 
 	@Test
