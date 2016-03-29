@@ -176,7 +176,13 @@ public class ThingController extends AbstractThingTagController {
 
 		BeanUtils.copyProperties(input, thingInfo);
 
-		Long thingID;
+		GlobalThingInfo thing = globalThingDao.getThingByVendorThingID(thingInfo.getVendorThingID());
+		if (thing != null) {
+			throw new PortalException("DuplicateObject", " Duplicate VenderID : " + thingInfo.getVendorThingID(),
+					HttpStatus.BAD_REQUEST);
+		}
+
+		Long thingID = null;
 		try {
 			thingID = thingTagManager.createThing(thingInfo, input.getLocation(), input.getInputTags());
 		} catch (ObjectNotFoundException e) {
@@ -488,7 +494,6 @@ public class ThingController extends AbstractThingTagController {
 	 * 查询gateway下的设备
 	 * GET /things/{globalThingID}/endnodes
 	 * <p>
-	 * // TODO add this API into documents
 	 *
 	 * @param globalThingID
 	 * @return

@@ -92,11 +92,6 @@ public class TagThingManager {
 			throw new UnauthorizedException("Can't use Master AppID to create thing");
 		}
 
-		/*Set<TagIndex> tagSet=new HashSet<>();
-
-		tagList.forEach((str)->{
-			tagSet.add(TagIndex.generCustomTagIndex(str));
-		});*/
 
 		long thingID = globalThingDao.saveOrUpdate(thingInfo);
 
@@ -105,22 +100,6 @@ public class TagThingManager {
 			location = DEFAULT_LOCATION;
 		}
 		this.saveOrUpdateThingLocation(thingID, location);
-
-		// set custom tag and custom tag-thing relation
-		/*for(TagIndex tag:tagSet){
-			if(!Strings.isBlank(tag.getDisplayName())){
-				Long tagID = null;
-				List<TagIndex>  list = tagIndexDao.findTagByTagTypeAndName(tag.getTagType().toString(), tag.getDisplayName());
-				if( list.size() == 0) {
-					tagID = tagIndexDao.saveOrUpdate(tag);
-				}else{
-					tagID = list.get(0).getId();
-				}
-
-				eventBus.onTagChangeFire(tag.getFullTagName(), Collections.singletonList(new Long(thingID)),true);
-				tagThingRelationDao.saveOrUpdate(new TagThingRelation(tagID,thingID));
-			}
-		}*/
 
 		return thingID;
 	}

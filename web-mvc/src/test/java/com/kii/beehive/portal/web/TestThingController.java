@@ -634,7 +634,7 @@ public class TestThingController extends WebTestTemplate {
 
 
 	@Test
-	public void testCreatThingWithTagAndCustomFields() throws Exception {
+	public void testCreateThingWithTagAndCustomFields() throws Exception {
 
 		// create without tag and custom field
 		Map<String, Object> request = new HashMap<>();
@@ -675,6 +675,15 @@ public class TestThingController extends WebTestTemplate {
 
 		GlobalThingInfo thingInfo = globalThingDao.getThingByVendorThingID(vendorThingIDsForTest[0]);
 		assertTrue(thingInfo != null);
+
+		//error test duplicate venderID
+		this.mockMvc.perform(
+				post("/things").content(ctx)
+						.contentType(MediaType.APPLICATION_JSON)
+						.characterEncoding("UTF-8")
+						.header(Constants.ACCESS_TOKEN, tokenForTest)
+		)
+				.andExpect(status().isBadRequest());
 
 		// test update
 		request = new HashMap<>();
@@ -723,7 +732,7 @@ public class TestThingController extends WebTestTemplate {
 	}
 
 	@Test
-	public void testCreatThingException() throws Exception {
+	public void testCreateThingException() throws Exception {
 
 		// no vendorThingID
 		ThingRestBean thingRestBean = new ThingRestBean();
