@@ -107,6 +107,9 @@ public class TestThingDao extends TestTemplate {
 				fail("Unexpected data set");
 			}
 		});
+
+		result = dao.findThingTypesWithThingCount(Collections.emptySet()).orElse(Collections.emptyList());
+		assertTrue(result.isEmpty());
 	}
 
 	@Test

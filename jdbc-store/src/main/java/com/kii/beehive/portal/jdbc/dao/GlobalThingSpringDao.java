@@ -264,6 +264,9 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 	}
 
 	public Optional<List<Map<String, Object>>> findThingTypesWithThingCount(Set<Long> thingIds) {
+		if (null == thingIds || thingIds.isEmpty()) {
+			return Optional.ofNullable(null);
+		}
 		StringBuilder sb = new StringBuilder("SELECT ");
 		sb.append(GlobalThingInfo.THING_TYPE).append(" AS type, COUNT(*) AS count FROM ").append(this.getTableName()).
 				append(" WHERE ").append(this.getKey()).append(" IN (:list) ").append(" GROUP BY ").
