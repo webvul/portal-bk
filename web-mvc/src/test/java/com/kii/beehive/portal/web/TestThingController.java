@@ -919,10 +919,10 @@ public class TestThingController extends WebTestTemplate {
 		ts.setThingList(Arrays.asList(thingGroup1));
 
 		ThingCommand tc = new ThingCommand();
-		tc.setSchema("some schema");
-		tc.setSchemaVersion(1);
+		tc.setSchema("SmartLight");
+		tc.setSchemaVersion(0);
 		Action action = new Action();
-		action.setField("power", "on");
+		action.setField("power", "true");
 		tc.addAction("turnPower", action);
 
 		TargetAction ta = new TargetAction();
