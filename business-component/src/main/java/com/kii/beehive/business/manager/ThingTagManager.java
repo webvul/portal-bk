@@ -71,7 +71,9 @@ public class ThingTagManager {
 
 		if(!source.getThingList().isEmpty()) {
 			things.addAll(globalThingDao.findByIDs(source.getThingList()));
-			return things;
+			//carlos
+			//可以同时 包括 thing list 和 tag list
+//			return things;
 		}
 
 		if(!source.getTagList().isEmpty()) {
