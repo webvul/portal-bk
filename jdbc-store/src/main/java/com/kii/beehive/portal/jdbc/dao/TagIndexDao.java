@@ -233,7 +233,7 @@ public class TagIndexDao extends SpringBaseDao<TagIndex> {
 	}
 
 	public Optional<List<Long>> findTagIdsByIDsAndFullname(List<Long> tagIds, Collection<String> fullTagNames) {
-		if (null == tagIds || null == fullTagNames || fullTagNames.isEmpty()) {
+		if (null == tagIds || tagIds.isEmpty() || null == fullTagNames || fullTagNames.isEmpty()) {
 			return Optional.ofNullable(null);
 		}
 		Map<String, Object> params = new HashMap();
