@@ -130,19 +130,28 @@ public class TagGroupRelationDao extends SpringBaseDao<TagGroupRelation> {
 				tagIds, Long.class));
 	}
 
-	public Optional<List<Long>> findTagIds(String userId, List<String> fullTagName) {
-		if (Strings.isBlank(userId) || null == fullTagName || fullTagName.isEmpty()) {
+	public Optional<List<Long>> findTagIdsByUserIdAndFullTagName(String userId, List<String> fullTagName) {
+		if (Strings.isBlank(userId)) {
 			return Optional.ofNullable(null);
 		}
 
-		StringBuilder sb = new StringBuilder(SQL_FIND_TAGIDS_BY_USER_AND_FILTER_BY_FULLNAME).append(" INNER JOIN ").
-				append(TagIndexDao.TABLE_NAME).append(" t3 ON t.").append(TagGroupRelation.TAG_ID)
-				.append(" = t3.").append(TagIndex.TAG_ID).append(" AND ").append("t3.").append(TagIndex.FULL_TAG_NAME).append(" IN (:fullNames)");
-
 		Map<String, Object> params = new HashMap();
 		params.put("userID", userId);
-		params.put("fullNames", fullTagName);
+
+		StringBuilder sb = new StringBuilder(SQL_FIND_TAGIDS_BY_USER_AND_FILTER_BY_FULLNAME).append(" INNER JOIN ").
+				append(TagIndexDao.TABLE_NAME).append(" t3 ON t.").append(TagGroupRelation.TAG_ID)
+				.append(" = t3.").append(TagIndex.TAG_ID);
+
+		if (null != fullTagName && !fullTagName.isEmpty()) {
+			sb.append(" AND ").append("t3.").append(TagIndex.FULL_TAG_NAME).append(" IN (:fullNames)");
+			params.put("fullNames", fullTagName);
+		}
+
 		return Optional.ofNullable(namedJdbcTemplate.queryForList(sb.toString(), params,
 				Long.class));
+	}
+
+	public Optional<List<Long>> findTagIdsByUserId(String userId) {
+		return findTagIdsByUserIdAndFullTagName(userId, null);
 	}
 }
