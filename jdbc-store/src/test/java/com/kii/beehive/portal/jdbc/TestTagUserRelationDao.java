@@ -102,6 +102,13 @@ public class TestTagUserRelationDao extends TestTemplate {
 				orElse(Collections.emptyList()).stream().collect(Collectors.toSet());
 		assertEquals("Should have 1 id", 1, tagIds.size());
 		assertEquals("Id doesn't match", allTagIds.get(3), tagIds.iterator().next());
+
+		List<String> tagNameList = new ArrayList<String>();
+		tagNameList.add(TagType.Location.getTagName("Location 1"));
+		tagIds = tagUserRelationDao.findTagIds("TestOwner", tagNameList).
+				orElse(Collections.emptyList()).stream().collect(Collectors.toSet());
+		assertEquals("Should have 1 id", 1, tagIds.size());
+		assertEquals("Id doesn't match", allTagIds.get(3), tagIds.iterator().next());
 	}
 
 	@Test

@@ -23,6 +23,12 @@ public class TagUserRelationDao extends SpringBaseDao<TagUserRelation> {
 			"?) AS t1 INNER JOIN " + TagIndexDao.TABLE_NAME + " t2 ON t1." + TagUserRelation.TAG_ID + " = t2." +
 			TagIndex.TAG_ID + " WHERE ";
 
+	final private static String SQL_FIND_TAGIDS_FILTER_BY_FULLTAGANME = "SELECT DISTINCT t1." + TagUserRelation
+			.TAG_ID + " FROM " +
+			"(SELECT " + TagUserRelation.TAG_ID + " FROM " + TABLE_NAME + " WHERE " + TagUserRelation.USER_ID + " = " +
+			":userID) AS t1 INNER JOIN " + TagIndexDao.TABLE_NAME + " t2 ON t1." + TagUserRelation.TAG_ID + " = t2." +
+			TagIndex.TAG_ID + " WHERE " + TagIndex.FULL_TAG_NAME + " IN (:fullNames)";
+
 	final private static String SQL_FIND_ACCESSIBLE_TAGIDS = "SELECT " + TagUserRelation.TAG_ID + " FROM " +
 			TABLE_NAME + " WHERE " + TagUserRelation.USER_ID + " = :userId AND " + TagUserRelation.TAG_ID + " IN " +
 			"(:list)";
@@ -146,5 +152,17 @@ public class TagUserRelationDao extends SpringBaseDao<TagUserRelation> {
 		}
 		return Optional.ofNullable(findSingleFieldBySingleField(TagUserRelation.USER_ID, TagUserRelation.TAG_ID,
 				tagIds, String.class));
+	}
+
+	public Optional<List<Long>> findTagIds(String userId, List<String> fullTagName) {
+		if (Strings.isBlank(userId) || null == fullTagName || fullTagName.isEmpty()) {
+			return Optional.ofNullable(null);
+		}
+
+		Map<String, Object> params = new HashMap();
+		params.put("userID", userId);
+		params.put("fullNames", fullTagName);
+		return Optional.ofNullable(namedJdbcTemplate.queryForList(SQL_FIND_TAGIDS_FILTER_BY_FULLTAGANME, params,
+				Long.class));
 	}
 }

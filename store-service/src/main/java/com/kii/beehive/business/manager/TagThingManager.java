@@ -608,6 +608,17 @@ public class TagThingManager {
 		return tagIndexDao.findByIDs(allIds);
 	}
 
+	public List<TagIndex> getAccessibleTagsByFullTagName(String userId, String fullTagNames) {
+		List<String> fullTagNameList = Arrays.asList(fullTagNames.split(","));
+		List<Long> tagIds1 = tagUserRelationDao.findTagIds(userId, fullTagNameList).
+				orElse(Collections.emptyList());
+		List<Long> tagIds2 = tagGroupRelationDao.findTagIds(userId, fullTagNameList).
+				orElse(Collections.emptyList());
+		List<Long> allIds = new ArrayList(tagIds1);
+		allIds.addAll(tagIds2);
+		return tagIndexDao.findByIDs(allIds);
+	}
+
 	public List<GlobalThingInfo> getThingsByTagIds(Set<Long> tagIds) {
 		if (null == tagIds || tagIds.isEmpty()) {
 			return Collections.emptyList();
