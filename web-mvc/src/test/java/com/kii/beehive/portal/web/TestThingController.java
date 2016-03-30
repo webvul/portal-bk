@@ -537,7 +537,7 @@ public class TestThingController extends WebTestTemplate {
 			thingController.unbindThingsFromTags("thing1", "tag1");
 			fail("Expect a PortalException");
 		} catch (PortalException e) {
-			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
+			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
 		}
 
 		// Tag not found
@@ -560,7 +560,7 @@ public class TestThingController extends WebTestTemplate {
 			thingController.unbindThingsFromTags("thing1", "tag1");
 			fail("Expect a PortalException");
 		} catch (PortalException e) {
-			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
+			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
 		}
 
 		tag.setCreateBy("ThingCreator");

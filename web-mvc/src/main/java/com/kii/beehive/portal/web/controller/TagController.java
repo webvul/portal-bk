@@ -16,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -178,7 +179,7 @@ public class TagController extends AbstractThingTagController {
 			throw new PortalException("RequiredFieldsMissing", "tagIDs or userIDs is empty", HttpStatus
 					.BAD_REQUEST);
 		}
-		List<TagIndex> tagIndexes = thingTagManager.getAccessibleTagsByFullTagName(getLoginUserID(), fullNames);
+		List<TagIndex> tagIndexes = getTags(Arrays.asList(fullNames.split(",")));
 		List<BeehiveUser> users = getUsers(userIds);
 		try {
 			thingTagManager.bindTagsToUsers(tagIndexes, users);
@@ -200,7 +201,7 @@ public class TagController extends AbstractThingTagController {
 			throw new PortalException("RequiredFieldsMissing", "tagIDs or userIDs is empty", HttpStatus
 					.BAD_REQUEST);
 		}
-		List<TagIndex> tagIndexes = thingTagManager.getAccessibleTagsByFullTagName(getLoginUserID(), fullNames);
+		List<TagIndex> tagIndexes = getTags(Arrays.asList(fullNames.split(",")));
 		List<BeehiveUser> users = getUsers(userIds);
 		try {
 			thingTagManager.unbindTagsFromUsers(tagIndexes, users);
@@ -223,7 +224,7 @@ public class TagController extends AbstractThingTagController {
 					.BAD_REQUEST);
 		}
 
-		List<TagIndex> tagIndexes = thingTagManager.getAccessibleTagsByFullTagName(getLoginUserID(), fullNames);
+		List<TagIndex> tagIndexes = getTags(Arrays.asList(fullNames.split(",")));
 
 		List<UserGroup> userGroups = getUserGroups(userGroupIDs);
 		try {
@@ -247,7 +248,7 @@ public class TagController extends AbstractThingTagController {
 			throw new PortalException("RequiredFieldsMissing", "tagIDs or userGroupIDs is empty", HttpStatus
 					.BAD_REQUEST);
 		}
-		List<TagIndex> tagIndexes = thingTagManager.getAccessibleTagsByFullTagName(getLoginUserID(), fullNames);
+		List<TagIndex> tagIndexes = getTags(Arrays.asList(fullNames.split(",")));
 		List<UserGroup> userGroups = getUserGroups(userGroupIDs);
 		try {
 			thingTagManager.unbindTagsFromUserGroups(tagIndexes, userGroups);

@@ -184,7 +184,7 @@ public class TestTagController extends WebTestTemplate {
 		for (String tagIds : blankTagIds) {
 			for (String userId : blankUserIds) {
 				try {
-					tagController.bindTagToUser(tagIds, userId);
+					tagController.bindTagToUser(tagIndex.getFullTagName(), userId);
 					fail("Expect a PortalException");
 				} catch (PortalException e) {
 					assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
@@ -200,7 +200,7 @@ public class TestTagController extends WebTestTemplate {
 		doReturn(Arrays.asList(someone)).when(tagThingManager).getUsers(anyListOf(String.class));
 		AuthInfoStore.setAuthInfo("Someone");
 		try {
-			tagController.bindTagToUser(tagId + "", "123");
+			tagController.bindTagToUser(tagIndex.getFullTagName(), "123");
 			fail("Expect a PortalException");
 		} catch (PortalException e) {
 			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
@@ -224,7 +224,7 @@ public class TestTagController extends WebTestTemplate {
 		}).when(tagThingManager).bindTagsToUsers(anyList(), anyList());
 
 		try {
-			tagController.bindTagToUser(tagId + "", "Someone");
+			tagController.bindTagToUser(tagIndex.getFullTagName(), "Someone");
 		} catch (Exception e) {
 			fail("Should not throw any exception");
 		}
@@ -268,7 +268,7 @@ public class TestTagController extends WebTestTemplate {
 		doReturn(Arrays.asList(someone)).when(tagThingManager).getUsers(anyListOf(String.class));
 
 		try {
-			tagController.unbindTagFromUser(tagId + "", "Someone");
+			tagController.unbindTagFromUser(tagIndex.getFullTagName(), "Someone");
 		} catch (Exception e) {
 			fail("Should not throw any exception");
 		}
@@ -291,8 +291,6 @@ public class TestTagController extends WebTestTemplate {
 		userGroup.setCreateBy("Someone");
 		Long userGroupId = userGroupDao.saveOrUpdate(userGroup);
 
-		AuthInfoStore.setAuthInfo("Someone");
-
 		// Error test
 		String[] blankTagIds = new String[]{null, " "};
 		String[] blankUserGroupIds = new String[]{null, " "};
@@ -309,14 +307,16 @@ public class TestTagController extends WebTestTemplate {
 
 		// Existence test
 		try {
-			tagController.bindTagToUserGroup(tagId + ",test2", userGroupId + "");
+			tagController.bindTagToUserGroup(tagIndex.getFullTagName() + ",test2-123", userGroupId + "");
 			fail("Expect a PortalException");
 		} catch (PortalException e) {
 			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
 		}
 
+		AuthInfoStore.setAuthInfo("Someone");
+
 		try {
-			tagController.bindTagToUserGroup(tagId + "", userGroupId + "");
+			tagController.bindTagToUserGroup(tagIndex.getFullTagName(), userGroupId + "");
 			fail("Expect a PortalException");
 		} catch (PortalException e) {
 			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
@@ -324,14 +324,14 @@ public class TestTagController extends WebTestTemplate {
 
 		AuthInfoStore.setAuthInfo(tagIndex.getCreateBy());
 		try {
-			tagController.bindTagToUserGroup(tagId + "", userGroupId + ",userGroup1");
+			tagController.bindTagToUserGroup(tagIndex.getFullTagName(), userGroupId + ",userGroup1");
 			fail("Expect a PortalException");
 		} catch (PortalException e) {
 			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
 		}
 
 		try {
-			tagController.bindTagToUserGroup(tagId + "", userGroupId + "");
+			tagController.bindTagToUserGroup(tagIndex.getFullTagName(), userGroupId + "");
 		} catch (Exception e) {
 			fail("Should not throw any exception");
 		}
@@ -355,12 +355,10 @@ public class TestTagController extends WebTestTemplate {
 		Long userGroupId = userGroupDao.saveOrUpdate(userGroup);
 
 		AuthInfoStore.setAuthInfo(tagIndex.getCreateBy());
-		tagController.bindTagToUserGroup(tagId + "", userGroupId + "");
+		tagController.bindTagToUserGroup(tagIndex.getFullTagName(), userGroupId + "");
 
 		TagGroupRelation relation = tagGroupRelationDao.findByTagIDAndUserGroupID(tagId, userGroupId);
 		assertNotNull("Should have the relation", relation);
-
-		AuthInfoStore.setAuthInfo("Someone");
 
 		// Error test
 		String[] blankTagIds = new String[]{null, " "};
@@ -378,14 +376,15 @@ public class TestTagController extends WebTestTemplate {
 
 		// Existence test
 		try {
-			tagController.unbindTagFromUserGroup(tagId + ",test2", userGroupId + "");
+			tagController.unbindTagFromUserGroup(tagIndex.getFullTagName() + ",test2", userGroupId + "");
 			fail("Expect a PortalException");
 		} catch (PortalException e) {
 			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
 		}
 
+		AuthInfoStore.setAuthInfo("Someone");
 		try {
-			tagController.unbindTagFromUserGroup(tagId + "", userGroupId + "");
+			tagController.unbindTagFromUserGroup(tagIndex.getFullTagName() + "", userGroupId + "");
 			fail("Expect a PortalException");
 		} catch (PortalException e) {
 			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
@@ -393,14 +392,14 @@ public class TestTagController extends WebTestTemplate {
 
 		AuthInfoStore.setAuthInfo(tagIndex.getCreateBy());
 		try {
-			tagController.unbindTagFromUserGroup(tagId + "", userGroupId + ",userGroup1");
+			tagController.unbindTagFromUserGroup(tagIndex.getFullTagName(), userGroupId + ",userGroup1");
 			fail("Expect a PortalException");
 		} catch (PortalException e) {
 			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
 		}
 
 		try {
-			tagController.unbindTagFromUserGroup(tagId + "", userGroupId + "");
+			tagController.unbindTagFromUserGroup(tagIndex.getFullTagName(), userGroupId + "");
 		} catch (Exception e) {
 			fail("Should not throw any exception");
 		}

@@ -176,7 +176,7 @@ public class TagThingManager {
 	}
 
 	public void bindTagsToUserGroups(List<TagIndex> tags, List<UserGroup> userGroups) throws UnauthorizedException {
-		if (!isTagCreator(tags)) {
+		if (tags.isEmpty() || !isTagCreator(tags)) {
 			throw new UnauthorizedException("Current user is not the creator of the tag.");
 		}
 		if (null != userGroups) {
@@ -529,6 +529,22 @@ public class TagThingManager {
 		return tags;
 	}
 
+	public List<TagIndex> getTagFullNameIndexes(List<String> fullNames) throws
+			ObjectNotFoundException, UnauthorizedException {
+		List<TagIndex> tags = new ArrayList();
+		for (String fullName : fullNames) {
+			List<TagIndex> list = tagIndexDao.findTagByFullTagName(fullName);
+			if (null == list || list.isEmpty()) {
+				throw new ObjectNotFoundException("Requested tag fullName " + fullName +
+						" doesn't exist");
+			} else if (!isTagCreator(CollectUtils.getFirst(list)) && !isTagOwner(CollectUtils.getFirst(list))) {
+				throw new UnauthorizedException("Current user is not the creator of tag(s).");
+			}
+			tags.add(CollectUtils.getFirst(list));
+		}
+		return tags;
+	}
+
 	public List<BeehiveUser> getUsers(List<String> userIDList) throws ObjectNotFoundException {
 		List<BeehiveUser> users = userDao.getUserByIDs(userIDList);
 		if (null == users || !users.stream().map(BeehiveUser::getKiiLoginName).collect(Collectors.toSet())
@@ -602,17 +618,6 @@ public class TagThingManager {
 		List<Long> tagIds1 = tagUserRelationDao.findTagIds(userId, tagType, displayName).
 				orElse(Collections.emptyList());
 		List<Long> tagIds2 = tagGroupRelationDao.findTagIdsByUserId(userId, tagType, displayName).
-				orElse(Collections.emptyList());
-		List<Long> allIds = new ArrayList(tagIds1);
-		allIds.addAll(tagIds2);
-		return tagIndexDao.findByIDs(allIds);
-	}
-
-	public List<TagIndex> getAccessibleTagsByFullTagName(String userId, String fullTagNames) {
-		List<String> fullTagNameList = Arrays.asList(fullTagNames.split(","));
-		List<Long> tagIds1 = tagUserRelationDao.findTagIds(userId, fullTagNameList).
-				orElse(Collections.emptyList());
-		List<Long> tagIds2 = tagGroupRelationDao.findTagIds(userId, fullTagNameList).
 				orElse(Collections.emptyList());
 		List<Long> allIds = new ArrayList(tagIds1);
 		allIds.addAll(tagIds2);

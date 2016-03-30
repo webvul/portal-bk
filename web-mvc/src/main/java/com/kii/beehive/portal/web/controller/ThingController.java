@@ -302,7 +302,7 @@ public class ThingController extends AbstractThingTagController {
 					.BAD_REQUEST);
 		}
 		List<GlobalThingInfo> things = getThings(globalThingIDs);
-		List<TagIndex> tags = thingTagManager.getAccessibleTagsByFullTagName(getLoginUserID(), fullNames);
+		List<TagIndex> tags = getTags(Arrays.asList(fullNames.split(",")));
 		try {
 			thingTagManager.bindTagsToThings(tags, things);
 		} catch (UnauthorizedException e) {
@@ -320,7 +320,7 @@ public class ThingController extends AbstractThingTagController {
 	 *
 	 * @param globalThingIDs
 	 */
-	@RequestMapping(value = "/{globalThingIDs}/tags/{tagIDs}", method = {RequestMethod.DELETE}, consumes = {"*"})
+	@RequestMapping(value = "/{globalThingIDs}/tags/{fullNames}", method = {RequestMethod.DELETE}, consumes = {"*"})
 	public void unbindThingsFromTags(@PathVariable("globalThingIDs") String globalThingIDs, @PathVariable("fullNames") String
 			fullNames) {
 		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(fullNames)) {
@@ -328,7 +328,7 @@ public class ThingController extends AbstractThingTagController {
 					.BAD_REQUEST);
 		}
 		List<GlobalThingInfo> things = getThings(globalThingIDs);
-		List<TagIndex> tags = thingTagManager.getAccessibleTagsByFullTagName(getLoginUserID(), fullNames);
+		List<TagIndex> tags = getTags(Arrays.asList(fullNames.split(",")));
 		try {
 			thingTagManager.unbindThingsFromTags(tags, things);
 		} catch (UnauthorizedException e) {

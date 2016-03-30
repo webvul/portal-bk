@@ -2,10 +2,12 @@ package com.kii.beehive.portal.web.controller;
 
 import com.kii.beehive.business.manager.TagThingManager;
 import com.kii.beehive.portal.exception.ObjectNotFoundException;
+import com.kii.beehive.portal.exception.UnauthorizedException;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
+import com.kii.beehive.portal.web.exception.BeehiveUnAuthorizedException;
 import com.kii.beehive.portal.web.exception.PortalException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -48,15 +50,17 @@ public abstract class AbstractThingTagController extends AbstractController {
 		}
 	}
 
-	protected List<TagIndex> getTags(List<String> tagIDList) {
+	protected List<TagIndex> getTags(List<String> fullNameList) {
 		try {
-			return thingTagManager.getTagIndexes(tagIDList);
+			return thingTagManager.getTagFullNameIndexes(fullNameList);
 		} catch (ObjectNotFoundException e) {
 			throw new PortalException("Requested tag doesn't exist", e.getMessage(), HttpStatus.BAD_REQUEST);
+		} catch (UnauthorizedException e) {
+			throw new BeehiveUnAuthorizedException("Current user is not the creator of tag(s).");
 		}
 	}
 
-	protected List<TagIndex> getTags(String tagIDs) {
-		return this.getTags(Arrays.asList(tagIDs.split(",")));
+	protected List<TagIndex> getTags(String fullNames) {
+		return this.getTags(Arrays.asList(fullNames.split(",")));
 	}
 }
