@@ -79,6 +79,10 @@ public class TestTagThingManager {
 	@Autowired
 	private AppInfoDao appInfoDao;
 
+	@Spy
+	@Autowired
+	private GroupUserRelationDao groupUserRelationDao;
+
 	private List<TagIndex> tags;
 
 	private List<BeehiveUser> users;
@@ -620,9 +624,24 @@ public class TestTagThingManager {
 		verify(tagGroupRelationDao, times(1)).delete(anyLong(), anyLong());
 		verify(tagThingRelationDao, times(1)).delete(anyLong(), anyLong());
 		verify(tagIndexDao, times(1)).deleteByID(anyLong());
-
 	}
 
+	@Test
+	public void testGetUsersOfThing() throws Exception {
+		doReturn(Optional.ofNullable(Arrays.asList(100L))).when(tagThingRelationDao).findTagIds(anyLong());
+		doReturn(Optional.ofNullable(Arrays.asList(200L))).when(tagGroupRelationDao).findUserGroupIdsByTagIds(
+				anyListOf(Long.class));
+		doReturn(Optional.ofNullable(Arrays.asList(201L))).when(thingUserGroupRelationDao).findUserGroupIds(anyLong());
+		doReturn(Optional.ofNullable(Arrays.asList("user1", "user2"))).when(groupUserRelationDao).
+				findUserIds(anyListOf(Long.class));
+		doReturn(Arrays.asList("user3")).when(thingUserRelationDao).findUserIds(anyLong());
+		doReturn(Optional.ofNullable(Arrays.asList("user4"))).when(tagUserRelationDao).findUserIds(anyListOf(Long
+				.class));
+
+		List<String> userIds = tagThingManager.getUsersOfThing(1000L);
+		assertEquals(4, userIds.stream().collect(Collectors.toSet()).size());
+	}
+	
 	/*
 	@Test
 	public void testFindLocations() {

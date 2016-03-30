@@ -11,10 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static junit.framework.TestCase.assertEquals;
@@ -179,5 +176,13 @@ public class TestTagGroupRelationDao extends TestTemplate {
 				orElse(Collections.emptyList()).stream().collect(Collectors.toSet());
 		Assert.assertEquals("Should have 1 id", 1, tagIds.size());
 		Assert.assertEquals("Id doesn't match", allTagIds.get(3), tagIds.iterator().next());
+	}
+
+	@Test
+	public void testFindUserGroupIdsByTagIds() throws Exception {
+		List<Long> groupIds = tagGroupRelationDao.findUserGroupIdsByTagIds(Arrays.asList(tag.getId())).
+				orElse(Collections.emptyList());
+		assertEquals(1, groupIds.size());
+		assertEquals(userGroup.getId(), groupIds.get(0));
 	}
 }

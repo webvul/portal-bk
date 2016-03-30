@@ -1,16 +1,18 @@
 package com.kii.beehive.portal.jdbc;
 
-import static junit.framework.TestCase.assertEquals;
-import static org.junit.Assert.assertNull;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
 import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
 import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Collections;
+import java.util.List;
+
+import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class TestGroupUserRelationDao extends TestTemplate {
 
@@ -86,4 +88,19 @@ public class TestGroupUserRelationDao extends TestTemplate {
 		dao.delete(null, null);
 	}
 
+	@Test
+	public void testFindUserIds() throws Exception {
+		UserGroup userGroup = new UserGroup();
+		userGroup.setName("Group 1");
+		Long groupId = userGroupDao.saveOrUpdate(userGroup);
+
+		GroupUserRelation relation = new GroupUserRelation();
+		relation.setUserGroupID(groupId);
+		relation.setUserID("Someone");
+		dao.saveOrUpdate(relation);
+
+		List<String> users = dao.findUserIds(Collections.singleton(groupId)).orElse(Collections.emptyList());
+		assertEquals(1, users.size());
+		assertEquals("Someone", users.get(0));
+	}
 }

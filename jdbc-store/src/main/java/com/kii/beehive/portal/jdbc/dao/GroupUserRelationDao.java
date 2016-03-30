@@ -4,8 +4,7 @@ import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Repository
 public class GroupUserRelationDao extends SpringBaseDao<GroupUserRelation> {
@@ -13,6 +12,9 @@ public class GroupUserRelationDao extends SpringBaseDao<GroupUserRelation> {
 
 	public static final String TABLE_NAME = "rel_group_user";
 	public static final String KEY = "id";
+
+	private static final String SQL_FIND_USERIDS_BY_GROUPIDS = "SELECT " + GroupUserRelation.USER_ID + " FROM " +
+			TABLE_NAME + " WHERE " + GroupUserRelation.USER_GROUP_ID + " IN (:groupIds)";
 
 	public void delete(String userID, Long userGroupID) {
 		if (!Strings.isBlank(userID) || userGroupID != null) {
@@ -75,6 +77,15 @@ public class GroupUserRelationDao extends SpringBaseDao<GroupUserRelation> {
 		String sql = "SELECT " + GroupUserRelation.USER_ID + " FROM " + this.getTableName() + " WHERE " + GroupUserRelation.USER_GROUP_ID + "=?";
 		List<String> rows = jdbcTemplate.queryForList(sql, String.class, userGroupID);
 		return rows;
+	}
+
+	public Optional<List<String>> findUserIds(Collection<Long> userGroupIds) {
+		if (null == userGroupIds || userGroupIds.isEmpty()) {
+			return Optional.ofNullable(null);
+		}
+		Map<String, Object> params = new HashMap();
+		params.put("groupIds", userGroupIds);
+		return Optional.ofNullable(namedJdbcTemplate.queryForList(SQL_FIND_USERIDS_BY_GROUPIDS, params, String.class));
 	}
 
 	/**

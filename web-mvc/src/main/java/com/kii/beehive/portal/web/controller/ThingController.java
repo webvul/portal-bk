@@ -32,7 +32,8 @@ import static java.util.Arrays.asList;
  * refer to doc "Beehive API - Tech Design" section "Thing API" for details
  */
 @RestController
-@RequestMapping(path = "/things", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+@RequestMapping(value = "/things", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE},
+		produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
 public class ThingController extends AbstractThingTagController {
 
 	//
@@ -48,6 +49,23 @@ public class ThingController extends AbstractThingTagController {
 	@Autowired
 	private ThingIFInAppService thingIFService;
 
+	/**
+	 * GET /{globalThingID}/users
+	 *
+	 * @param globalThingID
+	 * @return a list of user ids who can access the device.
+	 */
+	@RequestMapping(value = "/{globalThingID}/users", method = RequestMethod.GET)
+	public List<String> getUsersByThing(@PathVariable("globalThingID") Long globalThingID) {
+		GlobalThingInfo thingInfo;
+		try {
+			thingInfo = thingTagManager.getAccessibleThingById(getLoginUserID(), globalThingID);
+		} catch (ObjectNotFoundException e) {
+			throw new PortalException(e.getMessage(), e.getMessage(), HttpStatus.BAD_REQUEST);
+		}
+		return thingTagManager.getUsersOfThing(thingInfo.getId());
+	}
+
 
 	/**
 	 * type下的所有设备
@@ -58,7 +76,7 @@ public class ThingController extends AbstractThingTagController {
 	 * @return
 	 */
 
-	@RequestMapping(path = "/types/{type}", method = {RequestMethod.GET})
+	@RequestMapping(value = "/types/{type}", method = {RequestMethod.GET})
 	public List<ThingRestBean> getThingsByType(@PathVariable("type") String type) {
 		List<GlobalThingInfo> thingList = thingTagManager.getAccessibleThingsByType(type, getLoginUserID());
 		List<ThingRestBean> resultList = this.toThingRestBean(thingList);
@@ -73,7 +91,7 @@ public class ThingController extends AbstractThingTagController {
 	 *
 	 * @return
 	 */
-	@RequestMapping(path = "/types", method = {RequestMethod.GET})
+	@RequestMapping(value = "/types", method = {RequestMethod.GET})
 	public List<Map<String, Object>> getAllType() {
 		return thingTagManager.getTypesOfAccessibleThingsWithCount(getLoginUserID());
 	}
@@ -85,7 +103,7 @@ public class ThingController extends AbstractThingTagController {
 	 * <p>
 	 * refer to doc "Beehive API - Thing API" for request/response details
 	 */
-	@RequestMapping(path = "/types/tagID/{tagIDs}", method = {RequestMethod.GET})
+	@RequestMapping(value = "/types/tagID/{tagIDs}", method = {RequestMethod.GET})
 	public List<String> getThingTypeByTagIDs(@PathVariable("tagIDs") String tagIDs) {
 		List<String> result;
 		try {
@@ -106,7 +124,7 @@ public class ThingController extends AbstractThingTagController {
 	 *
 	 * @return
 	 */
-	@RequestMapping(path = "/types/fulltagname/{fullTagNames}", method = {RequestMethod.GET})
+	@RequestMapping(value = "/types/fulltagname/{fullTagNames}", method = {RequestMethod.GET})
 	public List<String> getThingTypeByTagFullName(@PathVariable("fullTagNames") String fullTagNames) {
 		try {
 			return thingTagManager.getTypesOfAccessibleThingsByTagFullName(getLoginUserID(),
@@ -126,7 +144,7 @@ public class ThingController extends AbstractThingTagController {
 	 * @param globalThingID
 	 * @return
 	 */
-	@RequestMapping(path = "/{globalThingID}", method = {RequestMethod.GET})
+	@RequestMapping(value = "/{globalThingID}", method = {RequestMethod.GET})
 	public ThingRestBean getThingByGlobalID(@PathVariable("globalThingID") Long globalThingID) {
 		GlobalThingInfo thingInfo;
 		try {
@@ -167,7 +185,7 @@ public class ThingController extends AbstractThingTagController {
 	 *
 	 * @param input
 	 */
-	@RequestMapping(path = "", method = {RequestMethod.POST})
+	@RequestMapping(value = "", method = {RequestMethod.POST})
 	public Map<String, Long> createThing(@RequestBody ThingRestBean input) {
 
 		input.verifyInput();
@@ -209,7 +227,7 @@ public class ThingController extends AbstractThingTagController {
 	 *
 	 * @param globalThingID
 	 */
-	@RequestMapping(path = "/{globalThingID}", method = {RequestMethod.DELETE}, consumes = {"*"})
+	@RequestMapping(value = "/{globalThingID}", method = {RequestMethod.DELETE}, consumes = {"*"})
 	public void removeThing(@PathVariable("globalThingID") Long globalThingID) {
 		GlobalThingInfo orig = globalThingDao.findByID(globalThingID);
 		if (orig == null) {
@@ -237,7 +255,7 @@ public class ThingController extends AbstractThingTagController {
 	 *
 	 * @param globalThingIDs
 	 */
-	@RequestMapping(path = "/{globalThingIDs}/tags/{tagIDs}", method = {RequestMethod.POST})
+	@RequestMapping(value = "/{globalThingIDs}/tags/{tagIDs}", method = {RequestMethod.POST})
 	public void bindThingsToTags(@PathVariable("globalThingIDs") String globalThingIDs, @PathVariable("tagIDs") String
 			tagIDs) {
 		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(tagIDs)) {
@@ -263,7 +281,7 @@ public class ThingController extends AbstractThingTagController {
 	 *
 	 * @param globalThingIDs
 	 */
-	@RequestMapping(path = "/{globalThingIDs}/tags/{tagIDs}", method = {RequestMethod.DELETE}, consumes = {"*"})
+	@RequestMapping(value = "/{globalThingIDs}/tags/{tagIDs}", method = {RequestMethod.DELETE}, consumes = {"*"})
 	public void unbindThingsFromTags(@PathVariable("globalThingIDs") String globalThingIDs, @PathVariable("tagIDs") String
 			tagIDs) {
 		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(tagIDs)) {
@@ -287,7 +305,7 @@ public class ThingController extends AbstractThingTagController {
 	 * @param globalThingIDs
 	 * @param userGroupIDs
 	 */
-	@RequestMapping(path = "/{globalThingIDs}/userGroups/{userGroupIDs}", method = {RequestMethod.POST})
+	@RequestMapping(value = "/{globalThingIDs}/userGroups/{userGroupIDs}", method = {RequestMethod.POST})
 	public void bindThingsToUserGroups(@PathVariable("globalThingIDs") String globalThingIDs, @PathVariable
 			("userGroupIDs")
 			String userGroupIDs) {
@@ -311,7 +329,7 @@ public class ThingController extends AbstractThingTagController {
 	 * @param globalThingIDs
 	 * @param userGroupIDs
 	 */
-	@RequestMapping(path = "/{globalThingIDs}/userGroups/{userGroupIDs}", method = {RequestMethod.DELETE}, consumes =
+	@RequestMapping(value = "/{globalThingIDs}/userGroups/{userGroupIDs}", method = {RequestMethod.DELETE}, consumes =
 			{"*"})
 	public void unbindThingsFromUserGroups(@PathVariable("globalThingIDs") String globalThingIDs, @PathVariable
 			("userGroupIDs")
@@ -336,7 +354,7 @@ public class ThingController extends AbstractThingTagController {
 	 * @param globalThingIDs thing id list, separated by single comma character
 	 * @param userIDs        user id list, separated by single comma character
 	 */
-	@RequestMapping(path = "/{globalThingIDs}/users/{userIDs}", method = {RequestMethod.POST})
+	@RequestMapping(value = "/{globalThingIDs}/users/{userIDs}", method = {RequestMethod.POST})
 	public void bindThingsToUsers(@PathVariable("globalThingIDs") String globalThingIDs, @PathVariable("userIDs")
 			String userIDs) {
 		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(userIDs)) {
@@ -359,7 +377,7 @@ public class ThingController extends AbstractThingTagController {
 	 * @param globalThingIDs thing id list, separated by single comma character
 	 * @param userIDs        user id list, separated by single comma character
 	 */
-	@RequestMapping(path = "/{globalThingIDs}/users/{userIDs}", method = {RequestMethod.DELETE}, consumes = {"*"})
+	@RequestMapping(value = "/{globalThingIDs}/users/{userIDs}", method = {RequestMethod.DELETE}, consumes = {"*"})
 	public void unbindThingsFromUsers(@PathVariable("globalThingIDs") String globalThingIDs, @PathVariable("userIDs")
 			String userIDs) {
 		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(userIDs)) {
@@ -384,7 +402,7 @@ public class ThingController extends AbstractThingTagController {
 	 * @param globalThingIDs
 	 * @param displayNames
 	 */
-	@RequestMapping(path = "/{globalThingIDs}/tags/custom/{displayNames}", method = {RequestMethod.POST})
+	@RequestMapping(value = "/{globalThingIDs}/tags/custom/{displayNames}", method = {RequestMethod.POST})
 	public void bindThingsToCustomTags(@PathVariable("globalThingIDs") String globalThingIDs,
 									   @PathVariable("displayNames") String displayNames) {
 		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(displayNames)) {
@@ -415,7 +433,7 @@ public class ThingController extends AbstractThingTagController {
 	 * @param globalThingIDs
 	 * @param displayNames
 	 */
-	@RequestMapping(path = "/{globalThingIDs}/tags/custom/{displayNames}", method = {RequestMethod.DELETE}, consumes = {"*"})
+	@RequestMapping(value = "/{globalThingIDs}/tags/custom/{displayNames}", method = {RequestMethod.DELETE}, consumes = {"*"})
 	public void unbindThingsFromCustomTags(@PathVariable("globalThingIDs") String globalThingIDs, @PathVariable("displayNames") String displayNames) {
 		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(displayNames)) {
 			throw new PortalException("RequiredFieldsMissing", "globalThingIDs or displayNames is empty", HttpStatus
@@ -444,7 +462,7 @@ public class ThingController extends AbstractThingTagController {
 	 *
 	 * @param globalThingIDs
 	 */
-	@RequestMapping(path = "/{globalThingIDs}/teams/{teamIDs}", method = {RequestMethod.POST})
+	@RequestMapping(value = "/{globalThingIDs}/teams/{teamIDs}", method = {RequestMethod.POST})
 	public void addThingTeam(@PathVariable("globalThingIDs") String globalThingIDs, @PathVariable("teamIDs") String teamIDs) {
 
 		List<String> thingIDList = asList(globalThingIDs.split(","));
@@ -460,7 +478,7 @@ public class ThingController extends AbstractThingTagController {
 	 *
 	 * @param globalThingIDs
 	 */
-	@RequestMapping(path = "/{globalThingIDs}/teams/{teamIDs}", method = {RequestMethod.DELETE}, consumes = {"*"})
+	@RequestMapping(value = "/{globalThingIDs}/teams/{teamIDs}", method = {RequestMethod.DELETE}, consumes = {"*"})
 	public void removeThingTeam(@PathVariable("globalThingIDs") String globalThingIDs, @PathVariable("teamIDs") String teamIDs) {
 		List<String> thingIDList = asList(globalThingIDs.split(","));
 		List<String> teamIDList = asList(teamIDs.split(","));
@@ -476,7 +494,7 @@ public class ThingController extends AbstractThingTagController {
 	 *
 	 * @return
 	 */
-	@RequestMapping(path = "/search", method = {RequestMethod.GET})
+	@RequestMapping(value = "/search", method = {RequestMethod.GET})
 	public List<ThingRestBean> getThingsByTagExpress(@RequestParam(value = "tagType") String tagType,
 													 @RequestParam(value = "displayName") String displayName) {
 		List<TagIndex> tagIndexes = thingTagManager.getAccessibleTagsByTagTypeAndName(getLoginUserID(),
@@ -498,7 +516,7 @@ public class ThingController extends AbstractThingTagController {
 	 * @param globalThingID
 	 * @return
 	 */
-	@RequestMapping(path = "/{globalThingID}/endnodes", method = {RequestMethod.GET})
+	@RequestMapping(value = "/{globalThingID}/endnodes", method = {RequestMethod.GET})
 	public ResponseEntity<List<ThingRestBean>> getGatewayEndnodes(@PathVariable("globalThingID") long globalThingID) {
 
 		// get gateway info

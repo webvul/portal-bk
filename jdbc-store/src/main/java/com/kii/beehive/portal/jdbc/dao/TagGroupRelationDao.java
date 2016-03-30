@@ -106,4 +106,12 @@ public class TagGroupRelationDao extends SpringBaseDao<TagGroupRelation> {
 		return Optional.ofNullable(jdbcTemplate.queryForList(sb.toString(), params.toArray(new Object[]{}),
 				Long.class));
 	}
+
+	public Optional<List<Long>> findUserGroupIdsByTagIds(List<Long> tagIds) {
+		if (null == tagIds || tagIds.isEmpty()) {
+			return Optional.ofNullable(null);
+		}
+		return Optional.ofNullable(findSingleFieldBySingleField(TagGroupRelation.USER_GROUP_ID, TagGroupRelation.TAG_ID,
+				tagIds, Long.class));
+	}
 }

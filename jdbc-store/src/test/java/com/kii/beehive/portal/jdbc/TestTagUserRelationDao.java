@@ -120,6 +120,10 @@ public class TestTagUserRelationDao extends TestTemplate {
 		assertNotNull("User ids should not be null", userIds);
 		assertEquals("There should be one user id", 1, userIds.size());
 		assertTrue("user id should be user1", "user2".equals(userIds.get(0)));
+
+		userIds = tagUserRelationDao.findUserIds(this.allTagIds).orElse(Collections.emptyList());
+		assertEquals(2, userIds.size());
+		assertTrue(userIds.contains("user1") && userIds.contains("user2"));
 	}
 
 	@Test

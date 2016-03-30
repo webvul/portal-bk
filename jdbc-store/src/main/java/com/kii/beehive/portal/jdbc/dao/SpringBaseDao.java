@@ -97,6 +97,25 @@ public abstract class SpringBaseDao<T extends DBEntity> {
 		return jdbcTemplate.query(sql, new Object[]{value}, getRowMapper());
 	}
 
+	public <T> List<T> findSingleFieldBySingleField(String returnField, String matchField, Object value,
+													Class<T> elementType) {
+		String sql = "SELECT DISTINCT " + returnField + " FROM " + this.getTableName() + " WHERE " + matchField +
+				" = ?";
+		return jdbcTemplate.queryForList(sql, new Object[]{value}, elementType);
+	}
+
+	public <T> List<T> findSingleFieldBySingleField(String returnField, String matchField, Collection<?> value,
+													Class<T> elementType) {
+		if (null == value || value.isEmpty()) {
+			return Collections.emptyList();
+		}
+		String sql = "SELECT DISTINCT " + returnField + " FROM " + this.getTableName() + " WHERE " + matchField +
+				" IN (:list)";
+		Map<String, Object> params = new HashMap();
+		params.put("list", value);
+		return namedJdbcTemplate.queryForList(sql, params, elementType);
+	}
+
 	public int deleteByID(Serializable id) {
 		String sql = "DELETE FROM " + this.getTableName() + " WHERE " + getKey() + "=?";
 		return jdbcTemplate.update(sql, id);

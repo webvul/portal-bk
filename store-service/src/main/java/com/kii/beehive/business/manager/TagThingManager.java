@@ -68,6 +68,9 @@ public class TagThingManager {
 	@Autowired
 	private UserGroupDao userGroupDao;
 
+	@Autowired
+	private GroupUserRelationDao groupUserRelationDao;
+
 
 	/**
 	 * create or update the thing including the location and custom tags
@@ -586,7 +589,10 @@ public class TagThingManager {
 	public GlobalThingInfo getAccessibleThingById(String userId, Long thingId) throws ObjectNotFoundException {
 		if (null != thingUserRelationDao.find(thingId, userId) ||
 				!thingUserGroupRelationDao.findByThingIdAndUserId(thingId, userId).isEmpty()) {
-			return globalThingDao.findByID(thingId);
+			GlobalThingInfo thingInfo = globalThingDao.findByID(thingId);
+			if (null != thingInfo) {
+				return thingInfo;
+			}
 		}
 
 		throw new ObjectNotFoundException("Requested thing doesn't exist or is not accessible");
@@ -608,5 +614,17 @@ public class TagThingManager {
 		}
 		return globalThingDao.findByIDs(tagThingRelationDao.findThingIds(tagIds).
 				orElse(Collections.emptyList()));
+	}
+
+	public List<String> getUsersOfThing(Long thingId) {
+		List<Long> tagIds = tagThingRelationDao.findTagIds(thingId).orElse(Collections.emptyList());
+		Set<Long> groupIds = new HashSet(tagGroupRelationDao.findUserGroupIdsByTagIds(tagIds).
+				orElse(Collections.emptyList()));
+		groupIds.addAll(thingUserGroupRelationDao.findUserGroupIds(thingId).orElse(Collections.emptyList()));
+		Set<String> users = groupUserRelationDao.findUserIds(groupIds).orElse(Collections.emptyList()).stream().
+				collect(Collectors.toSet());
+		users.addAll(thingUserRelationDao.findUserIds(thingId));
+		users.addAll(tagUserRelationDao.findUserIds(tagIds).orElse(Collections.emptyList()));
+		return users.stream().collect(Collectors.toList());
 	}
 }

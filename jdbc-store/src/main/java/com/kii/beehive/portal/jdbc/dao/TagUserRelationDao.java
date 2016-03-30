@@ -139,4 +139,12 @@ public class TagUserRelationDao extends SpringBaseDao<TagUserRelation> {
 		return Optional.ofNullable(jdbcTemplate.queryForList(SQL_FIND_TAGIDS_FILTER_BY + sb.toString(),
 				params.toArray(new Object[]{}), Long.class));
 	}
+
+	public Optional<List<String>> findUserIds(List<Long> tagIds) {
+		if (null == tagIds || tagIds.isEmpty()) {
+			return Optional.ofNullable(null);
+		}
+		return Optional.ofNullable(findSingleFieldBySingleField(TagUserRelation.USER_ID, TagUserRelation.TAG_ID,
+				tagIds, String.class));
+	}
 }

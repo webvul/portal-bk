@@ -85,4 +85,12 @@ public class TagThingRelationDao extends SpringBaseDao<TagThingRelation> {
 		param.put("tagIds", tagIds);
 		return Optional.ofNullable(namedJdbcTemplate.queryForList(SQL_FIND_THINGIDS_BY_TAGIDS, param, Long.class));
 	}
+
+	public Optional<List<Long>> findTagIds(Long thingId) {
+		if (null == thingId) {
+			return Optional.ofNullable(null);
+		}
+		return Optional.ofNullable(findSingleFieldBySingleField(TagThingRelation.TAG_ID,
+				TagThingRelation.THING_ID, thingId, Long.class));
+	}
 }
