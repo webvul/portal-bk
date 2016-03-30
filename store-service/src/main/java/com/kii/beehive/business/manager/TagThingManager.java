@@ -627,4 +627,8 @@ public class TagThingManager {
 		users.addAll(tagUserRelationDao.findUserIds(tagIds).orElse(Collections.emptyList()));
 		return users.stream().collect(Collectors.toList());
 	}
+
+	public List<GlobalThingInfo> getAccessibleThings(String userId) {
+		return globalThingDao.findByIDs(getAccessibleThingIds(userId));
+	}
 }
