@@ -546,7 +546,7 @@ public class TestTagThingManager {
 	public void testGetAccessibleTagsByTagTypeAndName() throws Exception {
 		doReturn(Optional.ofNullable(Arrays.asList(100L))).when(tagUserRelationDao).findTagIds(anyString(),
 				anyString(), anyString());
-		doReturn(Optional.ofNullable(Arrays.asList(200L))).when(tagGroupRelationDao).findTagIds(anyString(),
+		doReturn(Optional.ofNullable(Arrays.asList(200L))).when(tagGroupRelationDao).findTagIdsByUserId(anyString(),
 				anyString(), anyString());
 		Set<Long> tagIds = new HashSet();
 		doAnswer((Answer<List<TagIndex>>) invocation -> {
@@ -665,7 +665,7 @@ public class TestTagThingManager {
 		}).when(globalThingDao).findByIDs(anyCollectionOf(Long.class));
 
 		List<Long> expected = Arrays.asList(11001L, 11002L, 11003L);
-		tagThingManager.getAccessibleThings("Someone");
+		tagThingManager.getAccessibleThingsByUserId("Someone");
 		assertTrue("Thing ids don't match", thingIds.containsAll(expected));
 		assertEquals("Number of thing ids doesn't match", expected.size(), thingIds.size());
 	}

@@ -601,7 +601,7 @@ public class TagThingManager {
 	public List<TagIndex> getAccessibleTagsByTagTypeAndName(String userId, String tagType, String displayName) {
 		List<Long> tagIds1 = tagUserRelationDao.findTagIds(userId, tagType, displayName).
 				orElse(Collections.emptyList());
-		List<Long> tagIds2 = tagGroupRelationDao.findTagIds(userId, tagType, displayName).
+		List<Long> tagIds2 = tagGroupRelationDao.findTagIdsByUserId(userId, tagType, displayName).
 				orElse(Collections.emptyList());
 		List<Long> allIds = new ArrayList(tagIds1);
 		allIds.addAll(tagIds2);
@@ -628,7 +628,23 @@ public class TagThingManager {
 		return users.stream().collect(Collectors.toList());
 	}
 
-	public List<GlobalThingInfo> getAccessibleThings(String userId) {
+	public List<Long> getUserGroupsOfThing(Long thingId) {
+		List<Long> tagIds = tagThingRelationDao.findTagIds(thingId).orElse(Collections.emptyList());
+		Set<Long> groupIds = new HashSet(tagGroupRelationDao.findUserGroupIdsByTagIds(tagIds).
+				orElse(Collections.emptyList()));
+		groupIds.addAll(thingUserGroupRelationDao.findUserGroupIds(thingId).orElse(Collections.emptyList()));
+		return groupIds.stream().collect(Collectors.toList());
+	}
+
+	public List<GlobalThingInfo> getAccessibleThingsByUserId(String userId) {
 		return globalThingDao.findByIDs(getAccessibleThingIds(userId));
+	}
+
+	public List<GlobalThingInfo> getAccessibleThingsByUserGroupId(Long userGroupId) {
+		List<Long> tagIds = tagGroupRelationDao.findTagIdsByUserGroupId(userGroupId).orElse(Collections.emptyList());
+		Set<Long> thingIds = tagThingRelationDao.findThingIds(tagIds).orElse(Collections.emptyList()).stream().
+				collect(Collectors.toSet());
+		thingIds.addAll(thingUserGroupRelationDao.findThingIds(userGroupId).orElse(Collections.emptyList()));
+		return globalThingDao.findByIDs(thingIds);
 	}
 }

@@ -77,7 +77,15 @@ public class TagGroupRelationDao extends SpringBaseDao<TagGroupRelation> {
 		return super.findBySingleField(TagGroupRelation.USER_GROUP_ID, userGroupID);
 	}
 
-	public Optional<List<Long>> findTagIds(String userId, String tagType, String displayName) {
+	public Optional<List<Long>> findTagIdsByUserGroupId(Long userGroupId) {
+		if (null == userGroupId) {
+			return Optional.ofNullable(null);
+		}
+		return Optional.ofNullable(findSingleFieldBySingleField(TagGroupRelation.TAG_ID,
+				TagGroupRelation.USER_GROUP_ID, userGroupId, Long.class));
+	}
+
+	public Optional<List<Long>> findTagIdsByUserId(String userId, String tagType, String displayName) {
 		if (Strings.isBlank(userId)) {
 			return Optional.ofNullable(null);
 		}

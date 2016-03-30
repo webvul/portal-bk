@@ -74,7 +74,35 @@ public class ThingController extends AbstractThingTagController {
 	 */
 	@RequestMapping(value = "/user/{userID}", method = RequestMethod.GET)
 	public List<ThingRestBean> getThingsByUser(@PathVariable("userID") String userId) {
-		return toThingRestBean(thingTagManager.getAccessibleThings(userId));
+		return toThingRestBean(thingTagManager.getAccessibleThingsByUserId(userId));
+	}
+
+	/**
+	 * GET /{globalThingID}/userGroups
+	 *
+	 * @param globalThingID
+	 * @return a list of user group id which can access the device.
+	 */
+	@RequestMapping(value = "/{globalThingID}/userGroups", method = RequestMethod.GET)
+	public List<Long> getUserGroupIdsByThing(@PathVariable("globalThingID") Long globalThingID) {
+		GlobalThingInfo thingInfo;
+		try {
+			thingInfo = thingTagManager.getAccessibleThingById(getLoginUserID(), globalThingID);
+		} catch (ObjectNotFoundException e) {
+			throw new PortalException(e.getMessage(), e.getMessage(), HttpStatus.BAD_REQUEST);
+		}
+		return thingTagManager.getUserGroupsOfThing(thingInfo.getId());
+	}
+
+	/**
+	 * GET /user/{userID}
+	 *
+	 * @param userGroupId
+	 * @return a list of devices which the user can access
+	 */
+	@RequestMapping(value = "/userGroup/{userGroupID}", method = RequestMethod.GET)
+	public List<ThingRestBean> getThingsByUserGroup(@PathVariable("userGroupID") Long userGroupId) {
+		return toThingRestBean(thingTagManager.getAccessibleThingsByUserGroupId(userGroupId));
 	}
 
 
