@@ -167,18 +167,18 @@ public class TagController extends AbstractThingTagController {
 
 	/**
 	 * Bind tags to users.
-	 * POST /{tagIDs}/users/{userIDs}
+	 * POST /{fullNames}/users/{userIDs}
 	 *
-	 * @param tagIds
+	 * @param fullNames
 	 * @param userIds
 	 */
-	@RequestMapping(path = "/{tagIDs}/users/{userIDs}", method = {RequestMethod.POST})
-	public void bindTagToUser(@PathVariable("tagIDs") String tagIds, @PathVariable("userIDs") String userIds) {
-		if (Strings.isBlank(tagIds) || Strings.isBlank(userIds)) {
+	@RequestMapping(path = "/{fullNames}/users/{userIDs}", method = {RequestMethod.POST})
+	public void bindTagToUser(@PathVariable("fullNames") String fullNames, @PathVariable("userIDs") String userIds) {
+		if (Strings.isBlank(fullNames) || Strings.isBlank(userIds)) {
 			throw new PortalException("RequiredFieldsMissing", "tagIDs or userIDs is empty", HttpStatus
 					.BAD_REQUEST);
 		}
-		List<TagIndex> tagIndexes = getTags(tagIds);
+		List<TagIndex> tagIndexes = thingTagManager.getAccessibleTagsByFullTagName(getLoginUserID(), fullNames);
 		List<BeehiveUser> users = getUsers(userIds);
 		try {
 			thingTagManager.bindTagsToUsers(tagIndexes, users);
@@ -189,18 +189,18 @@ public class TagController extends AbstractThingTagController {
 
 	/**
 	 * Unbind tags to users.
-	 * POST /{tagIDs}/users/{userIDs}
+	 * POST /{fullNames}/users/{userIDs}
 	 *
-	 * @param tagIds
+	 * @param fullNames
 	 * @param userIds
 	 */
-	@RequestMapping(path = "/{tagIDs}/users/{userIDs}", method = {RequestMethod.DELETE})
-	public void unbindTagFromUser(@PathVariable("tagIDs") String tagIds, @PathVariable("userIDs") String userIds) {
-		if (Strings.isBlank(tagIds) || Strings.isBlank(userIds)) {
+	@RequestMapping(path = "/{fullNames}/users/{userIDs}", method = {RequestMethod.DELETE})
+	public void unbindTagFromUser(@PathVariable("fullNames") String fullNames, @PathVariable("userIDs") String userIds) {
+		if (Strings.isBlank(fullNames) || Strings.isBlank(userIds)) {
 			throw new PortalException("RequiredFieldsMissing", "tagIDs or userIDs is empty", HttpStatus
 					.BAD_REQUEST);
 		}
-		List<TagIndex> tagIndexes = getTags(tagIds);
+		List<TagIndex> tagIndexes = thingTagManager.getAccessibleTagsByFullTagName(getLoginUserID(), fullNames);
 		List<BeehiveUser> users = getUsers(userIds);
 		try {
 			thingTagManager.unbindTagsFromUsers(tagIndexes, users);
@@ -211,18 +211,20 @@ public class TagController extends AbstractThingTagController {
 
 	/**
 	 * 绑定tag及usergroup
-	 * POST /tags/{tagIDs}/userGroups/{userGroupIDs}
+	 * POST /tags/{fullNames}/userGroups/{userGroupIDs}
 	 * <p>
 	 * refer to doc "Beehive API - Thing API" for request/response details
 	 */
-	@RequestMapping(path = "/{tagIDs}/userGroups/{userGroupIDs}", method = {RequestMethod.POST})
-	public void bindTagToUserGroup(@PathVariable("tagIDs") String tagIDs, @PathVariable("userGroupIDs") String
+	@RequestMapping(path = "/{fullNames}/userGroups/{userGroupIDs}", method = {RequestMethod.POST})
+	public void bindTagToUserGroup(@PathVariable("fullNames") String fullNames, @PathVariable("userGroupIDs") String
 			userGroupIDs) {
-		if (Strings.isBlank(tagIDs) || Strings.isBlank(userGroupIDs)) {
+		if (Strings.isBlank(fullNames) || Strings.isBlank(userGroupIDs)) {
 			throw new PortalException("RequiredFieldsMissing", "tagIDs or userGroupIDs is empty", HttpStatus
 					.BAD_REQUEST);
 		}
-		List<TagIndex> tagIndexes = getTags(tagIDs);
+
+		List<TagIndex> tagIndexes = thingTagManager.getAccessibleTagsByFullTagName(getLoginUserID(), fullNames);
+
 		List<UserGroup> userGroups = getUserGroups(userGroupIDs);
 		try {
 			thingTagManager.bindTagsToUserGroups(tagIndexes, userGroups);
@@ -233,13 +235,13 @@ public class TagController extends AbstractThingTagController {
 
 	/**
 	 * 解除绑定tag及usergroup
-	 * DELETE /tags/{tagIDs}/userGroups/{userGroupIDs}
+	 * DELETE /tags/{fullNames}/userGroups/{userGroupIDs}
 	 * <p>
 	 * refer to doc "Beehive API - Thing API" for request/response details
 	 *
 	 * @param tagIDs
 	 */
-	@RequestMapping(path = "/{tagIDs}/userGroups/{userGroupIDs}", method = {RequestMethod.DELETE}, consumes = {"*"})
+	@RequestMapping(path = "/{fullNames}/userGroups/{userGroupIDs}", method = {RequestMethod.DELETE}, consumes = {"*"})
 	public void unbindTagFromUserGroup(@PathVariable("tagIDs") String tagIDs, @PathVariable("userGroupIDs") String userGroupIDs) {
 		if (Strings.isBlank(tagIDs) || Strings.isBlank(userGroupIDs)) {
 			throw new PortalException("RequiredFieldsMissing", "tagIDs or userGroupIDs is empty", HttpStatus

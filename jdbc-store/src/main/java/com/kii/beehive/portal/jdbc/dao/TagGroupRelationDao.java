@@ -8,9 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Repository
 public class TagGroupRelationDao extends SpringBaseDao<TagGroupRelation> {
@@ -22,6 +20,15 @@ public class TagGroupRelationDao extends SpringBaseDao<TagGroupRelation> {
 			GroupUserRelation.USER_GROUP_ID + " FROM " + GroupUserRelationDao.TABLE_NAME + " WHERE " +
 			GroupUserRelation.USER_ID + " = ?) t2 ON t1." + TagGroupRelation.USER_GROUP_ID + " = t2." +
 			GroupUserRelation.USER_GROUP_ID + ") t ";
+
+	private static final String SQL_FIND_TAGIDS_BY_USER_AND_FILTER_BY_FULLNAME = "SELECT DISTINCT t." +
+			TagGroupRelation.TAG_ID +
+			" FROM (SELECT DISTINCT " + TagGroupRelation.TAG_ID + " FROM " + TABLE_NAME + " t1 INNER JOIN (SELECT " +
+			GroupUserRelation.USER_GROUP_ID + " FROM " + GroupUserRelationDao.TABLE_NAME + " WHERE " +
+			GroupUserRelation.USER_ID + " = :userID) t2 ON t1." + TagGroupRelation.USER_GROUP_ID + " = t2." +
+			GroupUserRelation.USER_GROUP_ID + ") t ";
+
+
 	private Logger log = LoggerFactory.getLogger(TagGroupRelationDao.class);
 
 	public void delete(Long tagID, Long userGroupID) {
@@ -121,5 +128,21 @@ public class TagGroupRelationDao extends SpringBaseDao<TagGroupRelation> {
 		}
 		return Optional.ofNullable(findSingleFieldBySingleField(TagGroupRelation.USER_GROUP_ID, TagGroupRelation.TAG_ID,
 				tagIds, Long.class));
+	}
+
+	public Optional<List<Long>> findTagIds(String userId, List<String> fullTagName) {
+		if (Strings.isBlank(userId) || null == fullTagName || fullTagName.isEmpty()) {
+			return Optional.ofNullable(null);
+		}
+
+		StringBuilder sb = new StringBuilder(SQL_FIND_TAGIDS_BY_USER_AND_FILTER_BY_FULLNAME).append(" INNER JOIN ").
+				append(TagIndexDao.TABLE_NAME).append(" t3 ON t.").append(TagGroupRelation.TAG_ID)
+				.append(" = t3.").append(TagIndex.TAG_ID).append(" AND ").append("t3.").append(TagIndex.FULL_TAG_NAME).append(" IN (:fullNames)");
+
+		Map<String, Object> params = new HashMap();
+		params.put("userID", userId);
+		params.put("fullNames", fullTagName);
+		return Optional.ofNullable(namedJdbcTemplate.queryForList(sb.toString(), params,
+				Long.class));
 	}
 }
