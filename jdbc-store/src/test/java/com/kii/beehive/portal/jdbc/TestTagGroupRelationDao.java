@@ -179,7 +179,7 @@ public class TestTagGroupRelationDao extends TestTemplate {
 
 		List<String> tagNameList = new ArrayList<String>();
 		tagNameList.add(TagType.Location.getTagName("Location 1"));
-		tagIds = tagGroupRelationDao.findTagIds("Someone", tagNameList).
+		tagIds = tagGroupRelationDao.findTagIdsByUserIdAndFullTagName("Someone", tagNameList).
 				orElse(Collections.emptyList()).stream().collect(Collectors.toSet());
 		Assert.assertEquals("Should have 1 id", 1, tagIds.size());
 		Assert.assertEquals("Id doesn't match", allTagIds.get(3), tagIds.iterator().next());

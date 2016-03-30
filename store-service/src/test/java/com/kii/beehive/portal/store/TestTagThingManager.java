@@ -484,7 +484,7 @@ public class TestTagThingManager {
 		} catch (ObjectNotFoundException e) {
 		}
 
-		doReturn(null).when(globalThingDao).findByID(any(Serializable.class));
+		doReturn(mock(GlobalThingInfo.class)).when(globalThingDao).findByID(any(Serializable.class));
 		doReturn(mock(ThingUserRelation.class)).when(thingUserRelationDao).find(anyLong(), anyString());
 		tagThingManager.getAccessibleThingById("someone", 100L);
 
@@ -670,6 +670,33 @@ public class TestTagThingManager {
 		assertEquals("Number of thing ids doesn't match", expected.size(), thingIds.size());
 	}
 
+	@Test
+	public void testGetUserGroupsOfThing() throws Exception {
+		doReturn(Optional.ofNullable(Arrays.asList(100L))).when(tagThingRelationDao).findTagIds(anyLong());
+		doReturn(Optional.ofNullable(Arrays.asList(200L))).when(tagGroupRelationDao).
+				findUserGroupIdsByTagIds(anyListOf(Long.class));
+		doReturn(Optional.ofNullable(Arrays.asList(300L))).when(thingUserGroupRelationDao).
+				findUserGroupIds(anyLong());
+
+		List<Long> result = tagThingManager.getUserGroupsOfThing(100L);
+		assertEquals(2, result.size());
+		assertTrue(result.contains(200L) && result.contains(300L));
+	}
+
+	@Test
+	public void testGetAccessibleThingsByUserGroupId() throws Exception {
+		doReturn(Optional.ofNullable(Collections.emptyList())).when(tagGroupRelationDao).
+				findTagIdsByUserGroupId(anyLong());
+		doReturn(Optional.ofNullable(Arrays.asList(100L))).when(tagThingRelationDao).
+				findThingIds(anyCollectionOf(Long.class));
+		doReturn(Optional.ofNullable(Arrays.asList(200L))).when(thingUserGroupRelationDao).
+				findThingIds(anyLong());
+		doReturn(null).when(globalThingDao).findByIDs(anyCollectionOf(Long.class));
+
+		tagThingManager.getAccessibleThingsByUserGroupId(200L);
+
+		verify(globalThingDao, times(1)).findByIDs(anyCollectionOf(Long.class));
+	}
 	
 	/*
 	@Test

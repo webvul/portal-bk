@@ -154,6 +154,34 @@ public class TestThingController extends WebTestTemplate {
 	}
 
 	@Test
+	public void testGetUserGroupIdsByThing() throws Exception {
+		doThrow(new ObjectNotFoundException("test")).when(thingTagManager).getAccessibleThingById(anyString(),
+				anyLong());
+		try {
+			thingController.getUserGroupIdsByThing(100L);
+			fail("Expect an PortalException");
+		} catch (PortalException e) {
+			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+		}
+
+		doReturn(mock(GlobalThingInfo.class)).when(thingTagManager).getAccessibleThingById(anyString(), anyLong());
+		doReturn(null).when(thingTagManager).getUserGroupsOfThing(anyLong());
+
+		thingController.getUserGroupIdsByThing(100L);
+
+		verify(thingTagManager, times(1)).getUserGroupsOfThing(anyLong());
+	}
+
+	@Test
+	public void testGetThingsByUserGroup() throws Exception {
+		doReturn(null).when(thingTagManager).getAccessibleThingsByUserId(anyString());
+		thingController.getThingsByUserGroup(100L);
+
+		doReturn(Arrays.asList(mock(GlobalThingInfo.class))).when(thingTagManager).getAccessibleThingsByUserId(anyString());
+		thingController.getThingsByUserGroup(100L);
+	}
+
+	@Test
 	public void testGetThingTypeByTagFullName() throws Exception {
 		doThrow(new ObjectNotFoundException("test")).when(thingTagManager).getTypesOfAccessibleThingsByTagFullName(
 				anyString(), anySetOf(String.class));
