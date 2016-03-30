@@ -84,7 +84,7 @@ public abstract class SpringBaseDao<T extends DBEntity> {
 		}
 	}
 
-	public List<T> findByIDs(List<Long> ids) {
+	public List<T> findByIDs(Collection<Long> ids) {
 		if (null == ids || ids.isEmpty()) {
 			return Collections.emptyList();
 		}

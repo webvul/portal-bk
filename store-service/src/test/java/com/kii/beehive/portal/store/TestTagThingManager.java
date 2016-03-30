@@ -546,7 +546,7 @@ public class TestTagThingManager {
 	public void testGetAccessibleTagsByTagTypeAndName() throws Exception {
 		doReturn(Optional.ofNullable(Arrays.asList(100L))).when(tagUserRelationDao).findTagIds(anyString(),
 				anyString(), anyString());
-		doReturn(Optional.ofNullable(Arrays.asList(200L))).when(tagGroupRelationDao).findTagIds(anyString(),
+		doReturn(Optional.ofNullable(Arrays.asList(200L))).when(tagGroupRelationDao).findTagIdsByUserId(anyString(),
 				anyString(), anyString());
 		Set<Long> tagIds = new HashSet();
 		doAnswer((Answer<List<TagIndex>>) invocation -> {
@@ -641,6 +641,35 @@ public class TestTagThingManager {
 		List<String> userIds = tagThingManager.getUsersOfThing(1000L);
 		assertEquals(4, userIds.stream().collect(Collectors.toSet()).size());
 	}
+
+	@Test
+	public void testGetAccessibleThings() throws Exception {
+		String user = "Someone";
+
+		UserGroup userGroup = new UserGroup();
+		userGroup.setId(2200L);
+		doReturn(Arrays.asList(userGroup)).when(userGroupDao).findUserGroup(anyString(), any(), any());
+		doReturn(Optional.ofNullable(Arrays.asList(11001L))).when(thingUserGroupRelationDao).
+				findThingIds(eq(userGroup.getId()));
+		doReturn(Optional.ofNullable(Arrays.asList(11002L))).when(thingUserRelationDao).findThingIds(eq(user));
+
+		TagUserRelation relation = new TagUserRelation();
+		relation.setTagId(2400L);
+		doReturn(Optional.ofNullable(Arrays.asList(relation))).when(tagUserRelationDao).findByUserId(eq(user));
+		doReturn(Optional.ofNullable(Arrays.asList(11003L))).when(tagThingRelationDao).findThingIds(eq(relation
+				.getTagId()));
+		Set<Long> thingIds = new HashSet();
+		doAnswer((Answer<List<GlobalThingInfo>>) invocation -> {
+			thingIds.addAll((Collection<? extends Long>) invocation.getArguments()[0]);
+			return null;
+		}).when(globalThingDao).findByIDs(anyCollectionOf(Long.class));
+
+		List<Long> expected = Arrays.asList(11001L, 11002L, 11003L);
+		tagThingManager.getAccessibleThingsByUserId("Someone");
+		assertTrue("Thing ids don't match", thingIds.containsAll(expected));
+		assertEquals("Number of thing ids doesn't match", expected.size(), thingIds.size());
+	}
+
 	
 	/*
 	@Test

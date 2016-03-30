@@ -153,26 +153,26 @@ public class TestTagGroupRelationDao extends TestTemplate {
 		gurelation.setUserGroupID(userGroupId);
 		groupUserRelationDao.saveOrUpdate(gurelation);
 
-		Set<Long> tagIds = tagGroupRelationDao.findTagIds("Someone", null, null).orElse(Collections.emptyList()).
+		Set<Long> tagIds = tagGroupRelationDao.findTagIdsByUserId("Someone", null, null).orElse(Collections.emptyList()).
 				stream().collect(Collectors.toSet());
 		assertEquals("Number of ids doesn't match", 9, tagIds.size());
 		assertTrue("Ids don't match", tagIds.containsAll(allTagIds));
 
-		tagIds = tagGroupRelationDao.findTagIds("Someone 2", null, null).orElse(Collections.emptyList()).
+		tagIds = tagGroupRelationDao.findTagIdsByUserId("Someone 2", null, null).orElse(Collections.emptyList()).
 				stream().collect(Collectors.toSet());
 		assertTrue("Should not find any ids", tagIds.isEmpty());
 
-		tagIds = tagGroupRelationDao.findTagIds("Someone", TagType.Location.name(), null).
+		tagIds = tagGroupRelationDao.findTagIdsByUserId("Someone", TagType.Location.name(), null).
 				orElse(Collections.emptyList()).stream().collect(Collectors.toSet());
 		Assert.assertEquals("Should have 3 ids", 3, tagIds.size());
 		assertTrue("Ids don't match", tagIds.containsAll(allTagIds.subList(3, 6)));
 
-		tagIds = tagGroupRelationDao.findTagIds("Someone", null, "Location 1").
+		tagIds = tagGroupRelationDao.findTagIdsByUserId("Someone", null, "Location 1").
 				orElse(Collections.emptyList()).stream().collect(Collectors.toSet());
 		Assert.assertEquals("Should have 2 ids", 2, tagIds.size());
 		assertTrue("Ids don't match", tagIds.contains(allTagIds.get(3)) && tagIds.contains(allTagIds.get(6)));
 
-		tagIds = tagGroupRelationDao.findTagIds("Someone", TagType.Location.name(), "Location 1").
+		tagIds = tagGroupRelationDao.findTagIdsByUserId("Someone", TagType.Location.name(), "Location 1").
 				orElse(Collections.emptyList()).stream().collect(Collectors.toSet());
 		Assert.assertEquals("Should have 1 id", 1, tagIds.size());
 		Assert.assertEquals("Id doesn't match", allTagIds.get(3), tagIds.iterator().next());
