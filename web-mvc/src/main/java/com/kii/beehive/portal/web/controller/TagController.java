@@ -239,15 +239,15 @@ public class TagController extends AbstractThingTagController {
 	 * <p>
 	 * refer to doc "Beehive API - Thing API" for request/response details
 	 *
-	 * @param tagIDs
+	 * @param fullNames
 	 */
 	@RequestMapping(path = "/{fullNames}/userGroups/{userGroupIDs}", method = {RequestMethod.DELETE}, consumes = {"*"})
-	public void unbindTagFromUserGroup(@PathVariable("tagIDs") String tagIDs, @PathVariable("userGroupIDs") String userGroupIDs) {
-		if (Strings.isBlank(tagIDs) || Strings.isBlank(userGroupIDs)) {
+	public void unbindTagFromUserGroup(@PathVariable("fullNames") String fullNames, @PathVariable("userGroupIDs") String userGroupIDs) {
+		if (Strings.isBlank(fullNames) || Strings.isBlank(userGroupIDs)) {
 			throw new PortalException("RequiredFieldsMissing", "tagIDs or userGroupIDs is empty", HttpStatus
 					.BAD_REQUEST);
 		}
-		List<TagIndex> tagIndexes = getTags(tagIDs);
+		List<TagIndex> tagIndexes = thingTagManager.getAccessibleTagsByFullTagName(getLoginUserID(), fullNames);
 		List<UserGroup> userGroups = getUserGroups(userGroupIDs);
 		try {
 			thingTagManager.unbindTagsFromUserGroups(tagIndexes, userGroups);

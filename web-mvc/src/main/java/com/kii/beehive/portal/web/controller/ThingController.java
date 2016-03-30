@@ -249,21 +249,21 @@ public class ThingController extends AbstractThingTagController {
 
 	/**
 	 * 绑定设备及tag
-	 * POST /things/{globalThingIDs}/tags/{tagID...}
+	 * POST /things/{globalThingIDs}/tags/{fullNames...}
 	 * <p>
 	 * refer to doc "Beehive API - Thing API" for request/response details
 	 *
 	 * @param globalThingIDs
 	 */
-	@RequestMapping(value = "/{globalThingIDs}/tags/{tagIDs}", method = {RequestMethod.POST})
-	public void bindThingsToTags(@PathVariable("globalThingIDs") String globalThingIDs, @PathVariable("tagIDs") String
-			tagIDs) {
-		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(tagIDs)) {
+	@RequestMapping(value = "/{globalThingIDs}/tags/{fullNames}", method = {RequestMethod.POST})
+	public void bindThingsToTags(@PathVariable("globalThingIDs") String globalThingIDs, @PathVariable("fullNames") String
+			fullNames) {
+		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(fullNames)) {
 			throw new PortalException("RequiredFieldsMissing", "globalThingIDs or tagIDs is empty", HttpStatus
 					.BAD_REQUEST);
 		}
 		List<GlobalThingInfo> things = getThings(globalThingIDs);
-		List<TagIndex> tags = getTags(tagIDs);
+		List<TagIndex> tags = thingTagManager.getAccessibleTagsByFullTagName(getLoginUserID(), fullNames);
 		try {
 			thingTagManager.bindTagsToThings(tags, things);
 		} catch (UnauthorizedException e) {
@@ -275,21 +275,21 @@ public class ThingController extends AbstractThingTagController {
 
 	/**
 	 * 解除绑定设备及tag
-	 * DELETE /things/{globalThingIDs}/tags/{tagID...}
+	 * DELETE /things/{globalThingIDs}/tags/{fullNames...}
 	 * <p>
 	 * refer to doc "Beehive API - Thing API" for request/response details
 	 *
 	 * @param globalThingIDs
 	 */
 	@RequestMapping(value = "/{globalThingIDs}/tags/{tagIDs}", method = {RequestMethod.DELETE}, consumes = {"*"})
-	public void unbindThingsFromTags(@PathVariable("globalThingIDs") String globalThingIDs, @PathVariable("tagIDs") String
-			tagIDs) {
-		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(tagIDs)) {
+	public void unbindThingsFromTags(@PathVariable("globalThingIDs") String globalThingIDs, @PathVariable("fullNames") String
+			fullNames) {
+		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(fullNames)) {
 			throw new PortalException("RequiredFieldsMissing", "globalThingIDs or tagIDs is empty", HttpStatus
 					.BAD_REQUEST);
 		}
 		List<GlobalThingInfo> things = getThings(globalThingIDs);
-		List<TagIndex> tags = getTags(tagIDs);
+		List<TagIndex> tags = thingTagManager.getAccessibleTagsByFullTagName(getLoginUserID(), fullNames);
 		try {
 			thingTagManager.unbindThingsFromTags(tags, things);
 		} catch (UnauthorizedException e) {
