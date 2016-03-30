@@ -1,236 +1,305 @@
 package com.kii.beehive.portal.jdbc;
 
-import static junit.framework.TestCase.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
+import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.common.utils.ThingIDTools;
+import com.kii.beehive.portal.jdbc.dao.*;
+import com.kii.beehive.portal.jdbc.entity.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.kii.beehive.portal.auth.AuthInfoStore;
-import com.kii.beehive.portal.common.utils.ThingIDTools;
-import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
-import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
-import com.kii.beehive.portal.jdbc.dao.TagThingRelationDao;
-import com.kii.beehive.portal.jdbc.dao.TeamDao;
-import com.kii.beehive.portal.jdbc.dao.TeamThingRelationDao;
-import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
-import com.kii.beehive.portal.jdbc.entity.TagIndex;
-import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
-import com.kii.beehive.portal.jdbc.entity.TagType;
-import com.kii.beehive.portal.jdbc.entity.Team;
-import com.kii.beehive.portal.jdbc.entity.TeamThingRelation;
+import java.util.*;
+import java.util.stream.Collectors;
 
-public class TestThingDao extends TestTemplate{
+import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.*;
+
+public class TestThingDao extends TestTemplate {
 
 	@Autowired
 	private GlobalThingSpringDao dao;
-	
+
 	@Autowired
 	private TagIndexDao tagIndexDao;
-	
+
 	@Autowired
 	private TagThingRelationDao tagThingRelationDao;
-	
+
 	@Autowired
 	private TeamDao teamDao;
-	
+
 	@Autowired
 	private TeamThingRelationDao teamThingRelationDao;
-	
-	private GlobalThingInfo  thing=new GlobalThingInfo();
-	
+
+	private GlobalThingInfo thing = new GlobalThingInfo();
+
 	@Before
-	public void init(){
+	public void init() {
 		thing.setVendorThingID("demo_vendor_thing_id");
 		thing.setKiiAppID("appID");
 		thing.setCustom("custom");
 		thing.setType("thingType");
 		thing.setStatus("this is a test about long text,we don't know the final required,so....");
 
-		String fullKiiThingID= ThingIDTools.joinFullKiiThingID("appID", "abcdefghijk");
+		String fullKiiThingID = ThingIDTools.joinFullKiiThingID("abcdefghijk", "appID");
 		thing.setFullKiiThingID(fullKiiThingID);
-		long id=dao.saveOrUpdate(thing);
+		long id = dao.saveOrUpdate(thing);
 		thing.setId(id);
-		
+
 		AuthInfoStore.setTeamID(null);
 	}
-	
 
 	@Test
-	public void testFindByID(){
+	public void testFindByIDsAndType() throws Exception {
+		GlobalThingInfo thingInfo1 = new GlobalThingInfo();
+		thingInfo1.setType("LED");
+		thingInfo1.setVendorThingID("LED123");
+		thingInfo1.setKiiAppID("WhatsApp");
+		Long thingId1 = dao.saveOrUpdate(thingInfo1);
 
-		GlobalThingInfo  entity=dao.findByID(thing.getId());
-		assertEquals(thing.getVendorThingID(),entity.getVendorThingID());
-		assertEquals(thing.getKiiAppID(),entity.getKiiAppID());
-		assertEquals(thing.getCustom(),entity.getCustom());
-		assertEquals(thing.getType(),entity.getType());
-		assertEquals(thing.getStatus(),entity.getStatus());
+		GlobalThingInfo thingInfo2 = new GlobalThingInfo();
+		thingInfo2.setType("TV");
+		thingInfo2.setVendorThingID("TV123");
+		thingInfo2.setKiiAppID("WhatsApp");
+		Long thingId2 = dao.saveOrUpdate(thingInfo2);
+
+		Optional<List<GlobalThingInfo>> result = dao.findByIDsAndType(Arrays.asList(thingId1, thingId2).stream().
+				collect(Collectors.toSet()), "LED");
+		assertNotNull("Should have a thing", result.get());
+		assertEquals("Number of things is incorrect", 1, result.get().size());
+		assertEquals("Thing id doesn't match", thingId1, result.get().get(0).getId());
+
+		result = dao.findByIDsAndType(Arrays.asList(thingId1, thingId2).stream().
+				collect(Collectors.toSet()), "TV");
+		assertNotNull("Should have a thing", result.get());
+		assertEquals("Number of things is incorrect", 1, result.get().size());
+		assertEquals("Thing id doesn't match", thingId2, result.get().get(0).getId());
+
+		List<GlobalThingInfo> emptyResult = dao.findByIDsAndType(Collections.emptySet(), "TV").
+				orElse(Collections.emptyList());
+		assertTrue(emptyResult.isEmpty());
+		emptyResult = dao.findByIDsAndType(null, "TV").orElse(Collections.emptyList());
+		assertTrue(emptyResult.isEmpty());
+	}
+
+	@Test
+	public void testFindThingTypesWithThingCount() throws Exception {
+		Set<Long> thingIds = new HashSet();
+		for (int i = 0; i < 3; ++i) {
+			GlobalThingInfo thingInfo1 = new GlobalThingInfo();
+			thingInfo1.setType("LED");
+			thingInfo1.setVendorThingID("LED-" + i);
+			thingInfo1.setKiiAppID("WhatsApp");
+			thingIds.add(dao.saveOrUpdate(thingInfo1));
+		}
+
+		for (int i = 0; i < 2; ++i) {
+			GlobalThingInfo thingInfo2 = new GlobalThingInfo();
+			thingInfo2.setType("TV");
+			thingInfo2.setVendorThingID("TV1-" + i);
+			thingInfo2.setKiiAppID("WhatsApp");
+			thingIds.add(dao.saveOrUpdate(thingInfo2));
+		}
+
+		List<Map<String, Object>> result = dao.findThingTypesWithThingCount(thingIds).orElseThrow(() ->
+				new RuntimeException("Test fail. Can't get thingTypesWithThingCount"));
+		assertEquals("There should be two objects", 2, result.size());
+		result.forEach(data -> {
+			if (data.get("type").equals("LED")) {
+				assertEquals("Should have 3 LEDs", "3", data.get("count").toString());
+			} else if (data.get("type").equals("TV")) {
+				assertEquals("Should have 3 TVs", "2", data.get("count").toString());
+			} else {
+				fail("Unexpected data set");
+			}
+		});
+
+		result = dao.findThingTypesWithThingCount(Collections.emptySet()).orElse(Collections.emptyList());
+		assertTrue(result.isEmpty());
+	}
+
+	@Test
+	public void testFindByID() {
+
+		GlobalThingInfo entity = dao.findByID(thing.getId());
+		assertEquals(thing.getVendorThingID(), entity.getVendorThingID());
+		assertEquals(thing.getKiiAppID(), entity.getKiiAppID());
+		assertEquals(thing.getCustom(), entity.getCustom());
+		assertEquals(thing.getType(), entity.getType());
+		assertEquals(thing.getStatus(), entity.getStatus());
 
 	}
-	
+
 	@Test
-	public void testFindByIDs(){
+	public void testFindByIDs() {
 		GlobalThingInfo thing2 = new GlobalThingInfo();
 		thing2.setVendorThingID("demo_vendor_thing_id2");
 		thing2.setKiiAppID("appID2");
 		thing2.setStatus("1");
 
-		long id2=dao.saveOrUpdate(thing2);
+		long id2 = dao.saveOrUpdate(thing2);
 		List<Long> ids = new ArrayList<>();
 		ids.add(thing.getId());
 		ids.add(id2);
-		List<GlobalThingInfo>  list=dao.findByIDs(ids);
+		List<GlobalThingInfo> list = dao.findByIDs(ids);
 
-		assertEquals(2,list.size());
+		assertEquals(2, list.size());
 	}
-	
+
 	@Test
-	public void testDelete(){
+	public void testDelete() {
 		dao.deleteByID(thing.getId());
-		GlobalThingInfo  entity=dao.findByID(thing.getId());
+		GlobalThingInfo entity = dao.findByID(thing.getId());
 		assertNull(entity);
 	}
 
-	
+
 	@Test
-	public void testGetThingByVendorThingID(){
-		GlobalThingInfo  entity = dao.getThingByVendorThingID(thing.getVendorThingID());
-		assertEquals(thing.getVendorThingID(),entity.getVendorThingID());
-		assertEquals(thing.getKiiAppID(),entity.getKiiAppID());
-		assertEquals(thing.getCustom(),entity.getCustom());
-		assertEquals(thing.getType(),entity.getType());
-		assertEquals(thing.getStatus(),entity.getStatus());
+	public void testGetThingByVendorThingID() {
+		GlobalThingInfo entity = dao.getThingByVendorThingID(thing.getVendorThingID());
+		assertEquals(thing.getVendorThingID(), entity.getVendorThingID());
+		assertEquals(thing.getKiiAppID(), entity.getKiiAppID());
+		assertEquals(thing.getCustom(), entity.getCustom());
+		assertEquals(thing.getType(), entity.getType());
+		assertEquals(thing.getStatus(), entity.getStatus());
 	}
 
 	@Test
-	public void testUpdate(){
+	public void testUpdate() {
 		thing.setVendorThingID("demo_vendor_thing_id_update");
 		thing.setCustom("customUpdate");
 		thing.setType("typeUpdate");
 		thing.setStatus("Update");
 		dao.updateEntityAllByID(thing);
-		GlobalThingInfo  entity=dao.findByID(thing.getId());
-		assertEquals(thing.getVendorThingID(),entity.getVendorThingID());
-		assertEquals(thing.getKiiAppID(),entity.getKiiAppID());
-		assertEquals(thing.getCustom(),entity.getCustom());
-		assertEquals(thing.getType(),entity.getType());
-		assertEquals(thing.getStatus(),entity.getStatus());
+		GlobalThingInfo entity = dao.findByID(thing.getId());
+		assertEquals(thing.getVendorThingID(), entity.getVendorThingID());
+		assertEquals(thing.getKiiAppID(), entity.getKiiAppID());
+		assertEquals(thing.getCustom(), entity.getCustom());
+		assertEquals(thing.getType(), entity.getType());
+		assertEquals(thing.getStatus(), entity.getStatus());
+
+		Map<String, Object> map = new HashMap<>();
+		map.put("custom", "updated");
+		map.put("status", "newStatus");
+
+		dao.updateEntityByID(map, thing.getId());
+
+		thing = dao.findByID(thing.getId());
+
+		assertEquals(thing.getVendorThingID(), entity.getVendorThingID());
+		assertEquals(thing.getKiiAppID(), entity.getKiiAppID());
+		assertEquals(thing.getCustom(), "updated");
+		assertEquals(thing.getStatus(), "newStatus");
 	}
-	
+
 	@Test
 	public void testFindAllThingTypes() {
 		List<String> list = dao.findAllThingTypes();
 		assertTrue(list.size() > 0);
 	}
-	
+
 	@Test
 	public void testFindAllThingTypesWithTeamID() {
 		Long teamID = createTeamRel();
-		
+
 		AuthInfoStore.setTeamID(teamID);
 		List<String> list = dao.findAllThingTypes();
 		assertTrue(list.size() > 0);
 	}
-	
+
 	@Test
 	public void testFindAllThingTypesWithThingCount() {
 		List<Map<String, Object>> list = dao.findAllThingTypesWithThingCount();
 		assertTrue(list.size() > 0);
 	}
-	
+
 	@Test
 	public void testFindAllThingTypesWithThingCountWithTeamID() {
 		Long teamID = createTeamRel();
-		
+
 		AuthInfoStore.setTeamID(teamID);
-		
+
 		List<Map<String, Object>> list = dao.findAllThingTypesWithThingCount();
 		assertTrue(list.size() > 0);
 	}
-	
+
 	@Test
 	public void testGetThingByType() {
 		List<GlobalThingInfo> list = dao.getThingByType(thing.getType());
-		GlobalThingInfo  entity=list.get(0);
-		assertEquals(thing.getVendorThingID(),entity.getVendorThingID());
-		assertEquals(thing.getKiiAppID(),entity.getKiiAppID());
-		assertEquals(thing.getCustom(),entity.getCustom());
-		assertEquals(thing.getType(),entity.getType());
-		assertEquals(thing.getStatus(),entity.getStatus());
+		GlobalThingInfo entity = list.get(0);
+		assertEquals(thing.getVendorThingID(), entity.getVendorThingID());
+		assertEquals(thing.getKiiAppID(), entity.getKiiAppID());
+		assertEquals(thing.getCustom(), entity.getCustom());
+		assertEquals(thing.getType(), entity.getType());
+		assertEquals(thing.getStatus(), entity.getStatus());
 	}
-	
+
 	@Test
 	public void testGetThingByTypeWithTeamID() {
 		List<GlobalThingInfo> list = dao.getThingByType(thing.getType());
-		GlobalThingInfo  entity=list.get(0);
-		assertEquals(thing.getVendorThingID(),entity.getVendorThingID());
-		assertEquals(thing.getKiiAppID(),entity.getKiiAppID());
-		assertEquals(thing.getCustom(),entity.getCustom());
-		assertEquals(thing.getType(),entity.getType());
-		assertEquals(thing.getStatus(),entity.getStatus());
+		GlobalThingInfo entity = list.get(0);
+		assertEquals(thing.getVendorThingID(), entity.getVendorThingID());
+		assertEquals(thing.getKiiAppID(), entity.getKiiAppID());
+		assertEquals(thing.getCustom(), entity.getCustom());
+		assertEquals(thing.getType(), entity.getType());
+		assertEquals(thing.getStatus(), entity.getStatus());
 	}
-	
+
 	@Test
 	public void testFindThingByTag() {
 		TagIndex tag = createTagRel();
-		
+
 		List<GlobalThingInfo> list = dao.findThingByTag(tag.getFullTagName());
 		assertTrue(list.size() > 0);
-		GlobalThingInfo  entity=list.get(0);
-		assertEquals(thing.getVendorThingID(),entity.getVendorThingID());
-		assertEquals(thing.getKiiAppID(),entity.getKiiAppID());
-		assertEquals(thing.getCustom(),entity.getCustom());
-		assertEquals(thing.getType(),entity.getType());
-		assertEquals(thing.getStatus(),entity.getStatus());
+		GlobalThingInfo entity = list.get(0);
+		assertEquals(thing.getVendorThingID(), entity.getVendorThingID());
+		assertEquals(thing.getKiiAppID(), entity.getKiiAppID());
+		assertEquals(thing.getCustom(), entity.getCustom());
+		assertEquals(thing.getType(), entity.getType());
+		assertEquals(thing.getStatus(), entity.getStatus());
 	}
-	
+
 	@Test
 	public void testFindThingByTagWithTeamID() {
 		TagIndex tag = createTagRel();
-		
+
 		Long teamID = createTeamRel();
-		
+
 		AuthInfoStore.setTeamID(teamID);
 		List<GlobalThingInfo> list = dao.findThingByTag(tag.getFullTagName());
 		assertTrue(list.size() > 0);
-		GlobalThingInfo  entity=list.get(0);
-		assertEquals(thing.getVendorThingID(),entity.getVendorThingID());
-		assertEquals(thing.getKiiAppID(),entity.getKiiAppID());
-		assertEquals(thing.getCustom(),entity.getCustom());
-		assertEquals(thing.getType(),entity.getType());
-		assertEquals(thing.getStatus(),entity.getStatus());
+		GlobalThingInfo entity = list.get(0);
+		assertEquals(thing.getVendorThingID(), entity.getVendorThingID());
+		assertEquals(thing.getKiiAppID(), entity.getKiiAppID());
+		assertEquals(thing.getCustom(), entity.getCustom());
+		assertEquals(thing.getType(), entity.getType());
+		assertEquals(thing.getStatus(), entity.getStatus());
 	}
-	
+
 	@Test
-	public void testfindThingTypeBytagIDs() {
+	public void testFindThingTypeBytagIDs() {
 		TagIndex tag = createTagRel();
 		TagIndex tag2 = createTagRel();
-		
-		List<Map<String, Object>> list = dao.findThingTypeBytagIDs(tag.getId()+","+tag2.getId());
-		
-		assertTrue(list.size() > 0);
-	}
-	
-	@Test
-	public void testfindThingTypeBytagIDsWithTeamID() {
-		TagIndex tag = createTagRel();
-		TagIndex tag2 = createTagRel();
-		Long teamID = createTeamRel();
-		
-		AuthInfoStore.setTeamID(teamID);
-		List<Map<String, Object>> list = dao.findThingTypeBytagIDs(tag.getId()+","+tag2.getId());
-		
+
+		List<Map<String, Object>> list = dao.findThingTypeBytagIDs(tag.getId() + "," + tag2.getId());
+
 		assertTrue(list.size() > 0);
 	}
 
 	@Test
-	public void testfindThingTypeByFullTagNames() {
+	public void testFindThingTypeBytagIDsWithTeamID() {
+		TagIndex tag = createTagRel();
+		TagIndex tag2 = createTagRel();
+		Long teamID = createTeamRel();
+
+		AuthInfoStore.setTeamID(teamID);
+		List<Map<String, Object>> list = dao.findThingTypeBytagIDs(tag.getId() + "," + tag2.getId());
+
+		assertTrue(list.size() > 0);
+	}
+
+	@Test
+	public void testFindThingTypeByFullTagNames() {
 		TagIndex tag = createTagRel();
 		TagIndex tag2 = createTagRel();
 
@@ -245,7 +314,7 @@ public class TestThingDao extends TestTemplate{
 	}
 
 	@Test
-	public void testfindThingTypeByFullTagNamesWithTeamID() {
+	public void testFindThingTypeByFullTagNamesWithTeamID() {
 		TagIndex tag = createTagRel();
 		TagIndex tag2 = createTagRel();
 		Long teamID = createTeamRel();
@@ -260,26 +329,26 @@ public class TestThingDao extends TestTemplate{
 		assertTrue(list.size() == 1);
 		assertTrue("thingType".equals(list.get(0)));
 	}
-	
-	private TagIndex createTagRel(){
-		TagIndex  tag =new TagIndex();
+
+	private TagIndex createTagRel() {
+		TagIndex tag = new TagIndex();
 		tag.setDisplayName("DisplayNameTest");
 		tag.setTagType(TagType.Custom);
 		tag.setDescription("DescriptionTest");
 		tag.setFullTagName(TagType.Custom.getTagName("DisplayNameTest"));
-		long id=tagIndexDao.saveOrUpdate(tag);
+		long id = tagIndexDao.saveOrUpdate(tag);
 		tag.setId(id);
-		
+
 		tagThingRelationDao.saveOrUpdate(new TagThingRelation(tag.getId(), thing.getId()));
 		return tag;
 	}
-	
-	private Long createTeamRel(){
+
+	private Long createTeamRel() {
 		Team t = new Team();
 		t.setName("TeamTest");
 		Long teamID = teamDao.saveOrUpdate(t);
-		
-		teamThingRelationDao.saveOrUpdate(new TeamThingRelation(teamID,thing.getId()));
+
+		teamThingRelationDao.saveOrUpdate(new TeamThingRelation(teamID, thing.getId()));
 		return teamID;
 	}
 }

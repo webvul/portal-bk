@@ -40,18 +40,7 @@ public class AuthInfoService {
 
         log.debug("createAuthInfoEntry token: " + token + " for userID: " + userID);
 
-        //get user Permission
-        Set<String> pSet = new HashSet<String>();
-        List<GroupUserRelation> groupUserRelation = groupUserRelationDao.findByUserID(userID);
-        for(GroupUserRelation gur:groupUserRelation){
-        	List<Permission> plist = permissionDao.findByUserGroupID(gur.getUserGroupID());
-        	for(Permission p:plist){
-                log.debug("get permission on userID: " + userID + " action: " + p.getAction());
-        		pSet.add(p.getAction());
-        	}
-        }
-
-        return new AuthInfoEntry(userID, teamID, token, pSet);
+        return new AuthInfoEntry(userID, teamID, token);
     }
 
 

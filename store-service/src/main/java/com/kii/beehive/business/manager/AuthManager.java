@@ -106,7 +106,6 @@ public class AuthManager {
             authInfoEntry = authInfoCacheService.saveToken(userID, loginInfo.getToken());
         }
 
-        loginInfo.setPermissionSet(authInfoEntry.getPermissionSet());
         return loginInfo;
     }
 

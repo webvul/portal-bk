@@ -293,3 +293,50 @@ CREATE TABLE IF NOT EXISTS `auth_info` (
     ON DELETE CASCADE
     ON UPDATE CASCADE) 
 ENGINE=InnoDB AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `rel_thing_user` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `thing_id` INT(11) NOT NULL,
+  `user_id` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_rel_thing_user_thing_id_idx` (`thing_id` ASC),
+  INDEX `fk_rel_thing_user_user_id_idx` (`user_id` ASC),
+  CONSTRAINT `fk_rel_thing_user_thing_id`
+    FOREIGN KEY (`thing_id`)
+    REFERENCES `global_thing` (`id_global_thing`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS `rel_tag_user` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `tag_id` INT(11) NOT NULL,
+  `user_id` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_rel_tag_user_thing_id_idx` (`tag_id` ASC),
+  INDEX `fk_rel_tag_user_user_id_idx` (`user_id` ASC),
+  CONSTRAINT `fk_rel_thing_user_tag_id`
+    FOREIGN KEY (`tag_id`)
+    REFERENCES `tag_index` (`tag_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;
+
+CREATE TABLE IF NOT EXISTS `rel_thing_group` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `thing_id` INT(11) NOT NULL,
+  `user_group_id` INT(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_rel_thing_group_thing_id_idx` (`thing_id` ASC),
+  INDEX `fk_rel_thing_group_user_group_id_idx` (`user_group_id` ASC),
+  CONSTRAINT `fk_rel_thing_group_tag_id`
+    FOREIGN KEY (`thing_id`)
+    REFERENCES `global_thing` (`id_global_thing`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `fk_rel_thing_group_user_group_id`
+    FOREIGN KEY (`user_group_id`)
+    REFERENCES `user_group` (`user_group_id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE)
+ENGINE = InnoDB;

@@ -109,7 +109,6 @@ public class AuthController {
         // get access token
         String accessToken = loginInfo.getToken();
         authRestBean.setAccessToken(accessToken);
-        authRestBean.setPermissions(loginInfo.getPermissionSet());
         return authRestBean;
     }
 
@@ -183,7 +182,6 @@ public class AuthController {
         // get access token
         String accessToken = entry.getToken();
         authRestBean.setAccessToken(accessToken);
-        authRestBean.setPermissions(entry.getPermissionSet());
         return authRestBean;
     }
 

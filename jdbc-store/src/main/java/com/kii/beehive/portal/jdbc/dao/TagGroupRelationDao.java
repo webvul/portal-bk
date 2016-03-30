@@ -1,46 +1,52 @@
 package com.kii.beehive.portal.jdbc.dao;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
+import com.kii.beehive.portal.jdbc.entity.TagGroupRelation;
+import com.kii.beehive.portal.jdbc.entity.TagIndex;
+import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
-import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
-import com.kii.beehive.portal.jdbc.entity.TagGroupRelation;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class TagGroupRelationDao extends SpringBaseDao<TagGroupRelation> {
 
-	private Logger log= LoggerFactory.getLogger(TagGroupRelationDao.class);
-	
 	public static final String TABLE_NAME = "rel_tag_group";
 	public static final String KEY = "id";
-	
-	public void delete(Long tagID, Long userGroupID){
-		if(tagID != null || userGroupID != null){
+	private static final String SQL_FIND_TAGIDS_BY_USER_AND_FILTER_BY = "SELECT DISTINCT t." + TagGroupRelation.TAG_ID +
+			" FROM (SELECT DISTINCT " + TagGroupRelation.TAG_ID + " FROM " + TABLE_NAME + " t1 INNER JOIN (SELECT " +
+			GroupUserRelation.USER_GROUP_ID + " FROM " + GroupUserRelationDao.TABLE_NAME + " WHERE " +
+			GroupUserRelation.USER_ID + " = ?) t2 ON t1." + TagGroupRelation.USER_GROUP_ID + " = t2." +
+			GroupUserRelation.USER_GROUP_ID + ") t ";
+	private Logger log = LoggerFactory.getLogger(TagGroupRelationDao.class);
+
+	public void delete(Long tagID, Long userGroupID) {
+		if (tagID != null || userGroupID != null) {
 			String sql = "DELETE FROM " + this.getTableName() + " WHERE ";
-			
+
 			StringBuilder where = new StringBuilder();
 			List<Object> params = new ArrayList<Object>();
-			if(tagID != null){
-				where.append(TagGroupRelation.TAG_ID + " = ? "); 
+			if (tagID != null) {
+				where.append(TagGroupRelation.TAG_ID + " = ? ");
 				params.add(tagID);
 			}
-			
-			if(userGroupID != null){
-				if(where.length() > 0){
+
+			if (userGroupID != null) {
+				if (where.length() > 0) {
 					where.append(" AND ");
 				}
-				where.append(TagGroupRelation.USER_GROUP_ID+" = ? ");
+				where.append(TagGroupRelation.USER_GROUP_ID + " = ? ");
 				params.add(userGroupID);
 			}
 			Object[] paramArr = new Object[params.size()];
 			paramArr = params.toArray(paramArr);
-			
-	        jdbcTemplate.update(sql+where.toString(),paramArr);
-		}else{
+
+			jdbcTemplate.update(sql + where.toString(), paramArr);
+		} else {
 			log.warn("tagID and userGroupID are null");
 		}
 	}
@@ -55,19 +61,49 @@ public class TagGroupRelationDao extends SpringBaseDao<TagGroupRelation> {
 	public String getKey() {
 		return KEY;
 	}
-	
+
 	public TagGroupRelation findByTagIDAndUserGroupID(Long tagID, Long userGroupID) {
-		if(tagID!=null && userGroupID!=null){
-			String sql = "SELECT * FROM " + this.getTableName() + " WHERE "+ TagGroupRelation.TAG_ID +"=? AND "+ TagGroupRelation.USER_GROUP_ID + "=?";
-			List<TagGroupRelation> list= jdbcTemplate.query(sql,new Object[]{tagID,userGroupID},getRowMapper());
-	        if(list.size() > 0){
-	        	return list.get(0);
-	        }
+		if (tagID != null && userGroupID != null) {
+			String sql = "SELECT * FROM " + this.getTableName() + " WHERE " + TagGroupRelation.TAG_ID + "=? AND " + TagGroupRelation.USER_GROUP_ID + "=?";
+			List<TagGroupRelation> list = jdbcTemplate.query(sql, new Object[]{tagID, userGroupID}, getRowMapper());
+			if (list.size() > 0) {
+				return list.get(0);
+			}
 		}
-        return null;
-    }
-	
+		return null;
+	}
+
 	public List<TagGroupRelation> findByUserGroupID(Long userGroupID) {
 		return super.findBySingleField(TagGroupRelation.USER_GROUP_ID, userGroupID);
+	}
+
+	public Optional<List<Long>> findTagIds(String userId, String tagType, String displayName) {
+		if (Strings.isBlank(userId)) {
+			return Optional.ofNullable(null);
+		}
+		List<Object> params = new ArrayList();
+		params.add(userId);
+		if (Strings.isBlank(tagType) && Strings.isBlank(displayName)) {
+			return Optional.ofNullable(jdbcTemplate.queryForList(SQL_FIND_TAGIDS_BY_USER_AND_FILTER_BY,
+					params.toArray(new Object[]{}), Long.class));
+		}
+
+		StringBuilder sb = new StringBuilder();
+		if (!Strings.isBlank(tagType)) {
+			sb.append("t3.").append(TagIndex.TAG_TYPE).append(" = ?");
+			params.add(tagType);
+		}
+		if (!Strings.isBlank(displayName)) {
+			if (0 != sb.length()) {
+				sb.append(" AND ");
+			}
+			sb.append("t3.").append(TagIndex.DISPLAY_NAME).append(" = ?");
+			params.add(displayName);
+		}
+		sb = new StringBuilder(SQL_FIND_TAGIDS_BY_USER_AND_FILTER_BY).append(" INNER JOIN ").
+				append(TagIndexDao.TABLE_NAME).append(" t3 ON t.").append(TagGroupRelation.TAG_ID)
+				.append(" = t3.").append(TagIndex.TAG_ID).append(" AND ").append(sb);
+		return Optional.ofNullable(jdbcTemplate.queryForList(sb.toString(), params.toArray(new Object[]{}),
+				Long.class));
 	}
 }

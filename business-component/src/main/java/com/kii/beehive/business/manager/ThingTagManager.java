@@ -70,7 +70,7 @@ public class ThingTagManager {
 		List<GlobalThingInfo> things = new ArrayList<>();
 
 		if(!source.getThingList().isEmpty()) {
-			things.addAll(globalThingDao.getThingsByIDArray(source.getThingList()));
+			things.addAll(globalThingDao.findByIDs(source.getThingList()));
 			//carlos
 			//可以同时 包括 thing list 和 tag list
 //			return things;
