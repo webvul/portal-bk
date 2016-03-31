@@ -60,6 +60,9 @@ public class TagThingManager {
 	private ThingUserRelationDao thingUserRelationDao;
 
 	@Autowired
+	private TeamTagRelationDao teamTagRelationDao;
+
+	@Autowired
 	private ThingIFInAppService thingIFInAppService;
 
 	@Autowired
@@ -278,6 +281,18 @@ public class TagThingManager {
 
 	}
 
+	public Long createTag(TagIndex tag) {
+		Long tagID = tagIndexDao.saveOrUpdate(tag);
+
+		if (AuthInfoStore.getTeamID() != null) {
+			teamTagRelationDao.saveOrUpdate(new TeamTagRelation(AuthInfoStore.getTeamID(), tagID));
+		}
+
+		tagUserRelationDao.saveOrUpdate(new TagUserRelation(tagID, AuthInfoStore.getUserID()));
+
+		return tagID;
+	}
+
 
 	/**
 	 * save the thing-location relation
@@ -294,7 +309,7 @@ public class TagThingManager {
 		List<TagIndex> list = tagIndexDao.findTagByTagTypeAndName(TagType.Location.toString(), location);
 		Long tagId;
 		if (null == list || list.isEmpty()) {
-			tagId = tagIndexDao.saveOrUpdate(new TagIndex(TagType.Location, location, null));
+			tagId = this.createTag(new TagIndex(TagType.Location, location, null));
 		} else {
 			tagId = list.get(0).getId();
 		}
