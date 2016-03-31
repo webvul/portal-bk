@@ -1,7 +1,6 @@
-package com.kii.beehive.business.ruleengine.process;
+package com.kii.beehive.business.ruleEngine;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.kii.beehive.business.event.BusinessEventListenerService;
 import com.kii.beehive.business.event.impl.TriggerFireProcess;
@@ -10,9 +9,8 @@ import com.kii.beehive.portal.event.EventListener;
 import com.kii.extension.ruleengine.service.TriggerRecordDao;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 
-@Component(BusinessEventListenerService.FIRE_TRIGGER_WHEN_MATCH)
-public class RuleFireProcess implements TriggerFireProcess {
-
+//@Component
+public class MockRuleFireProcess implements TriggerFireProcess{
 
 	@Autowired
 	private CommandExecuteService execService;
@@ -22,9 +20,6 @@ public class RuleFireProcess implements TriggerFireProcess {
 
 	@Autowired
 	private BusinessEventListenerService listenerService;
-
-	@Autowired
-	private TriggerLogTools  logTools;
 
 
 	@Override
@@ -39,9 +34,7 @@ public class RuleFireProcess implements TriggerFireProcess {
 			return;
 		}
 
-		execService.doCommand(trigger);
 
-		logTools.outputLog(triggerID);
 
 	}
 }
