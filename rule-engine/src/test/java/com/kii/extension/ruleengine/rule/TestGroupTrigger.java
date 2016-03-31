@@ -15,6 +15,7 @@ import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.TagSelector;
 import com.kii.extension.ruleengine.store.trigger.TriggerGroupPolicy;
 import com.kii.extension.ruleengine.store.trigger.TriggerGroupPolicyType;
+import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerSource;
 import com.kii.extension.ruleengine.store.trigger.WhenType;
 
@@ -57,10 +58,11 @@ public class TestGroupTrigger extends TestInit {
 		String triggerID="202";
 		record.setId(triggerID);
 
+		record.setRecordStatus(TriggerRecord.StatusType.enable);
 
 		Set<String> thingIDs=tagService.getKiiThingIDs(selector);
 
-		engine.createGroupTrigger(thingIDs,policy,triggerID,perdicate);
+		engine.createGroupTrigger(thingIDs,record);
 
 		thingIDs.forEach(id->sendBadThingStatus(id));
 
@@ -119,7 +121,7 @@ public class TestGroupTrigger extends TestInit {
 
 		Set<String> thingIDs=tagService.getKiiThingIDs(selector);
 
-		engine.createGroupTrigger(thingIDs,policy,triggerID,perdicate);
+		engine.createGroupTrigger(thingIDs,record);
 
 		thingIDs.forEach(id->sendBadThingStatus(id));
 
@@ -162,26 +164,23 @@ public class TestGroupTrigger extends TestInit {
 		Condition condition= TriggerConditionBuilder.andCondition().great("foo",0).less("bar",0).getConditionInstance();
 		perdicate.setCondition(condition);
 
-		perdicate.setTriggersWhen(WhenType.CONDITION_TRUE);
+		perdicate.setTriggersWhen(WhenType.CONDITION_CHANGED);
 		record.setPredicate(perdicate);
+
+		record.setRecordStatus(TriggerRecord.StatusType.enable);
 
 		TriggerGroupPolicy policy=new TriggerGroupPolicy();
 		policy.setGroupPolicy(TriggerGroupPolicyType.Percent);
-		policy.setCriticalNumber(30);
+		policy.setCriticalNumber(50);
 		record.setPolicy(policy);
 
 
 		String triggerID="201";
 		record.setId(triggerID);
 
-
-
 		Set<String> thingIDs=tagService.getKiiThingIDs(selector);
 
-
-		int num=30*thingIDs.size()/100;
-
-		engine.createGroupTrigger(thingIDs,policy,triggerID,perdicate);
+		engine.createGroupTrigger(thingIDs,record);
 
 		thingIDs.forEach(id->sendBadThingStatus(id));
 
@@ -189,11 +188,11 @@ public class TestGroupTrigger extends TestInit {
 
 		thingIDs.forEach(id->sendGoodThingStatus(id));
 
-		assertEquals(3,exec.getHitCount(triggerID));
+		assertEquals(1,exec.getHitCount(triggerID));
 
-		sendBadThingStatus(thingIDs.iterator().next());
+		thingIDs.forEach(id->sendBadThingStatus(id));
 
-		assertEquals(4,exec.getHitCount(triggerID));
+		assertEquals(2,exec.getHitCount(triggerID));
 
 	}
 }

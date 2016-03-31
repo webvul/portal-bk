@@ -1,6 +1,21 @@
 package com.kii.beehive.business.ruleengine;
 
+import javax.annotation.PostConstruct;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.kii.beehive.business.event.BusinessEventListenerService;
 import com.kii.beehive.business.manager.ThingTagManager;
 import com.kii.beehive.portal.event.EventListener;
@@ -14,14 +29,6 @@ import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-
-import javax.annotation.PostConstruct;
-import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
 public class TriggerManager {
@@ -58,6 +65,7 @@ public class TriggerManager {
 
 		List<TriggerRecord> recordList=triggerDao.getAllTrigger();
 
+
 		recordList.forEach(record->{
 
 			if(record instanceof SimpleTriggerRecord){
@@ -76,6 +84,7 @@ public class TriggerManager {
 
 		});
 
+
 		thingTagService.iteratorAllThingsStatus( s->{
 
 			if(StringUtils.isEmpty(s.getStatus())){
@@ -92,11 +101,11 @@ public class TriggerManager {
 		});
 
 
+
 	}
 
 	public String createTrigger(TriggerRecord record){
 
-//		record.setRecordStatus(TriggerRecord.StatusType.enable);
 		record.setRecordStatus(TriggerRecord.StatusType.disable);
 
 		String triggerID=triggerDao.addEntity(record).getObjectID();
@@ -149,16 +158,8 @@ public class TriggerManager {
 
 	private void addGroupToEngine(GroupTriggerRecord record) {
 
-		Set<String> thingIDs;
-//		if(!record.getSource().getSelector().getThingList().isEmpty()) {
-//
-//			thingIDs = thingTagService.getTagNamesByIDs(record.getSource().getSelector().getThingList());
-//		}else {
-//			thingIDs = thingTagService.getKiiThingIDs(record.getSource().getSelector());
-//		}
-		//carlos modify
-		thingIDs = thingTagService.getKiiThingIDs(record.getSource().getSelector());
-		service.createGroupTrigger(thingIDs,record.getPolicy(),record.getId(),record.getPredicate());
+		Set<String> thingIDs = thingTagService.getKiiThingIDs(record.getSource().getSelector());
+		service.createGroupTrigger(thingIDs,record);
 	}
 
 	private void addSummaryToEngine(SummaryTriggerRecord record) {
@@ -235,15 +236,22 @@ public class TriggerManager {
 	public void deleteTrigger(String triggerID) {
 
 		triggerDao.deleteTriggerRecord(triggerID);
-	}
 
-	public void clearTrigger(String triggerID) {
-		//删除triggerRecord
-		triggerDao.clearTriggerRecord(triggerID);
-		//删除eventListener(kii cloud只支持单个删除)
+		service.removeTrigger(triggerID);
+
 		List<EventListener> eventListenerList = eventListenerDao.getEventListenerByTargetKey(triggerID);
 		for(EventListener eventListener: eventListenerList){
 			eventListenerDao.removeEntity(eventListener.getId());
 		}
 	}
+
+//	public void clearTrigger(String triggerID) {
+//		//删除triggerRecord
+//		triggerDao.clearTriggerRecord(triggerID);
+//		//删除eventListener(kii cloud只支持单个删除)
+//		List<EventListener> eventListenerList = eventListenerDao.getEventListenerByTargetKey(triggerID);
+//		for(EventListener eventListener: eventListenerList){
+//			eventListenerDao.removeEntity(eventListener.getId());
+//		}
+//	}
 }

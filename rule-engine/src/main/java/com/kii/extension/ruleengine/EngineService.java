@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -15,6 +16,7 @@ import com.kii.extension.ruleengine.drools.RuleGeneral;
 import com.kii.extension.ruleengine.drools.entity.Summary;
 import com.kii.extension.ruleengine.drools.entity.Trigger;
 import com.kii.extension.ruleengine.drools.entity.TriggerType;
+import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.MultipleSrcTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
@@ -33,6 +35,8 @@ public class EngineService {
 	@Autowired
 	private RuleGeneral  ruleGeneral;
 
+	private Set<String>  scheduleSet=new ConcurrentSkipListSet<>();
+
 
 	//TODO:need been finish
 	public void createMultipleSourceTrigger(MultipleSrcTriggerRecord record){
@@ -42,10 +46,6 @@ public class EngineService {
 		trigger.setType(TriggerType.multiple);
 		trigger.setTriggerID(record.getId());
 		trigger.setStream(false);
-
-
-
-
 
 	}
 
@@ -58,6 +58,7 @@ public class EngineService {
 		trigger.setType(TriggerType.summary);
 		trigger.setWhen(record.getPredicate().getTriggersWhen());
 		trigger.setStream(isStream);
+		trigger.setEnable(record.getRecordStatus()== TriggerRecord.StatusType.enable);
 
 		String 	rule = ruleGeneral.generDrlConfig(record.getId(), TriggerType.summary, record.getPredicate());
 
@@ -88,60 +89,50 @@ public class EngineService {
 
 		});
 
-		droolsTriggerService.fireCondition();
+		if(record.getPredicate().getSchedule()!=null) {
+			scheduleSet.add(record.getId());
+			droolsTriggerService.fireCondition();
+		}
 
 	}
 
-	public void createGroupTrigger(Collection<String> thingIDs, TriggerGroupPolicy policy, String triggerID, RuleEnginePredicate predicate){
+	public void createGroupTrigger(Collection<String> thingIDs, GroupTriggerRecord record){
 
 
 		Trigger trigger=new Trigger();
 
-		trigger.setTriggerID(triggerID);
+		trigger.setTriggerID(record.getId());
 		trigger.setType(TriggerType.group);
 
+		TriggerGroupPolicy policy=record.getPolicy();
 		trigger.setPolicy(policy.getGroupPolicy());
 		trigger.setNumber(policy.getCriticalNumber());
 
 		trigger.setStream(false);
+
+		RuleEnginePredicate predicate=record.getPredicate();
+
 		trigger.setWhen(predicate.getTriggersWhen());
 
 		trigger.setThings(thingIDs);
 
+		trigger.setEnable(record.getRecordStatus()== TriggerRecord.StatusType.enable);
+
+		//TODO:
 		predicate.setSchedule(null);
 
-		String rule=ruleGeneral.generDrlConfig(triggerID,TriggerType.group,predicate);
+		String rule=ruleGeneral.generDrlConfig(record.getId(),TriggerType.group,predicate);
 
 		droolsTriggerService.addTrigger(trigger,rule);
 
-		droolsTriggerService.fireCondition();
-
+		if(predicate.getSchedule()!=null) {
+			scheduleSet.add(record.getId());
+			droolsTriggerService.fireCondition();
+		}
 
 	}
 
 
-//	public void createSimpleTrigger(String thingID, String triggerID, RuleEnginePredicate predicate){
-//
-//
-//		Trigger trigger=new Trigger();
-//
-//		trigger.setTriggerID(triggerID);
-//		trigger.setType(TriggerType.simple);
-//		trigger.setStream(false);
-//		trigger.setWhen(predicate.getTriggersWhen());
-//
-//		trigger.setEnable(Boolean.FALSE);
-//
-//		if(!StringUtils.isEmpty(thingID)) {
-//			trigger.setThings(Collections.singleton(thingID));
-//		}
-//
-//		String rule=ruleGeneral.generDrlConfig(triggerID,TriggerType.simple,predicate);
-//
-//
-//		droolsTriggerService.addTrigger(trigger,rule);
-//
-//	}
 	public void createSimpleTrigger(String thingID, String triggerID, SimpleTriggerRecord record){
 
 
@@ -152,7 +143,7 @@ public class EngineService {
 		trigger.setStream(false);
 		trigger.setWhen(record.getPredicate().getTriggersWhen());
 
-		trigger.setEnable(TriggerRecord.StatusType.enable == record.getRecordStatus()  ? Boolean.TRUE : Boolean.FALSE);
+		trigger.setEnable(TriggerRecord.StatusType.enable == record.getRecordStatus());
 
 		if(!StringUtils.isEmpty(thingID)) {
 			trigger.setThings(Collections.singleton(thingID));
@@ -163,7 +154,10 @@ public class EngineService {
 
 		droolsTriggerService.addTrigger(trigger,rule);
 
-		droolsTriggerService.fireCondition();
+		if(record.getPredicate().getSchedule()!=null) {
+			scheduleSet.add(record.getId());
+			droolsTriggerService.fireCondition();
+		}
 
 
 	}
@@ -203,8 +197,15 @@ public class EngineService {
 
 		droolsTriggerService.enableTrigger(triggerID);
 
-		droolsTriggerService.fireCondition();
+		if(scheduleSet.contains(triggerID)) {
+			droolsTriggerService.fireCondition();
+		}
+	}
 
+	public void removeTrigger(String triggerID){
+
+		droolsTriggerService.removeTrigger(triggerID);
+		scheduleSet.remove(triggerID);
 
 	}
 }

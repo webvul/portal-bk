@@ -8,7 +8,7 @@ import com.kii.extension.ruleengine.store.trigger.WhenType;
 global CurrThing currThing;
 
 query "get Match Result by TriggerID" ()
-	Trigger($triggerID:triggerID,when==WhenType.CONDITION_TRUE)
+	Trigger($triggerID:triggerID,when==WhenType.CONDITION_TRUE,enable == true)
     results : MatchResult( triggerID == $triggerID )
 end
 
@@ -45,7 +45,7 @@ when
     MatchResult(triggerID==$triggerID)
     not ( TriggerResult(triggerID==$triggerID) )
 then
-	System.out.println("change "+$triggerID+" been fired");
+	System.out.println("change "+$triggerID+" been fired:false>true");
 	insert(new TriggerResult($triggerID));
 	CommandExec exec=(CommandExec)kcontext.getKieRuntime().getEnvironment().get("exec");
     exec.doExecute($triggerID);
@@ -58,7 +58,7 @@ when
     not (MatchResult(triggerID==$triggerID))
     $result:TriggerResult(triggerID==$triggerID)
 then
-	System.out.println("change "+$triggerID+" been fired");
+	System.out.println("change "+$triggerID+" been fired:true->false");
 	delete($result);
 	CommandExec exec=(CommandExec)kcontext.getKieRuntime().getEnvironment().get("exec");
     exec.doExecute($triggerID);

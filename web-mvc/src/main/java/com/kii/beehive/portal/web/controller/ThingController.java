@@ -297,19 +297,10 @@ public class ThingController extends AbstractThingTagController {
 			throw new PortalException("RequiredFieldsMissing", "globalThingIDs or tagIDs is empty", HttpStatus
 					.BAD_REQUEST);
 		}
-		List<GlobalThingInfo> things = getThings(globalThingIDs);
-		List<TagIndex> tags;
-		try {
-			tags = thingTagManager.getAccessibleTagsByFullTagName(getLoginUserID(), fullTagNames);
-		} catch (ObjectNotFoundException e) {
-			throw new PortalException(e.getMessage(), e.getMessage(), HttpStatus.BAD_REQUEST);
-		}
-		try {
-			thingTagManager.bindTagsToThings(tags, things);
-		} catch (UnauthorizedException e) {
-			throw new BeehiveUnAuthorizedException(e.getMessage());
-		}
-		thingIFService.onTagIDsChangeFire(tags.stream().map(TagIndex::getId).collect(Collectors.toList()), true);
+		List<Long> thingIds = getCreatedThingIds(globalThingIDs);
+		List<Long> tagIds = getCreatedTagIds(fullTagNames);
+		thingTagManager.bindTagsToThings(tagIds, thingIds);
+		thingIFService.onTagIDsChangeFire(tagIds, true);
 	}
 
 
@@ -328,19 +319,10 @@ public class ThingController extends AbstractThingTagController {
 			throw new PortalException("RequiredFieldsMissing", "globalThingIDs or tagIDs is empty", HttpStatus
 					.BAD_REQUEST);
 		}
-		List<GlobalThingInfo> things = getThings(globalThingIDs);
-		List<TagIndex> tags;
-		try {
-			tags = thingTagManager.getAccessibleTagsByFullTagName(getLoginUserID(), fullTagNames);
-		} catch (ObjectNotFoundException e) {
-			throw new PortalException(e.getMessage(), e.getMessage(), HttpStatus.BAD_REQUEST);
-		}
-		try {
-			thingTagManager.unbindThingsFromTags(tags, things);
-		} catch (UnauthorizedException e) {
-			throw new BeehiveUnAuthorizedException(e.getMessage());
-		}
-		thingIFService.onTagIDsChangeFire(tags.stream().map(TagIndex::getId).collect(Collectors.toList()), false);
+		List<Long> thingIds = getCreatedThingIds(globalThingIDs);
+		List<Long> tagIds = getCreatedTagIds(fullTagNames);
+		thingTagManager.unbindTagsFromThings(tagIds, thingIds);
+		thingIFService.onTagIDsChangeFire(tagIds, false);
 	}
 
 	/**
@@ -454,19 +436,10 @@ public class ThingController extends AbstractThingTagController {
 			throw new PortalException("RequiredFieldsMissing", "globalThingIDs or displayNames is empty", HttpStatus
 					.BAD_REQUEST);
 		}
-		List<GlobalThingInfo> things = getThings(globalThingIDs);
-		List<TagIndex> tags;
-		try {
-			tags = thingTagManager.getTagIndexes(Arrays.asList(displayNames.split(",")), TagType.Custom);
-		} catch (ObjectNotFoundException e) {
-			throw new PortalException("Requested tag doesn't exist", e.getMessage(), HttpStatus.BAD_REQUEST);
-		}
-		try {
-			thingTagManager.bindTagsToThings(tags, things);
-		} catch (UnauthorizedException e) {
-			throw new BeehiveUnAuthorizedException(e.getMessage());
-		}
-		thingIFService.onTagIDsChangeFire(tags.stream().map(TagIndex::getId).collect(Collectors.toList()), true);
+		List<Long> thingIds = getCreatedThingIds(globalThingIDs);
+		List<Long> tagIds = getCreatedTagIds(TagType.Custom, displayNames);
+		thingTagManager.bindTagsToThings(tagIds, thingIds);
+		thingIFService.onTagIDsChangeFire(tagIds, true);
 	}
 
 	/**
@@ -479,24 +452,16 @@ public class ThingController extends AbstractThingTagController {
 	 * @param displayNames
 	 */
 	@RequestMapping(value = "/{globalThingIDs}/tags/custom/{displayNames}", method = {RequestMethod.DELETE}, consumes = {"*"})
-	public void unbindThingsFromCustomTags(@PathVariable("globalThingIDs") String globalThingIDs, @PathVariable("displayNames") String displayNames) {
+	public void unbindThingsFromCustomTags(@PathVariable("globalThingIDs") String globalThingIDs,
+										   @PathVariable("displayNames") String displayNames) {
 		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(displayNames)) {
 			throw new PortalException("RequiredFieldsMissing", "globalThingIDs or displayNames is empty", HttpStatus
 					.BAD_REQUEST);
 		}
-		List<GlobalThingInfo> things = getThings(globalThingIDs);
-		List<TagIndex> tags;
-		try {
-			tags = thingTagManager.getTagIndexes(Arrays.asList(displayNames.split(",")), TagType.Custom);
-		} catch (ObjectNotFoundException e) {
-			throw new PortalException("Requested tag doesn't exist", e.getMessage(), HttpStatus.BAD_REQUEST);
-		}
-		try {
-			thingTagManager.unbindThingsFromTags(tags, things);
-		} catch (UnauthorizedException e) {
-			throw new BeehiveUnAuthorizedException(e.getMessage());
-		}
-		thingIFService.onTagIDsChangeFire(tags.stream().map(TagIndex::getId).collect(Collectors.toList()), false);
+		List<Long> thingIds = getCreatedThingIds(globalThingIDs);
+		List<Long> tagIds = getCreatedTagIds(TagType.Custom, displayNames);
+		thingTagManager.unbindTagsFromThings(tagIds, thingIds);
+		thingIFService.onTagIDsChangeFire(tagIds, false);
 	}
 
 	/**

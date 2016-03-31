@@ -1,10 +1,11 @@
 package com.kii.beehive.portal.web.controller;
 
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
-import com.kii.beehive.business.helper.OpLogTools;
-import com.kii.beehive.portal.web.exception.MethodNotAllowedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,8 +14,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kii.beehive.business.helper.OpLogTools;
 import com.kii.beehive.business.ruleengine.TriggerManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.web.exception.MethodNotAllowedException;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 
@@ -59,20 +62,11 @@ public class CrossTriggerController {
 		return result;
 	}
 
-	@RequestMapping(path="/{triggerID}/delete",method = { RequestMethod.PUT })
+	@RequestMapping(path="/{triggerID}",method = { RequestMethod.DELETE },produces={},consumes = {})
 	public Map<String, Object> deleteTrigger(@PathVariable("triggerID") String triggerID){
 		Map<String, Object> result = new HashMap<>();
 		result.put("result", "success");
 		TriggerRecord record=mang.getTriggerByID(triggerID);
-
-		if(TriggerRecord.StatusType.enable.equals(record.getRecordStatus())){
-			mang.disableTrigger(triggerID);
-		}
-
-		if(!TriggerRecord.StatusType.disable.equals(record.getRecordStatus())){
-
-			throw new MethodNotAllowedException("only owner can operate trigger");
-		}
 
 		verify(record);
 
@@ -90,33 +84,33 @@ public class CrossTriggerController {
 		return result;
 	}
 
-	@RequestMapping(path="/{triggerID}",method = { RequestMethod.DELETE })
-	public Map<String, Object> clearTrigger(@PathVariable("triggerID") String triggerID){
-		Map<String, Object> result = new HashMap<>();
-		result.put("result", "success");
-		TriggerRecord record=mang.getTriggerByID(triggerID);
-
-		if(!TriggerRecord.StatusType.deleted.equals(record.getRecordStatus())){
-
-			throw new MethodNotAllowedException("only can operating deleted Trigger");
-
-		}
-
-		verify(record);
-
-		mang.clearTrigger(triggerID);
-
-		//日期时间+当前用户ID+"trigger”+trigger type(simple/group/summary)+”delete"+当前triggerID
-		List<String> list=new LinkedList<>();
-		list.add(AuthInfoStore.getUserID());
-		list.add("trigger");
-		list.add(record.getType().name());
-		list.add("clear");
-		list.add(triggerID);
-		logTool.write(list);
-
-		return result;
-	}
+//	@RequestMapping(path="/{triggerID}",method = { RequestMethod.DELETE })
+//	public Map<String, Object> clearTrigger(@PathVariable("triggerID") String triggerID){
+//		Map<String, Object> result = new HashMap<>();
+//		result.put("result", "success");
+//		TriggerRecord record=mang.getTriggerByID(triggerID);
+//
+//		if(!TriggerRecord.StatusType.deleted.equals(record.getRecordStatus())){
+//
+//			throw new MethodNotAllowedException("only can operating deleted Trigger");
+//
+//		}
+//
+//		verify(record);
+//
+//		mang.clearTrigger(triggerID);
+//
+//		//日期时间+当前用户ID+"trigger”+trigger type(simple/group/summary)+”delete"+当前triggerID
+//		List<String> list=new LinkedList<>();
+//		list.add(AuthInfoStore.getUserID());
+//		list.add("trigger");
+//		list.add(record.getType().name());
+//		list.add("clear");
+//		list.add(triggerID);
+//		logTool.write(list);
+//
+//		return result;
+//	}
 
 	private void verify(TriggerRecord record) {
 //		if(!record.getUserID().equals(AuthInfoStore.getUserID())
