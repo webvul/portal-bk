@@ -371,26 +371,45 @@ public class TestTagThingManager {
 	public void testGetAccessibleThingsByType() throws Exception {
 		String user = "Someone";
 
-		UserGroup userGroup = new UserGroup();
-		userGroup.setId(2200L);
-		doReturn(Arrays.asList(userGroup)).when(userGroupDao).findUserGroup(anyString(), any(), any());
-		doReturn(Optional.ofNullable(Arrays.asList(11001L))).when(thingUserGroupRelationDao).
-				findThingIds(eq(userGroup.getId()));
+		doReturn(Optional.ofNullable(Arrays.asList(2200L))).when(groupUserRelationDao).findUserGroupIds(anyString());
+
+		doAnswer((Answer<Optional<List<Long>>>) invocation -> {
+			Collection<Long> tagIds = (Collection<Long>) invocation.getArguments()[0];
+			List<Long> thingIds = new ArrayList();
+			tagIds.forEach(id -> {
+				if (id == 2200L) {
+					thingIds.add(11001L);
+				}
+			});
+			return Optional.ofNullable(thingIds);
+		}).when(thingUserGroupRelationDao).findThingIds(anyListOf(Long.class));
+
 		doReturn(Optional.ofNullable(Arrays.asList(11002L))).when(thingUserRelationDao).findThingIds(eq(user));
 
-		TagUserRelation relation = new TagUserRelation();
-		relation.setTagId(2400L);
-		doReturn(Optional.ofNullable(Arrays.asList(relation))).when(tagUserRelationDao).findByUserId(eq(user));
-		doReturn(Optional.ofNullable(Arrays.asList(11003L))).when(tagThingRelationDao).findThingIds(eq(relation
-				.getTagId()));
+		doReturn(Optional.ofNullable(Arrays.asList(2400L))).when(tagUserRelationDao).findTagIds(eq(user));
+
+		doAnswer((Answer<Optional<List<Long>>>) invocation -> {
+			Collection<Long> tagIds = (Collection<Long>) invocation.getArguments()[0];
+			List<Long> thingIds = new ArrayList();
+			tagIds.forEach(id -> {
+				if (id == 2400L) {
+					thingIds.add(11003L);
+				}
+			});
+			return Optional.ofNullable(thingIds);
+		}).when(tagThingRelationDao).findThingIds(anyCollectionOf(Long.class));
+
 		Set<Long> thingIds = new HashSet();
+
 		doAnswer((Answer<Optional<List<GlobalThingInfo>>>) invocation -> {
 			thingIds.addAll((Collection<? extends Long>) invocation.getArguments()[0]);
 			return Optional.ofNullable(null);
 		}).when(globalThingDao).findByIDsAndType(anySetOf(Long.class), anyString());
 
 		List<Long> expected = Arrays.asList(11001L, 11002L, 11003L);
+
 		tagThingManager.getAccessibleThingsByType("some type", user);
+
 		assertTrue("Thing ids don't match", thingIds.containsAll(expected));
 		assertEquals("Number of thing ids doesn't match", expected.size(), thingIds.size());
 	}
@@ -426,18 +445,34 @@ public class TestTagThingManager {
 	public void testGetTypesOfAccessibleThingsWithCount() throws Exception {
 		String user = "Someone";
 
-		UserGroup userGroup = new UserGroup();
-		userGroup.setId(2200L);
-		doReturn(Arrays.asList(userGroup)).when(userGroupDao).findUserGroup(anyString(), any(), any());
-		doReturn(Optional.ofNullable(Arrays.asList(11001L))).when(thingUserGroupRelationDao).
-				findThingIds(eq(userGroup.getId()));
+		doReturn(Optional.ofNullable(Arrays.asList(2200L))).when(groupUserRelationDao).findUserGroupIds(anyString());
+
+		doAnswer((Answer<Optional<List<Long>>>) invocation -> {
+			Collection<Long> tagIds = (Collection<Long>) invocation.getArguments()[0];
+			List<Long> thingIds = new ArrayList();
+			tagIds.forEach(id -> {
+				if (id == 2200L) {
+					thingIds.add(11001L);
+				}
+			});
+			return Optional.ofNullable(thingIds);
+		}).when(thingUserGroupRelationDao).findThingIds(anyListOf(Long.class));
+
 		doReturn(Optional.ofNullable(Arrays.asList(11002L))).when(thingUserRelationDao).findThingIds(eq(user));
 
-		TagUserRelation relation = new TagUserRelation();
-		relation.setTagId(2400L);
-		doReturn(Optional.ofNullable(Arrays.asList(relation))).when(tagUserRelationDao).findByUserId(eq(user));
-		doReturn(Optional.ofNullable(Arrays.asList(11003L))).when(tagThingRelationDao).findThingIds(eq(relation
-				.getTagId()));
+		doReturn(Optional.ofNullable(Arrays.asList(2400L))).when(tagUserRelationDao).findTagIds(eq(user));
+
+		doAnswer((Answer<Optional<List<Long>>>) invocation -> {
+			Collection<Long> tagIds = (Collection<Long>) invocation.getArguments()[0];
+			List<Long> thingIds = new ArrayList();
+			tagIds.forEach(id -> {
+				if (id == 2400L) {
+					thingIds.add(11003L);
+				}
+			});
+			return Optional.ofNullable(thingIds);
+		}).when(tagThingRelationDao).findThingIds(anyCollectionOf(Long.class));
+
 		Set<Long> thingIds = new HashSet();
 		doAnswer((Answer<Optional<List<Map<String, Object>>>>) invocation -> {
 			thingIds.addAll((Collection<? extends Long>) invocation.getArguments()[0]);
@@ -620,18 +655,34 @@ public class TestTagThingManager {
 	public void testGetAccessibleThings() throws Exception {
 		String user = "Someone";
 
-		UserGroup userGroup = new UserGroup();
-		userGroup.setId(2200L);
-		doReturn(Arrays.asList(userGroup)).when(userGroupDao).findUserGroup(anyString(), any(), any());
-		doReturn(Optional.ofNullable(Arrays.asList(11001L))).when(thingUserGroupRelationDao).
-				findThingIds(eq(userGroup.getId()));
+		doReturn(Optional.ofNullable(Arrays.asList(2200L))).when(groupUserRelationDao).findUserGroupIds(anyString());
+
+		doAnswer((Answer<Optional<List<Long>>>) invocation -> {
+			Collection<Long> tagIds = (Collection<Long>) invocation.getArguments()[0];
+			List<Long> thingIds = new ArrayList();
+			tagIds.forEach(id -> {
+				if (id == 2200L) {
+					thingIds.add(11001L);
+				}
+			});
+			return Optional.ofNullable(thingIds);
+		}).when(thingUserGroupRelationDao).findThingIds(anyListOf(Long.class));
+
 		doReturn(Optional.ofNullable(Arrays.asList(11002L))).when(thingUserRelationDao).findThingIds(eq(user));
 
-		TagUserRelation relation = new TagUserRelation();
-		relation.setTagId(2400L);
-		doReturn(Optional.ofNullable(Arrays.asList(relation))).when(tagUserRelationDao).findByUserId(eq(user));
-		doReturn(Optional.ofNullable(Arrays.asList(11003L))).when(tagThingRelationDao).findThingIds(eq(relation
-				.getTagId()));
+		doReturn(Optional.ofNullable(Arrays.asList(2400L))).when(tagUserRelationDao).findTagIds(eq(user));
+
+		doAnswer((Answer<Optional<List<Long>>>) invocation -> {
+			Collection<Long> tagIds = (Collection<Long>) invocation.getArguments()[0];
+			List<Long> thingIds = new ArrayList();
+			tagIds.forEach(id -> {
+				if (id == 2400L) {
+					thingIds.add(11003L);
+				}
+			});
+			return Optional.ofNullable(thingIds);
+		}).when(tagThingRelationDao).findThingIds(anyCollectionOf(Long.class));
+
 		Set<Long> thingIds = new HashSet();
 		doAnswer((Answer<List<GlobalThingInfo>>) invocation -> {
 			thingIds.addAll((Collection<? extends Long>) invocation.getArguments()[0]);

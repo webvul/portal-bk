@@ -47,6 +47,14 @@ public class ThingUserGroupRelationDao extends SpringBaseDao<ThingUserGroupRelat
 		return Optional.ofNullable(jdbcTemplate.queryForList(SQL_FIND_THINGIDS, new Object[]{userGroupId}, Long.class));
 	}
 
+	public Optional<List<Long>> findThingIds(List<Long> userGroupIds) {
+		if (null == userGroupIds || userGroupIds.isEmpty()) {
+			return Optional.ofNullable(null);
+		}
+		return Optional.ofNullable(findSingleFieldBySingleField(ThingUserGroupRelation.THING_ID,
+				ThingUserGroupRelation.USER_GROUP_ID, userGroupIds, Long.class));
+	}
+
 	public Optional<List<Long>> findUserGroupIds(Long thingId) {
 		if (null == thingId) {
 			return Optional.ofNullable(null);

@@ -596,17 +596,16 @@ public class TagThingManager {
 				stream().map(GlobalThingInfo::getType).collect(Collectors.toList());
 	}
 
-	private Set<Long> getAccessibleThingIds(String user) {
+	private Set<Long> getAccessibleThingIds(String userId) {
 		Set<Long> thingIds = new HashSet();
-		List<UserGroup> userGroupList = userGroupDao.findUserGroup(user, null, null);
-		if (null != userGroupList) {
-			userGroupList.forEach(userGroup -> thingIds.addAll(thingUserGroupRelationDao.findThingIds(
-					userGroup.getId()).orElse(Collections.emptyList())));
-		}
-		thingIds.addAll(thingUserRelationDao.findThingIds(user).orElse(Collections.emptyList()));
-		tagUserRelationDao.findByUserId(user).orElse(Collections.emptyList()).forEach(tagUserRelation ->
-				thingIds.addAll(tagThingRelationDao.findThingIds(tagUserRelation.getTagId()).
-						orElse(Collections.emptyList())));
+		// user -> user group -> thing
+		thingIds.addAll(thingUserGroupRelationDao.findThingIds(groupUserRelationDao.findUserGroupIds(userId).
+				orElse(Collections.emptyList())).orElse(Collections.emptyList()));
+		// user -> thing
+		thingIds.addAll(thingUserRelationDao.findThingIds(userId).orElse(Collections.emptyList()));
+		// user -> tag -> thing
+		thingIds.addAll(tagThingRelationDao.findThingIds(tagUserRelationDao.findTagIds(userId).
+				orElse(Collections.emptyList())).orElse(Collections.emptyList()));
 		return thingIds;
 	}
 
