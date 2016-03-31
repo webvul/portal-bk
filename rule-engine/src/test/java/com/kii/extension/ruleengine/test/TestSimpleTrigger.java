@@ -171,4 +171,73 @@ public class TestSimpleTrigger extends InitTest {
 		assertEquals(2,exec.getHitCount(triggerID));
 
 	}
+
+
+	@Test
+	public void testTrigger103(){
+
+		ruleLoader.addCondition("trigger",getDrlContent("rule103"));
+
+		String triggerID="103";
+
+		Trigger trigger=new Trigger();
+		trigger.addThing(String.valueOf(2));
+
+		trigger.setType(TriggerType.simple);
+		trigger.setWhen(WhenType.CONDITION_CHANGED);
+
+		trigger.setTriggerID(triggerID);
+
+		ruleLoader.addOrUpdateData(trigger);
+
+		updateThingState("2");
+
+		ruleLoader.fireCondition();
+
+		updateThingState("2", paramOk);
+
+		ruleLoader.fireCondition();
+
+		assertEquals(1,exec.getHitCount(triggerID));
+
+		updateThingState("2", paramNo);
+
+		ruleLoader.fireCondition();
+
+		assertEquals(2,exec.getHitCount(triggerID));
+
+		updateThingState("2", paramOk);
+
+		ruleLoader.fireCondition();
+
+		assertEquals(3,exec.getHitCount(triggerID));
+
+		updateThingState("2", paramNo);
+
+		ruleLoader.fireCondition();
+
+		assertEquals(4,exec.getHitCount(triggerID));
+
+		updateThingState("2", paramNo);
+
+		ruleLoader.fireCondition();
+
+		assertEquals(4,exec.getHitCount(triggerID));
+
+		updateThingState("2", paramOk);
+
+		ruleLoader.fireCondition();
+
+		assertEquals(5,exec.getHitCount(triggerID));
+
+		updateThingState("2", paramOk);
+
+		ruleLoader.fireCondition();
+
+		assertEquals(5,exec.getHitCount(triggerID));
+
+
+
+
+	}
 }

@@ -45,7 +45,7 @@ when
     MatchResult(triggerID==$triggerID)
     not ( TriggerResult(triggerID==$triggerID) )
 then
-	System.out.println("change "+$triggerID+" been fired");
+	System.out.println("change "+$triggerID+" been fired:false>true");
 	insert(new TriggerResult($triggerID));
 	CommandExec exec=(CommandExec)kcontext.getKieRuntime().getEnvironment().get("exec");
     exec.doExecute($triggerID);
@@ -58,7 +58,7 @@ when
     not (MatchResult(triggerID==$triggerID))
     $result:TriggerResult(triggerID==$triggerID)
 then
-	System.out.println("change "+$triggerID+" been fired");
+	System.out.println("change "+$triggerID+" been fired:true->false");
 	delete($result);
 	CommandExec exec=(CommandExec)kcontext.getKieRuntime().getEnvironment().get("exec");
     exec.doExecute($triggerID);
