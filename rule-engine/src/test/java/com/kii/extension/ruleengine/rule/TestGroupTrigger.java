@@ -58,6 +58,7 @@ public class TestGroupTrigger extends TestInit {
 		String triggerID="202";
 		record.setId(triggerID);
 
+		record.setRecordStatus(TriggerRecord.StatusType.enable);
 
 		Set<String> thingIDs=tagService.getKiiThingIDs(selector);
 
