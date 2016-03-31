@@ -140,18 +140,12 @@ public class TagThingManager {
 		return result;
 	}
 
-	public void bindTagsToThings(List<TagIndex> tags, List<GlobalThingInfo> things) throws UnauthorizedException {
-		if (!isTagCreator(tags)) {
-			throw new UnauthorizedException("Current user is not the creator of the tag(s).");
-		}
-		if (!isThingCreator(things)) {
-			throw new UnauthorizedException("Current user is not the creator of the thing(s).");
-		}
-		tags.forEach(tagIndex -> {
-			things.forEach(thing -> {
-				TagThingRelation relation = tagThingRelationDao.findByThingIDAndTagID(thing.getId(), tagIndex.getId());
+	public void bindTagsToThings(List<Long> tagIds, List<Long> thingIds) {
+		tagIds.forEach(tagId -> {
+			thingIds.forEach(thingId -> {
+				TagThingRelation relation = tagThingRelationDao.findByThingIDAndTagID(thingId, tagId);
 				if (null == relation) {
-					tagThingRelationDao.insert(new TagThingRelation(tagIndex.getId(), thing.getId()));
+					tagThingRelationDao.insert(new TagThingRelation(tagId, thingId));
 				}
 			});
 		});
@@ -192,16 +186,10 @@ public class TagThingManager {
 		}
 	}
 
-	public void unbindThingsFromTags(List<TagIndex> tags, List<GlobalThingInfo> things) throws UnauthorizedException {
-		if (!isTagCreator(tags)) {
-			throw new UnauthorizedException("Current user is not the creator of the tag(s).");
-		}
-		if (!isThingCreator(things)) {
-			throw new UnauthorizedException("Current user is not the creator of the thing(s).");
-		}
-		tags.forEach(tag -> {
-			things.forEach(thing -> {
-				tagThingRelationDao.delete(tag.getId(), thing.getId());
+	public void unbindTagsFromThings(List<Long> tagIds, List<Long> thingIds) {
+		tagIds.forEach(tagId -> {
+			thingIds.forEach(thingId -> {
+				tagThingRelationDao.delete(tagId, thingId);
 			});
 		});
 	}
@@ -629,6 +617,36 @@ public class TagThingManager {
 		List<Long> allIds = new ArrayList(tagIds1);
 		allIds.addAll(tagIds2);
 		return tagIndexDao.findByIDs(allIds);
+	}
+
+	public List<Long> getCreatedTagIdsByTypeAndDisplayNames(String userId, TagType type, List<String> displayNames)
+			throws ObjectNotFoundException {
+		List<Long> result = tagIndexDao.getCreatedTagIdsByTypeAndDisplayNames(userId, type, displayNames).
+				orElse(Collections.emptyList());
+		if (result.isEmpty()) {
+			throw new ObjectNotFoundException("Can't find any tags created by user " + userId);
+		}
+		return result;
+	}
+
+	public List<Long> getCreatedTagIdsByFullTagName(String userId, String fullTagNames)
+			throws ObjectNotFoundException {
+		List<String> fullTagNameList = Arrays.asList(fullTagNames.split(","));
+		List<Long> result = tagIndexDao.findTagIdsByCreatorAndFullTagNames(userId, fullTagNameList).
+				orElse(Collections.emptyList());
+		if (result.isEmpty()) {
+			throw new ObjectNotFoundException("Can't find any tags created by user " + userId);
+		}
+		return result;
+	}
+
+	public List<Long> getCreatedThingIds(String userId, List<Long> thingIds)
+			throws ObjectNotFoundException {
+		List<Long> result = globalThingDao.findThingIdsByCreator(userId, thingIds).orElse(Collections.emptyList());
+		if (result.isEmpty()) {
+			throw new ObjectNotFoundException("Can't find any things created by user " + userId);
+		}
+		return result;
 	}
 
 	public List<TagIndex> getAccessibleTagsByFullTagName(String userId, String fullTagNames)

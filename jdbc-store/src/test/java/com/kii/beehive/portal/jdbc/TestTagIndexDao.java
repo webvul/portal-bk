@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -51,6 +52,40 @@ public class TestTagIndexDao extends TestTemplate {
 		long id = tagIndexDao.saveOrUpdate(tag);
 		tag.setId(id);
 		AuthInfoStore.setTeamID(null);
+	}
+
+	@Test
+	public void testFindTagIdsByCreatorAndFullTagNames() throws Exception {
+		List<Long> tagIds = tagIndexDao.findTagIdsByCreatorAndFullTagNames(AuthInfoStore.getUserID(), null).
+				orElse(Collections.emptyList());
+		assertEquals(1, tagIds.size());
+		assertEquals(tag.getId(), tagIds.get(0));
+
+		tagIds = tagIndexDao.findTagIdsByCreatorAndFullTagNames(AuthInfoStore.getUserID(),
+				Arrays.asList("test", tag.getFullTagName())).orElse(Collections.emptyList());
+		assertEquals(1, tagIds.size());
+		assertEquals(tag.getId(), tagIds.get(0));
+
+		tagIds = tagIndexDao.findTagIdsByCreatorAndFullTagNames(AuthInfoStore.getUserID(),
+				Arrays.asList("test")).orElse(Collections.emptyList());
+		assertEquals(0, tagIds.size());
+	}
+
+	@Test
+	public void testGetCreatedTagIdsByTypeAndDisplayNames() throws Exception {
+		List<Long> tagIds = tagIndexDao.getCreatedTagIdsByTypeAndDisplayNames(AuthInfoStore.getUserID(),
+				tag.getTagType(), null).orElse(Collections.emptyList());
+		assertEquals(1, tagIds.size());
+		assertEquals(tag.getId(), tagIds.get(0));
+
+		tagIds = tagIndexDao.getCreatedTagIdsByTypeAndDisplayNames(AuthInfoStore.getUserID(),
+				tag.getTagType(), Arrays.asList("123123", tag.getDisplayName())).orElse(Collections.emptyList());
+		assertEquals(1, tagIds.size());
+		assertEquals(tag.getId(), tagIds.get(0));
+
+		tagIds = tagIndexDao.getCreatedTagIdsByTypeAndDisplayNames(AuthInfoStore.getUserID(),
+				tag.getTagType(), Arrays.asList("123123")).orElse(Collections.emptyList());
+		assertEquals(0, tagIds.size());
 	}
 
 	@Test
