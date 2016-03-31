@@ -556,6 +556,20 @@ public class TagThingManager {
 		return users;
 	}
 
+	public List<UserGroup> getUserGroupsByIds(List<Long> userGroupIds) throws ObjectNotFoundException {
+		if (null == userGroupIds || userGroupIds.isEmpty()) {
+			return Collections.emptyList();
+		}
+		List<UserGroup> userGroups = userGroupDao.findByIDs(userGroupIds);
+		if (null == userGroups || !userGroups.stream().map(UserGroup::getId).collect(Collectors.toSet()).
+				containsAll(userGroupIds)) {
+			userGroupIds.removeAll(userGroups.stream().map(UserGroup::getId).collect(Collectors.toList()));
+			throw new ObjectNotFoundException("Invalid user group id(s): [" + collectionToString
+					(userGroupIds) + "]");
+		}
+		return userGroups;
+	}
+
 	public List<UserGroup> getUserGroups(List<String> userGroupIDList) throws ObjectNotFoundException {
 		List<Long> userGroupIds = userGroupIDList.stream().filter(Pattern.compile("^[0-9]+$").asPredicate())
 				.map(Long::valueOf).collect(Collectors.toList());
@@ -624,7 +638,8 @@ public class TagThingManager {
 		return tagIndexDao.findByIDs(allIds);
 	}
 
-	public List<TagIndex> getAccessibleTagsByFullTagName(String userId, String fullTagNames) {
+	public List<TagIndex> getAccessibleTagsByFullTagName(String userId, String fullTagNames)
+			throws ObjectNotFoundException {
 		List<String> fullTagNameList = Arrays.asList(fullTagNames.split(","));
 		List<Long> tagIds1 = tagUserRelationDao.findTagIds(userId, fullTagNameList).
 				orElse(Collections.emptyList());
@@ -632,6 +647,9 @@ public class TagThingManager {
 				orElse(Collections.emptyList());
 		List<Long> allIds = new ArrayList(tagIds1);
 		allIds.addAll(tagIds2);
+		if (allIds.isEmpty()) {
+			throw new ObjectNotFoundException("Can't find any accessible tags for user " + userId);
+		}
 		return tagIndexDao.findByIDs(allIds);
 	}
 
@@ -643,7 +661,8 @@ public class TagThingManager {
 				orElse(Collections.emptyList()));
 	}
 
-	public List<String> getUsersOfThing(Long thingId) {
+	public List<BeehiveUser> getUsersOfAccessibleThing(String userId, Long thingId) throws ObjectNotFoundException {
+		getAccessibleThingById(userId, thingId);
 		List<Long> tagIds = tagThingRelationDao.findTagIds(thingId).orElse(Collections.emptyList());
 		Set<Long> groupIds = new HashSet(tagGroupRelationDao.findUserGroupIdsByTagIds(tagIds).
 				orElse(Collections.emptyList()));
@@ -652,23 +671,28 @@ public class TagThingManager {
 				collect(Collectors.toSet());
 		users.addAll(thingUserRelationDao.findUserIds(thingId));
 		users.addAll(tagUserRelationDao.findUserIds(tagIds).orElse(Collections.emptyList()));
-		return users.stream().collect(Collectors.toList());
+		return userDao.getUserByIDs(users.stream().collect(Collectors.toList()));
 	}
 
-	public List<Long> getUserGroupsOfThing(Long thingId) {
+	public List<UserGroup> getUserGroupsOfAccessibleThing(String userId, Long thingId) throws ObjectNotFoundException {
+		getAccessibleThingById(userId, thingId);
 		List<Long> tagIds = tagThingRelationDao.findTagIds(thingId).orElse(Collections.emptyList());
 		Set<Long> groupIds = new HashSet(tagGroupRelationDao.findUserGroupIdsByTagIds(tagIds).
 				orElse(Collections.emptyList()));
 		groupIds.addAll(thingUserGroupRelationDao.findUserGroupIds(thingId).orElse(Collections.emptyList()));
-		return groupIds.stream().collect(Collectors.toList());
+		return userGroupDao.findByIDs(groupIds.stream().collect(Collectors.toList()));
 	}
 
-	public List<String> getUsersOfTag(Long tagId) {
-		return tagUserRelationDao.findUserIds(tagId);
+	public List<String> getUsersOfAccessibleTags(String userId, String fullTagName) {
+		List<Long> tagIds = tagUserRelationDao.findTagIds(userId, Arrays.asList(fullTagName)).
+				orElse(Collections.emptyList());
+		return tagUserRelationDao.findUserIds(tagIds).orElse(Collections.emptyList());
 	}
 
-	public List<Long> getUserGroupsOfTag(Long tagId) {
-		return tagGroupRelationDao.findUserGroupIdsByTagIds(Arrays.asList(tagId)).orElse(Collections.emptyList());
+	public List<Long> getUserGroupsOfAccessibleTags(String userId, String fullTagName) {
+		List<Long> tagIds = tagUserRelationDao.findTagIds(userId, Arrays.asList(fullTagName)).
+				orElse(Collections.emptyList());
+		return tagGroupRelationDao.findUserGroupIdsByTagIds(tagIds).orElse(Collections.emptyList());
 	}
 
 	public List<GlobalThingInfo> getAccessibleThingsByUserId(String userId) {

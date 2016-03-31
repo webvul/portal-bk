@@ -9,6 +9,7 @@ import com.kii.beehive.portal.exception.UnauthorizedException;
 import com.kii.beehive.portal.jdbc.dao.*;
 import com.kii.beehive.portal.jdbc.entity.*;
 import com.kii.beehive.portal.service.AppInfoDao;
+import com.kii.beehive.portal.service.BeehiveUserDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
 import junit.framework.TestCase;
@@ -70,6 +71,10 @@ public class TestTagThingManager {
 	@Spy
 	@Autowired
 	private UserGroupDao userGroupDao;
+
+	@Spy
+	@Autowired
+	private BeehiveUserDao userDao;
 
 	@Spy
 	@Autowired
@@ -628,6 +633,8 @@ public class TestTagThingManager {
 
 	@Test
 	public void testGetUsersOfThing() throws Exception {
+		doReturn(mock(ThingUserRelation.class)).when(thingUserRelationDao).find(anyLong(), anyString());
+		doReturn(mock(GlobalThingInfo.class)).when(globalThingDao).findByID(any(Serializable.class));
 		doReturn(Optional.ofNullable(Arrays.asList(100L))).when(tagThingRelationDao).findTagIds(anyLong());
 		doReturn(Optional.ofNullable(Arrays.asList(200L))).when(tagGroupRelationDao).findUserGroupIdsByTagIds(
 				anyListOf(Long.class));
@@ -638,7 +645,19 @@ public class TestTagThingManager {
 		doReturn(Optional.ofNullable(Arrays.asList("user4"))).when(tagUserRelationDao).findUserIds(anyListOf(Long
 				.class));
 
-		List<String> userIds = tagThingManager.getUsersOfThing(1000L);
+		doAnswer((Answer<List<BeehiveUser>>) invocation -> {
+			List<String> userIds = (List<String>) invocation.getArguments()[0];
+			List<BeehiveUser> users = new ArrayList();
+			userIds.forEach(id -> {
+				BeehiveUser user = new BeehiveUser();
+				user.setKiiLoginName(id);
+				users.add(user);
+			});
+			return users;
+		}).when(userDao).getUserByIDs(anyListOf(String.class));
+
+		List<String> userIds = tagThingManager.getUsersOfAccessibleThing("someone", 1000L).stream().map
+				(BeehiveUser::getKiiLoginName).collect(Collectors.toList());
 		assertEquals(4, userIds.stream().collect(Collectors.toSet()).size());
 	}
 
@@ -672,13 +691,25 @@ public class TestTagThingManager {
 
 	@Test
 	public void testGetUserGroupsOfThing() throws Exception {
+		doReturn(mock(ThingUserRelation.class)).when(thingUserRelationDao).find(anyLong(), anyString());
+		doReturn(mock(GlobalThingInfo.class)).when(globalThingDao).findByID(any(Serializable.class));
 		doReturn(Optional.ofNullable(Arrays.asList(100L))).when(tagThingRelationDao).findTagIds(anyLong());
 		doReturn(Optional.ofNullable(Arrays.asList(200L))).when(tagGroupRelationDao).
 				findUserGroupIdsByTagIds(anyListOf(Long.class));
 		doReturn(Optional.ofNullable(Arrays.asList(300L))).when(thingUserGroupRelationDao).
 				findUserGroupIds(anyLong());
-
-		List<Long> result = tagThingManager.getUserGroupsOfThing(100L);
+		doAnswer((Answer<List<UserGroup>>) invocation -> {
+			List<Long> ids = (List<Long>) invocation.getArguments()[0];
+			List<UserGroup> groups = new ArrayList();
+			ids.forEach(id -> {
+				UserGroup g = new UserGroup();
+				g.setId(id);
+				groups.add(g);
+			});
+			return groups;
+		}).when(userGroupDao).findByIDs(anyCollectionOf(Long.class));
+		List<Long> result = tagThingManager.getUserGroupsOfAccessibleThing("someone", 100L).stream().
+				map(UserGroup::getId).collect(Collectors.toList());
 		assertEquals(2, result.size());
 		assertTrue(result.contains(200L) && result.contains(300L));
 	}

@@ -50,24 +50,22 @@ public class ThingController extends AbstractThingTagController {
 	private ThingIFInAppService thingIFService;
 
 	/**
-	 * GET /{globalThingID}/users
+	 * GET /things/{globalThingID}/users
 	 *
 	 * @param globalThingID
 	 * @return a list of user ids who can access the device.
 	 */
 	@RequestMapping(value = "/{globalThingID}/users", method = RequestMethod.GET)
-	public List<String> getUsersByThing(@PathVariable("globalThingID") Long globalThingID) {
-		GlobalThingInfo thingInfo;
+	public List<BeehiveUser> getUsersByThing(@PathVariable("globalThingID") Long globalThingID) {
 		try {
-			thingInfo = thingTagManager.getAccessibleThingById(getLoginUserID(), globalThingID);
+			return thingTagManager.getUsersOfAccessibleThing(getLoginUserID(), globalThingID);
 		} catch (ObjectNotFoundException e) {
 			throw new PortalException(e.getMessage(), e.getMessage(), HttpStatus.BAD_REQUEST);
 		}
-		return thingTagManager.getUsersOfThing(thingInfo.getId());
 	}
 
 	/**
-	 * GET /user/{userID}
+	 * GET /things/user/{userID}
 	 *
 	 * @param userId
 	 * @return a list of devices which the user can access
@@ -78,24 +76,22 @@ public class ThingController extends AbstractThingTagController {
 	}
 
 	/**
-	 * GET /{globalThingID}/userGroups
+	 * GET /things/{globalThingID}/userGroups
 	 *
 	 * @param globalThingID
 	 * @return a list of user group id which can access the device.
 	 */
 	@RequestMapping(value = "/{globalThingID}/userGroups", method = RequestMethod.GET)
-	public List<Long> getUserGroupIdsByThing(@PathVariable("globalThingID") Long globalThingID) {
-		GlobalThingInfo thingInfo;
+	public List<UserGroup> getUserGroupIdsByThing(@PathVariable("globalThingID") Long globalThingID) {
 		try {
-			thingInfo = thingTagManager.getAccessibleThingById(getLoginUserID(), globalThingID);
+			return thingTagManager.getUserGroupsOfAccessibleThing(getLoginUserID(), globalThingID);
 		} catch (ObjectNotFoundException e) {
 			throw new PortalException(e.getMessage(), e.getMessage(), HttpStatus.BAD_REQUEST);
 		}
-		return thingTagManager.getUserGroupsOfThing(thingInfo.getId());
 	}
 
 	/**
-	 * GET /user/{userID}
+	 * GET /things/user/{userID}
 	 *
 	 * @param userGroupId
 	 * @return a list of devices which the user can access
@@ -295,14 +291,19 @@ public class ThingController extends AbstractThingTagController {
 	 * @param globalThingIDs
 	 */
 	@RequestMapping(value = "/{globalThingIDs}/tags/{fullNames}", method = {RequestMethod.POST})
-	public void bindThingsToTags(@PathVariable("globalThingIDs") String globalThingIDs, @PathVariable("fullNames") String
-			fullNames) {
-		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(fullNames)) {
+	public void bindThingsToTags(@PathVariable("globalThingIDs") String globalThingIDs,
+								 @PathVariable("fullNames") String fullTagNames) {
+		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(fullTagNames)) {
 			throw new PortalException("RequiredFieldsMissing", "globalThingIDs or tagIDs is empty", HttpStatus
 					.BAD_REQUEST);
 		}
 		List<GlobalThingInfo> things = getThings(globalThingIDs);
-		List<TagIndex> tags = getTags(Arrays.asList(fullNames.split(",")));
+		List<TagIndex> tags;
+		try {
+			tags = thingTagManager.getAccessibleTagsByFullTagName(getLoginUserID(), fullTagNames);
+		} catch (ObjectNotFoundException e) {
+			throw new PortalException(e.getMessage(), e.getMessage(), HttpStatus.BAD_REQUEST);
+		}
 		try {
 			thingTagManager.bindTagsToThings(tags, things);
 		} catch (UnauthorizedException e) {
@@ -321,14 +322,19 @@ public class ThingController extends AbstractThingTagController {
 	 * @param globalThingIDs
 	 */
 	@RequestMapping(value = "/{globalThingIDs}/tags/{fullNames}", method = {RequestMethod.DELETE}, consumes = {"*"})
-	public void unbindThingsFromTags(@PathVariable("globalThingIDs") String globalThingIDs, @PathVariable("fullNames") String
-			fullNames) {
-		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(fullNames)) {
+	public void unbindThingsFromTags(@PathVariable("globalThingIDs") String globalThingIDs,
+									 @PathVariable("fullNames") String fullTagNames) {
+		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(fullTagNames)) {
 			throw new PortalException("RequiredFieldsMissing", "globalThingIDs or tagIDs is empty", HttpStatus
 					.BAD_REQUEST);
 		}
 		List<GlobalThingInfo> things = getThings(globalThingIDs);
-		List<TagIndex> tags = getTags(Arrays.asList(fullNames.split(",")));
+		List<TagIndex> tags;
+		try {
+			tags = thingTagManager.getAccessibleTagsByFullTagName(getLoginUserID(), fullTagNames);
+		} catch (ObjectNotFoundException e) {
+			throw new PortalException(e.getMessage(), e.getMessage(), HttpStatus.BAD_REQUEST);
+		}
 		try {
 			thingTagManager.unbindThingsFromTags(tags, things);
 		} catch (UnauthorizedException e) {
