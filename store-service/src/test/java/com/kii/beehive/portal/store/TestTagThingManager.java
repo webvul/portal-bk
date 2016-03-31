@@ -587,51 +587,6 @@ public class TestTagThingManager {
 	}
 
 	@Test
-	public void testRemoveThing() throws Exception {
-		doNothing().when(tagThingRelationDao).delete(anyLong(), anyLong());
-		doNothing().when(thingUserRelationDao).deleteByThingId(anyLong());
-		doNothing().when(thingUserGroupRelationDao).deleteByThingId(anyLong());
-		doReturn(100).when(globalThingDao).deleteByID(eq(100L));
-		doNothing().when(thingIFInAppService).removeThing("kiiAppId-vendorThingId");
-
-		GlobalThingInfo thingInfo = new GlobalThingInfo();
-		thingInfo.setFullKiiThingID("kiiAppId-vendorThingId");
-		thingInfo.setId(100L);
-
-		tagThingManager.removeThing(thingInfo);
-
-		verify(tagThingRelationDao, times(1)).delete(anyLong(), eq(100L));
-		verify(thingUserRelationDao, times(1)).deleteByThingId(eq(100L));
-		verify(thingUserGroupRelationDao, times(1)).deleteByThingId(eq(100L));
-		verify(globalThingDao, times(1)).deleteByID(eq(100L));
-		verify(thingIFInAppService, times(1)).removeThing(eq("kiiAppId-vendorThingId"));
-
-		doThrow(new com.kii.extension.sdk.exception.ObjectNotFoundException()).when(thingIFInAppService).
-				removeThing(anyString());
-
-		try {
-			tagThingManager.removeThing(thingInfo);
-			fail("Expect an ObjectNotFoundException");
-		} catch (ObjectNotFoundException e) {
-		}
-	}
-
-	@Test
-	public void testRemoveTag() throws Exception {
-		doNothing().when(tagUserRelationDao).deleteByTagId(anyLong());
-		doNothing().when(tagGroupRelationDao).delete(anyLong(), anyLong());
-		doNothing().when(tagThingRelationDao).delete(anyLong(), anyLong());
-		doReturn(100).when(tagIndexDao).deleteByID(anyLong());
-
-		tagThingManager.removeTag(mock(TagIndex.class));
-
-		verify(tagUserRelationDao, times(1)).deleteByTagId(anyLong());
-		verify(tagGroupRelationDao, times(1)).delete(anyLong(), anyLong());
-		verify(tagThingRelationDao, times(1)).delete(anyLong(), anyLong());
-		verify(tagIndexDao, times(1)).deleteByID(anyLong());
-	}
-
-	@Test
 	public void testGetUsersOfThing() throws Exception {
 		doReturn(mock(ThingUserRelation.class)).when(thingUserRelationDao).find(anyLong(), anyString());
 		doReturn(mock(GlobalThingInfo.class)).when(globalThingDao).findByID(any(Serializable.class));

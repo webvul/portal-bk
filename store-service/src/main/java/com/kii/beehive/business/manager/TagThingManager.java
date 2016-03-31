@@ -233,16 +233,10 @@ public class TagThingManager {
 	}
 
 	public void removeTag(TagIndex tag) {
-		tagUserRelationDao.deleteByTagId(tag.getId());
-		tagGroupRelationDao.delete(tag.getId(), null);
-		tagThingRelationDao.delete(tag.getId(), null);
 		tagIndexDao.deleteByID(tag.getId());
 	}
 
 	public void removeThing(GlobalThingInfo thing) throws ObjectNotFoundException {
-		tagThingRelationDao.delete(null, thing.getId());
-		thingUserRelationDao.deleteByThingId(thing.getId());
-		thingUserGroupRelationDao.deleteByThingId(thing.getId());
 		globalThingDao.deleteByID(thing.getId());
 
 		// remove thing from Kii Cloud
