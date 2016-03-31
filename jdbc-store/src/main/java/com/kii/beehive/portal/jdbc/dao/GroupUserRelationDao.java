@@ -118,4 +118,11 @@ public class GroupUserRelationDao extends SpringBaseDao<GroupUserRelation> {
 		return 0;
 	}
 
+	public Optional<List<Long>> findUserGroupIds(String userId) {
+		if (null == userId) {
+			return Optional.ofNullable(null);
+		}
+		return Optional.ofNullable(findSingleFieldBySingleField(GroupUserRelation.USER_GROUP_ID,
+				GroupUserRelation.USER_ID, userId, Long.class));
+	}
 }

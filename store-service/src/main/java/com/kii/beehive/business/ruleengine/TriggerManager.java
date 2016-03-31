@@ -66,7 +66,6 @@ public class TriggerManager {
 		List<TriggerRecord> recordList=triggerDao.getAllTrigger();
 
 
-
 		recordList.forEach(record->{
 
 			if(record instanceof SimpleTriggerRecord){

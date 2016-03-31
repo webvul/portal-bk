@@ -12,13 +12,12 @@ import java.util.Collections;
 import java.util.List;
 
 import static junit.framework.TestCase.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class TestTagIndexDao extends TestTemplate {
 
 	@Autowired
-	private TagIndexDao dao;
+	private TagIndexDao tagIndexDao;
 
 	@Autowired
 	private GlobalThingSpringDao globalThingDao;
@@ -34,13 +33,22 @@ public class TestTagIndexDao extends TestTemplate {
 
 	private TagIndex tag = new TagIndex();
 
+	@Autowired
+	private TagUserRelationDao tagUserRelationDao;
+
+	@Autowired
+	private UserGroupDao userGroupDao;
+
+	@Autowired
+	private TagGroupRelationDao tagGroupRelationDao;
+
 	@Before
 	public void init() {
 		tag.setDisplayName("DisplayNameTest");
 		tag.setTagType(TagType.Custom);
 		tag.setDescription("DescriptionTest");
 		tag.setFullTagName(TagType.Custom.getTagName("DisplayNameTest"));
-		long id = dao.saveOrUpdate(tag);
+		long id = tagIndexDao.saveOrUpdate(tag);
 		tag.setId(id);
 		AuthInfoStore.setTeamID(null);
 	}
@@ -48,7 +56,7 @@ public class TestTagIndexDao extends TestTemplate {
 	@Test
 	public void testFindByID() {
 
-		TagIndex entity = dao.findByID(tag.getId());
+		TagIndex entity = tagIndexDao.findByID(tag.getId());
 		assertEquals(tag.getDisplayName(), entity.getDisplayName());
 		assertEquals(tag.getTagType(), entity.getTagType());
 		assertEquals(tag.getDescription(), entity.getDescription());
@@ -58,8 +66,8 @@ public class TestTagIndexDao extends TestTemplate {
 	@Test
 	public void testUpdate() {
 		tag.setDisplayName("DisplayNameUpdate");
-		dao.updateEntityAllByID(tag);
-		TagIndex entity = dao.findByID(tag.getId());
+		tagIndexDao.updateEntityAllByID(tag);
+		TagIndex entity = tagIndexDao.findByID(tag.getId());
 		assertEquals("DisplayNameUpdate", entity.getDisplayName());
 		assertEquals(tag.getTagType(), entity.getTagType());
 		assertEquals(tag.getDescription(), entity.getDescription());
@@ -73,33 +81,70 @@ public class TestTagIndexDao extends TestTemplate {
 		tag2.setTagType(TagType.Location);
 		tag2.setDescription("Description2");
 		tag2.setFullTagName(TagType.Location.getTagName("DisplayName2"));
-		long id2 = dao.saveOrUpdate(tag2);
+		long id2 = tagIndexDao.saveOrUpdate(tag2);
 		List<Long> ids = new ArrayList<>();
 		ids.add(tag.getId());
 		ids.add(id2);
-		List<TagIndex> list = dao.findByIDs(ids);
+		List<TagIndex> list = tagIndexDao.findByIDs(ids);
 
 		assertEquals(2, list.size());
 	}
 
 	@Test
 	public void testDelete() {
-		dao.deleteByID(tag.getId());
-		TagIndex entity = dao.findByID(tag.getId());
-		assertNull(entity);
+		TagIndex tagIndex = new TagIndex();
+		tagIndex.setTagType(TagType.Location);
+		tagIndex.setDisplayName("Location");
+		Long tagId = tagIndexDao.saveOrUpdate(tagIndex);
+
+		TagUserRelation tagUserRelation = new TagUserRelation();
+		tagUserRelation.setUserId("Someone");
+		tagUserRelation.setTagId(tagId);
+		tagUserRelationDao.saveOrUpdate(tagUserRelation);
+
+		UserGroup userGroup = new UserGroup();
+		userGroup.setName("Group");
+		Long userGroupId = userGroupDao.saveOrUpdate(userGroup);
+
+		TagGroupRelation tagGroupRelation = new TagGroupRelation();
+		tagGroupRelation.setTagID(tagId);
+		tagGroupRelation.setUserGroupID(userGroupId);
+		tagGroupRelation.setType("Some type");
+		tagGroupRelationDao.saveOrUpdate(tagGroupRelation);
+
+		GlobalThingInfo thingInfo = new GlobalThingInfo();
+		thingInfo.setVendorThingID("12345");
+		thingInfo.setKiiAppID("KiiAppId");
+		Long thingId = globalThingDao.saveOrUpdate(thingInfo);
+
+		TagThingRelation tagThingRelation = new TagThingRelation();
+		tagThingRelation.setTagID(tagId);
+		tagThingRelation.setThingID(thingId);
+		tagThingRelationDao.saveOrUpdate(tagThingRelation);
+
+		assertNotNull(tagUserRelationDao.find(tagId, "Someone"));
+		assertNotNull(tagGroupRelationDao.findByTagIDAndUserGroupID(tagId, userGroupId));
+		assertNotNull(tagThingRelationDao.findByThingIDAndTagID(thingId, tagId));
+
+		tagIndexDao.deleteByID(tagId);
+
+		assertNull(tagIndexDao.findByID(tagId));
+		assertNull(tagUserRelationDao.find(tagId, "Someone"));
+		assertNull(tagGroupRelationDao.findByTagIDAndUserGroupID(tagId, userGroupId));
+		assertNull(tagThingRelationDao.findByThingIDAndTagID(thingId, tagId));
 	}
 
 	@Test
 	public void testIsIdExist() {
-		boolean b = dao.IsIdExist(tag.getId());
+		boolean b = tagIndexDao.IsIdExist(tag.getId());
 		assertTrue(b);
 	}
 
 	@Test
 	public void testFindTagByTagTypeAndName() {
-		List<TagIndex> list = dao.findTagByTagTypeAndName(null, tag.getDisplayName());
+		List<TagIndex> list = tagIndexDao.findTagByTagTypeAndName(null, tag.getDisplayName());
 		assertEquals(1, list.size());
-		list = dao.findTagByTagTypeAndName(TagType.Custom.toString(), tag.getDisplayName());
+		list = tagIndexDao.findTagByTagTypeAndName(TagType.Custom.toString(), tag.getDisplayName());
 		assertEquals(1, list.size());
 	}
 
@@ -109,9 +154,9 @@ public class TestTagIndexDao extends TestTemplate {
 
 		AuthInfoStore.setTeamID(teamID);
 
-		List<TagIndex> list = dao.findTagByTagTypeAndName(null, tag.getDisplayName());
+		List<TagIndex> list = tagIndexDao.findTagByTagTypeAndName(null, tag.getDisplayName());
 		assertEquals(1, list.size());
-		list = dao.findTagByTagTypeAndName(TagType.Custom.toString(), tag.getDisplayName());
+		list = tagIndexDao.findTagByTagTypeAndName(TagType.Custom.toString(), tag.getDisplayName());
 		assertEquals(1, list.size());
 	}
 
@@ -122,9 +167,9 @@ public class TestTagIndexDao extends TestTemplate {
 		t.setTagType(TagType.Location);
 		t.setDescription("DescriptionTest");
 		t.setFullTagName(TagType.Location.getTagName("LocationTest"));
-		dao.saveOrUpdate(t);
+		tagIndexDao.saveOrUpdate(t);
 
-		List<String> list = dao.findLocations(t.getDisplayName());
+		List<String> list = tagIndexDao.findLocations(t.getDisplayName());
 		assertEquals(1, list.size());
 	}
 
@@ -138,11 +183,11 @@ public class TestTagIndexDao extends TestTemplate {
 		t.setTagType(TagType.Location);
 		t.setDescription("DescriptionTest");
 		t.setFullTagName(TagType.Location.getTagName("LocationTest"));
-		Long tID = dao.saveOrUpdate(t);
+		Long tID = tagIndexDao.saveOrUpdate(t);
 
 		teamTagRelationDao.saveOrUpdate(new TeamTagRelation(teamID, tID));
 
-		List<String> list = dao.findLocations(t.getDisplayName());
+		List<String> list = tagIndexDao.findLocations(t.getDisplayName());
 		assertEquals(1, list.size());
 	}
 
@@ -161,7 +206,7 @@ public class TestTagIndexDao extends TestTemplate {
 		rel.setThingID(thingID);
 		tagThingRelationDao.insert(rel);
 
-		List<TagIndex> list = dao.findTagByGlobalThingID(thingID);
+		List<TagIndex> list = tagIndexDao.findTagByGlobalThingID(thingID);
 		assertEquals(1, list.size());
 		assertEquals(tag.getDisplayName(), list.get(0).getDisplayName());
 		assertEquals(tag.getTagType(), list.get(0).getTagType());
@@ -170,7 +215,7 @@ public class TestTagIndexDao extends TestTemplate {
 
 	@Test
 	public void testFindTagByFullTagName() {
-		List<TagIndex> list = dao.findTagByFullTagName(tag.getFullTagName());
+		List<TagIndex> list = tagIndexDao.findTagByFullTagName(tag.getFullTagName());
 		assertEquals(1, list.size());
 	}
 
@@ -193,15 +238,15 @@ public class TestTagIndexDao extends TestTemplate {
 			TagIndex tag = new TagIndex();
 			tag.setDisplayName("Tag-" + i);
 			tag.setTagType(TagType.Location);
-			tagIds.add(dao.saveOrUpdate(tag));
+			tagIds.add(tagIndexDao.saveOrUpdate(tag));
 			names.add(tag.getFullTagName());
 			names.add("Test name " + i);
 		}
-		List<Long> result = dao.findTagIdsByIDsAndFullname(tagIds, names).orElse(Collections.emptyList());
+		List<Long> result = tagIndexDao.findTagIdsByIDsAndFullname(tagIds, names).orElse(Collections.emptyList());
 		assertEquals("Should find 3 ids", 3, result.size());
 		assertTrue("Ids don't match", result.containsAll(tagIds) && tagIds.containsAll(result));
 
-		result = dao.findTagIdsByIDsAndFullname(Collections.emptyList(), names).orElse(Collections.emptyList());
+		result = tagIndexDao.findTagIdsByIDsAndFullname(Collections.emptyList(), names).orElse(Collections.emptyList());
 		assertTrue(result.isEmpty());
 	}
 }
