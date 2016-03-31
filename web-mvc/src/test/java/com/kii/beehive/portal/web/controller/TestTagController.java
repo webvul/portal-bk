@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kii.beehive.business.manager.TagThingManager;
 import com.kii.beehive.business.manager.UserManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.exception.ObjectNotFoundException;
 import com.kii.beehive.portal.jdbc.dao.*;
 import com.kii.beehive.portal.jdbc.entity.*;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
@@ -23,9 +24,13 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static junit.framework.TestCase.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyList;
+import static org.mockito.Matchers.anyListOf;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.*;
+import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -91,6 +96,57 @@ public class TestTagController extends WebTestTemplate {
 			tagIndexDao.deleteByID(tag.getId());
 		}
 		AuthInfoStore.setAuthInfo(null);
+	}
+
+	@Test
+	public void testGetTagsByUser() throws Exception {
+		doReturn(null).when(tagThingManager).getAccessibleTagsByUserId(anyString());
+
+		tagController.getTagsByUser("Someone");
+
+		verify(tagThingManager, times(1)).getAccessibleTagsByUserId(anyString());
+	}
+
+	@Test
+	public void testGetUsersByFullTagName() throws Exception {
+		doReturn(Collections.singletonList("test")).when(tagThingManager).getUsersOfAccessibleTags(anyString(),
+				anyString());
+		doThrow(new ObjectNotFoundException("test")).when(tagThingManager).getUsers(anyListOf(String.class));
+
+		try {
+			tagController.getUsersByFullTagName("some tag");
+			fail("Expect an PortalException");
+		} catch (PortalException e) {
+			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+		}
+
+		doReturn(null).when(tagThingManager).getUsers(anyListOf(String.class));
+		tagController.getUsersByFullTagName("some tag");
+	}
+
+	@Test
+	public void testGetTagsByUserGroup() throws Exception {
+		doReturn(null).when(tagThingManager).getAccessibleTagsByUserGroupId(anyLong());
+
+		tagController.getTagsByUserGroup(100L);
+
+		verify(tagThingManager, times(1)).getAccessibleTagsByUserGroupId(anyLong());
+	}
+
+	@Test
+	public void testGetUserGroupsByFullTagName() throws Exception {
+		doReturn(Arrays.asList(100L)).when(tagThingManager).getUserGroupsOfAccessibleTags(anyString(), anyString());
+		doThrow(new ObjectNotFoundException("test")).when(tagThingManager).getUserGroupsByIds(anyListOf(Long.class));
+
+		try {
+			tagController.getUserGroupsByFullTagName("some tag");
+			fail("Expect a PortalException");
+		} catch (PortalException e) {
+			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+		}
+
+		doReturn(null).when(tagThingManager).getUserGroupsByIds(anyListOf(Long.class));
+		tagController.getUserGroupsByFullTagName("some tag");
 	}
 
 	@Test
@@ -744,37 +800,4 @@ public class TestTagController extends WebTestTemplate {
 		assertEquals(displayNames.get(4), list.get(4));
 
 	}
-
-
-	private Long[] creatThingsForTest(String[] vendorThingIDs, String kiiAppID, String type) {
-
-		Long[] globalThingIDs = new Long[vendorThingIDs.length];
-
-		for (int i = 0; i < vendorThingIDs.length; i++) {
-			GlobalThingInfo thingInfo = new GlobalThingInfo();
-			thingInfo.setVendorThingID(vendorThingIDs[i]);
-			thingInfo.setKiiAppID(kiiAppID);
-			thingInfo.setType(type);
-			globalThingIDs[i] = globalThingDao.saveOrUpdate(thingInfo);
-
-			System.out.println("create thing: " + globalThingIDs[i]);
-		}
-
-		return globalThingIDs;
-	}
-
-	private Long[] creatTagsForTest(TagType tagType, String[] displayNames) {
-
-		Long[] tagIDs = new Long[displayNames.length];
-
-		for (int i = 0; i < displayNames.length; i++) {
-			TagIndex tagIndex = new TagIndex(tagType, displayNames[i], null);
-			tagIDs[i] = tagIndexDao.saveOrUpdate(tagIndex);
-
-			System.out.println("create tag: " + tagIDs[i]);
-		}
-
-		return tagIDs;
-	}
-
 }

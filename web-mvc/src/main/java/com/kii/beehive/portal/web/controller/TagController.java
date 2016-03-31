@@ -1,5 +1,6 @@
 package com.kii.beehive.portal.web.controller;
 
+import com.kii.beehive.portal.exception.ObjectNotFoundException;
 import com.kii.beehive.portal.exception.UnauthorizedException;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.dao.TagUserRelationDao;
@@ -256,4 +257,59 @@ public class TagController extends AbstractThingTagController {
 			throw new BeehiveUnAuthorizedException(e.getMessage());
 		}
 	}
+
+	/**
+	 * GET /user/{userID}
+	 *
+	 * @param userId
+	 * @return a list of tags which the user can access
+	 */
+	@RequestMapping(value = "/user/{userID}", method = RequestMethod.GET)
+	public List<TagIndex> getTagsByUser(@PathVariable("userID") String userId) {
+		return thingTagManager.getAccessibleTagsByUserId(userId);
+	}
+
+	/**
+	 * GET /{fullTagName}/users
+	 *
+	 * @param fullTagName
+	 * @return a list of users who can access the tags
+	 */
+	@RequestMapping(value = "/{fullTagName}/users", method = RequestMethod.GET)
+	public List<BeehiveUser> getUsersByFullTagName(@PathVariable("fullTagName") String fullTagName) {
+		List<String> userId = thingTagManager.getUsersOfAccessibleTags(getLoginUserID(), fullTagName);
+		try {
+			return thingTagManager.getUsers(userId);
+		} catch (ObjectNotFoundException e) {
+			throw new PortalException(e.getMessage(), e.getMessage(), HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	/**
+	 * GET /userGroup/{userGroupID}
+	 *
+	 * @param userGroupId
+	 * @return a list of tags which the user group can access
+	 */
+	@RequestMapping(value = "/userGroup/{userGroupID}", method = RequestMethod.GET)
+	public List<TagIndex> getTagsByUserGroup(@PathVariable("userGroupID") Long userGroupId) {
+		return thingTagManager.getAccessibleTagsByUserGroupId(userGroupId);
+	}
+
+	/**
+	 * GET /{fullTagName}/userGroups
+	 *
+	 * @param fullTagName
+	 * @return a list of user groups which can access the tags
+	 */
+	@RequestMapping(value = "/{fullTagName}/userGroups", method = RequestMethod.GET)
+	public List<UserGroup> getUserGroupsByFullTagName(@PathVariable("fullTagName") String fullTagName) {
+		List<Long> userGroupIds = thingTagManager.getUserGroupsOfAccessibleTags(getLoginUserID(), fullTagName);
+		try {
+			return thingTagManager.getUserGroupsByIds(userGroupIds);
+		} catch (ObjectNotFoundException e) {
+			throw new PortalException(e.getMessage(), e.getMessage(), HttpStatus.BAD_REQUEST);
+		}
+	}
 }
+

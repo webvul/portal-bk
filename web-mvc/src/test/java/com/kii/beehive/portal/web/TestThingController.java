@@ -137,11 +137,11 @@ public class TestThingController extends WebTestTemplate {
 		}
 
 		doReturn(mock(GlobalThingInfo.class)).when(thingTagManager).getAccessibleThingById(anyString(), anyLong());
-		doReturn(null).when(thingTagManager).getUsersOfThing(anyLong());
+		doReturn(null).when(thingTagManager).getUsersOfAccessibleThing(anyString(), anyLong());
 
 		thingController.getUsersByThing(100L);
 
-		verify(thingTagManager, times(1)).getUsersOfThing(anyLong());
+		verify(thingTagManager, times(2)).getUsersOfAccessibleThing(anyString(), anyLong());
 	}
 
 	@Test
@@ -165,11 +165,11 @@ public class TestThingController extends WebTestTemplate {
 		}
 
 		doReturn(mock(GlobalThingInfo.class)).when(thingTagManager).getAccessibleThingById(anyString(), anyLong());
-		doReturn(null).when(thingTagManager).getUserGroupsOfThing(anyLong());
+		doReturn(null).when(thingTagManager).getUserGroupsOfAccessibleThing(anyString(), anyLong());
 
 		thingController.getUserGroupIdsByThing(100L);
 
-		verify(thingTagManager, times(1)).getUserGroupsOfThing(anyLong());
+		verify(thingTagManager, times(2)).getUserGroupsOfAccessibleThing(anyString(), anyLong());
 	}
 
 	@Test
@@ -493,12 +493,13 @@ public class TestThingController extends WebTestTemplate {
 			thingController.bindThingsToTags("thing1", "tag1");
 			fail("Expect a PortalException");
 		} catch (PortalException e) {
-			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
+			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
 		}
 
 		// Tag not found
 		AuthInfoStore.setAuthInfo("ThingCreator");
-		doThrow(new ObjectNotFoundException("test")).when(thingTagManager).getTagIndexes(anyList());
+		doThrow(new ObjectNotFoundException("test")).when(thingTagManager).getAccessibleTagsByFullTagName(anyString(),
+				anyString());
 
 		try {
 			thingController.bindThingsToTags("thing1", "tag1");
@@ -507,10 +508,13 @@ public class TestThingController extends WebTestTemplate {
 			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
 		}
 
-		// Not tag creator
-		TagIndex tag = new TagIndex();
-		tag.setCreateBy("Someone");
-		doReturn(Arrays.asList(tag)).when(thingTagManager).getTagIndexes(anyList());
+		doReturn(Arrays.asList(mock(TagIndex.class))).when(thingTagManager).getAccessibleTagsByFullTagName(anyString(),
+				anyString());
+		doNothing().when(thingTagManager).bindTagsToThings(anyListOf(TagIndex.class), anyListOf(GlobalThingInfo.class));
+		doThrow(new RuntimeException()).when(thingIFInAppService).onTagIDsChangeFire(anyListOf(Long.class), eq(false));
+
+		doThrow(new UnauthorizedException("test")).when(thingTagManager).bindTagsToThings(
+				anyListOf(TagIndex.class), anyListOf(GlobalThingInfo.class));
 
 		try {
 			thingController.bindThingsToTags("thing1", "tag1");
@@ -519,10 +523,11 @@ public class TestThingController extends WebTestTemplate {
 			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
 		}
 
-		tag.setCreateBy("ThingCreator");
-		doNothing().when(thingTagManager).bindTagsToThings(anyListOf(TagIndex.class), anyListOf(GlobalThingInfo.class));
-		doThrow(new RuntimeException()).when(thingIFInAppService).onTagIDsChangeFire(anyListOf(Long.class), eq(false));
+		doNothing().when(thingTagManager).bindTagsToThings(
+				anyListOf(TagIndex.class), anyListOf(GlobalThingInfo.class));
+
 		thingController.bindThingsToTags("thing1", "tag1");
+
 		verify(thingIFInAppService, times(1)).onTagIDsChangeFire(anyListOf(Long.class), eq(true));
 	}
 
@@ -570,7 +575,8 @@ public class TestThingController extends WebTestTemplate {
 
 		// Tag not found
 		AuthInfoStore.setAuthInfo("ThingCreator");
-		doThrow(new ObjectNotFoundException("test")).when(thingTagManager).getTagIndexes(anyList());
+		doThrow(new ObjectNotFoundException("test")).when(thingTagManager).getAccessibleTagsByFullTagName(anyString(),
+				anyString());
 
 		try {
 			thingController.unbindThingsFromTags("thing1", "tag1");
@@ -579,22 +585,26 @@ public class TestThingController extends WebTestTemplate {
 			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
 		}
 
-		// Not tag creator
-		TagIndex tag = new TagIndex();
-		tag.setCreateBy("Someone");
-		doReturn(Arrays.asList(tag)).when(thingTagManager).getTagIndexes(anyList());
-
-		try {
-			thingController.unbindThingsFromTags("thing1", "tag1");
-			fail("Expect a PortalException");
-		} catch (PortalException e) {
-			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
-		}
-
-		tag.setCreateBy("ThingCreator");
+		doReturn(Arrays.asList(mock(TagIndex.class))).when(thingTagManager).getAccessibleTagsByFullTagName(anyString(),
+				anyString());
 		doNothing().when(thingTagManager).bindTagsToThings(anyListOf(TagIndex.class), anyListOf(GlobalThingInfo.class));
 		doThrow(new RuntimeException()).when(thingIFInAppService).onTagIDsChangeFire(anyListOf(Long.class), eq(true));
+
+		doThrow(new UnauthorizedException("test")).when(thingTagManager).unbindThingsFromTags(
+				anyListOf(TagIndex.class), anyListOf(GlobalThingInfo.class));
+
+		try {
+			thingController.unbindThingsFromTags("thing1", "tag1");
+			fail("Expect a PortalException");
+		} catch (PortalException e) {
+			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
+		}
+
+		doNothing().when(thingTagManager).unbindThingsFromTags(
+				anyListOf(TagIndex.class), anyListOf(GlobalThingInfo.class));
+
 		thingController.unbindThingsFromTags("thing1", "tag1");
+
 		verify(thingIFInAppService, times(1)).onTagIDsChangeFire(anyListOf(Long.class), eq(false));
 	}
 
