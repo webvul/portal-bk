@@ -643,7 +643,7 @@ public class TagThingManager {
 				orElse(Collections.emptyList()));
 	}
 
-	public List<String> getUsersOfThing(Long thingId) {
+	public List<BeehiveUser> getUsersOfThing(Long thingId) {
 		List<Long> tagIds = tagThingRelationDao.findTagIds(thingId).orElse(Collections.emptyList());
 		Set<Long> groupIds = new HashSet(tagGroupRelationDao.findUserGroupIdsByTagIds(tagIds).
 				orElse(Collections.emptyList()));
@@ -652,15 +652,15 @@ public class TagThingManager {
 				collect(Collectors.toSet());
 		users.addAll(thingUserRelationDao.findUserIds(thingId));
 		users.addAll(tagUserRelationDao.findUserIds(tagIds).orElse(Collections.emptyList()));
-		return users.stream().collect(Collectors.toList());
+		return userDao.getUserByIDs(users.stream().collect(Collectors.toList()));
 	}
 
-	public List<Long> getUserGroupsOfThing(Long thingId) {
+	public List<UserGroup> getUserGroupsOfThing(Long thingId) {
 		List<Long> tagIds = tagThingRelationDao.findTagIds(thingId).orElse(Collections.emptyList());
 		Set<Long> groupIds = new HashSet(tagGroupRelationDao.findUserGroupIdsByTagIds(tagIds).
 				orElse(Collections.emptyList()));
 		groupIds.addAll(thingUserGroupRelationDao.findUserGroupIds(thingId).orElse(Collections.emptyList()));
-		return groupIds.stream().collect(Collectors.toList());
+		return userGroupDao.findByIDs(groupIds.stream().collect(Collectors.toList()));
 	}
 
 	public List<String> getUsersOfTag(Long tagId) {

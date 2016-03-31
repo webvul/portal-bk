@@ -50,13 +50,13 @@ public class ThingController extends AbstractThingTagController {
 	private ThingIFInAppService thingIFService;
 
 	/**
-	 * GET /{globalThingID}/users
+	 * GET /things/{globalThingID}/users
 	 *
 	 * @param globalThingID
 	 * @return a list of user ids who can access the device.
 	 */
 	@RequestMapping(value = "/{globalThingID}/users", method = RequestMethod.GET)
-	public List<String> getUsersByThing(@PathVariable("globalThingID") Long globalThingID) {
+	public List<BeehiveUser> getUsersByThing(@PathVariable("globalThingID") Long globalThingID) {
 		GlobalThingInfo thingInfo;
 		try {
 			thingInfo = thingTagManager.getAccessibleThingById(getLoginUserID(), globalThingID);
@@ -67,7 +67,7 @@ public class ThingController extends AbstractThingTagController {
 	}
 
 	/**
-	 * GET /user/{userID}
+	 * GET /things/user/{userID}
 	 *
 	 * @param userId
 	 * @return a list of devices which the user can access
@@ -78,13 +78,13 @@ public class ThingController extends AbstractThingTagController {
 	}
 
 	/**
-	 * GET /{globalThingID}/userGroups
+	 * GET /things/{globalThingID}/userGroups
 	 *
 	 * @param globalThingID
 	 * @return a list of user group id which can access the device.
 	 */
 	@RequestMapping(value = "/{globalThingID}/userGroups", method = RequestMethod.GET)
-	public List<Long> getUserGroupIdsByThing(@PathVariable("globalThingID") Long globalThingID) {
+	public List<UserGroup> getUserGroupIdsByThing(@PathVariable("globalThingID") Long globalThingID) {
 		GlobalThingInfo thingInfo;
 		try {
 			thingInfo = thingTagManager.getAccessibleThingById(getLoginUserID(), globalThingID);
@@ -95,7 +95,7 @@ public class ThingController extends AbstractThingTagController {
 	}
 
 	/**
-	 * GET /user/{userID}
+	 * GET /things/user/{userID}
 	 *
 	 * @param userGroupId
 	 * @return a list of devices which the user can access
