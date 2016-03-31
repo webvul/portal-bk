@@ -633,6 +633,8 @@ public class TestTagThingManager {
 
 	@Test
 	public void testGetUsersOfThing() throws Exception {
+		doReturn(mock(ThingUserRelation.class)).when(thingUserRelationDao).find(anyLong(), anyString());
+		doReturn(mock(GlobalThingInfo.class)).when(globalThingDao).findByID(any(Serializable.class));
 		doReturn(Optional.ofNullable(Arrays.asList(100L))).when(tagThingRelationDao).findTagIds(anyLong());
 		doReturn(Optional.ofNullable(Arrays.asList(200L))).when(tagGroupRelationDao).findUserGroupIdsByTagIds(
 				anyListOf(Long.class));
@@ -654,8 +656,8 @@ public class TestTagThingManager {
 			return users;
 		}).when(userDao).getUserByIDs(anyListOf(String.class));
 
-		List<String> userIds = tagThingManager.getUsersOfAccessibleThing(getLoginUserID(), 1000L).stream().map(BeehiveUser::getKiiLoginName).
-				collect(Collectors.toList());
+		List<String> userIds = tagThingManager.getUsersOfAccessibleThing("someone", 1000L).stream().map
+				(BeehiveUser::getKiiLoginName).collect(Collectors.toList());
 		assertEquals(4, userIds.stream().collect(Collectors.toSet()).size());
 	}
 
@@ -689,6 +691,8 @@ public class TestTagThingManager {
 
 	@Test
 	public void testGetUserGroupsOfThing() throws Exception {
+		doReturn(mock(ThingUserRelation.class)).when(thingUserRelationDao).find(anyLong(), anyString());
+		doReturn(mock(GlobalThingInfo.class)).when(globalThingDao).findByID(any(Serializable.class));
 		doReturn(Optional.ofNullable(Arrays.asList(100L))).when(tagThingRelationDao).findTagIds(anyLong());
 		doReturn(Optional.ofNullable(Arrays.asList(200L))).when(tagGroupRelationDao).
 				findUserGroupIdsByTagIds(anyListOf(Long.class));
@@ -704,8 +708,8 @@ public class TestTagThingManager {
 			});
 			return groups;
 		}).when(userGroupDao).findByIDs(anyCollectionOf(Long.class));
-		List<Long> result = tagThingManager.getUserGroupsOfAccessibleThing(getLoginUserID(), 100L).stream().map(UserGroup::getId).
-				collect(Collectors.toList());
+		List<Long> result = tagThingManager.getUserGroupsOfAccessibleThing("someone", 100L).stream().
+				map(UserGroup::getId).collect(Collectors.toList());
 		assertEquals(2, result.size());
 		assertTrue(result.contains(200L) && result.contains(300L));
 	}
