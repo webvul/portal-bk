@@ -297,7 +297,7 @@ public class TagThingManager {
 	 * @param globalThingID
 	 * @param location
 	 */
-	private void saveOrUpdateThingLocation(Long globalThingID, String location) {
+	private void saveOrUpdateThingLocation(Long globalThingID, String location) throws UnauthorizedException {
 
 		// get location tag
 		List<TagIndex> list = tagIndexDao.findTagByTagTypeAndName(TagType.Location.toString(), location);
@@ -305,6 +305,9 @@ public class TagThingManager {
 		if (null == list || list.isEmpty()) {
 			tagId = this.createTag(new TagIndex(TagType.Location, location, null));
 		} else {
+			if(!list.get(0).getCreateBy().equals(AuthInfoStore.getUserID())){
+				throw new UnauthorizedException("Current user is not the creator of the tag.");
+			}
 			tagId = list.get(0).getId();
 		}
 
