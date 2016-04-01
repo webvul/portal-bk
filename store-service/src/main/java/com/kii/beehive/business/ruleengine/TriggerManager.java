@@ -135,8 +135,6 @@ public class TriggerManager {
 			throw new IllegalArgumentException("unsupport trigger type");
 		}
 
-		eventService.addBeehiveTriggerChangeListener(triggerID);
-
 		return triggerID;
 
 	}
@@ -144,7 +142,6 @@ public class TriggerManager {
 
 
 	private void addSimpleToEngine(SimpleTriggerRecord record) {
-		String triggerID=record.getId();
 		String thingID=null;
 		if(record.getSource()!=null) {
 			GlobalThingInfo thingInfo = thingTagService.getThingByID(record.getSource().getThingID());
@@ -152,7 +149,7 @@ public class TriggerManager {
 				thingID = thingInfo.getFullKiiThingID();
 			}
 		}
-		service.createSimpleTrigger(thingID,triggerID,record);
+		service.createSimpleTrigger(thingID,record);
 	}
 
 

@@ -9,9 +9,9 @@ import com.kii.beehive.business.event.BusinessEventListenerService;
 import com.kii.beehive.business.event.impl.TagChangeProcess;
 import com.kii.beehive.business.manager.ThingTagManager;
 import com.kii.beehive.portal.event.EventListener;
+import com.kii.extension.ruleengine.EngineService;
 import com.kii.extension.ruleengine.service.TriggerRecordDao;
 import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
-import com.kii.extension.ruleengine.EngineService;
 
 @Component(BusinessEventListenerService.REFRESH_THING_GROUP)
 public class GroupTriggerProcess implements TagChangeProcess {
@@ -38,7 +38,7 @@ public class GroupTriggerProcess implements TagChangeProcess {
 
 		String listenerID=listener.getId();
 
-		GroupTriggerRecord trigger= (GroupTriggerRecord) triggerRecordDao.getEnableTriggerRecord(listener.getTargetKey());
+		GroupTriggerRecord trigger= (GroupTriggerRecord) triggerRecordDao.getTriggerRecord(listener.getTargetKey());
 
 		if(trigger==null){
 			listenerService.disableTrigger(listenerID);

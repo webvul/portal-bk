@@ -1,4 +1,4 @@
-package com.kii.beehive.business.ruleengine.process;
+package com.kii.beehive.business.ruleengine;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import com.kii.beehive.business.helper.OpLogTools;
 import com.kii.beehive.business.manager.ThingTagManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.extension.ruleengine.service.TriggerRecordDao;
 import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
@@ -32,6 +33,27 @@ public class TriggerLogTools {
 
 	@Autowired
 	private ThingTagManager thingTagService;
+
+
+	@Async
+	public void outputCommandLog(Set<GlobalThingInfo>  thingList,TriggerRecord  record){
+
+		thingList.forEach(thing->{
+
+			//日期时间+当前用户ID+"trigger”+trigger type(simple/group/summary)+”fire"+当前triggerID+触发源
+			List<String> list = new LinkedList<>();
+			list.add(AuthInfoStore.getUserID());
+			list.add("trigger");
+			list.add(record.getType().name());
+			list.add("exec");
+			list.add(record.getTriggerID());
+			//触发目标
+			list.add(thing.getId()+"");
+
+			logTool.write(list);
+		});
+
+	}
 
 
 	@Async
