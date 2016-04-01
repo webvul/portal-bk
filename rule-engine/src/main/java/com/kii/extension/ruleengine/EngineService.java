@@ -130,10 +130,12 @@ public class EngineService {
 	}
 
 
-	public void createSimpleTrigger(String thingID, String triggerID, SimpleTriggerRecord record){
+	public void createSimpleTrigger(String thingID, SimpleTriggerRecord record){
 
 
 		Trigger trigger=new Trigger();
+
+		String triggerID=record.getId();
 
 		trigger.setTriggerID(triggerID);
 		trigger.setType(TriggerType.simple);

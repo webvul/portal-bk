@@ -44,7 +44,7 @@ public class TestSimpleTrigger extends TestInit{
 		String triggerID="100";
 		record.setId(triggerID);
 
-		engine.createSimpleTrigger(kiiThingID,triggerID,record);
+		engine.createSimpleTrigger(kiiThingID,record);
 
 		sendBadThingStatus(kiiThingID);
 		sendGoodThingStatus(kiiThingID);
@@ -92,7 +92,7 @@ public class TestSimpleTrigger extends TestInit{
 		record.setId(triggerID);
 
 
-		engine.createSimpleTrigger(kiiThingID,triggerID,record);
+		engine.createSimpleTrigger(kiiThingID,record);
 
 		sendGoodThingStatus(kiiThingID);
 
