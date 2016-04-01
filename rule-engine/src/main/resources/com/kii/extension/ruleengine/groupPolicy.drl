@@ -20,7 +20,7 @@ then
 end
 
 
-rule "summary of  true  result:any  ->true"
+rule "summary of  true  result:any "
 when
 	$trigger:Trigger(policy ==TriggerGroupPolicyType.Any,$triggerID:triggerID,$things:things)
     CurrThing(thing memberOf $things) from currThing

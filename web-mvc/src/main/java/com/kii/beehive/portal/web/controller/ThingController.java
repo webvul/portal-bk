@@ -340,13 +340,9 @@ public class ThingController extends AbstractThingTagController {
 			throw new PortalException("RequiredFieldsMissing", "globalThingIDs or userGroupIDs is empty", HttpStatus
 					.BAD_REQUEST);
 		}
-		List<GlobalThingInfo> things = getThings(globalThingIDs);
-		List<UserGroup> userGroups = getUserGroups(userGroupIDs);
-		try {
-			thingTagManager.bindThingsToUserGroups(things, userGroups);
-		} catch (UnauthorizedException e) {
-			throw new BeehiveUnAuthorizedException(e.getMessage());
-		}
+		List<Long> thingIds = getCreatedThingIds(globalThingIDs);
+		List<Long> userGroupIds = getUserGroupIds(userGroupIDs);
+		thingTagManager.bindThingsToUserGroups(thingIds, userGroupIds);
 	}
 
 	/**
@@ -365,13 +361,9 @@ public class ThingController extends AbstractThingTagController {
 			throw new PortalException("RequiredFieldsMissing", "globalThingIDs or userGroupIDs is empty", HttpStatus
 					.BAD_REQUEST);
 		}
-		List<GlobalThingInfo> things = getThings(globalThingIDs);
-		List<UserGroup> userGroups = getUserGroups(userGroupIDs);
-		try {
-			thingTagManager.unbindThingsFromUserGroups(things, userGroups);
-		} catch (UnauthorizedException e) {
-			throw new BeehiveUnAuthorizedException(e.getMessage());
-		}
+		List<Long> thingIds = getCreatedThingIds(globalThingIDs);
+		List<Long> userGroupIds = getUserGroupIds(userGroupIDs);
+		thingTagManager.unbindThingsFromUserGroups(thingIds, userGroupIds);
 	}
 
 	/**
@@ -388,13 +380,9 @@ public class ThingController extends AbstractThingTagController {
 			throw new PortalException("RequiredFieldsMissing", "globalThingIDs or userIDs is empty", HttpStatus
 					.BAD_REQUEST);
 		}
-		List<GlobalThingInfo> things = getThings(globalThingIDs);
-		List<BeehiveUser> users = getUsers(userIDs);
-		try {
-			thingTagManager.bindThingsToUsers(things, users);
-		} catch (UnauthorizedException e) {
-			throw new BeehiveUnAuthorizedException(e.getMessage());
-		}
+		List<Long> thingIds = getCreatedThingIds(globalThingIDs);
+		Set<String> userIds = getUserIds(userIDs);
+		thingTagManager.bindThingsToUsers(thingIds, userIds);
 	}
 
 	/**
@@ -411,13 +399,9 @@ public class ThingController extends AbstractThingTagController {
 			throw new PortalException("RequiredFieldsMissing", "globalThingIDs or userIDs is empty", HttpStatus
 					.BAD_REQUEST);
 		}
-		List<GlobalThingInfo> things = getThings(globalThingIDs);
-		List<BeehiveUser> users = getUsers(userIDs);
-		try {
-			thingTagManager.unbindThingsFromUsers(things, users);
-		} catch (UnauthorizedException e) {
-			throw new BeehiveUnAuthorizedException(e.getMessage());
-		}
+		List<Long> thingIds = getCreatedThingIds(globalThingIDs);
+		Set<String> userIds = getUserIds(userIDs);
+		thingTagManager.unbindThingsFromUsers(thingIds, userIds);
 	}
 
 	/**

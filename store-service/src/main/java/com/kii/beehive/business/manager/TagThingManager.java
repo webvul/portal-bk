@@ -1,16 +1,19 @@
 package com.kii.beehive.business.manager;
 
-import com.kii.beehive.business.service.ThingIFInAppService;
-import com.kii.beehive.portal.auth.AuthInfoStore;
-import com.kii.beehive.portal.common.utils.CollectUtils;
-import com.kii.beehive.portal.exception.ObjectNotFoundException;
-import com.kii.beehive.portal.exception.UnauthorizedException;
-import com.kii.beehive.portal.jdbc.dao.*;
-import com.kii.beehive.portal.jdbc.entity.*;
-import com.kii.beehive.portal.service.AppInfoDao;
-import com.kii.beehive.portal.service.BeehiveUserDao;
-import com.kii.beehive.portal.store.entity.BeehiveUser;
-import com.kii.beehive.portal.store.entity.KiiAppInfo;
+import static com.kii.beehive.portal.common.utils.CollectUtils.collectionToString;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
 import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,11 +21,39 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
-import static com.kii.beehive.portal.common.utils.CollectUtils.collectionToString;
+import com.kii.beehive.business.service.ThingIFInAppService;
+import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.common.utils.CollectUtils;
+import com.kii.beehive.portal.exception.ObjectNotFoundException;
+import com.kii.beehive.portal.exception.UnauthorizedException;
+import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
+import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
+import com.kii.beehive.portal.jdbc.dao.TagGroupRelationDao;
+import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
+import com.kii.beehive.portal.jdbc.dao.TagThingRelationDao;
+import com.kii.beehive.portal.jdbc.dao.TagUserRelationDao;
+import com.kii.beehive.portal.jdbc.dao.TeamDao;
+import com.kii.beehive.portal.jdbc.dao.TeamTagRelationDao;
+import com.kii.beehive.portal.jdbc.dao.TeamThingRelationDao;
+import com.kii.beehive.portal.jdbc.dao.ThingUserGroupRelationDao;
+import com.kii.beehive.portal.jdbc.dao.ThingUserRelationDao;
+import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
+import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
+import com.kii.beehive.portal.jdbc.entity.TagGroupRelation;
+import com.kii.beehive.portal.jdbc.entity.TagIndex;
+import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
+import com.kii.beehive.portal.jdbc.entity.TagType;
+import com.kii.beehive.portal.jdbc.entity.TagUserRelation;
+import com.kii.beehive.portal.jdbc.entity.Team;
+import com.kii.beehive.portal.jdbc.entity.TeamTagRelation;
+import com.kii.beehive.portal.jdbc.entity.TeamThingRelation;
+import com.kii.beehive.portal.jdbc.entity.ThingUserGroupRelation;
+import com.kii.beehive.portal.jdbc.entity.ThingUserRelation;
+import com.kii.beehive.portal.jdbc.entity.UserGroup;
+import com.kii.beehive.portal.service.AppInfoDao;
+import com.kii.beehive.portal.service.BeehiveUserDao;
+import com.kii.beehive.portal.store.entity.BeehiveUser;
+import com.kii.beehive.portal.store.entity.KiiAppInfo;
 
 @Component
 @Transactional
@@ -178,21 +209,13 @@ public class TagThingManager {
 		}
 	}
 
-	public void bindTagsToUserGroups(List<TagIndex> tags, List<UserGroup> userGroups) throws UnauthorizedException {
-		if (tags.isEmpty() || !isTagCreator(tags)) {
-			throw new UnauthorizedException("Current user is not the creator of the tag.");
-		}
-		if (null != userGroups) {
-			userGroups.forEach(userGroup -> {
-				tags.forEach(tagIndex -> {
-					TagGroupRelation relation = tagGroupRelationDao.findByTagIDAndUserGroupID(tagIndex.getId(),
-							userGroup.getId());
-					if (null == relation) {
-						tagGroupRelationDao.insert(new TagGroupRelation(tagIndex.getId(), userGroup.getId(), "1"));
-					}
-				});
-			});
-		}
+	public void bindTagsToUserGroups(List<Long> tagIds, List<Long> userGroupIds) {
+		tagIds.forEach(tagId -> userGroupIds.forEach(groupId -> {
+			TagGroupRelation relation = tagGroupRelationDao.findByTagIDAndUserGroupID(tagId, groupId);
+			if (null == relation) {
+				tagGroupRelationDao.insert(new TagGroupRelation(tagId, groupId, "1"));
+			}
+		}));
 	}
 
 	public void unbindTagsFromThings(List<Long> tagIds, List<Long> thingIds) {
@@ -203,15 +226,8 @@ public class TagThingManager {
 		});
 	}
 
-	public void unbindTagsFromUserGroups(List<TagIndex> tags, List<UserGroup> userGroups) throws UnauthorizedException {
-		if (!isTagCreator(tags)) {
-			throw new UnauthorizedException("Current user is not the creator of the tag.");
-		}
-		if (null != userGroups) {
-			userGroups.forEach(userGroup -> {
-				tags.forEach(tagIndex -> tagGroupRelationDao.delete(tagIndex.getId(), userGroup.getId()));
-			});
-		}
+	public void unbindTagsFromUserGroups(List<Long> tagsId, List<Long> userGroupIds) {
+		tagsId.forEach(tagId -> userGroupIds.forEach(groupId -> tagGroupRelationDao.delete(tagId, groupId)));
 	}
 
 	public void unbindTeamToThing(Collection<String> teamIDs, Collection<String> thingIDs) {
@@ -404,95 +420,49 @@ public class TagThingManager {
 		return teamList;
 	}
 
-	public void bindTagsToUsers(List<TagIndex> tags, List<BeehiveUser> users) throws UnauthorizedException {
-		if (!isTagCreator(tags)) {
-			throw new UnauthorizedException("Current user is not the creator of the tag.");
-		}
-		if (null != users) {
-			users.forEach(user -> {
-				tags.forEach(tagIndex -> {
-					TagUserRelation relation = tagUserRelationDao.find(tagIndex.getId(), user.getKiiLoginName());
-					if (null == relation) {
-						tagUserRelationDao.insert(new TagUserRelation(tagIndex.getId(), user.getKiiLoginName()));
-					}
-				});
-			});
-		}
+	public void bindTagsToUsers(Collection<Long> tagIds, Collection<String> userIds) {
+		userIds.forEach(userId -> tagIds.forEach(tagId -> {
+			TagUserRelation relation = tagUserRelationDao.find(tagId, userId);
+			if (null == relation) {
+				tagUserRelationDao.insert(new TagUserRelation(tagId, userId));
+			}
+		}));
 	}
 
-	public void unbindTagsFromUsers(List<TagIndex> tags, List<BeehiveUser> users) throws UnauthorizedException {
-		if (!isTagCreator(tags)) {
-			throw new UnauthorizedException("Current user is not the creator of the tag.");
-		}
-		if (null != users) {
-			users.forEach(user -> {
-				tags.forEach(tagIndex -> tagUserRelationDao.deleteByTagIdAndUserId(tagIndex.getId(),
-						user.getKiiLoginName()));
-			});
-		}
+	public void unbindTagsFromUsers(Collection<Long> tagIds, Collection<String> userIds) {
+		userIds.forEach(userId -> tagIds.forEach(tagId -> tagUserRelationDao.deleteByTagIdAndUserId(tagId, userId)));
 	}
 
-	public void bindThingsToUsers(List<GlobalThingInfo> things, List<BeehiveUser> users) throws UnauthorizedException {
-		if (!isThingCreator(things)) {
-			throw new UnauthorizedException("Current user is not the creator of the thing(s).");
-		}
-		if (null != users) {
-			users.forEach(user -> {
-				things.forEach(thing -> {
-					ThingUserRelation relation = thingUserRelationDao.find(thing.getId(), user.getKiiLoginName());
-					if (null == relation) {
-						relation = new ThingUserRelation();
-						relation.setThingId(thing.getId());
-						relation.setUserId(user.getKiiLoginName());
-						thingUserRelationDao.insert(relation);
-					}
-				});
-			});
-		}
+	public void bindThingsToUsers(Collection<Long> thingIds, Collection<String> userIds) {
+		thingIds.forEach(thingId -> userIds.forEach(userId -> {
+			ThingUserRelation relation = thingUserRelationDao.find(thingId, userId);
+			if (null == relation) {
+				relation = new ThingUserRelation();
+				relation.setThingId(thingId);
+				relation.setUserId(userId);
+				thingUserRelationDao.insert(relation);
+			}
+		}));
 	}
 
 
-	public void unbindThingsFromUsers(List<GlobalThingInfo> things, List<BeehiveUser> users) throws
-			UnauthorizedException {
-		if (!isThingCreator(things)) {
-			throw new UnauthorizedException("Current user is not the creator of the thing(s).");
-		}
-		if (null != users) {
-			users.forEach(user -> {
-				things.forEach(thing -> thingUserRelationDao.deleteByThingIdAndUserId(thing.getId(),
-						user.getKiiLoginName()));
-			});
-		}
+	public void unbindThingsFromUsers(Collection<Long> thingIds, Collection<String> userIds) {
+		thingIds.forEach(thingId -> userIds.forEach(userId ->
+				thingUserRelationDao.deleteByThingIdAndUserId(thingId, userId)));
 	}
 
-	public void bindThingsToUserGroups(List<GlobalThingInfo> things, List<UserGroup> userGroups) throws
-			UnauthorizedException {
-		if (!isThingCreator(things)) {
-			throw new UnauthorizedException("Current user is not the creator of thing(s).");
-		}
-		if (null != userGroups) {
-			userGroups.forEach(userGroup -> {
-				things.forEach(thing -> {
-					ThingUserGroupRelation relation = thingUserGroupRelationDao.find(thing.getId(), userGroup.getId());
-					if (null == relation) {
-						thingUserGroupRelationDao.insert(new ThingUserGroupRelation(thing.getId(), userGroup.getId()));
-					}
-				});
-			});
-		}
+	public void bindThingsToUserGroups(Collection<Long> thingIds, Collection<Long> userGroupIds) {
+		thingIds.forEach(thingId -> userGroupIds.forEach(groupId -> {
+			ThingUserGroupRelation relation = thingUserGroupRelationDao.find(thingId, groupId);
+			if (null == relation) {
+				thingUserGroupRelationDao.insert(new ThingUserGroupRelation(thingId, groupId));
+			}
+		}));
 	}
 
-	public void unbindThingsFromUserGroups(List<GlobalThingInfo> things, List<UserGroup> userGroups) throws
-			UnauthorizedException {
-		if (!isThingCreator(things)) {
-			throw new UnauthorizedException("Current user is not the creator of thing(s).");
-		}
-		if (null != userGroups) {
-			userGroups.forEach(userGroup -> {
-				things.forEach(thing -> thingUserGroupRelationDao.deleteByThingIdAndUserGroupId(thing.getId(),
-						userGroup.getId()));
-			});
-		}
+	public void unbindThingsFromUserGroups(Collection<Long> thingIds, Collection<Long> userGroupIds) {
+		thingIds.forEach(thingId -> userGroupIds.forEach(groupId ->
+				thingUserGroupRelationDao.deleteByThingIdAndUserGroupId(thingId, groupId)));
 	}
 
 	public List<GlobalThingInfo> getThings(List<String> thingIDList) throws ObjectNotFoundException {
@@ -576,17 +546,16 @@ public class TagThingManager {
 		return userGroups;
 	}
 
-	public List<UserGroup> getUserGroups(List<String> userGroupIDList) throws ObjectNotFoundException {
-		List<Long> userGroupIds = userGroupIDList.stream().filter(Pattern.compile("^[0-9]+$").asPredicate())
-				.map(Long::valueOf).collect(Collectors.toList());
-		List<UserGroup> userGroups = userGroupDao.findByIDs(userGroupIds);
-		if (null == userGroups || !userGroups.stream().map(UserGroup::getId).map(Object::toString).
-				collect(Collectors.toSet()).containsAll(userGroupIDList)) {
-			userGroupIds.removeAll(userGroups.stream().map(UserGroup::getId).collect(Collectors.toList()));
+	public List<Long> getUserGroupIds(List<String> userGroupIDList) throws ObjectNotFoundException {
+		Set<Long> idSet = userGroupIDList.stream().filter(Pattern.compile("^[0-9]+$").asPredicate())
+				.map(Long::valueOf).collect(Collectors.toSet());
+		List<Long> userGroupIds = userGroupDao.findUserGroupIds(idSet).orElse(Collections.emptyList());
+		if (idSet.size() != userGroupIds.size()) {
+			idSet.removeAll(userGroupIds);
 			throw new ObjectNotFoundException("Invalid user group id(s): [" + collectionToString
-					(userGroupIds) + "]");
+					(idSet) + "]");
 		}
-		return userGroups;
+		return userGroupIds;
 	}
 
 	public List<GlobalThingInfo> getAccessibleThingsByType(String thingType, String user) {

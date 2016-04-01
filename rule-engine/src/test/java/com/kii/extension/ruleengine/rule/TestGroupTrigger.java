@@ -195,4 +195,64 @@ public class TestGroupTrigger extends TestInit {
 		assertEquals(2,exec.getHitCount(triggerID));
 
 	}
+
+
+	@Test
+	public void testGroupAnyTrigger(){
+
+
+		GroupTriggerRecord record=new GroupTriggerRecord();
+
+
+		TagSelector  selector=new TagSelector();
+		selector.addTag("Location-2F-room1");
+		selector.addTag("Location-2F_room1");
+		selector.setAndExpress(false);
+
+		TriggerSource source=new TriggerSource();
+		source.setSelector(selector);
+		record.setSource(source);
+
+		record.addTarget(getTarget() );
+
+		RuleEnginePredicate perdicate=new RuleEnginePredicate();
+		Condition condition= TriggerConditionBuilder.andCondition().great("foo",0).less("bar",0).getConditionInstance();
+		perdicate.setCondition(condition);
+
+		perdicate.setTriggersWhen(WhenType.CONDITION_CHANGED);
+		record.setPredicate(perdicate);
+
+		TriggerGroupPolicy policy=new TriggerGroupPolicy();
+		policy.setGroupPolicy(TriggerGroupPolicyType.Any);
+		record.setPolicy(policy);
+
+
+		String triggerID="202";
+		record.setId(triggerID);
+
+		record.setRecordStatus(TriggerRecord.StatusType.enable);
+
+		Set<String> thingIDs=tagService.getKiiThingIDs(selector);
+
+		engine.createGroupTrigger(thingIDs,record);
+
+		thingIDs.forEach(id->sendBadThingStatus(id));
+
+		assertEquals(0,exec.getHitCount(triggerID));
+
+		sendGoodThingStatus(thingIDs.iterator().next());
+
+		assertEquals(1,exec.getHitCount(triggerID));
+
+		sendBadThingStatus(thingIDs.iterator().next());
+
+		assertEquals(2,exec.getHitCount(triggerID));
+
+		sendGoodThingStatus(thingIDs.iterator().next());
+
+		assertEquals(3,exec.getHitCount(triggerID));
+
+
+	}
+
 }

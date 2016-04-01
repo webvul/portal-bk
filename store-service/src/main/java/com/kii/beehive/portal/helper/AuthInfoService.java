@@ -1,9 +1,5 @@
 package com.kii.beehive.portal.helper;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +7,6 @@ import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
 import com.kii.beehive.portal.jdbc.dao.PermissionDao;
-import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
-import com.kii.beehive.portal.jdbc.entity.Permission;
 import com.kii.beehive.portal.store.entity.AuthInfoEntry;
 
 /**

@@ -1,6 +1,6 @@
 package com.kii.beehive.business.manager;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -13,6 +13,7 @@ import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.PagerTag;
@@ -66,8 +67,8 @@ public class ThingTagManager {
 		return globalThingDao.findByID(globalThingID);
 	}
 
-	public List<GlobalThingInfo> getThingInfos(TagSelector source) {
-		List<GlobalThingInfo> things = new ArrayList<>();
+	public Set<GlobalThingInfo> getThingInfos(TagSelector source) {
+		Set<GlobalThingInfo> things = new HashSet<>();
 
 		if(!source.getThingList().isEmpty()) {
 			things.addAll(globalThingDao.findByIDs(source.getThingList()));
@@ -99,7 +100,7 @@ public class ThingTagManager {
 
 	public Set<String> getKiiThingIDs(TagSelector source){
 
-		List<GlobalThingInfo> thingList=getThingInfos(source);
+		Set<GlobalThingInfo> thingList=getThingInfos(source);
 
 		return thingList.stream().map(thing->thing.getFullKiiThingID()).collect(Collectors.toSet());
 

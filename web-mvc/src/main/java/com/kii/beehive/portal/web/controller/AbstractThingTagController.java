@@ -6,7 +6,6 @@ import com.kii.beehive.portal.exception.UnauthorizedException;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagType;
-import com.kii.beehive.portal.jdbc.entity.UserGroup;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.exception.BeehiveUnAuthorizedException;
 import com.kii.beehive.portal.web.exception.PortalException;
@@ -57,6 +56,11 @@ public abstract class AbstractThingTagController extends AbstractController {
 		}
 	}
 
+	/**
+	 * @param fullTagNames a list of tag full names, separating by comma
+	 * @return a list of tag ids
+	 * @throws PortalException if no tags can be found
+	 */
 	protected List<Long> getCreatedTagIds(String fullTagNames) {
 		try {
 			return thingTagManager.getCreatedTagIdsByFullTagName(getLoginUserID(), fullTagNames);
@@ -74,17 +78,18 @@ public abstract class AbstractThingTagController extends AbstractController {
 		}
 	}
 
-	protected List<BeehiveUser> getUsers(String userIDs) {
+	protected Set<String> getUserIds(String userIDs) {
 		try {
-			return thingTagManager.getUsers(Arrays.asList(userIDs.split(",")));
+			return thingTagManager.getUsers(Arrays.asList(userIDs.split(","))).stream().
+					map(BeehiveUser::getKiiLoginName).collect(Collectors.toSet());
 		} catch (ObjectNotFoundException e) {
 			throw new PortalException("Requested user doesn't exist", e.getMessage(), HttpStatus.BAD_REQUEST);
 		}
 	}
 
-	protected List<UserGroup> getUserGroups(String userGroupIDs) {
+	protected List<Long> getUserGroupIds(String userGroupIDs) {
 		try {
-			return thingTagManager.getUserGroups(Arrays.asList(userGroupIDs.split(",")));
+			return thingTagManager.getUserGroupIds(Arrays.asList(userGroupIDs.split(",")));
 		} catch (ObjectNotFoundException e) {
 			throw new PortalException("Requested user group doesn't exist", e.getMessage(), HttpStatus.BAD_REQUEST);
 		}

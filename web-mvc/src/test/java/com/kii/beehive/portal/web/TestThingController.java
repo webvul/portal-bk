@@ -14,14 +14,12 @@ import com.kii.beehive.portal.jdbc.dao.TeamThingRelationDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagType;
-import com.kii.beehive.portal.jdbc.entity.UserGroup;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.beehive.portal.web.controller.ThingController;
 import com.kii.beehive.portal.web.controller.ThingIFController;
 import com.kii.beehive.portal.web.entity.ThingCommandRestBean;
 import com.kii.beehive.portal.web.entity.ThingRestBean;
-import com.kii.beehive.portal.web.exception.BeehiveUnAuthorizedException;
 import com.kii.beehive.portal.web.exception.PortalException;
 import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
 import com.kii.extension.ruleengine.store.trigger.TagSelector;
@@ -207,28 +205,31 @@ public class TestThingController extends WebTestTemplate {
 			}
 		}
 
-		GlobalThingInfo thingInfo = new GlobalThingInfo();
-		thingInfo.setCreateBy("ThingCreator");
-		thingInfo.setId(1001L);
-		doReturn(Arrays.asList(thingInfo)).when(thingTagManager).getThings(anyListOf(String.class));
+		doThrow(new ObjectNotFoundException("test")).when(thingTagManager).getCreatedThingIds(anyString(),
+				anyListOf(Long.class));
 
-		UserGroup userGroup = new UserGroup();
-		userGroup.setCreateBy("Someone");
-		userGroup.setId(200L);
-		doReturn(Arrays.asList(userGroup)).when(thingTagManager).getUserGroups(anyListOf(String.class));
-
-		doThrow(new UnauthorizedException("test")).when(thingTagManager).bindThingsToUserGroups(anyListOf
-				(GlobalThingInfo.class), anyListOf(UserGroup.class));
 		try {
-			thingController.bindThingsToUserGroups("some things", "some userGroups");
+			thingController.bindThingsToUserGroups("123", "123");
 			fail("Expect a PortalException");
-		} catch (BeehiveUnAuthorizedException e) {
+		} catch (PortalException e) {
 			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
 		}
 
-		doNothing().when(thingTagManager).bindThingsToUserGroups(anyListOf
-				(GlobalThingInfo.class), anyListOf(UserGroup.class));
-		thingController.bindThingsToUserGroups("some things", "some userGroups");
+		doReturn(Arrays.asList(100L)).when(thingTagManager).getCreatedThingIds(anyString(), anyListOf(Long.class));
+		doThrow(new ObjectNotFoundException("test")).when(thingTagManager).getUserGroupIds(anyListOf(String.class));
+
+		try {
+			thingController.bindThingsToUserGroups("123", "123");
+			fail("Expect a PortalException");
+		} catch (PortalException e) {
+			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+		}
+
+		doReturn(Arrays.asList(100L)).when(thingTagManager).getUserGroupIds(anyListOf(String.class));
+		doNothing().when(thingTagManager).bindThingsToUserGroups(anyCollectionOf(Long.class),
+				anyCollectionOf(Long.class));
+
+		thingController.bindThingsToUserGroups("123", "123");
 	}
 
 	@Test
@@ -247,28 +248,31 @@ public class TestThingController extends WebTestTemplate {
 			}
 		}
 
-		GlobalThingInfo thingInfo = new GlobalThingInfo();
-		thingInfo.setCreateBy("ThingCreator");
-		thingInfo.setId(1001L);
-		doReturn(Arrays.asList(thingInfo)).when(thingTagManager).getThings(anyListOf(String.class));
+		doThrow(new ObjectNotFoundException("test")).when(thingTagManager).getCreatedThingIds(anyString(),
+				anyListOf(Long.class));
 
-		UserGroup userGroup = new UserGroup();
-		userGroup.setCreateBy("Someone");
-		userGroup.setId(200L);
-		doReturn(Arrays.asList(userGroup)).when(thingTagManager).getUserGroups(anyListOf(String.class));
-
-		doThrow(new UnauthorizedException("test")).when(thingTagManager).unbindThingsFromUserGroups(anyListOf
-				(GlobalThingInfo.class), anyListOf(UserGroup.class));
 		try {
-			thingController.unbindThingsFromUserGroups("some things", "some userGroups");
+			thingController.unbindThingsFromUserGroups("123", "123");
 			fail("Expect a PortalException");
-		} catch (BeehiveUnAuthorizedException e) {
+		} catch (PortalException e) {
 			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
 		}
 
-		doNothing().when(thingTagManager).unbindThingsFromUserGroups(anyListOf
-				(GlobalThingInfo.class), anyListOf(UserGroup.class));
-		thingController.unbindThingsFromUserGroups("some things", "some userGroups");
+		doReturn(Arrays.asList(100L)).when(thingTagManager).getCreatedThingIds(anyString(), anyListOf(Long.class));
+		doThrow(new ObjectNotFoundException("test")).when(thingTagManager).getUserGroupIds(anyListOf(String.class));
+
+		try {
+			thingController.unbindThingsFromUserGroups("123", "123");
+			fail("Expect a PortalException");
+		} catch (PortalException e) {
+			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+		}
+
+		doReturn(Arrays.asList(100L)).when(thingTagManager).getUserGroupIds(anyListOf(String.class));
+		doNothing().when(thingTagManager).bindThingsToUserGroups(anyCollectionOf(Long.class),
+				anyCollectionOf(Long.class));
+
+		thingController.unbindThingsFromUserGroups("123", "123");
 	}
 
 	@Test
@@ -287,27 +291,32 @@ public class TestThingController extends WebTestTemplate {
 			}
 		}
 
-		GlobalThingInfo thingInfo = new GlobalThingInfo();
-		thingInfo.setCreateBy("ThingCreator");
-		thingInfo.setId(1001L);
-		doReturn(Arrays.asList(thingInfo)).when(thingTagManager).getThings(anyListOf(String.class));
+		doThrow(new ObjectNotFoundException("test")).when(thingTagManager).getCreatedThingIds(anyString(),
+				anyListOf(Long.class));
+
+		try {
+			thingController.bindThingsToUsers("100", "someone");
+			fail("Expect a PortalException");
+		} catch (PortalException e) {
+			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
+		}
+
+		doReturn(Arrays.asList(100L)).when(thingTagManager).getCreatedThingIds(anyString(), anyListOf(Long.class));
+		doThrow(new ObjectNotFoundException("test")).when(thingTagManager).getUsers(anyListOf(String.class));
+
+		try {
+			thingController.bindThingsToUsers("100", "someone");
+			fail("Expect a PortalException");
+		} catch (PortalException e) {
+			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+		}
 
 		BeehiveUser user = new BeehiveUser();
 		user.setKiiLoginName("Someone");
 		doReturn(Arrays.asList(user)).when(thingTagManager).getUsers(anyListOf(String.class));
+		doNothing().when(thingTagManager).bindThingsToUsers(anyCollectionOf(Long.class), anyCollectionOf(String.class));
 
-		doThrow(new UnauthorizedException("test")).when(thingTagManager).bindThingsToUsers(anyListOf
-				(GlobalThingInfo.class), anyListOf(BeehiveUser.class));
-		try {
-			thingController.bindThingsToUsers("some things", "some userGroups");
-			fail("Expect a PortalException");
-		} catch (BeehiveUnAuthorizedException e) {
-			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
-		}
-
-		doNothing().when(thingTagManager).bindThingsToUsers(anyListOf
-				(GlobalThingInfo.class), anyListOf(BeehiveUser.class));
-		thingController.bindThingsToUsers("some things", "some userGroups");
+		thingController.bindThingsToUsers("100", "someone");
 	}
 
 	@Test
@@ -326,27 +335,32 @@ public class TestThingController extends WebTestTemplate {
 			}
 		}
 
-		GlobalThingInfo thingInfo = new GlobalThingInfo();
-		thingInfo.setCreateBy("ThingCreator");
-		thingInfo.setId(1001L);
-		doReturn(Arrays.asList(thingInfo)).when(thingTagManager).getThings(anyListOf(String.class));
+		doThrow(new ObjectNotFoundException("test")).when(thingTagManager).getCreatedThingIds(anyString(),
+				anyListOf(Long.class));
+
+		try {
+			thingController.unbindThingsFromUsers("100", "someone");
+			fail("Expect a PortalException");
+		} catch (PortalException e) {
+			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
+		}
+
+		doReturn(Arrays.asList(100L)).when(thingTagManager).getCreatedThingIds(anyString(), anyListOf(Long.class));
+		doThrow(new ObjectNotFoundException("test")).when(thingTagManager).getUsers(anyListOf(String.class));
+
+		try {
+			thingController.unbindThingsFromUsers("100", "someone");
+			fail("Expect a PortalException");
+		} catch (PortalException e) {
+			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+		}
 
 		BeehiveUser user = new BeehiveUser();
 		user.setKiiLoginName("Someone");
 		doReturn(Arrays.asList(user)).when(thingTagManager).getUsers(anyListOf(String.class));
+		doNothing().when(thingTagManager).bindThingsToUsers(anyCollectionOf(Long.class), anyCollectionOf(String.class));
 
-		doThrow(new UnauthorizedException("test")).when(thingTagManager).unbindThingsFromUsers(anyListOf
-				(GlobalThingInfo.class), anyListOf(BeehiveUser.class));
-		try {
-			thingController.unbindThingsFromUsers("some things", "some userGroups");
-			fail("Expect a PortalException");
-		} catch (BeehiveUnAuthorizedException e) {
-			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
-		}
-
-		doNothing().when(thingTagManager).unbindThingsFromUsers(anyListOf
-				(GlobalThingInfo.class), anyListOf(BeehiveUser.class));
-		thingController.unbindThingsFromUsers("some things", "some userGroups");
+		thingController.unbindThingsFromUsers("100", "someone");
 	}
 
 	@Test
@@ -635,100 +649,43 @@ public class TestThingController extends WebTestTemplate {
 
 	@Test
 	public void testCreateThingWithTagAndCustomFields() throws Exception {
-
-		// create without tag and custom field
-		Map<String, Object> request = new HashMap<>();
-		request.put("vendorThingID", vendorThingIDsForTest[0]);
-		request.put("kiiAppID", KII_APP_ID);
-		request.put("type", "some type");
-		request.put("location", "some location");
+		ThingRestBean thingRestBean = new ThingRestBean();
+		thingRestBean.setVendorThingID(vendorThingIDsForTest[0]);
+		thingRestBean.setKiiAppID(KII_APP_ID);
+		thingRestBean.setType("some type");
+		thingRestBean.setLocation("some location");
 
 		// set status
 		Map<String, Object> status = new HashMap<>();
 		status.put("brightness", "80");
 		status.put("temperature", "90");
-		request.put("status", status);
+
+		thingRestBean.setStatusJson(status);
 
 		// set custom
 		Map<String, Object> custom = new HashMap<>();
 		custom.put("license", "123qwerty");
 		custom.put("produceDate", "20001230");
-		request.put("custom", custom);
 
-		String ctx = mapper.writeValueAsString(request);
+		thingRestBean.setCustomJson(custom);
 
-		String result = this.mockMvc.perform(
-				post("/things").content(ctx)
-						.contentType(MediaType.APPLICATION_JSON)
-						.characterEncoding("UTF-8")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
-		)
-				.andExpect(status().isOk())
-				.andReturn().getResponse().getContentAsString();
+		GlobalThingInfo thingInfo = new GlobalThingInfo();
 
-		Map<String, Object> map = mapper.readValue(result, Map.class);
+		doReturn(thingInfo).when(globalThingDao).getThingByVendorThingID(eq(vendorThingIDsForTest[0]));
 
-		// assert http return
-		globalThingIDForTest = Long.valueOf((int) map.get("globalThingID"));
-		assertNotNull(globalThingIDForTest);
-		assertTrue(globalThingIDForTest > 0);
+		try {
+			thingController.createThing(thingRestBean);
+			fail("Expect an exception");
+		} catch (PortalException e) {
+			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
+		}
 
-		GlobalThingInfo thingInfo = globalThingDao.getThingByVendorThingID(vendorThingIDsForTest[0]);
-		assertTrue(thingInfo != null);
+		doReturn(null).when(globalThingDao).getThingByVendorThingID(anyString());
+		doReturn(100L).when(thingTagManager).createThing(any(GlobalThingInfo.class), anyString(),
+				anyCollectionOf(String.class));
 
-		//error test duplicate venderID
-		this.mockMvc.perform(
-				post("/things").content(ctx)
-						.contentType(MediaType.APPLICATION_JSON)
-						.characterEncoding("UTF-8")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
-		)
-				.andExpect(status().isBadRequest());
-
-		// test update
-		request = new HashMap<>();
-		request.put("globalThingID", globalThingIDForTest);
-		request.put("vendorThingID", vendorThingIDsForTest[1]);
-		request.put("kiiAppID", KII_APP_ID_NEW);
-		request.put("type", "some_type_new");
-		request.put("location", "some_location_new");
-
-		// set status
-		status = new HashMap<>();
-		status.put("brightness", "90");
-		status.put("color", "#123456");
-		request.put("status", status);
-
-		// set custom
-		custom = new HashMap<>();
-		custom.put("time-zone", "GMT+8");
-		custom.put("produceDate", "20991230");
-		request.put("custom", custom);
-
-		ctx = mapper.writeValueAsString(request);
-
-		result = this.mockMvc.perform(
-				post("/things").content(ctx)
-						.contentType(MediaType.APPLICATION_JSON)
-						.characterEncoding("UTF-8")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
-		)
-				.andExpect(status().isOk())
-				.andReturn().getResponse().getContentAsString();
-
-		map = mapper.readValue(result, Map.class);
-
-		// assert http reture
-		Long globalThingIDForTest = Long.valueOf((int) map.get("globalThingID"));
-		assertEquals(this.globalThingIDForTest, globalThingIDForTest);
-
-		// assert
-		thingInfo = globalThingDao.getThingByVendorThingID(vendorThingIDsForTest[0]);
-		assertTrue(thingInfo == null);
-
-		thingInfo = globalThingDao.getThingByVendorThingID(vendorThingIDsForTest[1]);
-		assertTrue(thingInfo != null);
-
+		Map<String, Long> result = thingController.createThing(thingRestBean);
+		assertEquals(100L, result.get("globalThingID").longValue());
 	}
 
 	@Test

@@ -88,13 +88,13 @@ public class TestTagThingManager {
 	@Autowired
 	private GroupUserRelationDao groupUserRelationDao;
 
-	private List<TagIndex> tags;
+	private List<Long> tagIds;
 
-	private List<BeehiveUser> users;
+	private List<String> userIds;
 
-	private List<UserGroup> userGroups;
+	private List<Long> userGroupIds;
 
-	private List<GlobalThingInfo> things;
+	private List<Long> thingIds;
 
 	@Mock
 	private ThingIFInAppService thingIFInAppService;
@@ -104,52 +104,45 @@ public class TestTagThingManager {
 		MockitoAnnotations.initMocks(this);
 
 		Long[] tagIds = new Long[]{100L, 200L};
-		tags = new ArrayList<>();
+		this.tagIds = new ArrayList<>();
 		for (Long id : tagIds) {
 			TagIndex tag = new TagIndex();
 			tag.setId(id);
 			tag.setCreateBy("tag creator");
-			tags.add(tag);
+			this.tagIds.add(id);
 		}
 
 		Long[] thingIds = new Long[]{500L, 600L};
-		things = new ArrayList();
+		this.thingIds = new ArrayList();
 		for (Long id : thingIds) {
 			GlobalThingInfo thing = new GlobalThingInfo();
 			thing.setId(id);
 			thing.setCreateBy("tag creator");
-			things.add(thing);
+			this.thingIds.add(id);
 		}
 
 		String[] userIds = new String[]{"user1", "user2"};
-		users = new ArrayList<>();
+		this.userIds = new ArrayList<>();
 		for (String id : userIds) {
 			BeehiveUser user = new BeehiveUser();
 			user.setKiiLoginName(id);
-			users.add(user);
+			this.userIds.add(id);
 		}
 
 		Long[] userGroupId = new Long[]{300L, 400L};
-		userGroups = new ArrayList<>();
+		userGroupIds = new ArrayList<>();
 		for (Long id : userGroupId) {
 			UserGroup group = new UserGroup();
 			group.setId(id);
-			userGroups.add(group);
+			userGroupIds.add(id);
 		}
 	}
 
 	@Test
 	public void testBindTagsToUsers() throws Exception {
-		AuthInfoStore.setAuthInfo("someone");
-		try {
-			tagThingManager.bindTagsToUsers(tags, users);
-			fail("Expect an UnauthorizedException");
-		} catch (UnauthorizedException e) {
-		}
-
 		AuthInfoStore.setAuthInfo("tag creator");
 		doReturn(mock(TagUserRelation.class)).when(tagUserRelationDao).find(anyLong(), anyString());
-		tagThingManager.bindTagsToUsers(tags, users);
+		tagThingManager.bindTagsToUsers(tagIds, userIds);
 		verify(tagUserRelationDao, Mockito.times(0)).insert(any(TagUserRelation.class));
 
 		Set<String> names = new HashSet<>();
@@ -159,24 +152,15 @@ public class TestTagThingManager {
 			names.add(relation.getTagId() + " " + relation.getUserId());
 			return null;
 		}).when(tagUserRelationDao).insert(any(TagUserRelation.class));
-		tagThingManager.bindTagsToUsers(tags, users);
+		tagThingManager.bindTagsToUsers(tagIds, userIds);
 		verify(tagUserRelationDao, Mockito.times(4)).insert(any(TagUserRelation.class));
-		tags.forEach(tagIndex -> {
-			users.forEach(beehiveUser -> TestCase.assertTrue("Inserted data is incorrect", names.contains(tagIndex.getId() +
-					" " + beehiveUser.getKiiLoginName())));
-		});
+		tagIds.forEach(tagIndex -> userIds.forEach(beehiveUser -> TestCase.assertTrue("Inserted data is incorrect",
+				names.contains(tagIndex + " " + beehiveUser))));
 		assertEquals("Should insert 4 entries", 4, names.size());
 	}
 
 	@Test
 	public void testUnbindTagsFromUsers() throws Exception {
-		AuthInfoStore.setAuthInfo("someone");
-		try {
-			tagThingManager.unbindTagsFromUsers(tags, users);
-			fail("Expect an UnauthorizedException");
-		} catch (UnauthorizedException e) {
-		}
-
 		AuthInfoStore.setAuthInfo("tag creator");
 
 		Set<String> names = new HashSet<>();
@@ -186,31 +170,22 @@ public class TestTagThingManager {
 			return null;
 		}).when(tagUserRelationDao).deleteByTagIdAndUserId(anyLong(), anyString());
 
-		tagThingManager.unbindTagsFromUsers(tags, users);
+		tagThingManager.unbindTagsFromUsers(tagIds, userIds);
 
 		verify(tagUserRelationDao, Mockito.times(4)).deleteByTagIdAndUserId(anyLong(), anyString());
-		tags.forEach(tagIndex -> {
-			users.forEach(beehiveUser -> TestCase.assertTrue("Inserted data is incorrect", names.contains(tagIndex.getId() +
-					" " + beehiveUser.getKiiLoginName())));
-		});
+		tagIds.forEach(tagIndex -> userIds.forEach(beehiveUser -> TestCase.assertTrue("Inserted data is incorrect",
+				names.contains(tagIndex + " " + beehiveUser))));
 		assertEquals("Should insert 4 entries", 4, names.size());
 
 	}
 
 	@Test
 	public void testBindTagsToUserGroups() throws Exception {
-		AuthInfoStore.setAuthInfo("someone");
-		try {
-			tagThingManager.bindTagsToUserGroups(tags, userGroups);
-			fail("Expect an UnauthorizedException");
-		} catch (UnauthorizedException e) {
-		}
-
 		AuthInfoStore.setAuthInfo("tag creator");
 
 		doReturn(mock(TagGroupRelation.class)).when(tagGroupRelationDao).findByTagIDAndUserGroupID(anyLong(), anyLong
 				());
-		tagThingManager.bindTagsToUserGroups(tags, userGroups);
+		tagThingManager.bindTagsToUserGroups(tagIds, userGroupIds);
 		verify(tagGroupRelationDao, times(0)).insert(any(TagGroupRelation.class));
 
 		Set<String> names = new HashSet();
@@ -221,24 +196,15 @@ public class TestTagThingManager {
 			names.add(relation.getTagID() + " " + relation.getUserGroupID());
 			return null;
 		}).when(tagGroupRelationDao).insert(any(TagGroupRelation.class));
-		tagThingManager.bindTagsToUserGroups(tags, userGroups);
+		tagThingManager.bindTagsToUserGroups(tagIds, userGroupIds);
 		verify(tagGroupRelationDao, Mockito.times(4)).insert(any(TagGroupRelation.class));
-		tags.forEach(tagIndex -> {
-			userGroups.forEach(group -> TestCase.assertTrue("Inserted data is incorrect", names.contains(tagIndex.getId() +
-					" " + group.getId())));
-		});
+		tagIds.forEach(tagIndex -> userGroupIds.forEach(group -> TestCase.assertTrue("Inserted data is incorrect",
+				names.contains(tagIndex + " " + group))));
 		assertEquals("Should insert 4 entries", 4, names.size());
 	}
 
 	@Test
 	public void testUnbindTagsFromUserGroups() throws Exception {
-		AuthInfoStore.setAuthInfo("someone");
-		try {
-			tagThingManager.unbindTagsFromUserGroups(tags, userGroups);
-			fail("Expect an UnauthorizedException");
-		} catch (UnauthorizedException e) {
-		}
-
 		AuthInfoStore.setAuthInfo("tag creator");
 
 		Set<String> names = new HashSet();
@@ -246,29 +212,20 @@ public class TestTagThingManager {
 			names.add(invocation.getArguments()[0] + " " + invocation.getArguments()[1]);
 			return null;
 		}).when(tagGroupRelationDao).delete(anyLong(), anyLong());
-		tagThingManager.unbindTagsFromUserGroups(tags, userGroups);
+		tagThingManager.unbindTagsFromUserGroups(tagIds, userGroupIds);
 		verify(tagGroupRelationDao, Mockito.times(4)).delete(anyLong(), anyLong());
-		tags.forEach(tagIndex -> {
-			userGroups.forEach(group -> TestCase.assertTrue("Inserted data is incorrect", names.contains(tagIndex.getId() +
-					" " + group.getId())));
-		});
+		tagIds.forEach(tagIndex -> userGroupIds.forEach(group -> TestCase.assertTrue("Inserted data is incorrect",
+				names.contains(tagIndex + " " + group))));
 		assertEquals("Should insert 4 entries", 4, names.size());
 	}
 
 	@Test
 	public void testBindThingsToUsers() throws Exception {
-		AuthInfoStore.setAuthInfo("someone");
-		try {
-			tagThingManager.bindThingsToUsers(things, users);
-			fail("Expect an UnauthorizedException");
-		} catch (UnauthorizedException e) {
-		}
-
 		AuthInfoStore.setAuthInfo("tag creator");
 
 		doReturn(mock(ThingUserRelation.class)).when(thingUserRelationDao).find(anyLong(), anyString());
 
-		tagThingManager.bindThingsToUsers(things, users);
+		tagThingManager.bindThingsToUsers(thingIds, userIds);
 
 		verify(thingUserRelationDao, times(0)).insert(any(ThingUserRelation.class));
 
@@ -280,23 +237,16 @@ public class TestTagThingManager {
 			return null;
 		}).when(thingUserRelationDao).insert(any(ThingUserRelation.class));
 
-		tagThingManager.bindThingsToUsers(things, users);
+		tagThingManager.bindThingsToUsers(thingIds, userIds);
 
 		verify(thingUserRelationDao, Mockito.times(4)).insert(any(ThingUserRelation.class));
-		things.forEach(thing -> users.forEach(user -> TestCase.assertTrue("Inserted data is incorrect", names.contains(thing
-				.getId() + " " + user.getKiiLoginName()))));
+		thingIds.forEach(thing -> userIds.forEach(user -> TestCase.assertTrue("Inserted data is incorrect",
+				names.contains(thing + " " + user))));
 		assertEquals("Should insert 4 entries", 4, names.size());
 	}
 
 	@Test
 	public void testUnbindThingsFromUsers() throws Exception {
-		AuthInfoStore.setAuthInfo("someone");
-		try {
-			tagThingManager.unbindThingsFromUsers(things, users);
-			fail("Expect an UnauthorizedException");
-		} catch (UnauthorizedException e) {
-		}
-
 		AuthInfoStore.setAuthInfo("tag creator");
 
 		Set<String> names = new HashSet();
@@ -304,27 +254,20 @@ public class TestTagThingManager {
 			names.add(invocation.getArguments()[0] + " " + invocation.getArguments()[1]);
 			return null;
 		}).when(thingUserRelationDao).deleteByThingIdAndUserId(anyLong(), anyString());
-		tagThingManager.unbindThingsFromUsers(things, users);
+		tagThingManager.unbindThingsFromUsers(thingIds, userIds);
 		verify(thingUserRelationDao, times(4)).deleteByThingIdAndUserId(anyLong(), anyString());
-		things.forEach(thing -> users.forEach(user -> TestCase.assertTrue("Inserted data is incorrect", names.contains(thing
-				.getId() + " " + user.getKiiLoginName()))));
+		thingIds.forEach(thing -> userIds.forEach(user -> TestCase.assertTrue("Inserted data is incorrect",
+				names.contains(thing + " " + user))));
 		assertEquals("Should insert 4 entries", 4, names.size());
 	}
 
 	@Test
 	public void testBindThingsToUserGroups() throws Exception {
-		AuthInfoStore.setAuthInfo("someone");
-		try {
-			tagThingManager.bindThingsToUserGroups(things, userGroups);
-			fail("Expect an UnauthorizedException");
-		} catch (UnauthorizedException e) {
-		}
-
 		AuthInfoStore.setAuthInfo("tag creator");
 
 		doReturn(mock(ThingUserGroupRelation.class)).when(thingUserGroupRelationDao).find(anyLong(), anyLong());
 
-		tagThingManager.bindThingsToUserGroups(things, userGroups);
+		tagThingManager.bindThingsToUserGroups(thingIds, userGroupIds);
 
 		verify(thingUserGroupRelationDao, times(0)).insert(any(ThingUserGroupRelation.class));
 
@@ -336,23 +279,16 @@ public class TestTagThingManager {
 			return null;
 		}).when(thingUserGroupRelationDao).insert(any(ThingUserGroupRelation.class));
 
-		tagThingManager.bindThingsToUserGroups(things, userGroups);
+		tagThingManager.bindThingsToUserGroups(thingIds, userGroupIds);
 
 		verify(thingUserGroupRelationDao, Mockito.times(4)).insert(any(ThingUserGroupRelation.class));
-		things.forEach(thing -> userGroups.forEach(group -> TestCase.assertTrue("Inserted data is incorrect", names.contains
-				(thing.getId() + " " + group.getId()))));
+		thingIds.forEach(thing -> userGroupIds.forEach(group -> TestCase.assertTrue("Inserted data is incorrect",
+				names.contains(thing + " " + group))));
 		assertEquals("Should insert 4 entries", 4, names.size());
 	}
 
 	@Test
 	public void testUnbindThingsFromUserGroups() throws Exception {
-		AuthInfoStore.setAuthInfo("someone");
-		try {
-			tagThingManager.unbindThingsFromUserGroups(things, userGroups);
-			fail("Expect an UnauthorizedException");
-		} catch (UnauthorizedException e) {
-		}
-
 		AuthInfoStore.setAuthInfo("tag creator");
 
 		Set<String> names = new HashSet();
@@ -360,10 +296,10 @@ public class TestTagThingManager {
 			names.add(invocation.getArguments()[0] + " " + invocation.getArguments()[1]);
 			return null;
 		}).when(thingUserGroupRelationDao).deleteByThingIdAndUserGroupId(anyLong(), anyLong());
-		tagThingManager.unbindThingsFromUserGroups(things, userGroups);
+		tagThingManager.unbindThingsFromUserGroups(thingIds, userGroupIds);
 		verify(thingUserGroupRelationDao, times(4)).deleteByThingIdAndUserGroupId(anyLong(), anyLong());
-		things.forEach(thing -> userGroups.forEach(group -> TestCase.assertTrue("Inserted data is incorrect", names.contains
-				(thing.getId() + " " + group.getId()))));
+		thingIds.forEach(thing -> userGroupIds.forEach(group -> TestCase.assertTrue("Inserted data is incorrect",
+				names.contains(thing + " " + group))));
 		assertEquals("Should insert 4 entries", 4, names.size());
 	}
 
@@ -569,7 +505,7 @@ public class TestTagThingManager {
 		doReturn(null).when(tagThingRelationDao).findByThingIDAndTagID(anyLong(), anyLong());
 		doReturn(200L).when(tagThingRelationDao).insert(any(TagThingRelation.class));
 		doReturn(0L).when(thingUserRelationDao).saveOrUpdate(any(ThingUserRelation.class));
-		doReturn(1L).when(tagUserRelationDao).insert(any(TagUserRelation.class));
+		doReturn(0L).when(tagUserRelationDao).saveOrUpdate(any(TagUserRelation.class));
 
 		Long thingId = tagThingManager.createThing(thingInfo, "location", Collections.emptyList());
 		assertEquals("Unexpected thing id", (Long) 100L, thingId);

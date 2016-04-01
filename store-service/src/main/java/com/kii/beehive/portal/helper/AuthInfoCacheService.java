@@ -8,9 +8,9 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
+import com.kii.beehive.business.manager.UserManager;
 import com.kii.beehive.portal.config.CacheConfig;
 import com.kii.beehive.portal.jdbc.entity.Team;
-import com.kii.beehive.business.manager.UserManager;
 import com.kii.beehive.portal.store.entity.AuthInfoEntry;
 
 /**

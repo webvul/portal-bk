@@ -118,10 +118,7 @@ public class EngineService {
 
 		trigger.setEnable(record.getRecordStatus()== TriggerRecord.StatusType.enable);
 
-		//TODO:
-		predicate.setSchedule(null);
-
-		String rule=ruleGeneral.generDrlConfig(record.getId(),TriggerType.group,predicate);
+		String rule=ruleGeneral.generGroupDrlConfig(record.getId(),policy.getGroupPolicy(),predicate);
 
 		droolsTriggerService.addTrigger(trigger,rule);
 
@@ -133,10 +130,12 @@ public class EngineService {
 	}
 
 
-	public void createSimpleTrigger(String thingID, String triggerID, SimpleTriggerRecord record){
+	public void createSimpleTrigger(String thingID, SimpleTriggerRecord record){
 
 
 		Trigger trigger=new Trigger();
+
+		String triggerID=record.getId();
 
 		trigger.setTriggerID(triggerID);
 		trigger.setType(TriggerType.simple);
