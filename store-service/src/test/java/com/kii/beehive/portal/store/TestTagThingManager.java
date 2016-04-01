@@ -569,6 +569,7 @@ public class TestTagThingManager {
 		doReturn(null).when(tagThingRelationDao).findByThingIDAndTagID(anyLong(), anyLong());
 		doReturn(200L).when(tagThingRelationDao).insert(any(TagThingRelation.class));
 		doReturn(0L).when(thingUserRelationDao).saveOrUpdate(any(ThingUserRelation.class));
+		doReturn(1L).when(tagUserRelationDao).insert(any(TagUserRelation.class));
 
 		Long thingId = tagThingManager.createThing(thingInfo, "location", Collections.emptyList());
 		assertEquals("Unexpected thing id", (Long) 100L, thingId);
@@ -606,6 +607,20 @@ public class TestTagThingManager {
 		}).when(tagIndexDao).findByIDs(anyListOf(Long.class));
 
 		tagThingManager.getAccessibleTagsByTagTypeAndName("someone", null, null);
+		assertTrue("Received ids don't match", tagIds.containsAll(Arrays.asList(100L, 200L)) && 2 == tagIds.size());
+	}
+
+	@Test
+	public void testGetAccessibleTagsByUserId() throws Exception {
+		doReturn(Optional.ofNullable(Arrays.asList(100L))).when(tagUserRelationDao).findTagIds(anyString());
+		doReturn(Optional.ofNullable(Arrays.asList(200L))).when(tagGroupRelationDao).findTagIdsByUserId(anyString());
+		Set<Long> tagIds = new HashSet();
+		doAnswer((Answer<List<TagIndex>>) invocation -> {
+			tagIds.addAll((Collection<? extends Long>) invocation.getArguments()[0]);
+			return null;
+		}).when(tagIndexDao).findByIDs(anyListOf(Long.class));
+
+		tagThingManager.getAccessibleTagsByUserId("someone");
 		assertTrue("Received ids don't match", tagIds.containsAll(Arrays.asList(100L, 200L)) && 2 == tagIds.size());
 	}
 

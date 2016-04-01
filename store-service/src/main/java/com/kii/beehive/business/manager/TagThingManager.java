@@ -305,7 +305,7 @@ public class TagThingManager {
 		if (null == list || list.isEmpty()) {
 			tagId = this.createTag(new TagIndex(TagType.Location, location, null));
 		} else {
-			if(!list.get(0).getCreateBy().equals(AuthInfoStore.getUserID())){
+			if (!list.get(0).getCreateBy().equals(AuthInfoStore.getUserID())) {
 				throw new UnauthorizedException("Current user is not the creator of the tag.");
 			}
 			tagId = list.get(0).getId();
@@ -743,8 +743,10 @@ public class TagThingManager {
 	}
 
 	public List<TagIndex> getAccessibleTagsByUserId(String userId) {
-		return tagIndexDao.findByIDs(
-				tagGroupRelationDao.findTagIdsByUserId(userId).orElse(Collections.emptyList()));
+		Set<Long> tagIds = tagGroupRelationDao.findTagIdsByUserId(userId).orElse(Collections.emptyList()).stream().
+				collect(Collectors.toSet());
+		tagIds.addAll(tagUserRelationDao.findTagIds(userId).orElse(Collections.emptyList()));
+		return tagIndexDao.findByIDs(tagIds);
 	}
 
 	public List<TagIndex> getAccessibleTagsByUserGroupId(Long userGroupId) {
