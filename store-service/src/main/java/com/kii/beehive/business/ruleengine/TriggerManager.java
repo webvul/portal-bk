@@ -135,8 +135,6 @@ public class TriggerManager {
 			throw new IllegalArgumentException("unsupport trigger type");
 		}
 
-		eventService.addBeehiveTriggerChangeListener(triggerID);
-
 		return triggerID;
 
 	}
