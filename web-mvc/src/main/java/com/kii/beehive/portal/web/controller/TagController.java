@@ -1,18 +1,13 @@
 package com.kii.beehive.portal.web.controller;
 
 import com.kii.beehive.portal.exception.ObjectNotFoundException;
-import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
-import com.kii.beehive.portal.jdbc.dao.TagUserRelationDao;
-import com.kii.beehive.portal.jdbc.dao.TeamTagRelationDao;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagType;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.constant.ErrorCode;
-import com.kii.beehive.portal.web.exception.BeehiveUnAuthorizedException;
 import com.kii.beehive.portal.web.exception.PortalException;
 import org.apache.logging.log4j.util.Strings;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
@@ -33,15 +28,6 @@ import java.util.Set;
 		MediaType.APPLICATION_JSON_UTF8_VALUE})
 public class TagController extends AbstractThingTagController {
 
-	@Autowired
-	private TagIndexDao tagIndexDao;
-
-	@Autowired
-	private TeamTagRelationDao teamTagRelationDao;
-
-	@Autowired
-	private TagUserRelationDao tagUserRelationDao;
-
 	/**
 	 * 创建tag
 	 * POST /tags/custom
@@ -52,7 +38,6 @@ public class TagController extends AbstractThingTagController {
 	 */
 	@RequestMapping(path = "/custom", method = {RequestMethod.POST})
 	public Map<String, Object> createTag(@RequestBody TagIndex tag) {
-
 		String displayName = tag.getDisplayName();
 		if (Strings.isBlank(displayName)) {
 			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "DisplayName is empty",
@@ -60,19 +45,20 @@ public class TagController extends AbstractThingTagController {
 		}
 
 		tag.setTagType(TagType.Custom);
-		List<TagIndex> tagList = tagIndexDao.findTagByTagTypeAndName(tag.getTagType().name(), tag.getDisplayName());
-		if (tagList.size() > 0) {//update
-			TagIndex old = tagList.get(0);
-			old.setDescription(tag.getDescription());
-			tag = old;
-		}
 		tag.setFullTagName(TagType.Custom.getTagName(displayName));
+
+		try {
+			List<Long> tagIds = getCreatedTagIds(TagType.Custom, displayName);
+			tag.setId(tagIds.get(0));
+		} catch (PortalException e) {
+		}
+
 		long tagID = thingTagManager.createTag(tag);
 
 
 		Map<String, Object> map = new HashMap<>();
 		map.put("id", tagID);
-		map.put("tagName", TagType.Custom.getTagName(tag.getDisplayName()));
+		map.put("tagName", tag.getFullTagName());
 		return map;
 	}
 
@@ -91,20 +77,7 @@ public class TagController extends AbstractThingTagController {
 			throw new PortalException("RequiredFieldsMissing", "displayName is empty", HttpStatus.BAD_REQUEST);
 		}
 
-		List<TagIndex> orig = tagIndexDao.findTagByTagTypeAndName(TagType.Custom.toString(), displayName);
-
-		if (orig.size() == 0) {
-			throw new PortalException("Tag Not Found", "Tag with displayName:" + displayName + " Not Found",
-					HttpStatus.NOT_FOUND);
-		}
-
-		TagIndex toBeRemoved = orig.get(0);
-		if (!thingTagManager.isTagCreator(toBeRemoved)) {
-			throw new BeehiveUnAuthorizedException("Current user is not the creator of the tag.");
-		}
-		thingTagManager.removeTag(toBeRemoved);
-
-//		eventBus.onTagChangeFire();
+		getCreatedTagIds(TagType.Custom, displayName).forEach(id -> thingTagManager.removeTag(id));
 	}
 
 	/**
@@ -120,11 +93,8 @@ public class TagController extends AbstractThingTagController {
 	@RequestMapping(path = "/search", method = {RequestMethod.GET})
 	public List<TagIndex> findTags(@RequestParam(value = "tagType", required = false) String tagType,
 								   @RequestParam(value = "displayName", required = false) String displayName) {
-
-		List<TagIndex> list = tagIndexDao.findUserTagByTypeAndName(getLoginUserID(),
+		return thingTagManager.getAccessibleTagsByTagTypeAndName(getLoginUserID(),
 				StringUtils.capitalize(tagType), displayName);
-		return list;
-
 	}
 
 	/*@RequestMapping(path = "/{tagName}/operation/{operation}", method = { RequestMethod.GET })

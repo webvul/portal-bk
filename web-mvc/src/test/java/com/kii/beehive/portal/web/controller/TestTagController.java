@@ -22,6 +22,7 @@ import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.util.StringUtils;
 
 import java.util.*;
 
@@ -179,46 +180,30 @@ public class TestTagController extends WebTestTemplate {
 	@Test
 	public void testRemoveTag() throws Exception {
 		try {
-			tagController.removeTag("Random");
-			fail("Expect a PortalException");
+			tagController.removeTag(null);
+			fail("Expect an exception");
 		} catch (PortalException e) {
-			assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
+			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
 		}
 
-		String keyId = "id";
-
-		TagIndex tagIndex = new TagIndex();
-		tagIndex.setDisplayName("Tag 1");
-		tagIndex.setDescription("Tag");
-		tagIndex.setTagType(TagType.Custom);
-
-		AuthInfoStore.setAuthInfo("user1");
-
-		Map<String, Object> result = tagController.createTag(tagIndex);
-		TagIndex tagFromDB = tagIndexDao.findByID((Long) result.get(keyId));
-		assertNotNull("Cannot find the created tag.", tagFromDB);
-
-		AuthInfoStore.setAuthInfo("user2");
+		doThrow(new ObjectNotFoundException("test")).when(tagThingManager).getCreatedTagIdsByTypeAndDisplayNames(
+				anyString(), any(TagType.class), anyListOf(String.class));
 
 		try {
-			tagController.removeTag(tagIndex.getDisplayName());
-			fail("Expect a PortalException");
+			tagController.removeTag("displayName");
+			fail("Expect an exception");
 		} catch (PortalException e) {
-			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
+			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
 		}
 
-		AuthInfoStore.setAuthInfo("user1");
-		try {
-			tagController.removeTag(tagIndex.getDisplayName());
-		} catch (Exception e) {
-			fail("Should not throw any exception");
-		}
+		doReturn(Arrays.asList(100L)).when(tagThingManager).getCreatedTagIdsByTypeAndDisplayNames(
+				anyString(), any(TagType.class), anyListOf(String.class));
 
-		tagFromDB = tagIndexDao.findByID((Long) result.get(keyId));
-		assertNull("Should not find the created tag.", tagFromDB);
+		verify(tagThingManager, times(0)).removeTag(eq(100L));
 
-		TagUserRelation relation = tagUserRelationDao.find((Long) result.get(keyId), "user1");
-		assertNull("Should not have the relation", relation);
+		tagController.removeTag("displayName");
+
+		verify(tagThingManager, times(1)).removeTag(eq(100L));
 	}
 
 	@Test
@@ -313,69 +298,9 @@ public class TestTagController extends WebTestTemplate {
 
 	@Test
 	public void testFindTags() throws Exception {
-		AuthInfoStore.setAuthInfo("TagCreator");
-		Set<Long> tagIds = new HashSet<>();
-		TagIndex tagIndex = new TagIndex();
-		tagIndex.setDisplayName("Tag 1");
-		tagIndex.setDescription("Tag");
-		tagIndex.setTagType(TagType.Custom);
-		tagIndex.setCreateBy("TagCreator");
-		tagIds.add(tagIndexDao.saveOrUpdate(tagIndex));
-
-		tagIndex.setDisplayName("Tag 2");
-		tagIndex.setTagType(TagType.Location);
-		tagIds.add(tagIndexDao.saveOrUpdate(tagIndex));
-
-		tagIndex.setDisplayName("Tag 3");
-		tagIndex.setTagType(TagType.System);
-		tagIds.add(tagIndexDao.saveOrUpdate(tagIndex));
-
-		AuthInfoStore.setAuthInfo("TagCreator 2");
-		tagIndex.setDisplayName("Tag 3");
-		tagIndex.setTagType(TagType.System);
-		tagIndex.setCreateBy("TagCreator 2");
-		tagIds.add(tagIndexDao.saveOrUpdate(tagIndex));
-
-		AuthInfoStore.setAuthInfo("Someone");
-
-		List<TagIndex> tagIndexes = tagController.findTags("", "");
-		assertNotNull("Result should not be null", tagIndexes);
-		assertTrue("Result should be an empty list", tagIndexes.isEmpty());
-
-		tagIndexes = tagController.findTags("Tag 1", TagType.Custom.name());
-		assertNotNull("Result should not be null", tagIndexes);
-		assertTrue("Result should be an empty list", tagIndexes.isEmpty());
-
-		AuthInfoStore.setAuthInfo("TagCreator");
-
-		tagIndexes = tagController.findTags("", "");
-		assertNotNull("Result should not be null", tagIndexes);
-		assertEquals("There should be three tags", 3, tagIndexes.size());
-
-		tagIndexes = tagController.findTags("", "Tag 1");
-		assertNotNull("Result should not be null", tagIndexes);
-		assertEquals("There should be one tag", 1, tagIndexes.size());
-		assertEquals("Display name should be 'Tag 1'", "Tag 1", tagIndexes.get(0).getDisplayName());
-		assertEquals("Tag type doesn't match", TagType.Custom, tagIndexes.get(0).getTagType());
-
-		tagIndexes = tagController.findTags("", "Tag 2");
-		assertNotNull("Result should not be null", tagIndexes);
-		assertEquals("There should be one tag", 1, tagIndexes.size());
-		assertEquals("Display name should be 'Tag 1'", "Tag 2", tagIndexes.get(0).getDisplayName());
-		assertEquals("Tag type doesn't match", TagType.Location, tagIndexes.get(0).getTagType());
-
-		tagIndexes = tagController.findTags("", "Tag 3");
-		assertNotNull("Result should not be null", tagIndexes);
-		assertEquals("There should be one tag", 1, tagIndexes.size());
-		assertEquals("Display name should be 'Tag 3'", "Tag 3", tagIndexes.get(0).getDisplayName());
-		assertEquals("Tag type doesn't match", TagType.System, tagIndexes.get(0).getTagType());
-
-		AuthInfoStore.setAuthInfo("TagCreator 2");
-		tagIndexes = tagController.findTags(TagType.System.name(), "");
-		assertNotNull("Result should not be null", tagIndexes);
-		assertEquals("There should be one tag", 1, tagIndexes.size());
-		assertEquals("Display name should be 'Tag 3'", "Tag 3", tagIndexes.get(0).getDisplayName());
-		assertEquals("Tag type doesn't match", TagType.System, tagIndexes.get(0).getTagType());
+		tagController.findTags("Test", "123");
+		verify(tagThingManager, times(1)).getAccessibleTagsByTagTypeAndName(anyString(),
+				eq(StringUtils.capitalize("Test")), eq("123"));
 	}
 
 	@Test
@@ -552,20 +477,6 @@ public class TestTagController extends WebTestTemplate {
 
 		tagIndex = tagIndexDao.findByID(tagIDForTest);
 		assertNull(tagIndex);
-
-	}
-
-	@Test
-	public void testWebRemoveTagException() throws Exception {
-
-		String result = this.mockMvc.perform(
-				delete("/tags/custom/" + "some_non_existing_displayName")
-						.contentType(MediaType.APPLICATION_JSON)
-						.characterEncoding("UTF-8")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
-		)
-				.andExpect(status().isNotFound())
-				.andReturn().getResponse().getContentAsString();
 
 	}
 

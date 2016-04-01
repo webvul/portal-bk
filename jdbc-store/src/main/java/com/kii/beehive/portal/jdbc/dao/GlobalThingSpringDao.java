@@ -25,7 +25,10 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 		return KEY;
 	}
 
-	public List<GlobalThingInfo> getThingsByVendorIDArray(List<String> vendorIDs) {
+	public Optional<List<GlobalThingInfo>> getThingsByVendorIDArray(Collection<String> vendorIDs) {
+		if (null == vendorIDs || vendorIDs.isEmpty()) {
+			return Optional.ofNullable(null);
+		}
 
 		String sql = "SELECT g.* "
 				+ "FROM global_thing g "
@@ -34,7 +37,7 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 		Map<String, Object> params = new HashMap<>();
 		params.put("ids", vendorIDs);
 
-		return namedJdbcTemplate.query(sql, params, getRowMapper());
+		return Optional.ofNullable(namedJdbcTemplate.query(sql, params, getRowMapper()));
 
 	}
 

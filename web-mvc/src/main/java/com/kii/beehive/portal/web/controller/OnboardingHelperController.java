@@ -20,7 +20,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -111,11 +113,15 @@ public class OnboardingHelperController {
 	@RequestMapping(path = "/onboardinghelper/{vendorThingID}", method = {RequestMethod.GET}, consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
 	public ModelAndView getOnboardingInfo(@PathVariable("vendorThingID") String vendorThingID) {
 
-		GlobalThingInfo globalThingInfo = tagThingManager.findThingByVendorThingID(vendorThingID);
+		List<GlobalThingInfo> thingInfos = tagThingManager.getThingsByVendorThingIds(Arrays.asList(vendorThingID));
 
-		if (globalThingInfo == null) {
-			throw new PortalException("vendorThingID not found", "vendorThingID " + vendorThingID + " is not found", HttpStatus.NOT_FOUND);
-		} else if (!tagThingManager.isThingCreator(globalThingInfo) && tagThingManager.isThingOwner(globalThingInfo)) {
+		if (thingInfos.isEmpty()) {
+			throw new PortalException("vendorThingID not found",
+					"vendorThingID " + vendorThingID + " is not found", HttpStatus.NOT_FOUND);
+		}
+		GlobalThingInfo globalThingInfo = thingInfos.get(0);
+
+		if (!tagThingManager.isThingCreator(globalThingInfo) && tagThingManager.isThingOwner(globalThingInfo)) {
 			throw new BeehiveUnAuthorizedException("not creator or owner");
 		}
 

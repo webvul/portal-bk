@@ -36,11 +36,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import java.io.Serializable;
 import java.util.*;
 
 import static junit.framework.TestCase.*;
@@ -671,7 +671,16 @@ public class TestThingController extends WebTestTemplate {
 
 		GlobalThingInfo thingInfo = new GlobalThingInfo();
 
-		doReturn(thingInfo).when(globalThingDao).getThingByVendorThingID(eq(vendorThingIDsForTest[0]));
+		doAnswer((Answer<List<GlobalThingInfo>>) invocation -> {
+			Collection<String> ids = (Collection<String>) invocation.getArguments()[0];
+			List<GlobalThingInfo> result = new ArrayList();
+			ids.forEach(id -> {
+				if (id.equals(vendorThingIDsForTest[0])) {
+					result.add(thingInfo);
+				}
+			});
+			return result;
+		}).when(thingTagManager).getThingsByVendorThingIds(anyCollectionOf(String.class));
 
 		try {
 			thingController.createThing(thingRestBean);
@@ -680,7 +689,8 @@ public class TestThingController extends WebTestTemplate {
 			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
 		}
 
-		doReturn(null).when(globalThingDao).getThingByVendorThingID(anyString());
+		doReturn(Collections.emptyList()).when(thingTagManager).
+				getThingsByVendorThingIds(anyCollectionOf(String.class));
 		doReturn(100L).when(thingTagManager).createThing(any(GlobalThingInfo.class), anyString(),
 				anyCollectionOf(String.class));
 
@@ -771,18 +781,8 @@ public class TestThingController extends WebTestTemplate {
 
 	@Test
 	public void testRemoveThing() throws Exception {
-		doReturn(null).when(globalThingDao).findByID(any(Serializable.class));
-		try {
-			thingController.removeThing(100L);
-			fail("Expect an PortalException");
-		} catch (PortalException e) {
-			assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
-		}
-
-		doReturn(mock(GlobalThingInfo.class)).when(globalThingDao).findByID(any(Serializable.class));
-		doReturn(false).when(thingTagManager).isThingCreator(any(GlobalThingInfo.class));
-		doReturn(false).when(thingTagManager).isThingCreator(anyCollectionOf(GlobalThingInfo.class));
-
+		doThrow(new ObjectNotFoundException("test")).when(thingTagManager).
+				getCreatedThingIds(anyString(), anyListOf(Long.class));
 		try {
 			thingController.removeThing(100L);
 			fail("Expect an PortalException");
@@ -790,21 +790,23 @@ public class TestThingController extends WebTestTemplate {
 			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
 		}
 
-		doReturn(true).when(thingTagManager).isThingCreator(any(GlobalThingInfo.class));
-		doNothing().when(thingTagManager).removeThing(any(GlobalThingInfo.class));
-
-		thingController.removeThing(100L);
-
-		verify(thingTagManager, times(1)).removeThing(any(GlobalThingInfo.class));
-
-		doThrow(new ObjectNotFoundException("test")).when(thingTagManager).removeThing(any(GlobalThingInfo.class));
+		doReturn(Arrays.asList(100L)).when(thingTagManager).getCreatedThingIds(anyString(), anyListOf(Long.class));
+		doThrow(new ObjectNotFoundException("test")).when(thingTagManager).getThingsByIds(anyListOf(Long.class));
 
 		try {
 			thingController.removeThing(100L);
 			fail("Expect an PortalException");
 		} catch (PortalException e) {
-			assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
+			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
 		}
+
+		doReturn(Arrays.asList(mock(GlobalThingInfo.class))).when(thingTagManager).
+				getThingsByIds(anyListOf(Long.class));
+		doNothing().when(thingTagManager).removeThing(any(GlobalThingInfo.class));
+
+		thingController.removeThing(100L);
+
+		verify(thingTagManager, times(1)).removeThing(any(GlobalThingInfo.class));
 	}
 
 

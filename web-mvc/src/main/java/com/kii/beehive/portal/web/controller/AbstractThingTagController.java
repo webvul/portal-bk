@@ -29,14 +29,19 @@ public abstract class AbstractThingTagController extends AbstractController {
 
 	protected List<GlobalThingInfo> getThings(List<String> thingIDList) {
 		try {
-			return thingTagManager.getThings(thingIDList);
+			return thingTagManager.getThingsByIdStrings(thingIDList);
 		} catch (ObjectNotFoundException e) {
 			throw new PortalException("Requested thing doesn't exist", e.getMessage(), HttpStatus.BAD_REQUEST);
 		}
 	}
 
-	protected List<GlobalThingInfo> getThings(String globalThingIDs) {
-		return this.getThings(Arrays.asList(globalThingIDs.split(",")));
+	protected List<GlobalThingInfo> getCreatedThings(String globalThingIds) {
+		List<Long> thingIds = getCreatedThingIds(globalThingIds);
+		try {
+			return thingTagManager.getThingsByIds(thingIds);
+		} catch (ObjectNotFoundException e) {
+			throw new PortalException("Requested thing doesn't exist", e.getMessage(), HttpStatus.BAD_REQUEST);
+		}
 	}
 
 	protected List<Long> getCreatedThingIds(String globalThingIds) {
@@ -103,9 +108,5 @@ public abstract class AbstractThingTagController extends AbstractController {
 		} catch (UnauthorizedException e) {
 			throw new BeehiveUnAuthorizedException("Current user is not the creator of tag(s).");
 		}
-	}
-
-	protected List<TagIndex> getTags(String fullNames) {
-		return this.getTags(Arrays.asList(fullNames.split(",")));
 	}
 }
