@@ -27,6 +27,15 @@ public class TagIndexDao extends SpringBaseDao<TagIndex> {
 			TABLE_NAME + " WHERE " + TagIndex.TAG_ID + " IN (:tagIds) AND " + TagIndex.FULL_TAG_NAME +
 			" IN (:fullNames)";
 
+	private static final String SQL_FIND_TAGIDS_BY_CREATOR = "SELECT " + TagIndex.TAG_ID + " FROM " +
+			TABLE_NAME + " WHERE " + TagIndex.CREATE_BY + " = :creator ";
+
+	private static final String SQL_FIND_TAGIDS_BY_CREATOR_AND_FULLNAMES = SQL_FIND_TAGIDS_BY_CREATOR +
+			" AND " + TagIndex.FULL_TAG_NAME + " IN (:names)";
+
+	private static final String SQL_FIND_TAGIDS_BY_CREATOR_AND_TYPE = SQL_FIND_TAGIDS_BY_CREATOR +
+			" AND " + TagIndex.TAG_TYPE + " = :type";
+
 	/**
 	 * find tag list by tagType and displayName
 	 *
@@ -241,5 +250,46 @@ public class TagIndexDao extends SpringBaseDao<TagIndex> {
 		params.put("fullNames", fullTagNames);
 		return Optional.ofNullable(namedJdbcTemplate.queryForList(SQL_FIND_TAGIDS_BY_TAGIDS_AND_FULLNAMES, params,
 				Long.class));
+	}
+
+	public Optional<List<Long>> findTagIdsByCreatorAndFullTagNames(String userId, List<String> fullTagNameList) {
+		if (null == userId) {
+			return Optional.ofNullable(null);
+		}
+
+		if (null == fullTagNameList || fullTagNameList.isEmpty()) {
+			return Optional.ofNullable(findSingleFieldBySingleField(TagIndex.TAG_ID, TagIndex.CREATE_BY, userId,
+					Long.class));
+		}
+		Map<String, Object> params = new HashMap();
+		params.put("creator", userId);
+		params.put("names", fullTagNameList);
+		return Optional.ofNullable(namedJdbcTemplate.queryForList(SQL_FIND_TAGIDS_BY_CREATOR_AND_FULLNAMES, params,
+				Long.class));
+	}
+
+	public Optional<List<Long>> getCreatedTagIdsByTypeAndDisplayNames(String userId, TagType type,
+																	  List<String> displayNames) {
+		if (null == userId) {
+			return Optional.ofNullable(null);
+		}
+		if (null == type) {
+			return Optional.ofNullable(findSingleFieldBySingleField(TagIndex.TAG_ID, TagIndex.CREATE_BY, userId,
+					Long.class));
+		}
+		Map<String, Object> params = new HashMap();
+		params.put("creator", userId);
+		params.put("type", type.name());
+
+		if (null == displayNames || displayNames.isEmpty()) {
+			return Optional.ofNullable(namedJdbcTemplate.queryForList(SQL_FIND_TAGIDS_BY_CREATOR_AND_TYPE, params,
+					Long.class));
+		}
+
+		StringBuilder sb = new StringBuilder(SQL_FIND_TAGIDS_BY_CREATOR_AND_TYPE);
+		sb.append(" AND ").append(TagIndex.DISPLAY_NAME).append(" IN (:names)");
+		params.put("names", displayNames);
+
+		return Optional.ofNullable(namedJdbcTemplate.queryForList(sb.toString(), params, Long.class));
 	}
 }

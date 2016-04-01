@@ -568,18 +568,29 @@ public class TestTagThingManager {
 		}).when(tagIndexDao).saveOrUpdate(any(TagIndex.class));
 		doReturn(null).when(tagThingRelationDao).findByThingIDAndTagID(anyLong(), anyLong());
 		doReturn(200L).when(tagThingRelationDao).insert(any(TagThingRelation.class));
+		doReturn(0L).when(thingUserRelationDao).saveOrUpdate(any(ThingUserRelation.class));
 
 		Long thingId = tagThingManager.createThing(thingInfo, "location", Collections.emptyList());
 		assertEquals("Unexpected thing id", (Long) 100L, thingId);
 		verify(tagThingRelationDao, times(1)).insert(any(TagThingRelation.class));
 
-
 		doReturn(299L).when(tagIndexDao).saveOrUpdate(any(TagIndex.class));
 
-		tagThingManager.createThing(thingInfo, null, Collections.emptyList());
+		final ThingUserRelation[] relation = new ThingUserRelation[1];
+
+		doAnswer((Answer<Long>) invocation -> {
+			relation[0] = (ThingUserRelation) invocation.getArguments()[0];
+			return 0L;
+		}).when(thingUserRelationDao).saveOrUpdate(any(ThingUserRelation.class));
+
+		thingId = tagThingManager.createThing(thingInfo, null, Collections.emptyList());
 
 		verify(tagIndexDao, times(1)).findTagByTagTypeAndName(eq(TagType.Location.name()),
 				eq(TagThingManager.DEFAULT_LOCATION));
+
+		assertNotNull(relation[0]);
+		assertEquals(thingId, relation[0].getThingId());
+		assertEquals(thingInfo.getCreateBy(), relation[0].getUserId());
 	}
 
 	@Test

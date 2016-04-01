@@ -66,13 +66,8 @@ public class TagController extends AbstractThingTagController {
 			tag = old;
 		}
 		tag.setFullTagName(TagType.Custom.getTagName(displayName));
-		long tagID = tagIndexDao.saveOrUpdate(tag);
+		long tagID = thingTagManager.createTag(tag);
 
-		if (isTeamIDExist()) {
-			teamTagRelationDao.saveOrUpdate(new TeamTagRelation(getLoginTeamID(), tagID));
-		}
-
-		tagUserRelationDao.saveOrUpdate(new TagUserRelation(tagID, getLoginUserID()));
 
 		Map<String, Object> map = new HashMap<>();
 		map.put("id", tagID);
@@ -259,7 +254,7 @@ public class TagController extends AbstractThingTagController {
 	}
 
 	/**
-	 * GET /user/{userID}
+	 * GET /tags/user/{userID}
 	 *
 	 * @param userId
 	 * @return a list of tags which the user can access
@@ -270,7 +265,7 @@ public class TagController extends AbstractThingTagController {
 	}
 
 	/**
-	 * GET /{fullTagName}/users
+	 * GET /tags/{fullTagName}/users
 	 *
 	 * @param fullTagName
 	 * @return a list of users who can access the tags
@@ -286,7 +281,7 @@ public class TagController extends AbstractThingTagController {
 	}
 
 	/**
-	 * GET /userGroup/{userGroupID}
+	 * GET /tags/userGroup/{userGroupID}
 	 *
 	 * @param userGroupId
 	 * @return a list of tags which the user group can access
@@ -297,7 +292,7 @@ public class TagController extends AbstractThingTagController {
 	}
 
 	/**
-	 * GET /{fullTagName}/userGroups
+	 * GET /tags/{fullTagName}/userGroups
 	 *
 	 * @param fullTagName
 	 * @return a list of user groups which can access the tags

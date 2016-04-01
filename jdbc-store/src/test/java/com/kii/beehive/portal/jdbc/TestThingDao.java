@@ -59,6 +59,23 @@ public class TestThingDao extends TestTemplate {
 	}
 
 	@Test
+	public void testFindThingIdsByCreator() throws Exception {
+		List<Long> thingIds = globalThingDao.findThingIdsByCreator(AuthInfoStore.getUserID(), null).
+				orElse(Collections.emptyList());
+		assertEquals(1, thingIds.size());
+		assertEquals(thing.getId(), thingIds.get(0));
+
+		thingIds = globalThingDao.findThingIdsByCreator(AuthInfoStore.getUserID(), Arrays.asList(200L, thing.getId())).
+				orElse(Collections.emptyList());
+		assertEquals(1, thingIds.size());
+		assertEquals(thing.getId(), thingIds.get(0));
+
+		thingIds = globalThingDao.findThingIdsByCreator(AuthInfoStore.getUserID(), Arrays.asList(200L)).
+				orElse(Collections.emptyList());
+		assertEquals(0, thingIds.size());
+	}
+
+	@Test
 	public void testFindByIDsAndType() throws Exception {
 		GlobalThingInfo thingInfo1 = new GlobalThingInfo();
 		thingInfo1.setType("LED");

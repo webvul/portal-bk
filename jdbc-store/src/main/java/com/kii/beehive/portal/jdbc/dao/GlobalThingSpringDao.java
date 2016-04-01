@@ -12,6 +12,8 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 
 	public static final String TABLE_NAME = "global_thing";
 	public static final String KEY = GlobalThingInfo.ID_GLOBAL_THING;
+	private static final String SQL_FIND_THINGIDS_BY_CREATOR = "SELECT " + GlobalThingInfo.ID_GLOBAL_THING + " FROM " +
+			TABLE_NAME + " WHERE " + GlobalThingInfo.CREATE_BY + " = :creator ";
 
 	@Override
 	protected String getTableName() {
@@ -22,7 +24,6 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 	protected String getKey() {
 		return KEY;
 	}
-
 
 	public List<GlobalThingInfo> getThingsByVendorIDArray(List<String> vendorIDs) {
 
@@ -36,7 +37,6 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 		return namedJdbcTemplate.query(sql, params, getRowMapper());
 
 	}
-
 
 	public Set<GlobalThingInfo> queryThingByUnionTags(List<String> tagCollect) {
 
@@ -145,7 +145,6 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 		return rows;
 	}
 
-
 	public List<Map<String, Object>> findAllThingTypesWithThingCount() {
 		String sql = "SELECT " + GlobalThingInfo.THING_TYPE + " as type, COUNT(1) as count FROM " + this.getTableName();
 
@@ -216,7 +215,6 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 		return rows;
 	}
 
-
 	public List<GlobalThingInfo> findThingByTag(String tagName) {
 		StringBuilder sql = new StringBuilder("SELECT g.* from " + this.getTableName() + " g ");
 		StringBuilder where = new StringBuilder(" WHERE t.full_tag_name = ? ");
@@ -274,5 +272,22 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 		Map<String, Object> params = new HashMap();
 		params.put("list", thingIds);
 		return Optional.ofNullable(namedJdbcTemplate.queryForList(sb.toString(), params));
+	}
+
+	public Optional<List<Long>> findThingIdsByCreator(String userId, List<Long> thingIds) {
+		if (null == userId) {
+			return Optional.ofNullable(null);
+		}
+		if (null == thingIds || thingIds.isEmpty()) {
+			return Optional.ofNullable(findSingleFieldBySingleField(GlobalThingInfo.ID_GLOBAL_THING,
+					GlobalThingInfo.CREATE_BY, userId, Long.class));
+		}
+		StringBuilder sb = new StringBuilder(SQL_FIND_THINGIDS_BY_CREATOR);
+		sb.append(" AND ").append(GlobalThingInfo.ID_GLOBAL_THING).append(" IN (:ids)");
+
+		Map<String, Object> params = new HashMap();
+		params.put("creator", userId);
+		params.put("ids", thingIds);
+		return Optional.ofNullable(namedJdbcTemplate.queryForList(sb.toString(), params, Long.class));
 	}
 }
