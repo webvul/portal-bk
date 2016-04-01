@@ -217,8 +217,8 @@ public class TagThingManager {
 		}
 	}
 
-	public void removeTag(TagIndex tag) {
-		tagIndexDao.deleteByID(tag.getId());
+	public void removeTag(Long tagId) {
+		tagIndexDao.deleteByID(tagId);
 	}
 
 	public void removeThing(GlobalThingInfo thing) throws ObjectNotFoundException {
