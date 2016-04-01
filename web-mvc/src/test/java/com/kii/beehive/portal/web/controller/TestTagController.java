@@ -6,7 +6,9 @@ import com.kii.beehive.business.manager.UserManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.exception.ObjectNotFoundException;
 import com.kii.beehive.portal.jdbc.dao.*;
-import com.kii.beehive.portal.jdbc.entity.*;
+import com.kii.beehive.portal.jdbc.entity.TagIndex;
+import com.kii.beehive.portal.jdbc.entity.TagType;
+import com.kii.beehive.portal.jdbc.entity.TagUserRelation;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.WebTestTemplate;
 import com.kii.beehive.portal.web.constant.Constants;
@@ -16,19 +18,16 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static junit.framework.TestCase.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyList;
 import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.*;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -224,129 +223,46 @@ public class TestTagController extends WebTestTemplate {
 
 	@Test
 	public void testBindTagToUser() throws Exception {
-		TagIndex tagIndex = new TagIndex();
-		tagIndex.setDisplayName("Tag 1");
-		tagIndex.setDescription("Tag");
-		tagIndex.setTagType(TagType.Custom);
-
-		AuthInfoStore.setAuthInfo("TagCreator");
-		Long tagId = tagIndexDao.saveOrUpdate(tagIndex);
-
-		doReturn(new HashSet<>(Arrays.asList("1"))).when(userManager).checkNonExistingUserID(any());
-
-		// Error test
-		String[] blankTagIds = new String[]{null, " "};
-		String[] blankUserIds = new String[]{null, " "};
-		for (String tagIds : blankTagIds) {
-			for (String userId : blankUserIds) {
-				try {
-					tagController.bindTagToUser(tagIndex.getFullTagName(), userId);
-					fail("Expect a PortalException");
-				} catch (PortalException e) {
-					assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
-				}
-			}
-		}
-
-		doReturn(new ArrayList<>()).when(tagThingManager).getUsers(anyListOf(String.class));
-		// Existence test
-
+		doReturn(Arrays.asList(100L)).when(tagThingManager).getCreatedTagIdsByFullTagName(anyString(), anyString());
 		BeehiveUser someone = new BeehiveUser();
 		someone.setKiiLoginName("Someone");
 		doReturn(Arrays.asList(someone)).when(tagThingManager).getUsers(anyListOf(String.class));
-		AuthInfoStore.setAuthInfo("Someone");
-		try {
-			tagController.bindTagToUser(tagIndex.getFullTagName(), "123");
-			fail("Expect a PortalException");
-		} catch (PortalException e) {
-			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
-		}
 
-		AuthInfoStore.setAuthInfo("TagCreator");
-
-		doAnswer(invocation -> {
-			List<Long> tagIds = ((List<TagIndex>) invocation.getArguments()[0]).stream().map(TagIndex::getId).
-					collect(Collectors.toList());
-			List<BeehiveUser> users = (List<BeehiveUser>) invocation.getArguments()[1];
-			tagIds.forEach(id -> {
-				users.forEach(user -> {
-					TagUserRelation relation = new TagUserRelation();
-					relation.setTagId(id);
-					relation.setUserId(user.getKiiLoginName());
-					tagUserRelationDao.saveOrUpdate(relation);
-				});
-			});
+		List<String> userIds = new ArrayList();
+		doAnswer((Answer<Object>) invocation -> {
+			userIds.addAll((Collection<? extends String>) invocation.getArguments()[1]);
 			return null;
-		}).when(tagThingManager).bindTagsToUsers(anyList(), anyList());
+		}).when(tagThingManager).bindTagsToUsers(anyCollectionOf(Long.class),
+				anyCollectionOf(String.class));
 
-		try {
-			tagController.bindTagToUser(tagIndex.getFullTagName(), "Someone");
-		} catch (Exception e) {
-			fail("Should not throw any exception");
-		}
+		tagController.bindTagToUser("fullname", "Someone");
 
-		TagUserRelation relation = tagUserRelationDao.find(tagId, "Someone");
-		assertNotNull("Should have the relation", relation);
+		assertEquals(1, userIds.size());
+		assertEquals("Someone", userIds.get(0));
 	}
 
 	@Test
 	public void testUnbindTagFromUser() throws Exception {
-		TagIndex tagIndex = new TagIndex();
-		tagIndex.setDisplayName("Tag 1");
-		tagIndex.setDescription("Tag");
-		tagIndex.setTagType(TagType.Custom);
-		tagIndex.setCreateBy("TagCreator");
-
-		AuthInfoStore.setAuthInfo("TagCreator");
-		Long tagId = tagIndexDao.saveOrUpdate(tagIndex);
-
-		TagUserRelation relation = new TagUserRelation();
-		relation.setTagId(tagId);
-		relation.setUserId("Someone");
-		tagUserRelationDao.saveOrUpdate(relation);
-
-		doReturn(new HashSet<String>()).when(userManager).checkNonExistingUserID(any());
-
-		doAnswer(invocation -> {
-			List<Long> tagIds = ((List<TagIndex>) invocation.getArguments()[0]).stream().map(TagIndex::getId).
-					collect(Collectors.toList());
-			List<BeehiveUser> users = (List<BeehiveUser>) invocation.getArguments()[1];
-			tagIds.forEach(id -> {
-				users.forEach(user -> {
-					tagUserRelationDao.deleteByTagIdAndUserId(id, user.getKiiLoginName());
-				});
-			});
-			return null;
-		}).when(tagThingManager).unbindTagsFromUsers(anyList(), anyList());
-
+		doReturn(Arrays.asList(100L)).when(tagThingManager).getCreatedTagIdsByFullTagName(anyString(), anyString());
 		BeehiveUser someone = new BeehiveUser();
 		someone.setKiiLoginName("Someone");
 		doReturn(Arrays.asList(someone)).when(tagThingManager).getUsers(anyListOf(String.class));
 
-		try {
-			tagController.unbindTagFromUser(tagIndex.getFullTagName(), "Someone");
-		} catch (Exception e) {
-			fail("Should not throw any exception");
-		}
+		List<String> userIds = new ArrayList();
+		doAnswer((Answer<Object>) invocation -> {
+			userIds.addAll((Collection<? extends String>) invocation.getArguments()[1]);
+			return null;
+		}).when(tagThingManager).unbindTagsFromUsers(anyCollectionOf(Long.class),
+				anyCollectionOf(String.class));
 
-		relation = tagUserRelationDao.find(tagId, "Someone");
-		assertNull("Should not have the relation", relation);
+		tagController.unbindTagFromUser("fullname", "Someone");
+
+		assertEquals(1, userIds.size());
+		assertEquals("Someone", userIds.get(0));
 	}
 
 	@Test
 	public void testBindUserGroupToTag() throws Exception {
-		TagIndex tagIndex = new TagIndex();
-		tagIndex.setDisplayName("Tag 1");
-		tagIndex.setDescription("Tag");
-		tagIndex.setTagType(TagType.Custom);
-		AuthInfoStore.setAuthInfo("TagCreator");
-		Long tagId = tagIndexDao.saveOrUpdate(tagIndex);
-
-		UserGroup userGroup = new UserGroup();
-		userGroup.setName("User Group");
-		userGroup.setCreateBy("Someone");
-		Long userGroupId = userGroupDao.saveOrUpdate(userGroup);
-
 		// Error test
 		String[] blankTagIds = new String[]{null, " "};
 		String[] blankUserGroupIds = new String[]{null, " "};
@@ -361,68 +277,24 @@ public class TestTagController extends WebTestTemplate {
 			}
 		}
 
-		// Existence test
-		try {
-			tagController.bindTagToUserGroup(tagIndex.getFullTagName() + ",test2-123", userGroupId + "");
-			fail("Expect a PortalException");
-		} catch (PortalException e) {
-			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
-		}
+		doReturn(Arrays.asList(100L)).when(tagThingManager).getCreatedTagIdsByFullTagName(anyString(), anyString());
+		doReturn(Arrays.asList(200L)).when(tagThingManager).getUserGroupIds(anyListOf(String.class));
+		doNothing().when(tagThingManager).bindTagsToUserGroups(anyListOf(Long.class), anyListOf(Long.class));
 
-		AuthInfoStore.setAuthInfo("Someone");
+		tagController.bindTagToUserGroup("12,34", "56,78");
 
-		try {
-			tagController.bindTagToUserGroup(tagIndex.getFullTagName(), userGroupId + "");
-			fail("Expect a PortalException");
-		} catch (PortalException e) {
-			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
-		}
-
-		AuthInfoStore.setAuthInfo(tagIndex.getCreateBy());
-		try {
-			tagController.bindTagToUserGroup(tagIndex.getFullTagName(), userGroupId + ",userGroup1");
-			fail("Expect a PortalException");
-		} catch (PortalException e) {
-			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
-		}
-
-		try {
-			tagController.bindTagToUserGroup(tagIndex.getFullTagName(), userGroupId + "");
-		} catch (Exception e) {
-			fail("Should not throw any exception");
-		}
-
-		TagGroupRelation relation = tagGroupRelationDao.findByTagIDAndUserGroupID(tagId, userGroupId);
-		assertNotNull("Should have the relation", relation);
+		verify(tagThingManager, times(1)).bindTagsToUserGroups(anyListOf(Long.class), anyListOf(Long.class));
 	}
 
 	@Test
 	public void testUnbindUserGroupFromTag() throws Exception {
-		TagIndex tagIndex = new TagIndex();
-		tagIndex.setDisplayName("Tag 1");
-		tagIndex.setDescription("Tag");
-		tagIndex.setTagType(TagType.Custom);
-		AuthInfoStore.setAuthInfo("TagCreator");
-		Long tagId = tagIndexDao.saveOrUpdate(tagIndex);
-
-		UserGroup userGroup = new UserGroup();
-		userGroup.setName("User Group");
-		userGroup.setCreateBy("Someone");
-		Long userGroupId = userGroupDao.saveOrUpdate(userGroup);
-
-		AuthInfoStore.setAuthInfo(tagIndex.getCreateBy());
-		tagController.bindTagToUserGroup(tagIndex.getFullTagName(), userGroupId + "");
-
-		TagGroupRelation relation = tagGroupRelationDao.findByTagIDAndUserGroupID(tagId, userGroupId);
-		assertNotNull("Should have the relation", relation);
-
 		// Error test
 		String[] blankTagIds = new String[]{null, " "};
 		String[] blankUserGroupIds = new String[]{null, " "};
 		for (String tagIds : blankTagIds) {
 			for (String userGroupIds : blankUserGroupIds) {
 				try {
-					tagController.unbindTagFromUserGroup(tagIds, userGroupIds);
+					tagController.unbindTagsFromUserGroups(tagIds, userGroupIds);
 					fail("Expect a PortalException");
 				} catch (PortalException e) {
 					assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
@@ -430,38 +302,13 @@ public class TestTagController extends WebTestTemplate {
 			}
 		}
 
-		// Existence test
-		try {
-			tagController.unbindTagFromUserGroup(tagIndex.getFullTagName() + ",test2", userGroupId + "");
-			fail("Expect a PortalException");
-		} catch (PortalException e) {
-			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
-		}
+		doReturn(Arrays.asList(100L)).when(tagThingManager).getCreatedTagIdsByFullTagName(anyString(), anyString());
+		doReturn(Arrays.asList(200L)).when(tagThingManager).getUserGroupIds(anyListOf(String.class));
+		doNothing().when(tagThingManager).unbindTagsFromUserGroups(anyListOf(Long.class), anyListOf(Long.class));
 
-		AuthInfoStore.setAuthInfo("Someone");
-		try {
-			tagController.unbindTagFromUserGroup(tagIndex.getFullTagName() + "", userGroupId + "");
-			fail("Expect a PortalException");
-		} catch (PortalException e) {
-			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
-		}
+		tagController.unbindTagsFromUserGroups("12,34", "56,78");
 
-		AuthInfoStore.setAuthInfo(tagIndex.getCreateBy());
-		try {
-			tagController.unbindTagFromUserGroup(tagIndex.getFullTagName(), userGroupId + ",userGroup1");
-			fail("Expect a PortalException");
-		} catch (PortalException e) {
-			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
-		}
-
-		try {
-			tagController.unbindTagFromUserGroup(tagIndex.getFullTagName(), userGroupId + "");
-		} catch (Exception e) {
-			fail("Should not throw any exception");
-		}
-
-		relation = tagGroupRelationDao.findByTagIDAndUserGroupID(tagId, userGroupId);
-		assertNull("Should not have the relation", relation);
+		verify(tagThingManager, times(1)).unbindTagsFromUserGroups(anyListOf(Long.class), anyListOf(Long.class));
 	}
 
 	@Test

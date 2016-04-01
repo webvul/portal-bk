@@ -1,11 +1,12 @@
 package com.kii.beehive.portal.web.controller;
 
 import com.kii.beehive.portal.exception.ObjectNotFoundException;
-import com.kii.beehive.portal.exception.UnauthorizedException;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.dao.TagUserRelationDao;
 import com.kii.beehive.portal.jdbc.dao.TeamTagRelationDao;
-import com.kii.beehive.portal.jdbc.entity.*;
+import com.kii.beehive.portal.jdbc.entity.TagIndex;
+import com.kii.beehive.portal.jdbc.entity.TagType;
+import com.kii.beehive.portal.jdbc.entity.UserGroup;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.exception.BeehiveUnAuthorizedException;
@@ -17,10 +18,10 @@ import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Beehive API - Thing API
@@ -175,13 +176,9 @@ public class TagController extends AbstractThingTagController {
 			throw new PortalException("RequiredFieldsMissing", "tagIDs or userIDs is empty", HttpStatus
 					.BAD_REQUEST);
 		}
-		List<TagIndex> tagIndexes = getTags(Arrays.asList(fullNames.split(",")));
-		List<BeehiveUser> users = getUsers(userIds);
-		try {
-			thingTagManager.bindTagsToUsers(tagIndexes, users);
-		} catch (UnauthorizedException e) {
-			throw new BeehiveUnAuthorizedException(e.getMessage());
-		}
+		List<Long> tagIds = getCreatedTagIds(fullNames);
+		Set<String> userIdSet = getUserIds(userIds);
+		thingTagManager.bindTagsToUsers(tagIds, userIdSet);
 	}
 
 	/**
@@ -197,13 +194,9 @@ public class TagController extends AbstractThingTagController {
 			throw new PortalException("RequiredFieldsMissing", "tagIDs or userIDs is empty", HttpStatus
 					.BAD_REQUEST);
 		}
-		List<TagIndex> tagIndexes = getTags(Arrays.asList(fullNames.split(",")));
-		List<BeehiveUser> users = getUsers(userIds);
-		try {
-			thingTagManager.unbindTagsFromUsers(tagIndexes, users);
-		} catch (UnauthorizedException e) {
-			throw new BeehiveUnAuthorizedException(e.getMessage());
-		}
+		List<Long> tagIds = getCreatedTagIds(fullNames);
+		Set<String> userIdSet = getUserIds(userIds);
+		thingTagManager.unbindTagsFromUsers(tagIds, userIdSet);
 	}
 
 	/**
@@ -220,14 +213,9 @@ public class TagController extends AbstractThingTagController {
 					.BAD_REQUEST);
 		}
 
-		List<TagIndex> tagIndexes = getTags(Arrays.asList(fullNames.split(",")));
-
-		List<UserGroup> userGroups = getUserGroups(userGroupIDs);
-		try {
-			thingTagManager.bindTagsToUserGroups(tagIndexes, userGroups);
-		} catch (UnauthorizedException e) {
-			throw new BeehiveUnAuthorizedException(e.getMessage());
-		}
+		List<Long> tagIds = getCreatedTagIds(fullNames);
+		List<Long> groupIds = getUserGroupIds(userGroupIDs);
+		thingTagManager.bindTagsToUserGroups(tagIds, groupIds);
 	}
 
 	/**
@@ -239,18 +227,14 @@ public class TagController extends AbstractThingTagController {
 	 * @param fullNames
 	 */
 	@RequestMapping(path = "/{fullNames}/userGroups/{userGroupIDs}", method = {RequestMethod.DELETE}, consumes = {"*"})
-	public void unbindTagFromUserGroup(@PathVariable("fullNames") String fullNames, @PathVariable("userGroupIDs") String userGroupIDs) {
+	public void unbindTagsFromUserGroups(@PathVariable("fullNames") String fullNames, @PathVariable("userGroupIDs") String userGroupIDs) {
 		if (Strings.isBlank(fullNames) || Strings.isBlank(userGroupIDs)) {
 			throw new PortalException("RequiredFieldsMissing", "tagIDs or userGroupIDs is empty", HttpStatus
 					.BAD_REQUEST);
 		}
-		List<TagIndex> tagIndexes = getTags(Arrays.asList(fullNames.split(",")));
-		List<UserGroup> userGroups = getUserGroups(userGroupIDs);
-		try {
-			thingTagManager.unbindTagsFromUserGroups(tagIndexes, userGroups);
-		} catch (UnauthorizedException e) {
-			throw new BeehiveUnAuthorizedException(e.getMessage());
-		}
+		List<Long> tagIds = getCreatedTagIds(fullNames);
+		List<Long> groupIds = getUserGroupIds(userGroupIDs);
+		thingTagManager.unbindTagsFromUserGroups(tagIds, groupIds);
 	}
 
 	/**

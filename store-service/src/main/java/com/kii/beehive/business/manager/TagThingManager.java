@@ -178,21 +178,13 @@ public class TagThingManager {
 		}
 	}
 
-	public void bindTagsToUserGroups(List<TagIndex> tags, List<UserGroup> userGroups) throws UnauthorizedException {
-		if (tags.isEmpty() || !isTagCreator(tags)) {
-			throw new UnauthorizedException("Current user is not the creator of the tag.");
-		}
-		if (null != userGroups) {
-			userGroups.forEach(userGroup -> {
-				tags.forEach(tagIndex -> {
-					TagGroupRelation relation = tagGroupRelationDao.findByTagIDAndUserGroupID(tagIndex.getId(),
-							userGroup.getId());
-					if (null == relation) {
-						tagGroupRelationDao.insert(new TagGroupRelation(tagIndex.getId(), userGroup.getId(), "1"));
-					}
-				});
-			});
-		}
+	public void bindTagsToUserGroups(List<Long> tagIds, List<Long> userGroupIds) {
+		tagIds.forEach(tagId -> userGroupIds.forEach(groupId -> {
+			TagGroupRelation relation = tagGroupRelationDao.findByTagIDAndUserGroupID(tagId, groupId);
+			if (null == relation) {
+				tagGroupRelationDao.insert(new TagGroupRelation(tagId, groupId, "1"));
+			}
+		}));
 	}
 
 	public void unbindTagsFromThings(List<Long> tagIds, List<Long> thingIds) {
@@ -203,15 +195,8 @@ public class TagThingManager {
 		});
 	}
 
-	public void unbindTagsFromUserGroups(List<TagIndex> tags, List<UserGroup> userGroups) throws UnauthorizedException {
-		if (!isTagCreator(tags)) {
-			throw new UnauthorizedException("Current user is not the creator of the tag.");
-		}
-		if (null != userGroups) {
-			userGroups.forEach(userGroup -> {
-				tags.forEach(tagIndex -> tagGroupRelationDao.delete(tagIndex.getId(), userGroup.getId()));
-			});
-		}
+	public void unbindTagsFromUserGroups(List<Long> tagsId, List<Long> userGroupIds) {
+		tagsId.forEach(tagId -> userGroupIds.forEach(groupId -> tagGroupRelationDao.delete(tagId, groupId)));
 	}
 
 	public void unbindTeamToThing(Collection<String> teamIDs, Collection<String> thingIDs) {
@@ -305,7 +290,7 @@ public class TagThingManager {
 		if (null == list || list.isEmpty()) {
 			tagId = this.createTag(new TagIndex(TagType.Location, location, null));
 		} else {
-			if(!list.get(0).getCreateBy().equals(AuthInfoStore.getUserID())){
+			if (!list.get(0).getCreateBy().equals(AuthInfoStore.getUserID())) {
 				throw new UnauthorizedException("Current user is not the creator of the tag.");
 			}
 			tagId = list.get(0).getId();
@@ -404,95 +389,49 @@ public class TagThingManager {
 		return teamList;
 	}
 
-	public void bindTagsToUsers(List<TagIndex> tags, List<BeehiveUser> users) throws UnauthorizedException {
-		if (!isTagCreator(tags)) {
-			throw new UnauthorizedException("Current user is not the creator of the tag.");
-		}
-		if (null != users) {
-			users.forEach(user -> {
-				tags.forEach(tagIndex -> {
-					TagUserRelation relation = tagUserRelationDao.find(tagIndex.getId(), user.getKiiLoginName());
-					if (null == relation) {
-						tagUserRelationDao.insert(new TagUserRelation(tagIndex.getId(), user.getKiiLoginName()));
-					}
-				});
-			});
-		}
+	public void bindTagsToUsers(Collection<Long> tagIds, Collection<String> userIds) {
+		userIds.forEach(userId -> tagIds.forEach(tagId -> {
+			TagUserRelation relation = tagUserRelationDao.find(tagId, userId);
+			if (null == relation) {
+				tagUserRelationDao.insert(new TagUserRelation(tagId, userId));
+			}
+		}));
 	}
 
-	public void unbindTagsFromUsers(List<TagIndex> tags, List<BeehiveUser> users) throws UnauthorizedException {
-		if (!isTagCreator(tags)) {
-			throw new UnauthorizedException("Current user is not the creator of the tag.");
-		}
-		if (null != users) {
-			users.forEach(user -> {
-				tags.forEach(tagIndex -> tagUserRelationDao.deleteByTagIdAndUserId(tagIndex.getId(),
-						user.getKiiLoginName()));
-			});
-		}
+	public void unbindTagsFromUsers(Collection<Long> tagIds, Collection<String> userIds) {
+		userIds.forEach(userId -> tagIds.forEach(tagId -> tagUserRelationDao.deleteByTagIdAndUserId(tagId, userId)));
 	}
 
-	public void bindThingsToUsers(List<GlobalThingInfo> things, List<BeehiveUser> users) throws UnauthorizedException {
-		if (!isThingCreator(things)) {
-			throw new UnauthorizedException("Current user is not the creator of the thing(s).");
-		}
-		if (null != users) {
-			users.forEach(user -> {
-				things.forEach(thing -> {
-					ThingUserRelation relation = thingUserRelationDao.find(thing.getId(), user.getKiiLoginName());
-					if (null == relation) {
-						relation = new ThingUserRelation();
-						relation.setThingId(thing.getId());
-						relation.setUserId(user.getKiiLoginName());
-						thingUserRelationDao.insert(relation);
-					}
-				});
-			});
-		}
+	public void bindThingsToUsers(Collection<Long> thingIds, Collection<String> userIds) {
+		thingIds.forEach(thingId -> userIds.forEach(userId -> {
+			ThingUserRelation relation = thingUserRelationDao.find(thingId, userId);
+			if (null == relation) {
+				relation = new ThingUserRelation();
+				relation.setThingId(thingId);
+				relation.setUserId(userId);
+				thingUserRelationDao.insert(relation);
+			}
+		}));
 	}
 
 
-	public void unbindThingsFromUsers(List<GlobalThingInfo> things, List<BeehiveUser> users) throws
-			UnauthorizedException {
-		if (!isThingCreator(things)) {
-			throw new UnauthorizedException("Current user is not the creator of the thing(s).");
-		}
-		if (null != users) {
-			users.forEach(user -> {
-				things.forEach(thing -> thingUserRelationDao.deleteByThingIdAndUserId(thing.getId(),
-						user.getKiiLoginName()));
-			});
-		}
+	public void unbindThingsFromUsers(Collection<Long> thingIds, Collection<String> userIds) {
+		thingIds.forEach(thingId -> userIds.forEach(userId ->
+				thingUserRelationDao.deleteByThingIdAndUserId(thingId, userId)));
 	}
 
-	public void bindThingsToUserGroups(List<GlobalThingInfo> things, List<UserGroup> userGroups) throws
-			UnauthorizedException {
-		if (!isThingCreator(things)) {
-			throw new UnauthorizedException("Current user is not the creator of thing(s).");
-		}
-		if (null != userGroups) {
-			userGroups.forEach(userGroup -> {
-				things.forEach(thing -> {
-					ThingUserGroupRelation relation = thingUserGroupRelationDao.find(thing.getId(), userGroup.getId());
-					if (null == relation) {
-						thingUserGroupRelationDao.insert(new ThingUserGroupRelation(thing.getId(), userGroup.getId()));
-					}
-				});
-			});
-		}
+	public void bindThingsToUserGroups(Collection<Long> thingIds, Collection<Long> userGroupIds) {
+		thingIds.forEach(thingId -> userGroupIds.forEach(groupId -> {
+			ThingUserGroupRelation relation = thingUserGroupRelationDao.find(thingId, groupId);
+			if (null == relation) {
+				thingUserGroupRelationDao.insert(new ThingUserGroupRelation(thingId, groupId));
+			}
+		}));
 	}
 
-	public void unbindThingsFromUserGroups(List<GlobalThingInfo> things, List<UserGroup> userGroups) throws
-			UnauthorizedException {
-		if (!isThingCreator(things)) {
-			throw new UnauthorizedException("Current user is not the creator of thing(s).");
-		}
-		if (null != userGroups) {
-			userGroups.forEach(userGroup -> {
-				things.forEach(thing -> thingUserGroupRelationDao.deleteByThingIdAndUserGroupId(thing.getId(),
-						userGroup.getId()));
-			});
-		}
+	public void unbindThingsFromUserGroups(Collection<Long> thingIds, Collection<Long> userGroupIds) {
+		thingIds.forEach(thingId -> userGroupIds.forEach(groupId ->
+				thingUserGroupRelationDao.deleteByThingIdAndUserGroupId(thingId, groupId)));
 	}
 
 	public List<GlobalThingInfo> getThings(List<String> thingIDList) throws ObjectNotFoundException {
@@ -576,17 +515,16 @@ public class TagThingManager {
 		return userGroups;
 	}
 
-	public List<UserGroup> getUserGroups(List<String> userGroupIDList) throws ObjectNotFoundException {
-		List<Long> userGroupIds = userGroupIDList.stream().filter(Pattern.compile("^[0-9]+$").asPredicate())
-				.map(Long::valueOf).collect(Collectors.toList());
-		List<UserGroup> userGroups = userGroupDao.findByIDs(userGroupIds);
-		if (null == userGroups || !userGroups.stream().map(UserGroup::getId).map(Object::toString).
-				collect(Collectors.toSet()).containsAll(userGroupIDList)) {
-			userGroupIds.removeAll(userGroups.stream().map(UserGroup::getId).collect(Collectors.toList()));
+	public List<Long> getUserGroupIds(List<String> userGroupIDList) throws ObjectNotFoundException {
+		Set<Long> idSet = userGroupIDList.stream().filter(Pattern.compile("^[0-9]+$").asPredicate())
+				.map(Long::valueOf).collect(Collectors.toSet());
+		List<Long> userGroupIds = userGroupDao.findUserGroupIds(idSet).orElse(Collections.emptyList());
+		if (idSet.size() != userGroupIds.size()) {
+			idSet.removeAll(userGroupIds);
 			throw new ObjectNotFoundException("Invalid user group id(s): [" + collectionToString
-					(userGroupIds) + "]");
+					(idSet) + "]");
 		}
-		return userGroups;
+		return userGroupIds;
 	}
 
 	public List<GlobalThingInfo> getAccessibleThingsByType(String thingType, String user) {
