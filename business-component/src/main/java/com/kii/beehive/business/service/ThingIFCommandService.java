@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
@@ -13,7 +14,6 @@ import org.springframework.stereotype.Component;
 
 import com.kii.beehive.business.manager.AppInfoManager;
 import com.kii.beehive.business.manager.ThingTagManager;
-import com.kii.beehive.portal.jdbc.dao.BaseDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
 import com.kii.extension.ruleengine.store.trigger.TargetAction;
@@ -70,7 +70,7 @@ public class ThingIFCommandService {
 
         TargetAction action=target.getCommand();
 
-        List<GlobalThingInfo>  thingList=thingTagService.getThingInfos(target.getSelector());
+        Set<GlobalThingInfo> thingList=thingTagService.getThingInfos(target.getSelector());
 
 //        String thingType = target.getThingType();
 

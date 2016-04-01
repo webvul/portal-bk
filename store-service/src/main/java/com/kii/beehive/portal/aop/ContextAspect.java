@@ -8,8 +8,8 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 
-import com.kii.beehive.portal.store.entity.PortalEntity;
 import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.store.entity.PortalEntity;
 
 @Aspect
 public class ContextAspect {

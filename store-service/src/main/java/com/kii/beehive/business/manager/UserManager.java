@@ -1,12 +1,31 @@
 package com.kii.beehive.business.manager;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.kii.beehive.business.helper.SyncMsgService;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.exception.DuplicateException;
 import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.beehive.portal.exception.InvalidAuthException;
 import com.kii.beehive.portal.exception.UserNotExistException;
-import com.kii.beehive.portal.jdbc.dao.*;
+import com.kii.beehive.portal.jdbc.dao.GroupPermissionRelationDao;
+import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
+import com.kii.beehive.portal.jdbc.dao.PermissionDao;
+import com.kii.beehive.portal.jdbc.dao.TeamDao;
+import com.kii.beehive.portal.jdbc.dao.TeamGroupRelationDao;
+import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
 import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
 import com.kii.beehive.portal.jdbc.entity.Team;
 import com.kii.beehive.portal.jdbc.entity.TeamGroupRelation;
@@ -17,12 +36,6 @@ import com.kii.beehive.portal.service.KiiUserSyncDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.store.entity.CustomProperty;
 import com.kii.extension.sdk.exception.ObjectNotFoundException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.util.*;
 
 @Component
 public class UserManager {

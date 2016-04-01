@@ -1,6 +1,7 @@
 package com.kii.beehive.portal.common.utils;
 
 import java.util.Map;
+import java.util.regex.Matcher;
 
 public class StrTemplate {
 
@@ -12,7 +13,9 @@ public class StrTemplate {
 
 			String token = "\\$\\(" + key + "\\)";
 
-			result = result.replaceAll(token, entry.getValue());
+			String  value= Matcher.quoteReplacement(entry.getValue());
+
+			result = result.replaceAll(token, value);
 		}
 
 		return result;
@@ -35,12 +38,16 @@ public class StrTemplate {
 
 	public static final String generByMap(String template, Map<String, String> params) {
 		String result = template;
+
 		for (Map.Entry<String, String> entry : params.entrySet()) {
 			String key = entry.getKey();
 
 			String token = "\\$\\{" + key + "\\}";
 
-			result = result.replaceAll(token, entry.getValue());
+			String  value= Matcher.quoteReplacement(entry.getValue());
+			//TODO:do not using regExp
+
+			result = result.replaceAll(token, value);
 		}
 
 		return result;
@@ -55,7 +62,9 @@ public class StrTemplate {
 		for (int i = 0; i < params.length; i++) {
 			String token = "\\$\\{" + i + "\\}";
 
-			result = result.replaceAll(token, params[i]);
+			String  value= Matcher.quoteReplacement(params[i]);
+
+			result = result.replaceAll(token,value);
 		}
 
 		return result;

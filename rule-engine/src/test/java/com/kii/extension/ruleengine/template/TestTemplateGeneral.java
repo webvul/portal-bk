@@ -14,6 +14,7 @@ import com.kii.extension.ruleengine.drools.entity.TriggerType;
 import com.kii.extension.ruleengine.store.trigger.Condition;
 import com.kii.extension.ruleengine.store.trigger.CronPrefix;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
+import com.kii.extension.ruleengine.store.trigger.TriggerGroupPolicyType;
 import com.kii.extension.ruleengine.store.trigger.WhenType;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -63,9 +64,20 @@ public class TestTemplateGeneral {
 		log.info(general.generDrlConfig("abcSchedule", TriggerType.summary,predicate));
 
 
+		log.info(general.generGroupDrlConfig("abcGroup", TriggerGroupPolicyType.Any,predicate));
+
+		log.info(general.generGroupDrlConfig("abcGroup", TriggerGroupPolicyType.All,predicate));
+
+		log.info(general.generGroupDrlConfig("abcGroup", TriggerGroupPolicyType.Percent,predicate));
+
+		log.info(general.generGroupDrlConfig("abcGroup", TriggerGroupPolicyType.Some,predicate));
+
+
 		predicate.setCondition(null);
 
 		log.info(general.generDrlConfig("schedule", TriggerType.simple,predicate));
+
+
 
 	}
 }
