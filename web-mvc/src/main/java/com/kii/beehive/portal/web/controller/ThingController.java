@@ -3,10 +3,10 @@ package com.kii.beehive.portal.web.controller;
 import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.portal.exception.ObjectNotFoundException;
 import com.kii.beehive.portal.exception.UnauthorizedException;
-import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
-import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
-import com.kii.beehive.portal.jdbc.dao.TeamThingRelationDao;
-import com.kii.beehive.portal.jdbc.entity.*;
+import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
+import com.kii.beehive.portal.jdbc.entity.TagIndex;
+import com.kii.beehive.portal.jdbc.entity.TagType;
+import com.kii.beehive.portal.jdbc.entity.UserGroup;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.entity.ThingRestBean;
 import com.kii.beehive.portal.web.exception.BeehiveUnAuthorizedException;
@@ -35,17 +35,6 @@ import static java.util.Arrays.asList;
 @RequestMapping(value = "/things", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE},
 		produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
 public class ThingController extends AbstractThingTagController {
-
-	//
-	@Autowired
-	private GlobalThingSpringDao globalThingDao;
-
-	@Autowired
-	private TagIndexDao tagIndexDao;
-
-	@Autowired
-	private TeamThingRelationDao teamThingRelationDao;
-
 	@Autowired
 	private ThingIFInAppService thingIFService;
 
@@ -229,23 +218,18 @@ public class ThingController extends AbstractThingTagController {
 
 		BeanUtils.copyProperties(input, thingInfo);
 
-		GlobalThingInfo thing = globalThingDao.getThingByVendorThingID(thingInfo.getVendorThingID());
-		if (thing != null) {
+		if (!thingTagManager.getThingsByVendorThingIds(Arrays.asList(thingInfo.getVendorThingID())).isEmpty()) {
 			throw new PortalException("DuplicateObject", " Duplicate VenderID : " + thingInfo.getVendorThingID(),
 					HttpStatus.BAD_REQUEST);
 		}
 
-		Long thingID = null;
+		Long thingID;
 		try {
 			thingID = thingTagManager.createThing(thingInfo, input.getLocation(), input.getInputTags());
 		} catch (ObjectNotFoundException e) {
 			throw new PortalException(e.getMessage(), e.getMessage(), HttpStatus.BAD_REQUEST);
 		} catch (UnauthorizedException e) {
 			throw new BeehiveUnAuthorizedException(e.getMessage());
-		}
-
-		if (isTeamIDExist()) {
-			teamThingRelationDao.saveOrUpdate(new TeamThingRelation(getLoginTeamID(), thingID));
 		}
 
 		Map<String, Long> map = new HashMap<>();
@@ -264,18 +248,8 @@ public class ThingController extends AbstractThingTagController {
 	 */
 	@RequestMapping(value = "/{globalThingID}", method = {RequestMethod.DELETE}, consumes = {"*"})
 	public void removeThing(@PathVariable("globalThingID") Long globalThingID) {
-		GlobalThingInfo orig = globalThingDao.findByID(globalThingID);
-		if (orig == null) {
-			throw new PortalException("Thing Not Found", "Thing with globalThingID:" + globalThingID + " Not Found",
-					HttpStatus.NOT_FOUND);
-		}
-
-		if (!thingTagManager.isThingCreator(orig)) {
-			throw new BeehiveUnAuthorizedException("Current user is not the creator of the thing");
-		}
-
 		try {
-			thingTagManager.removeThing(orig);
+			thingTagManager.removeThing(getCreatedThings(globalThingID.toString()).get(0));
 		} catch (ObjectNotFoundException e) {
 			throw new PortalException("Requested thing doesn't exist", e.getMessage(), HttpStatus.NOT_FOUND);
 		}
@@ -511,18 +485,11 @@ public class ThingController extends AbstractThingTagController {
 	 * @return
 	 */
 	@RequestMapping(value = "/{globalThingID}/endnodes", method = {RequestMethod.GET})
-	public ResponseEntity<List<ThingRestBean>> getGatewayEndnodes(@PathVariable("globalThingID") long globalThingID) {
+	public ResponseEntity<List<ThingRestBean>> getGatewayEndnodes(@PathVariable("globalThingID") Long globalThingID) {
 
 		// get gateway info
-		GlobalThingInfo gatewayInfo = globalThingDao.findByID(globalThingID);
 
-		if (gatewayInfo == null) {
-			throw new PortalException("Thing Not Found", "Thing with globalThingID:" + globalThingID + " Not Found", HttpStatus.NOT_FOUND);
-		}
-
-		if (!thingTagManager.isThingCreator(gatewayInfo)) {
-			throw new BeehiveUnAuthorizedException("Current user is not the creator of the thing");
-		}
+		GlobalThingInfo gatewayInfo = getCreatedThings(globalThingID.toString()).get(0);
 
 		// check whether onboarding is done
 		String fullKiiThingID = gatewayInfo.getFullKiiThingID();
@@ -532,15 +499,14 @@ public class ThingController extends AbstractThingTagController {
 		}
 
 		// get vendor thing id list of endnodes
-		List<EndNodeOfGateway> list = thingIFService.getAllEndNodesOfGateway(fullKiiThingID);
-
-		List<String> vendorThingIDList = new ArrayList<>();
-		for (EndNodeOfGateway endNodeOfGateway : list) {
+		List<EndNodeOfGateway> endNodes = thingIFService.getAllEndNodesOfGateway(fullKiiThingID);
+		List<String> vendorThingIDList = new ArrayList();
+		for (EndNodeOfGateway endNodeOfGateway : endNodes) {
 			vendorThingIDList.add(endNodeOfGateway.getVendorThingID());
 		}
 
 		// get thing info of endnodes
-		List<GlobalThingInfo> globalThingInfoList = globalThingDao.getThingsByVendorIDArray(vendorThingIDList);
+		List<GlobalThingInfo> globalThingInfoList = thingTagManager.getThingsByVendorThingIds(vendorThingIDList);
 		List<ThingRestBean> resultList = this.toThingRestBean(globalThingInfoList);
 
 		return new ResponseEntity(resultList, HttpStatus.OK);
