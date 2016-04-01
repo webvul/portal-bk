@@ -690,8 +690,10 @@ public class TagThingManager {
 	}
 
 	public List<TagIndex> getAccessibleTagsByUserId(String userId) {
-		return tagIndexDao.findByIDs(
-				tagGroupRelationDao.findTagIdsByUserId(userId).orElse(Collections.emptyList()));
+		Set<Long> tagIds = tagGroupRelationDao.findTagIdsByUserId(userId).orElse(Collections.emptyList()).stream().
+				collect(Collectors.toSet());
+		tagIds.addAll(tagUserRelationDao.findTagIds(userId).orElse(Collections.emptyList()));
+		return tagIndexDao.findByIDs(tagIds);
 	}
 
 	public List<TagIndex> getAccessibleTagsByUserGroupId(Long userGroupId) {

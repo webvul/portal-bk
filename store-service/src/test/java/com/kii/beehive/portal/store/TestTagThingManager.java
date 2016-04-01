@@ -547,6 +547,20 @@ public class TestTagThingManager {
 	}
 
 	@Test
+	public void testGetAccessibleTagsByUserId() throws Exception {
+		doReturn(Optional.ofNullable(Arrays.asList(100L))).when(tagUserRelationDao).findTagIds(anyString());
+		doReturn(Optional.ofNullable(Arrays.asList(200L))).when(tagGroupRelationDao).findTagIdsByUserId(anyString());
+		Set<Long> tagIds = new HashSet();
+		doAnswer((Answer<List<TagIndex>>) invocation -> {
+			tagIds.addAll((Collection<? extends Long>) invocation.getArguments()[0]);
+			return null;
+		}).when(tagIndexDao).findByIDs(anyListOf(Long.class));
+
+		tagThingManager.getAccessibleTagsByUserId("someone");
+		assertTrue("Received ids don't match", tagIds.containsAll(Arrays.asList(100L, 200L)) && 2 == tagIds.size());
+	}
+
+	@Test
 	public void testGetThingsByTagIds() throws Exception {
 		List<GlobalThingInfo> result = tagThingManager.getThingsByTagIds(null);
 		assertNotNull("Should not be null", result);
