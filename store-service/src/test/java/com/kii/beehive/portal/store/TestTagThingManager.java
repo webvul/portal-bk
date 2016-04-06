@@ -696,6 +696,21 @@ public class TestTagThingManager {
 
 		verify(globalThingDao, times(1)).findByIDs(anyCollectionOf(Long.class));
 	}
+
+	@Test
+	public void testGetAccessibleTagsByUserIdAndLocations() throws Exception {
+		doReturn(Optional.ofNullable(Arrays.asList(100L))).when(tagUserRelationDao).findTagIds(eq("Someone"));
+		doReturn(Optional.ofNullable(Arrays.asList(200L))).when(tagGroupRelationDao).findTagIdsByUserId(eq("Someone"));
+		Set<Long> ids = new HashSet();
+		doAnswer((Answer<Optional<List<TagIndex>>>) invocation -> {
+			ids.addAll((Collection<? extends Long>) invocation.getArguments()[0]);
+			return Optional.ofNullable(null);
+		}).when(tagIndexDao).findTagsByTagIdsAndLocations(anyCollectionOf(Long.class), anyString());
+
+		tagThingManager.getAccessibleTagsByUserIdAndLocations("Someone", "location");
+
+		assertTrue(ids.contains(100L) && ids.contains(200L) && 2 == ids.size());
+	}
 	
 	/*
 	@Test
