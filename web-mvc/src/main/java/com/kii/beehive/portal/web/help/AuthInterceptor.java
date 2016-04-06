@@ -225,7 +225,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
 		// Add HTML5 CORS headers
 		response.addHeader("Access-Control-Allow-Origin", "*");
-		response.addHeader("Access-Control-Allow-Methods", "GET, HEAD, POST, PUT, DELETE, OPTIONS");
+		response.addHeader("Access-Control-Allow-Methods", "GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS");
 		response.addHeader("Access-Control-Allow-Headers", "origin, authorization, accept, content-type");
 		response.addHeader("Access-Control-Max-Age", "99999");
 
