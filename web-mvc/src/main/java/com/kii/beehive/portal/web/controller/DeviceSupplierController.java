@@ -30,8 +30,6 @@ public class DeviceSupplierController {
 	 *
 	 * GET /devicesuppliers/all
 	 *
-	 * // TODO add this API into documents
-	 *
 	 * @return
      */
 	@RequestMapping(path="/all",method = { RequestMethod.GET })
