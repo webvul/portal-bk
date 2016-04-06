@@ -207,7 +207,7 @@ public class UserManager {
 			userIDListToInsert.removeAll(existingUserIDList);
 
 			List<GroupUserRelation> relationList = new ArrayList<>();
-			userIDListToInsert.forEach(newUserId -> new GroupUserRelation(newUserId, userGroupID));
+			userIDListToInsert.forEach(newUserId -> relationList.add(new GroupUserRelation(newUserId, userGroupID)));
 
 			groupUserRelationDao.batchInsert(relationList);
 		}
