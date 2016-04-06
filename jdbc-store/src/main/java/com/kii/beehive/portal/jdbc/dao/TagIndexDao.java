@@ -292,4 +292,27 @@ public class TagIndexDao extends SpringBaseDao<TagIndex> {
 
 		return Optional.ofNullable(namedJdbcTemplate.queryForList(sb.toString(), params, Long.class));
 	}
+
+	public Optional<List<TagIndex>> findTagsByTagIdsAndLocations(Collection<Long> tagIds, String parentLocation) {
+		if ((null == tagIds || tagIds.isEmpty()) && Strings.isBlank(parentLocation)) {
+			return Optional.ofNullable(null);
+		}
+
+		Map<String, Object> params = new HashMap();
+		params.put("type", TagType.Location.name());
+		StringBuilder sb = new StringBuilder("SELECT * FROM ").append(TABLE_NAME).append(" WHERE ").
+				append(TagIndex.TAG_TYPE).append(" = ").append(":type");
+
+		if (null != tagIds && !tagIds.isEmpty()) {
+			sb.append(" AND ").append(TagIndex.TAG_ID).append(" IN (:ids) ");
+			params.put("ids", tagIds);
+		}
+
+		if (!Strings.isBlank(parentLocation)) {
+			sb.append(" AND ").append(TagIndex.DISPLAY_NAME).append(" LIKE :name");
+			params.put("name", parentLocation + "%");
+		}
+
+		return Optional.ofNullable(namedJdbcTemplate.query(sb.toString(), params, getRowMapper()));
+	}
 }

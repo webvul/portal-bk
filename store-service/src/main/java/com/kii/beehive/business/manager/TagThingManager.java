@@ -257,9 +257,11 @@ public class TagThingManager {
 
 	}
 
-	public List<String> findUserLocations(String userId, String parentLocation) {
-
-		return tagIndexDao.findUserLocations(userId, parentLocation);
+	public List<TagIndex> getAccessibleTagsByUserIdAndLocations(String userId, String parentLocation) {
+		// user -> tag
+		Set<Long> tagIds = new HashSet(tagUserRelationDao.findTagIds(userId).orElse(Collections.emptyList()));
+		tagIds.addAll(tagGroupRelationDao.findTagIdsByUserId(userId).orElse(Collections.emptyList()));
+		return tagIndexDao.findTagsByTagIdsAndLocations(tagIds, parentLocation).orElse(Collections.emptyList());
 
 	}
 

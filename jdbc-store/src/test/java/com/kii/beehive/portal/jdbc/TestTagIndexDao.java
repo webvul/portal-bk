@@ -202,10 +202,30 @@ public class TestTagIndexDao extends TestTemplate {
 		t.setTagType(TagType.Location);
 		t.setDescription("DescriptionTest");
 		t.setFullTagName(TagType.Location.getTagName("LocationTest"));
-		tagIndexDao.saveOrUpdate(t);
+		Long tagId = tagIndexDao.saveOrUpdate(t);
 
 		List<String> list = tagIndexDao.findLocations(t.getDisplayName());
 		assertEquals(1, list.size());
+
+		List<TagIndex> result = tagIndexDao.findTagsByTagIdsAndLocations(Arrays.asList(tagId), null).
+				orElse(Collections.emptyList());
+		assertEquals(1, result.size());
+		assertEquals(tagId, result.get(0).getId());
+
+		result = tagIndexDao.findTagsByTagIdsAndLocations(Arrays.asList(tagId), "Loc").orElse(Collections.emptyList());
+		assertEquals(1, result.size());
+		assertEquals(tagId, result.get(0).getId());
+
+		result = tagIndexDao.findTagsByTagIdsAndLocations(null, "Loc").orElse(Collections.emptyList());
+		assertEquals(1, result.size());
+		assertEquals(tagId, result.get(0).getId());
+
+		result = tagIndexDao.findTagsByTagIdsAndLocations(null, "Loc1").orElse(Collections.emptyList());
+		assertEquals(0, result.size());
+
+		result = tagIndexDao.findTagsByTagIdsAndLocations(Arrays.asList(tagId + 20), "Loc").orElse(Collections
+				.emptyList());
+		assertEquals(0, result.size());
 	}
 
 	@Test

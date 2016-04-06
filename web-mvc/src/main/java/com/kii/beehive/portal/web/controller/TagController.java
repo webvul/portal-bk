@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Beehive API - Thing API
@@ -116,7 +117,8 @@ public class TagController extends AbstractThingTagController {
 	 */
 	@RequestMapping(path = "/locations/{parentLocation}", method = {RequestMethod.GET}, consumes = {"*"})
 	public List<String> findLocations(@PathVariable("parentLocation") String parentLocation) {
-		return thingTagManager.findUserLocations(getLoginUserID(), parentLocation);
+		return thingTagManager.getAccessibleTagsByUserIdAndLocations(getLoginUserID(), parentLocation).stream().
+				map(TagIndex::getDisplayName).collect(Collectors.toList());
 	}
 
 	/**
