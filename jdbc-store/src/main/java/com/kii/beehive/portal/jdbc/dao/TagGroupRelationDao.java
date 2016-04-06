@@ -151,6 +151,10 @@ public class TagGroupRelationDao extends SpringBaseDao<TagGroupRelation> {
 				Long.class));
 	}
 
+	/**
+	 * @param userId
+	 * @return a list of tag ids which user can access through the user groups
+	 */
 	public Optional<List<Long>> findTagIdsByUserId(String userId) {
 		return findTagIdsByUserIdAndFullTagName(userId, null);
 	}

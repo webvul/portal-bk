@@ -6,6 +6,7 @@ import com.kii.beehive.portal.jdbc.entity.TagType;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.constant.ErrorCode;
+import com.kii.beehive.portal.web.exception.BeehiveUnAuthorizedException;
 import com.kii.beehive.portal.web.exception.PortalException;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.http.HttpStatus;
@@ -13,10 +14,8 @@ import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Beehive API - Thing API
@@ -44,15 +43,22 @@ public class TagController extends AbstractThingTagController {
 					HttpStatus.BAD_REQUEST);
 		}
 
+		if (null != tag.getId()) {
+			try {
+				TagIndex existedTag = thingTagManager.getTagIndexes(Arrays.asList(tag.getId().toString())).get(0);
+				if (!thingTagManager.isTagCreator(existedTag)) {
+					throw new BeehiveUnAuthorizedException("Requested tag isn't created by current user");
+				}
+			} catch (ObjectNotFoundException e) {
+				throw new PortalException(HttpStatus.BAD_REQUEST + "", "Requested tag doesn't exists",
+						HttpStatus.BAD_REQUEST);
+			}
+		} else if (thingTagManager.isTagDisplayNamePresent(getLoginTeamID(), TagType.Custom, displayName)) {
+			throw new PortalException(HttpStatus.BAD_REQUEST + "", "Requested displayName already exists",
+					HttpStatus.BAD_REQUEST);
+		}
 		tag.setTagType(TagType.Custom);
 		tag.setFullTagName(TagType.Custom.getTagName(displayName));
-
-		try {
-			List<Long> tagIds = getCreatedTagIds(TagType.Custom, displayName);
-			tag.setId(tagIds.get(0));
-		} catch (PortalException e) {
-		}
-
 		long tagID = thingTagManager.createTag(tag);
 
 
@@ -116,7 +122,8 @@ public class TagController extends AbstractThingTagController {
 	 */
 	@RequestMapping(path = "/locations/{parentLocation}", method = {RequestMethod.GET}, consumes = {"*"})
 	public List<String> findLocations(@PathVariable("parentLocation") String parentLocation) {
-		return thingTagManager.findUserLocations(getLoginUserID(), parentLocation);
+		return thingTagManager.getAccessibleTagsByUserIdAndLocations(getLoginUserID(), parentLocation).stream().
+				map(TagIndex::getDisplayName).collect(Collectors.toList());
 	}
 
 	/**

@@ -257,9 +257,11 @@ public class TagThingManager {
 
 	}
 
-	public List<String> findUserLocations(String userId, String parentLocation) {
-
-		return tagIndexDao.findUserLocations(userId, parentLocation);
+	public List<TagIndex> getAccessibleTagsByUserIdAndLocations(String userId, String parentLocation) {
+		// user -> tag
+		Set<Long> tagIds = new HashSet(tagUserRelationDao.findTagIds(userId).orElse(Collections.emptyList()));
+		tagIds.addAll(tagGroupRelationDao.findTagIdsByUserId(userId).orElse(Collections.emptyList()));
+		return tagIndexDao.findTagsByTagIdsAndLocations(tagIds, parentLocation).orElse(Collections.emptyList());
 
 	}
 
@@ -699,5 +701,10 @@ public class TagThingManager {
 	public List<TagIndex> getAccessibleTagsByUserGroupId(Long userGroupId) {
 		return tagIndexDao.findByIDs(
 				tagGroupRelationDao.findTagIdsByUserGroupId(userGroupId).orElse(Collections.emptyList()));
+	}
+
+	public boolean isTagDisplayNamePresent(Long teamId, TagType type, String displayName) {
+		return !tagIndexDao.findTagIdsByTeamAndTagTypeAndName(teamId, type, displayName).
+				orElse(Collections.emptyList()).isEmpty();
 	}
 }

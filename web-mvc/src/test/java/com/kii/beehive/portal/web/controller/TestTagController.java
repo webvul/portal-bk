@@ -178,6 +178,29 @@ public class TestTagController extends WebTestTemplate {
 	}
 
 	@Test
+	public void testUpdateTag() throws Exception {
+		AuthInfoStore.setAuthInfo("Someone");
+
+		String keyId = "id";
+		String keyName = "tagName";
+
+		TagIndex tagIndex = new TagIndex();
+		tagIndex.setDisplayName("Tag 1");
+		tagIndex.setDescription("Tag");
+		tagIndex.setTagType(TagType.Custom);
+		tagIndex.setId(100L);
+
+		doReturn(Arrays.asList(tagIndex)).when(tagThingManager).getTagIndexes(anyListOf(String.class));
+		doReturn(true).when(tagThingManager).isTagCreator(any(TagIndex.class));
+
+		doReturn(tagIndex.getId()).when(tagThingManager).createTag(any(TagIndex.class));
+
+		Map<String, Object> result = tagController.createTag(tagIndex);
+		assertEquals(tagIndex.getId(), result.get(keyId));
+		assertEquals(tagIndex.getFullTagName(), result.get(keyName));
+	}
+
+	@Test
 	public void testRemoveTag() throws Exception {
 		try {
 			tagController.removeTag(null);
@@ -305,36 +328,16 @@ public class TestTagController extends WebTestTemplate {
 
 	@Test
 	public void testFindLocation() throws Exception {
-		Set<String> displayNames = new HashSet<>();
-		displayNames.add("floor1-lobby");
-		displayNames.add("floor1-room1-counter1");
-		displayNames.add("floor1-room1-counter2");
-		displayNames.add("floor2-room1");
-		displayNames.add("floor2-room2");
+		doReturn(Collections.emptyList()).when(tagThingManager).getAccessibleTagsByUserIdAndLocations(anyString(),
+				anyString());
 
-		AuthInfoStore.setAuthInfo("TagCreator");
-		TagIndex tagIndex = new TagIndex();
-		tagIndex.setTagType(TagType.Location);
-		displayNames.forEach(name -> {
-			tagIndex.setDisplayName(name);
-			tagIndexDao.saveOrUpdate(tagIndex);
-		});
+		verify(tagThingManager, times(0)).getAccessibleTagsByUserIdAndLocations(anyString(),
+				anyString());
 
-		List<String> locations = tagController.findAllLocations();
-		assertNotNull("Location should not be null", locations);
-		assertTrue("Didn't find all locations", displayNames.containsAll(locations) &&
-				locations.containsAll(displayNames));
+		tagController.findAllLocations();
 
-		locations = tagController.findLocations("floor2");
-		assertNotNull("Location should not be null", locations);
-		locations.forEach(location -> assertTrue("Location should start with floor2", location.startsWith("floor2-")));
-
-		locations = tagController.findLocations("room1");
-		assertTrue("Should not find any locations", null == locations || locations.isEmpty());
-
-		AuthInfoStore.setAuthInfo("Someone");
-		locations = tagController.findLocations("");
-		assertTrue("Should not find any locations", null == locations || locations.isEmpty());
+		verify(tagThingManager, times(1)).getAccessibleTagsByUserIdAndLocations(anyString(),
+				anyString());
 	}
 
 	@Test
@@ -364,198 +367,6 @@ public class TestTagController extends WebTestTemplate {
 		// assert http return
 		String tagName = (String) map.get("tagName");
 		assertEquals(TagType.Custom + "-" + displayName, tagName);
-
-	}
-
-	@Test
-	public void testWebUpdateTag() throws Exception {
-
-		this.testWebCreateTag();
-
-		// update the tag
-		Map<String, Object> request = new HashMap<>();
-		request.put("displayName", displayName);
-		request.put("description", "some description new");
-
-		String ctx = mapper.writeValueAsString(request);
-
-		String result = this.mockMvc.perform(
-				post("/tags/custom").content(ctx)
-						.contentType(MediaType.APPLICATION_JSON)
-						.characterEncoding("UTF-8")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
-		)
-				.andExpect(status().isOk())
-				.andReturn().getResponse().getContentAsString();
-
-		Map<String, Object> map = mapper.readValue(result, Map.class);
-
-		System.out.println("Response:" + result);
-
-		// assert http return
-		Long tagID = Long.valueOf((int) map.get("id"));
-		assertEquals(tagIDForTest, tagID);
-
-		String tagName = (String) map.get("tagName");
-		assertEquals(TagType.Custom + "-" + displayName, tagName);
-
-		TagIndex tagIndex = tagIndexDao.findByID(tagID);
-		assertEquals(tagIDForTest, (Long) tagIndex.getId());
-		assertEquals(displayName, tagIndex.getDisplayName());
-		assertEquals("some description new", tagIndex.getDescription());
-
-
-		// create another tag as displayName changed
-		request = new HashMap<>();
-		request.put("displayName", displayName + "_new");
-		request.put("description", "some description new");
-
-		ctx = mapper.writeValueAsString(request);
-
-		result = this.mockMvc.perform(
-				post("/tags/custom").content(ctx)
-						.contentType(MediaType.APPLICATION_JSON)
-						.characterEncoding("UTF-8")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
-		)
-				.andExpect(status().isOk())
-				.andReturn().getResponse().getContentAsString();
-
-		map = mapper.readValue(result, Map.class);
-
-		System.out.println("Response:" + result);
-
-		// assert http return
-		tagID = Long.valueOf((int) map.get("id"));
-		assertEquals(Long.valueOf(tagIDForTest + 1), tagID);
-
-		tagName = (String) map.get("tagName");
-		assertEquals(TagType.Custom + "-" + displayName + "_new", tagName);
-
-		tagIndex = tagIndexDao.findByID(tagID);
-		assertEquals(Long.valueOf(tagIDForTest + 1), (Long) tagIndex.getId());
-		assertEquals(displayName + "_new", tagIndex.getDisplayName());
-		assertEquals("some description new", tagIndex.getDescription());
-
-	}
-
-	@Test
-	public void testWebCreateTagException() throws Exception {
-
-		Map<String, Object> request = new HashMap<>();
-		request.put("description", "some description");
-
-		String ctx = mapper.writeValueAsString(request);
-
-		String result = this.mockMvc.perform(
-				post("/tags/custom").content(ctx)
-						.contentType(MediaType.APPLICATION_JSON)
-						.characterEncoding("UTF-8")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
-		)
-				.andExpect(status().isBadRequest())
-				.andReturn().getResponse().getContentAsString();
-
-	}
-
-	@Test
-	public void testWebRemoveTag() throws Exception {
-
-		this.testWebCreateTag();
-
-		TagIndex tagIndex = tagIndexDao.findByID(tagIDForTest);
-		assertNotNull(tagIndex);
-
-		String result = this.mockMvc.perform(
-				delete("/tags/custom/" + displayName)
-						.contentType(MediaType.APPLICATION_JSON)
-						.characterEncoding("UTF-8")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
-		)
-				.andExpect(status().isOk())
-				.andReturn().getResponse().getContentAsString();
-
-		tagIndex = tagIndexDao.findByID(tagIDForTest);
-		assertNull(tagIndex);
-
-	}
-
-
-	@Test
-	public void testWebFindLocations() throws Exception {
-
-		// create location
-		List<String> displayNames = new ArrayList<>();
-		displayNames.add("floor1-lobby");
-		displayNames.add("floor1-room1-counter1");
-		displayNames.add("floor1-room1-counter2");
-		displayNames.add("floor2-room1");
-		displayNames.add("floor2-room2");
-		List<Long> tagIDs = new ArrayList<>();
-
-		AuthInfoStore.setAuthInfo("211102");
-		// create tag
-		for (int i = 0; i < displayNames.size(); i++) {
-			TagIndex tagIndex = new TagIndex();
-			tagIndex.setTagType(TagType.Location);
-			tagIndex.setDisplayName(displayNames.get(i));
-			tagIndexDao.saveOrUpdate(tagIndex);
-		}
-
-		// find location floor1
-		String result = this.mockMvc.perform(
-				get("/tags/locations/" + "floor1")
-						.contentType(MediaType.APPLICATION_JSON)
-						.characterEncoding("UTF-8")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
-		)
-				.andExpect(status().isOk())
-				.andReturn().getResponse().getContentAsString();
-
-		List<String> list = mapper.readValue(result, List.class);
-
-		// assert http return
-		assertEquals(3, list.size());
-		assertEquals(displayNames.get(0), list.get(0));
-		assertEquals(displayNames.get(1), list.get(1));
-		assertEquals(displayNames.get(2), list.get(2));
-
-		// find location floor1-room1
-		result = this.mockMvc.perform(
-				get("/tags/locations/" + "floor1-room1")
-						.contentType(MediaType.APPLICATION_JSON)
-						.characterEncoding("UTF-8")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
-		)
-				.andExpect(status().isOk())
-				.andReturn().getResponse().getContentAsString();
-
-		list = mapper.readValue(result, List.class);
-
-		// assert http return
-		assertEquals(2, list.size());
-		assertEquals(displayNames.get(1), list.get(0));
-		assertEquals(displayNames.get(2), list.get(1));
-
-		// find all locations
-		result = this.mockMvc.perform(
-				get("/tags/locations/")
-						.contentType(MediaType.APPLICATION_JSON)
-						.characterEncoding("UTF-8")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
-		)
-				.andExpect(status().isOk())
-				.andReturn().getResponse().getContentAsString();
-
-		list = mapper.readValue(result, List.class);
-
-		// assert http return
-		assertEquals(5, list.size());
-		assertEquals(displayNames.get(0), list.get(0));
-		assertEquals(displayNames.get(1), list.get(1));
-		assertEquals(displayNames.get(2), list.get(2));
-		assertEquals(displayNames.get(3), list.get(3));
-		assertEquals(displayNames.get(4), list.get(4));
 
 	}
 }
