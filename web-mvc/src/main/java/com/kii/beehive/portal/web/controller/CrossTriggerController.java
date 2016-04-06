@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import com.kii.extension.ruleengine.TriggerValidate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,6 +33,8 @@ public class CrossTriggerController {
 	@Autowired
 	private OpLogTools logTool;
 
+	@Autowired
+	private TriggerValidate triggerValidate;
 
 	/**
 	 * onboarding should be already done on the things in the param
@@ -41,8 +44,9 @@ public class CrossTriggerController {
 	@RequestMapping(path="/createTrigger",method = { RequestMethod.POST })
 	public Map<String, Object> createTrigger(@RequestBody TriggerRecord record){
 
-
 		record.setUserID(AuthInfoStore.getUserID());
+
+		triggerValidate.validateTrigger(record);
 
 		String triggerID = null;
 
