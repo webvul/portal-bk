@@ -13,9 +13,10 @@
 
     <bean:annotation-config />
 
+    <import resource="classpath:com/kii/beehive/business/testComponentContext.xml" />
 
-    <bean class="com.kii.extension.ruleengine.drools.CommandExec" />
-    <bean class="test.mock.MockEventBus" />
+    <bean class="com.kii.extension.ruleengine.console.MockEventCallback" />
 
+    <bean class="com.kii.extension.ruleengine.RuleEngineConfig" />
 
 </beans>

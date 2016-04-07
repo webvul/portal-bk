@@ -113,13 +113,13 @@ public class DroolsRuleService {
 		kb.buildAll();
 
 		//临时增加, 如果规则文件有错误,则删除 避免rule engine 异常崩溃
-		try {
-			kieContainer.updateToVersion(kb.getKieModule().getReleaseId());
-		} catch (Exception e) {
-			e.printStackTrace();
-			this.removeCondition(name);
-//			kfs.delete("src/main/resources/user_"+name+".drl");
-		}
+//		try {
+		kieContainer.updateToVersion(kb.getKieModule().getReleaseId());
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			this.removeCondition(name);
+////			kfs.delete("src/main/resources/user_"+name+".drl");
+//		}
 
 		getSession().getObjects().forEach((obj)->{
 
@@ -157,9 +157,16 @@ public class DroolsRuleService {
 	public void addOrUpdateData(Object entity){
 
 
-		FactHandle handler=handleMap.computeIfAbsent(getEntityKey(entity),(k)-> getSession().insert(entity));
+		handleMap.compute(getEntityKey(entity),(k,v)->{
+			    if(v==null) {
+					return getSession().insert(entity);
+				}else{
+					getSession().update(v,entity);
+					return v;
+				}
+			}
+		);
 
-		getSession().update(handler, entity);
 	}
 
 	private String getEntityKey(Object entity) {

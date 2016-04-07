@@ -70,7 +70,9 @@ public class TriggerLogTools {
 			triggerType = simpleTriggerRecord.getType().name();
 
 			thingIDs = new HashSet<>();
-			thingIDs.add(simpleTriggerRecord.getSource().getThingID()+"");
+			if(simpleTriggerRecord.getSource()!=null) {
+				thingIDs.add(simpleTriggerRecord.getSource().getThingID() + "");
+			}
 		}else if(record instanceof GroupTriggerRecord){
 			GroupTriggerRecord groupTriggerRecord = (GroupTriggerRecord)record;
 			triggerType = groupTriggerRecord.getType().name();
