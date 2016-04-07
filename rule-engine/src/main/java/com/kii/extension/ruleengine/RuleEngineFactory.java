@@ -27,6 +27,9 @@ public class RuleEngineFactory {
 
 
 
+
+
+
 	@Autowired
 	private StartTriggerJob startJob;
 
@@ -97,7 +100,7 @@ public class RuleEngineFactory {
 
 	SchedulerFactory schedFact = new org.quartz.impl.StdSchedulerFactory();
 
-	@Bean
+//	@Bean
 	public Scheduler getScheduler() throws SchedulerException {
 
 		Scheduler sched = schedFact.getScheduler();

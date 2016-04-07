@@ -100,7 +100,10 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 			// below APIs don't need to check token and permission
 			// - login: /oauth2/login
 			// - register: /oauth2/register
-			if(subUrl.startsWith(Constants.URL_OAUTH2_LOGIN) || subUrl.startsWith(Constants.URL_OAUTH2_REGISTER)){
+			if(subUrl.startsWith(Constants.URL_OAUTH2_LOGIN)
+					|| subUrl.startsWith(Constants.URL_OAUTH2_REGISTER)
+					|| subUrl.startsWith("/onboardinghelper")
+					|| subUrl.contains("/debug/")){
 
 				list.set(1,subUrl);
 				logTool.write(list);

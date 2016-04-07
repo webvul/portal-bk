@@ -65,18 +65,21 @@ public class TriggerLogTools {
 		if(record == null){
 			return;
 		}
-		if(record instanceof SimpleTriggerRecord && ((SimpleTriggerRecord)record).getSource() != null ){
+		if(record instanceof SimpleTriggerRecord ){
 			SimpleTriggerRecord simpleTriggerRecord = (SimpleTriggerRecord)record;
 			triggerType = simpleTriggerRecord.getType().name();
 
 			thingIDs = new HashSet<>();
-			thingIDs.add(simpleTriggerRecord.getSource().getThingID()+"");
-		}else if(record instanceof GroupTriggerRecord && ((GroupTriggerRecord)record).getSource() != null && ((GroupTriggerRecord)record).getSource().getSelector() != null){
+			if(simpleTriggerRecord.getSource()!=null) {
+				thingIDs.add(simpleTriggerRecord.getSource().getThingID() + "");
+			}
+
+		}else if(record instanceof GroupTriggerRecord){
+
 			GroupTriggerRecord groupTriggerRecord = (GroupTriggerRecord)record;
 			triggerType = groupTriggerRecord.getType().name();
 
 			thingIDs = thingTagService.getKiiThingIDs(groupTriggerRecord.getSource().getSelector());
-
 
 		}else if(record instanceof SummaryTriggerRecord && ((SummaryTriggerRecord)record).getSummarySource() != null){
 			SummaryTriggerRecord summaryTriggerRecord = (SummaryTriggerRecord)record;

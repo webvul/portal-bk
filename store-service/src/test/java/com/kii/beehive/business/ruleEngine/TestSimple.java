@@ -87,6 +87,20 @@ public class TestSimple {
 	}
 
 	@Test
+	public void test() throws IOException {
+
+		ThingStatus status=new ThingStatus();
+		status.setField("power","false");
+		String id="192b49ce-th.f83120e36100-2939-5e11-cd5e-02a7cefb";
+//		statusChangeCallback.onEventFire(status,id,new Date());
+
+		status.setField("power","true");
+		statusChangeCallback.onEventFire(status,id,new Date());
+
+		System.in.read();
+	}
+
+	@Test
 	public void testSchedule() throws InterruptedException, IOException {
 
 		String kiiThingID="0af7a7e7-th.f83120e36100-a269-5e11-e5bb-0bc2e136";

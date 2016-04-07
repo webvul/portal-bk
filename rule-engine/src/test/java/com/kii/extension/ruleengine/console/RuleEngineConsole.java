@@ -1,11 +1,11 @@
 package com.kii.extension.ruleengine.console;
 
-import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.InputStreamReader;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Map;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.util.FileCopyUtils;
@@ -27,24 +27,28 @@ public class RuleEngineConsole {
 
 	public static void main(String[] argc){
 
-		ClassPathXmlApplicationContext  context=new ClassPathXmlApplicationContext("classpath:./ruleTestContext.xml");
+		ClassPathXmlApplicationContext  context=new ClassPathXmlApplicationContext("classpath:ruleTestContext.xml");
 
 		EngineService engine=context.getBean(EngineService.class);
 
 		ObjectMapper mapper=context.getBean(ObjectMapper.class);
+
+		System.out.println(">>> input command\n");
+
 		while(true){
 
 
 			try {
-				BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+//				BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
-				String input = reader.readLine();
+				String input = readLine();
 
 				if(StringUtils.isEmpty(input)){
 					continue;
 				}
 
-				String[] arrays= StringUtils.split(input," ");
+				String[] arrays= StringUtils.tokenizeToStringArray(input," ");
+
 
 				String cmd=arrays[0];
 
@@ -60,21 +64,21 @@ public class RuleEngineConsole {
 					engine.updateThingStatus(arrays[1],status,new Date());
 
 				}
-				if(cmd.equals("enableTrigger")){
+				if(cmd.equals("enable")){
 
 					String triggerID=arrays[1];
 
 					engine.enableTrigger(triggerID);
 				}
-				if(cmd.equals("disableTrigger")){
+				if(cmd.equals("disable")){
 					String triggerID=arrays[1];
 					engine.disableTrigger(triggerID);
 				}
-				if(cmd.equals("removeTrigger")){
+				if(cmd.equals("remove")){
 					String triggerID=arrays[1];
 					engine.removeTrigger(triggerID);
 				}
-				if(cmd.equals("updateTrigger")){
+				if(cmd.equals("update")){
 					String triggerID=arrays[1];
 					String[] things=arrays[2].split(",");
 
@@ -88,11 +92,11 @@ public class RuleEngineConsole {
 
 					engine.changeThingsInSummary(triggerID,summaryName,new HashSet(Arrays.asList(things)));
 				}
-				if(cmd.equals("createSimpleTrigger")){
+				if(cmd.equals("createSimple")){
 					String triggerID=arrays[1];
 					String thingID=arrays[2];
 
-					String json=FileCopyUtils.copyToString(new FileReader(arrays[3]));
+					String json=getFileContext(arrays[3]);
 
 					RuleEnginePredicate predicate=mapper.readValue(json,RuleEnginePredicate.class);
 
@@ -105,11 +109,11 @@ public class RuleEngineConsole {
 					engine.createSimpleTrigger(thingID,record);
 				}
 
-				if(cmd.equals("createGroupTrigger")){
+				if(cmd.equals("createGroup")){
 					String triggerID=arrays[1];
 					String[] thingIDs=arrays[2].split(",");
 
-					String json=FileCopyUtils.copyToString(new FileReader(arrays[3]));
+					String json=getFileContext(arrays[3]);
 
 
 
@@ -134,6 +138,17 @@ public class RuleEngineConsole {
 					engine.createGroupTrigger(Arrays.asList(thingIDs),record);
 				}
 
+				if(cmd.equals("dump")){
+
+					Map<String,Object> result=engine.dumpEngineRuntime();
+
+					String json=mapper.writeValueAsString(result);
+
+					System.out.println(json);
+
+
+				}
+
 
 			}catch(Exception e){
 				e.printStackTrace();
@@ -144,19 +159,45 @@ public class RuleEngineConsole {
 
 	}
 
+	private static String getFileContext(String name) throws IOException {
+
+		return FileCopyUtils.copyToString(new FileReader("./rule-engine/src/test/resources/console/"+name+".json"));
+
+	}
+
+	private static String readLine()throws IOException{
+
+		char ch=(char)System.in.read();
+		StringBuilder sb=new StringBuilder();
+		while(ch!='\n'){
+			sb.append(ch);
+			ch=(char)System.in.read();
+		}
+		return sb.toString().trim();
+	}
+
 	private static ThingStatus getStatus(String params){
 
 		ThingStatus status=new ThingStatus();
 
-		for(String param:StringUtils.split(params,",")){
-			int idx=param.indexOf("=");
-
-			String key=param.substring(0,idx);
-			String value=param.substring(idx+1);
-
-			status.setField(key,value);
-		};
+		if(!params.contains(",")){
+			fillStatus(status, params);
+		}else {
+			for (String param : StringUtils.split(params, ",")) {
+				fillStatus(status, param);
+			}
+			;
+		}
 
 		return status;
+	}
+
+	private static void fillStatus(ThingStatus status, String param) {
+		int idx=param.indexOf("=");
+
+		String key=param.substring(0,idx);
+		String value=param.substring(idx+1);
+
+		status.setField(key,value);
 	}
 }
