@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.kii.extension.ruleengine.TriggerConditionBuilder;
 import com.kii.extension.ruleengine.drools.RuleGeneral;
 import com.kii.extension.ruleengine.drools.entity.TriggerType;
@@ -28,11 +31,15 @@ public class TestTemplateGeneral {
 	@Autowired
 	private RuleGeneral  general;
 
+	private ObjectMapper mapper=new ObjectMapper();
+
 	@Test
-	public void testSimple(){
+	public void testSimple() throws JsonProcessingException {
 
 
-		Condition condition= TriggerConditionBuilder.andCondition().great("foo",0).less("bar",0).getConditionInstance();
+		Condition condition= TriggerConditionBuilder.newCondition().equal("foo","true").getConditionInstance();
+
+		log.info(mapper.writeValueAsString(condition));
 
 
 		String express=general.generExpress(condition);

@@ -35,6 +35,7 @@ public class EngineService {
 	@Autowired
 	private RuleGeneral  ruleGeneral;
 
+
 	private Set<String>  scheduleSet=new ConcurrentSkipListSet<>();
 
 
@@ -46,6 +47,13 @@ public class EngineService {
 		trigger.setType(TriggerType.multiple);
 		trigger.setTriggerID(record.getId());
 		trigger.setStream(false);
+
+	}
+
+
+	public Map<String,Object>  dumpEngineRuntime(){
+
+		return droolsTriggerService.getEngineRuntime();
 
 	}
 

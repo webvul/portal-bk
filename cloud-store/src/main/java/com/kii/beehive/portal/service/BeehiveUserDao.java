@@ -1,15 +1,6 @@
 package com.kii.beehive.portal.service;
 
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.entity.BucketInfo;
@@ -17,26 +8,31 @@ import com.kii.extension.sdk.exception.ObjectNotFoundException;
 import com.kii.extension.sdk.query.ConditionBuilder;
 import com.kii.extension.sdk.query.QueryParam;
 import com.kii.extension.sdk.service.AbstractDataAccess;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
+import java.util.*;
 
 
-@BindAppByName(appName="portal",appBindSource="propAppBindTool")
+@BindAppByName(appName = "portal", appBindSource = "propAppBindTool")
 @Component
 public class BeehiveUserDao extends AbstractDataAccess<BeehiveUser> {
 
-	private Logger log= LoggerFactory.getLogger(BeehiveUserDao.class);
+	private Logger log = LoggerFactory.getLogger(BeehiveUserDao.class);
 
 
 //	@Autowired
 //	private SimpleQueryTool queryTool;
 
-	public String createUser(BeehiveUser user){
+	public String createUser(BeehiveUser user) {
 
-		String id=null;
+		String id = null;
 
-		if(user.getAliUserID()==null){
-			id=user.getKiiUserID();
-		}else{
-			id=user.getAliUserID();
+		if (user.getAliUserID() == null) {
+			id = user.getKiiUserID();
+		} else {
+			id = user.getAliUserID();
 		}
 		super.addEntity(user, id);
 
@@ -45,23 +41,22 @@ public class BeehiveUserDao extends AbstractDataAccess<BeehiveUser> {
 	}
 
 
-	public void updateUser(BeehiveUser user,String userID) {
+	public void updateUser(BeehiveUser user, String userID) {
 
-		boolean isExist=super.checkExist(userID);
-		if(isExist) {
+		boolean isExist = super.checkExist(userID);
+		if (isExist) {
 			user.setId(null);
 			super.updateEntity(user, userID);
-		}else{
+		} else {
 			throw new ObjectNotFoundException();
 		}
 	}
 
 
+	public void updateUserGroups(String userID, Set<String> groups) {
 
-	public void updateUserGroups(String userID, Set<String> groups){
 
-
-		Map<String,Object> paramMap = new HashMap<>();
+		Map<String, Object> paramMap = new HashMap<>();
 		paramMap.put("groups", groups);
 
 		super.updateEntity(paramMap, userID);
@@ -81,39 +76,43 @@ public class BeehiveUserDao extends AbstractDataAccess<BeehiveUser> {
 
 
 	public List<BeehiveUser> getUserByIDs(List<String> beehiveUserIDList) {
+		if (null == beehiveUserIDList || beehiveUserIDList.isEmpty()) {
+			return Collections.emptyList();
+		}
 		return super.getEntitys(beehiveUserIDList.toArray(new String[beehiveUserIDList.size()]));
 	}
 
-	public BeehiveUser  getUserByID(String userID){
+	public BeehiveUser getUserByID(String userID) {
 		return super.getObjectByID(userID);
 	}
 
 
-	public void deleteUser(String userID){
+	public void deleteUser(String userID) {
 		super.removeEntity(userID);
 	}
 
-	public List<BeehiveUser>  getUsersBySimpleQuery(Map<String,Object> params){
-		QueryParam query=getEntitysByFields(params);
+	public List<BeehiveUser> getUsersBySimpleQuery(Map<String, Object> params) {
+		QueryParam query = getEntitysByFields(params);
 
 		return super.fullQuery(query);
 	}
 
 
-	public QueryParam getEntitysByFields(Map<String,Object> fields){
+	public QueryParam getEntitysByFields(Map<String, Object> fields) {
 
-		ConditionBuilder builder= ConditionBuilder.andCondition();
+		ConditionBuilder builder = ConditionBuilder.andCondition();
 
-		fields.forEach((k,v)->{
+		fields.forEach((k, v) -> {
 
 
-			builder.equal(k,v);
+			builder.equal(k, v);
 		});
 
 		return builder.getFinalCondition().build();
 
 	}
-	public List<BeehiveUser> getAllUsers(){
+
+	public List<BeehiveUser> getAllUsers() {
 		return super.getAll();
 	}
 

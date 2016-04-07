@@ -1,10 +1,15 @@
 package com.kii.extension.ruleengine.drools;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.codec.Charsets;
 import org.kie.api.KieBase;
 import org.kie.api.KieBaseConfiguration;
 import org.kie.api.KieServices;
@@ -41,6 +46,45 @@ public class DroolsRuleService {
 	private Map<String,FactHandle> handleMap=new ConcurrentHashMap<>();
 
 
+	public Map<String,Object>  getEngineEntitys(){
+
+
+		Map<String,Object>  map=new HashMap<>();
+
+
+		Collection<? extends Object> objs=getSession().getObjects();
+
+		Map<String,Object>  entityMap=new HashMap<>();
+
+		for(Object obj:objs){
+			entityMap.put(getEntityKey(obj),obj);
+		}
+
+		map.put("entitys",entityMap);
+
+		Map<String,Object> globalMap=new HashMap<>();
+		for(String g:kieSession.getGlobals().getGlobalKeys()){
+			globalMap.put(g,kieSession.getGlobal(g));
+		}
+		map.put("globals",globalMap);
+
+
+		Map<String,String> drlMap=new HashMap<>();
+		for(String drlPath:pathSet){
+			String name=drlPath.substring(drlPath.lastIndexOf("/"),drlPath.length());
+			if(name.startsWith("/comm")){
+				continue;
+			}
+			String drlCtx=new String(kfs.read(drlPath), Charsets.UTF_8);
+			drlMap.put(name,drlCtx);
+		}
+		map.put("drls",drlMap);
+
+		return map;
+	}
+
+
+	private final Set<String> pathSet=new HashSet<>();
 
 	public DroolsRuleService(boolean isStream,String...  rules){
 
@@ -53,7 +97,11 @@ public class DroolsRuleService {
 
 		int i=0;
 		for(String rule:rules) {
-			kfs.write("src/main/resources/comm_"+i+".drl", rule);
+
+			String drlName="src/main/resources/comm_"+i+".drl";
+
+			kfs.write(drlName, rule);
+			pathSet.add(drlName);
 			i++;
 		}
 
@@ -107,19 +155,22 @@ public class DroolsRuleService {
 
 	public void addCondition(String name,String rule){
 
-		kfs.write("src/main/resources/user_"+name+".drl", rule);
+		String drlName="src/main/resources/user_"+name+".drl";
+		kfs.write(drlName, rule);
+
+		pathSet.add(drlName);
 
 		KieBuilder kb=ks.newKieBuilder(kfs);
 		kb.buildAll();
 
 		//临时增加, 如果规则文件有错误,则删除 避免rule engine 异常崩溃
-		try {
-			kieContainer.updateToVersion(kb.getKieModule().getReleaseId());
-		} catch (Exception e) {
-			e.printStackTrace();
-			this.removeCondition(name);
-//			kfs.delete("src/main/resources/user_"+name+".drl");
-		}
+//		try {
+		kieContainer.updateToVersion(kb.getKieModule().getReleaseId());
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			this.removeCondition(name);
+////			kfs.delete("src/main/resources/user_"+name+".drl");
+//		}
 
 		getSession().getObjects().forEach((obj)->{
 
@@ -133,8 +184,14 @@ public class DroolsRuleService {
 
 
 	public void removeCondition(String name){
-		kfs.delete("src/main/resources/user_"+name+".drl");
+		String path="src/main/resources/user_"+name+".drl";
 
+
+		if(!pathSet.contains(path)) {
+			throw new IllegalArgumentException("the deleted drl not found");
+		}
+
+		kfs.delete(path);
 		KieBuilder kb=ks.newKieBuilder(kfs);
 		kb.buildAll();
 
@@ -157,13 +214,20 @@ public class DroolsRuleService {
 	public void addOrUpdateData(Object entity){
 
 
-		FactHandle handler=handleMap.computeIfAbsent(getEntityKey(entity),(k)-> getSession().insert(entity));
+		handleMap.compute(getEntityKey(entity),(k,v)->{
+			    if(v==null) {
+					return getSession().insert(entity);
+				}else{
+					getSession().update(v,entity);
+					return v;
+				}
+			}
+		);
 
-		getSession().update(handler, entity);
 	}
 
 	private String getEntityKey(Object entity) {
-		return entity.getClass().getName()+entity.hashCode();
+		return entity.getClass().getName()+":"+entity.hashCode();
 	}
 
 	public <T> List<T> doQuery(String queryName,Object... params){

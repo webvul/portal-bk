@@ -705,4 +705,9 @@ public class TagThingManager {
 		return tagIndexDao.findByIDs(
 				tagGroupRelationDao.findTagIdsByUserGroupId(userGroupId).orElse(Collections.emptyList()));
 	}
+
+	public boolean isTagDisplayNamePresent(Long teamId, TagType type, String displayName) {
+		return !tagIndexDao.findTagIdsByTeamAndTagTypeAndName(teamId, type, displayName).
+				orElse(Collections.emptyList()).isEmpty();
+	}
 }

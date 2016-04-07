@@ -43,6 +43,9 @@ public class TestTagIndexDao extends TestTemplate {
 	@Autowired
 	private TagGroupRelationDao tagGroupRelationDao;
 
+	@Autowired
+	private TeamUserRelationDao teamUserRelationDao;
+
 	@Before
 	public void init() {
 		tag.setDisplayName("DisplayNameTest");
@@ -303,5 +306,69 @@ public class TestTagIndexDao extends TestTemplate {
 
 		result = tagIndexDao.findTagIdsByIDsAndFullname(Collections.emptyList(), names).orElse(Collections.emptyList());
 		assertTrue(result.isEmpty());
+	}
+
+	@Test
+	public void testFindTagIdsByTeamAndTagTypeAndName() throws Exception {
+		tagIndexDao.deleteByID(tag.getId());
+
+		AuthInfoStore.setAuthInfo("Someone");
+		List<Long> tagIds = new ArrayList();
+		List<String> names = new ArrayList();
+		for (int i = 0; i < 3; ++i) {
+			TagIndex tag = new TagIndex();
+			tag.setDisplayName("Tag-" + i);
+			tag.setTagType(TagType.Location);
+			tagIds.add(tagIndexDao.saveOrUpdate(tag));
+			names.add(tag.getFullTagName());
+		}
+
+		Team team = new Team();
+		team.setName("test");
+
+		AuthInfoStore.setAuthInfo("TeamLead");
+		AuthInfoStore.setTeamID(teamDao.saveOrUpdate(team));
+		for (int i = 0; i < 3; ++i) {
+			TagIndex tag = new TagIndex();
+			tag.setDisplayName("Tag-Team-" + i);
+			tag.setTagType(TagType.Custom);
+			tagIds.add(tagIndexDao.saveOrUpdate(tag));
+			names.add(tag.getFullTagName());
+		}
+
+		TeamUserRelation relation = new TeamUserRelation();
+		relation.setTeamID(AuthInfoStore.getTeamID());
+		relation.setUserID("TeamLead");
+		teamUserRelationDao.saveOrUpdate(relation);
+
+		List<Long> ids = tagIndexDao.findTagIdsByTeamAndTagTypeAndName(null, null, null).
+				orElse(Collections.emptyList());
+		assertEquals(6, ids.size());
+		assertTrue(tagIds.containsAll(ids) && ids.containsAll(tagIds));
+
+		ids = tagIndexDao.findTagIdsByTeamAndTagTypeAndName(AuthInfoStore.getTeamID(), null, null).
+				orElse(Collections.emptyList());
+		assertEquals(3, ids.size());
+		assertTrue(tagIds.subList(3, 6).containsAll(ids) && ids.containsAll(tagIds.subList(3, 6)));
+
+		ids = tagIndexDao.findTagIdsByTeamAndTagTypeAndName(null, TagType.Custom, null).
+				orElse(Collections.emptyList());
+		assertEquals(3, ids.size());
+		assertTrue(tagIds.subList(3, 6).containsAll(ids) && ids.containsAll(tagIds.subList(3, 6)));
+
+		ids = tagIndexDao.findTagIdsByTeamAndTagTypeAndName(null, null, "Tag-Team-2").
+				orElse(Collections.emptyList());
+		assertEquals(1, ids.size());
+		assertTrue(tagIds.get(5).longValue() == ids.get(0).longValue());
+
+		ids = tagIndexDao.findTagIdsByTeamAndTagTypeAndName(null, TagType.Custom, "Tag-Team-2").
+				orElse(Collections.emptyList());
+		assertEquals(1, ids.size());
+		assertTrue(tagIds.get(5).longValue() == ids.get(0).longValue());
+
+		ids = tagIndexDao.findTagIdsByTeamAndTagTypeAndName(AuthInfoStore.getTeamID(), TagType.Custom, "Tag-Team-2").
+				orElse(Collections.emptyList());
+		assertEquals(1, ids.size());
+		assertTrue(tagIds.get(5).longValue() == ids.get(0).longValue());
 	}
 }

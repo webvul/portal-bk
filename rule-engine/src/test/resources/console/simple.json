@@ -1,0 +1,10 @@
+{
+
+    "condition": {
+      "field": "power",
+      "type": "eq",
+      "value": "true"
+    },
+    "triggersWhen": "CONDITION_FALSE_TO_TRUE"
+
+}
