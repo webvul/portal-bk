@@ -32,7 +32,7 @@ public class DeviceSupplierController {
 	 *
 	 * @return
      */
-	@RequestMapping(path="/all",method = { RequestMethod.GET })
+	@RequestMapping(path="/all",method = { RequestMethod.GET }, consumes = {"*"})
 	public List<DeviceSupplierRestBean> getAllDeviceSuppliers() {
 
 		// get list of device suppliers

@@ -44,7 +44,7 @@ public class ThingController extends AbstractThingTagController {
 	 * @param globalThingID
 	 * @return a list of user ids who can access the device.
 	 */
-	@RequestMapping(value = "/{globalThingID}/users", method = RequestMethod.GET)
+	@RequestMapping(value = "/{globalThingID}/users", method = RequestMethod.GET, consumes = {"*"})
 	public List<BeehiveUser> getUsersByThing(@PathVariable("globalThingID") Long globalThingID) {
 		try {
 			return thingTagManager.getUsersOfAccessibleThing(getLoginUserID(), globalThingID);
@@ -59,7 +59,7 @@ public class ThingController extends AbstractThingTagController {
 	 * @param userId
 	 * @return a list of devices which the user can access
 	 */
-	@RequestMapping(value = "/user/{userID}", method = RequestMethod.GET)
+	@RequestMapping(value = "/user/{userID}", method = RequestMethod.GET, consumes = {"*"})
 	public List<ThingRestBean> getThingsByUser(@PathVariable("userID") String userId) {
 		return toThingRestBean(thingTagManager.getAccessibleThingsByUserId(userId));
 	}
@@ -70,7 +70,7 @@ public class ThingController extends AbstractThingTagController {
 	 * @param globalThingID
 	 * @return a list of user group id which can access the device.
 	 */
-	@RequestMapping(value = "/{globalThingID}/userGroups", method = RequestMethod.GET)
+	@RequestMapping(value = "/{globalThingID}/userGroups", method = RequestMethod.GET, consumes = {"*"})
 	public List<UserGroup> getUserGroupIdsByThing(@PathVariable("globalThingID") Long globalThingID) {
 		try {
 			return thingTagManager.getUserGroupsOfAccessibleThing(getLoginUserID(), globalThingID);
@@ -85,7 +85,7 @@ public class ThingController extends AbstractThingTagController {
 	 * @param userGroupId
 	 * @return a list of devices which the user can access
 	 */
-	@RequestMapping(value = "/userGroup/{userGroupID}", method = RequestMethod.GET)
+	@RequestMapping(value = "/userGroup/{userGroupID}", method = RequestMethod.GET, consumes = {"*"})
 	public List<ThingRestBean> getThingsByUserGroup(@PathVariable("userGroupID") Long userGroupId) {
 		return toThingRestBean(thingTagManager.getAccessibleThingsByUserGroupId(userGroupId));
 	}
@@ -100,7 +100,7 @@ public class ThingController extends AbstractThingTagController {
 	 * @return
 	 */
 
-	@RequestMapping(value = "/types/{type}", method = {RequestMethod.GET})
+	@RequestMapping(value = "/types/{type}", method = {RequestMethod.GET}, consumes = {"*"})
 	public List<ThingRestBean> getThingsByType(@PathVariable("type") String type) {
 		List<GlobalThingInfo> thingList = thingTagManager.getAccessibleThingsByType(type, getLoginUserID());
 		List<ThingRestBean> resultList = this.toThingRestBean(thingList);
@@ -115,7 +115,7 @@ public class ThingController extends AbstractThingTagController {
 	 *
 	 * @return
 	 */
-	@RequestMapping(value = "/types", method = {RequestMethod.GET})
+	@RequestMapping(value = "/types", method = {RequestMethod.GET}, consumes = {"*"})
 	public List<Map<String, Object>> getAllType() {
 		return thingTagManager.getTypesOfAccessibleThingsWithCount(getLoginUserID());
 	}
@@ -127,7 +127,7 @@ public class ThingController extends AbstractThingTagController {
 	 * <p>
 	 * refer to doc "Beehive API - Thing API" for request/response details
 	 */
-	@RequestMapping(value = "/types/tagID/{tagIDs}", method = {RequestMethod.GET})
+	@RequestMapping(value = "/types/tagID/{tagIDs}", method = {RequestMethod.GET}, consumes = {"*"})
 	public List<String> getThingTypeByTagIDs(@PathVariable("tagIDs") String tagIDs) {
 		List<String> result;
 		try {
@@ -148,7 +148,7 @@ public class ThingController extends AbstractThingTagController {
 	 *
 	 * @return
 	 */
-	@RequestMapping(value = "/types/fulltagname/{fullTagNames}", method = {RequestMethod.GET})
+	@RequestMapping(value = "/types/fulltagname/{fullTagNames}", method = {RequestMethod.GET}, consumes = {"*"})
 	public List<String> getThingTypeByTagFullName(@PathVariable("fullTagNames") String fullTagNames) {
 		try {
 			return thingTagManager.getTypesOfAccessibleThingsByTagFullName(getLoginUserID(),
@@ -168,7 +168,7 @@ public class ThingController extends AbstractThingTagController {
 	 * @param globalThingID
 	 * @return
 	 */
-	@RequestMapping(value = "/{globalThingID}", method = {RequestMethod.GET})
+	@RequestMapping(value = "/{globalThingID}", method = {RequestMethod.GET}, consumes = {"*"})
 	public ThingRestBean getThingByGlobalID(@PathVariable("globalThingID") Long globalThingID) {
 		GlobalThingInfo thingInfo;
 		try {
@@ -326,8 +326,7 @@ public class ThingController extends AbstractThingTagController {
 	 * @param globalThingIDs
 	 * @param userGroupIDs
 	 */
-	@RequestMapping(value = "/{globalThingIDs}/userGroups/{userGroupIDs}", method = {RequestMethod.DELETE}, consumes =
-			{"*"})
+	@RequestMapping(value = "/{globalThingIDs}/userGroups/{userGroupIDs}", method = {RequestMethod.DELETE}, consumes = {"*"})
 	public void unbindThingsFromUserGroups(@PathVariable("globalThingIDs") String globalThingIDs, @PathVariable
 			("userGroupIDs")
 			String userGroupIDs) {
@@ -462,7 +461,7 @@ public class ThingController extends AbstractThingTagController {
 	 *
 	 * @return
 	 */
-	@RequestMapping(value = "/search", method = {RequestMethod.GET})
+	@RequestMapping(value = "/search", method = {RequestMethod.GET}, consumes = {"*"})
 	public List<ThingRestBean> getThingsByTagExpress(@RequestParam(value = "tagType") String tagType,
 													 @RequestParam(value = "displayName") String displayName) {
 		List<TagIndex> tagIndexes = thingTagManager.getAccessibleTagsByTagTypeAndName(getLoginUserID(),
@@ -484,7 +483,7 @@ public class ThingController extends AbstractThingTagController {
 	 * @param globalThingID
 	 * @return
 	 */
-	@RequestMapping(value = "/{globalThingID}/endnodes", method = {RequestMethod.GET})
+	@RequestMapping(value = "/{globalThingID}/endnodes", method = {RequestMethod.GET}, consumes = {"*"})
 	public ResponseEntity<List<ThingRestBean>> getGatewayEndnodes(@PathVariable("globalThingID") Long globalThingID) {
 
 		// get gateway info

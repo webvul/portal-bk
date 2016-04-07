@@ -16,7 +16,7 @@ public class DemoController {
 
 
 	@ResponseBody
-	@RequestMapping(path="/hello",method={RequestMethod.GET})
+	@RequestMapping(path="/hello",method={RequestMethod.GET}, consumes = {"*"})
 	public ModelAndView hello(){
 
 		HelloEntry entry=new HelloEntry();

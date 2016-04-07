@@ -66,7 +66,7 @@ public class CrossTriggerController {
 		return result;
 	}
 
-	@RequestMapping(path="/{triggerID}",method = { RequestMethod.DELETE },produces={},consumes = {})
+	@RequestMapping(path="/{triggerID}",method = { RequestMethod.DELETE }, consumes = {"*"}, produces={})
 	public Map<String, Object> deleteTrigger(@PathVariable("triggerID") String triggerID){
 		Map<String, Object> result = new HashMap<>();
 		result.put("result", "success");
@@ -193,13 +193,13 @@ public class CrossTriggerController {
 		return result;
 	}
 
-	@RequestMapping(path="/{triggerID}",method={RequestMethod.GET})
+	@RequestMapping(path="/{triggerID}",method={RequestMethod.GET}, consumes = {"*"})
 	public TriggerRecord getTriggerById(@PathVariable("triggerID") String triggerID){
 
 		return mang.getTriggerByID(triggerID);
 
 	}
-	@RequestMapping(path="/all",method={RequestMethod.GET})
+	@RequestMapping(path="/all",method={RequestMethod.GET}, consumes = {"*"})
 	public List<TriggerRecord> getTriggerListByCurrentUser(){
 
 		String currentUserId = AuthInfoStore.getUserID();
@@ -209,7 +209,7 @@ public class CrossTriggerController {
 
 	}
 
-	@RequestMapping(path="/deleteTrigger",method={RequestMethod.GET})
+	@RequestMapping(path="/deleteTrigger",method={RequestMethod.GET}, consumes = {"*"})
 	public List<TriggerRecord> getDeleteTriggerListByCurrentUser(){
 
 		String currentUserId = AuthInfoStore.getUserID();
@@ -219,7 +219,7 @@ public class CrossTriggerController {
 
 	}
 
-	@RequestMapping(path="/things/{thingId}",method={RequestMethod.GET})
+	@RequestMapping(path="/things/{thingId}",method={RequestMethod.GET}, consumes = {"*"})
 	public List<SimpleTriggerRecord> getTriggerListByThingIdAndUserId(@PathVariable("thingId") String thingId){
 		String currentUserId = AuthInfoStore.getUserID();
 		return mang.getTriggerListByUserIdAndThingId(currentUserId,thingId);

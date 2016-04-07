@@ -121,7 +121,7 @@ public class UserController  extends AbstractController{
 	 *
 	 * @param userID
 	 */
-	@RequestMapping(path="/{userID}",method={RequestMethod.GET})
+	@RequestMapping(path="/{userID}",method={RequestMethod.GET}, consumes = {"*"})
 	public UserRestBean getUser(@PathVariable("userID") String userID){
 		
 		checkTeam(userID);
@@ -181,7 +181,7 @@ public class UserController  extends AbstractController{
 
 	}
 
-	@RequestMapping(path="/info",method={RequestMethod.GET})
+	@RequestMapping(path="/info",method={RequestMethod.GET}, consumes = {"*"})
 	public Map<String, String> info(HttpServletRequest httpRequest){
 		Map<String, String> map = new HashMap<>();
 		InputStream manifestStream = httpRequest.getServletContext().getResourceAsStream("/META-INF/MANIFEST.MF");
