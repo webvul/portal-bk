@@ -3,17 +3,17 @@ package com.kii.beehive.portal.web.entity;
 
 import java.util.Set;
 
-import com.kii.beehive.portal.store.entity.BeehiveUser;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
-public class AuthRestBean extends UserRestBean {
+import com.kii.beehive.portal.jdbc.entity.BeehiveUser;
+
+public class AuthRestBean  {
 
     public AuthRestBean() {
         super();
     }
 
-    public AuthRestBean(BeehiveUser user) {
-        super(user);
-    }
+	private BeehiveUser user;
 
     private String accessToken;
     
@@ -54,6 +54,13 @@ public class AuthRestBean extends UserRestBean {
 	public void setTeamName(String teamName) {
 		this.teamName = teamName;
 	}
-    
-    
+
+	@JsonUnwrapped
+	public BeehiveUser getUser() {
+		return user;
+	}
+
+	public void setUser(BeehiveUser user) {
+		this.user = user;
+	}
 }

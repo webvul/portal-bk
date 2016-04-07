@@ -5,6 +5,7 @@ import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.exception.UnauthorizedException;
 import com.kii.beehive.portal.helper.AuthInfoCacheService;
 import com.kii.beehive.portal.helper.AuthInfoPermanentTokenService;
+import com.kii.beehive.portal.jdbc.entity.BeehiveUser;
 import com.kii.beehive.portal.store.entity.AuthInfoEntry;
 import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.context.UserTokenBindTool;
@@ -47,14 +48,14 @@ public class AuthManager {
 	 * @param userID
 	 * @param password
 	 */
-	public boolean register(String userID, String password) {
+	public boolean register(BeehiveUser  user, String password) {
 
 		try {
 			// TODO need to check why below was ever commented out?
-			String defaultPassword = this.getDefaultPassword(userID);
+			String defaultPassword = this.getDefaultPassword(user);
 
 			// login Kii Cloud
-			LoginInfo loginInfo = userService.login(userID, defaultPassword);
+			LoginInfo loginInfo = userService.login(user., defaultPassword);
 
 			// bind token to ThreadLocal
 			userTokenBindTool.bindToken(loginInfo.getToken());
@@ -70,8 +71,8 @@ public class AuthManager {
 		return true;
 	}
 
-	private String getDefaultPassword(String userID) {
-		return DigestUtils.sha1Hex(userID + "_beehive");
+	private String getDefaultPassword(BeehiveUser user) {
+		return DigestUtils.sha1Hex(user.getUserName()+"_username_"+user.getId() + "_beehive");
 	}
 
 	/**

@@ -1,8 +1,8 @@
 package com.kii.beehive.portal.web.controller;
 
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
+
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,13 +12,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kii.beehive.portal.auth.AuthInfoStore;
-import com.kii.beehive.portal.common.utils.CollectUtils;
 import com.kii.beehive.business.manager.AuthManager;
 import com.kii.beehive.business.manager.UserManager;
+import com.kii.beehive.portal.common.utils.CollectUtils;
+import com.kii.beehive.portal.jdbc.entity.BeehiveUser;
 import com.kii.beehive.portal.jdbc.entity.Team;
 import com.kii.beehive.portal.store.entity.AuthInfoEntry;
-import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.entity.AuthRestBean;
@@ -38,8 +37,8 @@ public class AuthController {
 	@Autowired
     private AuthManager authManager;
 
-    @Autowired
-    private UserManager userManager;
+//    @Autowired
+//    private UserManager userManager;
     
     /**
      * 用户注册
@@ -50,7 +49,7 @@ public class AuthController {
      * @return
      */
     @RequestMapping(path = "/register", method = { RequestMethod.POST })
-    public void register(@RequestBody Map<String, Object> request) {
+    public void activity(@RequestBody Map<String, Object> request) {
 
         String userID = (String)request.get("userID");
         String password = (String)request.get("password");

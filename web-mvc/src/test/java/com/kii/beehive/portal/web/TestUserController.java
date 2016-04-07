@@ -18,11 +18,12 @@ import org.springframework.http.MediaType;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kii.beehive.portal.service.ArchiveBeehiveUserDao;
-import com.kii.beehive.portal.service.BeehiveUserDao;
-import com.kii.beehive.portal.service.KiiUserSyncDao;
-import com.kii.beehive.portal.store.entity.BeehiveUser;
+import com.kii.beehive.portal.service.PortalSyncUserDao;
+import com.kii.beehive.business.service.KiiUserService;
+import com.kii.beehive.portal.jdbc.entity.BeehiveUser;
+import com.kii.beehive.portal.store.entity.PortalSyncUser;
 import com.kii.beehive.portal.web.constant.Constants;
-import com.kii.beehive.portal.web.controller.UserController;
+import com.kii.beehive.portal.web.controller.UserSyncController;
 import com.kii.extension.sdk.exception.UserAlreadyExistsException;
 
 
@@ -31,16 +32,16 @@ public class TestUserController extends WebTestTemplate{
 	private  static final String AUTH_HEADER = Constants.ACCESS_TOKEN;
 
 	@Autowired
-	private UserController controller;
+	private UserSyncController controller;
 
 	@Autowired
 	private ObjectMapper mapper;
 
 	@Autowired
-	private BeehiveUserDao beehiveUserDao;
+	private PortalSyncUserDao beehiveUserDao;
 
 	@Autowired
-	private KiiUserSyncDao kiiUserSyncDao;
+	private KiiUserService kiiUserService;
 
 	@Autowired
 	private ArchiveBeehiveUserDao archiveBeehiveUserDao;
@@ -86,7 +87,7 @@ public class TestUserController extends WebTestTemplate{
 		System.out.println("*******************************************************************");
 
 		// remove from archive beehive user
-		BeehiveUser user = new BeehiveUser();
+		PortalSyncUser user = new PortalSyncUser();
 		user.setAliUserID(userIDForTest);
 		try {
 			user = archiveBeehiveUserDao.queryInArchive(user);
@@ -104,7 +105,7 @@ public class TestUserController extends WebTestTemplate{
 			}
 
 			System.out.println("Clear() KiiUserID:" + user.getKiiUserID());
-			kiiUserSyncDao.removeBeehiveUser(user.getKiiUserID());
+			kiiUserService.removeBeehiveUser(user.getKiiUserID());
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -179,9 +180,9 @@ public class TestUserController extends WebTestTemplate{
 
 		// check whether Kii user is created in master app
 		BeehiveUser user = new BeehiveUser();
-		user.setAliUserID(userIDForTest);
+		user.setUserName(userIDForTest);
 		try {
-			kiiUserSyncDao.addBeehiveUser(user);
+			kiiUserService.addBeehiveUser(user);
 			fail();
 		} catch (Throwable e) {
 			assertEquals(UserAlreadyExistsException.class, e.getClass());

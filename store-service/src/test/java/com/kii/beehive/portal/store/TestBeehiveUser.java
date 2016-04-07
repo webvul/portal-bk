@@ -8,17 +8,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.kii.beehive.business.manager.UserManager;
-import com.kii.beehive.portal.service.BeehiveUserDao;
-import com.kii.beehive.portal.store.entity.BeehiveUser;
+import com.kii.beehive.business.manager.PortalSyncUserManager;
+import com.kii.beehive.portal.service.PortalSyncUserDao;
+import com.kii.beehive.portal.jdbc.entity.BeehiveUser;
 
 public class TestBeehiveUser extends TestInit{
 
 	@Autowired
-	private BeehiveUserDao  userDao;
+	private PortalSyncUserDao userDao;
 
 	@Autowired
-	private UserManager userMang;
+	private PortalSyncUserManager userMang;
 
 
 	@Autowired

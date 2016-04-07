@@ -1,31 +1,36 @@
 package com.kii.beehive.portal.service;
 
 
-import com.kii.beehive.portal.store.entity.BeehiveUser;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
+import com.kii.beehive.portal.store.entity.PortalSyncUser;
 import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.entity.BucketInfo;
 import com.kii.extension.sdk.exception.ObjectNotFoundException;
 import com.kii.extension.sdk.query.ConditionBuilder;
 import com.kii.extension.sdk.query.QueryParam;
 import com.kii.extension.sdk.service.AbstractDataAccess;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-
-import java.util.*;
 
 
 @BindAppByName(appName = "portal", appBindSource = "propAppBindTool")
 @Component
-public class BeehiveUserDao extends AbstractDataAccess<BeehiveUser> {
+public class PortalSyncUserDao extends AbstractDataAccess<PortalSyncUser> {
 
-	private Logger log = LoggerFactory.getLogger(BeehiveUserDao.class);
+	private Logger log = LoggerFactory.getLogger(PortalSyncUserDao.class);
 
 
 //	@Autowired
 //	private SimpleQueryTool queryTool;
 
-	public String createUser(BeehiveUser user) {
+	public String createUser(PortalSyncUser user) {
 
 		String id = null;
 
@@ -41,7 +46,7 @@ public class BeehiveUserDao extends AbstractDataAccess<BeehiveUser> {
 	}
 
 
-	public void updateUser(BeehiveUser user, String userID) {
+	public void updateUser(PortalSyncUser user, String userID) {
 
 		boolean isExist = super.checkExist(userID);
 		if (isExist) {
@@ -75,14 +80,14 @@ public class BeehiveUserDao extends AbstractDataAccess<BeehiveUser> {
 //	}
 
 
-	public List<BeehiveUser> getUserByIDs(List<String> beehiveUserIDList) {
+	public List<PortalSyncUser> getUserByIDs(List<String> beehiveUserIDList) {
 		if (null == beehiveUserIDList || beehiveUserIDList.isEmpty()) {
 			return Collections.emptyList();
 		}
 		return super.getEntitys(beehiveUserIDList.toArray(new String[beehiveUserIDList.size()]));
 	}
 
-	public BeehiveUser getUserByID(String userID) {
+	public PortalSyncUser getUserByID(String userID) {
 		return super.getObjectByID(userID);
 	}
 
@@ -91,7 +96,7 @@ public class BeehiveUserDao extends AbstractDataAccess<BeehiveUser> {
 		super.removeEntity(userID);
 	}
 
-	public List<BeehiveUser> getUsersBySimpleQuery(Map<String, Object> params) {
+	public List<PortalSyncUser> getUsersBySimpleQuery(Map<String, Object> params) {
 		QueryParam query = getEntitysByFields(params);
 
 		return super.fullQuery(query);
@@ -112,13 +117,13 @@ public class BeehiveUserDao extends AbstractDataAccess<BeehiveUser> {
 
 	}
 
-	public List<BeehiveUser> getAllUsers() {
+	public List<PortalSyncUser> getAllUsers() {
 		return super.getAll();
 	}
 
 	@Override
-	protected Class<BeehiveUser> getTypeCls() {
-		return BeehiveUser.class;
+	protected Class<PortalSyncUser> getTypeCls() {
+		return PortalSyncUser.class;
 	}
 
 	@Override

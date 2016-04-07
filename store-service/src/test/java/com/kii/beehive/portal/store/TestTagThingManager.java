@@ -9,8 +9,8 @@ import com.kii.beehive.portal.exception.UnauthorizedException;
 import com.kii.beehive.portal.jdbc.dao.*;
 import com.kii.beehive.portal.jdbc.entity.*;
 import com.kii.beehive.portal.service.AppInfoDao;
-import com.kii.beehive.portal.service.BeehiveUserDao;
-import com.kii.beehive.portal.store.entity.BeehiveUser;
+import com.kii.beehive.portal.service.PortalSyncUserDao;
+import com.kii.beehive.portal.jdbc.entity.BeehiveUser;
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
 import junit.framework.TestCase;
 import org.junit.Before;
@@ -74,7 +74,7 @@ public class TestTagThingManager {
 
 	@Spy
 	@Autowired
-	private BeehiveUserDao userDao;
+	private PortalSyncUserDao userDao;
 
 	@Spy
 	@Autowired

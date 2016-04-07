@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import com.kii.beehive.portal.exception.InvalidAuthException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,9 +25,8 @@ import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
 import com.kii.beehive.portal.jdbc.entity.TagGroupRelation;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
-import com.kii.beehive.portal.service.BeehiveUserDao;
-import com.kii.beehive.portal.store.entity.BeehiveUser;
-import com.kii.beehive.portal.web.constant.Constants;
+import com.kii.beehive.portal.service.PortalSyncUserDao;
+import com.kii.beehive.portal.jdbc.entity.BeehiveUser;
 import com.kii.beehive.portal.web.entity.UserGroupRestBean;
 import com.kii.beehive.portal.web.exception.BeehiveUnAuthorizedException;
 import com.kii.beehive.portal.web.exception.PortalException;
@@ -43,7 +41,7 @@ import com.kii.beehive.portal.web.exception.PortalException;
 public class UserGroupController extends AbstractController{
 	
 	@Autowired
-	private BeehiveUserDao beehiveUserDao;
+	private PortalSyncUserDao beehiveUserDao;
 	
 	@Autowired
 	private TagGroupRelationDao tagGroupRelationDao;

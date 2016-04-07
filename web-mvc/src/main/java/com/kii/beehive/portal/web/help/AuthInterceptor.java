@@ -136,7 +136,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 				return  super.preHandle(request, response, handler);
 			}
 
-			if(subUrl.startsWith(Constants.URL_USER)){
+			if(subUrl.startsWith(Constants.URL_USER_SYNC)){
 				//usersynccallback
 
 				DeviceSupplier supplier= null;

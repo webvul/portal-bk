@@ -2,14 +2,14 @@ package com.kii.beehive.portal.web.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kii.beehive.business.manager.TagThingManager;
-import com.kii.beehive.business.manager.UserManager;
+import com.kii.beehive.business.manager.PortalSyncUserManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.exception.ObjectNotFoundException;
 import com.kii.beehive.portal.jdbc.dao.*;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagType;
 import com.kii.beehive.portal.jdbc.entity.TagUserRelation;
-import com.kii.beehive.portal.store.entity.BeehiveUser;
+import com.kii.beehive.portal.jdbc.entity.BeehiveUser;
 import com.kii.beehive.portal.web.WebTestTemplate;
 import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.beehive.portal.web.exception.PortalException;
@@ -80,7 +80,7 @@ public class TestTagController extends WebTestTemplate {
 
 	@Spy
 	@Autowired
-	private UserManager userManager;
+	private PortalSyncUserManager userManager;
 
 	private String displayName = "someDisplayName";
 
