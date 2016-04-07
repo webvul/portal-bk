@@ -12,13 +12,12 @@ import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
+import com.kii.extension.ruleengine.RuleEngineConfig;
 import com.kii.extension.ruleengine.store.trigger.SchedulePeriod;
 import com.kii.extension.ruleengine.store.trigger.SimplePeriod;
-import com.kii.extension.ruleengine.RuleEngineConfig;
 
-@Component
+//@Component
 public class ScheduleService {
 	
 	

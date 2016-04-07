@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Map;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.util.FileCopyUtils;
@@ -46,7 +47,8 @@ public class RuleEngineConsole {
 					continue;
 				}
 
-				String[] arrays= StringUtils.delimitedListToStringArray(input," ");
+				String[] arrays= StringUtils.tokenizeToStringArray(input," ");
+
 
 				String cmd=arrays[0];
 
@@ -136,6 +138,17 @@ public class RuleEngineConsole {
 					engine.createGroupTrigger(Arrays.asList(thingIDs),record);
 				}
 
+				if(cmd.equals("dump")){
+
+					Map<String,Object> result=engine.dumpEngineRuntime();
+
+					String json=mapper.writeValueAsString(result);
+
+					System.out.println(json);
+
+
+				}
+
 
 			}catch(Exception e){
 				e.printStackTrace();
@@ -160,7 +173,7 @@ public class RuleEngineConsole {
 			sb.append(ch);
 			ch=(char)System.in.read();
 		}
-		return sb.toString();
+		return sb.toString().trim();
 	}
 
 	private static ThingStatus getStatus(String params){

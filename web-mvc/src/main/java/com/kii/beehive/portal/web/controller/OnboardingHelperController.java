@@ -1,6 +1,25 @@
 package com.kii.beehive.portal.web.controller;
 
+import javax.servlet.http.HttpServletRequest;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.kii.beehive.business.manager.AppInfoManager;
 import com.kii.beehive.business.manager.TagThingManager;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
@@ -8,20 +27,9 @@ import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.store.entity.CallbackUrlParameter;
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
 import com.kii.beehive.portal.web.constant.CallbackNames;
-import com.kii.beehive.portal.web.exception.BeehiveUnAuthorizedException;
 import com.kii.beehive.portal.web.exception.PortalException;
 import com.kii.beehive.portal.web.help.BeehiveAppInfoManager;
 import com.kii.extension.sdk.entity.FederatedAuthResult;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Beehive API - Thing API
@@ -111,13 +119,17 @@ public class OnboardingHelperController {
 	@RequestMapping(path = "/onboardinghelper/{vendorThingID}", method = {RequestMethod.GET}, consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
 	public ModelAndView getOnboardingInfo(@PathVariable("vendorThingID") String vendorThingID) {
 
-		GlobalThingInfo globalThingInfo = tagThingManager.findThingByVendorThingID(vendorThingID);
+		List<GlobalThingInfo> thingInfos = tagThingManager.getThingsByVendorThingIds(Arrays.asList(vendorThingID));
 
-		if (globalThingInfo == null) {
-			throw new PortalException("vendorThingID not found", "vendorThingID " + vendorThingID + " is not found", HttpStatus.NOT_FOUND);
-		} else if (!tagThingManager.isThingCreator(globalThingInfo) && tagThingManager.isThingOwner(globalThingInfo)) {
-			throw new BeehiveUnAuthorizedException("not creator or owner");
+		if (thingInfos.isEmpty()) {
+			throw new PortalException("vendorThingID not found",
+					"vendorThingID " + vendorThingID + " is not found", HttpStatus.NOT_FOUND);
 		}
+		GlobalThingInfo globalThingInfo = thingInfos.get(0);
+
+//		if (!tagThingManager.isThingCreator(globalThingInfo) && tagThingManager.isThingOwner(globalThingInfo)) {
+//			throw new BeehiveUnAuthorizedException("not creator or owner");
+//		}
 
 		KiiAppInfo appInfo = appInfoDao.getAppInfoByID(globalThingInfo.getKiiAppID());
 

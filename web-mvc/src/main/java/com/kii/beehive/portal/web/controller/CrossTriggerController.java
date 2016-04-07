@@ -18,6 +18,7 @@ import com.kii.beehive.business.helper.OpLogTools;
 import com.kii.beehive.business.ruleengine.TriggerManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.web.exception.MethodNotAllowedException;
+import com.kii.extension.ruleengine.TriggerValidate;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 
@@ -32,6 +33,8 @@ public class CrossTriggerController {
 	@Autowired
 	private OpLogTools logTool;
 
+	@Autowired
+	private TriggerValidate triggerValidate;
 
 	/**
 	 * onboarding should be already done on the things in the param
@@ -41,8 +44,9 @@ public class CrossTriggerController {
 	@RequestMapping(path="/createTrigger",method = { RequestMethod.POST })
 	public Map<String, Object> createTrigger(@RequestBody TriggerRecord record){
 
-
 		record.setUserID(AuthInfoStore.getUserID());
+
+		triggerValidate.validateTrigger(record);
 
 		String triggerID = null;
 
@@ -62,7 +66,7 @@ public class CrossTriggerController {
 		return result;
 	}
 
-	@RequestMapping(path="/{triggerID}",method = { RequestMethod.DELETE },produces={},consumes = {})
+	@RequestMapping(path="/{triggerID}",method = { RequestMethod.DELETE },consumes = {"*"})
 	public Map<String, Object> deleteTrigger(@PathVariable("triggerID") String triggerID){
 		Map<String, Object> result = new HashMap<>();
 		result.put("result", "success");
@@ -189,13 +193,13 @@ public class CrossTriggerController {
 		return result;
 	}
 
-	@RequestMapping(path="/{triggerID}",method={RequestMethod.GET})
+	@RequestMapping(path="/{triggerID}",method={RequestMethod.GET},consumes = {"*"})
 	public TriggerRecord getTriggerById(@PathVariable("triggerID") String triggerID){
 
 		return mang.getTriggerByID(triggerID);
 
 	}
-	@RequestMapping(path="/all",method={RequestMethod.GET})
+	@RequestMapping(path="/all",method={RequestMethod.GET},consumes = {"*"})
 	public List<TriggerRecord> getTriggerListByCurrentUser(){
 
 		String currentUserId = AuthInfoStore.getUserID();
@@ -205,7 +209,7 @@ public class CrossTriggerController {
 
 	}
 
-	@RequestMapping(path="/deleteTrigger",method={RequestMethod.GET})
+	@RequestMapping(path="/deleteTrigger",method={RequestMethod.GET},consumes = {"*"})
 	public List<TriggerRecord> getDeleteTriggerListByCurrentUser(){
 
 		String currentUserId = AuthInfoStore.getUserID();
@@ -215,10 +219,22 @@ public class CrossTriggerController {
 
 	}
 
-	@RequestMapping(path="/things/{thingId}",method={RequestMethod.GET})
+	@RequestMapping(path="/things/{thingId}",method={RequestMethod.GET},consumes = {"*"})
 	public List<SimpleTriggerRecord> getTriggerListByThingIdAndUserId(@PathVariable("thingId") String thingId){
 		String currentUserId = AuthInfoStore.getUserID();
 		return mang.getTriggerListByUserIdAndThingId(currentUserId,thingId);
 	}
 
+
+	@RequestMapping(path="/debug/dump",method={RequestMethod.GET},consumes = {"*"})
+	public Map<String,Object> getRuleEngineDump(){
+
+		return mang.getRuleEngingDump();
+	}
+
+	@RequestMapping(path="/debug/reinit",method={RequestMethod.POST},consumes = {"*"})
+	public void reInit(){
+
+		 mang.init();
+	}
 }

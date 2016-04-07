@@ -104,6 +104,12 @@ public class TriggerManager {
 
 	}
 
+	public Map<String,Object> getRuleEngingDump(){
+		return service.dumpEngineRuntime();
+	}
+
+
+
 	public String createTrigger(TriggerRecord record){
 
 		record.setRecordStatus(TriggerRecord.StatusType.disable);

@@ -4,6 +4,7 @@ import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
 import com.kii.beehive.portal.jdbc.entity.TagType;
+import com.kii.beehive.portal.jdbc.entity.TeamUserRelation;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Repository;
 
@@ -291,5 +292,57 @@ public class TagIndexDao extends SpringBaseDao<TagIndex> {
 		params.put("names", displayNames);
 
 		return Optional.ofNullable(namedJdbcTemplate.queryForList(sb.toString(), params, Long.class));
+	}
+
+	public Optional<List<TagIndex>> findTagsByTagIdsAndLocations(Collection<Long> tagIds, String parentLocation) {
+		if ((null == tagIds || tagIds.isEmpty()) && Strings.isBlank(parentLocation)) {
+			return Optional.ofNullable(null);
+		}
+
+		Map<String, Object> params = new HashMap();
+		params.put("type", TagType.Location.name());
+		StringBuilder sb = new StringBuilder("SELECT * FROM ").append(TABLE_NAME).append(" WHERE ").
+				append(TagIndex.TAG_TYPE).append(" = ").append(":type");
+
+		if (null != tagIds && !tagIds.isEmpty()) {
+			sb.append(" AND ").append(TagIndex.TAG_ID).append(" IN (:ids) ");
+			params.put("ids", tagIds);
+		}
+
+		if (!Strings.isBlank(parentLocation)) {
+			sb.append(" AND ").append(TagIndex.DISPLAY_NAME).append(" LIKE :name");
+			params.put("name", parentLocation + "%");
+		}
+
+		return Optional.ofNullable(namedJdbcTemplate.query(sb.toString(), params, getRowMapper()));
+	}
+
+	public Optional<List<Long>> findTagIdsByTeamAndTagTypeAndName(Long teamId, TagType type, String displayName) {
+		StringBuilder sb = new StringBuilder("SELECT t1.").append(TagIndex.TAG_ID).append(" FROM ").
+				append(TABLE_NAME).append(" t1");
+
+		List<Object> params = new ArrayList();
+		if (null != teamId) {
+			sb.append(" INNER JOIN ").append(TeamUserRelationDao.TABLE_NAME).append(" t2 ON t2.").
+					append(TeamUserRelation.USER_ID).append(" = t1.").append(TagIndex.CREATE_BY).append(" AND t2.").
+					append(TeamUserRelation.TEAM_ID).append(" = ?");
+			params.add(teamId);
+		}
+
+		StringBuilder sbWhere = new StringBuilder();
+
+		if (null != type) {
+			sbWhere.append(" WHERE t1.").append(TagIndex.TAG_TYPE).append(" = ?");
+			params.add(type.name());
+		}
+
+		if (!Strings.isBlank(displayName)) {
+			sbWhere.append(0 == sbWhere.length() ? " WHERE t1." : " AND t1.").append(TagIndex.DISPLAY_NAME).
+					append(" = ?");
+			params.add(displayName);
+		}
+
+		return Optional.ofNullable(jdbcTemplate.queryForList(sb.append(sbWhere).toString(),
+				params.toArray(new Object[]{}), Long.class));
 	}
 }

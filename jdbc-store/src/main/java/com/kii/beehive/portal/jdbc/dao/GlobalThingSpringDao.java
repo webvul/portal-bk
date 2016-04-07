@@ -1,11 +1,20 @@
 package com.kii.beehive.portal.jdbc.dao;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+
+import org.springframework.stereotype.Repository;
+
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
-import org.springframework.stereotype.Repository;
-
-import java.util.*;
 
 @Repository
 public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
@@ -25,7 +34,10 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 		return KEY;
 	}
 
-	public List<GlobalThingInfo> getThingsByVendorIDArray(List<String> vendorIDs) {
+	public Optional<List<GlobalThingInfo>> getThingsByVendorIDArray(Collection<String> vendorIDs) {
+		if (null == vendorIDs || vendorIDs.isEmpty()) {
+			return Optional.ofNullable(null);
+		}
 
 		String sql = "SELECT g.* "
 				+ "FROM global_thing g "
@@ -34,7 +46,7 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 		Map<String, Object> params = new HashMap<>();
 		params.put("ids", vendorIDs);
 
-		return namedJdbcTemplate.query(sql, params, getRowMapper());
+		return Optional.ofNullable(namedJdbcTemplate.query(sql, params, getRowMapper()));
 
 	}
 

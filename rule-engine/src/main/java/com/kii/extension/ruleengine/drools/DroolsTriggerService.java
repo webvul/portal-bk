@@ -54,6 +54,17 @@ public class DroolsTriggerService {
 	}
 
 
+	public  Map<String,Object> getEngineRuntime(){
+
+		Map<String,Object> map=new HashMap<>();
+
+		map.put("cloud",cloudService.getEngineEntitys());
+		map.put("stream",streamService.getEngineEntitys());
+
+		return map;
+
+	}
+
 	private DroolsRuleService getService(Trigger trigger){
 
 		if(trigger.isStream()){

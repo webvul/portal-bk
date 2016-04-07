@@ -6,7 +6,9 @@ import com.kii.beehive.business.manager.UserManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.exception.ObjectNotFoundException;
 import com.kii.beehive.portal.jdbc.dao.*;
-import com.kii.beehive.portal.jdbc.entity.*;
+import com.kii.beehive.portal.jdbc.entity.TagIndex;
+import com.kii.beehive.portal.jdbc.entity.TagType;
+import com.kii.beehive.portal.jdbc.entity.TagUserRelation;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.WebTestTemplate;
 import com.kii.beehive.portal.web.constant.Constants;
@@ -16,19 +18,17 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.util.StringUtils;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static junit.framework.TestCase.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyList;
 import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.*;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -178,175 +178,99 @@ public class TestTagController extends WebTestTemplate {
 	}
 
 	@Test
-	public void testRemoveTag() throws Exception {
-		try {
-			tagController.removeTag("Random");
-			fail("Expect a PortalException");
-		} catch (PortalException e) {
-			assertEquals(HttpStatus.NOT_FOUND, e.getStatus());
-		}
+	public void testUpdateTag() throws Exception {
+		AuthInfoStore.setAuthInfo("Someone");
 
 		String keyId = "id";
+		String keyName = "tagName";
 
 		TagIndex tagIndex = new TagIndex();
 		tagIndex.setDisplayName("Tag 1");
 		tagIndex.setDescription("Tag");
 		tagIndex.setTagType(TagType.Custom);
+		tagIndex.setId(100L);
 
-		AuthInfoStore.setAuthInfo("user1");
+		doReturn(Arrays.asList(tagIndex)).when(tagThingManager).getTagIndexes(anyListOf(String.class));
+		doReturn(true).when(tagThingManager).isTagCreator(any(TagIndex.class));
+
+		doReturn(tagIndex.getId()).when(tagThingManager).createTag(any(TagIndex.class));
 
 		Map<String, Object> result = tagController.createTag(tagIndex);
-		TagIndex tagFromDB = tagIndexDao.findByID((Long) result.get(keyId));
-		assertNotNull("Cannot find the created tag.", tagFromDB);
+		assertEquals(tagIndex.getId(), result.get(keyId));
+		assertEquals(tagIndex.getFullTagName(), result.get(keyName));
+	}
 
-		AuthInfoStore.setAuthInfo("user2");
-
+	@Test
+	public void testRemoveTag() throws Exception {
 		try {
-			tagController.removeTag(tagIndex.getDisplayName());
-			fail("Expect a PortalException");
+			tagController.removeTag(null);
+			fail("Expect an exception");
 		} catch (PortalException e) {
-			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
+			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
 		}
 
-		AuthInfoStore.setAuthInfo("user1");
+		doThrow(new ObjectNotFoundException("test")).when(tagThingManager).getCreatedTagIdsByTypeAndDisplayNames(
+				anyString(), any(TagType.class), anyListOf(String.class));
+
 		try {
-			tagController.removeTag(tagIndex.getDisplayName());
-		} catch (Exception e) {
-			fail("Should not throw any exception");
+			tagController.removeTag("displayName");
+			fail("Expect an exception");
+		} catch (PortalException e) {
+			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
 		}
 
-		tagFromDB = tagIndexDao.findByID((Long) result.get(keyId));
-		assertNull("Should not find the created tag.", tagFromDB);
+		doReturn(Arrays.asList(100L)).when(tagThingManager).getCreatedTagIdsByTypeAndDisplayNames(
+				anyString(), any(TagType.class), anyListOf(String.class));
 
-		TagUserRelation relation = tagUserRelationDao.find((Long) result.get(keyId), "user1");
-		assertNull("Should not have the relation", relation);
+		verify(tagThingManager, times(0)).removeTag(eq(100L));
+
+		tagController.removeTag("displayName");
+
+		verify(tagThingManager, times(1)).removeTag(eq(100L));
 	}
 
 	@Test
 	public void testBindTagToUser() throws Exception {
-		TagIndex tagIndex = new TagIndex();
-		tagIndex.setDisplayName("Tag 1");
-		tagIndex.setDescription("Tag");
-		tagIndex.setTagType(TagType.Custom);
-
-		AuthInfoStore.setAuthInfo("TagCreator");
-		Long tagId = tagIndexDao.saveOrUpdate(tagIndex);
-
-		doReturn(new HashSet<>(Arrays.asList("1"))).when(userManager).checkNonExistingUserID(any());
-
-		// Error test
-		String[] blankTagIds = new String[]{null, " "};
-		String[] blankUserIds = new String[]{null, " "};
-		for (String tagIds : blankTagIds) {
-			for (String userId : blankUserIds) {
-				try {
-					tagController.bindTagToUser(tagIndex.getFullTagName(), userId);
-					fail("Expect a PortalException");
-				} catch (PortalException e) {
-					assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
-				}
-			}
-		}
-
-		doReturn(new ArrayList<>()).when(tagThingManager).getUsers(anyListOf(String.class));
-		// Existence test
-
+		doReturn(Arrays.asList(100L)).when(tagThingManager).getCreatedTagIdsByFullTagName(anyString(), anyString());
 		BeehiveUser someone = new BeehiveUser();
 		someone.setKiiLoginName("Someone");
 		doReturn(Arrays.asList(someone)).when(tagThingManager).getUsers(anyListOf(String.class));
-		AuthInfoStore.setAuthInfo("Someone");
-		try {
-			tagController.bindTagToUser(tagIndex.getFullTagName(), "123");
-			fail("Expect a PortalException");
-		} catch (PortalException e) {
-			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
-		}
 
-		AuthInfoStore.setAuthInfo("TagCreator");
-
-		doAnswer(invocation -> {
-			List<Long> tagIds = ((List<TagIndex>) invocation.getArguments()[0]).stream().map(TagIndex::getId).
-					collect(Collectors.toList());
-			List<BeehiveUser> users = (List<BeehiveUser>) invocation.getArguments()[1];
-			tagIds.forEach(id -> {
-				users.forEach(user -> {
-					TagUserRelation relation = new TagUserRelation();
-					relation.setTagId(id);
-					relation.setUserId(user.getKiiLoginName());
-					tagUserRelationDao.saveOrUpdate(relation);
-				});
-			});
+		List<String> userIds = new ArrayList();
+		doAnswer((Answer<Object>) invocation -> {
+			userIds.addAll((Collection<? extends String>) invocation.getArguments()[1]);
 			return null;
-		}).when(tagThingManager).bindTagsToUsers(anyList(), anyList());
+		}).when(tagThingManager).bindTagsToUsers(anyCollectionOf(Long.class),
+				anyCollectionOf(String.class));
 
-		try {
-			tagController.bindTagToUser(tagIndex.getFullTagName(), "Someone");
-		} catch (Exception e) {
-			fail("Should not throw any exception");
-		}
+		tagController.bindTagToUser("fullname", "Someone");
 
-		TagUserRelation relation = tagUserRelationDao.find(tagId, "Someone");
-		assertNotNull("Should have the relation", relation);
+		assertEquals(1, userIds.size());
+		assertEquals("Someone", userIds.get(0));
 	}
 
 	@Test
 	public void testUnbindTagFromUser() throws Exception {
-		TagIndex tagIndex = new TagIndex();
-		tagIndex.setDisplayName("Tag 1");
-		tagIndex.setDescription("Tag");
-		tagIndex.setTagType(TagType.Custom);
-		tagIndex.setCreateBy("TagCreator");
-
-		AuthInfoStore.setAuthInfo("TagCreator");
-		Long tagId = tagIndexDao.saveOrUpdate(tagIndex);
-
-		TagUserRelation relation = new TagUserRelation();
-		relation.setTagId(tagId);
-		relation.setUserId("Someone");
-		tagUserRelationDao.saveOrUpdate(relation);
-
-		doReturn(new HashSet<String>()).when(userManager).checkNonExistingUserID(any());
-
-		doAnswer(invocation -> {
-			List<Long> tagIds = ((List<TagIndex>) invocation.getArguments()[0]).stream().map(TagIndex::getId).
-					collect(Collectors.toList());
-			List<BeehiveUser> users = (List<BeehiveUser>) invocation.getArguments()[1];
-			tagIds.forEach(id -> {
-				users.forEach(user -> {
-					tagUserRelationDao.deleteByTagIdAndUserId(id, user.getKiiLoginName());
-				});
-			});
-			return null;
-		}).when(tagThingManager).unbindTagsFromUsers(anyList(), anyList());
-
+		doReturn(Arrays.asList(100L)).when(tagThingManager).getCreatedTagIdsByFullTagName(anyString(), anyString());
 		BeehiveUser someone = new BeehiveUser();
 		someone.setKiiLoginName("Someone");
 		doReturn(Arrays.asList(someone)).when(tagThingManager).getUsers(anyListOf(String.class));
 
-		try {
-			tagController.unbindTagFromUser(tagIndex.getFullTagName(), "Someone");
-		} catch (Exception e) {
-			fail("Should not throw any exception");
-		}
+		List<String> userIds = new ArrayList();
+		doAnswer((Answer<Object>) invocation -> {
+			userIds.addAll((Collection<? extends String>) invocation.getArguments()[1]);
+			return null;
+		}).when(tagThingManager).unbindTagsFromUsers(anyCollectionOf(Long.class),
+				anyCollectionOf(String.class));
 
-		relation = tagUserRelationDao.find(tagId, "Someone");
-		assertNull("Should not have the relation", relation);
+		tagController.unbindTagFromUser("fullname", "Someone");
+
+		assertEquals(1, userIds.size());
+		assertEquals("Someone", userIds.get(0));
 	}
 
 	@Test
 	public void testBindUserGroupToTag() throws Exception {
-		TagIndex tagIndex = new TagIndex();
-		tagIndex.setDisplayName("Tag 1");
-		tagIndex.setDescription("Tag");
-		tagIndex.setTagType(TagType.Custom);
-		AuthInfoStore.setAuthInfo("TagCreator");
-		Long tagId = tagIndexDao.saveOrUpdate(tagIndex);
-
-		UserGroup userGroup = new UserGroup();
-		userGroup.setName("User Group");
-		userGroup.setCreateBy("Someone");
-		Long userGroupId = userGroupDao.saveOrUpdate(userGroup);
-
 		// Error test
 		String[] blankTagIds = new String[]{null, " "};
 		String[] blankUserGroupIds = new String[]{null, " "};
@@ -361,68 +285,24 @@ public class TestTagController extends WebTestTemplate {
 			}
 		}
 
-		// Existence test
-		try {
-			tagController.bindTagToUserGroup(tagIndex.getFullTagName() + ",test2-123", userGroupId + "");
-			fail("Expect a PortalException");
-		} catch (PortalException e) {
-			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
-		}
+		doReturn(Arrays.asList(100L)).when(tagThingManager).getCreatedTagIdsByFullTagName(anyString(), anyString());
+		doReturn(Arrays.asList(200L)).when(tagThingManager).getUserGroupIds(anyListOf(String.class));
+		doNothing().when(tagThingManager).bindTagsToUserGroups(anyListOf(Long.class), anyListOf(Long.class));
 
-		AuthInfoStore.setAuthInfo("Someone");
+		tagController.bindTagToUserGroup("12,34", "56,78");
 
-		try {
-			tagController.bindTagToUserGroup(tagIndex.getFullTagName(), userGroupId + "");
-			fail("Expect a PortalException");
-		} catch (PortalException e) {
-			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
-		}
-
-		AuthInfoStore.setAuthInfo(tagIndex.getCreateBy());
-		try {
-			tagController.bindTagToUserGroup(tagIndex.getFullTagName(), userGroupId + ",userGroup1");
-			fail("Expect a PortalException");
-		} catch (PortalException e) {
-			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
-		}
-
-		try {
-			tagController.bindTagToUserGroup(tagIndex.getFullTagName(), userGroupId + "");
-		} catch (Exception e) {
-			fail("Should not throw any exception");
-		}
-
-		TagGroupRelation relation = tagGroupRelationDao.findByTagIDAndUserGroupID(tagId, userGroupId);
-		assertNotNull("Should have the relation", relation);
+		verify(tagThingManager, times(1)).bindTagsToUserGroups(anyListOf(Long.class), anyListOf(Long.class));
 	}
 
 	@Test
 	public void testUnbindUserGroupFromTag() throws Exception {
-		TagIndex tagIndex = new TagIndex();
-		tagIndex.setDisplayName("Tag 1");
-		tagIndex.setDescription("Tag");
-		tagIndex.setTagType(TagType.Custom);
-		AuthInfoStore.setAuthInfo("TagCreator");
-		Long tagId = tagIndexDao.saveOrUpdate(tagIndex);
-
-		UserGroup userGroup = new UserGroup();
-		userGroup.setName("User Group");
-		userGroup.setCreateBy("Someone");
-		Long userGroupId = userGroupDao.saveOrUpdate(userGroup);
-
-		AuthInfoStore.setAuthInfo(tagIndex.getCreateBy());
-		tagController.bindTagToUserGroup(tagIndex.getFullTagName(), userGroupId + "");
-
-		TagGroupRelation relation = tagGroupRelationDao.findByTagIDAndUserGroupID(tagId, userGroupId);
-		assertNotNull("Should have the relation", relation);
-
 		// Error test
 		String[] blankTagIds = new String[]{null, " "};
 		String[] blankUserGroupIds = new String[]{null, " "};
 		for (String tagIds : blankTagIds) {
 			for (String userGroupIds : blankUserGroupIds) {
 				try {
-					tagController.unbindTagFromUserGroup(tagIds, userGroupIds);
+					tagController.unbindTagsFromUserGroups(tagIds, userGroupIds);
 					fail("Expect a PortalException");
 				} catch (PortalException e) {
 					assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
@@ -430,139 +310,34 @@ public class TestTagController extends WebTestTemplate {
 			}
 		}
 
-		// Existence test
-		try {
-			tagController.unbindTagFromUserGroup(tagIndex.getFullTagName() + ",test2", userGroupId + "");
-			fail("Expect a PortalException");
-		} catch (PortalException e) {
-			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
-		}
+		doReturn(Arrays.asList(100L)).when(tagThingManager).getCreatedTagIdsByFullTagName(anyString(), anyString());
+		doReturn(Arrays.asList(200L)).when(tagThingManager).getUserGroupIds(anyListOf(String.class));
+		doNothing().when(tagThingManager).unbindTagsFromUserGroups(anyListOf(Long.class), anyListOf(Long.class));
 
-		AuthInfoStore.setAuthInfo("Someone");
-		try {
-			tagController.unbindTagFromUserGroup(tagIndex.getFullTagName() + "", userGroupId + "");
-			fail("Expect a PortalException");
-		} catch (PortalException e) {
-			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
-		}
+		tagController.unbindTagsFromUserGroups("12,34", "56,78");
 
-		AuthInfoStore.setAuthInfo(tagIndex.getCreateBy());
-		try {
-			tagController.unbindTagFromUserGroup(tagIndex.getFullTagName(), userGroupId + ",userGroup1");
-			fail("Expect a PortalException");
-		} catch (PortalException e) {
-			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
-		}
-
-		try {
-			tagController.unbindTagFromUserGroup(tagIndex.getFullTagName(), userGroupId + "");
-		} catch (Exception e) {
-			fail("Should not throw any exception");
-		}
-
-		relation = tagGroupRelationDao.findByTagIDAndUserGroupID(tagId, userGroupId);
-		assertNull("Should not have the relation", relation);
+		verify(tagThingManager, times(1)).unbindTagsFromUserGroups(anyListOf(Long.class), anyListOf(Long.class));
 	}
 
 	@Test
 	public void testFindTags() throws Exception {
-		AuthInfoStore.setAuthInfo("TagCreator");
-		Set<Long> tagIds = new HashSet<>();
-		TagIndex tagIndex = new TagIndex();
-		tagIndex.setDisplayName("Tag 1");
-		tagIndex.setDescription("Tag");
-		tagIndex.setTagType(TagType.Custom);
-		tagIndex.setCreateBy("TagCreator");
-		tagIds.add(tagIndexDao.saveOrUpdate(tagIndex));
-
-		tagIndex.setDisplayName("Tag 2");
-		tagIndex.setTagType(TagType.Location);
-		tagIds.add(tagIndexDao.saveOrUpdate(tagIndex));
-
-		tagIndex.setDisplayName("Tag 3");
-		tagIndex.setTagType(TagType.System);
-		tagIds.add(tagIndexDao.saveOrUpdate(tagIndex));
-
-		AuthInfoStore.setAuthInfo("TagCreator 2");
-		tagIndex.setDisplayName("Tag 3");
-		tagIndex.setTagType(TagType.System);
-		tagIndex.setCreateBy("TagCreator 2");
-		tagIds.add(tagIndexDao.saveOrUpdate(tagIndex));
-
-		AuthInfoStore.setAuthInfo("Someone");
-
-		List<TagIndex> tagIndexes = tagController.findTags("", "");
-		assertNotNull("Result should not be null", tagIndexes);
-		assertTrue("Result should be an empty list", tagIndexes.isEmpty());
-
-		tagIndexes = tagController.findTags("Tag 1", TagType.Custom.name());
-		assertNotNull("Result should not be null", tagIndexes);
-		assertTrue("Result should be an empty list", tagIndexes.isEmpty());
-
-		AuthInfoStore.setAuthInfo("TagCreator");
-
-		tagIndexes = tagController.findTags("", "");
-		assertNotNull("Result should not be null", tagIndexes);
-		assertEquals("There should be three tags", 3, tagIndexes.size());
-
-		tagIndexes = tagController.findTags("", "Tag 1");
-		assertNotNull("Result should not be null", tagIndexes);
-		assertEquals("There should be one tag", 1, tagIndexes.size());
-		assertEquals("Display name should be 'Tag 1'", "Tag 1", tagIndexes.get(0).getDisplayName());
-		assertEquals("Tag type doesn't match", TagType.Custom, tagIndexes.get(0).getTagType());
-
-		tagIndexes = tagController.findTags("", "Tag 2");
-		assertNotNull("Result should not be null", tagIndexes);
-		assertEquals("There should be one tag", 1, tagIndexes.size());
-		assertEquals("Display name should be 'Tag 1'", "Tag 2", tagIndexes.get(0).getDisplayName());
-		assertEquals("Tag type doesn't match", TagType.Location, tagIndexes.get(0).getTagType());
-
-		tagIndexes = tagController.findTags("", "Tag 3");
-		assertNotNull("Result should not be null", tagIndexes);
-		assertEquals("There should be one tag", 1, tagIndexes.size());
-		assertEquals("Display name should be 'Tag 3'", "Tag 3", tagIndexes.get(0).getDisplayName());
-		assertEquals("Tag type doesn't match", TagType.System, tagIndexes.get(0).getTagType());
-
-		AuthInfoStore.setAuthInfo("TagCreator 2");
-		tagIndexes = tagController.findTags(TagType.System.name(), "");
-		assertNotNull("Result should not be null", tagIndexes);
-		assertEquals("There should be one tag", 1, tagIndexes.size());
-		assertEquals("Display name should be 'Tag 3'", "Tag 3", tagIndexes.get(0).getDisplayName());
-		assertEquals("Tag type doesn't match", TagType.System, tagIndexes.get(0).getTagType());
+		tagController.findTags("Test", "123");
+		verify(tagThingManager, times(1)).getAccessibleTagsByTagTypeAndName(anyString(),
+				eq(StringUtils.capitalize("Test")), eq("123"));
 	}
 
 	@Test
 	public void testFindLocation() throws Exception {
-		Set<String> displayNames = new HashSet<>();
-		displayNames.add("floor1-lobby");
-		displayNames.add("floor1-room1-counter1");
-		displayNames.add("floor1-room1-counter2");
-		displayNames.add("floor2-room1");
-		displayNames.add("floor2-room2");
+		doReturn(Collections.emptyList()).when(tagThingManager).getAccessibleTagsByUserIdAndLocations(anyString(),
+				anyString());
 
-		AuthInfoStore.setAuthInfo("TagCreator");
-		TagIndex tagIndex = new TagIndex();
-		tagIndex.setTagType(TagType.Location);
-		displayNames.forEach(name -> {
-			tagIndex.setDisplayName(name);
-			tagIndexDao.saveOrUpdate(tagIndex);
-		});
+		verify(tagThingManager, times(0)).getAccessibleTagsByUserIdAndLocations(anyString(),
+				anyString());
 
-		List<String> locations = tagController.findAllLocations();
-		assertNotNull("Location should not be null", locations);
-		assertTrue("Didn't find all locations", displayNames.containsAll(locations) &&
-				locations.containsAll(displayNames));
+		tagController.findAllLocations();
 
-		locations = tagController.findLocations("floor2");
-		assertNotNull("Location should not be null", locations);
-		locations.forEach(location -> assertTrue("Location should start with floor2", location.startsWith("floor2-")));
-
-		locations = tagController.findLocations("room1");
-		assertTrue("Should not find any locations", null == locations || locations.isEmpty());
-
-		AuthInfoStore.setAuthInfo("Someone");
-		locations = tagController.findLocations("");
-		assertTrue("Should not find any locations", null == locations || locations.isEmpty());
+		verify(tagThingManager, times(1)).getAccessibleTagsByUserIdAndLocations(anyString(),
+				anyString());
 	}
 
 	@Test
@@ -592,212 +367,6 @@ public class TestTagController extends WebTestTemplate {
 		// assert http return
 		String tagName = (String) map.get("tagName");
 		assertEquals(TagType.Custom + "-" + displayName, tagName);
-
-	}
-
-	@Test
-	public void testWebUpdateTag() throws Exception {
-
-		this.testWebCreateTag();
-
-		// update the tag
-		Map<String, Object> request = new HashMap<>();
-		request.put("displayName", displayName);
-		request.put("description", "some description new");
-
-		String ctx = mapper.writeValueAsString(request);
-
-		String result = this.mockMvc.perform(
-				post("/tags/custom").content(ctx)
-						.contentType(MediaType.APPLICATION_JSON)
-						.characterEncoding("UTF-8")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
-		)
-				.andExpect(status().isOk())
-				.andReturn().getResponse().getContentAsString();
-
-		Map<String, Object> map = mapper.readValue(result, Map.class);
-
-		System.out.println("Response:" + result);
-
-		// assert http return
-		Long tagID = Long.valueOf((int) map.get("id"));
-		assertEquals(tagIDForTest, tagID);
-
-		String tagName = (String) map.get("tagName");
-		assertEquals(TagType.Custom + "-" + displayName, tagName);
-
-		TagIndex tagIndex = tagIndexDao.findByID(tagID);
-		assertEquals(tagIDForTest, (Long) tagIndex.getId());
-		assertEquals(displayName, tagIndex.getDisplayName());
-		assertEquals("some description new", tagIndex.getDescription());
-
-
-		// create another tag as displayName changed
-		request = new HashMap<>();
-		request.put("displayName", displayName + "_new");
-		request.put("description", "some description new");
-
-		ctx = mapper.writeValueAsString(request);
-
-		result = this.mockMvc.perform(
-				post("/tags/custom").content(ctx)
-						.contentType(MediaType.APPLICATION_JSON)
-						.characterEncoding("UTF-8")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
-		)
-				.andExpect(status().isOk())
-				.andReturn().getResponse().getContentAsString();
-
-		map = mapper.readValue(result, Map.class);
-
-		System.out.println("Response:" + result);
-
-		// assert http return
-		tagID = Long.valueOf((int) map.get("id"));
-		assertEquals(Long.valueOf(tagIDForTest + 1), tagID);
-
-		tagName = (String) map.get("tagName");
-		assertEquals(TagType.Custom + "-" + displayName + "_new", tagName);
-
-		tagIndex = tagIndexDao.findByID(tagID);
-		assertEquals(Long.valueOf(tagIDForTest + 1), (Long) tagIndex.getId());
-		assertEquals(displayName + "_new", tagIndex.getDisplayName());
-		assertEquals("some description new", tagIndex.getDescription());
-
-	}
-
-	@Test
-	public void testWebCreateTagException() throws Exception {
-
-		Map<String, Object> request = new HashMap<>();
-		request.put("description", "some description");
-
-		String ctx = mapper.writeValueAsString(request);
-
-		String result = this.mockMvc.perform(
-				post("/tags/custom").content(ctx)
-						.contentType(MediaType.APPLICATION_JSON)
-						.characterEncoding("UTF-8")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
-		)
-				.andExpect(status().isBadRequest())
-				.andReturn().getResponse().getContentAsString();
-
-	}
-
-	@Test
-	public void testWebRemoveTag() throws Exception {
-
-		this.testWebCreateTag();
-
-		TagIndex tagIndex = tagIndexDao.findByID(tagIDForTest);
-		assertNotNull(tagIndex);
-
-		String result = this.mockMvc.perform(
-				delete("/tags/custom/" + displayName)
-						.contentType(MediaType.APPLICATION_JSON)
-						.characterEncoding("UTF-8")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
-		)
-				.andExpect(status().isOk())
-				.andReturn().getResponse().getContentAsString();
-
-		tagIndex = tagIndexDao.findByID(tagIDForTest);
-		assertNull(tagIndex);
-
-	}
-
-	@Test
-	public void testWebRemoveTagException() throws Exception {
-
-		String result = this.mockMvc.perform(
-				delete("/tags/custom/" + "some_non_existing_displayName")
-						.contentType(MediaType.APPLICATION_JSON)
-						.characterEncoding("UTF-8")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
-		)
-				.andExpect(status().isNotFound())
-				.andReturn().getResponse().getContentAsString();
-
-	}
-
-
-	@Test
-	public void testWebFindLocations() throws Exception {
-
-		// create location
-		List<String> displayNames = new ArrayList<>();
-		displayNames.add("floor1-lobby");
-		displayNames.add("floor1-room1-counter1");
-		displayNames.add("floor1-room1-counter2");
-		displayNames.add("floor2-room1");
-		displayNames.add("floor2-room2");
-		List<Long> tagIDs = new ArrayList<>();
-
-		AuthInfoStore.setAuthInfo("211102");
-		// create tag
-		for (int i = 0; i < displayNames.size(); i++) {
-			TagIndex tagIndex = new TagIndex();
-			tagIndex.setTagType(TagType.Location);
-			tagIndex.setDisplayName(displayNames.get(i));
-			tagIndexDao.saveOrUpdate(tagIndex);
-		}
-
-		// find location floor1
-		String result = this.mockMvc.perform(
-				get("/tags/locations/" + "floor1")
-						.contentType(MediaType.APPLICATION_JSON)
-						.characterEncoding("UTF-8")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
-		)
-				.andExpect(status().isOk())
-				.andReturn().getResponse().getContentAsString();
-
-		List<String> list = mapper.readValue(result, List.class);
-
-		// assert http return
-		assertEquals(3, list.size());
-		assertEquals(displayNames.get(0), list.get(0));
-		assertEquals(displayNames.get(1), list.get(1));
-		assertEquals(displayNames.get(2), list.get(2));
-
-		// find location floor1-room1
-		result = this.mockMvc.perform(
-				get("/tags/locations/" + "floor1-room1")
-						.contentType(MediaType.APPLICATION_JSON)
-						.characterEncoding("UTF-8")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
-		)
-				.andExpect(status().isOk())
-				.andReturn().getResponse().getContentAsString();
-
-		list = mapper.readValue(result, List.class);
-
-		// assert http return
-		assertEquals(2, list.size());
-		assertEquals(displayNames.get(1), list.get(0));
-		assertEquals(displayNames.get(2), list.get(1));
-
-		// find all locations
-		result = this.mockMvc.perform(
-				get("/tags/locations/")
-						.contentType(MediaType.APPLICATION_JSON)
-						.characterEncoding("UTF-8")
-						.header(Constants.ACCESS_TOKEN, tokenForTest)
-		)
-				.andExpect(status().isOk())
-				.andReturn().getResponse().getContentAsString();
-
-		list = mapper.readValue(result, List.class);
-
-		// assert http return
-		assertEquals(5, list.size());
-		assertEquals(displayNames.get(0), list.get(0));
-		assertEquals(displayNames.get(1), list.get(1));
-		assertEquals(displayNames.get(2), list.get(2));
-		assertEquals(displayNames.get(3), list.get(3));
-		assertEquals(displayNames.get(4), list.get(4));
 
 	}
 }

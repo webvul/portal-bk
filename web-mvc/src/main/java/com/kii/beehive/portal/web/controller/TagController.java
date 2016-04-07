@@ -1,26 +1,21 @@
 package com.kii.beehive.portal.web.controller;
 
 import com.kii.beehive.portal.exception.ObjectNotFoundException;
-import com.kii.beehive.portal.exception.UnauthorizedException;
-import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
-import com.kii.beehive.portal.jdbc.dao.TagUserRelationDao;
-import com.kii.beehive.portal.jdbc.dao.TeamTagRelationDao;
-import com.kii.beehive.portal.jdbc.entity.*;
+import com.kii.beehive.portal.jdbc.entity.TagIndex;
+import com.kii.beehive.portal.jdbc.entity.TagType;
+import com.kii.beehive.portal.jdbc.entity.UserGroup;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.exception.BeehiveUnAuthorizedException;
 import com.kii.beehive.portal.web.exception.PortalException;
 import org.apache.logging.log4j.util.Strings;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Beehive API - Thing API
@@ -32,15 +27,6 @@ import java.util.Map;
 		MediaType.APPLICATION_JSON_UTF8_VALUE})
 public class TagController extends AbstractThingTagController {
 
-	@Autowired
-	private TagIndexDao tagIndexDao;
-
-	@Autowired
-	private TeamTagRelationDao teamTagRelationDao;
-
-	@Autowired
-	private TagUserRelationDao tagUserRelationDao;
-
 	/**
 	 * 创建tag
 	 * POST /tags/custom
@@ -51,27 +37,34 @@ public class TagController extends AbstractThingTagController {
 	 */
 	@RequestMapping(path = "/custom", method = {RequestMethod.POST})
 	public Map<String, Object> createTag(@RequestBody TagIndex tag) {
-
 		String displayName = tag.getDisplayName();
 		if (Strings.isBlank(displayName)) {
 			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "DisplayName is empty",
 					HttpStatus.BAD_REQUEST);
 		}
 
-		tag.setTagType(TagType.Custom);
-		List<TagIndex> tagList = tagIndexDao.findTagByTagTypeAndName(tag.getTagType().name(), tag.getDisplayName());
-		if (tagList.size() > 0) {//update
-			TagIndex old = tagList.get(0);
-			old.setDescription(tag.getDescription());
-			tag = old;
+		if (null != tag.getId()) {
+			try {
+				TagIndex existedTag = thingTagManager.getTagIndexes(Arrays.asList(tag.getId().toString())).get(0);
+				if (!thingTagManager.isTagCreator(existedTag)) {
+					throw new BeehiveUnAuthorizedException("Requested tag isn't created by current user");
+				}
+			} catch (ObjectNotFoundException e) {
+				throw new PortalException(HttpStatus.BAD_REQUEST + "", "Requested tag doesn't exists",
+						HttpStatus.BAD_REQUEST);
+			}
+		} else if (thingTagManager.isTagDisplayNamePresent(getLoginTeamID(), TagType.Custom, displayName)) {
+			throw new PortalException(HttpStatus.BAD_REQUEST + "", "Requested displayName already exists",
+					HttpStatus.BAD_REQUEST);
 		}
+		tag.setTagType(TagType.Custom);
 		tag.setFullTagName(TagType.Custom.getTagName(displayName));
 		long tagID = thingTagManager.createTag(tag);
 
 
 		Map<String, Object> map = new HashMap<>();
 		map.put("id", tagID);
-		map.put("tagName", TagType.Custom.getTagName(tag.getDisplayName()));
+		map.put("tagName", tag.getFullTagName());
 		return map;
 	}
 
@@ -90,20 +83,7 @@ public class TagController extends AbstractThingTagController {
 			throw new PortalException("RequiredFieldsMissing", "displayName is empty", HttpStatus.BAD_REQUEST);
 		}
 
-		List<TagIndex> orig = tagIndexDao.findTagByTagTypeAndName(TagType.Custom.toString(), displayName);
-
-		if (orig.size() == 0) {
-			throw new PortalException("Tag Not Found", "Tag with displayName:" + displayName + " Not Found",
-					HttpStatus.NOT_FOUND);
-		}
-
-		TagIndex toBeRemoved = orig.get(0);
-		if (!thingTagManager.isTagCreator(toBeRemoved)) {
-			throw new BeehiveUnAuthorizedException("Current user is not the creator of the tag.");
-		}
-		thingTagManager.removeTag(toBeRemoved);
-
-//		eventBus.onTagChangeFire();
+		getCreatedTagIds(TagType.Custom, displayName).forEach(id -> thingTagManager.removeTag(id));
 	}
 
 	/**
@@ -119,11 +99,8 @@ public class TagController extends AbstractThingTagController {
 	@RequestMapping(path = "/search", method = {RequestMethod.GET})
 	public List<TagIndex> findTags(@RequestParam(value = "tagType", required = false) String tagType,
 								   @RequestParam(value = "displayName", required = false) String displayName) {
-
-		List<TagIndex> list = tagIndexDao.findUserTagByTypeAndName(getLoginUserID(),
+		return thingTagManager.getAccessibleTagsByTagTypeAndName(getLoginUserID(),
 				StringUtils.capitalize(tagType), displayName);
-		return list;
-
 	}
 
 	/*@RequestMapping(path = "/{tagName}/operation/{operation}", method = { RequestMethod.GET })
@@ -145,7 +122,8 @@ public class TagController extends AbstractThingTagController {
 	 */
 	@RequestMapping(path = "/locations/{parentLocation}", method = {RequestMethod.GET}, consumes = {"*"})
 	public List<String> findLocations(@PathVariable("parentLocation") String parentLocation) {
-		return thingTagManager.findUserLocations(getLoginUserID(), parentLocation);
+		return thingTagManager.getAccessibleTagsByUserIdAndLocations(getLoginUserID(), parentLocation).stream().
+				map(TagIndex::getDisplayName).collect(Collectors.toList());
 	}
 
 	/**
@@ -175,13 +153,9 @@ public class TagController extends AbstractThingTagController {
 			throw new PortalException("RequiredFieldsMissing", "tagIDs or userIDs is empty", HttpStatus
 					.BAD_REQUEST);
 		}
-		List<TagIndex> tagIndexes = getTags(Arrays.asList(fullNames.split(",")));
-		List<BeehiveUser> users = getUsers(userIds);
-		try {
-			thingTagManager.bindTagsToUsers(tagIndexes, users);
-		} catch (UnauthorizedException e) {
-			throw new BeehiveUnAuthorizedException(e.getMessage());
-		}
+		List<Long> tagIds = getCreatedTagIds(fullNames);
+		Set<String> userIdSet = getUserIds(userIds);
+		thingTagManager.bindTagsToUsers(tagIds, userIdSet);
 	}
 
 	/**
@@ -197,13 +171,9 @@ public class TagController extends AbstractThingTagController {
 			throw new PortalException("RequiredFieldsMissing", "tagIDs or userIDs is empty", HttpStatus
 					.BAD_REQUEST);
 		}
-		List<TagIndex> tagIndexes = getTags(Arrays.asList(fullNames.split(",")));
-		List<BeehiveUser> users = getUsers(userIds);
-		try {
-			thingTagManager.unbindTagsFromUsers(tagIndexes, users);
-		} catch (UnauthorizedException e) {
-			throw new BeehiveUnAuthorizedException(e.getMessage());
-		}
+		List<Long> tagIds = getCreatedTagIds(fullNames);
+		Set<String> userIdSet = getUserIds(userIds);
+		thingTagManager.unbindTagsFromUsers(tagIds, userIdSet);
 	}
 
 	/**
@@ -220,14 +190,9 @@ public class TagController extends AbstractThingTagController {
 					.BAD_REQUEST);
 		}
 
-		List<TagIndex> tagIndexes = getTags(Arrays.asList(fullNames.split(",")));
-
-		List<UserGroup> userGroups = getUserGroups(userGroupIDs);
-		try {
-			thingTagManager.bindTagsToUserGroups(tagIndexes, userGroups);
-		} catch (UnauthorizedException e) {
-			throw new BeehiveUnAuthorizedException(e.getMessage());
-		}
+		List<Long> tagIds = getCreatedTagIds(fullNames);
+		List<Long> groupIds = getUserGroupIds(userGroupIDs);
+		thingTagManager.bindTagsToUserGroups(tagIds, groupIds);
 	}
 
 	/**
@@ -239,18 +204,14 @@ public class TagController extends AbstractThingTagController {
 	 * @param fullNames
 	 */
 	@RequestMapping(path = "/{fullNames}/userGroups/{userGroupIDs}", method = {RequestMethod.DELETE}, consumes = {"*"})
-	public void unbindTagFromUserGroup(@PathVariable("fullNames") String fullNames, @PathVariable("userGroupIDs") String userGroupIDs) {
+	public void unbindTagsFromUserGroups(@PathVariable("fullNames") String fullNames, @PathVariable("userGroupIDs") String userGroupIDs) {
 		if (Strings.isBlank(fullNames) || Strings.isBlank(userGroupIDs)) {
 			throw new PortalException("RequiredFieldsMissing", "tagIDs or userGroupIDs is empty", HttpStatus
 					.BAD_REQUEST);
 		}
-		List<TagIndex> tagIndexes = getTags(Arrays.asList(fullNames.split(",")));
-		List<UserGroup> userGroups = getUserGroups(userGroupIDs);
-		try {
-			thingTagManager.unbindTagsFromUserGroups(tagIndexes, userGroups);
-		} catch (UnauthorizedException e) {
-			throw new BeehiveUnAuthorizedException(e.getMessage());
-		}
+		List<Long> tagIds = getCreatedTagIds(fullNames);
+		List<Long> groupIds = getUserGroupIds(userGroupIDs);
+		thingTagManager.unbindTagsFromUserGroups(tagIds, groupIds);
 	}
 
 	/**
