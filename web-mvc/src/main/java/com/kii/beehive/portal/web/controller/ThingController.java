@@ -214,11 +214,29 @@ public class ThingController extends AbstractThingTagController {
 
 		input.verifyInput();
 
-		GlobalThingInfo thingInfo = new GlobalThingInfo();
+		GlobalThingInfo thingInfo = null;
 
-		BeanUtils.copyProperties(input, thingInfo);
+		if (input.getId() == null) {
+			thingInfo = new GlobalThingInfo();
+		} else {
+			try {
+				thingInfo = thingTagManager.getAccessibleThingById(getLoginUserID(), input.getId());
+			} catch (ObjectNotFoundException e) {
+				throw new PortalException("Requested thing doesn't exist or isn't accessible", e.getMessage(),
+						HttpStatus.BAD_REQUEST);
+			}
+		}
 
-		if (!thingTagManager.getThingsByVendorThingIds(Arrays.asList(thingInfo.getVendorThingID())).isEmpty()) {
+		thingInfo.setVendorThingID(input.getVendorThingID());
+		thingInfo.setKiiAppID(input.getKiiAppID());
+		thingInfo.setType(input.getType());
+		thingInfo.setStatus(input.getStatus());
+		thingInfo.setCustom(input.getCustom());
+
+
+		List<GlobalThingInfo> gList = thingTagManager.getThingsByVendorThingIds(Arrays.asList(thingInfo.getVendorThingID()));
+
+		if (!gList.isEmpty() && !gList.get(0).getId().equals(input.getId())) {
 			throw new PortalException("DuplicateObject", " Duplicate VenderID : " + thingInfo.getVendorThingID(),
 					HttpStatus.BAD_REQUEST);
 		}
