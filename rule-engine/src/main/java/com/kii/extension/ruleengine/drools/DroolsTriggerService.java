@@ -46,11 +46,11 @@ public class DroolsTriggerService {
 
 	@PostConstruct
 	public void initRule(){
-
-		curr.setThing("NONE");
-
-		cloudService.setGlobal("currThing",curr);
-		streamService.setGlobal("currThing",curr);
+//
+//		curr.setThing("NONE");
+//
+//		cloudService.setGlobal("currThing",curr);
+//		streamService.setGlobal("currThing",curr);
 	}
 
 
@@ -200,7 +200,11 @@ public class DroolsTriggerService {
 		curr.setThing(fullThingID);
 
 		cloudService.addOrUpdateData(newStatus);
+		cloudService.addOrUpdateData(curr);
+
 		streamService.addOrUpdateData(newStatus);
+		cloudService.addOrUpdateData(curr);
+
 
 		fireCondition();
 	}

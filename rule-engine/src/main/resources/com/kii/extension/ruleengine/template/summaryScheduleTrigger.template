@@ -3,7 +3,6 @@ package com.kii.extension.ruleengine.drools.rule
 import com.kii.extension.ruleengine.drools.entity.*;
 import com.kii.extension.ruleengine.drools.CommandExec;
 
-global CurrThing currThing;
 
 /////////////////////////////////////
 //summary trigger custom segment

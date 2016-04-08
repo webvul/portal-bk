@@ -2,6 +2,7 @@ package com.kii.beehive.business.ruleengine;
 
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,8 +46,23 @@ public class CommandExecuteService {
 	private TriggerLogTools  logTool;
 
 
+	private AtomicBoolean  sign=new AtomicBoolean(true);
+	public void enable(){
+
+		sign.set(true);
+	}
+
+	public void disable(){
+
+		sign.set(false);
+	}
+
 
 	public void doCommand(TriggerRecord  record) {
+
+		if(!sign.get()){
+			return;
+		}
 		List<ExecuteTarget> targets=record.getTargets();
 
 		targets.forEach(target->{

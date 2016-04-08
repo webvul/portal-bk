@@ -2,7 +2,6 @@ package com.kii.extension.ruleengine.drools.rule
 
 import com.kii.extension.ruleengine.drools.entity.*;
 
-global CurrThing currThing;
 
 /////////////////////////////////////
 //summary trigger custom segment
@@ -10,7 +9,7 @@ global CurrThing currThing;
 
 rule "${triggerID} user custom segment:summary"
 when
-    Trigger( $triggerID:triggerID=="${triggerID}",type ==TriggerType.summary )
+    Trigger( $triggerID:triggerID, ( enable==true && triggerID =="${triggerID}"  &&  type ==TriggerType.summary) )
     SummaryValueMap( triggerID==$triggerID, ${express}  )
 then
 	insertLogical(new MatchResult($triggerID));

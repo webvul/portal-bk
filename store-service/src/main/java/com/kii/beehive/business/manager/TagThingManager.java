@@ -137,12 +137,15 @@ public class TagThingManager {
 			location = DEFAULT_LOCATION;
 		}
 
-		this.saveOrUpdateThingLocation(thingID, location);
 
-		ThingUserRelation relation = new ThingUserRelation();
-		relation.setUserId(thingInfo.getCreateBy());
-		relation.setThingId(thingID);
-		thingUserRelationDao.saveOrUpdate(relation);
+		if (thingInfo.getId() == null) { //create
+			this.saveOrUpdateThingLocation(thingID, location);
+			
+			ThingUserRelation relation = new ThingUserRelation();
+			relation.setUserId(thingInfo.getCreateBy());
+			relation.setThingId(thingID);
+			thingUserRelationDao.saveOrUpdate(relation);
+		}
 
 		if (null != AuthInfoStore.getTeamID()) {
 			teamThingRelationDao.saveOrUpdate(new TeamThingRelation(AuthInfoStore.getTeamID(), thingID));

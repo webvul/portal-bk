@@ -58,6 +58,9 @@ public class TriggerManager {
 	private EventListenerDao eventListenerDao;
 
 
+	@Autowired
+	private CommandExecuteService  commandService;
+
 
 	@PostConstruct
 	public void init(){
@@ -65,6 +68,7 @@ public class TriggerManager {
 
 		List<TriggerRecord> recordList=triggerDao.getAllTrigger();
 
+		commandService.disable();
 
 		recordList.forEach(record->{
 
@@ -100,6 +104,10 @@ public class TriggerManager {
 			}
 		});
 
+
+		service.finishInit();
+
+		commandService.enable();
 
 
 	}
@@ -184,15 +192,16 @@ public class TriggerManager {
 
 	public void disableTrigger(String triggerID){
 		triggerDao.disableTrigger(triggerID);
+
 		service.disableTrigger(triggerID);
-		eventService.disableTriggerByTargetID(triggerID);
+
 	}
 
 
 	public void enableTrigger(String triggerID){
 		triggerDao.enableTrigger(triggerID);
+
 		service.enableTrigger(triggerID);
-		eventService.enableTriggerByTargetID(triggerID);
 	}
 
 	public List<TriggerRecord> getTriggerListByUserId(String userId){
