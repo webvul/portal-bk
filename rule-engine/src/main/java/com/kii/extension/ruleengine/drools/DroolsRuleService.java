@@ -34,7 +34,7 @@ import org.springframework.stereotype.Component;
 public class DroolsRuleService {
 
 
-	private KieSession kieSession;
+	private final KieSession kieSession;
 
 	private final KieContainer kieContainer;
 
@@ -43,7 +43,7 @@ public class DroolsRuleService {
 	private final KieFileSystem kfs;
 
 
-	private Map<String,FactHandle> handleMap=new ConcurrentHashMap<>();
+	private final Map<String,FactHandle> handleMap=new ConcurrentHashMap<>();
 
 
 	public Map<String,Object>  getEngineEntitys(){
@@ -94,11 +94,12 @@ public class DroolsRuleService {
 
 		kfs= ks.newKieFileSystem();
 
-
 		int i=0;
 		for(String rule:rules) {
 
 			String drlName="src/main/resources/comm_"+i+".drl";
+
+			byte[]  bytes=kfs.read(drlName);
 
 			kfs.write(drlName, rule);
 			pathSet.add(drlName);
@@ -161,16 +162,9 @@ public class DroolsRuleService {
 		pathSet.add(drlName);
 
 		KieBuilder kb=ks.newKieBuilder(kfs);
-		kb.buildAll();
 
-		//临时增加, 如果规则文件有错误,则删除 避免rule engine 异常崩溃
-//		try {
+		kb.buildAll();
 		kieContainer.updateToVersion(kb.getKieModule().getReleaseId());
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			this.removeCondition(name);
-////			kfs.delete("src/main/resources/user_"+name+".drl");
-//		}
 
 		getSession().getObjects().forEach((obj)->{
 

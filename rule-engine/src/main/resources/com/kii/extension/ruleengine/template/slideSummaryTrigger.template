@@ -7,7 +7,7 @@ global CurrThing currThing;
 
 rule "${triggerID} summary unit:slide windows ${summaryField}"
 when
-	Trigger(type =="summary",$triggerID:triggerID=="${triggerID}" )
+	Trigger($triggerID:triggerID,(triggerID=="${triggerID}" && enable=true &&  type ==TriggerType.summary)  )
 	$summary:Summary(triggerID==$triggerID ,$things:things, funName=="${funName}-${sum-suffix}" )
 	CurrThing(thing memberOf $things) from currThing
 	accumulate( ThingStatusInRule(thingID memberOf $things , $status:values) over window:${sum-suffix}( ${windowSize});

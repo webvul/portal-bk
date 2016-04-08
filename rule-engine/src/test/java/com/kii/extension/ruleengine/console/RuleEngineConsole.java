@@ -92,7 +92,7 @@ public class RuleEngineConsole {
 
 					engine.changeThingsInSummary(triggerID,summaryName,new HashSet(Arrays.asList(things)));
 				}
-				if(cmd.equals("createSimple")){
+				if(cmd.equals("newSimple")){
 					String triggerID=arrays[1];
 					String thingID=arrays[2];
 
@@ -101,9 +101,9 @@ public class RuleEngineConsole {
 					RuleEnginePredicate predicate=mapper.readValue(json,RuleEnginePredicate.class);
 
 					SimpleTriggerRecord record=new SimpleTriggerRecord();
-					record.setRecordStatus(TriggerRecord.StatusType.enable);
 					record.setPredicate(predicate);
 					record.setId(triggerID);
+					record.setRecordStatus(TriggerRecord.StatusType.disable);
 					record.setSource(new SimpleTriggerRecord.ThingID());
 
 					engine.createSimpleTrigger(thingID,record);

@@ -10,7 +10,7 @@ global CurrThing currThing;
 
 rule "${triggerID} user custom segment:group"
 when
-    Trigger( $triggerID:triggerID=="${triggerID}",$things:things  )
+    Trigger( $triggerID:triggerID, $things:things ,(triggerID=="${triggerID}" && enable=true &&  type ==TriggerType.group)  )
     CurrThing(thing memberOf $things) from currThing
     ThingStatusInRule( $thingID:thingID memberOf $things,${express}  )
 then
