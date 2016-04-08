@@ -7,7 +7,7 @@
 //import org.junit.Test;
 //import org.springframework.beans.factory.annotation.Autowired;
 //
-//import com.kii.beehive.portal.jdbc.dao.BeehiveUserDao;
+//import com.kii.beehive.portal.service.BeehiveUserDao;
 //import com.kii.beehive.portal.jdbc.entity.BeehiveUser;
 //import com.kii.beehive.portal.service.BeehiveUserService;
 //

@@ -1,10 +1,8 @@
 package com.kii.beehive.portal.web.controller;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,10 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.business.manager.UserManager;
-import com.kii.beehive.portal.jdbc.entity.BeehiveUser;
-import com.kii.beehive.portal.jdbc.entity.Team;
-import com.kii.beehive.portal.jdbc.entity.TeamUserRelation;
-import com.kii.beehive.portal.web.entity.SyncUserRestBean;
+import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.entity.UserRestBean;
 
 @RestController
@@ -64,14 +59,9 @@ public class UserController {
 	 * @param user
 	 */
 	@RequestMapping(path="/{userID}",method={RequestMethod.PATCH})
-	public Map<String,String> updateUser(@PathVariable("userID") String userID, @RequestBody SyncUserRestBean user){
+	public Map<String,String> updateUser(@PathVariable("userID") String userID, @RequestBody BeehiveUser user){
 
-		checkTeam(userID);
-
-		// clean the input user id
-		user.setAliUserID(null);
-
-		userManager.updateUser(user.getBeehiveUser(),userID);
+		userManager.updateUser(user,userID);
 
 
 		Map<String,String> map=new HashMap<>();
@@ -88,20 +78,11 @@ public class UserController {
 	 * @param userID
 	 */
 	@RequestMapping(path="/{userID}",method={RequestMethod.GET})
-	public SyncUserRestBean getUser(@PathVariable("userID") String userID){
+	public BeehiveUser getUser(@PathVariable("userID") String userID){
 
-		checkTeam(userID);
 
-		return new SyncUserRestBean(userManager.getUserByID(userID));
+		return userManager.getUserByID(userID);
 	}
 
-	private void checkTeam(String userID){
-		if(isTeamIDExist()){
-			TeamUserRelation tur = teamUserRelationDao.findByTeamIDAndUserID(this.getLoginTeamID(), userID);
-			if(tur == null){
-				throw new PortalException("User Not Found", "userID:" + userID + " Not Found", HttpStatus.NOT_FOUND);
-			}
-		}
-	}
 
 }

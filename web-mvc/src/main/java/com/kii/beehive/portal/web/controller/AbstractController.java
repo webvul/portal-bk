@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.kii.beehive.business.manager.AuthManager;
 import com.kii.beehive.business.manager.PortalSyncUserManager;
-import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.jdbc.dao.GroupPermissionRelationDao;
 import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
 import com.kii.beehive.portal.jdbc.dao.PermissionDao;
@@ -30,16 +29,4 @@ public abstract class AbstractController {
     @Autowired
     protected GroupPermissionRelationDao groupPermissionRelationDao;
 
-
-	protected String getLoginUserID() {
-		return AuthInfoStore.getUserID();
-	}
-	
-	protected Long getLoginTeamID() {
-		return AuthInfoStore.getTeamID();
-	}
-	
-	protected boolean isTeamIDExist() {
-		return getLoginTeamID() != null;
-	}
 }

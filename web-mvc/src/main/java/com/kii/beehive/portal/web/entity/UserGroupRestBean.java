@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
-import com.kii.beehive.portal.jdbc.entity.BeehiveUser;
+import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.exception.PortalException;
 
 public class UserGroupRestBean extends UserGroup {

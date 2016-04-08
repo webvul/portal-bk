@@ -11,9 +11,9 @@
 //import org.springframework.stereotype.Component;
 //
 //import com.kii.beehive.portal.jdbc.dao.ArchiveBeehiveUserDao;
-//import com.kii.beehive.portal.jdbc.dao.BeehiveUserDao;
+//import com.kii.beehive.portal.service.BeehiveUserDao;
 //import com.kii.beehive.portal.jdbc.dao.BeehiveUserGroupRelationDao;
-//import com.kii.beehive.portal.jdbc.entity.BeehiveUser;
+//import com.kii.beehive.portal.store.entity.BeehiveUser;
 //
 //@Component
 //public class BeehiveUserService {

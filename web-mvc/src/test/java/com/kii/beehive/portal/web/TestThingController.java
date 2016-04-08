@@ -14,7 +14,7 @@ import com.kii.beehive.portal.jdbc.dao.TeamThingRelationDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagType;
-import com.kii.beehive.portal.jdbc.entity.BeehiveUser;
+import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.beehive.portal.web.controller.ThingController;
 import com.kii.beehive.portal.web.controller.ThingIFController;

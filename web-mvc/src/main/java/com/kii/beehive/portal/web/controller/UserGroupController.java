@@ -1,15 +1,14 @@
 package com.kii.beehive.portal.web.controller;
 
 
+import javax.servlet.http.HttpServletRequest;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
-import com.kii.beehive.portal.exception.InvalidAuthException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,14 +18,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.exception.InvalidAuthException;
 import com.kii.beehive.portal.jdbc.dao.TagGroupRelationDao;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
 import com.kii.beehive.portal.jdbc.entity.TagGroupRelation;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
-import com.kii.beehive.portal.service.PortalSyncUserDao;
-import com.kii.beehive.portal.jdbc.entity.BeehiveUser;
+import com.kii.beehive.portal.service.BeehiveUserDao;
+import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.entity.UserGroupRestBean;
 import com.kii.beehive.portal.web.exception.BeehiveUnAuthorizedException;
 import com.kii.beehive.portal.web.exception.PortalException;
@@ -41,7 +42,7 @@ import com.kii.beehive.portal.web.exception.PortalException;
 public class UserGroupController extends AbstractController{
 	
 	@Autowired
-	private PortalSyncUserDao beehiveUserDao;
+	private BeehiveUserDao beehiveUserDao;
 	
 	@Autowired
 	private TagGroupRelationDao tagGroupRelationDao;
@@ -66,9 +67,9 @@ public class UserGroupController extends AbstractController{
 		UserGroup userGroup = userGroupRestBean.getUserGroup();
         Long userGroupID = null;
         if(userGroup.getId() == null){//create
-        	userGroupID = userManager.createUserGroup(userGroup, getLoginUserID());
+        	userGroupID = userManager.createUserGroup(userGroup, AuthInfoStore.getUserID());
         }else{//update
-        	userGroupID = userManager.updateUserGroup(userGroup, getLoginUserID());
+        	userGroupID = userManager.updateUserGroup(userGroup, AuthInfoStore.getUserID());
         }
 
         Map<String,Object> resultMap = new HashMap<>();
@@ -85,8 +86,8 @@ public class UserGroupController extends AbstractController{
 	@RequestMapping(path="/{userGroupID}/user/{userIDs}",method={RequestMethod.POST})
 	public ResponseEntity addUsersToUserGroup(@PathVariable("userGroupID") Long userGroupID, @PathVariable("userIDs") String userIDs){
         UserGroup ug = this.userGroupDao.findByID(userGroupID);
-        if(!ug.getCreateBy().equals(getLoginUserID())){
-            throw new InvalidAuthException(ug.getCreateBy(), getLoginUserID());
+        if(!ug.getCreateBy().equals(AuthInfoStore.getUserID())){
+            throw new InvalidAuthException(ug.getCreateBy(), AuthInfoStore.getUserID());
         }
 
         List<String> userIDList = Arrays.asList(userIDs.split(","));
@@ -105,13 +106,13 @@ public class UserGroupController extends AbstractController{
 		UserGroup ug = this.userGroupDao.findByID(userGroupID);
 		if(ug == null){
 			throw new PortalException("UserGroup Not Found", "UserGroup with userGroupID:" + userGroupID + " Not Found", HttpStatus.NOT_FOUND);
-		}else if(!ug.getCreateBy().equals(getLoginUserID())){
+		}else if(!ug.getCreateBy().equals(AuthInfoStore.getUserID())){
 			throw new BeehiveUnAuthorizedException("Current user is not the creator of the user group.");
         }else {
             List<String> userIDList = new ArrayList<String>();
             String[] userIDArray = userIDs.split(",");
             for(String uID : userIDArray){
-                if(!uID.equals(getLoginUserID())){
+                if(!uID.equals(AuthInfoStore.getUserID())){
                     userIDList.add(uID);
                 }else{
 					throw new BeehiveUnAuthorizedException("the creator can't remove");
@@ -141,7 +142,7 @@ public class UserGroupController extends AbstractController{
 
 		if(orig == null){
 			throw new PortalException("UserGroup Not Found", "UserGroup with userGroupID:" + userGroupID + " Not Found", HttpStatus.NOT_FOUND);
-		}else if(!orig.getCreateBy().equals(getLoginUserID())){
+		}else if(!orig.getCreateBy().equals(AuthInfoStore.getUserID())){
 			throw new BeehiveUnAuthorizedException("Current user is not the creator of the user group.");
         }
 		
@@ -162,7 +163,7 @@ public class UserGroupController extends AbstractController{
     @RequestMapping(path="/{userGroupID}",method={RequestMethod.GET})
     public ResponseEntity<UserGroupRestBean> getUserGroupDetail(@PathVariable("userGroupID") Long userGroupID){
     	UserGroupRestBean ugrb = null;
-		if(isGroupOfUser(getLoginUserID(), userGroupID)){
+		if(isGroupOfUser(AuthInfoStore.getUserID(), userGroupID)){
 			List<GroupUserRelation> relList = groupUserRelationDao.findByUserGroupID(userGroupID);
 			if(relList.size() > 0){
                 List<String> userIdList = new ArrayList<String>();
@@ -193,7 +194,7 @@ public class UserGroupController extends AbstractController{
     @RequestMapping(path="/{userGroupID}/tags",method={RequestMethod.GET})
     public ResponseEntity<List<TagIndex>> getUserGroupTag(@PathVariable("userGroupID") Long userGroupID, HttpServletRequest httpRequest){
     	List<TagIndex> tagList = null;
-		if(isGroupOfUser(getLoginUserID(), userGroupID)){
+		if(isGroupOfUser(AuthInfoStore.getUserID(), userGroupID)){
 			List<Long> tagIDList = new ArrayList<Long>();
 			List<TagGroupRelation> relList = tagGroupRelationDao.findByUserGroupID(userGroupID);
 			if(relList.size() > 0){
@@ -219,7 +220,7 @@ public class UserGroupController extends AbstractController{
      */
     @RequestMapping(path = "/list", method = {RequestMethod.GET})
 	public ResponseEntity<List<UserGroupRestBean>> getUserGroupList() {
-		List<UserGroup> list =  list = userGroupDao.findUserGroup(getLoginUserID(), null , null);
+		List<UserGroup> list =  list = userGroupDao.findUserGroup(AuthInfoStore.getUserID(), null , null);
 		List<UserGroupRestBean> restBeanList = this.convertList(list);
 		return new ResponseEntity<>(restBeanList, HttpStatus.OK);
 	}

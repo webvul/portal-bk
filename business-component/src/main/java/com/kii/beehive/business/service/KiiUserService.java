@@ -4,7 +4,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.kii.beehive.portal.jdbc.entity.BeehiveUser;
+import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.entity.KiiUser;
 import com.kii.extension.sdk.entity.LoginInfo;

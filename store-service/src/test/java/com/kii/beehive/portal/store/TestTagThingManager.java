@@ -10,7 +10,7 @@ import com.kii.beehive.portal.jdbc.dao.*;
 import com.kii.beehive.portal.jdbc.entity.*;
 import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.service.PortalSyncUserDao;
-import com.kii.beehive.portal.jdbc.entity.BeehiveUser;
+import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
 import junit.framework.TestCase;
 import org.junit.Before;

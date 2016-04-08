@@ -9,7 +9,7 @@ import com.kii.beehive.portal.jdbc.dao.*;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagType;
 import com.kii.beehive.portal.jdbc.entity.TagUserRelation;
-import com.kii.beehive.portal.jdbc.entity.BeehiveUser;
+import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.WebTestTemplate;
 import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.beehive.portal.web.exception.PortalException;

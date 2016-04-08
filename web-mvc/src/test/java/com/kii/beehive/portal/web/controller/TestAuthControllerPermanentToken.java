@@ -16,7 +16,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
 import com.kii.beehive.portal.service.PortalSyncUserDao;
-import com.kii.beehive.portal.jdbc.entity.BeehiveUser;
+import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.WebTestTemplate;
 import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.extension.sdk.entity.KiiUser;

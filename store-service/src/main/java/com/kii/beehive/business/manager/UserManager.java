@@ -15,27 +15,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kii.beehive.business.service.KiiUserService;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.StringRandomTools;
 import com.kii.beehive.portal.exception.DuplicateException;
 import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.beehive.portal.exception.InvalidAuthException;
+import com.kii.beehive.portal.exception.ObjectNotFoundException;
 import com.kii.beehive.portal.exception.UserNotExistException;
-import com.kii.beehive.portal.jdbc.dao.BeehiveUserDao;
 import com.kii.beehive.portal.jdbc.dao.GroupPermissionRelationDao;
 import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
 import com.kii.beehive.portal.jdbc.dao.PermissionDao;
 import com.kii.beehive.portal.jdbc.dao.TeamDao;
 import com.kii.beehive.portal.jdbc.dao.TeamGroupRelationDao;
+import com.kii.beehive.portal.jdbc.dao.TeamUserRelationDao;
 import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
-import com.kii.beehive.portal.jdbc.entity.BeehiveUser;
 import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
 import com.kii.beehive.portal.jdbc.entity.Team;
 import com.kii.beehive.portal.jdbc.entity.TeamGroupRelation;
 import com.kii.beehive.portal.jdbc.entity.TeamUserRelation;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
-import com.kii.beehive.business.service.KiiUserService;
-import com.kii.beehive.portal.store.entity.PortalSyncUser;
+import com.kii.beehive.portal.service.BeehiveUserDao;
+import com.kii.beehive.portal.store.entity.BeehiveUser;
 
 @Component
 @Transactional
@@ -56,8 +57,6 @@ public class UserManager {
 	@Autowired
 	private GroupPermissionRelationDao groupPermissionRelationDao;
 
-	@Autowired
-	protected TeamGroupRelationDao teamGroupRelationDao;
 
 	@Autowired
 	protected PermissionDao permissionDao;
@@ -72,10 +71,14 @@ public class UserManager {
 	@Autowired
 	protected TeamGroupRelationDao teamGroupRelationDao;
 
+	@Autowired
+	protected TeamUserRelationDao teamUserRelationDao;
+
+
 
 	public BeehiveUser addUser(BeehiveUser user) {
 
-		userDao.insert(user);
+		userDao.addEntity(user);
 
 		user=kiiUserService.addBeehiveUser(user);
 
@@ -83,13 +86,13 @@ public class UserManager {
 
 		user.setActivityToken(token);
 
-		userDao.updateEntityByID(user,user.getUserID());
+		userDao.updateEntity(user,user.getId());
 
 		return user;
 	}
 
 
-	private void addTeamInfo(String teamName,Long userID){
+	private void addTeamInfo(String teamName,String userID){
 
 		//create team
 		if(!Strings.isBlank(teamName)){
@@ -170,7 +173,7 @@ public class UserManager {
 	 */
 	public void addUserToUserGroup(List<String> userIDList, Long userGroupID) {
 
-		List<BeehiveUser> userList = userDao.getUserByIDs(userIDList);
+		List<BeehiveUser> userList = userDao.getUserByIDs(userIDList.toArray(new String[0]));
 		if (userList.size() == 1) {
 			List<UserGroup> orgiList = userGroupDao.findUserGroup(userList.get(0).getKiiLoginName(), userGroupID, null);
 			if (orgiList.size() == 0) {
@@ -192,14 +195,14 @@ public class UserManager {
 	}
 
 	public void deleteUser(String userID) {
-
+		checkTeam(userID);
 		BeehiveUser user = userDao.getUserByID(userID);
 
 		//this.removeUserFromUserGroup(userID, user.getGroups());
 
 		groupUserRelationDao.delete(userID, null);
 
-		kiiUserDao.disableBeehiveUser(user);
+		kiiUserService.disableBeehiveUser(user);
 
 		userDao.deleteUser(userID);
 
@@ -207,9 +210,30 @@ public class UserManager {
 	}
 
 	public BeehiveUser getUserByID(String userID) {
+
+		checkTeam(userID);
 		return userDao.getUserByID(userID);
 	}
 
+
+	public void updateUser(BeehiveUser user,String userID){
+
+		checkTeam(userID);
+		userDao.updateEntity(user,userID);
+
+
+	}
+
+
+
+	private void checkTeam(String userID){
+		if(AuthInfoStore.isTeamIDExist()){
+			TeamUserRelation tur = teamUserRelationDao.findByTeamIDAndUserID(AuthInfoStore.getTeamID(), userID);
+			if(tur == null){
+				throw new ObjectNotFoundException( "userID:" + userID + " Not Found");
+			}
+		}
+	}
 	/**
 	 * return the non existing userIDs
 	 *
@@ -223,10 +247,10 @@ public class UserManager {
 		}
 
 		// get the existing user IDs
-		List<BeehiveUser> beehiveUserList = userDao.getUserByIDs(new ArrayList<>(userIDs));
+		List<BeehiveUser> beehiveUserList = userDao.getUserByIDs(userIDs.toArray(new String[0]));
 		Set<String> existingUserIDList = new HashSet<>();
 		for (BeehiveUser user : beehiveUserList) {
-			existingUserIDList.add(user.getAliUserID());
+			existingUserIDList.add(user.getId());
 		}
 
 		// get the non existing user IDs

@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kii.beehive.portal.service.ArchiveBeehiveUserDao;
 import com.kii.beehive.portal.service.PortalSyncUserDao;
 import com.kii.beehive.business.service.KiiUserService;
-import com.kii.beehive.portal.jdbc.entity.BeehiveUser;
+import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.store.entity.PortalSyncUser;
 import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.beehive.portal.web.controller.UserSyncController;

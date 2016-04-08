@@ -1,25 +1,28 @@
 package com.kii.beehive.business.manager;
 
 
+import java.util.Collections;
+import java.util.List;
+
+import org.apache.commons.codec.digest.DigestUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.exception.UnauthorizedException;
 import com.kii.beehive.portal.helper.AuthInfoCacheService;
 import com.kii.beehive.portal.helper.AuthInfoPermanentTokenService;
-import com.kii.beehive.portal.jdbc.entity.BeehiveUser;
+import com.kii.beehive.portal.service.BeehiveUserDao;
 import com.kii.beehive.portal.store.entity.AuthInfoEntry;
+import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.context.UserTokenBindTool;
 import com.kii.extension.sdk.entity.LoginInfo;
 import com.kii.extension.sdk.exception.KiiCloudException;
 import com.kii.extension.sdk.service.UserService;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.logging.log4j.util.Strings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @BindAppByName(appName = "master")
 @Component
@@ -28,7 +31,7 @@ public class AuthManager {
 	private Logger log = LoggerFactory.getLogger(AuthManager.class);
 
 	@Autowired
-	private UserService userService;
+	private BeehiveUserDao userDao;
 
 	@Autowired
 	private AuthInfoCacheService authInfoCacheService;
@@ -39,6 +42,9 @@ public class AuthManager {
 	@Autowired
 	private UserTokenBindTool userTokenBindTool;
 
+	@Autowired
+	private UserService userService;
+
 	/**
 	 * register with userID and password
 	 * the logic behind is as below:
@@ -48,32 +54,39 @@ public class AuthManager {
 	 * @param userID
 	 * @param password
 	 */
-	public boolean register(BeehiveUser  user, String password) {
+	public boolean activity(String userID, String token) {
 
-		try {
-			// TODO need to check why below was ever commented out?
-			String defaultPassword = this.getDefaultPassword(user);
+		// TODO need to check why below was ever commented out?
+//			String defaultPassword = this.getDefaultPassword(user);
 
-			// login Kii Cloud
-			LoginInfo loginInfo = userService.login(user., defaultPassword);
+		BeehiveUser user = userDao.getUserByID(userID);
 
-			// bind token to ThreadLocal
-			userTokenBindTool.bindToken(loginInfo.getToken());
 
-			// change from default password to new password
-			userService.changePassword(defaultPassword, password);
+		boolean sign = token.equals(user.getActivityToken());
 
-		} catch (KiiCloudException e) {
-			log.debug("Login with default password failed", e);
-			return false;
+		if (sign) {
+			//one-time token
+			userDao.updateWithVerify(userID, Collections.singletonMap("activityToken", null), user.getVersion());
 		}
 
-		return true;
+		return sign;
 	}
 
-	private String getDefaultPassword(BeehiveUser user) {
-		return DigestUtils.sha1Hex(user.getUserName()+"_username_"+user.getId() + "_beehive");
+	public void initPassword(String userID,String newPassword) {
+
+
+		BeehiveUser  user=userDao.getUserByID(userID);
+
+		String pwd=user.getDefaultPassword();
+
+
+		String newPwd=user.getUserPassword(newPassword);
+
+		userService.changePassword(pwd,newPwd);
+
 	}
+
+
 
 	/**
 	 * login Kii Cloud and save the auth info
@@ -89,16 +102,10 @@ public class AuthManager {
 		// login Kii Cloud
 		LoginInfo loginInfo = null;
 
-		try {
-			loginInfo = userService.login(userID, password);
-		} catch (KiiCloudException e) {
-			log.debug("Login failed", e);
-			return null;
-		}
+		BeehiveUser  user=userDao.getUserByID(userID);
+		String pwd=user.getUserPassword(password);
 
-
-		// if permanent token is required, save the auth info into permanent token cache and DB;
-		// else, save the auth info into auth info cache
+		loginInfo = userService.login(userID, pwd);
 		AuthInfoEntry authInfoEntry = null;
 		if (permanentToken) {
 			authInfoEntry = authInfoPermanentTokenService.saveToken(userID, loginInfo.getToken());
@@ -118,7 +125,12 @@ public class AuthManager {
 	 */
 	public void changePassword(String oldPassword, String newPassword) {
 
-		userService.changePassword(oldPassword, newPassword);
+		BeehiveUser  user=userDao.getUserByID(AuthInfoStore.getUserID());
+
+		String pwd=user.getUserPassword(oldPassword);
+		String newPwd=user.getUserPassword(newPassword);
+
+		userService.changePassword(pwd, newPwd);
 
 		// remove the auth info from auth info cache
 		String token = userTokenBindTool.getToken();
@@ -202,7 +214,7 @@ public class AuthManager {
 	 * @return null if the corresponding auth info entry doesn't exist
 	 */
 	public AuthInfoEntry getAuthInfoEntry(String token) {
-		if (Strings.isBlank(token)) {
+		if (StringUtils.isEmpty(token)) {
 			return null;
 		}
 

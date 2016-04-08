@@ -1,8 +1,11 @@
-package com.kii.beehive.portal.jdbc.entity;
+package com.kii.beehive.portal.store.entity;
 
-import com.kii.beehive.portal.jdbc.annotation.JdbcField;
 
-public class BeehiveUser extends DBEntity {
+import org.apache.commons.codec.digest.DigestUtils;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+public class BeehiveUser extends  PortalEntity {
 
 	private String kiiUserID;
 
@@ -14,14 +17,13 @@ public class BeehiveUser extends DBEntity {
 
 	private String mail;
 
-	private String role;
+//	private String role;
 
 	private String company;
 
 	private String activityToken;
 
 
-	@JdbcField(column="activity_token" )
 	public String getActivityToken() {
 		return activityToken;
 	}
@@ -34,14 +36,6 @@ public class BeehiveUser extends DBEntity {
 
 	}
 
-	@JdbcField(column = "beehive_user_id")
-	public Long getUserID(){
-		return super.getId();
-	}
-
-	public void setUserID(Long id){
-		super.setId(id);
-	}
 
 	public String getKiiUserID() {
 		return kiiUserID;
@@ -75,13 +69,13 @@ public class BeehiveUser extends DBEntity {
 		this.mail = mail;
 	}
 
-	public String getRole() {
-		return role;
-	}
-
-	public void setRole(String role) {
-		this.role = role;
-	}
+//	public String getRole() {
+//		return role;
+//	}
+//
+//	public void setRole(String role) {
+//		this.role = role;
+//	}
 
 	public String getCompany() {
 		return company;
@@ -100,4 +94,13 @@ public class BeehiveUser extends DBEntity {
 	}
 
 
+	@JsonIgnore
+	public String getDefaultPassword() {
+		return DigestUtils.sha1Hex(getUserName()+"_username_"+getId() + "_beehive");
+	}
+
+	public String getUserPassword(String pwd){
+		return DigestUtils.sha1Hex(pwd+"_user_id"+getId()+"_beehive");
+
+	}
 }

@@ -7,7 +7,7 @@ import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
 import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
 import com.kii.beehive.portal.service.PortalSyncUserDao;
-import com.kii.beehive.portal.jdbc.entity.BeehiveUser;
+import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.WebTestTemplate;
 import com.kii.beehive.portal.web.constant.Constants;
 import org.junit.Before;

@@ -26,7 +26,7 @@ import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.CollectUtils;
 import com.kii.beehive.portal.exception.ObjectNotFoundException;
 import com.kii.beehive.portal.exception.UnauthorizedException;
-import com.kii.beehive.portal.jdbc.dao.BeehiveUserDao;
+import com.kii.beehive.portal.service.BeehiveUserDao;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
 import com.kii.beehive.portal.jdbc.dao.TagGroupRelationDao;
@@ -39,7 +39,7 @@ import com.kii.beehive.portal.jdbc.dao.TeamThingRelationDao;
 import com.kii.beehive.portal.jdbc.dao.ThingUserGroupRelationDao;
 import com.kii.beehive.portal.jdbc.dao.ThingUserRelationDao;
 import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
-import com.kii.beehive.portal.jdbc.entity.BeehiveUser;
+import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.TagGroupRelation;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
@@ -533,7 +533,7 @@ public class TagThingManager {
 	}
 
 	public List<BeehiveUser> getUsers(List<String> userIDList) throws ObjectNotFoundException {
-		List<BeehiveUser> users = userDao.getUserByIDs(userIDList);
+		List<BeehiveUser> users = userDao.getUserByIDs(userIDList.toArray(new String[0]));
 		if (null == users || !users.stream().map(BeehiveUser::getKiiLoginName).collect(Collectors.toSet())
 				.containsAll(userIDList)) {
 			userIDList.removeAll(users.stream().map(BeehiveUser::getKiiLoginName).collect(Collectors.toList()));
@@ -686,7 +686,7 @@ public class TagThingManager {
 				collect(Collectors.toSet());
 		users.addAll(thingUserRelationDao.findUserIds(thingId));
 		users.addAll(tagUserRelationDao.findUserIds(tagIds).orElse(Collections.emptyList()));
-		return userDao.getUserByIDs(users.stream().collect(Collectors.toList()));
+		return userDao.getUserByIDs(users.toArray(new String[0]));
 	}
 
 	public List<UserGroup> getUserGroupsOfAccessibleThing(String userId, Long thingId) throws ObjectNotFoundException {

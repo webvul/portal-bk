@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kii.beehive.business.manager.AuthManager;
 import com.kii.beehive.business.manager.UserManager;
 import com.kii.beehive.portal.common.utils.CollectUtils;
-import com.kii.beehive.portal.jdbc.entity.BeehiveUser;
 import com.kii.beehive.portal.jdbc.entity.Team;
 import com.kii.beehive.portal.store.entity.AuthInfoEntry;
+import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.entity.AuthRestBean;
@@ -37,8 +37,8 @@ public class AuthController {
 	@Autowired
     private AuthManager authManager;
 
-//    @Autowired
-//    private UserManager userManager;
+    @Autowired
+    private UserManager userManager;
     
     /**
      * 用户注册
@@ -52,13 +52,13 @@ public class AuthController {
     public void activity(@RequestBody Map<String, Object> request) {
 
         String userID = (String)request.get("userID");
-        String password = (String)request.get("password");
+        String password = (String)request.get("activityToken");
 
         if(CollectUtils.containsBlank(userID, password)) {
             throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "userID or password empty", HttpStatus.BAD_REQUEST);
         }
         
-        boolean result = authManager.register(userID, password);
+        boolean result = authManager.activity(userID, password);
 
         if(result == false) {
             throw new PortalException(ErrorCode.AUTH_FAIL, "userID incorrect or already registered", HttpStatus.BAD_REQUEST);
@@ -97,7 +97,8 @@ public class AuthController {
         // get user info
         BeehiveUser beehiveUser = userManager.getUserByID(userID);
         
-        AuthRestBean authRestBean = new AuthRestBean(beehiveUser);
+        AuthRestBean authRestBean = new AuthRestBean();
+		authRestBean.setUser(beehiveUser);
         
         Team team = userManager.getTeamByID(userID);
         if(team != null){
@@ -170,7 +171,8 @@ public class AuthController {
         // get user info
         BeehiveUser beehiveUser = userManager.getUserByID(userID);
 
-        AuthRestBean authRestBean = new AuthRestBean(beehiveUser);
+        AuthRestBean authRestBean = new AuthRestBean();
+		authRestBean.setUser(beehiveUser);
 
         Team team = userManager.getTeamByID(userID);
         if(team != null){

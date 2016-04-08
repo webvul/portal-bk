@@ -22,6 +22,10 @@ public class AuthInfoStore {
 		return team.get();
 	}
 
+	public static boolean isTeamIDExist(){
+		return getTeamID() != null;
+	}
+
 	public static void setAdmin(){
 		isAdmin.set(true);
 	}

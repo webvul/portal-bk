@@ -5,7 +5,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
-import com.kii.beehive.portal.jdbc.entity.BeehiveUser;
+import com.kii.beehive.portal.store.entity.BeehiveUser;
 
 public class AuthRestBean  {
 

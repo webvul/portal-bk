@@ -26,13 +26,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.business.service.ThingIFInAppService;
+import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.exception.ObjectNotFoundException;
 import com.kii.beehive.portal.exception.UnauthorizedException;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagType;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
-import com.kii.beehive.portal.jdbc.entity.BeehiveUser;
+import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.entity.ThingRestBean;
 import com.kii.beehive.portal.web.exception.BeehiveUnAuthorizedException;
 import com.kii.beehive.portal.web.exception.PortalException;
@@ -59,7 +60,7 @@ public class ThingController extends AbstractThingTagController {
 	@RequestMapping(value = "/{globalThingID}/users", method = RequestMethod.GET)
 	public List<BeehiveUser> getUsersByThing(@PathVariable("globalThingID") Long globalThingID) {
 		try {
-			return thingTagManager.getUsersOfAccessibleThing(getLoginUserID(), globalThingID);
+			return thingTagManager.getUsersOfAccessibleThing(AuthInfoStore.getUserID(), globalThingID);
 		} catch (ObjectNotFoundException e) {
 			throw new PortalException(e.getMessage(), e.getMessage(), HttpStatus.BAD_REQUEST);
 		}
@@ -85,7 +86,7 @@ public class ThingController extends AbstractThingTagController {
 	@RequestMapping(value = "/{globalThingID}/userGroups", method = RequestMethod.GET)
 	public List<UserGroup> getUserGroupIdsByThing(@PathVariable("globalThingID") Long globalThingID) {
 		try {
-			return thingTagManager.getUserGroupsOfAccessibleThing(getLoginUserID(), globalThingID);
+			return thingTagManager.getUserGroupsOfAccessibleThing(AuthInfoStore.getUserID(), globalThingID);
 		} catch (ObjectNotFoundException e) {
 			throw new PortalException(e.getMessage(), e.getMessage(), HttpStatus.BAD_REQUEST);
 		}
@@ -114,7 +115,7 @@ public class ThingController extends AbstractThingTagController {
 
 	@RequestMapping(value = "/types/{type}", method = {RequestMethod.GET})
 	public List<ThingRestBean> getThingsByType(@PathVariable("type") String type) {
-		List<GlobalThingInfo> thingList = thingTagManager.getAccessibleThingsByType(type, getLoginUserID());
+		List<GlobalThingInfo> thingList = thingTagManager.getAccessibleThingsByType(type, AuthInfoStore.getUserID());
 		List<ThingRestBean> resultList = this.toThingRestBean(thingList);
 		return resultList;
 	}
@@ -129,7 +130,7 @@ public class ThingController extends AbstractThingTagController {
 	 */
 	@RequestMapping(value = "/types", method = {RequestMethod.GET})
 	public List<Map<String, Object>> getAllType() {
-		return thingTagManager.getTypesOfAccessibleThingsWithCount(getLoginUserID());
+		return thingTagManager.getTypesOfAccessibleThingsWithCount(AuthInfoStore.getUserID());
 	}
 
 
@@ -143,7 +144,7 @@ public class ThingController extends AbstractThingTagController {
 	public List<String> getThingTypeByTagIDs(@PathVariable("tagIDs") String tagIDs) {
 		List<String> result;
 		try {
-			result = thingTagManager.getThingTypesOfAccessibleThingsByTagIds(getLoginUserID(),
+			result = thingTagManager.getThingTypesOfAccessibleThingsByTagIds(AuthInfoStore.getUserID(),
 					asList(tagIDs.split(",")));
 		} catch (ObjectNotFoundException e) {
 			throw new PortalException("Requested tag doesn't exist or is not accessible", e.getMessage(),
@@ -163,7 +164,7 @@ public class ThingController extends AbstractThingTagController {
 	@RequestMapping(value = "/types/fulltagname/{fullTagNames}", method = {RequestMethod.GET})
 	public List<String> getThingTypeByTagFullName(@PathVariable("fullTagNames") String fullTagNames) {
 		try {
-			return thingTagManager.getTypesOfAccessibleThingsByTagFullName(getLoginUserID(),
+			return thingTagManager.getTypesOfAccessibleThingsByTagFullName(AuthInfoStore.getUserID(),
 					asList(fullTagNames.split(",")).stream().collect(Collectors.toSet()));
 		} catch (ObjectNotFoundException e) {
 			throw new PortalException("Some requested tags don't exist or is not accessible", e.getMessage(),
@@ -184,7 +185,7 @@ public class ThingController extends AbstractThingTagController {
 	public ThingRestBean getThingByGlobalID(@PathVariable("globalThingID") Long globalThingID) {
 		GlobalThingInfo thingInfo;
 		try {
-			thingInfo = thingTagManager.getAccessibleThingById(getLoginUserID(), globalThingID);
+			thingInfo = thingTagManager.getAccessibleThingById(AuthInfoStore.getUserID(), globalThingID);
 		} catch (ObjectNotFoundException e) {
 			throw new PortalException("Requested thing doesn't exist or isn't accessible", e.getMessage(),
 					HttpStatus.BAD_REQUEST);
@@ -477,7 +478,7 @@ public class ThingController extends AbstractThingTagController {
 	@RequestMapping(value = "/search", method = {RequestMethod.GET})
 	public List<ThingRestBean> getThingsByTagExpress(@RequestParam(value = "tagType") String tagType,
 													 @RequestParam(value = "displayName") String displayName) {
-		List<TagIndex> tagIndexes = thingTagManager.getAccessibleTagsByTagTypeAndName(getLoginUserID(),
+		List<TagIndex> tagIndexes = thingTagManager.getAccessibleTagsByTagTypeAndName(AuthInfoStore.getUserID(),
 				StringUtils.capitalize(tagType), displayName);
 
 		List<GlobalThingInfo> thingInfos = thingTagManager.getThingsByTagIds(tagIndexes.stream().map(TagIndex::getId).

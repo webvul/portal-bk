@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.jdbc.entity.GroupPermissionRelation;
 import com.kii.beehive.portal.jdbc.entity.Permission;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
@@ -44,7 +45,7 @@ public class PermissionController extends AbstractController{
     		throw new PortalException("UserGroup Not Found", "UserGroup with userGroupID:" + userGroupID + " Not Found", HttpStatus.NOT_FOUND);
     	}
     	//loginUser can edit, when loginUser is in this group , 
-    	List<UserGroup> checkAuth = userGroupDao.findUserGroup(getLoginUserID(), userGroupID, null);
+    	List<UserGroup> checkAuth = userGroupDao.findUserGroup(AuthInfoStore.getUserID(), userGroupID, null);
 		
 		if(checkAuth.size() == 1){
 			List<UserGroup> orgiList = userGroupDao.findUserGroup(permissionID, userGroupID);
@@ -69,7 +70,7 @@ public class PermissionController extends AbstractController{
     public ResponseEntity removePermissionToUserGroup(@PathVariable("userGroupID") Long userGroupID, @PathVariable("permissionID") Long permissionID, HttpServletRequest httpRequest){
     	
     	//loginUser can edit, when loginUser is in this group , 
-    	List<UserGroup> checkAuth = userGroupDao.findUserGroup(getLoginUserID(), userGroupID, null);
+    	List<UserGroup> checkAuth = userGroupDao.findUserGroup(AuthInfoStore.getUserID(), userGroupID, null);
 		
 		if(checkAuth.size() == 1){
 			groupPermissionRelationDao.delete(permissionID, userGroupID);
