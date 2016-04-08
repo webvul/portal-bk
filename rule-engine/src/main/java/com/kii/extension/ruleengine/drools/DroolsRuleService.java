@@ -154,9 +154,11 @@ public class DroolsRuleService {
 
 
 
-	public void addCondition(String name,String rule){
+	public synchronized   void addCondition(String name,String rule){
 
 		String drlName="src/main/resources/user_"+name+".drl";
+
+
 		kfs.write(drlName, rule);
 
 		pathSet.add(drlName);
@@ -166,6 +168,7 @@ public class DroolsRuleService {
 		kb.buildAll();
 		kieContainer.updateToVersion(kb.getKieModule().getReleaseId());
 
+		handleMap.clear();
 		getSession().getObjects().forEach((obj)->{
 
 			FactHandle handle=getSession().getFactHandle(obj);

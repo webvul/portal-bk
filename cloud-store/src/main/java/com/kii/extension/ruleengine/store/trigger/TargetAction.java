@@ -24,4 +24,6 @@ public class TargetAction {
 	public void setCommand(ThingCommand command) {
 		this.command = command;
 	}
+
+
 }

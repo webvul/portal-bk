@@ -5,13 +5,10 @@ import com.kii.extension.ruleengine.drools.CommandExec;
 import com.kii.extension.ruleengine.store.trigger.WhenType;
 
 
-global CurrThing currThing;
-
 query "get Match Result by TriggerID" ()
 	Trigger($triggerID:triggerID,when==WhenType.CONDITION_TRUE)
     results : MatchResult( triggerID == $triggerID )
 end
-
 
 rule "fire all trigger:when false->true,trigger  fire"
 when

@@ -1,10 +1,10 @@
-package com.kii.extension.ruleengine.console;
+package com.kii.beehive.business.ruleEngine.console;
 
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -13,23 +13,35 @@ import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.kii.extension.ruleengine.EngineService;
+import com.kii.beehive.business.ruleengine.CommandExecuteService;
+import com.kii.beehive.business.ruleengine.ThingStatusChangeCallback;
+import com.kii.beehive.business.ruleengine.TriggerManager;
+import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
 import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.TargetAction;
 import com.kii.extension.ruleengine.store.trigger.TriggerGroupPolicy;
 import com.kii.extension.ruleengine.store.trigger.TriggerGroupPolicyType;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
+import com.kii.extension.sdk.entity.thingif.Action;
+import com.kii.extension.sdk.entity.thingif.ThingCommand;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
 
-public class RuleEngineConsole {
+public class TriggerMangerConsole {
 
 	public static void main(String[] argc){
 
-		ClassPathXmlApplicationContext  context=new ClassPathXmlApplicationContext("classpath:ruleTestContext.xml");
+		ClassPathXmlApplicationContext  context=new ClassPathXmlApplicationContext("classpath:com/kii/beehive/portal/store/testStoreContext.xml");
 
-		EngineService engine=context.getBean(EngineService.class);
+		TriggerManager engine=context.getBean(TriggerManager.class);
+
+		ThingStatusChangeCallback callback=context.getBean(ThingStatusChangeCallback.class);
+
+		CommandExecuteService execService=context.getBean(CommandExecuteService.class);
+
+		execService.disable();
 
 		ObjectMapper mapper=context.getBean(ObjectMapper.class);
 
@@ -61,26 +73,9 @@ public class RuleEngineConsole {
 
 					ThingStatus status=getStatus(params);
 
-					engine.updateThingStatus(arrays[1],status,new Date());
+					callback.onEventFire(status,arrays[1],new Date());
 
 				}
-
-				if(cmd.equals("initStatus")){
-					String params=arrays[2];
-
-					ThingStatus status=getStatus(params);
-
-					engine.initThingStatus(arrays[1],status,new Date());
-
-				}
-
-
-				if(cmd.equals("finishInit")){
-
-					engine.finishInit();
-
-				}
-
 				if(cmd.equals("enable")){
 
 					String triggerID=arrays[1];
@@ -93,37 +88,38 @@ public class RuleEngineConsole {
 				}
 				if(cmd.equals("remove")){
 					String triggerID=arrays[1];
-					engine.removeTrigger(triggerID);
+					engine.deleteTrigger(triggerID);
 				}
-				if(cmd.equals("update")){
-					String triggerID=arrays[1];
-					String[] things=arrays[2].split(",");
-
-					engine.changeThingsInTrigger(triggerID,new HashSet(Arrays.asList(things)));
-
-				}
-				if(cmd.equals("updateSummary")){
-					String triggerID=arrays[1];
-					String summaryName=arrays[2];
-					String[] things=arrays[3].split(",");
-
-					engine.changeThingsInSummary(triggerID,summaryName,new HashSet(Arrays.asList(things)));
-				}
+//				if(cmd.equals("update")){
+//					String triggerID=arrays[1];
+//					String[] things=arrays[2].split(",");
+//
+//					engine.changeThingsInTrigger(triggerID,new HashSet(Arrays.asList(things)));
+//
+//				}
+//				if(cmd.equals("updateSummary")){
+//					String triggerID=arrays[1];
+//					String summaryName=arrays[2];
+//					String[] things=arrays[3].split(",");
+//
+//					engine.changeThingsInSummary(triggerID,summaryName,new HashSet(Arrays.asList(things)));
+//				}
 				if(cmd.equals("newSimple")){
-					String triggerID=arrays[1];
-					String thingID=arrays[2];
+					String thingID=arrays[1];
 
-					String json=getFileContext(arrays[3]);
+					String json=getFileContext(arrays[2]);
 
 					RuleEnginePredicate predicate=mapper.readValue(json,RuleEnginePredicate.class);
 
 					SimpleTriggerRecord record=new SimpleTriggerRecord();
 					record.setPredicate(predicate);
-					record.setId(triggerID);
 					record.setRecordStatus(TriggerRecord.StatusType.disable);
 					record.setSource(new SimpleTriggerRecord.ThingID());
+					record.getSource().setThingID(Long.parseLong(thingID));
+					List<ExecuteTarget> targets = getTargets();
+					record.setTarget(targets);
 
-					engine.createSimpleTrigger(thingID,record);
+					engine.createTrigger(record);
 				}
 
 				if(cmd.equals("createGroup")){
@@ -131,8 +127,6 @@ public class RuleEngineConsole {
 					String[] thingIDs=arrays[2].split(",");
 
 					String json=getFileContext(arrays[3]);
-
-
 
 					RuleEnginePredicate predicate=mapper.readValue(json,RuleEnginePredicate.class);
 
@@ -152,12 +146,12 @@ public class RuleEngineConsole {
 
 					record.setPolicy(policy);
 
-					engine.createGroupTrigger(Arrays.asList(thingIDs),record);
+					engine.createTrigger(record);
 				}
 
 				if(cmd.equals("dump")){
 
-					Map<String,Object> result=engine.dumpEngineRuntime();
+					Map<String,Object> result=engine.getRuleEngingDump();
 
 					String json=mapper.writeValueAsString(result);
 
@@ -176,9 +170,23 @@ public class RuleEngineConsole {
 
 	}
 
+	private static List<ExecuteTarget> getTargets() {
+		List<ExecuteTarget> targets=new ArrayList<>();
+		ExecuteTarget target=new ExecuteTarget();
+		TargetAction command=new TargetAction();
+		ThingCommand thingCmd=new ThingCommand();
+		Action action=new Action();
+		action.setField("power","ON");
+		thingCmd.addAction("power",action);
+		command.setCommand(thingCmd);
+		target.setCommand(command);
+		targets.add(target);
+		return targets;
+	}
+
 	private static String getFileContext(String name) throws IOException {
 
-		return FileCopyUtils.copyToString(new FileReader("./rule-engine/src/test/resources/console/"+name+".json"));
+		return FileCopyUtils.copyToString(new FileReader("./store-service/src/test/resources/console/"+name+".json"));
 
 	}
 
