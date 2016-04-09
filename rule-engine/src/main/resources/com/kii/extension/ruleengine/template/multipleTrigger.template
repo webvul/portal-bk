@@ -2,7 +2,6 @@ package com.kii.extension.ruleengine.drools.rule
 
 import com.kii.extension.ruleengine.drools.entity.*;
 
-global CurrThing currThing;
 
 /////////////////////////////////////
 //multiple trigger custom segment

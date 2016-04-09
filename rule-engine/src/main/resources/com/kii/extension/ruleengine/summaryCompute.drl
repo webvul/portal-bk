@@ -2,7 +2,6 @@ package com.kii.extension.ruleengine.drools.rule
 
 import com.kii.extension.ruleengine.drools.entity.*;
 
-global CurrThing currThing;
 
 
 rule "summary all multiple value in map"
@@ -38,7 +37,7 @@ rule "compute the summary of  fieldName value: funName"
 when
 	$trigger:Trigger(type ==TriggerType.summary,$triggerID:triggerID)
 	$summary:Summary(triggerID==$triggerID ,$things:things, funName=="sum" )
-	CurrThing(thing memberOf $things) from currThing
+	CurrThing(thing memberOf $things)
 	accumulate( ThingStatusInRule(thingID memberOf $things , $status:values);
                     $sum : sum($status.get($summary.getFieldName()))
                   )
@@ -52,7 +51,7 @@ rule "compute the count of  fieldName value: funName"
 when
 	$trigger:Trigger(type ==TriggerType.summary,$triggerID:triggerID)
 	$summary:Summary(triggerID==$triggerID ,$things:things, funName=="count" )
-	CurrThing(thing memberOf $things) from currThing
+	CurrThing(thing memberOf $things)
 	accumulate( ThingStatusInRule(thingID memberOf $summary.things ,$status:values);
                     $value : count($status)
                     )
@@ -66,7 +65,7 @@ rule "compute the max of  fieldName value: funName"
 when
 	$trigger:Trigger(type ==TriggerType.summary,$triggerID:triggerID)
 	$summary:Summary(triggerID==$triggerID ,$things:things, funName=="max" )
-	CurrThing(thing memberOf $things) from currThing
+	CurrThing(thing memberOf $things)
 	accumulate( ThingStatusInRule(thingID memberOf $summary.things ,$status:values);
                     $value : max($status)
                     )
@@ -80,7 +79,7 @@ rule "compute the min of  fieldName value: funName"
 when
 	$trigger:Trigger(type ==TriggerType.summary,$triggerID:triggerID)
 	$summary:Summary(triggerID==$triggerID ,$things:things, funName=="min" )
-	CurrThing(thing memberOf $things) from currThing
+	CurrThing(thing memberOf $things)
 	accumulate( ThingStatusInRule(thingID memberOf $summary.things ,$status:values);
                     $value : min($status)
                     )
@@ -94,7 +93,7 @@ rule "compute the average of  fieldName value: funName"
 when
 	$trigger:Trigger(type ==TriggerType.summary,$triggerID:triggerID)
 	$summary:Summary(triggerID==$triggerID ,$things:things, funName=="average" )
-	CurrThing(thing memberOf $things) from currThing
+	CurrThing(thing memberOf $things)
 	accumulate( ThingStatusInRule(thingID memberOf $summary.things ,$status:values);
                     $value : average($status)
                     )

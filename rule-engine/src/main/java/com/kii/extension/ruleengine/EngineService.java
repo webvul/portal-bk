@@ -138,7 +138,7 @@ public class EngineService {
 	}
 
 
-	public void createSimpleTrigger(String thingID, SimpleTriggerRecord record){
+	public void  createSimpleTrigger(String thingID, SimpleTriggerRecord record){
 
 
 		Trigger trigger=new Trigger();
@@ -167,6 +167,10 @@ public class EngineService {
 		}
 
 
+	}
+
+	public void finishInit(){
+		droolsTriggerService.fireCondition();
 	}
 
 	public void changeThingsInTrigger(String triggerID,Set<String> newThings){
@@ -212,7 +216,8 @@ public class EngineService {
 	public void removeTrigger(String triggerID){
 
 		droolsTriggerService.removeTrigger(triggerID);
-		scheduleSet.remove(triggerID);
+
+
 
 	}
 }
