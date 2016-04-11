@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import com.kii.beehive.portal.exception.TokenTimeoutException;
+import com.kii.beehive.portal.exception.UnauthorizedException;
 import com.kii.beehive.portal.jdbc.dao.AuthInfoDao;
 import com.kii.beehive.portal.jdbc.entity.AuthInfo;
 
@@ -51,16 +53,14 @@ public class AuthInfoService {
 
 
 	public AuthInfo getAuthInfoByToken(String token){
-		AuthInfo info= userTokenMap.computeIfAbsent(token,(t)->{
-				return authInfoDao.getAuthInfoByToken(t);
+		AuthInfo info= userTokenMap.computeIfAbsent(token,(t)-> authInfoDao.getAuthInfoByToken(t));
 
-		});
 		if(info==null){
-			return null;
+			throw new UnauthorizedException("token invalid ");
 		}
 		if(info.getExpireTime().getTime()<new Date().getTime()){
 			userTokenMap.remove(token);
-			return null;
+			throw new TokenTimeoutException();
 		}
 
 		return info;
