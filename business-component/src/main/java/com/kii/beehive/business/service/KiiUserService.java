@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.extension.sdk.annotation.BindAppByName;
+import com.kii.extension.sdk.context.UserTokenBindTool;
 import com.kii.extension.sdk.entity.KiiUser;
 import com.kii.extension.sdk.entity.LoginInfo;
 import com.kii.extension.sdk.exception.BadUserNameException;
@@ -24,6 +25,9 @@ public class KiiUserService {
 
 	@Autowired
 	private UserService userService;
+
+	@Autowired
+	private UserTokenBindTool  tokenBind;
 
 	/**
 	 * important:
@@ -49,32 +53,37 @@ public class KiiUserService {
 
 
 
-	public String  addBeehiveUser(String userName,String pwd){
+	public String  addBeehiveUser(BeehiveUser beehiveUser,String pwd){
 
 		KiiUser user=new KiiUser();
 
-		user.setDisplayName(userName);
+		user.setDisplayName(beehiveUser.getUserName());
 
-		user.setLoginName(userName);
+		user.setLoginName(beehiveUser.getId());
 
-//		String pwd=beehiveUser.getDefaultPassword();
 		user.setPassword(pwd);
 
 		String kiiUserID = userService.createUser(user);
 
-//		beehiveUser.setKiiUserID(kiiUserID);
-//		beehiveUser.setKiiLoginName(user.getLoginName());
 
 		return kiiUserID;
 	}
 
 
 
-	public String bindToUser(String name,String pwd){
+	public String bindToUser(BeehiveUser user,String pwd){
 
-		LoginInfo loginInfo=userService.login(name,pwd);
+		LoginInfo loginInfo=userService.login(user.getId(),pwd);
+
+		tokenBind.bindToken(loginInfo.getToken());
 
 		return loginInfo.getToken();
+	}
+
+	public void changePassword(String oldPwd,String newPwd){
+
+		userService.changePassword(oldPwd,newPwd);
+
 	}
 
 	public void removeBeehiveUser(String kiiUserID) {

@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kii.beehive.portal.common.utils.CollectUtils;
 import com.kii.beehive.portal.entitys.AuthRestBean;
 import com.kii.beehive.portal.manager.AuthManager;
-import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
+import com.kii.beehive.portal.web.help.AuthUtils;
 
 /**
  * Beehive API - User API
@@ -57,6 +57,16 @@ public class AuthController {
         }
     }
 
+	@RequestMapping(path = "/initpassword", method = { RequestMethod.POST })
+	public void initPassword(@RequestBody Map<String, Object> request){
+
+		String password = (String)request.get("newPassword");
+		String userID = (String)request.get("userID");
+
+		authManager.initPassword(userID,password);
+
+	}
+
     /**
      * 用户登录
      * POST /oauth2/login
@@ -81,29 +91,7 @@ public class AuthController {
         }
 
 		return authManager.login(userID,password,permanentToken);
-//
-//        LoginInfo loginInfo = authManager.login(userID, password, permanentToken);
-//
-//        if(loginInfo == null) {
-//            throw new PortalException(ErrorCode.AUTH_FAIL, "Authentication failed", HttpStatus.BAD_REQUEST);
-//        }
-//
-//        // get user info
-//        BeehiveUser beehiveUser = userManager.getUserByID(userID);
-//
-//        AuthRestBean authRestBean = new AuthRestBean();
-//		authRestBean.setUser(beehiveUser);
-//
-//        Team team = userManager.getTeamByID(userID);
-//        if(team != null){
-//        	authRestBean.setTeamID(team.getId());
-//        	authRestBean.setTeamName(team.getName());
-//        }
-//
-//        // get access token
-//        String accessToken = loginInfo.getToken();
-//        authRestBean.setAccessToken(accessToken);
-//        return authRestBean;
+
     }
 
     /**
@@ -117,29 +105,11 @@ public class AuthController {
     @RequestMapping(path = "/logout", method = { RequestMethod.POST })
     public void logout(HttpServletRequest request) {
 
-        String token = getTokenFromHttpHeader(request);
-
-        if(token == null) {
-            return;
-        }
-
+		String token = AuthUtils.getTokenFromHeader(request);
         authManager.logout(token);
 
     }
 
-    private String getTokenFromHttpHeader(HttpServletRequest request) {
-        String auth = request.getHeader(Constants.ACCESS_TOKEN);
-
-        if (auth == null || !auth.startsWith("Bearer ")) {
-            return null;
-        }
-
-        auth = auth.trim();
-
-        String token = auth.substring(auth.indexOf(" ") + 1).trim();
-
-        return token;
-    }
 
     /**
      * 验证用户（令牌）
@@ -152,7 +122,7 @@ public class AuthController {
     @RequestMapping(path = "/validatetoken", method = { RequestMethod.POST })
     public AuthRestBean validateUserToken(HttpServletRequest request) {
 
-        String token = getTokenFromHttpHeader(request);
+        String token = AuthUtils.getTokenFromHeader(request);
 
         return authManager.validateUserToken(token);
     }

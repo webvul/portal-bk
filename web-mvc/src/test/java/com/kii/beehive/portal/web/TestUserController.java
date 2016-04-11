@@ -183,7 +183,7 @@ public class TestUserController extends WebTestTemplate{
 		user.setUserName(userIDForTest);
 		user.setId("demo");
 		try {
-			kiiUserService.addBeehiveUser(user.getId(),user.getDefaultPassword());
+			kiiUserService.addBeehiveUser(user,user.getDefaultPassword());
 			fail();
 		} catch (Throwable e) {
 			assertEquals(UserAlreadyExistsException.class, e.getClass());

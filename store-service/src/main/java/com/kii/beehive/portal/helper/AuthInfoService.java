@@ -1,13 +1,20 @@
 package com.kii.beehive.portal.helper;
 
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
-import com.kii.beehive.portal.jdbc.dao.PermissionDao;
-import com.kii.beehive.portal.store.entity.AuthInfoEntry;
+import com.kii.beehive.portal.jdbc.dao.AuthInfoDao;
+import com.kii.beehive.portal.jdbc.entity.AuthInfo;
+import com.kii.extension.sdk.context.UserTokenBindTool;
 
 /**
  * this class queries the url permission on the given user/token and constructs AuthInfoEntry to store these info
@@ -18,24 +25,66 @@ public class AuthInfoService {
 
     private Logger log= LoggerFactory.getLogger(AuthInfoService.class);
 
-    @Autowired
-    private GroupUserRelationDao groupUserRelationDao;
-    
-    @Autowired
-    private PermissionDao permissionDao;
 
-    /**
-     * query the url permission on the given user/token and construct AuthInfoEntry to store these info
-     *
-     * @param userID
-     * @param token
-     */
-    public AuthInfoEntry createAuthInfoEntry(String userID,Long teamID, String token) {
+	@Autowired
+	private AuthInfoDao authInfoDao;
 
-        log.debug("createAuthInfoEntry token: " + token + " for userID: " + userID);
+	private Map<String,AuthInfo> userTokenMap=new ConcurrentHashMap<>();
 
-        return new AuthInfoEntry(userID, teamID, token);
+	@Scheduled(cron="0,0,1,*,*,?")
+	public void checkTTL(){
+		//TODO:
+	}
+
+
+    public void createAuthInfoEntry(AuthInfo auth, String token,boolean isPermanentToken) {
+
+        log.debug("createAuthInfoEntry token: " + token + " for userID: " + auth);
+
+		userTokenMap.put(token,auth);
+
+		if(isPermanentToken) {
+
+			authInfoDao.insert(auth);
+		}
+        return;
     }
 
 
+	public AuthInfo getAuthInfoByToken(String token){
+		AuthInfo info= userTokenMap.computeIfAbsent(token,(t)->{
+				return authInfoDao.getAuthInfoByToken(t);
+
+		});
+		if(info==null){
+			return null;
+		}
+		if(info.getExpireTime().getTime()<new Date().getTime()){
+			userTokenMap.remove(token);
+			return null;
+		}
+
+		return info;
+	}
+
+	public void removeToken(String token){
+
+		userTokenMap.remove(token);
+
+		authInfoDao.deleteByToken(token);
+
+	}
+	
+	
+	public void removeTokenByUserID(String id) {
+
+		List<String> tokens=userTokenMap.entrySet().stream().filter((entry)->{
+			return entry.getValue().getUserID().equals(id);
+		}).map((entry)->entry.getKey()).collect(Collectors.toList());
+
+		userTokenMap.keySet().removeAll(tokens);
+
+		authInfoDao.deleteByUserID(id);
+
+	}
 }

@@ -70,20 +70,26 @@ public class TriggerManager {
 
 		commandService.disable();
 
-		recordList.forEach(record->{
+		recordList.forEach(record -> {
 
-			if(record instanceof SimpleTriggerRecord){
-				addSimpleToEngine((SimpleTriggerRecord)record);
-			}else if(record instanceof GroupTriggerRecord){
-				GroupTriggerRecord groupRecord=((GroupTriggerRecord)record);
-				addGroupToEngine(groupRecord);
+			try {
 
-			}else if(record instanceof  SummaryTriggerRecord){
-				SummaryTriggerRecord  summaryRecord=(SummaryTriggerRecord)record;
-				addSummaryToEngine(summaryRecord);
+				if (record instanceof SimpleTriggerRecord) {
+					addSimpleToEngine((SimpleTriggerRecord) record);
+				} else if (record instanceof GroupTriggerRecord) {
+					GroupTriggerRecord groupRecord = ((GroupTriggerRecord) record);
+					addGroupToEngine(groupRecord);
 
-			}else{
-				throw new IllegalArgumentException("unsupport trigger type");
+				} else if (record instanceof SummaryTriggerRecord) {
+					SummaryTriggerRecord summaryRecord = (SummaryTriggerRecord) record;
+					addSummaryToEngine(summaryRecord);
+
+				} else {
+					throw new IllegalArgumentException("unsupport trigger type");
+				}
+			}catch(Exception e){
+				e.printStackTrace();
+				return;
 			}
 
 		});

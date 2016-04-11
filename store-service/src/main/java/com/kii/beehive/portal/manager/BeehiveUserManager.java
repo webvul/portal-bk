@@ -1,25 +1,18 @@
 package com.kii.beehive.portal.manager;
 
-import java.util.Collections;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import com.kii.beehive.business.service.KiiUserService;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.StringRandomTools;
 import com.kii.beehive.portal.exception.ObjectNotFoundException;
-import com.kii.beehive.portal.exception.UnauthorizedException;
 import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
 import com.kii.beehive.portal.jdbc.dao.TeamUserRelationDao;
 import com.kii.beehive.portal.jdbc.entity.TeamUserRelation;
 import com.kii.beehive.portal.service.BeehiveUserDao;
-import com.kii.beehive.portal.store.entity.AuthInfoEntry;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
-import com.kii.extension.sdk.entity.LoginInfo;
 
 @Component
 @Transactional
@@ -49,9 +42,9 @@ public class BeehiveUserManager {
 			throw new IllegalArgumentException("the username had existed,please change a loginName or email or phone Number");
 		}
 
-		userDao.addEntity(user);
+		userDao.addKiiEntity(user);
 
-		String loginID=kiiUserService.addBeehiveUser(user.getId(),user.getDefaultPassword());
+		String loginID=kiiUserService.addBeehiveUser(user,user.getDefaultPassword());
 
 		user.setKiiUserID(loginID);
 
@@ -115,27 +108,27 @@ public class BeehiveUserManager {
 	 * @param userID
 	 * @param password
 	 */
-	public boolean activity(String userID, String token) {
-
-		// TODO need to check why below was ever commented out?
-//			String defaultPassword = this.getDefaultPassword(user);
-
-		BeehiveUser user = userDao.getUserByID(userID);
-
-
-		if(StringUtils.isEmpty(user.getActivityToken())){
-//			throw new UnauthorizedException("the activity token invalid or outdate");
-			return false;
-		}
-		boolean sign = user.getActivityToken().equals(user.getHashedPwd(token));
-
-		if (sign) {
-			//one-time token
-			userDao.updateWithVerify(userID, Collections.singletonMap("activityToken", null), user.getVersion());
-		}
-
-		return sign;
-	}
+//	public boolean activity(String userID, String token) {
+//
+//		// TODO need to check why below was ever commented out?
+////			String defaultPassword = this.getDefaultPassword(user);
+//
+//		BeehiveUser user = userDao.getUserByID(userID);
+//
+//
+//		if(StringUtils.isEmpty(user.getActivityToken())){
+////			throw new UnauthorizedException("the activity token invalid or outdate");
+//			return false;
+//		}
+//		boolean sign = user.getActivityToken().equals(user.getHashedPwd(token));
+//
+//		if (sign) {
+//			//one-time token
+//			userDao.updateWithVerify(userID, Collections.singletonMap("activityToken", null), user.getVersion());
+//		}
+//
+//		return sign;
+//	}
 
 
 

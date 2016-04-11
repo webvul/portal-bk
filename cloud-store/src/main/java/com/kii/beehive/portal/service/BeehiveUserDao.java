@@ -57,4 +57,6 @@ public class BeehiveUserDao extends AbstractDataAccess<BeehiveUser> {
 	protected BucketInfo getBucketInfo() {
 		return new BucketInfo("beehiveUser");
 	}
+	
+
 }
