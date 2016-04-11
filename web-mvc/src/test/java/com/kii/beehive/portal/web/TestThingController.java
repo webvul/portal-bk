@@ -676,6 +676,7 @@ public class TestThingController extends WebTestTemplate {
 			List<GlobalThingInfo> result = new ArrayList();
 			ids.forEach(id -> {
 				if (id.equals(vendorThingIDsForTest[0])) {
+					thingInfo.setId(1L);
 					result.add(thingInfo);
 				}
 			});
