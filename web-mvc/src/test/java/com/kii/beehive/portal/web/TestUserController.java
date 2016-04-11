@@ -181,8 +181,9 @@ public class TestUserController extends WebTestTemplate{
 		// check whether Kii user is created in master app
 		BeehiveUser user = new BeehiveUser();
 		user.setUserName(userIDForTest);
+		user.setId("demo");
 		try {
-			kiiUserService.addBeehiveUser(user);
+			kiiUserService.addBeehiveUser(user.getId(),user.getDefaultPassword());
 			fail();
 		} catch (Throwable e) {
 			assertEquals(UserAlreadyExistsException.class, e.getClass());

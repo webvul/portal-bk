@@ -3,12 +3,12 @@ package com.kii.extension.ruleengine.store.trigger;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
-import com.kii.beehive.portal.store.entity.CustomProperty;
 import com.kii.extension.sdk.entity.KiiEntity;
 
 
@@ -135,4 +135,6 @@ public abstract  class TriggerRecord extends KiiEntity {
 	public void setCustom(CustomProperty custom) {
 		this.custom = custom;
 	}
+
+
 }

@@ -18,10 +18,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kii.beehive.business.manager.UserManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.exception.InvalidAuthException;
+import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
 import com.kii.beehive.portal.jdbc.dao.TagGroupRelationDao;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
+import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
 import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
 import com.kii.beehive.portal.jdbc.entity.TagGroupRelation;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
@@ -39,7 +42,7 @@ import com.kii.beehive.portal.web.exception.PortalException;
  */
 @RestController
 @RequestMapping(path = "/usergroup")
-public class UserGroupController extends AbstractController{
+public class UserGroupController {
 	
 	@Autowired
 	private BeehiveUserDao beehiveUserDao;
@@ -49,6 +52,16 @@ public class UserGroupController extends AbstractController{
 	
 	@Autowired
 	private TagIndexDao tagIndexDao;
+
+	@Autowired
+	protected UserManager userManager;
+
+	@Autowired
+	protected UserGroupDao userGroupDao;
+
+
+	@Autowired
+	protected GroupUserRelationDao groupUserRelationDao;
 	
     /**
      * 创建用户群组

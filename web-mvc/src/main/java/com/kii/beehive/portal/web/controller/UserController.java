@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kii.beehive.business.manager.UserManager;
+import com.kii.beehive.portal.manager.BeehiveUserManager;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.entity.UserRestBean;
 
@@ -22,7 +22,7 @@ public class UserController {
 
 
 	@Autowired
-	private UserManager userManager;
+	private BeehiveUserManager userManager;
 
 	/**
 	 * 创建用户
@@ -39,13 +39,14 @@ public class UserController {
 
 		BeehiveUser beehiveUser = user.getBeehiveUser();
 
-		beehiveUser = userManager.addUser(beehiveUser);
+
+		String token = userManager.addUser(beehiveUser);
 
 
 		Map<String,String> map = new HashMap<>();
 
 		map.put("userName", beehiveUser.getUserName());
-		map.put("activityToken",beehiveUser.getActivityToken());
+		map.put("activityToken",token);
 
 		return map;
 	}

@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
 import com.kii.beehive.portal.service.PortalSyncUserDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
+import com.kii.beehive.portal.store.entity.PortalSyncUser;
 import com.kii.beehive.portal.web.WebTestTemplate;
 import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.extension.sdk.entity.KiiUser;
@@ -160,7 +161,7 @@ public class TestAuthController extends WebTestTemplate {
         try {
             String kiiUserID = userServiceForTest.createUser(kiiUser);
 
-            BeehiveUser user = new BeehiveUser();
+			PortalSyncUser user = new PortalSyncUser();
             user.setAliUserID(userID);
             user.setUserName("someUserNameForTest");
             user.setKiiUserID(kiiUserID);

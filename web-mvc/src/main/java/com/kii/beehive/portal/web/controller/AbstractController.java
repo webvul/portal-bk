@@ -2,7 +2,7 @@ package com.kii.beehive.portal.web.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.kii.beehive.business.manager.AuthManager;
+import com.kii.beehive.portal.manager.AuthManager;
 import com.kii.beehive.business.manager.PortalSyncUserManager;
 import com.kii.beehive.portal.jdbc.dao.GroupPermissionRelationDao;
 import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;

@@ -128,7 +128,7 @@ public class PortalSyncUserDao extends AbstractDataAccess<PortalSyncUser> {
 
 	@Override
 	protected BucketInfo getBucketInfo() {
-		return new BucketInfo("beehiveUser");
+		return new BucketInfo("portalSyncUser");
 	}
 
 

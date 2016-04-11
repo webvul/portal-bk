@@ -1,6 +1,5 @@
 package com.kii.beehive.business.service;
 
-import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -50,33 +49,30 @@ public class KiiUserService {
 
 
 
-	public BeehiveUser addBeehiveUser(BeehiveUser beehiveUser){
+	public String  addBeehiveUser(String userName,String pwd){
 
 		KiiUser user=new KiiUser();
 
-		user.setDisplayName(beehiveUser.getUserName());
+		user.setDisplayName(userName);
 
-		user.setLoginName(beehiveUser.getUserName());
+		user.setLoginName(userName);
 
-		String pwd=getPassword(beehiveUser);
+//		String pwd=beehiveUser.getDefaultPassword();
 		user.setPassword(pwd);
 
 		String kiiUserID = userService.createUser(user);
 
-		beehiveUser.setKiiUserID(kiiUserID);
-		beehiveUser.setKiiLoginName(user.getLoginName());
+//		beehiveUser.setKiiUserID(kiiUserID);
+//		beehiveUser.setKiiLoginName(user.getLoginName());
 
-		return beehiveUser;
+		return kiiUserID;
 	}
 
-	private String getPassword(BeehiveUser  user){
 
-		return DigestUtils.sha1Hex(user.getKiiLoginName()+"_username_"+user.getId()+"_beehive");
-	}
 
-	public String bindToUser(BeehiveUser user){
+	public String bindToUser(String name,String pwd){
 
-		LoginInfo loginInfo=userService.login(user.getKiiLoginName(),getPassword(user));
+		LoginInfo loginInfo=userService.login(name,pwd);
 
 		return loginInfo.getToken();
 	}

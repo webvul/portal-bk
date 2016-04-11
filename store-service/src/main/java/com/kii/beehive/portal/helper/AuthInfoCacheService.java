@@ -8,8 +8,8 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
-import com.kii.beehive.business.manager.UserManager;
 import com.kii.beehive.portal.config.CacheConfig;
+import com.kii.beehive.portal.jdbc.dao.TeamDao;
 import com.kii.beehive.portal.jdbc.entity.Team;
 import com.kii.beehive.portal.store.entity.AuthInfoEntry;
 
@@ -28,7 +28,7 @@ public class AuthInfoCacheService {
     private AuthInfoService authInfoService;
     
     @Autowired
-    private UserManager userManager;
+    private TeamDao teamDao;
 
     /**
      * get auth info entry from auth info cache
@@ -58,7 +58,7 @@ public class AuthInfoCacheService {
     public AuthInfoEntry saveToken(String userID, String token) {
 
         log.debug("save(into cache) token: " + token + " for userID: " + userID);
-        Team team = userManager.getTeamByID(userID);
+        Team team = teamDao.getTeamByUserID(userID);
         Long teamId = null;
         if(team != null){
         	teamId = team.getId();

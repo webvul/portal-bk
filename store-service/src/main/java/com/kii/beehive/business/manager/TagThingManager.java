@@ -536,7 +536,7 @@ public class TagThingManager {
 	}
 
 	public List<BeehiveUser> getUsers(List<String> userIDList) throws ObjectNotFoundException {
-		List<BeehiveUser> users = userDao.getUserByIDs(userIDList.toArray(new String[0]));
+		List<BeehiveUser> users = userDao.getUserByIDs(userIDList);
 		if (null == users || !users.stream().map(BeehiveUser::getKiiLoginName).collect(Collectors.toSet())
 				.containsAll(userIDList)) {
 			userIDList.removeAll(users.stream().map(BeehiveUser::getKiiLoginName).collect(Collectors.toList()));
@@ -689,7 +689,7 @@ public class TagThingManager {
 				collect(Collectors.toSet());
 		users.addAll(thingUserRelationDao.findUserIds(thingId));
 		users.addAll(tagUserRelationDao.findUserIds(tagIds).orElse(Collections.emptyList()));
-		return userDao.getUserByIDs(users.toArray(new String[0]));
+		return userDao.getUserByIDs(users);
 	}
 
 	public List<UserGroup> getUserGroupsOfAccessibleThing(String userId, Long thingId) throws ObjectNotFoundException {

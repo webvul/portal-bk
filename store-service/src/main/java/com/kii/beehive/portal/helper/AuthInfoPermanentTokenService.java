@@ -12,10 +12,10 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
-import com.kii.beehive.business.manager.UserManager;
 import com.kii.beehive.portal.common.utils.CollectUtils;
 import com.kii.beehive.portal.config.CacheConfig;
 import com.kii.beehive.portal.jdbc.dao.AuthInfoDao;
+import com.kii.beehive.portal.jdbc.dao.TeamDao;
 import com.kii.beehive.portal.jdbc.entity.AuthInfo;
 import com.kii.beehive.portal.jdbc.entity.Team;
 import com.kii.beehive.portal.store.entity.AuthInfoEntry;
@@ -37,9 +37,10 @@ public class AuthInfoPermanentTokenService {
 
     @Autowired
     private AuthInfoDao authInfoDao;
-    
-    @Autowired
-    private UserManager userManager;
+
+
+	@Autowired
+	private TeamDao teamDao;
 
     /**
      * get auth info entry from permanent token cache, if not found in permanent token cache, try to get from DB
@@ -86,7 +87,7 @@ public class AuthInfoPermanentTokenService {
 
         log.debug("save(into cache/DB) token: " + token + " for userID: " + userID);
         
-        Team team = userManager.getTeamByID(userID);
+        Team team = teamDao.getTeamByUserID(userID);
         Long teamId = null;
         if(team != null){
         	teamId = team.getId();

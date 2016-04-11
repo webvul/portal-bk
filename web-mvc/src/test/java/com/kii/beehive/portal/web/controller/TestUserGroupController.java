@@ -1,27 +1,32 @@
 package com.kii.beehive.portal.web.controller;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
-import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
-import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
-import com.kii.beehive.portal.jdbc.entity.UserGroup;
-import com.kii.beehive.portal.service.PortalSyncUserDao;
-import com.kii.beehive.portal.store.entity.BeehiveUser;
-import com.kii.beehive.portal.web.WebTestTemplate;
-import com.kii.beehive.portal.web.constant.Constants;
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertNotNull;
+import static junit.framework.TestCase.assertNull;
+import static junit.framework.TestCase.assertTrue;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static junit.framework.TestCase.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
+import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
+import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
+import com.kii.beehive.portal.jdbc.entity.UserGroup;
+import com.kii.beehive.portal.service.PortalSyncUserDao;
+import com.kii.beehive.portal.store.entity.PortalSyncUser;
+import com.kii.beehive.portal.web.WebTestTemplate;
+import com.kii.beehive.portal.web.constant.Constants;
 
 public class TestUserGroupController extends WebTestTemplate {
 
@@ -58,7 +63,7 @@ public class TestUserGroupController extends WebTestTemplate {
 		userIDListForTest.add("test_userid_3");
 
 		for (String s : userIDListForTest) {
-			BeehiveUser user = new BeehiveUser();
+			PortalSyncUser user = new PortalSyncUser();
 			user.setAliUserID(s);
 			user.setUserName("username_for_" + s);
 

@@ -12,17 +12,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kii.beehive.business.manager.AuthManager;
-import com.kii.beehive.business.manager.UserManager;
 import com.kii.beehive.portal.common.utils.CollectUtils;
-import com.kii.beehive.portal.jdbc.entity.Team;
-import com.kii.beehive.portal.store.entity.AuthInfoEntry;
-import com.kii.beehive.portal.store.entity.BeehiveUser;
+import com.kii.beehive.portal.entitys.AuthRestBean;
+import com.kii.beehive.portal.manager.AuthManager;
 import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.beehive.portal.web.constant.ErrorCode;
-import com.kii.beehive.portal.web.entity.AuthRestBean;
 import com.kii.beehive.portal.web.exception.PortalException;
-import com.kii.extension.sdk.entity.LoginInfo;
 
 /**
  * Beehive API - User API
@@ -37,9 +32,6 @@ public class AuthController {
 	@Autowired
     private AuthManager authManager;
 
-    @Autowired
-    private UserManager userManager;
-    
     /**
      * 用户注册
      * POST /oauth2/register
@@ -88,28 +80,30 @@ public class AuthController {
             throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "userID or password empty", HttpStatus.BAD_REQUEST);
         }
 
-        LoginInfo loginInfo = authManager.login(userID, password, permanentToken);
-
-        if(loginInfo == null) {
-            throw new PortalException(ErrorCode.AUTH_FAIL, "Authentication failed", HttpStatus.BAD_REQUEST);
-        }
-        
-        // get user info
-        BeehiveUser beehiveUser = userManager.getUserByID(userID);
-        
-        AuthRestBean authRestBean = new AuthRestBean();
-		authRestBean.setUser(beehiveUser);
-        
-        Team team = userManager.getTeamByID(userID);
-        if(team != null){
-        	authRestBean.setTeamID(team.getId());
-        	authRestBean.setTeamName(team.getName());
-        }
-
-        // get access token
-        String accessToken = loginInfo.getToken();
-        authRestBean.setAccessToken(accessToken);
-        return authRestBean;
+		return authManager.login(userID,password,permanentToken);
+//
+//        LoginInfo loginInfo = authManager.login(userID, password, permanentToken);
+//
+//        if(loginInfo == null) {
+//            throw new PortalException(ErrorCode.AUTH_FAIL, "Authentication failed", HttpStatus.BAD_REQUEST);
+//        }
+//
+//        // get user info
+//        BeehiveUser beehiveUser = userManager.getUserByID(userID);
+//
+//        AuthRestBean authRestBean = new AuthRestBean();
+//		authRestBean.setUser(beehiveUser);
+//
+//        Team team = userManager.getTeamByID(userID);
+//        if(team != null){
+//        	authRestBean.setTeamID(team.getId());
+//        	authRestBean.setTeamName(team.getName());
+//        }
+//
+//        // get access token
+//        String accessToken = loginInfo.getToken();
+//        authRestBean.setAccessToken(accessToken);
+//        return authRestBean;
     }
 
     /**
@@ -159,31 +153,8 @@ public class AuthController {
     public AuthRestBean validateUserToken(HttpServletRequest request) {
 
         String token = getTokenFromHttpHeader(request);
-        AuthInfoEntry entry = authManager.getAuthInfoEntry(token);
 
-        // this case would rarely happen, because token is validated in AuthInterceptor before coming here
-        if(entry == null) {
-            throw new PortalException(ErrorCode.AUTH_FAIL, "Authentication failed", HttpStatus.BAD_REQUEST);
-        }
-
-        String userID = entry.getUserID();
-
-        // get user info
-        BeehiveUser beehiveUser = userManager.getUserByID(userID);
-
-        AuthRestBean authRestBean = new AuthRestBean();
-		authRestBean.setUser(beehiveUser);
-
-        Team team = userManager.getTeamByID(userID);
-        if(team != null){
-            authRestBean.setTeamID(team.getId());
-            authRestBean.setTeamName(team.getName());
-        }
-
-        // get access token
-        String accessToken = entry.getToken();
-        authRestBean.setAccessToken(accessToken);
-        return authRestBean;
+        return authManager.validateUserToken(token);
     }
 
 

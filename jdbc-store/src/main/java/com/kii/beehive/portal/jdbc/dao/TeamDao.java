@@ -37,4 +37,13 @@ public class TeamDao extends SpringBaseDao<Team> {
 	    return rows;
 	}
 
+	public Team getTeamByUserID(String userID){
+		List<Team> teamList = findTeamByUserID(userID);
+		if (teamList != null && teamList.size() > 0) {
+			return teamList.get(0);
+		} else {
+			return null;
+		}
+	}
+
 }

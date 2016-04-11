@@ -233,7 +233,7 @@ public class ThingController extends AbstractThingTagController {
 			thingInfo = new GlobalThingInfo();
 		} else {
 			try {
-				thingInfo = thingTagManager.getAccessibleThingById(getLoginUserID(), input.getId());
+				thingInfo = thingTagManager.getAccessibleThingById(AuthInfoStore.getUserID(), input.getId());
 			} catch (ObjectNotFoundException e) {
 				throw new PortalException("Requested thing doesn't exist or isn't accessible", e.getMessage(),
 						HttpStatus.BAD_REQUEST);

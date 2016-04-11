@@ -99,7 +99,7 @@ public class BeehiveUser extends  PortalEntity {
 		return DigestUtils.sha1Hex(getUserName()+"_username_"+getId() + "_beehive");
 	}
 
-	public String getUserPassword(String pwd){
+	public String getHashedPwd(String pwd){
 		return DigestUtils.sha1Hex(pwd+"_user_id"+getId()+"_beehive");
 
 	}
