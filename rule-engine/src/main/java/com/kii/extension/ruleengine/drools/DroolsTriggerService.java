@@ -1,25 +1,14 @@
 package com.kii.extension.ruleengine.drools;
 
-import javax.annotation.PostConstruct;
-
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
+import com.kii.extension.ruleengine.drools.entity.*;
+import com.kii.extension.sdk.entity.thingif.ThingStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import com.kii.extension.ruleengine.drools.entity.CurrThing;
-import com.kii.extension.ruleengine.drools.entity.MatchResult;
-import com.kii.extension.ruleengine.drools.entity.Summary;
-import com.kii.extension.ruleengine.drools.entity.SummaryValueMap;
-import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
-import com.kii.extension.ruleengine.drools.entity.Trigger;
-import com.kii.extension.sdk.entity.thingif.ThingStatus;
+import javax.annotation.PostConstruct;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 public class DroolsTriggerService {
@@ -54,6 +43,15 @@ public class DroolsTriggerService {
 	}
 
 
+	/**
+	 * 清空 drools 相关 重新初始化
+	 */
+	public void clear(){
+		cloudService.clear();
+		streamService.clear();
+		triggerMap.clear();
+		summaryMap.clear();
+	}
 	public  Map<String,Object> getEngineRuntime(){
 
 		Map<String,Object> map=new HashMap<>();
