@@ -1,18 +1,29 @@
 package com.kii.extension.ruleengine;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
 import com.kii.extension.ruleengine.drools.DroolsTriggerService;
 import com.kii.extension.ruleengine.drools.RuleGeneral;
 import com.kii.extension.ruleengine.drools.entity.Summary;
 import com.kii.extension.ruleengine.drools.entity.Trigger;
 import com.kii.extension.ruleengine.drools.entity.TriggerType;
-import com.kii.extension.ruleengine.store.trigger.*;
+import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.MultipleSrcTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
+import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.TriggerGroupPolicy;
+import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-
-import java.util.*;
-import java.util.concurrent.ConcurrentSkipListSet;
 
 @Component
 public class EngineService {
@@ -92,10 +103,10 @@ public class EngineService {
 
 		});
 
-		if(record.getPredicate().getSchedule()!=null) {
-			scheduleSet.add(record.getId());
-			droolsTriggerService.fireCondition();
-		}
+//		if(record.getPredicate().getSchedule()!=null) {
+//			scheduleSet.add(record.getId());
+		droolsTriggerService.fireCondition();
+//		}
 
 	}
 
@@ -125,10 +136,10 @@ public class EngineService {
 
 		droolsTriggerService.addTrigger(trigger,rule);
 
-		if(predicate.getSchedule()!=null) {
-			scheduleSet.add(record.getId());
+//		if(predicate.getSchedule()!=null) {
+//			scheduleSet.add(record.getId());
 			droolsTriggerService.fireCondition();
-		}
+//		}
 
 	}
 
@@ -156,17 +167,17 @@ public class EngineService {
 
 		droolsTriggerService.addTrigger(trigger,rule);
 
-		if(record.getPredicate().getSchedule()!=null) {
-			scheduleSet.add(record.getId());
-			droolsTriggerService.fireCondition();
-		}
-
-
-	}
-
-	public void finishInit(){
+//		if(record.getPredicate().getSchedule()!=null) {
+//			scheduleSet.add(record.getId());
 		droolsTriggerService.fireCondition();
+//		}
+
+
 	}
+
+//	public void finishInit(){
+//		droolsTriggerService.fireCondition();
+//	}
 
 	public void changeThingsInTrigger(String triggerID,Set<String> newThings){
 

@@ -160,6 +160,11 @@ public class TriggerMangerConsole {
 
 				}
 
+				if(cmd.equals("init")){
+
+					engine.init();
+				}
+
 
 			}catch(Exception e){
 				e.printStackTrace();

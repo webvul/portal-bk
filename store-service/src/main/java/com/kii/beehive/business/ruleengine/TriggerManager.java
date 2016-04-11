@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -23,11 +24,13 @@ import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.service.EventListenerDao;
 import com.kii.extension.ruleengine.EngineService;
+import com.kii.extension.ruleengine.schedule.ScheduleService;
 import com.kii.extension.ruleengine.service.TriggerRecordDao;
 import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.TriggerValidPeriod;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
 @Component
@@ -62,36 +65,29 @@ public class TriggerManager {
 	private CommandExecuteService  commandService;
 
 
+	@Autowired
+	private ScheduleService scheduleService;
+
+
+	public void reinit(){
+
+		service.clear();
+		init();
+	}
+
 	@PostConstruct
 	public void init(){
 
-		service.clear();
-
 		List<TriggerRecord> recordList=triggerDao.getAllTrigger();
-
-		commandService.disable();
 
 		recordList.forEach(record -> {
 
 			try {
-
-				if (record instanceof SimpleTriggerRecord) {
-					addSimpleToEngine((SimpleTriggerRecord) record);
-				} else if (record instanceof GroupTriggerRecord) {
-					GroupTriggerRecord groupRecord = ((GroupTriggerRecord) record);
-					addGroupToEngine(groupRecord);
-
-				} else if (record instanceof SummaryTriggerRecord) {
-					SummaryTriggerRecord summaryRecord = (SummaryTriggerRecord) record;
-					addSummaryToEngine(summaryRecord);
-
-				} else {
-					throw new IllegalArgumentException("unsupport trigger type");
-				}
-			}catch(Exception e){
+				addTriggerToEngine(record);
+			}catch(Exception  e){
 				e.printStackTrace();
-				return;
 			}
+
 
 		});
 
@@ -112,15 +108,18 @@ public class TriggerManager {
 		});
 
 
-		service.finishInit();
-
-		commandService.enable();
-
 
 	}
 
 	public Map<String,Object> getRuleEngingDump(){
-		return service.dumpEngineRuntime();
+
+		Map<String,Object> map=service.dumpEngineRuntime();
+
+
+		map.put("schedule",scheduleService.dump());
+
+		return map;
+
 	}
 
 
@@ -129,12 +128,23 @@ public class TriggerManager {
 
 		record.setRecordStatus(TriggerRecord.StatusType.disable);
 
-		String triggerID=triggerDao.addEntity(record).getObjectID();
+		triggerDao.addKiiEntity(record);
 
-		record.setId(triggerID);
+		addTriggerToEngine(record);
+
+		return record.getId();
+
+	}
+
+	private void addTriggerToEngine(TriggerRecord record) {
+
+		String triggerID=record.getId();
 
 		try {
 
+			TriggerValidPeriod predicate=record.getPreparedCondition();
+
+			scheduleService.addManagerTask(triggerID,predicate);
 			if (record instanceof SimpleTriggerRecord) {
 				addSimpleToEngine((SimpleTriggerRecord) record);
 			} else if (record instanceof GroupTriggerRecord) {
@@ -160,12 +170,11 @@ public class TriggerManager {
 			triggerDao.removeEntity(triggerID);
 			throw e;
 
+		} catch (SchedulerException e) {
+			e.printStackTrace();
+			throw new IllegalArgumentException("schedule init fail:triggerID "+triggerID);
 		}
-
-		return triggerID;
-
 	}
-
 
 
 	private void addSimpleToEngine(SimpleTriggerRecord record) {

@@ -1,14 +1,22 @@
 package com.kii.extension.ruleengine.drools;
 
-import com.kii.extension.ruleengine.drools.entity.*;
-import com.kii.extension.sdk.entity.thingif.ThingStatus;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import com.kii.extension.ruleengine.drools.entity.MatchResult;
+import com.kii.extension.ruleengine.drools.entity.Summary;
+import com.kii.extension.ruleengine.drools.entity.SummaryValueMap;
+import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
+import com.kii.extension.ruleengine.drools.entity.Trigger;
+import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
 @Component
 public class DroolsTriggerService {
@@ -30,18 +38,10 @@ public class DroolsTriggerService {
 
 	private final Map<String,Map<String,Summary>>  summaryMap=new ConcurrentHashMap<>();
 
-
-	private  final CurrThing curr=new CurrThing();
-
-	@PostConstruct
-	public void initRule(){
+//	@PostConstruct
+//	public void initRule(){
+//	}
 //
-//		curr.setThing("NONE");
-//
-//		cloudService.setGlobal("currThing",curr);
-//		streamService.setGlobal("currThing",curr);
-	}
-
 
 	/**
 	 * 清空 drools 相关 重新初始化
@@ -75,8 +75,10 @@ public class DroolsTriggerService {
 
 	public void addTrigger(Trigger triggerInput,String ruleContent){
 
+
 		Trigger trigger=new Trigger(triggerInput);
 		triggerMap.put(trigger.getTriggerID(),trigger);
+
 
 		getService(trigger).addCondition("rule"+trigger.getTriggerID(),ruleContent);
 
@@ -85,6 +87,7 @@ public class DroolsTriggerService {
 	}
 
 	public void addSummaryTrigger(Trigger triggerInput,String ruleContent){
+
 
 		Trigger trigger=new Trigger(triggerInput);
 		triggerMap.put(trigger.getTriggerID(),trigger);
@@ -147,6 +150,7 @@ public class DroolsTriggerService {
 
 	public void removeTrigger(String triggerID){
 
+
 		Trigger trigger=triggerMap.get(triggerID);
 
 		getService(trigger).removeData(trigger);
@@ -154,6 +158,7 @@ public class DroolsTriggerService {
 
 		Map<String,Summary> map=summaryMap.remove(triggerID);
 		map.values().forEach(summary-> getService(trigger).removeData(summary));
+
 	}
 
 	public void enableTrigger(String triggerID) {
@@ -164,7 +169,6 @@ public class DroolsTriggerService {
 
 		getService(trigger).addOrUpdateData(trigger);
 
-		cloudService.fireCondition();
 	}
 
 	public void disableTrigger(String triggerID) {
@@ -195,16 +199,18 @@ public class DroolsTriggerService {
 		newStatus.setValues(status.getFields());
 		newStatus.setCreateAt(date);
 
-		curr.setThing(fullThingID);
-
 		cloudService.addOrUpdateData(newStatus);
-		cloudService.addOrUpdateData(curr);
-
 		streamService.addOrUpdateData(newStatus);
-		cloudService.addOrUpdateData(curr);
 
+		setCurrThingID(fullThingID);
 
 		fireCondition();
+	}
+
+	private void setCurrThingID(String fullThingID){
+
+		cloudService.setCurrThingID(fullThingID);
+		cloudService.setCurrThingID(fullThingID);
 	}
 
 	public  void fireCondition(){
