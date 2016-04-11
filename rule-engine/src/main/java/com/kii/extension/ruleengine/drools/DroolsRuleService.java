@@ -147,7 +147,7 @@ public class DroolsRuleService {
 	 */
 	public void clear(){
 
-		//清空规则文件
+		//清空trigger生成的rule
 		for(String drlPath:pathSet){
 			String name=drlPath.substring(drlPath.lastIndexOf("/"),drlPath.length());
 			if(name.startsWith("/comm")){
