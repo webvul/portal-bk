@@ -216,14 +216,13 @@ public class TagController extends AbstractThingTagController {
 	}
 
 	/**
-	 * GET /tags/user/{userID}
+	 * GET /tags/user
 	 *
-	 * @param userId
 	 * @return a list of tags which the user can access
 	 */
-	@RequestMapping(value = "/user/{userID}", method = RequestMethod.GET, consumes = {"*"})
-	public List<TagIndex> getTagsByUser(@PathVariable("userID") String userId) {
-		return thingTagManager.getAccessibleTagsByUserId(userId);
+	@RequestMapping(value = "/user", method = RequestMethod.GET, consumes = {"*"})
+	public List<TagIndex> getTagsByUser() {
+			return thingTagManager.getAccessibleTagsByUserId(AuthInfoStore.getUserID());
 	}
 
 	/**

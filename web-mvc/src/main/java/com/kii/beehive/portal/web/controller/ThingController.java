@@ -55,14 +55,13 @@ public class ThingController extends AbstractThingTagController {
 	}
 
 	/**
-	 * GET /things/user/{userID}
+	 * GET /things/user
 	 *
-	 * @param userId
 	 * @return a list of devices which the user can access
 	 */
-	@RequestMapping(value = "/user/{userID}", method = RequestMethod.GET, consumes = {"*"})
-	public List<ThingRestBean> getThingsByUser(@PathVariable("userID") String userId) {
-		return toThingRestBean(thingTagManager.getAccessibleThingsByUserId(userId));
+	@RequestMapping(value = "/user", method = RequestMethod.GET, consumes = {"*"})
+	public List<ThingRestBean> getThingsByUser() {
+		return toThingRestBean(thingTagManager.getAccessibleThingsByUserId(AuthInfoStore.getUserID()));
 	}
 
 	/**
@@ -81,7 +80,7 @@ public class ThingController extends AbstractThingTagController {
 	}
 
 	/**
-	 * GET /things/user/{userID}
+	 * GET /things/userGroup/{userGroupID}
 	 *
 	 * @param userGroupId
 	 * @return a list of devices which the user can access

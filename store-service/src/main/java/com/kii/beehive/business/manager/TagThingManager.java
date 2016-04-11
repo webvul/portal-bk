@@ -1,19 +1,16 @@
 package com.kii.beehive.business.manager;
 
-import static com.kii.beehive.portal.common.utils.CollectUtils.collectionToString;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
+import com.kii.beehive.business.service.ThingIFInAppService;
+import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.common.utils.CollectUtils;
+import com.kii.beehive.portal.exception.ObjectNotFoundException;
+import com.kii.beehive.portal.exception.UnauthorizedException;
+import com.kii.beehive.portal.jdbc.dao.*;
+import com.kii.beehive.portal.jdbc.entity.*;
+import com.kii.beehive.portal.service.AppInfoDao;
+import com.kii.beehive.portal.service.BeehiveUserDao;
+import com.kii.beehive.portal.store.entity.BeehiveUser;
+import com.kii.beehive.portal.store.entity.KiiAppInfo;
 import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,39 +18,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kii.beehive.business.service.ThingIFInAppService;
-import com.kii.beehive.portal.auth.AuthInfoStore;
-import com.kii.beehive.portal.common.utils.CollectUtils;
-import com.kii.beehive.portal.exception.ObjectNotFoundException;
-import com.kii.beehive.portal.exception.UnauthorizedException;
-import com.kii.beehive.portal.service.BeehiveUserDao;
-import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
-import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
-import com.kii.beehive.portal.jdbc.dao.TagGroupRelationDao;
-import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
-import com.kii.beehive.portal.jdbc.dao.TagThingRelationDao;
-import com.kii.beehive.portal.jdbc.dao.TagUserRelationDao;
-import com.kii.beehive.portal.jdbc.dao.TeamDao;
-import com.kii.beehive.portal.jdbc.dao.TeamTagRelationDao;
-import com.kii.beehive.portal.jdbc.dao.TeamThingRelationDao;
-import com.kii.beehive.portal.jdbc.dao.ThingUserGroupRelationDao;
-import com.kii.beehive.portal.jdbc.dao.ThingUserRelationDao;
-import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
-import com.kii.beehive.portal.store.entity.BeehiveUser;
-import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
-import com.kii.beehive.portal.jdbc.entity.TagGroupRelation;
-import com.kii.beehive.portal.jdbc.entity.TagIndex;
-import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
-import com.kii.beehive.portal.jdbc.entity.TagType;
-import com.kii.beehive.portal.jdbc.entity.TagUserRelation;
-import com.kii.beehive.portal.jdbc.entity.Team;
-import com.kii.beehive.portal.jdbc.entity.TeamTagRelation;
-import com.kii.beehive.portal.jdbc.entity.TeamThingRelation;
-import com.kii.beehive.portal.jdbc.entity.ThingUserGroupRelation;
-import com.kii.beehive.portal.jdbc.entity.ThingUserRelation;
-import com.kii.beehive.portal.jdbc.entity.UserGroup;
-import com.kii.beehive.portal.service.AppInfoDao;
-import com.kii.beehive.portal.store.entity.KiiAppInfo;
+import java.util.*;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import static com.kii.beehive.portal.common.utils.CollectUtils.collectionToString;
 
 @Component
 @Transactional
@@ -140,7 +109,7 @@ public class TagThingManager {
 
 		if (thingInfo.getId() == null) { //create
 			this.saveOrUpdateThingLocation(thingID, location);
-			
+
 			ThingUserRelation relation = new ThingUserRelation();
 			relation.setUserId(thingInfo.getCreateBy());
 			relation.setThingId(thingID);
@@ -718,6 +687,10 @@ public class TagThingManager {
 	}
 
 	public List<GlobalThingInfo> getAccessibleThingsByUserGroupId(Long userGroupId) {
+		GroupUserRelation gur = groupUserRelationDao.findByUserIDAndUserGroupID(AuthInfoStore.getUserID(), userGroupId);
+		if (gur == null) {
+			return null;
+		}
 		List<Long> tagIds = tagGroupRelationDao.findTagIdsByUserGroupId(userGroupId).orElse(Collections.emptyList());
 		Set<Long> thingIds = tagThingRelationDao.findThingIds(tagIds).orElse(Collections.emptyList()).stream().
 				collect(Collectors.toSet());
@@ -733,6 +706,10 @@ public class TagThingManager {
 	}
 
 	public List<TagIndex> getAccessibleTagsByUserGroupId(Long userGroupId) {
+		GroupUserRelation gur = groupUserRelationDao.findByUserIDAndUserGroupID(AuthInfoStore.getUserID(), userGroupId);
+		if (gur == null) {
+			return null;
+		}
 		return tagIndexDao.findByIDs(
 				tagGroupRelationDao.findTagIdsByUserGroupId(userGroupId).orElse(Collections.emptyList()));
 	}
