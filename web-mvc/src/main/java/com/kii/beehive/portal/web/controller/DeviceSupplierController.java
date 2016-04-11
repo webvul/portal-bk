@@ -16,7 +16,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping(path = "/devicesuppliers", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {
+@RequestMapping(value = "/devicesuppliers", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {
 		MediaType.APPLICATION_JSON_UTF8_VALUE})
 public class DeviceSupplierController {
 
@@ -31,7 +31,7 @@ public class DeviceSupplierController {
 	 *
 	 * @return
 	 */
-	@RequestMapping(path = "/all", method = {RequestMethod.GET}, consumes = {"*"})
+	@RequestMapping(value = "/all", method = {RequestMethod.GET}, consumes = {"*"})
 	public List<DeviceSupplierRestBean> getAllDeviceSuppliers() {
 
 		// get list of device suppliers

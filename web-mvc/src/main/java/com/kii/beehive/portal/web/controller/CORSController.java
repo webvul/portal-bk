@@ -9,10 +9,10 @@ import javax.servlet.http.HttpServletResponse;
 
 
 @RestController
-@RequestMapping(path = "/**", method = {RequestMethod.OPTIONS})
+@RequestMapping(value = "/**", method = {RequestMethod.OPTIONS})
 public class CORSController {
 
-	@RequestMapping(path = "")
+	@RequestMapping(value = "")
 	public void doOptions(HttpServletRequest request, HttpServletResponse response) {
 
 	}

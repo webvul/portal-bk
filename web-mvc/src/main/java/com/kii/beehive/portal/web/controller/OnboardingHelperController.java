@@ -67,7 +67,7 @@ public class OnboardingHelperController {
 	 *
 	 * @param paramMap
 	 */
-	@RequestMapping(path = "/appinit", method = {RequestMethod.POST}, consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+	@RequestMapping(value = "/appinit", method = {RequestMethod.POST}, consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
 	public void initAppContext(@RequestBody Map<String, Object> paramMap, HttpServletRequest request) {
 
 		String userName = (String) paramMap.getOrDefault("portal.username", portalUserName);
@@ -89,7 +89,7 @@ public class OnboardingHelperController {
 		return;
 	}
 
-	@RequestMapping(path = "/appRegist/{appID}", method = {RequestMethod.POST}, consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+	@RequestMapping(value = "/appRegist/{appID}", method = {RequestMethod.POST}, consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
 	public void initAppContext(@PathVariable("appID") String appID, HttpServletRequest request) {
 
 		CallbackUrlParameter param = new CallbackUrlParameter();
@@ -113,7 +113,7 @@ public class OnboardingHelperController {
 	 *
 	 * @param vendorThingID
 	 */
-	@RequestMapping(path = "/onboardinghelper/{vendorThingID}", method = {RequestMethod.GET}, consumes = {"*"}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+	@RequestMapping(value = "/onboardinghelper/{vendorThingID}", method = {RequestMethod.GET}, consumes = {"*"}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
 	public ModelAndView getOnboardingInfo(@PathVariable("vendorThingID") String vendorThingID) {
 
 		List<GlobalThingInfo> thingInfos = tagThingManager.getThingsByVendorThingIds(Arrays.asList(vendorThingID));
@@ -150,7 +150,7 @@ public class OnboardingHelperController {
 	}
 
 
-	@RequestMapping(path = "/info", method = {RequestMethod.GET})
+	@RequestMapping(value = "/info", method = {RequestMethod.GET})
 	public Map<String, String> info(HttpServletRequest httpRequest) {
 		Map<String, String> map = new HashMap<>();
 		InputStream manifestStream = httpRequest.getServletContext().getResourceAsStream("/META-INF/MANIFEST.MF");

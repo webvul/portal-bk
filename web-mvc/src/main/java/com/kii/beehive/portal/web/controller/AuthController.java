@@ -23,7 +23,7 @@ import java.util.Map;
  * refer to doc "Beehive API - Tech Design" section "User API" for details
  */
 @RestController
-@RequestMapping(path = "/oauth2", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {
+@RequestMapping(value = "/oauth2", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {
 		MediaType.APPLICATION_JSON_UTF8_VALUE})
 public class AuthController {
 
@@ -38,7 +38,7 @@ public class AuthController {
 	 *
 	 * @return
 	 */
-	@RequestMapping(path = "/register", method = {RequestMethod.POST})
+	@RequestMapping(value = "/register", method = {RequestMethod.POST})
 	public void activity(@RequestBody Map<String, Object> request) {
 
 		String userID = (String) request.get("userID");
@@ -55,7 +55,7 @@ public class AuthController {
 		}
 	}
 
-	@RequestMapping(path = "/initpassword", method = {RequestMethod.POST})
+	@RequestMapping(value = "/initpassword", method = {RequestMethod.POST})
 	public void initPassword(@RequestBody Map<String, Object> request) {
 
 		String password = (String) request.get("newPassword");
@@ -73,7 +73,7 @@ public class AuthController {
 	 *
 	 * @return
 	 */
-	@RequestMapping(path = "/login", method = {RequestMethod.POST})
+	@RequestMapping(value = "/login", method = {RequestMethod.POST})
 	public AuthRestBean login(@RequestBody Map<String, Object> request) {
 
 		String userID = (String) request.get("userID");
@@ -100,7 +100,7 @@ public class AuthController {
 	 *
 	 * @return
 	 */
-	@RequestMapping(path = "/logout", method = {RequestMethod.POST})
+	@RequestMapping(value = "/logout", method = {RequestMethod.POST})
 	public void logout(HttpServletRequest request) {
 
 		String token = AuthUtils.getTokenFromHeader(request);
@@ -117,7 +117,7 @@ public class AuthController {
 	 *
 	 * @return
 	 */
-	@RequestMapping(path = "/validatetoken", method = {RequestMethod.POST})
+	@RequestMapping(value = "/validatetoken", method = {RequestMethod.POST})
 	public AuthRestBean validateUserToken(HttpServletRequest request) {
 
 		String token = AuthUtils.getTokenFromHeader(request);
@@ -134,7 +134,7 @@ public class AuthController {
 	 *
 	 * @return
 	 */
-	@RequestMapping(path = "/changepassword", method = {RequestMethod.POST})
+	@RequestMapping(value = "/changepassword", method = {RequestMethod.POST})
 	public void changePassword(@RequestBody Map<String, Object> request) {
 
 		String oldPassword = (String) request.get("oldPassword");

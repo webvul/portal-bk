@@ -12,7 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(path = CallbackNames.CALLBACK_URL, consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {
+@RequestMapping(value = CallbackNames.CALLBACK_URL, consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {
 		MediaType.APPLICATION_JSON_UTF8_VALUE})
 public class ExtensionCallbackController {
 
@@ -27,7 +27,7 @@ public class ExtensionCallbackController {
 	private BusinessEventBus eventBus;
 
 
-	@RequestMapping(path = "/" + CallbackNames.STATE_CHANGED, method = {RequestMethod.POST})
+	@RequestMapping(value = "/" + CallbackNames.STATE_CHANGED, method = {RequestMethod.POST})
 	public void onStateChangeFire(@RequestHeader("x-kii-appid") String appID,
 								  @RequestHeader("Authorization") String token,
 								  @RequestBody StateUpload status) {
@@ -42,7 +42,7 @@ public class ExtensionCallbackController {
 	}
 
 
-	@RequestMapping(path = "/" + CallbackNames.THING_CREATED, method = {RequestMethod.POST})
+	@RequestMapping(value = "/" + CallbackNames.THING_CREATED, method = {RequestMethod.POST})
 	public void onThingCreatedFire(@RequestHeader("x-kii-appid") String appID,
 								   @RequestHeader("Authorization") String token,
 								   @RequestBody CreatedThing thing) {

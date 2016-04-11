@@ -6,12 +6,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 @RestController
-@RequestMapping(path = "/", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+@RequestMapping(value = "/", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
 public class DemoController {
 
 
 	@ResponseBody
-	@RequestMapping(path = "/hello", method = {RequestMethod.GET}, consumes = {"*"})
+	@RequestMapping(value = "/hello", method = {RequestMethod.GET}, consumes = {"*"})
 	public ModelAndView hello() {
 
 		HelloEntry entry = new HelloEntry();
@@ -26,7 +26,7 @@ public class DemoController {
 
 	}
 
-	@RequestMapping(path = "/echo", method = {RequestMethod.POST})
+	@RequestMapping(value = "/echo", method = {RequestMethod.POST})
 	public HelloEntry echo(@RequestBody HelloEntry entry) {
 
 //		entry.setName("hello");

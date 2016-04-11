@@ -31,7 +31,7 @@ import java.util.*;
  * refer to doc "Tech Design - Beehive API" section "User API" for details
  */
 @RestController
-@RequestMapping(path = "/usergroup")
+@RequestMapping(value = "/usergroup")
 public class UserGroupController {
 
 	@Autowired
@@ -62,7 +62,7 @@ public class UserGroupController {
 	 *
 	 * @param userGroupRestBean
 	 */
-	@RequestMapping(path = "", method = {RequestMethod.POST})
+	@RequestMapping(value = "", method = {RequestMethod.POST})
 	public ResponseEntity createUserGroup(@RequestBody UserGroupRestBean userGroupRestBean, HttpServletRequest httpRequest) {
 
 		userGroupRestBean.verifyInput();
@@ -86,7 +86,7 @@ public class UserGroupController {
 	 *
 	 * @param userGroupID
 	 */
-	@RequestMapping(path = "/{userGroupID}/user/{userIDs}", method = {RequestMethod.POST})
+	@RequestMapping(value = "/{userGroupID}/user/{userIDs}", method = {RequestMethod.POST})
 	public ResponseEntity addUsersToUserGroup(@PathVariable("userGroupID") Long userGroupID, @PathVariable("userIDs") String userIDs) {
 		UserGroup ug = this.userGroupDao.findByID(userGroupID);
 		if (!ug.getCreateBy().equals(AuthInfoStore.getUserID())) {
@@ -104,7 +104,7 @@ public class UserGroupController {
 	 *
 	 * @param userGroupID
 	 */
-	@RequestMapping(path = "/{userGroupID}/user/{userIDs}", method = {RequestMethod.DELETE}, consumes = {"*"})
+	@RequestMapping(value = "/{userGroupID}/user/{userIDs}", method = {RequestMethod.DELETE}, consumes = {"*"})
 	public ResponseEntity removeUsersFromUserGroup(@PathVariable("userGroupID") Long userGroupID, @PathVariable("userIDs") String userIDs) {
 		UserGroup ug = this.userGroupDao.findByID(userGroupID);
 		if (ug == null) {
@@ -138,7 +138,7 @@ public class UserGroupController {
 	 *
 	 * @param userGroupID
 	 */
-	@RequestMapping(path = "/{userGroupID}", method = {RequestMethod.DELETE}, consumes = {"*"})
+	@RequestMapping(value = "/{userGroupID}", method = {RequestMethod.DELETE}, consumes = {"*"})
 	public ResponseEntity deleteUserGroup(@PathVariable("userGroupID") Long userGroupID) {
 
 		UserGroup orig = userGroupDao.findByID(userGroupID);
@@ -163,7 +163,7 @@ public class UserGroupController {
 	 *
 	 * @param userGroupID
 	 */
-	@RequestMapping(path = "/{userGroupID}", method = {RequestMethod.GET}, consumes = {"*"})
+	@RequestMapping(value = "/{userGroupID}", method = {RequestMethod.GET}, consumes = {"*"})
 	public ResponseEntity<UserGroupRestBean> getUserGroupDetail(@PathVariable("userGroupID") Long userGroupID) {
 		UserGroupRestBean ugrb = null;
 		if (isGroupOfUser(AuthInfoStore.getUserID(), userGroupID)) {
@@ -194,7 +194,7 @@ public class UserGroupController {
 	 *
 	 * @param userGroupID
 	 */
-	@RequestMapping(path = "/{userGroupID}/tags", method = {RequestMethod.GET}, consumes = {"*"})
+	@RequestMapping(value = "/{userGroupID}/tags", method = {RequestMethod.GET}, consumes = {"*"})
 	public ResponseEntity<List<TagIndex>> getUserGroupTag(@PathVariable("userGroupID") Long userGroupID, HttpServletRequest httpRequest) {
 		List<TagIndex> tagList = null;
 		if (isGroupOfUser(AuthInfoStore.getUserID(), userGroupID)) {
@@ -220,14 +220,14 @@ public class UserGroupController {
 	 * refer to doc "Beehive API - User API" for request/response details
 	 * refer to doc "Tech Design - Beehive API", section "Inquire User Group (查询用户群组)" for more details
 	 */
-	@RequestMapping(path = "/list", method = {RequestMethod.GET}, consumes = {"*"})
+	@RequestMapping(value = "/list", method = {RequestMethod.GET}, consumes = {"*"})
 	public ResponseEntity<List<UserGroupRestBean>> getUserGroupList() {
 		List<UserGroup> list = list = userGroupDao.findUserGroup(AuthInfoStore.getUserID(), null, null);
 		List<UserGroupRestBean> restBeanList = this.convertList(list);
 		return new ResponseEntity<>(restBeanList, HttpStatus.OK);
 	}
 
-	@RequestMapping(path = "/all", method = {RequestMethod.GET}, consumes = {"*"})
+	@RequestMapping(value = "/all", method = {RequestMethod.GET}, consumes = {"*"})
 	public ResponseEntity<List<UserGroupRestBean>> getUserGroupAll() {
 		List<UserGroup> list = userGroupDao.findAll();
 		List<UserGroupRestBean> restBeanList = this.convertList(list);

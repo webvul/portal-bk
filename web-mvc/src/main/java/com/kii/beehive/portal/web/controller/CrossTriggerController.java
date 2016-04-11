@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping(path = "/triggers", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {
+@RequestMapping(value = "/triggers", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {
 		MediaType.APPLICATION_JSON_UTF8_VALUE})
 public class CrossTriggerController {
 
@@ -36,7 +36,7 @@ public class CrossTriggerController {
 	 *
 	 * @param record
 	 */
-	@RequestMapping(path = "/createTrigger", method = {RequestMethod.POST})
+	@RequestMapping(value = "/createTrigger", method = {RequestMethod.POST})
 	public Map<String, Object> createTrigger(@RequestBody TriggerRecord record) {
 
 		record.setUserID(AuthInfoStore.getUserID());
@@ -61,7 +61,7 @@ public class CrossTriggerController {
 		return result;
 	}
 
-	@RequestMapping(path = "/{triggerID}", method = {RequestMethod.DELETE}, consumes = {"*"})
+	@RequestMapping(value = "/{triggerID}", method = {RequestMethod.DELETE}, consumes = {"*"})
 	public Map<String, Object> deleteTrigger(@PathVariable("triggerID") String triggerID) {
 		Map<String, Object> result = new HashMap<>();
 		result.put("result", "success");
@@ -120,7 +120,7 @@ public class CrossTriggerController {
 		return;
 	}
 
-	@RequestMapping(path = "/{triggerID}/enable", method = {RequestMethod.PUT})
+	@RequestMapping(value = "/{triggerID}/enable", method = {RequestMethod.PUT})
 	public Map<String, Object> enableTrigger(@PathVariable("triggerID") String triggerID) {
 		Map<String, Object> result = new HashMap<>();
 		result.put("result", "success");
@@ -166,7 +166,7 @@ public class CrossTriggerController {
 //		return result;
 //	}
 
-	@RequestMapping(path = "/{triggerID}/disable", method = {RequestMethod.PUT})
+	@RequestMapping(value = "/{triggerID}/disable", method = {RequestMethod.PUT})
 	public Map<String, Object> disableTrigger(@PathVariable("triggerID") String triggerID) {
 		Map<String, Object> result = new HashMap<>();
 		result.put("result", "success");
@@ -188,14 +188,14 @@ public class CrossTriggerController {
 		return result;
 	}
 
-	@RequestMapping(path = "/{triggerID}", method = {RequestMethod.GET}, consumes = {"*"})
+	@RequestMapping(value = "/{triggerID}", method = {RequestMethod.GET}, consumes = {"*"})
 	public TriggerRecord getTriggerById(@PathVariable("triggerID") String triggerID) {
 
 		return mang.getTriggerByID(triggerID);
 
 	}
 
-	@RequestMapping(path = "/all", method = {RequestMethod.GET}, consumes = {"*"})
+	@RequestMapping(value = "/all", method = {RequestMethod.GET}, consumes = {"*"})
 	public List<TriggerRecord> getTriggerListByCurrentUser() {
 
 		String currentUserId = AuthInfoStore.getUserID();
@@ -205,7 +205,7 @@ public class CrossTriggerController {
 
 	}
 
-	@RequestMapping(path = "/deleteTrigger", method = {RequestMethod.GET}, consumes = {"*"})
+	@RequestMapping(value = "/deleteTrigger", method = {RequestMethod.GET}, consumes = {"*"})
 	public List<TriggerRecord> getDeleteTriggerListByCurrentUser() {
 
 		String currentUserId = AuthInfoStore.getUserID();
@@ -215,20 +215,20 @@ public class CrossTriggerController {
 
 	}
 
-	@RequestMapping(path = "/things/{thingId}", method = {RequestMethod.GET}, consumes = {"*"})
+	@RequestMapping(value = "/things/{thingId}", method = {RequestMethod.GET}, consumes = {"*"})
 	public List<SimpleTriggerRecord> getTriggerListByThingIdAndUserId(@PathVariable("thingId") String thingId) {
 		String currentUserId = AuthInfoStore.getUserID();
 		return mang.getTriggerListByUserIdAndThingId(currentUserId, thingId);
 	}
 
 
-	@RequestMapping(path = "/debug/dump", method = {RequestMethod.GET}, consumes = {"*"})
+	@RequestMapping(value = "/debug/dump", method = {RequestMethod.GET}, consumes = {"*"})
 	public Map<String, Object> getRuleEngineDump() {
 
 		return mang.getRuleEngingDump();
 	}
 
-	@RequestMapping(path = "/debug/reinit", method = {RequestMethod.POST}, consumes = {"*"})
+	@RequestMapping(value = "/debug/reinit", method = {RequestMethod.POST}, consumes = {"*"})
 	public void reInit() {
 
 		mang.init();

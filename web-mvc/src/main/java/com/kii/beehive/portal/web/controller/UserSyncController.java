@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  * refer to doc "Tech Design - Beehive API" section "User API" for details
  */
 @RestController
-@RequestMapping(path = "/usersync", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+@RequestMapping(value = "/usersync", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
 public class UserSyncController {
 
 	@Autowired
@@ -34,7 +34,7 @@ public class UserSyncController {
 	 *
 	 * @param user
 	 */
-	@RequestMapping(path = "", method = {RequestMethod.POST})
+	@RequestMapping(value = "", method = {RequestMethod.POST})
 	public Map<String, String> createUser(@RequestBody SyncUserRestBean user) {
 
 		user.verifyInput();
@@ -59,7 +59,7 @@ public class UserSyncController {
 	 *
 	 * @param user
 	 */
-	@RequestMapping(path = "/{userID}", method = {RequestMethod.PATCH})
+	@RequestMapping(value = "/{userID}", method = {RequestMethod.PATCH})
 	public Map<String, String> updateUser(@PathVariable("userID") String userID, @RequestBody SyncUserRestBean user) {
 
 
@@ -82,7 +82,7 @@ public class UserSyncController {
 	 *
 	 * @param userID
 	 */
-	@RequestMapping(path = "/{userID}", method = {RequestMethod.GET})
+	@RequestMapping(value = "/{userID}", method = {RequestMethod.GET})
 	public SyncUserRestBean getUser(@PathVariable("userID") String userID) {
 
 
@@ -97,7 +97,7 @@ public class UserSyncController {
 	 *
 	 * @param userID
 	 */
-	@RequestMapping(path = "/{userID}/custom", method = {RequestMethod.PATCH})
+	@RequestMapping(value = "/{userID}/custom", method = {RequestMethod.PATCH})
 	public Map<String, String> updateCustomProp(@PathVariable("userID") String userID, @RequestBody Map<String, Object> props) {
 
 
@@ -116,7 +116,7 @@ public class UserSyncController {
 	 *
 	 * @param userID
 	 */
-	@RequestMapping(path = "/{userID}", method = {RequestMethod.DELETE}, consumes = {"*"})
+	@RequestMapping(value = "/{userID}", method = {RequestMethod.DELETE}, consumes = {"*"})
 	public void deleteUser(@PathVariable("userID") String userID) {
 		userManager.deleteUser(userID);
 
@@ -130,7 +130,7 @@ public class UserSyncController {
 	 *
 	 * @param queryMap
 	 */
-	@RequestMapping(path = "/simplequery", method = {RequestMethod.POST})
+	@RequestMapping(value = "/simplequery", method = {RequestMethod.POST})
 	public List<SyncUserRestBean> queryUserByProps(@RequestBody Map<String, Object> queryMap) {
 
 		return userManager.simpleQueryUser(queryMap).stream()

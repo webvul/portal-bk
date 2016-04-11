@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping(path = "/users", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+@RequestMapping(value = "/users", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
 public class UserController {
 
 
@@ -26,7 +26,7 @@ public class UserController {
 	 *
 	 * @param user
 	 */
-	@RequestMapping(path = "", method = {RequestMethod.POST})
+	@RequestMapping(value = "", method = {RequestMethod.POST})
 	public Map<String, String> createUser(@RequestBody UserRestBean user) {
 
 		user.verifyInput();
@@ -53,7 +53,7 @@ public class UserController {
 	 *
 	 * @param user
 	 */
-	@RequestMapping(path = "/{userID}", method = {RequestMethod.PATCH})
+	@RequestMapping(value = "/{userID}", method = {RequestMethod.PATCH})
 	public Map<String, String> updateUser(@PathVariable("userID") String userID, @RequestBody BeehiveUser user) {
 
 		userManager.updateUser(user, userID);
@@ -72,7 +72,7 @@ public class UserController {
 	 *
 	 * @param userID
 	 */
-	@RequestMapping(path = "/{userID}", method = {RequestMethod.GET}, consumes = {"*"})
+	@RequestMapping(value = "/{userID}", method = {RequestMethod.GET}, consumes = {"*"})
 	public UserRestBean getUser(@PathVariable("userID") String userID) {
 
 		UserRestBean bean = new UserRestBean();

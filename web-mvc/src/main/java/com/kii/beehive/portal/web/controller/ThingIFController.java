@@ -21,7 +21,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(path = "/thing-if")
+@RequestMapping(value = "/thing-if")
 public class ThingIFController extends AbstractThingTagController {
 
 	@Autowired
@@ -33,7 +33,7 @@ public class ThingIFController extends AbstractThingTagController {
 	 * @param restBeanList
 	 * @return
 	 */
-	@RequestMapping(path = "/command", method = {RequestMethod.POST})
+	@RequestMapping(value = "/command", method = {RequestMethod.POST})
 	public List<List<Map<String, Object>>> sendCommand(@RequestBody List<ThingCommandRestBean> restBeanList) {
 
 		// construct command request

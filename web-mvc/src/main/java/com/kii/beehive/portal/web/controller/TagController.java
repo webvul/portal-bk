@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
  * refer to doc "Beehive API - Tech Design" section "Thing API" for details
  */
 @RestController
-@RequestMapping(path = "/tags", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {
+@RequestMapping(value = "/tags", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {
 		MediaType.APPLICATION_JSON_UTF8_VALUE})
 public class TagController extends AbstractThingTagController {
 
@@ -36,7 +36,7 @@ public class TagController extends AbstractThingTagController {
 	 * to doc "Tech Design - Beehive API", section
 	 * "Create/Update Tag (创建/更新tag)" for more details
 	 */
-	@RequestMapping(path = "/custom", method = {RequestMethod.POST})
+	@RequestMapping(value = "/custom", method = {RequestMethod.POST})
 	public Map<String, Object> createTag(@RequestBody TagIndex tag) {
 		String displayName = tag.getDisplayName();
 		if (Strings.isBlank(displayName)) {
@@ -77,7 +77,7 @@ public class TagController extends AbstractThingTagController {
 	 * to doc "Tech Design - Beehive API", section "Delete Tag (移除tag)" for more
 	 * details
 	 */
-	@RequestMapping(path = "/custom/{displayName}", method = {RequestMethod.DELETE}, consumes = {"*"})
+	@RequestMapping(value = "/custom/{displayName}", method = {RequestMethod.DELETE}, consumes = {"*"})
 	public void removeTag(@PathVariable("displayName") String displayName) {
 
 		if (Strings.isBlank(displayName)) {
@@ -97,14 +97,14 @@ public class TagController extends AbstractThingTagController {
 	 *
 	 * @return
 	 */
-	@RequestMapping(path = "/search", method = {RequestMethod.GET}, consumes = {"*"})
+	@RequestMapping(value = "/search", method = {RequestMethod.GET}, consumes = {"*"})
 	public List<TagIndex> findTags(@RequestParam(value = "tagType", required = false) String tagType,
 								   @RequestParam(value = "displayName", required = false) String displayName) {
 		return thingTagManager.getAccessibleTagsByTagTypeAndName(AuthInfoStore.getUserID(),
 				StringUtils.capitalize(tagType), displayName);
 	}
 
-	/*@RequestMapping(path = "/{tagName}/operation/{operation}", method = { RequestMethod.GET })
+	/*@RequestMapping(value = "/{tagName}/operation/{operation}", method = { RequestMethod.GET })
 	public List<GlobalThingInfo> getThingsByTagExpress(@PathVariable("tagName") String tagName,
 			@PathVariable("operation") String operation) {
 
@@ -121,7 +121,7 @@ public class TagController extends AbstractThingTagController {
 	 *
 	 * @return
 	 */
-	@RequestMapping(path = "/locations/{parentLocation}", method = {RequestMethod.GET}, consumes = {"*"})
+	@RequestMapping(value = "/locations/{parentLocation}", method = {RequestMethod.GET}, consumes = {"*"})
 	public List<String> findLocations(@PathVariable("parentLocation") String parentLocation) {
 		return thingTagManager.getAccessibleTagsByUserIdAndLocations(AuthInfoStore.getUserID(), parentLocation).stream().
 				map(TagIndex::getDisplayName).collect(Collectors.toList());
@@ -135,7 +135,7 @@ public class TagController extends AbstractThingTagController {
 	 *
 	 * @return
 	 */
-	@RequestMapping(path = "/locations", method = {RequestMethod.GET}, consumes = {"*"})
+	@RequestMapping(value = "/locations", method = {RequestMethod.GET}, consumes = {"*"})
 	public List<String> findAllLocations() {
 		return findLocations("");
 	}
@@ -148,7 +148,7 @@ public class TagController extends AbstractThingTagController {
 	 * @param fullNames
 	 * @param userIds
 	 */
-	@RequestMapping(path = "/{fullNames}/users/{userIDs}", method = {RequestMethod.POST})
+	@RequestMapping(value = "/{fullNames}/users/{userIDs}", method = {RequestMethod.POST})
 	public void bindTagToUser(@PathVariable("fullNames") String fullNames, @PathVariable("userIDs") String userIds) {
 		if (Strings.isBlank(fullNames) || Strings.isBlank(userIds)) {
 			throw new PortalException("RequiredFieldsMissing", "tagIDs or userIDs is empty", HttpStatus
@@ -166,7 +166,7 @@ public class TagController extends AbstractThingTagController {
 	 * @param fullNames
 	 * @param userIds
 	 */
-	@RequestMapping(path = "/{fullNames}/users/{userIDs}", method = {RequestMethod.DELETE}, consumes = {"*"})
+	@RequestMapping(value = "/{fullNames}/users/{userIDs}", method = {RequestMethod.DELETE}, consumes = {"*"})
 	public void unbindTagFromUser(@PathVariable("fullNames") String fullNames, @PathVariable("userIDs") String userIds) {
 		if (Strings.isBlank(fullNames) || Strings.isBlank(userIds)) {
 			throw new PortalException("RequiredFieldsMissing", "tagIDs or userIDs is empty", HttpStatus
@@ -183,7 +183,7 @@ public class TagController extends AbstractThingTagController {
 	 * <p>
 	 * refer to doc "Beehive API - Thing API" for request/response details
 	 */
-	@RequestMapping(path = "/{fullNames}/userGroups/{userGroupIDs}", method = {RequestMethod.POST})
+	@RequestMapping(value = "/{fullNames}/userGroups/{userGroupIDs}", method = {RequestMethod.POST})
 	public void bindTagToUserGroup(@PathVariable("fullNames") String fullNames, @PathVariable("userGroupIDs") String
 			userGroupIDs) {
 		if (Strings.isBlank(fullNames) || Strings.isBlank(userGroupIDs)) {
@@ -204,7 +204,7 @@ public class TagController extends AbstractThingTagController {
 	 *
 	 * @param fullNames
 	 */
-	@RequestMapping(path = "/{fullNames}/userGroups/{userGroupIDs}", method = {RequestMethod.DELETE}, consumes = {"*"})
+	@RequestMapping(value = "/{fullNames}/userGroups/{userGroupIDs}", method = {RequestMethod.DELETE}, consumes = {"*"})
 	public void unbindTagsFromUserGroups(@PathVariable("fullNames") String fullNames, @PathVariable("userGroupIDs") String userGroupIDs) {
 		if (Strings.isBlank(fullNames) || Strings.isBlank(userGroupIDs)) {
 			throw new PortalException("RequiredFieldsMissing", "tagIDs or userGroupIDs is empty", HttpStatus
