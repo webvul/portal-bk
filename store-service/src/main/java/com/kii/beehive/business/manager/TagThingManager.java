@@ -109,7 +109,7 @@ public class TagThingManager {
 
 		if (thingInfo.getId() == null) { //create
 			this.saveOrUpdateThingLocation(thingID, location);
-			
+
 			ThingUserRelation relation = new ThingUserRelation();
 			relation.setUserId(thingInfo.getCreateBy());
 			relation.setThingId(thingID);
@@ -687,6 +687,10 @@ public class TagThingManager {
 	}
 
 	public List<GlobalThingInfo> getAccessibleThingsByUserGroupId(Long userGroupId) {
+		GroupUserRelation gur = groupUserRelationDao.findByUserIDAndUserGroupID(AuthInfoStore.getUserID(), userGroupId);
+		if (gur == null) {
+			return null;
+		}
 		List<Long> tagIds = tagGroupRelationDao.findTagIdsByUserGroupId(userGroupId).orElse(Collections.emptyList());
 		Set<Long> thingIds = tagThingRelationDao.findThingIds(tagIds).orElse(Collections.emptyList()).stream().
 				collect(Collectors.toSet());
@@ -702,6 +706,10 @@ public class TagThingManager {
 	}
 
 	public List<TagIndex> getAccessibleTagsByUserGroupId(Long userGroupId) {
+		GroupUserRelation gur = groupUserRelationDao.findByUserIDAndUserGroupID(AuthInfoStore.getUserID(), userGroupId);
+		if (gur == null) {
+			return null;
+		}
 		return tagIndexDao.findByIDs(
 				tagGroupRelationDao.findTagIdsByUserGroupId(userGroupId).orElse(Collections.emptyList()));
 	}
