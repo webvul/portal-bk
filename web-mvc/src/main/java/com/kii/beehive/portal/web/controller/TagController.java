@@ -107,7 +107,7 @@ public class TagController extends AbstractThingTagController {
 	 *
 	 * @return
 	 */
-	@RequestMapping(path = "/search", method = {RequestMethod.GET})
+	@RequestMapping(path = "/search", method = {RequestMethod.GET}, consumes = {"*"})
 	public List<TagIndex> findTags(@RequestParam(value = "tagType", required = false) String tagType,
 								   @RequestParam(value = "displayName", required = false) String displayName) {
 		return thingTagManager.getAccessibleTagsByTagTypeAndName(AuthInfoStore.getUserID(),
@@ -176,7 +176,7 @@ public class TagController extends AbstractThingTagController {
 	 * @param fullNames
 	 * @param userIds
 	 */
-	@RequestMapping(path = "/{fullNames}/users/{userIDs}", method = {RequestMethod.DELETE})
+	@RequestMapping(path = "/{fullNames}/users/{userIDs}", method = {RequestMethod.DELETE}, consumes = {"*"})
 	public void unbindTagFromUser(@PathVariable("fullNames") String fullNames, @PathVariable("userIDs") String userIds) {
 		if (Strings.isBlank(fullNames) || Strings.isBlank(userIds)) {
 			throw new PortalException("RequiredFieldsMissing", "tagIDs or userIDs is empty", HttpStatus
@@ -231,7 +231,7 @@ public class TagController extends AbstractThingTagController {
 	 * @param userId
 	 * @return a list of tags which the user can access
 	 */
-	@RequestMapping(value = "/user/{userID}", method = RequestMethod.GET)
+	@RequestMapping(value = "/user/{userID}", method = RequestMethod.GET, consumes = {"*"})
 	public List<TagIndex> getTagsByUser(@PathVariable("userID") String userId) {
 		return thingTagManager.getAccessibleTagsByUserId(userId);
 	}
@@ -242,7 +242,7 @@ public class TagController extends AbstractThingTagController {
 	 * @param fullTagName
 	 * @return a list of users who can access the tags
 	 */
-	@RequestMapping(value = "/{fullTagName}/users", method = RequestMethod.GET)
+	@RequestMapping(value = "/{fullTagName}/users", method = RequestMethod.GET, consumes = {"*"})
 	public List<BeehiveUser> getUsersByFullTagName(@PathVariable("fullTagName") String fullTagName) {
 		List<String> userId = thingTagManager.getUsersOfAccessibleTags(AuthInfoStore.getUserID(), fullTagName);
 		try {
@@ -258,7 +258,7 @@ public class TagController extends AbstractThingTagController {
 	 * @param userGroupId
 	 * @return a list of tags which the user group can access
 	 */
-	@RequestMapping(value = "/userGroup/{userGroupID}", method = RequestMethod.GET)
+	@RequestMapping(value = "/userGroup/{userGroupID}", method = RequestMethod.GET, consumes = {"*"})
 	public List<TagIndex> getTagsByUserGroup(@PathVariable("userGroupID") Long userGroupId) {
 		return thingTagManager.getAccessibleTagsByUserGroupId(userGroupId);
 	}
@@ -269,7 +269,7 @@ public class TagController extends AbstractThingTagController {
 	 * @param fullTagName
 	 * @return a list of user groups which can access the tags
 	 */
-	@RequestMapping(value = "/{fullTagName}/userGroups", method = RequestMethod.GET)
+	@RequestMapping(value = "/{fullTagName}/userGroups", method = RequestMethod.GET, consumes = {"*"})
 	public List<UserGroup> getUserGroupsByFullTagName(@PathVariable("fullTagName") String fullTagName) {
 		List<Long> userGroupIds = thingTagManager.getUserGroupsOfAccessibleTags(AuthInfoStore.getUserID(), fullTagName);
 		try {

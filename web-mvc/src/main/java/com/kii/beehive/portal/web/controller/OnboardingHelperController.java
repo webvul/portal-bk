@@ -120,7 +120,7 @@ public class OnboardingHelperController {
 	 *
 	 * @param vendorThingID
 	 */
-	@RequestMapping(path = "/onboardinghelper/{vendorThingID}", method = {RequestMethod.GET}, consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+	@RequestMapping(path = "/onboardinghelper/{vendorThingID}", method = {RequestMethod.GET}, consumes = {"*"}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
 	public ModelAndView getOnboardingInfo(@PathVariable("vendorThingID") String vendorThingID) {
 
 		List<GlobalThingInfo> thingInfos = tagThingManager.getThingsByVendorThingIds(Arrays.asList(vendorThingID));

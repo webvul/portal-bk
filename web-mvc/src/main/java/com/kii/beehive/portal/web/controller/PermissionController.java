@@ -66,7 +66,7 @@ public class PermissionController extends AbstractController{
      * refer to doc "Beehive API - User API" for request/response details
      *
      */
-    @RequestMapping(path="/{permissionID}/userGroup/{userGroupID}",method={RequestMethod.DELETE})
+    @RequestMapping(path="/{permissionID}/userGroup/{userGroupID}",method={RequestMethod.DELETE}, consumes = {"*"})
     public ResponseEntity removePermissionToUserGroup(@PathVariable("userGroupID") Long userGroupID, @PathVariable("permissionID") Long permissionID, HttpServletRequest httpRequest){
     	
     	//loginUser can edit, when loginUser is in this group , 
@@ -89,7 +89,7 @@ public class PermissionController extends AbstractController{
      *
      * @param userGroupID
      */
-    @RequestMapping(path="/userGroup/{userGroupID}",method={RequestMethod.GET})
+    @RequestMapping(path="/userGroup/{userGroupID}",method={RequestMethod.GET}, consumes = {"*"})
     public ResponseEntity<List<Permission>> getUserGroupPermission(@PathVariable("userGroupID") Long userGroupID, HttpServletRequest httpRequest){
     	UserGroup ug = userGroupDao.findByID(userGroupID);
     	if(ug == null){
@@ -107,7 +107,7 @@ public class PermissionController extends AbstractController{
      *
      * @param queryMap
      */
-    @RequestMapping(path = "/list", method = {RequestMethod.GET})
+    @RequestMapping(path = "/list", method = {RequestMethod.GET}, consumes = {"*"})
 	public ResponseEntity<List<Permission>> getUserGroupList() {
 		List<Permission> list = permissionDao.findAll();
 		return new ResponseEntity<>(list, HttpStatus.OK);

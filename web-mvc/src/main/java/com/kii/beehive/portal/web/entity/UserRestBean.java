@@ -24,6 +24,8 @@ public class UserRestBean {
 		this.teamName = teamName;
 	}
 
+
+
 	@JsonUnwrapped
 	public BeehiveUser getBeehiveUser() {
 		return beehiveUser;

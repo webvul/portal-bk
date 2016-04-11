@@ -114,7 +114,7 @@ public class UserGroupController {
 	 *
 	 * @param userGroupID
 	 */
-	@RequestMapping(path="/{userGroupID}/user/{userIDs}",method={RequestMethod.DELETE})
+	@RequestMapping(path="/{userGroupID}/user/{userIDs}",method={RequestMethod.DELETE}, consumes = {"*"})
 	public ResponseEntity removeUsersFromUserGroup(@PathVariable("userGroupID") Long userGroupID, @PathVariable("userIDs") String userIDs){
 		UserGroup ug = this.userGroupDao.findByID(userGroupID);
 		if(ug == null){
@@ -148,7 +148,7 @@ public class UserGroupController {
      *
      * @param userGroupID
      */
-    @RequestMapping(path="/{userGroupID}",method={RequestMethod.DELETE})
+    @RequestMapping(path="/{userGroupID}",method={RequestMethod.DELETE}, consumes = {"*"})
     public ResponseEntity deleteUserGroup(@PathVariable("userGroupID") Long userGroupID){
 
     	UserGroup orig =  userGroupDao.findByID(userGroupID);
@@ -173,7 +173,7 @@ public class UserGroupController {
      *
      * @param userGroupID
      */
-    @RequestMapping(path="/{userGroupID}",method={RequestMethod.GET})
+    @RequestMapping(path="/{userGroupID}",method={RequestMethod.GET}, consumes = {"*"})
     public ResponseEntity<UserGroupRestBean> getUserGroupDetail(@PathVariable("userGroupID") Long userGroupID){
     	UserGroupRestBean ugrb = null;
 		if(isGroupOfUser(AuthInfoStore.getUserID(), userGroupID)){
@@ -204,7 +204,7 @@ public class UserGroupController {
      *
      * @param userGroupID
      */
-    @RequestMapping(path="/{userGroupID}/tags",method={RequestMethod.GET})
+    @RequestMapping(path="/{userGroupID}/tags",method={RequestMethod.GET}, consumes = {"*"})
     public ResponseEntity<List<TagIndex>> getUserGroupTag(@PathVariable("userGroupID") Long userGroupID, HttpServletRequest httpRequest){
     	List<TagIndex> tagList = null;
 		if(isGroupOfUser(AuthInfoStore.getUserID(), userGroupID)){
@@ -231,14 +231,14 @@ public class UserGroupController {
      * refer to doc "Tech Design - Beehive API", section "Inquire User Group (查询用户群组)" for more details
      *
      */
-    @RequestMapping(path = "/list", method = {RequestMethod.GET})
+    @RequestMapping(path = "/list", method = {RequestMethod.GET}, consumes = {"*"})
 	public ResponseEntity<List<UserGroupRestBean>> getUserGroupList() {
 		List<UserGroup> list =  list = userGroupDao.findUserGroup(AuthInfoStore.getUserID(), null , null);
 		List<UserGroupRestBean> restBeanList = this.convertList(list);
 		return new ResponseEntity<>(restBeanList, HttpStatus.OK);
 	}
     
-    @RequestMapping(path = "/all", method = {RequestMethod.GET})
+    @RequestMapping(path = "/all", method = {RequestMethod.GET}, consumes = {"*"})
 	public ResponseEntity<List<UserGroupRestBean>> getUserGroupAll() {
 		List<UserGroup> list = userGroupDao.findAll();
 		List<UserGroupRestBean> restBeanList = this.convertList(list);

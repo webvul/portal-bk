@@ -1,14 +1,5 @@
 package com.kii.extension.ruleengine.drools;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.commons.codec.Charsets;
 import org.kie.api.KieBase;
 import org.kie.api.KieBaseConfiguration;
@@ -29,6 +20,9 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+
 @Component
 @Scope(scopeName= ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class DroolsRuleService {
@@ -44,7 +38,7 @@ public class DroolsRuleService {
 
 
 	private final Map<String,FactHandle> handleMap=new ConcurrentHashMap<>();
-
+	private final Set<String> pathSet=new HashSet<>();
 
 	public Map<String,Object>  getEngineEntitys(){
 
@@ -84,7 +78,7 @@ public class DroolsRuleService {
 	}
 
 
-	private final Set<String> pathSet=new HashSet<>();
+
 
 	public DroolsRuleService(boolean isStream,String...  rules){
 
@@ -147,6 +141,30 @@ public class DroolsRuleService {
 
 	}
 
+	/**
+	 * 清空drools fact,trigger生成的rule,用于重新初始化
+	 *
+	 */
+	public void clear(){
+
+		//清空trigger生成的rule
+		for(String drlPath:pathSet){
+			String name=drlPath.substring(drlPath.lastIndexOf("/"),drlPath.length());
+			if(name.startsWith("/comm")){
+				continue;
+			}
+			kfs.delete(drlPath);
+		}
+		KieBuilder kb=ks.newKieBuilder(kfs);
+		kb.buildAll();
+		kieContainer.updateToVersion(kb.getKieModule().getReleaseId());
+
+		//清空当前drools内的fact
+		handleMap.keySet().forEach( key -> removeData(handleMap.get(key)));
+	}
+
+
+
 	public void bindWithInstance(String name,Object instance){
 
 		kieSession.getEnvironment().set(name,instance);
@@ -154,7 +172,7 @@ public class DroolsRuleService {
 
 
 
-	public synchronized   void addCondition(String name,String rule){
+	public synchronized void addCondition(String name,String rule){
 
 		String drlName="src/main/resources/user_"+name+".drl";
 
@@ -201,6 +219,7 @@ public class DroolsRuleService {
 
 		});
 	}
+
 
 
 

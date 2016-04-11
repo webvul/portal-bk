@@ -78,12 +78,13 @@ public class UserController {
 	 *
 	 * @param userID
 	 */
-	@RequestMapping(path="/{userID}",method={RequestMethod.GET})
-	public BeehiveUser getUser(@PathVariable("userID") String userID){
+	@RequestMapping(path="/{userID}",method={RequestMethod.GET}, consumes = {"*"})
+	public UserRestBean getUser(@PathVariable("userID") String userID){
 
+		UserRestBean  bean=new UserRestBean();
+		bean.setBeehiveUser(userManager.getUserByID(userID));
 
-		return userManager.getUserByID(userID);
+		return bean;
 	}
-
 
 }
