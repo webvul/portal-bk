@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.jdbc.dao.AuthInfoDao;
 import com.kii.beehive.portal.jdbc.entity.AuthInfo;
-import com.kii.extension.sdk.context.UserTokenBindTool;
 
 /**
  * this class queries the url permission on the given user/token and constructs AuthInfoEntry to store these info
@@ -31,7 +30,7 @@ public class AuthInfoService {
 
 	private Map<String,AuthInfo> userTokenMap=new ConcurrentHashMap<>();
 
-	@Scheduled(cron="0,0,1,*,*,?")
+	@Scheduled(cron="0 0 1 * * ?")
 	public void checkTTL(){
 		//TODO:
 	}

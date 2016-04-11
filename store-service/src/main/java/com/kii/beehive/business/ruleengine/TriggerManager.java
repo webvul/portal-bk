@@ -1,6 +1,21 @@
 package com.kii.beehive.business.ruleengine;
 
+import javax.annotation.PostConstruct;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.kii.beehive.business.event.BusinessEventListenerService;
 import com.kii.beehive.business.manager.ThingTagManager;
 import com.kii.beehive.portal.event.EventListener;
@@ -14,14 +29,6 @@ import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-
-import javax.annotation.PostConstruct;
-import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
 public class TriggerManager {
@@ -126,27 +133,33 @@ public class TriggerManager {
 
 		record.setId(triggerID);
 
-		if(record instanceof SimpleTriggerRecord){
-			addSimpleToEngine((SimpleTriggerRecord)record);
-		}else if(record instanceof GroupTriggerRecord){
-			GroupTriggerRecord groupRecord=((GroupTriggerRecord)record);
-			if(!groupRecord.getSource().getSelector().getTagList().isEmpty()) {
+		try {
 
-				eventService.addGroupTagChangeListener(groupRecord.getSource().getSelector().getTagList(), triggerID);
+			if (record instanceof SimpleTriggerRecord) {
+				addSimpleToEngine((SimpleTriggerRecord) record);
+			} else if (record instanceof GroupTriggerRecord) {
+				GroupTriggerRecord groupRecord = ((GroupTriggerRecord) record);
+				addGroupToEngine(groupRecord);
+				if (!groupRecord.getSource().getSelector().getTagList().isEmpty()) {
+					eventService.addGroupTagChangeListener(groupRecord.getSource().getSelector().getTagList(), triggerID);
+				}
+
+			} else if (record instanceof SummaryTriggerRecord) {
+				SummaryTriggerRecord summaryRecord = (SummaryTriggerRecord) record;
+
+				addSummaryToEngine(summaryRecord);
+				summaryRecord.getSummarySource().forEach((k, v) -> {
+					eventService.addSummaryTagChangeListener(v.getSource().getSelector().getTagList(), triggerID, k);
+				});
+
+			} else {
+				throw new IllegalArgumentException("unsupport trigger type");
 			}
-			addGroupToEngine(groupRecord);
+		}catch(RuntimeException e){
 
-		}else if(record instanceof  SummaryTriggerRecord){
-			SummaryTriggerRecord  summaryRecord=(SummaryTriggerRecord)record;
+			triggerDao.removeEntity(triggerID);
+			throw e;
 
-			summaryRecord.getSummarySource().forEach((k,v)->{
-				eventService.addSummaryTagChangeListener(v.getSource().getSelector().getTagList(),triggerID,k);
-			});
-
-			addSummaryToEngine(summaryRecord);
-
-		}else{
-			throw new IllegalArgumentException("unsupport trigger type");
 		}
 
 		return triggerID;
