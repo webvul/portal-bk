@@ -1,30 +1,5 @@
 package com.kii.beehive.portal.web.controller;
 
-import static java.util.Arrays.asList;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.apache.logging.log4j.util.Strings;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.exception.ObjectNotFoundException;
@@ -38,6 +13,19 @@ import com.kii.beehive.portal.web.entity.ThingRestBean;
 import com.kii.beehive.portal.web.exception.BeehiveUnAuthorizedException;
 import com.kii.beehive.portal.web.exception.PortalException;
 import com.kii.extension.sdk.entity.thingif.EndNodeOfGateway;
+import org.apache.logging.log4j.util.Strings;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static java.util.Arrays.asList;
 
 /**
  * Beehive API - Thing API
@@ -67,14 +55,13 @@ public class ThingController extends AbstractThingTagController {
 	}
 
 	/**
-	 * GET /things/user/{userID}
+	 * GET /things/user
 	 *
-	 * @param userId
 	 * @return a list of devices which the user can access
 	 */
-	@RequestMapping(value = "/user/{userID}", method = RequestMethod.GET, consumes = {"*"})
-	public List<ThingRestBean> getThingsByUser(@PathVariable("userID") String userId) {
-		return toThingRestBean(thingTagManager.getAccessibleThingsByUserId(userId));
+	@RequestMapping(value = "/user", method = RequestMethod.GET, consumes = {"*"})
+	public List<ThingRestBean> getThingsByUser() {
+		return toThingRestBean(thingTagManager.getAccessibleThingsByUserId(AuthInfoStore.getUserID()));
 	}
 
 	/**
@@ -93,7 +80,7 @@ public class ThingController extends AbstractThingTagController {
 	}
 
 	/**
-	 * GET /things/user/{userID}
+	 * GET /things/userGroup/{userGroupID}
 	 *
 	 * @param userGroupId
 	 * @return a list of devices which the user can access

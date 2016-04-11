@@ -1,29 +1,6 @@
 package com.kii.beehive.portal.web.controller;
 
-import javax.servlet.http.HttpServletRequest;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.jar.Attributes;
-import java.util.jar.Manifest;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.kii.beehive.business.manager.AppInfoManager;
 import com.kii.beehive.business.manager.TagThingManager;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
@@ -34,6 +11,22 @@ import com.kii.beehive.portal.web.constant.CallbackNames;
 import com.kii.beehive.portal.web.exception.PortalException;
 import com.kii.beehive.portal.web.help.BeehiveAppInfoManager;
 import com.kii.extension.sdk.entity.FederatedAuthResult;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 
 /**
  * Beehive API - Thing API
@@ -74,7 +67,7 @@ public class OnboardingHelperController {
 	 *
 	 * @param paramMap
 	 */
-	@RequestMapping(path = "/appinit", method = {RequestMethod.POST}, consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+	@RequestMapping(value = "/appinit", method = {RequestMethod.POST}, consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
 	public void initAppContext(@RequestBody Map<String, Object> paramMap, HttpServletRequest request) {
 
 		String userName = (String) paramMap.getOrDefault("portal.username", portalUserName);
@@ -96,7 +89,7 @@ public class OnboardingHelperController {
 		return;
 	}
 
-	@RequestMapping(path = "/appRegist/{appID}", method = {RequestMethod.POST}, consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+	@RequestMapping(value = "/appRegist/{appID}", method = {RequestMethod.POST}, consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
 	public void initAppContext(@PathVariable("appID") String appID, HttpServletRequest request) {
 
 		CallbackUrlParameter param = new CallbackUrlParameter();
@@ -120,7 +113,7 @@ public class OnboardingHelperController {
 	 *
 	 * @param vendorThingID
 	 */
-	@RequestMapping(path = "/onboardinghelper/{vendorThingID}", method = {RequestMethod.GET}, consumes = {"*"}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+	@RequestMapping(value = "/onboardinghelper/{vendorThingID}", method = {RequestMethod.GET}, consumes = {"*"}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
 	public ModelAndView getOnboardingInfo(@PathVariable("vendorThingID") String vendorThingID) {
 
 		List<GlobalThingInfo> thingInfos = tagThingManager.getThingsByVendorThingIds(Arrays.asList(vendorThingID));
@@ -157,8 +150,8 @@ public class OnboardingHelperController {
 	}
 
 
-	@RequestMapping(path="/info",method={RequestMethod.GET})
-	public Map<String, String> info(HttpServletRequest httpRequest){
+	@RequestMapping(value = "/info", method = {RequestMethod.GET})
+	public Map<String, String> info(HttpServletRequest httpRequest) {
 		Map<String, String> map = new HashMap<>();
 		InputStream manifestStream = httpRequest.getServletContext().getResourceAsStream("/META-INF/MANIFEST.MF");
 		try {
@@ -170,10 +163,10 @@ public class OnboardingHelperController {
 			map.put("Version", impVersion);
 			map.put("Title", impTitle);
 			map.put("Date", impTimestamp);
-		}catch(IOException ex) {
+		} catch (IOException ex) {
 			//log.warn("Error while reading version: " + ex.getMessage());
 		}
-		return  map;
+		return map;
 	}
 
 }
