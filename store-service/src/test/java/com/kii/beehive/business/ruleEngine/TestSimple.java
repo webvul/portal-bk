@@ -18,6 +18,7 @@ import com.kii.extension.ruleengine.TriggerConditionBuilder;
 import com.kii.extension.ruleengine.drools.CommandExec;
 import com.kii.extension.ruleengine.store.trigger.Condition;
 import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
+import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.IntervalPrefix;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
@@ -148,6 +149,21 @@ public class TestSimple {
 		assertEquals(4,exec.getHitCount(triggerID));
 
 		System.in.read();
+
+	}
+
+	@Test
+	public void testGroup(){
+
+
+		String kiiThingID="0af7a7e7-th.f83120e36100-a269-5e11-e5bb-0bc2e136";
+
+		GroupTriggerRecord record=new GroupTriggerRecord();
+
+		record.addTarget(getTarget() );
+
+		manager.createTrigger(record);
+
 
 	}
 

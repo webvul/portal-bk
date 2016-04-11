@@ -14,7 +14,9 @@ public class StoreServiceException extends RuntimeException {
 
 
 	public String getErrorCode() {
-		return errorCode;
+
+
+		return this.getClass().getSimpleName();
 	}
 
 	public void setErrorCode(String errorCode) {

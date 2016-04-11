@@ -4,11 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
-import com.kii.beehive.portal.store.entity.CustomProperty;
 import com.kii.extension.sdk.entity.KiiEntity;
 
 
@@ -25,11 +24,11 @@ public abstract  class TriggerRecord extends KiiEntity {
 
 	private String triggerName;
 
-	private CustomProperty  custom;
+	private CustomProperty  custom=new CustomProperty();
 
 	private String userID;
 
-	private PreparedCondition preparedCondition;
+	private TriggerValidPeriod period;
 
 	private RuleEnginePredicate predicate;
 
@@ -46,12 +45,13 @@ public abstract  class TriggerRecord extends KiiEntity {
 
 	public String getTriggerID() {return super.getId();}
 
-	public PreparedCondition getPreparedCondition() {
-		return preparedCondition;
+	@JsonProperty("preparedCondition")
+	public TriggerValidPeriod getPreparedCondition() {
+		return period;
 	}
 
-	public void setPreparedCondition(PreparedCondition preparedCondition) {
-		this.preparedCondition = preparedCondition;
+	public void setPreparedCondition(TriggerValidPeriod preparedCondition) {
+		this.period = preparedCondition;
 	}
 
 	public String getDescription() {
@@ -127,7 +127,6 @@ public abstract  class TriggerRecord extends KiiEntity {
 		this.triggerName = triggerName;
 	}
 
-	@JsonUnwrapped
 	public CustomProperty getCustom() {
 		return custom;
 	}
@@ -135,4 +134,15 @@ public abstract  class TriggerRecord extends KiiEntity {
 	public void setCustom(CustomProperty custom) {
 		this.custom = custom;
 	}
+
+	@JsonIgnore
+	public Object getCustomProperty(String key){
+		return custom.getCustom().get(key);
+	}
+
+	@JsonIgnore
+	public void setCustomProperty(String key,Object val){
+		 custom.addProperty(key,val);
+	}
+
 }

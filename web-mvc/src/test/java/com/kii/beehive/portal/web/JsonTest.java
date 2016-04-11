@@ -11,8 +11,8 @@ import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.kii.beehive.portal.store.entity.BeehiveUser;
-import com.kii.beehive.portal.web.entity.UserRestBean;
+import com.kii.beehive.portal.store.entity.PortalSyncUser;
+import com.kii.beehive.portal.web.entity.SyncUserRestBean;
 
 public class JsonTest {
 
@@ -33,11 +33,11 @@ public class JsonTest {
 
 		String json=mapper.writeValueAsString(input);
 
-		UserRestBean user=mapper.readValue(json,UserRestBean.class);
+		SyncUserRestBean user=mapper.readValue(json,SyncUserRestBean.class);
 
 		assertEquals("123",user.getCustomFields().getValueByKey("No"));
 
-		BeehiveUser bUser=user.getBeehiveUser();
+		PortalSyncUser bUser=user.getBeehiveUser();
 
 		assertEquals("123",bUser.getCustomFields().getValueByKey("No"));
 

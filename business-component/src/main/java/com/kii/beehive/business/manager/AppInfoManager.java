@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.service.BeehiveParameterDao;
-import com.kii.beehive.portal.service.KiiUserSyncDao;
+import com.kii.beehive.business.service.KiiUserService;
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
 import com.kii.extension.sdk.context.AppBindTool;
 import com.kii.extension.sdk.context.AppBindToolResolver;
@@ -45,7 +45,7 @@ public class AppInfoManager {
 	private DevPortalService portalService;
 
 	@Autowired
-	private KiiUserSyncDao  userDao;
+	private KiiUserService userDao;
 
 	@Autowired
 	private FederatedAuthService  federatedAuthService;

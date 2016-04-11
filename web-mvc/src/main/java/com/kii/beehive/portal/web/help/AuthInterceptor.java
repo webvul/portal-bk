@@ -16,11 +16,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.kii.beehive.business.helper.OpLogTools;
-import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.business.manager.AppInfoManager;
-import com.kii.beehive.business.manager.AuthManager;
+import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.jdbc.entity.AuthInfo;
+import com.kii.beehive.portal.manager.AuthManager;
 import com.kii.beehive.portal.service.DeviceSupplierDao;
-import com.kii.beehive.portal.store.entity.AuthInfoEntry;
 import com.kii.beehive.portal.store.entity.DeviceSupplier;
 import com.kii.beehive.portal.web.constant.CallbackNames;
 import com.kii.beehive.portal.web.constant.Constants;
@@ -85,7 +85,6 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
 		String url=request.getRequestURI();
 
-		String auth = request.getHeader(Constants.ACCESS_TOKEN);
 
 		int idx=url.indexOf(Constants.URL_PREFIX);
 		String subUrl=url.substring(idx+4).trim();
@@ -93,14 +92,14 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 		List<String> list=new LinkedList<>();
 
 		list.add(subUrl);
-		list.add(auth);
+		list.add(request.getHeader(Constants.ACCESS_TOKEN));
 
-		try {
+//		try {
 
 			// below APIs don't need to check token and permission
 			// - login: /oauth2/login
 			// - register: /oauth2/register
-			if(subUrl.startsWith(Constants.URL_OAUTH2_LOGIN)
+		if(subUrl.startsWith(Constants.URL_OAUTH2_LOGIN)
 					|| subUrl.startsWith(Constants.URL_OAUTH2_REGISTER)
 					|| subUrl.startsWith("/onboardinghelper")
 					|| subUrl.contains("/debug/")){
@@ -110,19 +109,14 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
 				return  super.preHandle(request, response, handler);
 
-			}
-
-			if (auth == null || !auth.startsWith(Constants.HEADER_BEARER)) {
-				throw new BeehiveUnAuthorizedException(" auth token format invalid");
-			}
-
-			auth = auth.trim();
-
-			String token = auth.substring(auth.indexOf(" ") + 1).trim();
-
-			list.set(1,token);
+		}
 
 
+		String token=AuthUtils.getTokenFromHeader(request);
+
+		list.set(1,token);
+
+		try{
 			// TODO this checking is for testing only, must remove after testing complete
 			if (Constants.SUPER_TOKEN.equals(token)&&(!"production".equals(env))) {
 
@@ -136,7 +130,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 				return  super.preHandle(request, response, handler);
 			}
 
-			if(subUrl.startsWith(Constants.URL_USER)){
+			if(subUrl.startsWith(Constants.URL_USER_SYNC)){
 				//usersynccallback
 
 				DeviceSupplier supplier= null;
@@ -160,7 +154,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
 			}else {
 
-				AuthInfoEntry authInfo = authManager.validateAndBindUserToken(token);
+				AuthInfo authInfo = authManager.validateAndBindUserToken(token);
 				log.debug(authInfo.toString());
 				list.set(1, authInfo.getUserID());
 

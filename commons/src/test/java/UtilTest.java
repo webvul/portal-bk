@@ -7,6 +7,8 @@ import java.util.Set;
 
 import org.junit.Test;
 
+import com.kii.beehive.portal.common.utils.StringRandomTools;
+
 public class UtilTest {
 
 
@@ -33,5 +35,13 @@ public class UtilTest {
 
 		assertEquals(null,map.get("key1"));
 
+	}
+
+	@Test
+	public void testStrRandom(){
+
+		for(int i=0;i<10;i++) {
+			System.out.println(StringRandomTools.getRandomStr(6));
+		}
 	}
 }

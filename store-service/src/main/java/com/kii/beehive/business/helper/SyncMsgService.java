@@ -11,7 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.service.DeviceSupplierDao;
 import com.kii.beehive.portal.service.UserSyncMsgDao;
-import com.kii.beehive.portal.store.entity.BeehiveUser;
+import com.kii.beehive.portal.store.entity.PortalSyncUser;
 import com.kii.beehive.portal.store.entity.usersync.SupplierPushMsgTask;
 import com.kii.beehive.portal.store.entity.usersync.UserSyncMsg;
 import com.kii.beehive.portal.store.entity.usersync.UserSyncMsgType;
@@ -37,7 +37,7 @@ public class SyncMsgService {
 	private NotifySenderTool notifyTool;
 
 
-	public void addUpdateMsg(String userID,BeehiveUser user){
+	public void addUpdateMsg(String userID,PortalSyncUser user){
 		addSyncMsg(userID, UserSyncMsgType.Update,user);
 	}
 
@@ -49,12 +49,12 @@ public class SyncMsgService {
 	}
 
 
-	public void addInsertMsg(String userID,BeehiveUser user){
+	public void addInsertMsg(String userID,PortalSyncUser user){
 		addSyncMsg(userID, UserSyncMsgType.Create,user);
 
 	}
 
-	private void addSyncMsg(String userID,UserSyncMsgType type,BeehiveUser user){
+	private void addSyncMsg(String userID,UserSyncMsgType type,PortalSyncUser user){
 
 		UserSyncMsg  msg=new UserSyncMsg();
 

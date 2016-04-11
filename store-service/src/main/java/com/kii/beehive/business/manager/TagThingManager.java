@@ -658,7 +658,7 @@ public class TagThingManager {
 				collect(Collectors.toSet());
 		users.addAll(thingUserRelationDao.findUserIds(thingId));
 		users.addAll(tagUserRelationDao.findUserIds(tagIds).orElse(Collections.emptyList()));
-		return userDao.getUserByIDs(users.stream().collect(Collectors.toList()));
+		return userDao.getUserByIDs(users);
 	}
 
 	public List<UserGroup> getUserGroupsOfAccessibleThing(String userId, Long thingId) throws ObjectNotFoundException {

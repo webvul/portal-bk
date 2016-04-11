@@ -13,10 +13,13 @@ import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
+import com.kii.extension.sdk.entity.thingif.ThingStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -54,40 +57,46 @@ public class TriggerManager {
 	@PostConstruct
 	public void init() {
 
+		service.clear();
 
-		/*List<TriggerRecord> recordList=triggerDao.getAllTrigger();
+		List<TriggerRecord> recordList = triggerDao.getAllTrigger();
 
 		commandService.disable();
 
-		recordList.forEach(record->{
+		recordList.forEach(record -> {
 
-			if(record instanceof SimpleTriggerRecord){
-				addSimpleToEngine((SimpleTriggerRecord)record);
-			}else if(record instanceof GroupTriggerRecord){
-				GroupTriggerRecord groupRecord=((GroupTriggerRecord)record);
-				addGroupToEngine(groupRecord);
+			try {
 
-			}else if(record instanceof  SummaryTriggerRecord){
-				SummaryTriggerRecord  summaryRecord=(SummaryTriggerRecord)record;
-				addSummaryToEngine(summaryRecord);
+				if (record instanceof SimpleTriggerRecord) {
+					addSimpleToEngine((SimpleTriggerRecord) record);
+				} else if (record instanceof GroupTriggerRecord) {
+					GroupTriggerRecord groupRecord = ((GroupTriggerRecord) record);
+					addGroupToEngine(groupRecord);
 
-			}else{
-				throw new IllegalArgumentException("unsupport trigger type");
+				} else if (record instanceof SummaryTriggerRecord) {
+					SummaryTriggerRecord summaryRecord = (SummaryTriggerRecord) record;
+					addSummaryToEngine(summaryRecord);
+
+				} else {
+					throw new IllegalArgumentException("unsupport trigger type");
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				return;
 			}
 
 		});
 
+		thingTagService.iteratorAllThingsStatus(s -> {
 
-		thingTagService.iteratorAllThingsStatus( s->{
-
-			if(StringUtils.isEmpty(s.getStatus())){
+			if (StringUtils.isEmpty(s.getStatus())) {
 				return;
 			}
 			try {
-				ThingStatus status = mapper.readValue(s.getStatus(),ThingStatus.class);
-				String id=s.getFullKiiThingID();
+				ThingStatus status = mapper.readValue(s.getStatus(), ThingStatus.class);
+				String id = s.getFullKiiThingID();
 
-				service.initThingStatus(id,status,s.getModifyDate());
+				service.initThingStatus(id, status, s.getModifyDate());
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -98,7 +107,7 @@ public class TriggerManager {
 
 		commandService.enable();
 
-*/
+
 	}
 
 	public Map<String, Object> getRuleEngingDump() {
@@ -114,28 +123,35 @@ public class TriggerManager {
 
 		record.setId(triggerID);
 
-		if (record instanceof SimpleTriggerRecord) {
-			addSimpleToEngine((SimpleTriggerRecord) record);
-		} else if (record instanceof GroupTriggerRecord) {
-			GroupTriggerRecord groupRecord = ((GroupTriggerRecord) record);
-			if (!groupRecord.getSource().getSelector().getTagList().isEmpty()) {
+		try {
 
-				eventService.addGroupTagChangeListener(groupRecord.getSource().getSelector().getTagList(), triggerID);
+			if (record instanceof SimpleTriggerRecord) {
+				addSimpleToEngine((SimpleTriggerRecord) record);
+			} else if (record instanceof GroupTriggerRecord) {
+				GroupTriggerRecord groupRecord = ((GroupTriggerRecord) record);
+				addGroupToEngine(groupRecord);
+				if (!groupRecord.getSource().getSelector().getTagList().isEmpty()) {
+					eventService.addGroupTagChangeListener(groupRecord.getSource().getSelector().getTagList(), triggerID);
+				}
+
+			} else if (record instanceof SummaryTriggerRecord) {
+				SummaryTriggerRecord summaryRecord = (SummaryTriggerRecord) record;
+
+				addSummaryToEngine(summaryRecord);
+				summaryRecord.getSummarySource().forEach((k, v) -> {
+					eventService.addSummaryTagChangeListener(v.getSource().getSelector().getTagList(), triggerID, k);
+				});
+
+			} else {
+				throw new IllegalArgumentException("unsupport trigger type");
 			}
-			addGroupToEngine(groupRecord);
+		} catch (RuntimeException e) {
 
-		} else if (record instanceof SummaryTriggerRecord) {
-			SummaryTriggerRecord summaryRecord = (SummaryTriggerRecord) record;
+			triggerDao.removeEntity(triggerID);
+			throw e;
 
-			summaryRecord.getSummarySource().forEach((k, v) -> {
-				eventService.addSummaryTagChangeListener(v.getSource().getSelector().getTagList(), triggerID, k);
-			});
-
-			addSummaryToEngine(summaryRecord);
-
-		} else {
-			throw new IllegalArgumentException("unsupport trigger type");
 		}
+
 
 		return triggerID;
 

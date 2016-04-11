@@ -1,17 +1,15 @@
 package com.kii.extension.ruleengine.service;
 
-import java.util.Collections;
-import java.util.List;
-
-import org.springframework.scheduling.Trigger;
-import org.springframework.stereotype.Component;
-
-import com.kii.extension.sdk.service.AbstractDataAccess;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.entity.BucketInfo;
 import com.kii.extension.sdk.query.ConditionBuilder;
 import com.kii.extension.sdk.query.QueryParam;
+import com.kii.extension.sdk.service.AbstractDataAccess;
+import org.springframework.stereotype.Component;
+
+import java.util.Collections;
+import java.util.List;
 
 @Component
 @BindAppByName(appName = "portal",appBindSource="propAppBindTool")
@@ -111,7 +109,7 @@ public class TriggerRecordDao extends AbstractDataAccess<TriggerRecord> {
 
 		QueryParam query= ConditionBuilder.orCondition().equal("recordStatus",TriggerRecord.StatusType.disable).equal("recordStatus", TriggerRecord.StatusType.enable).getFinalQueryParam();
 
-		List<TriggerRecord> list=super.query(query);
+		List<TriggerRecord> list=super.fullQuery(query);
 
 		return list;
 	}

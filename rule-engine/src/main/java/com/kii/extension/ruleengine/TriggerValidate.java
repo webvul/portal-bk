@@ -16,7 +16,6 @@ import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TagSelector;
 import com.kii.extension.ruleengine.store.trigger.TargetAction;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.TriggerSource;
 import com.kii.extension.ruleengine.store.trigger.WhenType;
 import com.kii.extension.ruleengine.store.trigger.condition.AndLogic;
 import com.kii.extension.ruleengine.store.trigger.condition.OrLogic;
@@ -74,25 +73,6 @@ public class TriggerValidate {
     }
 
     private void validateGroupTrigger(GroupTriggerRecord groupTriggerRecord){
-        TriggerSource triggerSource = groupTriggerRecord.getSource();
-        RuleEnginePredicate predicate = groupTriggerRecord.getPredicate();
-
-        //when condition exist , thingID is not null. And at the same time schedule express can not be null;
-        if(
-            (
-                triggerSource == null ||
-                triggerSource.getSelector() == null ||
-                (
-                    (triggerSource.getSelector().getTagList() == null || triggerSource.getSelector().getTagList().size() == 0)
-                    &&
-                    (triggerSource.getSelector().getThingList() == null || triggerSource.getSelector().getThingList().size() == 0)
-                )
-            )
-            &&
-            predicate.getCondition()!=null){
-
-            throw new IllegalArgumentException("Source and Schedule can not be null at the same time !");
-        }
 
         //source内判定行业模版,暂未实现(等待行业模板)
     }

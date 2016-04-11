@@ -2,13 +2,14 @@ package com.kii.beehive.portal.store.entity.usersync;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import com.kii.beehive.portal.store.entity.BeehiveUser;
+import com.kii.beehive.portal.store.entity.PortalSyncUser;
+
 
 public class UserSyncMsg {
 
 	private UserSyncMsgType type;
 
-	private BeehiveUser user;
+	private PortalSyncUser user;
 
 	private String userID;
 
@@ -17,11 +18,11 @@ public class UserSyncMsg {
 
 
 	@JsonIgnore()
-	public BeehiveUser getUser() {
+	public PortalSyncUser getUser() {
 		return user;
 	}
 
-	public void setUser(BeehiveUser user) {
+	public void setUser(PortalSyncUser user) {
 		this.user = user;
 	}
 

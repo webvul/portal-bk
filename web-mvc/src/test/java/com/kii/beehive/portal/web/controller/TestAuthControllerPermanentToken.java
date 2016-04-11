@@ -1,5 +1,11 @@
 package com.kii.beehive.portal.web.controller;
 
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertNotNull;
+import static junit.framework.TestCase.assertNull;
+import static junit.framework.TestCase.assertTrue;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,18 +20,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
-import com.kii.beehive.portal.service.BeehiveUserDao;
-import com.kii.beehive.portal.store.entity.BeehiveUser;
+import com.kii.beehive.portal.service.PortalSyncUserDao;
+import com.kii.beehive.portal.store.entity.PortalSyncUser;
 import com.kii.beehive.portal.web.WebTestTemplate;
 import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.extension.sdk.entity.KiiUser;
-
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertNotNull;
-import static junit.framework.TestCase.assertNull;
-import static junit.framework.TestCase.assertTrue;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * the test cases in this class is to test the scenarios of the token stored in auth info cache,
@@ -44,7 +45,7 @@ public class TestAuthControllerPermanentToken extends WebTestTemplate {
     private UserServiceForTest userServiceForTest;
 
     @Autowired
-    private BeehiveUserDao beehiveUserDao;
+    private PortalSyncUserDao beehiveUserDao;
 
     @Autowired
     private GroupUserRelationDao groupUserRelationDao;
@@ -160,7 +161,7 @@ public class TestAuthControllerPermanentToken extends WebTestTemplate {
         try {
             String kiiUserID = userServiceForTest.createUser(kiiUser);
 
-            BeehiveUser user = new BeehiveUser();
+			PortalSyncUser user = new PortalSyncUser();
             user.setAliUserID(userID);
             user.setUserName("someUserNameForTest");
             user.setKiiUserID(kiiUserID);

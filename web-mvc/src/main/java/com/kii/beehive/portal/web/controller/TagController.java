@@ -1,5 +1,23 @@
 package com.kii.beehive.portal.web.controller;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.logging.log4j.util.Strings;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.exception.ObjectNotFoundException;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
@@ -9,14 +27,6 @@ import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.exception.BeehiveUnAuthorizedException;
 import com.kii.beehive.portal.web.exception.PortalException;
-import org.apache.logging.log4j.util.Strings;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Beehive API - Thing API
@@ -54,7 +64,7 @@ public class TagController extends AbstractThingTagController {
 				throw new PortalException(HttpStatus.BAD_REQUEST + "", "Requested tag doesn't exists",
 						HttpStatus.BAD_REQUEST);
 			}
-		} else if (thingTagManager.isTagDisplayNamePresent(getLoginTeamID(), TagType.Custom, displayName)) {
+		} else if (thingTagManager.isTagDisplayNamePresent(AuthInfoStore.getTeamID(), TagType.Custom, displayName)) {
 			throw new PortalException(HttpStatus.BAD_REQUEST + "", "Requested displayName already exists",
 					HttpStatus.BAD_REQUEST);
 		}
@@ -100,7 +110,7 @@ public class TagController extends AbstractThingTagController {
 	@RequestMapping(path = "/search", method = {RequestMethod.GET}, consumes = {"*"})
 	public List<TagIndex> findTags(@RequestParam(value = "tagType", required = false) String tagType,
 								   @RequestParam(value = "displayName", required = false) String displayName) {
-		return thingTagManager.getAccessibleTagsByTagTypeAndName(getLoginUserID(),
+		return thingTagManager.getAccessibleTagsByTagTypeAndName(AuthInfoStore.getUserID(),
 				StringUtils.capitalize(tagType), displayName);
 	}
 
@@ -123,7 +133,7 @@ public class TagController extends AbstractThingTagController {
 	 */
 	@RequestMapping(path = "/locations/{parentLocation}", method = {RequestMethod.GET}, consumes = {"*"})
 	public List<String> findLocations(@PathVariable("parentLocation") String parentLocation) {
-		return thingTagManager.getAccessibleTagsByUserIdAndLocations(getLoginUserID(), parentLocation).stream().
+		return thingTagManager.getAccessibleTagsByUserIdAndLocations(AuthInfoStore.getUserID(), parentLocation).stream().
 				map(TagIndex::getDisplayName).collect(Collectors.toList());
 	}
 
@@ -233,7 +243,7 @@ public class TagController extends AbstractThingTagController {
 	 */
 	@RequestMapping(value = "/{fullTagName}/users", method = RequestMethod.GET, consumes = {"*"})
 	public List<BeehiveUser> getUsersByFullTagName(@PathVariable("fullTagName") String fullTagName) {
-		List<String> userId = thingTagManager.getUsersOfAccessibleTags(getLoginUserID(), fullTagName);
+		List<String> userId = thingTagManager.getUsersOfAccessibleTags(AuthInfoStore.getUserID(), fullTagName);
 		try {
 			return thingTagManager.getUsers(userId);
 		} catch (ObjectNotFoundException e) {
@@ -260,7 +270,7 @@ public class TagController extends AbstractThingTagController {
 	 */
 	@RequestMapping(value = "/{fullTagName}/userGroups", method = RequestMethod.GET, consumes = {"*"})
 	public List<UserGroup> getUserGroupsByFullTagName(@PathVariable("fullTagName") String fullTagName) {
-		List<Long> userGroupIds = thingTagManager.getUserGroupsOfAccessibleTags(getLoginUserID(), fullTagName);
+		List<Long> userGroupIds = thingTagManager.getUserGroupsOfAccessibleTags(AuthInfoStore.getUserID(), fullTagName);
 		try {
 			return thingTagManager.getUserGroupsByIds(userGroupIds);
 		} catch (ObjectNotFoundException e) {

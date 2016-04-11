@@ -8,17 +8,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.kii.beehive.business.manager.UserManager;
-import com.kii.beehive.portal.service.BeehiveUserDao;
+import com.kii.beehive.business.manager.PortalSyncUserManager;
+import com.kii.beehive.portal.service.PortalSyncUserDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 
 public class TestBeehiveUser extends TestInit{
 
 	@Autowired
-	private BeehiveUserDao  userDao;
+	private PortalSyncUserDao userDao;
 
 	@Autowired
-	private UserManager userMang;
+	private PortalSyncUserManager userMang;
 
 
 	@Autowired
@@ -33,10 +33,10 @@ public class TestBeehiveUser extends TestInit{
 		user.setCompany("demo");
 		user.setUserName("王二");
 
-		user.setCustomField("id", "1234567");
-		user.setCustomField("no", "abcdef");
+//		user.setCustomField("id", "1234567");
+//		user.setCustomField("no", "abcdef");
 
-		userMang.addUser(user);
+//		userMang.addUser(user);
 //		String json=mapper.writeValueAsString(user);
 //
 //System.out.println(json);

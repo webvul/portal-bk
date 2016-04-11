@@ -1,7 +1,5 @@
 package com.kii.extension.ruleengine.drools.entity;
 
-import java.util.Objects;
-
 public class CurrThing {
 
 	private String thingID;
@@ -23,11 +21,17 @@ public class CurrThing {
 
 	@Override
 	public boolean equals(Object o) {
-		return true;
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		CurrThing currThing = (CurrThing) o;
+
+		return thingID != null ? thingID.equals(currThing.thingID) : currThing.thingID == null;
+
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hashCode("thingID");
+		return thingID != null ? thingID.hashCode() : 0;
 	}
 }

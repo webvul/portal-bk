@@ -1,14 +1,11 @@
-package com.kii.beehive.portal.service;
+package com.kii.beehive.business.service;
 
-import org.apache.commons.codec.Charsets;
-import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.extension.sdk.annotation.BindAppByName;
+import com.kii.extension.sdk.context.UserTokenBindTool;
 import com.kii.extension.sdk.entity.KiiUser;
 import com.kii.extension.sdk.entity.LoginInfo;
 import com.kii.extension.sdk.exception.BadUserNameException;
@@ -24,10 +21,13 @@ import com.kii.extension.sdk.service.UserService;
  */
 @Component
 @BindAppByName(appName="master")
-public class KiiUserSyncDao {
+public class KiiUserService {
 
 	@Autowired
 	private UserService userService;
+
+	@Autowired
+	private UserTokenBindTool  tokenBind;
 
 	/**
 	 * important:
@@ -48,45 +48,42 @@ public class KiiUserSyncDao {
 			user.setPassword(pwd);
 			return userService.createUser(user);
 		}
-
 	}
 
-	public void addBeehiveUser(BeehiveUser beehiveUser){
+
+
+
+	public String  addBeehiveUser(BeehiveUser beehiveUser,String pwd){
 
 		KiiUser user=new KiiUser();
 
 		user.setDisplayName(beehiveUser.getUserName());
 
-		if(!StringUtils.isEmpty(beehiveUser.getAliUserID())) {
-			user.setLoginName(beehiveUser.getAliUserID());
-		}else{
-			String loginName= new String(Hex.encodeHex(beehiveUser.getUserName().getBytes(Charsets.UTF_8)));
-			user.setLoginName(loginName);
-		}
+		user.setLoginName(beehiveUser.getId());
 
-		String pwd=DigestUtils.sha1Hex(user.getLoginName()+"_beehive");
 		user.setPassword(pwd);
 
 		String kiiUserID = userService.createUser(user);
 
-		beehiveUser.setKiiUserID(kiiUserID);
-		beehiveUser.setKiiLoginName(user.getLoginName());
 
-		if(StringUtils.isEmpty(beehiveUser.getAliUserID())){
-			beehiveUser.setAliUserID(kiiUserID);
-		}
+		return kiiUserID;
 	}
 
-	public String bindToUser(BeehiveUser user){
 
 
-		String userID=user.getKiiLoginName();
+	public String bindToUser(BeehiveUser user,String pwd){
 
-		String pwd=DigestUtils.sha1Hex(user.getKiiLoginName()+"_beehive");
+		LoginInfo loginInfo=userService.login(user.getId(),pwd);
 
-		LoginInfo loginInfo=userService.login(userID,pwd);
+		tokenBind.bindToken(loginInfo.getToken());
 
 		return loginInfo.getToken();
+	}
+
+	public void changePassword(String oldPwd,String newPwd){
+
+		userService.changePassword(oldPwd,newPwd);
+
 	}
 
 	public void removeBeehiveUser(String kiiUserID) {
@@ -95,9 +92,7 @@ public class KiiUserSyncDao {
 	}
 
 	public void disableBeehiveUser(BeehiveUser user) {
-
 		userService.disableUser(user.getKiiUserID());
-
 	}
 
 

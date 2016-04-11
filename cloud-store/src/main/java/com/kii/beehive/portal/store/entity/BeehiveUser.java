@@ -1,19 +1,11 @@
 package com.kii.beehive.portal.store.entity;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+
+import org.apache.commons.codec.digest.DigestUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
-public class BeehiveUser extends PortalEntity {
-
-
-	public static final String PREFIX = "custom-";
-
-	private String aliUserID;
+public class BeehiveUser extends  PortalEntity {
 
 	private String kiiUserID;
 
@@ -25,28 +17,25 @@ public class BeehiveUser extends PortalEntity {
 
 	private String mail;
 
-	private String role;
+//	private String role;
 
 	private String company;
 
-	private Set<String> groups;
+	private String activityToken;
 
-	private Map<String,Object> customFields=new HashMap<>();
 
-	private CustomProperty properties=new CustomProperty();
+	public String getActivityToken() {
+		return activityToken;
+	}
+
+	public void setActivityToken(String activityToken) {
+		this.activityToken = activityToken;
+	}
 
 	public BeehiveUser(){
 
 	}
 
-	@JsonProperty("userID")
-	public String getAliUserID() {
-		return aliUserID;
-	}
-
-	public void setAliUserID(String aliUserID) {
-		this.aliUserID = aliUserID;
-	}
 
 	public String getKiiUserID() {
 		return kiiUserID;
@@ -80,13 +69,13 @@ public class BeehiveUser extends PortalEntity {
 		this.mail = mail;
 	}
 
-	public String getRole() {
-		return role;
-	}
-
-	public void setRole(String role) {
-		this.role = role;
-	}
+//	public String getRole() {
+//		return role;
+//	}
+//
+//	public void setRole(String role) {
+//		this.role = role;
+//	}
 
 	public String getCompany() {
 		return company;
@@ -94,14 +83,6 @@ public class BeehiveUser extends PortalEntity {
 
 	public void setCompany(String company) {
 		this.company = company;
-	}
-
-	public Set<String> getGroups() {
-		return groups;
-	}
-
-	public void setGroups(Set<String> groups) {
-		this.groups = groups;
 	}
 
 	public String getKiiLoginName() {
@@ -112,24 +93,14 @@ public class BeehiveUser extends PortalEntity {
 		this.kiiLoginName = kiiLoginName;
 	}
 
-	@JsonUnwrapped
-	public CustomProperty getCustomFields() {
-		return properties;
-	}
-
-	public void setCustomFields(CustomProperty properties) {
-		this.properties = properties;
-	}
 
 	@JsonIgnore
-	public void setCustomField(String key,Object val){
-		this.properties.setCustomField(key,val);
-	};
-
-
-	@JsonIgnore
-	public Object getCustomField(String key){
-		return this.properties.getValueByKey(key);
+	public String getDefaultPassword() {
+		return DigestUtils.sha1Hex(getUserName()+"_username_"+getId() + "_beehive");
 	}
 
+	public String getHashedPwd(String pwd){
+		return DigestUtils.sha1Hex(pwd+"_user_id"+getId()+"_beehive");
+
+	}
 }
