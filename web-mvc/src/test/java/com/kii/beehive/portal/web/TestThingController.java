@@ -139,10 +139,10 @@ public class TestThingController extends WebTestTemplate {
 	@Test
 	public void testGetThingsByUser() throws Exception {
 		doReturn(null).when(thingTagManager).getAccessibleThingsByUserId(anyString());
-		thingController.getThingsByUser("someone");
+		thingController.getThingsByUser();
 
 		doReturn(Arrays.asList(mock(GlobalThingInfo.class))).when(thingTagManager).getAccessibleThingsByUserId(anyString());
-		thingController.getThingsByUser("someone");
+		thingController.getThingsByUser();
 	}
 
 	@Test

@@ -102,7 +102,7 @@ public class TestTagController extends WebTestTemplate {
 	public void testGetTagsByUser() throws Exception {
 		doReturn(null).when(tagThingManager).getAccessibleTagsByUserId(anyString());
 
-		tagController.getTagsByUser("Someone");
+		tagController.getTagsByUser();
 
 		verify(tagThingManager, times(1)).getAccessibleTagsByUserId(anyString());
 	}
