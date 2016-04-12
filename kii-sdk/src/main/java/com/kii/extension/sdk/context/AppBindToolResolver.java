@@ -5,8 +5,6 @@ import javax.annotation.PreDestroy;
 
 import java.util.LinkedList;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -17,8 +15,6 @@ import com.kii.extension.sdk.entity.AppInfo;
 
 @Component
 public class AppBindToolResolver {
-
-	private Logger log= LoggerFactory.getLogger(AppBindToolResolver.class);
 
 	@Autowired
 	private ApplicationContext context;
@@ -64,7 +60,6 @@ public class AppBindToolResolver {
 	@PreDestroy
 	public void afterClose(){
 
-		log.debug("afterClose");
 
 		oldInfosThreadLocal=null;
 		appChoiceLocal=null;
@@ -96,7 +91,6 @@ public class AppBindToolResolver {
 
 	public void setAppInfoDirectly(AppInfo appInfo,String token){
 
-		log.debug("setAppInfoDirectly token=" + token + ", app=" + appInfo);
 
 		setAppInfoDirectly(appInfo);
 		tokenDirectLocal.set(token);
@@ -106,7 +100,6 @@ public class AppBindToolResolver {
 
 	public void setAppInfoDirectly(String appName,String token) {
 
-		log.debug("setAppInfoDirectly token=" + token + ", app=" + appName);
 
 		setAppInfoDirectly(appName);
 		tokenDirectLocal.set(token);
@@ -114,7 +107,6 @@ public class AppBindToolResolver {
 
 	public void setAppInfoDirectly(String appName) {
 
-		log.debug("setAppInfoDirectly app=" + appName);
 
 		AppInfo appInfo=queryAppInfoByName(appName,null);
 
@@ -123,7 +115,6 @@ public class AppBindToolResolver {
 
 	public void setAppInfoDirectly(AppInfo appInfo){
 
-		log.debug("setAppInfoDirectly app=" + appInfo);
 
 		OldInfos oldInfos=new OldInfos();
 
@@ -139,7 +130,6 @@ public class AppBindToolResolver {
 
 	public void setAppChoice(AppChoice choice,String token){
 
-		log.debug("setAppChoice token=" + token + ", AppChoice=" + choice);
 
 		setAppChoice(choice);
 
@@ -149,7 +139,6 @@ public class AppBindToolResolver {
 
 	public void setAppChoice(AppChoice choice){
 
-		log.debug("setAppChoice AppChoice=" + choice);
 
 		OldInfos oldInfos=new OldInfos();
 
@@ -168,7 +157,6 @@ public class AppBindToolResolver {
 
 	public void setAppName(String appName,String token){
 
-		log.debug("setAppName token=" + token + ", app=" + appName);
 
 		AppChoice choice=new AppChoice();
 
@@ -180,7 +168,6 @@ public class AppBindToolResolver {
 
 	public void setAppName(String appName){
 
-		log.debug("setAppName appName=" + appName);
 
 		AppChoice choice=new AppChoice();
 
@@ -192,7 +179,6 @@ public class AppBindToolResolver {
 
 	public void setToken(String token) {
 
-		log.debug("setToken token=" + token);
 
 		this.tokenDirectLocal.set(token);
 	}
@@ -203,23 +189,32 @@ public class AppBindToolResolver {
 		String token=tokenDirectLocal.get();
 		if(!StringUtils.isEmpty(token)){
 
-			log.debug("getToken " + token);
 			return token;
 		}
 
+		bindTokenResolver();
+
 		token = tokenResolver.getToken();
 
-		log.debug("getToken " + token);
 		return token;
 
 	}
 
+	private void bindTokenResolver(){
+
+		if(appChoiceLocal.get().isBindAdmin()){
+
+			tokenResolver.bindAdmin();
+		}else{
+			tokenResolver.bindUser();
+		}
+
+	}
 	public AppInfo getAppInfo(){
 
 		AppInfo appInfo=appInfoDirectly.get();
 		if(appInfo!=null){
 
-			log.debug("getAppInfo " + appInfo);
 		  	return appInfo;
 		}
 
@@ -229,14 +224,12 @@ public class AppBindToolResolver {
 
 		appInfoDirectly.set(newAppInfo);
 
-		log.debug("getAppInfo " + newAppInfo);
 
 		return newAppInfo;
 	}
 
 	public void clean(){
 
-		log.debug("clean");
 
 		LinkedList<OldInfos> infosQueue=oldInfosThreadLocal.get();
 		if(infosQueue.isEmpty()){
@@ -254,7 +247,6 @@ public class AppBindToolResolver {
 
 	public void clearAll(){
 
-		log.debug("clearAll");
 
 		appInfoDirectly.remove();
 		appChoiceLocal.remove();
@@ -266,14 +258,12 @@ public class AppBindToolResolver {
 
 	private AppInfo queryAppInfoByName(String appName,String bindName){
 
-		log.debug("queryAppInfoByName appName=" + appName + ", bindName=" + bindName);
 
 		if(bindName!=null) {
 
 			AppBindTool bindTool=context.getBean(bindName, AppBindTool.class);
 			AppInfo appInfo = bindTool.getAppInfo(appName);
 
-			log.debug("queryAppInfoByName app=" + appInfo);
 			return appInfo;
 
 		}
@@ -284,7 +274,6 @@ public class AppBindToolResolver {
 			AppInfo info = bindTool.getAppInfo(appName);
 			if(info!=null){
 
-				log.debug("queryAppInfoByName app=" + info);
 				return info;
 			}
 		}

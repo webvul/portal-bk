@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -34,6 +35,8 @@ public class EngineService {
 
 	@Autowired
 	private RuleGeneral  ruleGeneral;
+//	@Autowired
+//	private ScheduleService scheduleService;
 
 
 	private Set<String>  scheduleSet=new ConcurrentSkipListSet<>();
@@ -57,6 +60,8 @@ public class EngineService {
 	public void clear(){
 		droolsTriggerService.clear();
 	}
+
+
 	public Map<String,Object>  dumpEngineRuntime(){
 
 		return droolsTriggerService.getEngineRuntime();
@@ -144,7 +149,7 @@ public class EngineService {
 	}
 
 
-	public void  createSimpleTrigger(String thingID, SimpleTriggerRecord record){
+	public void  createSimpleTrigger(String thingID, SimpleTriggerRecord record) throws SchedulerException {
 
 
 		Trigger trigger=new Trigger();
@@ -171,7 +176,6 @@ public class EngineService {
 //			scheduleSet.add(record.getId());
 		droolsTriggerService.fireCondition();
 //		}
-
 
 	}
 
@@ -217,13 +221,12 @@ public class EngineService {
 		if(scheduleSet.contains(triggerID)) {
 			droolsTriggerService.fireCondition();
 		}
+
 	}
 
 	public void removeTrigger(String triggerID){
 
 		droolsTriggerService.removeTrigger(triggerID);
-
-
 
 	}
 }

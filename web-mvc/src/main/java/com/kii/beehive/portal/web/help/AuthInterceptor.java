@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.kii.beehive.business.helper.OpLogTools;
@@ -97,10 +98,8 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 //		try {
 
 			// below APIs don't need to check token and permission
-			// - login: /oauth2/login
-			// - register: /oauth2/register
-		if(subUrl.startsWith(Constants.URL_OAUTH2_LOGIN)
-					|| subUrl.startsWith(Constants.URL_OAUTH2_REGISTER)
+
+		if(subUrl.startsWith(Constants.URL_OAUTH2)
 					|| subUrl.startsWith("/onboardinghelper")
 					|| subUrl.contains("/debug/")){
 
@@ -114,6 +113,9 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
 		String token=AuthUtils.getTokenFromHeader(request);
 
+		if(StringUtils.isEmpty(token)){
+			throw new BeehiveUnAuthorizedException("token miss or invalid format ");
+		}
 		list.set(1,token);
 
 		try{
@@ -155,7 +157,6 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 			}else {
 
 				AuthInfo authInfo = authManager.validateAndBindUserToken(token);
-				log.debug(authInfo.toString());
 				list.set(1, authInfo.getUserID());
 
 				AuthInfoStore.setAuthInfo(authInfo.getUserID());

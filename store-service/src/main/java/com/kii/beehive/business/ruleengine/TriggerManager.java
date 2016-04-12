@@ -71,8 +71,11 @@ public class TriggerManager {
 	public void reinit(){
 
 		service.clear();
+		scheduleService.clearTrigger();
+
 		init();
 	}
+
 	@PostConstruct
 	public void init(){
 		List<TriggerRecord> recordList = triggerDao.getAllTrigger();
@@ -84,8 +87,6 @@ public class TriggerManager {
 			}catch(Exception e){
 				e.printStackTrace();
 			}
-
-
 		});
 
 		thingTagService.iteratorAllThingsStatus(s -> {
@@ -140,7 +141,6 @@ public class TriggerManager {
 		}
 
 		try {
-
 			if (record instanceof SimpleTriggerRecord) {
 				addSimpleToEngine((SimpleTriggerRecord) record);
 			} else if (record instanceof GroupTriggerRecord) {
@@ -167,7 +167,7 @@ public class TriggerManager {
 			}
 		} catch (RuntimeException e) {
 
-			triggerDao.removeEntity(triggerID);
+			triggerDao.deleteTriggerRecord(triggerID);
 			throw e;
 
 		} catch (SchedulerException e) {
@@ -187,7 +187,12 @@ public class TriggerManager {
 				thingID = thingInfo.getFullKiiThingID();
 			}
 		}
-		service.createSimpleTrigger(thingID, record);
+		try {
+			service.createSimpleTrigger(thingID,record);
+		} catch (SchedulerException e) {
+			e.printStackTrace();
+			throw new IllegalArgumentException("preparedCondition schedule error :" + e.getMessage());
+		}
 	}
 
 
@@ -275,6 +280,8 @@ public class TriggerManager {
 		triggerDao.deleteTriggerRecord(triggerID);
 
 		service.removeTrigger(triggerID);
+
+		scheduleService.removeManagerTaskForSchedule(triggerID);
 
 		List<EventListener> eventListenerList = eventListenerDao.getEventListenerByTargetKey(triggerID);
 		for (EventListener eventListener : eventListenerList) {

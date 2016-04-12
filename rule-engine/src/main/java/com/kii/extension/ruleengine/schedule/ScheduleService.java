@@ -29,6 +29,8 @@ public class ScheduleService {
 	
 	
 	public static final String TRIGGER_ID = "triggerID";
+	private static final String STOP_PRE = "Stop-";
+	private static final String START_PRE = "Start-";
 
 	@Autowired
 	private Scheduler scheduler;
@@ -40,6 +42,7 @@ public class ScheduleService {
 			scheduler.start();
 		} catch (SchedulerException e) {
 			e.printStackTrace();
+			throw new IllegalArgumentException(e);
 		}
 	}
 	
@@ -50,12 +53,15 @@ public class ScheduleService {
 			scheduler.shutdown();
 		} catch (SchedulerException e) {
 			e.printStackTrace();
+			throw new IllegalArgumentException(e);
+
 		}
 	}
 
+
 	public Map<String,Object> dump(){
 
-		GroupMatcher<TriggerKey>  any= GroupMatcher.anyTriggerGroup();
+		GroupMatcher<TriggerKey> any= GroupMatcher.anyTriggerGroup();
 
 		Map<String,Object> triggerMap=new HashMap<>();
 
@@ -65,7 +71,7 @@ public class ScheduleService {
 			keys.forEach((k) -> {
 				try {
 					Trigger trigger = scheduler.getTrigger(k);
-					Map<String,Object> data=new HashMap<String, Object>();
+					Map<String,Object> data=new HashMap<>();
 					data.put("endTime",trigger.getEndTime());
 					data.put("startTime",trigger.getStartTime());
 
@@ -89,10 +95,47 @@ public class ScheduleService {
 		return triggerMap;
 	}
 
+	
+
+	/**
+	 * for reInit
+	 */
+	public void clearTrigger(){
+
+		try {
+			Set<TriggerKey>  triggers = scheduler.getTriggerKeys(GroupMatcher.anyTriggerGroup());
+
+			triggers.forEach(triggerKey -> {
+				try {
+					scheduler.unscheduleJob(triggerKey);
+				} catch (SchedulerException e) {
+					e.printStackTrace();
+				}
+			});
+		} catch (SchedulerException e) {
+			e.printStackTrace();
+		}
+
+
+
+	}
+
+	public void removeManagerTaskForSchedule(String triggerID) {
+		try {
+			scheduler.unscheduleJob(TriggerKey.triggerKey(START_PRE +triggerID));
+
+			scheduler.unscheduleJob(TriggerKey.triggerKey(STOP_PRE +triggerID));
+
+		} catch (SchedulerException e) {
+			throw new IllegalArgumentException(e);
+		}
+	}
+
 	public void addManagerTaskForSchedule(String triggerID, SchedulePeriod period) throws SchedulerException {
 
 
 		Trigger triggerStart= TriggerBuilder.newTrigger()
+				.withIdentity(TriggerKey.triggerKey(START_PRE+triggerID))
 				.usingJobData(TRIGGER_ID,triggerID)
 				.forJob(RuleEngineConfig.START_JOB)
 				.withSchedule(cronSchedule(period.getStartCron()))
@@ -103,6 +146,7 @@ public class ScheduleService {
 		scheduler.scheduleJob(triggerStart);
 
 		Trigger triggerEnd= TriggerBuilder.newTrigger()
+				.withIdentity(TriggerKey.triggerKey(STOP_PRE+triggerID))
 				.usingJobData(TRIGGER_ID,triggerID)
 				.forJob(RuleEngineConfig.STOP_JOB)
 				.withSchedule(cronSchedule(period.getEndCron()))
@@ -127,10 +171,12 @@ public class ScheduleService {
 
 		if(period.getStartTime()>=now){
 			Trigger triggerStart = TriggerBuilder.newTrigger()
+					.withIdentity(TriggerKey.triggerKey(START_PRE+triggerID))
 					.usingJobData(TRIGGER_ID, triggerID)
 					.forJob(RuleEngineConfig.START_JOB)
 					.startAt(new Date(period.getStartTime()))
 					.build();
+
 
 			scheduler.scheduleJob(triggerStart);
 		}else if(period.getEndTime()>=now){
@@ -139,17 +185,19 @@ public class ScheduleService {
 
 		if(period.getEndTime()>=now) {
 			Trigger triggerEnd = TriggerBuilder.newTrigger()
+					.withIdentity(TriggerKey.triggerKey(STOP_PRE+triggerID))
 					.usingJobData(TRIGGER_ID, triggerID)
 					.forJob(RuleEngineConfig.STOP_JOB)
 					.startAt(new Date(period.getEndTime()))
 					.build();
+
 
 			scheduler.scheduleJob(triggerEnd);
 		}else{
 			scheduler.triggerJob(RuleEngineConfig.STOP_JOB);
 		}
 	}
-	
+
 	
 	public void addManagerTask(String triggerID,TriggerValidPeriod period) throws SchedulerException {
 

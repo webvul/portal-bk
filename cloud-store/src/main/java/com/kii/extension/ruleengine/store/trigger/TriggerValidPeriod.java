@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME,
-		include = JsonTypeInfo.As.EXTERNAL_PROPERTY,
+		include = JsonTypeInfo.As.EXISTING_PROPERTY,
 		property = "type")
 @JsonSubTypes({
 		@JsonSubTypes.Type(value = SimplePeriod.class,name="simple"),
@@ -12,6 +12,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 })
 public interface TriggerValidPeriod {
 
-	String getType();
+	public String getType();
 
 }

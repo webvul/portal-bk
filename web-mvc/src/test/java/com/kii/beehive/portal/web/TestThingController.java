@@ -312,7 +312,7 @@ public class TestThingController extends WebTestTemplate {
 		}
 
 		BeehiveUser user = new BeehiveUser();
-		user.setKiiLoginName("Someone");
+		user.setId("Someone");
 		doReturn(Arrays.asList(user)).when(thingTagManager).getUsers(anyListOf(String.class));
 		doNothing().when(thingTagManager).bindThingsToUsers(anyCollectionOf(Long.class), anyCollectionOf(String.class));
 
@@ -356,7 +356,7 @@ public class TestThingController extends WebTestTemplate {
 		}
 
 		BeehiveUser user = new BeehiveUser();
-		user.setKiiLoginName("Someone");
+		user.setId("Someone");
 		doReturn(Arrays.asList(user)).when(thingTagManager).getUsers(anyListOf(String.class));
 		doNothing().when(thingTagManager).bindThingsToUsers(anyCollectionOf(Long.class), anyCollectionOf(String.class));
 

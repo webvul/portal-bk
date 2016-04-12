@@ -2,8 +2,9 @@ package com.kii.beehive.portal.manager;
 
 
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +15,7 @@ import org.springframework.util.StringUtils;
 
 import com.kii.beehive.business.service.KiiUserService;
 import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.common.utils.StringRandomTools;
 import com.kii.beehive.portal.entitys.AuthRestBean;
 import com.kii.beehive.portal.exception.UnauthorizedException;
 import com.kii.beehive.portal.helper.AuthInfoService;
@@ -23,13 +25,12 @@ import com.kii.beehive.portal.jdbc.entity.AuthInfo;
 import com.kii.beehive.portal.jdbc.entity.Team;
 import com.kii.beehive.portal.service.BeehiveUserDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
-import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.context.UserTokenBindTool;
+import com.kii.extension.sdk.entity.KiiUser;
+import com.kii.extension.sdk.exception.KiiCloudException;
 
-@BindAppByName(appName = "master")
 @Component
 @Transactional
-
 public class AuthManager {
 
 	private Logger log = LoggerFactory.getLogger(AuthManager.class);
@@ -46,47 +47,56 @@ public class AuthManager {
 	@Autowired
 	private KiiUserService userService;
 
-
-
 	@Autowired
 	private TeamDao teamDao;
 
 	@Autowired
 	protected TeamUserRelationDao teamUserRelationDao;
 
-	public boolean activity(String userName, String token) {
+
+	private Map<String,String> oneTimeTokenMap=new ConcurrentHashMap<>();
+
+
+	public String activite(String userName, String token) {
 
 		BeehiveUser user = userDao.getUserByName(userName);
 
-
 		if(StringUtils.isEmpty(user.getActivityToken())){
-			return false;
-		}
-		boolean sign = user.getActivityToken().equals(user.getHashedPwd(token));
-
-		if (sign) {
-			//one-time token
-			userDao.updateWithVerify(user.getId(), Collections.singletonMap("activityToken", null), user.getVersion());
-
-
+			throw new UnauthorizedException("userID  already activied");
 		}
 
-		return sign;
+		if(!user.getActivityToken().equals(user.getHashedPwd(token))){
+			throw new UnauthorizedException("activity token  incorrect");
+		};
+
+		String oneTimeToken= StringRandomTools.getRandomStr(32);
+
+		oneTimeTokenMap.put(user.getUserName(),oneTimeToken);
+
+		return oneTimeToken;
+
 	}
 
-	public void initPassword(String userName,String newPassword) {
+	public void initPassword(String token,String userName,String newPassword) {
 
+		if(StringUtils.isEmpty(token)||!token.equals(oneTimeTokenMap.get(userName))){
+
+			throw new UnauthorizedException("token invalid");
+
+		}
 
 		BeehiveUser  user=userDao.getUserByName(userName);
 
 		String pwd=user.getDefaultPassword();
+		String newPwd=user.getHashedPwd(newPassword);
 
 		userService.bindToUser(user,pwd);
 
-		String newPwd=user.getHashedPwd(newPassword);
-
 		userService.changePassword(pwd,newPwd);
 
+		oneTimeTokenMap.remove(userName);
+
+		userDao.cleanActivityToken(user.getId(),newPwd);
 	}
 
 
@@ -105,16 +115,36 @@ public class AuthManager {
 		BeehiveUser  user=userDao.getUserByName(userName);
 		String pwd=user.getHashedPwd(password);
 
-
 		String token = userService.bindToUser(user, pwd);
 
 		if(token == null) {
 			throw new UnauthorizedException( "Authentication failed");
 		}
 
+		Team team=this.getTeamByID(user.getId());
+		saveToken(permanentToken, user, token,team);
+
+		AuthRestBean authRestBean = generAuthBean(user, token, team);
+		return authRestBean;
+	}
+
+	private AuthRestBean generAuthBean(BeehiveUser user, String token, Team team) {
+		AuthRestBean authRestBean = new AuthRestBean();
+		authRestBean.setUser(user);
+
+		if(team != null){
+			authRestBean.setTeamID(team.getId());
+			authRestBean.setTeamName(team.getName());
+		}
+
+		authRestBean.setAccessToken(token);
+		return authRestBean;
+	}
+
+	private AuthInfo saveToken(boolean permanentToken, BeehiveUser user, String token,Team team) {
 		AuthInfo entity = new AuthInfo();
 		entity.setUserID(user.getId());
-		Team team=this.getTeamByID(user.getId());
+
 		if(team!=null) {
 			entity.setTeamID(team.getId());
 		}
@@ -129,17 +159,7 @@ public class AuthManager {
 		entity.setExpireTime(calendar.getTime());
 
 		authService.createAuthInfoEntry(entity,token,permanentToken);
-
-		AuthRestBean authRestBean = new AuthRestBean();
-		authRestBean.setUser(user);
-
-		if(team != null){
-			authRestBean.setTeamID(team.getId());
-			authRestBean.setTeamName(team.getName());
-		}
-
-		authRestBean.setAccessToken(token);
-		return authRestBean;
+		return entity;
 	}
 
 	/**
@@ -156,14 +176,34 @@ public class AuthManager {
 		String pwd=user.getHashedPwd(oldPassword);
 		String newPwd=user.getHashedPwd(newPassword);
 
-		userService.bindToUser(user, pwd);
-
 		userService.changePassword(pwd, newPwd);
+
+		userDao.cleanActivityToken(user.getId(),newPwd);
 
 		authService.removeTokenByUserID(user.getId());
 
 	}
 
+
+	public String  resetPwd(String userID) {
+
+		BeehiveUser user=userDao.getUserByID(userID);
+
+		userService.bindToUser(user,user.getUserPassword());
+
+		userService.changePassword(user.getUserPassword(),user.getDefaultPassword());
+
+		String token= StringRandomTools.getRandomStr(6);
+
+		user.setActivityToken(user.getHashedPwd(token));
+
+		userDao.updateEntity(user,user.getId());
+
+		authService.removeTokenByUserID(user.getId());
+
+		return token;
+
+	}
 
 
 	/**
@@ -173,7 +213,7 @@ public class AuthManager {
 	 * @param token
 	 * @return
 	 */
-	public AuthInfo validateAndBindUserToken(String token) throws UnauthorizedException {
+	public AuthInfo validateAndBindUserToken(String token)  {
 
 		// try to get auth info from auth info cache by token
 		AuthInfo authInfo = authService.getAuthInfoByToken(token);
@@ -219,35 +259,25 @@ public class AuthManager {
 
 	public AuthRestBean validateUserToken(String token){
 
-		AuthInfo entry = authService.getAuthInfoByToken(token);
+		userTokenBindTool.bindToken(token);
 
-		// this case would rarely happen, because token is validated in AuthInterceptor before coming here
-		if(entry == null) {
-			throw new UnauthorizedException("the token cannot been found");
+		try {
+
+			KiiUser kiiUser = userService.getKiiUser();
+
+			String userID = kiiUser.getLoginName();
+
+			BeehiveUser beehiveUser = userDao.getUserByID(userID);
+			Team team = getTeamByID(userID);
+
+			saveToken(false, beehiveUser, token, team);
+
+			AuthRestBean authRestBean = generAuthBean(beehiveUser, token, team);
+
+			return authRestBean;
+		}catch(KiiCloudException ex){
+			throw new UnauthorizedException("invaild token");
 		}
-
-		String userID = entry.getUserID();
-
-
-		AuthRestBean authRestBean = new AuthRestBean();
-
-		// get access token
-		String accessToken = entry.getToken();
-		authRestBean.setAccessToken(accessToken);
-
-		// get user info
-		BeehiveUser beehiveUser = userDao.getUserByID(userID);
-
-		authRestBean.setUser(beehiveUser);
-
-		Team team = getTeamByID(userID);
-		if(team != null){
-			authRestBean.setTeamID(team.getId());
-			authRestBean.setTeamName(team.getName());
-		}
-
-
-		return authRestBean;
 	}
 
 }

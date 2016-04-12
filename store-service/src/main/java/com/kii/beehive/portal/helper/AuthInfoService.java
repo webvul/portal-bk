@@ -83,7 +83,7 @@ public class AuthInfoService {
 
 		userTokenMap.keySet().removeAll(tokens);
 
-		authInfoDao.deleteByUserID(id);
+//		authInfoDao.deleteByUserID(id);
 
 	}
 }

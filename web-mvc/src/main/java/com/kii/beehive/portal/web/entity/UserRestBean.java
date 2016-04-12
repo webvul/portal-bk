@@ -31,13 +31,13 @@ public class UserRestBean {
 		return beehiveUser;
 	}
 
-	public void setBeehiveUser(BeehiveUser beehiveUser) {
-		this.beehiveUser = beehiveUser;
+	public void setBeehiveUser(BeehiveUser user) {
+		this.beehiveUser = user.cloneView();
 	}
 
 	@JsonIgnore
 	public void verifyInput(){
-		if(StringUtils.isEmpty(beehiveUser.getUserName())){
+		if(StringUtils.isEmpty(beehiveUser.getUserName())&&StringUtils.isEmpty(beehiveUser.getMail())&&StringUtils.isEmpty(beehiveUser.getPhone())){
 			throw new PortalException("RequiredFieldsMissing","username cannot been null", HttpStatus.BAD_REQUEST);
 		}
 

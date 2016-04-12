@@ -2,6 +2,7 @@ package com.kii.beehive.portal.store.entity;
 
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.springframework.beans.BeanUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -9,7 +10,7 @@ public class BeehiveUser extends  PortalEntity {
 
 	private String kiiUserID;
 
-	private String kiiLoginName;
+//	private String kiiLoginName;
 
 	private String userName;
 
@@ -23,6 +24,21 @@ public class BeehiveUser extends  PortalEntity {
 
 	private String activityToken;
 
+	private String userPassword;
+
+
+	public String getUserID(){
+		return super.getId();
+	}
+
+
+	public String getUserPassword() {
+		return userPassword;
+	}
+
+	public void setUserPassword(String userPassword) {
+		this.userPassword = userPassword;
+	}
 
 	public String getActivityToken() {
 		return activityToken;
@@ -85,13 +101,13 @@ public class BeehiveUser extends  PortalEntity {
 		this.company = company;
 	}
 
-	public String getKiiLoginName() {
-		return kiiLoginName;
-	}
-
-	public void setKiiLoginName(String kiiLoginName) {
-		this.kiiLoginName = kiiLoginName;
-	}
+//	public String getKiiLoginName() {
+//		return kiiLoginName;
+//	}
+//
+//	public void setKiiLoginName(String kiiLoginName) {
+//		this.kiiLoginName = kiiLoginName;
+//	}
 
 
 	@JsonIgnore
@@ -101,6 +117,16 @@ public class BeehiveUser extends  PortalEntity {
 
 	public String getHashedPwd(String pwd){
 		return DigestUtils.sha1Hex(pwd+"_user_id"+getId()+"_beehive");
+
+	}
+
+
+	public BeehiveUser cloneView(){
+
+		BeehiveUser user=new BeehiveUser();
+		BeanUtils.copyProperties(this, user, "kiiUserID","activityToken","defaultPassword","userPassword");
+
+		return user;
 
 	}
 }
