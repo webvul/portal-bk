@@ -1,5 +1,6 @@
 package com.kii.beehive.portal.web.controller;
 
+
 import javax.servlet.http.HttpServletRequest;
 
 import java.util.HashMap;
@@ -22,14 +23,15 @@ import com.kii.beehive.portal.web.exception.BeehiveUnAuthorizedException;
 import com.kii.beehive.portal.web.exception.PortalException;
 import com.kii.beehive.portal.web.help.AuthUtils;
 
+
 /**
  * Beehive API - User API
- *
+ * <p>
  * refer to doc "Beehive API - Tech Design" section "User API" for details
  */
 @RestController
-@RequestMapping(path = "/oauth2", consumes = { MediaType.APPLICATION_JSON_UTF8_VALUE }, produces = {
-        MediaType.APPLICATION_JSON_UTF8_VALUE })
+@RequestMapping(value = "/oauth2", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {
+		MediaType.APPLICATION_JSON_UTF8_VALUE})
 public class AuthController {
 
 	@Autowired
@@ -63,57 +65,57 @@ public class AuthController {
     }
 
 	@RequestMapping(path = "/initpassword", method = { RequestMethod.POST })
-	public void initPassword(@RequestBody Map<String, Object> inputMap,HttpServletRequest request){
+	public void initPassword(@RequestBody Map<String, Object> inputMap,HttpServletRequest request) {
 
 		String token = AuthUtils.getTokenFromHeader(request);
 
-		if(StringUtils.isEmpty(token)){
+		if (StringUtils.isEmpty(token)) {
 			throw new BeehiveUnAuthorizedException("token miss or invalid format ");
 		}
-		String password = (String)inputMap.get("newPassword");
-		String userID = (String)inputMap.get("userName");
+		String password = (String) inputMap.get("newPassword");
+		String userID = (String) inputMap.get("userName");
 
-		authManager.initPassword(token,userID,password);
+		authManager.initPassword(token, userID, password);
+	}
+
+
+	/**
+	 * 用户登录
+	 * POST /oauth2/login
+	 * <p>
+	 * refer to doc "Beehive API - User API" for request/response details
+	 *
+	 * @return
+	 */
+	@RequestMapping(value = "/login", method = {RequestMethod.POST})
+	public AuthRestBean login(@RequestBody Map<String, Object> request) {
+
+		String userID = (String) request.get("userID");
+		String password = (String) request.get("password");
+		Boolean permanentToken = (Boolean) request.get("permanentToken");
+		// if permanentToken is not set, make it false as default
+		if (permanentToken == null) {
+			permanentToken = false;
+		}
+
+		if (CollectUtils.containsBlank(userID, password)) {
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "userID or password empty", HttpStatus.BAD_REQUEST);
+		}
+
+		return authManager.login(userID, password, permanentToken);
 
 	}
 
-    /**
-     * 用户登录
-     * POST /oauth2/login
-     *
-     * refer to doc "Beehive API - User API" for request/response details
-     *
-     * @return
-     */
-    @RequestMapping(path = "/login", method = { RequestMethod.POST })
-    public AuthRestBean login(@RequestBody Map<String, Object> request) {
-
-        String userID = (String)request.get("userID");
-        String password = (String)request.get("password");
-        Boolean permanentToken = (Boolean)request.get("permanentToken");
-        // if permanentToken is not set, make it false as default
-        if(permanentToken == null) {
-            permanentToken = false;
-        }
-
-        if(CollectUtils.containsBlank(userID, password)) {
-            throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "userID or password empty", HttpStatus.BAD_REQUEST);
-        }
-
-		return authManager.login(userID,password,permanentToken);
-
-    }
-
-    /**
-     * 用户登出
-     * POST /oauth2/logout
-     *
-     * refer to doc "Beehive API - User API" for request/response details
-     *
-     * @return
-     */
-    @RequestMapping(path = "/logout", method = { RequestMethod.POST })
-    public void logout(HttpServletRequest request) {
+	/**
+	 * 用户登出
+	 * POST /oauth2/logout
+	 * <p>
+	 * refer to doc "Beehive API - User API" for request/response details
+	 *
+	 * @return
+	 */
+	@RequestMapping(value = "/logout", method = {RequestMethod.POST})
+	public void logout(HttpServletRequest request) {
 
 		String token = AuthUtils.getTokenFromHeader(request);
 		if(!StringUtils.isEmpty(token)){
@@ -122,18 +124,19 @@ public class AuthController {
     }
 
 
-    /**
-     * 验证用户（令牌）
-     * POST /oauth2/validatetoken
-     *
-     * refer to doc "Beehive API - User API" for request/response details
-     *
-     * @return
-     */
-    @RequestMapping(path = "/validatetoken", method = { RequestMethod.POST })
-    public AuthRestBean validateUserToken(HttpServletRequest request) {
 
-        String token = AuthUtils.getTokenFromHeader(request);
+	/**
+	 * 验证用户（令牌）
+	 * POST /oauth2/validatetoken
+	 * <p>
+	 * refer to doc "Beehive API - User API" for request/response details
+	 *
+	 * @return
+	 */
+	@RequestMapping(value = "/validatetoken", method = {RequestMethod.POST})
+	public AuthRestBean validateUserToken(HttpServletRequest request) {
+
+		String token = AuthUtils.getTokenFromHeader(request);
 
 		if(StringUtils.isEmpty(token)){
 			throw new BeehiveUnAuthorizedException("token miss or invalid format ");
@@ -141,6 +144,8 @@ public class AuthController {
 
         return authManager.validateUserToken(token);
     }
+
+
 
 
 

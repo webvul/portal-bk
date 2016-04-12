@@ -10,12 +10,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.kii.beehive.business.event.BusinessEventListenerService;
 import com.kii.beehive.business.manager.ThingTagManager;
 import com.kii.beehive.portal.event.EventListener;
@@ -23,26 +23,35 @@ import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.service.EventListenerDao;
 import com.kii.extension.ruleengine.EngineService;
+import com.kii.extension.ruleengine.schedule.ScheduleService;
 import com.kii.extension.ruleengine.service.TriggerRecordDao;
 import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.TriggerValidPeriod;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import javax.annotation.PostConstruct;
+import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
 public class TriggerManager {
-
 
 
 	@Autowired
 	private TriggerRecordDao triggerDao;
 
 	@Autowired
-	private BusinessEventListenerService  eventService;
+	private BusinessEventListenerService eventService;
 
 	@Autowired
-	private EngineService  service;
+	private EngineService service;
 
 	@Autowired
 	private ThingTagManager thingTagService;
@@ -59,82 +68,84 @@ public class TriggerManager {
 
 
 	@Autowired
-	private CommandExecuteService  commandService;
+	private CommandExecuteService commandService;
 
 
-	@PostConstruct
-	public void init(){
+	@Autowired
+	private ScheduleService scheduleService;
+
+
+	public void reinit(){
 
 		service.clear();
-
-		List<TriggerRecord> recordList=triggerDao.getAllTrigger();
-
-		commandService.disable();
+		init();
+	}
+	@PostConstruct
+	public void init(){
+		List<TriggerRecord> recordList = triggerDao.getAllTrigger();
 
 		recordList.forEach(record -> {
 
 			try {
-
-				if (record instanceof SimpleTriggerRecord) {
-					addSimpleToEngine((SimpleTriggerRecord) record);
-				} else if (record instanceof GroupTriggerRecord) {
-					GroupTriggerRecord groupRecord = ((GroupTriggerRecord) record);
-					addGroupToEngine(groupRecord);
-
-				} else if (record instanceof SummaryTriggerRecord) {
-					SummaryTriggerRecord summaryRecord = (SummaryTriggerRecord) record;
-					addSummaryToEngine(summaryRecord);
-
-				} else {
-					throw new IllegalArgumentException("unsupport trigger type");
-				}
+				addTriggerToEngine(record);
 			}catch(Exception e){
 				e.printStackTrace();
-				return;
 			}
+
 
 		});
 
+		thingTagService.iteratorAllThingsStatus(s -> {
 
-		thingTagService.iteratorAllThingsStatus( s->{
-
-			if(StringUtils.isEmpty(s.getStatus())){
+			if (StringUtils.isEmpty(s.getStatus())) {
 				return;
 			}
 			try {
-				ThingStatus status = mapper.readValue(s.getStatus(),ThingStatus.class);
-				String id=s.getFullKiiThingID();
+				ThingStatus status = mapper.readValue(s.getStatus(), ThingStatus.class);
+				String id = s.getFullKiiThingID();
 
-				service.initThingStatus(id,status,s.getModifyDate());
+				service.initThingStatus(id, status, s.getModifyDate());
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		});
 
 
-		service.finishInit();
-
-		commandService.enable();
-
 
 	}
 
-	public Map<String,Object> getRuleEngingDump(){
-		return service.dumpEngineRuntime();
+	public Map<String,Object> getRuleEngingDump() {
+
+			Map<String, Object> map = service.dumpEngineRuntime();
+
+
+			map.put("schedule", scheduleService.dump());
+
+			return map;
 	}
 
 
-
-	public String createTrigger(TriggerRecord record){
+	public String createTrigger(TriggerRecord record) {
 
 		record.setRecordStatus(TriggerRecord.StatusType.disable);
 
-		String triggerID=triggerDao.addEntity(record).getObjectID();
+		triggerDao.addKiiEntity(record);
 
-		record.setId(triggerID);
+		addTriggerToEngine(record);
+
+		return record.getId();
+
+	}
+
+	private void addTriggerToEngine(TriggerRecord record) {
+
+		String triggerID=record.getId();
 
 		try {
 
+			TriggerValidPeriod predicate=record.getPreparedCondition();
+
+			scheduleService.addManagerTask(triggerID,predicate);
 			if (record instanceof SimpleTriggerRecord) {
 				addSimpleToEngine((SimpleTriggerRecord) record);
 			} else if (record instanceof GroupTriggerRecord) {
@@ -155,55 +166,57 @@ public class TriggerManager {
 			} else {
 				throw new IllegalArgumentException("unsupport trigger type");
 			}
-		}catch(RuntimeException e){
+		} catch (RuntimeException e) {
 
 			triggerDao.removeEntity(triggerID);
 			throw e;
 
+		} catch (SchedulerException e) {
+			e.printStackTrace();
+			throw new IllegalArgumentException("schedule init fail:triggerID "+triggerID);
 		}
 
-		return triggerID;
-
+		return ;
 	}
 
 
-
 	private void addSimpleToEngine(SimpleTriggerRecord record) {
-		String thingID=null;
-		if(record.getSource()!=null) {
+		String thingID = null;
+		if (record.getSource() != null) {
 			GlobalThingInfo thingInfo = thingTagService.getThingByID(record.getSource().getThingID());
-			if(thingInfo != null) {
+			if (thingInfo != null) {
 				thingID = thingInfo.getFullKiiThingID();
 			}
 		}
-		service.createSimpleTrigger(thingID,record);
+		service.createSimpleTrigger(thingID, record);
 	}
 
 
 	private void addGroupToEngine(GroupTriggerRecord record) {
 
 		Set<String> thingIDs = thingTagService.getKiiThingIDs(record.getSource().getSelector());
-		service.createGroupTrigger(thingIDs,record);
+		service.createGroupTrigger(thingIDs, record);
 	}
 
 	private void addSummaryToEngine(SummaryTriggerRecord record) {
-		Map<String,Set<String>> thingMap=new HashMap<>();
+		Map<String, Set<String>> thingMap = new HashMap<>();
 
-		final AtomicBoolean isStream=new AtomicBoolean(false);
+		final AtomicBoolean isStream = new AtomicBoolean(false);
 
-		record.getSummarySource().forEach((k,v)->{
+		record.getSummarySource().forEach((k, v) -> {
 
-			if(v.getExpressList().stream().filter((exp)->exp.getSlideFuntion()!=null).findAny().isPresent() && !isStream.get()){
+			if (v.getExpressList().stream().filter((exp) -> exp.getSlideFuntion() != null).findAny().isPresent() && !isStream.get()) {
 				isStream.set(true);
-			};
+			}
+			;
 
-			thingMap.put(k,thingTagService.getKiiThingIDs(v.getSource().getSelector()));
+			thingMap.put(k, thingTagService.getKiiThingIDs(v.getSource().getSelector()));
 		});
 
-		service.createSummaryTrigger(record,thingMap,isStream.get());
+		service.createSummaryTrigger(record, thingMap, isStream.get());
 	}
 
-	public void disableTrigger(String triggerID){
+	public void disableTrigger(String triggerID) {
 		triggerDao.disableTrigger(triggerID);
 
 		service.disableTrigger(triggerID);
@@ -211,36 +224,36 @@ public class TriggerManager {
 	}
 
 
-	public void enableTrigger(String triggerID){
+	public void enableTrigger(String triggerID) {
 		triggerDao.enableTrigger(triggerID);
 
 		service.enableTrigger(triggerID);
 	}
 
-	public List<TriggerRecord> getTriggerListByUserId(String userId){
-		List<TriggerRecord> triggerList= triggerDao.getTriggerListByUserId(userId);
+	public List<TriggerRecord> getTriggerListByUserId(String userId) {
+		List<TriggerRecord> triggerList = triggerDao.getTriggerListByUserId(userId);
 
 		return triggerList;
 	}
 
-	public List<TriggerRecord> getDeleteTriggerListByUserId(String userId){
-		List<TriggerRecord> triggerList= triggerDao.getDeleteTriggerListByUserId(userId);
+	public List<TriggerRecord> getDeleteTriggerListByUserId(String userId) {
+		List<TriggerRecord> triggerList = triggerDao.getDeleteTriggerListByUserId(userId);
 
 		return triggerList;
 	}
 
-	public List<SimpleTriggerRecord> getTriggerListByUserIdAndThingId(String userId,String thingId){
+	public List<SimpleTriggerRecord> getTriggerListByUserIdAndThingId(String userId, String thingId) {
 		List<SimpleTriggerRecord> resultTriggerList = new ArrayList<SimpleTriggerRecord>();
-		List<TriggerRecord> triggerList= triggerDao.getTriggerListByUserId(userId);
-		for(TriggerRecord trigger : triggerList){
-			if(trigger instanceof SimpleTriggerRecord){
-				SimpleTriggerRecord simpleTriggerRecord = (SimpleTriggerRecord)trigger;
+		List<TriggerRecord> triggerList = triggerDao.getTriggerListByUserId(userId);
+		for (TriggerRecord trigger : triggerList) {
+			if (trigger instanceof SimpleTriggerRecord) {
+				SimpleTriggerRecord simpleTriggerRecord = (SimpleTriggerRecord) trigger;
 
-				if(simpleTriggerRecord.getSource()==null ){
+				if (simpleTriggerRecord.getSource() == null) {
 					continue;
 				}
-				String currThingId = simpleTriggerRecord.getSource().getThingID()+"";
-				if(thingId.equals(currThingId)){
+				String currThingId = simpleTriggerRecord.getSource().getThingID() + "";
+				if (thingId.equals(currThingId)) {
 					resultTriggerList.add(simpleTriggerRecord);
 				}
 			}
@@ -249,15 +262,15 @@ public class TriggerManager {
 		return resultTriggerList;
 	}
 
-	public TriggerRecord  getTriggerByID(String triggerID){
+	public TriggerRecord getTriggerByID(String triggerID) {
 
-		TriggerRecord record= triggerDao.getTriggerRecord(triggerID);
-		if(record==null){
+		TriggerRecord record = triggerDao.getTriggerRecord(triggerID);
+		if (record == null) {
 			throw new EntryNotFoundException(triggerID);
 		}
 		return record;
 	}
-	
+
 	public void deleteTrigger(String triggerID) {
 
 		triggerDao.deleteTriggerRecord(triggerID);
@@ -265,7 +278,7 @@ public class TriggerManager {
 		service.removeTrigger(triggerID);
 
 		List<EventListener> eventListenerList = eventListenerDao.getEventListenerByTargetKey(triggerID);
-		for(EventListener eventListener: eventListenerList){
+		for (EventListener eventListener : eventListenerList) {
 			eventListenerDao.removeEntity(eventListener.getId());
 		}
 	}

@@ -39,7 +39,7 @@ public class AuthInfoDao extends SpringBaseDao<AuthInfo> {
 
 	public AuthInfo getAuthInfoByToken(String token){
 
-		String sql="select * from auth_info where token = ? &  expire_time > ? ";
+		String sql="select * from auth_info where token = ? ";
 
 		List<AuthInfo> infos=jdbcTemplate.query(sql,new Object[]{token,new Date()},getRowMapper());
 
@@ -48,6 +48,7 @@ public class AuthInfoDao extends SpringBaseDao<AuthInfo> {
 		}else if(infos.size()>1){
 			throw new IllegalArgumentException("the data error,more than one record with same token");
 		}else{
+
 			return infos.get(0);
 		}
 	}

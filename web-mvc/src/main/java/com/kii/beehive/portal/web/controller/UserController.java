@@ -20,10 +20,10 @@ import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.entity.UserRestBean;
 import com.kii.beehive.portal.web.exception.PortalException;
 
-@RestController
-@RequestMapping(path = "/users",  consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
-public class UserController {
 
+@RestController
+@RequestMapping(value = "/users", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+public class UserController {
 
 
 	@Autowired
@@ -34,15 +34,15 @@ public class UserController {
 
 
 	/**
-	 * 创建用户
+	 * 创建用户
 	 * POST /users
-	 *
+	 * <p>
 	 * refer to doc "Beehive API - User API" for request/response details
 	 *
 	 * @param user
 	 */
-	@RequestMapping(path="",method={RequestMethod.POST})
-	public Map<String,String> createUser(@RequestBody UserRestBean user){
+	@RequestMapping(value = "", method = {RequestMethod.POST})
+	public Map<String, String> createUser(@RequestBody UserRestBean user) {
 
 		user.verifyInput();
 
@@ -52,10 +52,10 @@ public class UserController {
 		String token = userManager.addUser(beehiveUser);
 
 
-		Map<String,String> map = new HashMap<>();
+		Map<String, String> map = new HashMap<>();
 
 		map.put("userName", beehiveUser.getUserName());
-		map.put("activityToken",token);
+		map.put("activityToken", token);
 
 		return map;
 	}
@@ -87,34 +87,34 @@ public class UserController {
 	/**
 	 * 更新用户
 	 * PATCH /users/{userID}
-	 *
+	 * <p>
 	 * refer to doc "Beehive API - User API" for request/response details
 	 *
 	 * @param user
 	 */
-	@RequestMapping(path="/{userID}",method={RequestMethod.PATCH})
-	public Map<String,String> updateUser(@PathVariable("userID") String userID, @RequestBody BeehiveUser user){
+	@RequestMapping(value = "/{userID}", method = {RequestMethod.PATCH})
+	public Map<String, String> updateUser(@PathVariable("userID") String userID, @RequestBody BeehiveUser user) {
 
-		userManager.updateUser(user,userID);
+		userManager.updateUser(user, userID);
 
 
-		Map<String,String> map=new HashMap<>();
-		map.put("userID",userID);
+		Map<String, String> map = new HashMap<>();
+		map.put("userID", userID);
 		return map;
 	}
 
 	/**
 	 * 通过userID查询用户
 	 * GET /users/{userID}
-	 *
+	 * <p>
 	 * refer to doc "Beehive API - User API" for request/response details
 	 *
 	 * @param userID
 	 */
-	@RequestMapping(path="/{userID}",method={RequestMethod.GET}, consumes = {"*"})
-	public UserRestBean getUser(@PathVariable("userID") String userID){
+	@RequestMapping(value = "/{userID}", method = {RequestMethod.GET}, consumes = {"*"})
+	public UserRestBean getUser(@PathVariable("userID") String userID) {
 
-		UserRestBean  bean=new UserRestBean();
+		UserRestBean bean = new UserRestBean();
 		bean.setBeehiveUser(userManager.getUserByID(userID));
 
 		return bean;

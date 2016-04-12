@@ -1,12 +1,12 @@
 package com.kii.beehive.portal.web.controller;
 
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kii.beehive.portal.common.utils.CollectUtils;
+import com.kii.beehive.portal.exception.StoreServiceException;
+import com.kii.beehive.portal.web.exception.PortalException;
+import com.kii.extension.sdk.exception.KiiCloudException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -16,19 +16,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import com.kii.beehive.portal.common.utils.CollectUtils;
-import com.kii.beehive.portal.exception.StoreServiceException;
-import com.kii.beehive.portal.web.exception.PortalException;
-import com.kii.extension.sdk.exception.KiiCloudException;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @ControllerAdvice
 public class ExceptionController {
 
-	private Logger log= LoggerFactory.getLogger(ExceptionController.class);
+	private Logger log = LoggerFactory.getLogger(ExceptionController.class);
 
 	@Autowired
 	private ObjectMapper mapper;
@@ -36,41 +34,41 @@ public class ExceptionController {
 	@ExceptionHandler(Throwable.class)
 	public ResponseEntity<String> handleGlobalException(Throwable ex) {
 
-		log.error("global exception ",ex);
+		log.error("global exception ", ex);
 
 //		String error=ex.getErrorCode().toString();
 
-		Map<String,String> errorMap=new HashMap<>();
-		errorMap.put("errorCode",ex.getClass().getSimpleName());
-		errorMap.put("errorMessage",ex.getMessage());
+		Map<String, String> errorMap = new HashMap<>();
+		errorMap.put("errorCode", ex.getClass().getSimpleName());
+		errorMap.put("errorMessage", ex.getMessage());
 
 //		String errJson=mapper.writeValueAsString(errorMap);
 
-		ResponseEntity<String> resp=new ResponseEntity(errorMap,HttpStatus.INTERNAL_SERVER_ERROR);
+		ResponseEntity<String> resp = new ResponseEntity(errorMap, HttpStatus.INTERNAL_SERVER_ERROR);
 		return resp;
 	}
 
-	private List<String> filter= CollectUtils.createList("status","suppressed","stackTrace","class","localizedMessage");
+	private List<String> filter = CollectUtils.createList("status", "suppressed", "stackTrace", "class", "localizedMessage");
 
-	private String convertExeptionToJson(RuntimeException ex){
+	private String convertExeptionToJson(RuntimeException ex) {
 
-		Map<String,Object> error=new HashMap<>();
+		Map<String, Object> error = new HashMap<>();
 
-		for(PropertyDescriptor desc:BeanUtils.getPropertyDescriptors(ex.getClass()) ){
+		for (PropertyDescriptor desc : BeanUtils.getPropertyDescriptors(ex.getClass())) {
 
-			if(!filter.contains(desc.getDisplayName()) ){
+			if (!filter.contains(desc.getDisplayName())) {
 				try {
-					Method method=desc.getReadMethod();
-					if(method.isAnnotationPresent(JsonIgnore.class)){
+					Method method = desc.getReadMethod();
+					if (method.isAnnotationPresent(JsonIgnore.class)) {
 						continue;
 					}
-					Object val=desc.getReadMethod().invoke(ex,null);
-					if(val==null){
+					Object val = desc.getReadMethod().invoke(ex, null);
+					if (val == null) {
 						continue;
 					}
-					error.put(desc.getDisplayName(),val);
-				} catch (IllegalAccessException|InvocationTargetException e) {
-					log.error("exception convert to json fail",e);
+					error.put(desc.getDisplayName(), val);
+				} catch (IllegalAccessException | InvocationTargetException e) {
+					log.error("exception convert to json fail", e);
 					throw new IllegalArgumentException(e);
 				}
 			}
@@ -79,21 +77,20 @@ public class ExceptionController {
 		try {
 			return mapper.writeValueAsString(error);
 		} catch (JsonProcessingException e) {
-			log.error("exception convert to json fail",e);
+			log.error("exception convert to json fail", e);
 			throw new IllegalArgumentException(e);
 		}
 	}
 
 
-
 	@ExceptionHandler(StoreServiceException.class)
 	public ResponseEntity<String> handleStoreServiceException(StoreServiceException ex) {
 
-		log.error("store exception ",ex);
+		log.error("store exception ", ex);
 
-		String error= convertExeptionToJson(ex);
+		String error = convertExeptionToJson(ex);
 
-		ResponseEntity<String> resp=new ResponseEntity(error,HttpStatus.valueOf(ex.getStatusCode()));
+		ResponseEntity<String> resp = new ResponseEntity(error, HttpStatus.valueOf(ex.getStatusCode()));
 
 		return resp;
 	}
@@ -101,24 +98,24 @@ public class ExceptionController {
 	@ExceptionHandler(PortalException.class)
 	public ResponseEntity<String> handleServiceException(PortalException ex) {
 
-		log.error("portal exception ",ex);
+		log.error("portal exception ", ex);
 
-		String error= convertExeptionToJson(ex);
+		String error = convertExeptionToJson(ex);
 
-		ResponseEntity<String> resp=new ResponseEntity(error,ex.getStatus());
+		ResponseEntity<String> resp = new ResponseEntity(error, ex.getStatus());
 		return resp;
 	}
 
 	@ExceptionHandler(KiiCloudException.class)
 	public ResponseEntity<String> handleKiiCloudException(KiiCloudException ex) {
 
-		log.error("kiicloud exception ",ex);
+		log.error("kiicloud exception ", ex);
 
-		String error= convertExeptionToJson(ex);
+		String error = convertExeptionToJson(ex);
 
-		HttpStatus status=HttpStatus.valueOf(ex.getStatusCode());
+		HttpStatus status = HttpStatus.valueOf(ex.getStatusCode());
 
-		ResponseEntity<String> resp=new ResponseEntity(error,status);
+		ResponseEntity<String> resp = new ResponseEntity(error, status);
 		return resp;
 	}
 }

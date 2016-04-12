@@ -75,12 +75,6 @@ public class RuleEngineConsole {
 				}
 
 
-				if(cmd.equals("finishInit")){
-
-					engine.finishInit();
-
-				}
-
 				if(cmd.equals("enable")){
 
 					String triggerID=arrays[1];

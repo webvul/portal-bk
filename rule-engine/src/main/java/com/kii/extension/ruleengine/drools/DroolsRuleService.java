@@ -1,5 +1,14 @@
 package com.kii.extension.ruleengine.drools;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.apache.commons.codec.Charsets;
 import org.kie.api.KieBase;
 import org.kie.api.KieBaseConfiguration;
@@ -20,8 +29,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import com.kii.extension.ruleengine.drools.entity.CurrThing;
 
 @Component
 @Scope(scopeName= ConfigurableBeanFactory.SCOPE_PROTOTYPE)
@@ -39,6 +47,24 @@ public class DroolsRuleService {
 
 	private final Map<String,FactHandle> handleMap=new ConcurrentHashMap<>();
 	private final Set<String> pathSet=new HashSet<>();
+
+
+	private final FactHandle  currThingHandler;
+
+	private CurrThing currThing=new CurrThing();
+
+	public void setCurrThingID(String thingID){
+		this.currThing.setThing(thingID);
+
+		kieSession.update(currThingHandler,currThing);
+	}
+
+	public void rejectCurrThingID(){
+		this.currThing.setThing("NONE");
+
+		kieSession.update(currThingHandler,currThing);
+	}
+
 
 	public Map<String,Object>  getEngineEntitys(){
 
@@ -125,6 +151,8 @@ public class DroolsRuleService {
 		kieSession.addEventListener(new DebugAgendaEventListener());
 		kieSession.addEventListener(new DebugRuleRuntimeEventListener());
 
+		currThing.setThing("NONE");
+		currThingHandler=kieSession.insert(currThing);
 		handleMap.clear();
 	}
 
@@ -173,6 +201,10 @@ public class DroolsRuleService {
 
 
 	public synchronized void addCondition(String name,String rule){
+
+
+
+		this.rejectCurrThingID();
 
 		String drlName="src/main/resources/user_"+name+".drl";
 
