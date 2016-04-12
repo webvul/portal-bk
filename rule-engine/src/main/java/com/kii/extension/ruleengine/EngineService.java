@@ -35,8 +35,6 @@ public class EngineService {
 
 	@Autowired
 	private RuleGeneral  ruleGeneral;
-//	@Autowired
-//	private ScheduleService scheduleService;
 
 
 	private Set<String>  scheduleSet=new ConcurrentSkipListSet<>();

@@ -7,11 +7,11 @@ import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.kii.extension.ruleengine.drools.entity.TriggerType;
-import com.kii.extension.ruleengine.store.trigger.WhenType;
 import com.kii.extension.ruleengine.drools.entity.Summary;
 import com.kii.extension.ruleengine.drools.entity.SummaryValueMap;
 import com.kii.extension.ruleengine.drools.entity.Trigger;
+import com.kii.extension.ruleengine.drools.entity.TriggerType;
+import com.kii.extension.ruleengine.store.trigger.WhenType;
 
 public class TestSummaryTrigger extends InitTest {
 
