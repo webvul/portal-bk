@@ -27,6 +27,7 @@ import com.kii.beehive.portal.service.BeehiveUserDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.extension.sdk.context.UserTokenBindTool;
 import com.kii.extension.sdk.entity.KiiUser;
+import com.kii.extension.sdk.exception.KiiCloudException;
 
 @Component
 @Transactional
@@ -95,7 +96,7 @@ public class AuthManager {
 
 		oneTimeTokenMap.remove(userName);
 
-		userDao.cleanActivityToken(user.getId());
+		userDao.cleanActivityToken(user.getId(),newPwd);
 	}
 
 
@@ -177,10 +178,32 @@ public class AuthManager {
 
 		userService.changePassword(pwd, newPwd);
 
+		userDao.cleanActivityToken(user.getId(),newPwd);
+
 		authService.removeTokenByUserID(user.getId());
 
 	}
 
+
+	public String  resetPwd(String userID) {
+
+		BeehiveUser user=userDao.getUserByID(userID);
+
+		userService.bindToUser(user,user.getUserPassword());
+
+		userService.changePassword(user.getUserPassword(),user.getDefaultPassword());
+
+		String token= StringRandomTools.getRandomStr(6);
+
+		user.setActivityToken(user.getHashedPwd(token));
+
+		userDao.updateEntity(user,user.getId());
+
+		authService.removeTokenByUserID(user.getId());
+
+		return token;
+
+	}
 
 
 	/**
@@ -238,18 +261,23 @@ public class AuthManager {
 
 		userTokenBindTool.bindToken(token);
 
-		KiiUser kiiUser=userService.getKiiUser();
+		try {
 
-		String userID = kiiUser.getLoginName();
+			KiiUser kiiUser = userService.getKiiUser();
 
-		BeehiveUser beehiveUser = userDao.getUserByID(userID);
-		Team team = getTeamByID(userID);
+			String userID = kiiUser.getLoginName();
 
-		saveToken(false, beehiveUser, token,team);
+			BeehiveUser beehiveUser = userDao.getUserByID(userID);
+			Team team = getTeamByID(userID);
 
-		AuthRestBean authRestBean = generAuthBean(beehiveUser, token, team);
+			saveToken(false, beehiveUser, token, team);
 
-		return authRestBean;
+			AuthRestBean authRestBean = generAuthBean(beehiveUser, token, team);
+
+			return authRestBean;
+		}catch(KiiCloudException ex){
+			throw new UnauthorizedException("invaild token");
+		}
 	}
 
 }

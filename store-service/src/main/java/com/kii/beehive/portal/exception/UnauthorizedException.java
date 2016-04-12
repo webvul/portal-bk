@@ -11,7 +11,7 @@ public class UnauthorizedException extends StoreServiceException {
 
 	public int getStatusCode(){
 
-		return 403;
+		return 401;
 
 	}
 }

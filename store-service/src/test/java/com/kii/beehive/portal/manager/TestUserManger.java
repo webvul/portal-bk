@@ -3,6 +3,8 @@ package com.kii.beehive.portal.manager;
 import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.Map;
+
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -32,9 +34,41 @@ public class TestUserManger  extends TestInit {
 		user.setUserName(name);
 		user.setCompany("kiicloud");
 
-		String token=userManager.addUser(user);
+		Map<String,Object> maps=userManager.addUser(user);
 
-		String oneTimeToken=authManager.activite(name,token);
+		String oneTimeToken=authManager.activite(name, (String) maps.get("activityToken"));
+
+		authManager.initPassword(oneTimeToken,user.getUserName(),"qwerty");
+
+		AuthRestBean  bean=authManager.login(name,"qwerty",false);
+
+		String newToken=bean.getAccessToken();
+
+		AuthRestBean newBean=authManager.validateUserToken(newToken);
+
+		assertEquals(newBean.getUser().getId(),bean.getUser().getId());
+
+	}
+
+
+	@Test
+	public void resetPwd(){
+
+
+		BeehiveUser user=new BeehiveUser();
+
+		String name="testForUserManger";
+		user.setUserName(name);
+		user.setCompany("kiicloud");
+
+
+		AuthRestBean  rest=authManager.login(name,"qwerty",false);
+
+		String userID=rest.getUser().getId();
+
+		String token=authManager.resetPwd(userID);
+
+		String oneTimeToken=authManager.activite(name, token);
 
 		authManager.initPassword(oneTimeToken,user.getUserName(),"qwerty");
 

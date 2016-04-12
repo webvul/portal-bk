@@ -155,16 +155,16 @@ public class UserManager {
 
 		List<BeehiveUser> userList = userDao.getUserByIDs(userIDList);
 		if (userList.size() == 1) {
-			List<UserGroup> orgiList = userGroupDao.findUserGroup(userList.get(0).getKiiLoginName(), userGroupID, null);
+			List<UserGroup> orgiList = userGroupDao.findUserGroup(userList.get(0).getId(), userGroupID, null);
 			if (orgiList.size() == 0) {
-				GroupUserRelation gur = new GroupUserRelation(userList.get(0).getKiiLoginName(), userGroupID);
+				GroupUserRelation gur = new GroupUserRelation(userList.get(0).getId(), userGroupID);
 				groupUserRelationDao.insert(gur);
 			}
 		} else if (userList.size() > 1) {
 			List<String> existingUserIDList = groupUserRelationDao.findUserIDByUserGroupID(userGroupID);
 
 			List<String> userIDListToInsert = new ArrayList<>();
-			userList.forEach(beehiveUser -> userIDListToInsert.add(beehiveUser.getKiiLoginName()));
+			userList.forEach(beehiveUser -> userIDListToInsert.add(beehiveUser.getId()));
 			userIDListToInsert.removeAll(existingUserIDList);
 
 			List<GroupUserRelation> relationList = new ArrayList<>();

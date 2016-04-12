@@ -51,10 +51,11 @@ public class BeehiveUserDao extends AbstractDataAccess<BeehiveUser> {
 	}
 
 
-	public void cleanActivityToken(String id) {
+	public void cleanActivityToken(String id,String pwd) {
 
 		Map<String,Object>  params=new HashMap<>();
 		params.put("activityToken",null);
+		params.put("userPassword",pwd);
 
 		super.updateEntity(params,id);
 	}

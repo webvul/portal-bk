@@ -1,39 +1,76 @@
 package com.kii.beehive.portal.store;
 
 
-import com.kii.beehive.business.manager.TagThingManager;
-import com.kii.beehive.business.service.ThingIFInAppService;
-import com.kii.beehive.portal.auth.AuthInfoStore;
-import com.kii.beehive.portal.exception.ObjectNotFoundException;
-import com.kii.beehive.portal.exception.UnauthorizedException;
-import com.kii.beehive.portal.jdbc.dao.*;
-import com.kii.beehive.portal.jdbc.entity.*;
-import com.kii.beehive.portal.service.AppInfoDao;
-import com.kii.beehive.portal.service.PortalSyncUserDao;
-import com.kii.beehive.portal.store.entity.BeehiveUser;
-import com.kii.beehive.portal.store.entity.KiiAppInfo;
-import junit.framework.TestCase;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
-import org.mockito.*;
-import org.mockito.stubbing.Answer;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.io.Serializable;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.anyCollectionOf;
 import static org.mockito.Mockito.anyListOf;
 import static org.mockito.Mockito.anySetOf;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
+import org.mockito.stubbing.Answer;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.kii.beehive.business.manager.TagThingManager;
+import com.kii.beehive.business.service.ThingIFInAppService;
+import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.exception.ObjectNotFoundException;
+import com.kii.beehive.portal.exception.UnauthorizedException;
+import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
+import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
+import com.kii.beehive.portal.jdbc.dao.TagGroupRelationDao;
+import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
+import com.kii.beehive.portal.jdbc.dao.TagThingRelationDao;
+import com.kii.beehive.portal.jdbc.dao.TagUserRelationDao;
+import com.kii.beehive.portal.jdbc.dao.ThingUserGroupRelationDao;
+import com.kii.beehive.portal.jdbc.dao.ThingUserRelationDao;
+import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
+import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
+import com.kii.beehive.portal.jdbc.entity.TagGroupRelation;
+import com.kii.beehive.portal.jdbc.entity.TagIndex;
+import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
+import com.kii.beehive.portal.jdbc.entity.TagType;
+import com.kii.beehive.portal.jdbc.entity.TagUserRelation;
+import com.kii.beehive.portal.jdbc.entity.ThingUserGroupRelation;
+import com.kii.beehive.portal.jdbc.entity.ThingUserRelation;
+import com.kii.beehive.portal.jdbc.entity.UserGroup;
+import com.kii.beehive.portal.service.AppInfoDao;
+import com.kii.beehive.portal.service.PortalSyncUserDao;
+import com.kii.beehive.portal.store.entity.BeehiveUser;
+import com.kii.beehive.portal.store.entity.KiiAppInfo;
+
+import junit.framework.TestCase;
 
 @RunWith(JUnit4.class)
 public class TestTagThingManager {
@@ -125,7 +162,7 @@ public class TestTagThingManager {
 		this.userIds = new ArrayList<>();
 		for (String id : userIds) {
 			BeehiveUser user = new BeehiveUser();
-			user.setKiiLoginName(id);
+			user.setId(id);
 			this.userIds.add(id);
 		}
 
@@ -602,14 +639,14 @@ public class TestTagThingManager {
 			List<BeehiveUser> users = new ArrayList();
 			userIds.forEach(id -> {
 				BeehiveUser user = new BeehiveUser();
-				user.setKiiLoginName(id);
+				user.setId(id);
 				users.add(user);
 			});
 			return users;
 		}).when(userDao).getUserByIDs(anyListOf(String.class));
 
 		List<String> userIds = tagThingManager.getUsersOfAccessibleThing("someone", 1000L).stream().map
-				(BeehiveUser::getKiiLoginName).collect(Collectors.toList());
+				(BeehiveUser::getId).collect(Collectors.toList());
 		assertEquals(4, userIds.stream().collect(Collectors.toSet()).size());
 	}
 

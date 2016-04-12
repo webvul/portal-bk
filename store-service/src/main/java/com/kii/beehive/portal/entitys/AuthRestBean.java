@@ -10,7 +10,7 @@ import com.kii.beehive.portal.store.entity.BeehiveUser;
 public class AuthRestBean  {
 
     public AuthRestBean() {
-        super();
+
     }
 
 	private BeehiveUser user;
@@ -55,12 +55,15 @@ public class AuthRestBean  {
 		this.teamName = teamName;
 	}
 
+
+
 	@JsonUnwrapped
 	public BeehiveUser getUser() {
 		return user;
 	}
 
 	public void setUser(BeehiveUser user) {
-		this.user = user;
+
+		this.user=user.cloneView();
 	}
 }
