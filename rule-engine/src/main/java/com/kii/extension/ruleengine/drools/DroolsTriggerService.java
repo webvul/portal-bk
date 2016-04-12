@@ -38,10 +38,6 @@ public class DroolsTriggerService {
 
 	private final Map<String,Map<String,Summary>>  summaryMap=new ConcurrentHashMap<>();
 
-//	@PostConstruct
-//	public void initRule(){
-//	}
-//
 
 	/**
 	 * 清空 drools 相关 重新初始化
@@ -52,6 +48,8 @@ public class DroolsTriggerService {
 		triggerMap.clear();
 		summaryMap.clear();
 	}
+
+
 	public  Map<String,Object> getEngineRuntime(){
 
 		Map<String,Object> map=new HashMap<>();
