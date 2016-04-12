@@ -1,7 +1,6 @@
 package com.kii.beehive.portal.manager;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
@@ -35,18 +34,13 @@ public class TestUserManger  extends TestInit {
 
 		String token=userManager.addUser(user);
 
-		boolean sign=authManager.activity(name,token);
+		String oneTimeToken=authManager.activite(name,token);
 
-		assertTrue(sign);
-
-		authManager.initPassword(user.getUserName(),"qwerty");
+		authManager.initPassword(oneTimeToken,user.getUserName(),"qwerty");
 
 		AuthRestBean  bean=authManager.login(name,"qwerty",false);
 
-
 		String newToken=bean.getAccessToken();
-
-
 
 		AuthRestBean newBean=authManager.validateUserToken(newToken);
 

@@ -231,6 +231,7 @@ public class CrossTriggerController {
 	@RequestMapping(value = "/debug/reinit", method = {RequestMethod.POST}, consumes = {"*"})
 	public void reInit() {
 
-		mang.init();
+		 mang.reinit();
+
 	}
 }

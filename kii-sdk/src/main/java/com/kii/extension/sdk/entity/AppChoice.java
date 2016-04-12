@@ -10,6 +10,17 @@ public class AppChoice implements Serializable{
 
 	private String appName;
 
+	private boolean bindAdmin;
+
+
+	public boolean isBindAdmin() {
+		return bindAdmin;
+	}
+
+	public void setBindAdmin(boolean bindAdmin) {
+		this.bindAdmin = bindAdmin;
+	}
+
 	public String getBindName() {
 		return bindName;
 	}

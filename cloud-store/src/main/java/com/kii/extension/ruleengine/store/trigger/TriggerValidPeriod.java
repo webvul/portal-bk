@@ -7,8 +7,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 		include = JsonTypeInfo.As.EXISTING_PROPERTY,
 		property = "type")
 @JsonSubTypes({
-		@JsonSubTypes.Type(value = SimplePeriod.class,name="Simple"),
-		@JsonSubTypes.Type(value = SchedulePeriod.class,name="Schedule"),
+		@JsonSubTypes.Type(value = SimplePeriod.class,name="simple"),
+		@JsonSubTypes.Type(value = SchedulePeriod.class,name="cron"),
 })
 public interface TriggerValidPeriod {
 

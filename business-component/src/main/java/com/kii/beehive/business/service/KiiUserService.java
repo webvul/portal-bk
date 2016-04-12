@@ -20,7 +20,7 @@ import com.kii.extension.sdk.service.UserService;
  * refer to doc "Tech Design - Beehive API" for details
  */
 @Component
-@BindAppByName(appName="master")
+@BindAppByName(appName="master",bindAdmin=false)
 public class KiiUserService {
 
 	@Autowired
@@ -35,8 +35,6 @@ public class KiiUserService {
 	 * this API is supposed to be called only when initialize the environment
 	 */
 	public String addDefaultOwner(String name,String pwd){
-
-
 
 		try {
 			LoginInfo info = userService.login(name, pwd);
@@ -64,7 +62,6 @@ public class KiiUserService {
 		user.setPassword(pwd);
 
 		String kiiUserID = userService.createUser(user);
-
 
 		return kiiUserID;
 	}
@@ -102,4 +99,7 @@ public class KiiUserService {
 	}
 
 
+public KiiUser getKiiUser() {
+		return userService.getUserDetail();
+	}
 }

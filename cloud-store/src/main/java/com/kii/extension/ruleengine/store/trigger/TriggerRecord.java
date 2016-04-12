@@ -45,7 +45,7 @@ public abstract  class TriggerRecord extends KiiEntity {
 
 	public String getTriggerID() {return super.getId();}
 
-	@JsonProperty("preparedCondition")
+	@JsonProperty("prepareCondition")
 	public TriggerValidPeriod getPreparedCondition() {
 		return period;
 	}

@@ -1,27 +1,40 @@
 package com.kii.extension.sdk.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kii.extension.sdk.entity.AppInfo;
-import com.kii.extension.sdk.entity.BucketInfo;
-import com.kii.extension.sdk.entity.KiiUser;
-import com.kii.extension.sdk.entity.ScopeType;
-import com.kii.extension.sdk.entity.thingif.*;
-import com.kii.extension.sdk.exception.KiiCloudException;
-import com.kii.extension.sdk.query.QueryParam;
-import org.apache.commons.codec.Charsets;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.*;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.message.BasicNameValuePair;
-import org.springframework.util.StringUtils;
-
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.codec.Charsets;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpHead;
+import org.apache.http.client.methods.HttpPatch;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.message.BasicNameValuePair;
+import org.springframework.util.StringUtils;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import com.kii.extension.sdk.entity.AppInfo;
+import com.kii.extension.sdk.entity.BucketInfo;
+import com.kii.extension.sdk.entity.KiiUser;
+import com.kii.extension.sdk.entity.ScopeType;
+import com.kii.extension.sdk.entity.thingif.ActionResult;
+import com.kii.extension.sdk.entity.thingif.OnBoardingParam;
+import com.kii.extension.sdk.entity.thingif.ThingCommand;
+import com.kii.extension.sdk.entity.thingif.ThingStatus;
+import com.kii.extension.sdk.entity.thingif.ThingTrigger;
+import com.kii.extension.sdk.exception.KiiCloudException;
+import com.kii.extension.sdk.query.QueryParam;
 
 
 public class ApiAccessBuilder {
@@ -284,6 +297,17 @@ public class ApiAccessBuilder {
 
 		this.setContentType("application/vnd.kii.RegistrationRequest+json");
 		ctxObj = user;
+
+		return this;
+	}
+
+	public ApiAccessBuilder getUserDetail() {
+
+
+		request = new HttpGet(appInfo.getAppSubUrl() + "/users/me");
+
+//		this.setContentType("application/vnd.kii.RegistrationRequest+json");
+//		ctxObj = user;
 
 		return this;
 	}

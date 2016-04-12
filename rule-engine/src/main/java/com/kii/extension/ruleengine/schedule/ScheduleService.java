@@ -119,5 +119,17 @@ public class ScheduleService {
 	}
 
 
+	public void addManagerTask(String triggerID,TriggerValidPeriod predicate) throws SchedulerException {
 
+		if(predicate==null){
+			return;
+		}
+		if(predicate instanceof SimplePeriod){
+			addManagerTaskForSimple(triggerID,(SimplePeriod)predicate);
+		}else if(predicate instanceof SchedulePeriod){
+			addManagerTaskForSchedule(triggerID,(SchedulePeriod)predicate);
+		}else{
+			throw new IllegalArgumentException("invalid period type");
+		}
+	}
 }

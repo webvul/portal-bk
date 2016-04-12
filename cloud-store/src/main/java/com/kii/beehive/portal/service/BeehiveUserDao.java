@@ -1,7 +1,9 @@
 package com.kii.beehive.portal.service;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
@@ -46,6 +48,15 @@ public class BeehiveUserDao extends AbstractDataAccess<BeehiveUser> {
 
 		super.removeEntity(userID);
 
+	}
+
+
+	public void cleanActivityToken(String id) {
+
+		Map<String,Object>  params=new HashMap<>();
+		params.put("activityToken",null);
+
+		super.updateEntity(params,id);
 	}
 
 	@Override

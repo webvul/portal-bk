@@ -24,6 +24,6 @@ public class SchedulePeriod implements TriggerValidPeriod {
 	}
 	@Override
 	public String getType(){
-		return "Schedule";
+		return "cron";
 	};
 }
