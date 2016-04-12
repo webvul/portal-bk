@@ -22,13 +22,11 @@ public class TokenBindToolResolver {
 
 	public void bindAdmin(){
 
-		log.debug("bindAdmin");
 		appChoiceLocal.set(true);
 	}
 
 	public void bindUser(){
 
-		log.debug("bindUser");
 		appChoiceLocal.set(false);
 	}
 
@@ -37,11 +35,9 @@ public class TokenBindToolResolver {
 
 		if(appChoiceLocal.get()){
 
-			log.debug("use AdminTokenBindTool to get token");
 			return context.getBean(AdminTokenBindTool.class).getToken();
 		}else{
 
-			log.debug("use UserTokenBindTool to get token");
 			return context.getBean(UserTokenBindTool.class).getToken();
 		}
 
@@ -52,7 +48,6 @@ public class TokenBindToolResolver {
 
 	public void clean(){
 
-		log.debug("clean");
 		appChoiceLocal.remove();
 	}
 	

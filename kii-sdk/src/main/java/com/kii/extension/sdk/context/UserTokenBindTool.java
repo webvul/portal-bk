@@ -3,30 +3,23 @@ package com.kii.extension.sdk.context;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.kii.extension.sdk.service.UserService;
 import com.kii.extension.sdk.entity.AppInfo;
 import com.kii.extension.sdk.entity.LoginInfo;
+import com.kii.extension.sdk.service.UserService;
 
 
 @Component
 public class UserTokenBindTool implements TokenBindTool {
 
-	private Logger log= LoggerFactory.getLogger(UserTokenBindTool.class);
 
 	@Autowired
 	private UserService userService;
 
 	@Autowired
 	private AppBindToolResolver bindToolResolver;
-//
-//	@Autowired
-//	private ObjectMapper mapper;
-
 
 	private ThreadLocal<Map<String,UserInfo>> userLocal=ThreadLocal.withInitial(()->new HashMap<>());
 
@@ -37,7 +30,6 @@ public class UserTokenBindTool implements TokenBindTool {
 
 		userLocal.get().put(appInfo.getAppID(), userInfo);
 
-		log.debug("UserTokenBindTool.userLocal bind: " + appInfo.getAppID() + " / " + userInfo);
 	}
 
 
@@ -81,10 +73,9 @@ public class UserTokenBindTool implements TokenBindTool {
 	public void clean() {
 		userLocal.remove();
 
-		log.debug("UserTokenBindTool.userLocal clean");
 	}
 
-	public static class UserInfo{
+	static class UserInfo {
 
 		private String userName;
 
@@ -116,14 +107,6 @@ public class UserTokenBindTool implements TokenBindTool {
 			this.password = password;
 		}
 
-		@Override
-		public String toString() {
-			StringBuffer buffer = new StringBuffer();
-			buffer.append("<userName=").append(userName);
-			buffer.append(", password=").append(password);
-			buffer.append(", token=").append(token);
-			buffer.append(">");
-			return buffer.toString();
-		}
+
 	}
 }

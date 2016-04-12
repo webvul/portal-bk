@@ -35,19 +35,18 @@ public class AppBindAspect {
 
 	@Pointcut("execution (* com.kii.extension.sdk.service.AbstractDataAccess+.*(..)  ) ")
 	private void commDataAccess(){
-		log.debug("Pointcut commDataAccess");
+
 	}
 
 	@Pointcut("within (@com.kii.extension.sdk.annotation.BindAppByName  com.kii..* ) ")
 	private void appBindWithAnnotation(){
 
-		log.debug("Pointcut appBindWithAnnotation");
 	}
 
 
 	@Pointcut("execution (*  com.kii..*(..,@com.kii.extension.sdk.annotation.AppBindParam (*),.. ))")
 	private void bindWithParam(){
-		log.debug("Pointcut bindWithParam");
+
 	}
 
 
@@ -65,9 +64,9 @@ public class AppBindAspect {
 		}
 		choice.setAppName(appByName.appName());
 
-		bindTool.setAppChoice(choice);
+		choice.setBindAdmin(appByName.bindAdmin());
 
-		log.debug("@@@@@@@@@ bindTool.setAppChoice: " + choice);
+		bindTool.setAppChoice(choice);
 
 	}
 
@@ -81,7 +80,6 @@ public class AppBindAspect {
 		}
 		bindTool.clean();
 
-		log.debug("@@@@@@@@@ bindTool.clean");
 	}
 
 
@@ -89,7 +87,6 @@ public class AppBindAspect {
 	public void  afterCallBindParam(JoinPoint joinPoint ){
 		bindTool.clean();
 
-		log.debug("@@@@@@@@@ bindTool.clean");
 	}
 
 
@@ -102,7 +99,6 @@ public class AppBindAspect {
 		Object[] args=joinPoint.getArgs();
 
 		String param=null;
-		AppBindParam annotation=null;
 		for(int i=0;i<methodAnnotations.length;i++){
 
 			for(Annotation anno:methodAnnotations[i]){
@@ -112,18 +108,13 @@ public class AppBindAspect {
 					if(arg instanceof AppInfo){
 						bindTool.setAppInfoDirectly((AppInfo)arg);
 
-						log.debug("@@@@@@@@@ bindTool.setAppInfoDirectly: " + arg);
-
 						break;
 					}else if(arg instanceof  String) {
 						param = String.valueOf(args[i]);
 						bindTool.setAppInfoDirectly(param);
 
-						log.debug("@@@@@@@@@ bindTool.setAppInfoDirectly: " + param);
-
 						break;
 					}
-//					annotation=(AppBindParam)anno;
 					break;
 				}
 			}

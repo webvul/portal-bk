@@ -2,8 +2,9 @@ package com.kii.beehive.portal.web.help;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.util.StringUtils;
+
 import com.kii.beehive.portal.web.constant.Constants;
-import com.kii.beehive.portal.web.exception.BeehiveUnAuthorizedException;
 
 public class AuthUtils {
 
@@ -12,14 +13,17 @@ public class AuthUtils {
 
 		String auth = request.getHeader(Constants.ACCESS_TOKEN);
 
-
-		if (auth == null || !auth.startsWith(Constants.HEADER_BEARER)) {
-			throw new BeehiveUnAuthorizedException(" auth token format invalid");
+		if(StringUtils.isEmpty(auth)||!auth.startsWith(Constants.HEADER_BEARER)){
+			return null;
 		}
 
 		auth = auth.trim();
 
-		String token = auth.substring(auth.indexOf(" ") + 1).trim();
+		int idx=auth.indexOf(" ");
+		if(idx==-1){
+			return null;
+		}
+		String token = auth.substring( idx + 1).trim();
 
 		return token;
 	}

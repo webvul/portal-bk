@@ -9,12 +9,12 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.extension.sdk.context.AppBindToolResolver;
-import com.kii.extension.sdk.entity.KiiUser;
-import com.kii.extension.sdk.context.TokenBindToolResolver;
 import com.kii.extension.sdk.entity.AppInfo;
+import com.kii.extension.sdk.entity.KiiUser;
 import com.kii.extension.sdk.entity.LoginInfo;
 import com.kii.extension.sdk.impl.ApiAccessBuilder;
 import com.kii.extension.sdk.impl.KiiCloudClient;
+
 
 @Component
 public class UserService {
@@ -28,8 +28,8 @@ public class UserService {
 	@Autowired
 	private AppBindToolResolver bindToolResolver;
 
-	@Autowired
-	private TokenBindToolResolver tool;
+//	@Autowired
+//	private TokenBindToolResolver tool;
 
 	public  LoginInfo login(String userName,String password){
 
@@ -88,9 +88,6 @@ public class UserService {
 
 	public void changePassword(String oldPassword, String newPassword) {
 
-		// use user token for change password
-		tool.bindUser();
-
 		HttpUriRequest request=getBuilder().changePassword(oldPassword, newPassword).generRequest(mapper);
 
 		client.doRequest(request);
@@ -125,6 +122,13 @@ public class UserService {
 
 		client.doRequest(request);
 	}
+	
+	
+	public KiiUser getUserDetail() {
 
 
+		HttpUriRequest request=getBuilder().getUserDetail().generRequest(mapper);
+
+		return client.executeRequestWithCls(request,KiiUser.class);
+	}
 }

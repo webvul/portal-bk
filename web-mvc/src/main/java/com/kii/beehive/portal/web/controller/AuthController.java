@@ -2,11 +2,13 @@ package com.kii.beehive.portal.web.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -16,6 +18,7 @@ import com.kii.beehive.portal.common.utils.CollectUtils;
 import com.kii.beehive.portal.entitys.AuthRestBean;
 import com.kii.beehive.portal.manager.AuthManager;
 import com.kii.beehive.portal.web.constant.ErrorCode;
+import com.kii.beehive.portal.web.exception.BeehiveUnAuthorizedException;
 import com.kii.beehive.portal.web.exception.PortalException;
 import com.kii.beehive.portal.web.help.AuthUtils;
 
@@ -40,30 +43,37 @@ public class AuthController {
      *
      * @return
      */
-    @RequestMapping(path = "/register", method = { RequestMethod.POST })
-    public void activity(@RequestBody Map<String, Object> request) {
+    @RequestMapping(path = "/activate", method = { RequestMethod.POST })
+    public Map<String,Object> activating(@RequestBody Map<String, Object> request) {
 
-        String userID = (String)request.get("userID");
+        String userName = (String)request.get("userName");
         String password = (String)request.get("activityToken");
 
-        if(CollectUtils.containsBlank(userID, password)) {
+        if(CollectUtils.containsBlank(userName, password)) {
             throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "userID or password empty", HttpStatus.BAD_REQUEST);
         }
-        
-        boolean result = authManager.activity(userID, password);
 
-        if(result == false) {
-            throw new PortalException(ErrorCode.AUTH_FAIL, "userID incorrect or already registered", HttpStatus.BAD_REQUEST);
-        }
+        String result = authManager.activite(userName, password);
+
+		Map<String,Object> values=new HashMap<>();
+		values.put("initPwdToken",result);
+
+		return values;
+
     }
 
 	@RequestMapping(path = "/initpassword", method = { RequestMethod.POST })
-	public void initPassword(@RequestBody Map<String, Object> request){
+	public void initPassword(@RequestBody Map<String, Object> inputMap,HttpServletRequest request){
 
-		String password = (String)request.get("newPassword");
-		String userID = (String)request.get("userID");
+		String token = AuthUtils.getTokenFromHeader(request);
 
-		authManager.initPassword(userID,password);
+		if(StringUtils.isEmpty(token)){
+			throw new BeehiveUnAuthorizedException("token miss or invalid format ");
+		}
+		String password = (String)inputMap.get("newPassword");
+		String userID = (String)inputMap.get("userName");
+
+		authManager.initPassword(token,userID,password);
 
 	}
 
@@ -106,8 +116,9 @@ public class AuthController {
     public void logout(HttpServletRequest request) {
 
 		String token = AuthUtils.getTokenFromHeader(request);
-        authManager.logout(token);
-
+		if(!StringUtils.isEmpty(token)){
+			authManager.logout(token);
+		}
     }
 
 
@@ -124,31 +135,13 @@ public class AuthController {
 
         String token = AuthUtils.getTokenFromHeader(request);
 
+		if(StringUtils.isEmpty(token)){
+			throw new BeehiveUnAuthorizedException("token miss or invalid format ");
+		}
+
         return authManager.validateUserToken(token);
     }
 
-
-    /**
-     * 用户修改密码
-     * POST /oauth2/changepassword
-     *
-     * refer to doc "Beehive API - User API" for request/response details
-     *
-     * @return
-     */
-    @RequestMapping(path = "/changepassword", method = { RequestMethod.POST })
-    public void changePassword(@RequestBody Map<String, Object> request) {
-
-        String oldPassword = (String)request.get("oldPassword");
-        String newPassord = (String)request.get("newPassword");
-
-        if(CollectUtils.containsBlank(oldPassword, newPassord)) {
-            throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "oldPassword or newPassord empty", HttpStatus.BAD_REQUEST);
-        }
-
-        authManager.changePassword(oldPassword, newPassord);
-
-    }
 
 
 }
