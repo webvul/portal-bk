@@ -55,11 +55,11 @@ public class TestUserManger  extends TestInit {
 	public void resetPwd(){
 
 
-		BeehiveUser user=new BeehiveUser();
+//		BeehiveUser user=new BeehiveUser();
 
 		String name="testForUserManger";
-		user.setUserName(name);
-		user.setCompany("kiicloud");
+//		user.setUserName(name);
+//		user.setCompany("kiicloud");
 
 
 		AuthRestBean  rest=authManager.login(name,"qwerty",false);
@@ -70,7 +70,7 @@ public class TestUserManger  extends TestInit {
 
 		String oneTimeToken=authManager.activite(name, token);
 
-		authManager.initPassword(oneTimeToken,user.getUserName(),"qwerty");
+		authManager.initPassword(oneTimeToken,name,"qwerty");
 
 		AuthRestBean  bean=authManager.login(name,"qwerty",false);
 
