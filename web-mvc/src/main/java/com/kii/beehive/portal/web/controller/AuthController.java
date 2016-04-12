@@ -79,6 +79,8 @@ public class AuthController {
 	}
 
 
+
+
 	/**
 	 * 用户登录
 	 * POST /oauth2/login
@@ -90,7 +92,7 @@ public class AuthController {
 	@RequestMapping(value = "/login", method = {RequestMethod.POST})
 	public AuthRestBean login(@RequestBody Map<String, Object> request) {
 
-		String userID = (String) request.get("userID");
+		String userID = (String) request.get("userName");
 		String password = (String) request.get("password");
 		Boolean permanentToken = (Boolean) request.get("permanentToken");
 		// if permanentToken is not set, make it false as default
@@ -118,8 +120,10 @@ public class AuthController {
 	public void logout(HttpServletRequest request) {
 
 		String token = AuthUtils.getTokenFromHeader(request);
-		if(!StringUtils.isEmpty(token)){
+		if(!StringUtils.isEmpty(token)) {
 			authManager.logout(token);
+		}else{
+			throw new BeehiveUnAuthorizedException("token not existed");
 		}
     }
 

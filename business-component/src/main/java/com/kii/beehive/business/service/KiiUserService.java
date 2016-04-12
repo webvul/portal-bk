@@ -99,7 +99,7 @@ public class KiiUserService {
 	}
 
 
-public KiiUser getKiiUser() {
+	public KiiUser getKiiUser() {
 		return userService.getUserDetail();
 	}
 }

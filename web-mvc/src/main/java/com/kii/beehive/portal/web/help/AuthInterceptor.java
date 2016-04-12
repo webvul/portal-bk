@@ -157,7 +157,6 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 			}else {
 
 				AuthInfo authInfo = authManager.validateAndBindUserToken(token);
-				log.debug(authInfo.toString());
 				list.set(1, authInfo.getUserID());
 
 				AuthInfoStore.setAuthInfo(authInfo.getUserID());

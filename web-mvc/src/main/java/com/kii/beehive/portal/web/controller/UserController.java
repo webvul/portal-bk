@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,7 +23,7 @@ import com.kii.beehive.portal.web.exception.PortalException;
 
 
 @RestController
-@RequestMapping(value = "/users", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+@RequestMapping( consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
 public class UserController {
 
 
@@ -41,23 +42,39 @@ public class UserController {
 	 *
 	 * @param user
 	 */
-	@RequestMapping(value = "", method = {RequestMethod.POST})
-	public Map<String, String> createUser(@RequestBody UserRestBean user) {
+	@RequestMapping(value = "/admin/users", method = {RequestMethod.POST})
+	public Map<String, Object> createUser(@RequestBody UserRestBean user) {
 
 		user.verifyInput();
 
 		BeehiveUser beehiveUser = user.getBeehiveUser();
+		if(StringUtils.isEmpty(beehiveUser.getUserName())){
+			if(!StringUtils.isEmpty(beehiveUser.getMail())){
+				beehiveUser.setUserName(beehiveUser.getMail());
+			}else if(!StringUtils.isEmpty(beehiveUser.getPhone())){
+				beehiveUser.setUserName(beehiveUser.getPhone());
+			}
+		}
+
+		return  userManager.addUser(beehiveUser);
+
+	}
 
 
-		String token = userManager.addUser(beehiveUser);
+	@RequestMapping(path = "/admin/users/{userid}/resetpassword", method = { RequestMethod.POST })
+	public Map<String,Object> resetPassword(@PathVariable("userid") String userID) {
 
 
-		Map<String, String> map = new HashMap<>();
+		String token= authManager.resetPwd(userID);
 
-		map.put("userName", beehiveUser.getUserName());
+		Map<String, Object> map = new HashMap<>();
+
+		map.put("userID", userID);
 		map.put("activityToken", token);
 
+
 		return map;
+
 	}
 
 
@@ -69,7 +86,7 @@ public class UserController {
 	 *
 	 * @return
 	 */
-	@RequestMapping(path = "/changepassword", method = { RequestMethod.POST })
+	@RequestMapping(path = "/users/changepassword", method = { RequestMethod.POST })
 	public void changePassword(@RequestBody Map<String, Object> request) {
 
 		String oldPassword = (String)request.get("oldPassword");
@@ -84,6 +101,7 @@ public class UserController {
 	}
 
 
+
 	/**
 	 * 更新用户
 	 * PATCH /users/{userID}
@@ -92,7 +110,7 @@ public class UserController {
 	 *
 	 * @param user
 	 */
-	@RequestMapping(value = "/{userID}", method = {RequestMethod.PATCH})
+	@RequestMapping(value = "/users/{userID}", method = {RequestMethod.PATCH})
 	public Map<String, String> updateUser(@PathVariable("userID") String userID, @RequestBody BeehiveUser user) {
 
 		userManager.updateUser(user, userID);
@@ -111,7 +129,7 @@ public class UserController {
 	 *
 	 * @param userID
 	 */
-	@RequestMapping(value = "/{userID}", method = {RequestMethod.GET}, consumes = {"*"})
+	@RequestMapping(value = "/users/{userID}", method = {RequestMethod.GET}, consumes = {"*"})
 	public UserRestBean getUser(@PathVariable("userID") String userID) {
 
 		UserRestBean bean = new UserRestBean();
