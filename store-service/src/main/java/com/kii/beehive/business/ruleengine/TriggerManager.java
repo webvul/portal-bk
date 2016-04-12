@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.kii.beehive.business.event.BusinessEventListenerService;
 import com.kii.beehive.business.manager.ThingTagManager;
 import com.kii.beehive.portal.event.EventListener;
@@ -31,14 +32,6 @@ import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerValidPeriod;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-
-import javax.annotation.PostConstruct;
-import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
 public class TriggerManager {
@@ -141,11 +134,13 @@ public class TriggerManager {
 
 		String triggerID=record.getId();
 
+		TriggerValidPeriod period=record.getPreparedCondition();
+		if(period!=null){
+			record.setRecordStatus(TriggerRecord.StatusType.disable);
+		}
+
 		try {
 
-			TriggerValidPeriod predicate=record.getPreparedCondition();
-
-			scheduleService.addManagerTask(triggerID,predicate);
 			if (record instanceof SimpleTriggerRecord) {
 				addSimpleToEngine((SimpleTriggerRecord) record);
 			} else if (record instanceof GroupTriggerRecord) {
@@ -165,6 +160,10 @@ public class TriggerManager {
 
 			} else {
 				throw new IllegalArgumentException("unsupport trigger type");
+			}
+
+			if(period!=null) {
+				scheduleService.addManagerTask(triggerID, period);
 			}
 		} catch (RuntimeException e) {
 

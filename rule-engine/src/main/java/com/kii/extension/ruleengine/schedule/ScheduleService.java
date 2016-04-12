@@ -94,55 +94,73 @@ public class ScheduleService {
 
 		Trigger triggerStart= TriggerBuilder.newTrigger()
 				.usingJobData(TRIGGER_ID,triggerID)
-				.forJob(RuleEngineConfig.START_JOB,RuleEngineConfig.MANAGER_GROUP)
+				.forJob(RuleEngineConfig.START_JOB)
 				.withSchedule(cronSchedule(period.getStartCron()))
 				.build();
 
-		scheduler.scheduleJob(triggerStart);
 
+
+		scheduler.scheduleJob(triggerStart);
 
 		Trigger triggerEnd= TriggerBuilder.newTrigger()
 				.usingJobData(TRIGGER_ID,triggerID)
-				.forJob(RuleEngineConfig.STOP_JOB,RuleEngineConfig.MANAGER_GROUP)
+				.forJob(RuleEngineConfig.STOP_JOB)
 				.withSchedule(cronSchedule(period.getEndCron()))
 				.build();
 
+
 		scheduler.scheduleJob(triggerEnd);
+
+		Date nextStop=triggerEnd.getNextFireTime();
+		Date nextStart=triggerStart.getNextFireTime();
+
+		if(nextStart.getTime()>=nextStop.getTime()){
+			scheduler.triggerJob(RuleEngineConfig.START_JOB);
+		}else{
+			scheduler.triggerJob(RuleEngineConfig.STOP_JOB);
+		}
 	}
 
 	public void addManagerTaskForSimple(String triggerID, SimplePeriod period) throws SchedulerException {
 
+		long now=System.currentTimeMillis();
 
-		Trigger triggerStart= TriggerBuilder.newTrigger()
-				.usingJobData(TRIGGER_ID,triggerID)
-				.forJob(RuleEngineConfig.START_JOB,RuleEngineConfig.MANAGER_GROUP)
-				.startAt(new Date(period.getStartTime()))
-				.build();
+		if(period.getStartTime()>=now){
+			Trigger triggerStart = TriggerBuilder.newTrigger()
+					.usingJobData(TRIGGER_ID, triggerID)
+					.forJob(RuleEngineConfig.START_JOB)
+					.startAt(new Date(period.getStartTime()))
+					.build();
 
-		scheduler.scheduleJob(triggerStart);
+			scheduler.scheduleJob(triggerStart);
+		}else if(period.getEndTime()>=now){
+			scheduler.triggerJob(RuleEngineConfig.START_JOB);
+		}
 
+		if(period.getEndTime()>=now) {
+			Trigger triggerEnd = TriggerBuilder.newTrigger()
+					.usingJobData(TRIGGER_ID, triggerID)
+					.forJob(RuleEngineConfig.STOP_JOB)
+					.startAt(new Date(period.getEndTime()))
+					.build();
 
-		Trigger triggerEnd= TriggerBuilder.newTrigger()
-				.usingJobData(TRIGGER_ID,triggerID)
-				.forJob(RuleEngineConfig.STOP_JOB, RuleEngineConfig.MANAGER_GROUP)
-				.startAt(new Date(period.getEndTime()))
-				.build();
-
-		scheduler.scheduleJob(triggerEnd);
+			scheduler.scheduleJob(triggerEnd);
+		}else{
+			scheduler.triggerJob(RuleEngineConfig.STOP_JOB);
+		}
 	}
 	
 	
-	public void addManagerTask(String triggerID,TriggerValidPeriod predicate) throws SchedulerException {
+	public void addManagerTask(String triggerID,TriggerValidPeriod period) throws SchedulerException {
 
-		if(predicate==null){
-			return;
-		}
-		if(predicate instanceof SimplePeriod){
-			addManagerTaskForSimple(triggerID,(SimplePeriod)predicate);
-		}else if(predicate instanceof SchedulePeriod){
-			addManagerTaskForSchedule(triggerID,(SchedulePeriod)predicate);
+
+		if(period instanceof SimplePeriod){
+			addManagerTaskForSimple(triggerID,(SimplePeriod)period);
+		}else if(period instanceof SchedulePeriod){
+			addManagerTaskForSchedule(triggerID,(SchedulePeriod)period);
 		}else{
 			throw new IllegalArgumentException("invalid period type");
 		}
+
 	}
 }

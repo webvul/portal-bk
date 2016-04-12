@@ -129,14 +129,14 @@ public class RuleEngineFactory {
 	private JobDetail getStartJob(){
 
 		return getJobBuilder(startJob.getClass())
-				.withIdentity(RuleEngineConfig.START_JOB, RuleEngineConfig.MANAGER_GROUP)
+				.withIdentity(RuleEngineConfig.START_JOB)
 				.build();
 	}
 
 	private JobDetail  getStopJob(){
 
 		return getJobBuilder(stopJob.getClass())
-				.withIdentity(RuleEngineConfig.STOP_JOB,RuleEngineConfig.MANAGER_GROUP)
+				.withIdentity(RuleEngineConfig.STOP_JOB)
 				.build();
 	}
 
