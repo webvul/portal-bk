@@ -3,7 +3,9 @@ package com.kii.extension.ruleengine.schedule;
 import com.kii.extension.ruleengine.RuleEngineConfig;
 import com.kii.extension.ruleengine.store.trigger.SchedulePeriod;
 import com.kii.extension.ruleengine.store.trigger.SimplePeriod;
+import com.kii.extension.ruleengine.store.trigger.TriggerValidPeriod;
 import org.quartz.*;
+import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -42,6 +44,45 @@ public class ScheduleService {
 			e.printStackTrace();
 		}
 	}
+
+
+	public Map<String,Object> dump(){
+
+		GroupMatcher<TriggerKey> any= GroupMatcher.anyTriggerGroup();
+
+		Map<String,Object> triggerMap=new HashMap<>();
+
+		try {
+			Set<TriggerKey> keys = scheduler.getTriggerKeys(any);
+
+			keys.forEach((k) -> {
+				try {
+					Trigger trigger = scheduler.getTrigger(k);
+					Map<String,Object> data=new HashMap<String, Object>();
+					data.put("endTime",trigger.getEndTime());
+					data.put("startTime",trigger.getStartTime());
+
+					data.put("nextFireTime",trigger.getNextFireTime());
+					data.put("previousFireTime",trigger.getPreviousFireTime());
+
+					data.put("jobType",trigger.getJobKey().getName());
+					data.put("triggerID",trigger.getJobDataMap().getString("triggerID"));
+
+					triggerMap.put(trigger.getKey().getName(), data);
+
+
+				} catch (SchedulerException e) {
+					e.printStackTrace();
+				}
+
+			});
+		}catch(SchedulerException e){
+			e.printStackTrace();
+		}
+		return triggerMap;
+	}
+
+	
 
 	/**
 	 * for reInit

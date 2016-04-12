@@ -1,16 +1,5 @@
 package com.kii.extension.ruleengine;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentSkipListSet;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-
 import com.kii.extension.ruleengine.drools.DroolsTriggerService;
 import com.kii.extension.ruleengine.drools.RuleGeneral;
 import com.kii.extension.ruleengine.drools.entity.Summary;
@@ -177,14 +166,6 @@ public class EngineService {
 		droolsTriggerService.fireCondition();
 //		}
 
-		//
-		if(record.getPreparedCondition() != null ){
-			if("Simple".equals(record.getPreparedCondition().getType())){
-				scheduleService.addManagerTaskForSimple(triggerID, (SimplePeriod)record.getPreparedCondition());
-			} else if("Schedule".equals(record.getPreparedCondition().getType())){
-				scheduleService.addManagerTaskForSchedule(triggerID, (SchedulePeriod) record.getPreparedCondition());
-			}
-		}
 	}
 
 //	public void finishInit(){

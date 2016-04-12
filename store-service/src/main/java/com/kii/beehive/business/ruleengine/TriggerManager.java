@@ -1,20 +1,5 @@
 package com.kii.beehive.business.ruleengine;
 
-import javax.annotation.PostConstruct;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import org.quartz.SchedulerException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kii.beehive.business.event.BusinessEventListenerService;
 import com.kii.beehive.business.manager.ThingTagManager;
@@ -25,11 +10,7 @@ import com.kii.beehive.portal.service.EventListenerDao;
 import com.kii.extension.ruleengine.EngineService;
 import com.kii.extension.ruleengine.schedule.ScheduleService;
 import com.kii.extension.ruleengine.service.TriggerRecordDao;
-import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.TriggerValidPeriod;
+import com.kii.extension.ruleengine.store.trigger.*;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -144,9 +125,6 @@ public class TriggerManager {
 
 		try {
 
-			TriggerValidPeriod predicate=record.getPreparedCondition();
-
-			scheduleService.addManagerTask(triggerID,predicate);
 			if (record instanceof SimpleTriggerRecord) {
 				addSimpleToEngine((SimpleTriggerRecord) record);
 			} else if (record instanceof GroupTriggerRecord) {
@@ -167,6 +145,11 @@ public class TriggerManager {
 			} else {
 				throw new IllegalArgumentException("unsupport trigger type");
 			}
+
+			TriggerValidPeriod predicate=record.getPreparedCondition();
+
+			scheduleService.addManagerTask(triggerID,predicate);
+
 		} catch (RuntimeException e) {
 
 			triggerDao.removeEntity(triggerID);

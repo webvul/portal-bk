@@ -1,14 +1,6 @@
 package com.kii.extension.ruleengine.drools;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
+import com.kii.extension.ruleengine.drools.entity.CurrThing;
 import org.apache.commons.codec.Charsets;
 import org.kie.api.KieBase;
 import org.kie.api.KieBaseConfiguration;
@@ -29,7 +21,8 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.kii.extension.ruleengine.drools.entity.CurrThing;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 @Scope(scopeName= ConfigurableBeanFactory.SCOPE_PROTOTYPE)
@@ -194,7 +187,7 @@ public class DroolsRuleService {
 			kieContainer.updateToVersion(kb.getKieModule().getReleaseId());
 		}
 		//清空当前drools内的fact
-		handleMap.keySet().forEach( key -> removeFact(handleMap.get(key)));
+		handleMap.keySet().forEach( key -> getSession().delete(handleMap.get(key)) );
 		handleMap.clear();
 	}
 
