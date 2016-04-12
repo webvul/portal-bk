@@ -153,7 +153,9 @@ public class DroolsTriggerService {
 		getService(trigger).removeCondition("rule"+triggerID);
 
 		Map<String,Summary> map=summaryMap.remove(triggerID);
-		map.values().forEach(summary-> getService(trigger).removeData(summary));
+		if(map != null ){
+			map.values().forEach(summary-> getService(trigger).removeData(summary));
+		}
 	}
 
 	public void enableTrigger(String triggerID) {

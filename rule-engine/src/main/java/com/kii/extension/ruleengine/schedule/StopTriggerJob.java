@@ -19,7 +19,7 @@ public class StopTriggerJob implements JobInSpring {
 	@Override
 	public void execute(JobDataMap paramMap) {
 		String triggerID=paramMap.getString(ScheduleService.TRIGGER_ID);
-		log.info("stop "+triggerID);
+		log.info("stop job disable trigger: "+triggerID);
 
 		bean.disableTrigger(triggerID);
 

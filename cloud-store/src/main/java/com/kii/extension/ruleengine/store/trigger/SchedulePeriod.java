@@ -22,7 +22,7 @@ public class SchedulePeriod implements TriggerValidPeriod {
 	public void setEndCron(String endCron) {
 		this.endCron = endCron;
 	}
-
+	@Override
 	public String getType(){
 		return "Schedule";
 	};

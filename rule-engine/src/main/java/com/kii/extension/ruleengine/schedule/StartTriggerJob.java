@@ -19,7 +19,7 @@ public class StartTriggerJob implements JobInSpring {
 	public void execute(JobDataMap paramMap)  {
 
 		String triggerID=paramMap.getString(ScheduleService.TRIGGER_ID);
-		log.info("start "+triggerID);
+		log.info("start job enable trigger: "+triggerID);
 
 		bean.enableTrigger(triggerID);
 

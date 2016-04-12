@@ -5,8 +5,10 @@ import com.kii.extension.ruleengine.drools.RuleGeneral;
 import com.kii.extension.ruleengine.drools.entity.Summary;
 import com.kii.extension.ruleengine.drools.entity.Trigger;
 import com.kii.extension.ruleengine.drools.entity.TriggerType;
+import com.kii.extension.ruleengine.schedule.ScheduleService;
 import com.kii.extension.ruleengine.store.trigger.*;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -23,6 +25,8 @@ public class EngineService {
 
 	@Autowired
 	private RuleGeneral  ruleGeneral;
+	@Autowired
+	private ScheduleService scheduleService;
 
 
 	private Set<String>  scheduleSet=new ConcurrentSkipListSet<>();
@@ -45,6 +49,7 @@ public class EngineService {
 	 */
 	public void clear(){
 		droolsTriggerService.clear();
+		scheduleService.clearTrigger();
 	}
 	public Map<String,Object>  dumpEngineRuntime(){
 
@@ -133,7 +138,7 @@ public class EngineService {
 	}
 
 
-	public void  createSimpleTrigger(String thingID, SimpleTriggerRecord record){
+	public void  createSimpleTrigger(String thingID, SimpleTriggerRecord record) throws SchedulerException {
 
 
 		Trigger trigger=new Trigger();
@@ -161,7 +166,14 @@ public class EngineService {
 			droolsTriggerService.fireCondition();
 		}
 
-
+		//
+		if(record.getPreparedCondition() != null ){
+			if("Simple".equals(record.getPreparedCondition().getType())){
+				scheduleService.addManagerTaskForSimple(triggerID, (SimplePeriod)record.getPreparedCondition());
+			} else if("Schedule".equals(record.getPreparedCondition().getType())){
+				scheduleService.addManagerTaskForSchedule(triggerID, (SchedulePeriod) record.getPreparedCondition());
+			}
+		}
 	}
 
 	public void finishInit(){
@@ -206,13 +218,14 @@ public class EngineService {
 		if(scheduleSet.contains(triggerID)) {
 			droolsTriggerService.fireCondition();
 		}
+
 	}
 
 	public void removeTrigger(String triggerID){
 
 		droolsTriggerService.removeTrigger(triggerID);
 
-
+		scheduleService.removeManagerTaskForSchedule(triggerID);
 
 	}
 }

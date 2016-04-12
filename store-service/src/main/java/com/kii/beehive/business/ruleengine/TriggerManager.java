@@ -14,6 +14,7 @@ import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -166,7 +167,12 @@ public class TriggerManager {
 				thingID = thingInfo.getFullKiiThingID();
 			}
 		}
-		service.createSimpleTrigger(thingID, record);
+		try {
+			service.createSimpleTrigger(thingID,record);
+		} catch (SchedulerException e) {
+			e.printStackTrace();
+			throw new IllegalArgumentException("preparedCondition schedule error :" + e.getMessage());
+		}
 	}
 
 
