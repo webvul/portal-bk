@@ -137,6 +137,7 @@ public class TriggerManager {
 
 		TriggerValidPeriod period=record.getPreparedCondition();
 		if(period!=null){
+			//ctrl enable sign by schedule.
 			record.setRecordStatus(TriggerRecord.StatusType.disable);
 		}
 

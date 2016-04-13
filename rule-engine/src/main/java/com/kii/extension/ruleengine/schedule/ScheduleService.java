@@ -29,8 +29,8 @@ public class ScheduleService {
 	
 	
 	public static final String TRIGGER_ID = "triggerID";
-	private static final String STOP_PRE = "Stop-";
-	private static final String START_PRE = "Start-";
+	private static final String STOP_PRE = "Stop";
+	private static final String START_PRE = "Start";
 
 	@Autowired
 	private Scheduler scheduler;
@@ -78,8 +78,7 @@ public class ScheduleService {
 					data.put("nextFireTime",trigger.getNextFireTime());
 					data.put("previousFireTime",trigger.getPreviousFireTime());
 
-					data.put("jobType",trigger.getJobKey().getName());
-					data.put("triggerID",trigger.getJobDataMap().getString("triggerID"));
+					data.put("jobType",k.getGroup());
 
 					triggerMap.put(trigger.getKey().getName(), data);
 
@@ -122,9 +121,9 @@ public class ScheduleService {
 
 	public void removeManagerTaskForSchedule(String triggerID) {
 		try {
-			scheduler.unscheduleJob(TriggerKey.triggerKey(START_PRE +triggerID));
+			scheduler.unscheduleJob(TriggerKey.triggerKey(triggerID,START_PRE));
 
-			scheduler.unscheduleJob(TriggerKey.triggerKey(STOP_PRE +triggerID));
+			scheduler.unscheduleJob(TriggerKey.triggerKey(triggerID,STOP_PRE));
 
 		} catch (SchedulerException e) {
 			throw new IllegalArgumentException(e);
@@ -135,7 +134,7 @@ public class ScheduleService {
 
 
 		Trigger triggerStart= TriggerBuilder.newTrigger()
-				.withIdentity(TriggerKey.triggerKey(START_PRE+triggerID))
+				.withIdentity(TriggerKey.triggerKey(triggerID,START_PRE))
 				.usingJobData(TRIGGER_ID,triggerID)
 				.forJob(RuleEngineConfig.START_JOB)
 				.withSchedule(cronSchedule(period.getStartCron()))
@@ -146,7 +145,7 @@ public class ScheduleService {
 		scheduler.scheduleJob(triggerStart);
 
 		Trigger triggerEnd= TriggerBuilder.newTrigger()
-				.withIdentity(TriggerKey.triggerKey(STOP_PRE+triggerID))
+				.withIdentity(TriggerKey.triggerKey(triggerID,STOP_PRE))
 				.usingJobData(TRIGGER_ID,triggerID)
 				.forJob(RuleEngineConfig.STOP_JOB)
 				.withSchedule(cronSchedule(period.getEndCron()))
@@ -158,6 +157,7 @@ public class ScheduleService {
 		Date nextStop=triggerEnd.getNextFireTime();
 		Date nextStart=triggerStart.getNextFireTime();
 
+		//fire miss trigger by hand
 		if(nextStart.getTime()>=nextStop.getTime()){
 			scheduler.triggerJob(RuleEngineConfig.START_JOB);
 		}else{
@@ -169,9 +169,14 @@ public class ScheduleService {
 
 		long now=System.currentTimeMillis();
 
+		//the trigger had finished
+		if(period.getEndTime()<now){
+			return;
+		}
+
 		if(period.getStartTime()>=now){
 			Trigger triggerStart = TriggerBuilder.newTrigger()
-					.withIdentity(TriggerKey.triggerKey(START_PRE+triggerID))
+					.withIdentity(TriggerKey.triggerKey(triggerID,START_PRE))
 					.usingJobData(TRIGGER_ID, triggerID)
 					.forJob(RuleEngineConfig.START_JOB)
 					.startAt(new Date(period.getStartTime()))
@@ -180,22 +185,20 @@ public class ScheduleService {
 
 			scheduler.scheduleJob(triggerStart);
 		}else if(period.getEndTime()>=now){
+			//fire miss start job by hand
 			scheduler.triggerJob(RuleEngineConfig.START_JOB);
 		}
 
-		if(period.getEndTime()>=now) {
-			Trigger triggerEnd = TriggerBuilder.newTrigger()
-					.withIdentity(TriggerKey.triggerKey(STOP_PRE+triggerID))
+
+		Trigger triggerEnd = TriggerBuilder.newTrigger()
+					.withIdentity(TriggerKey.triggerKey(triggerID,STOP_PRE))
 					.usingJobData(TRIGGER_ID, triggerID)
 					.forJob(RuleEngineConfig.STOP_JOB)
 					.startAt(new Date(period.getEndTime()))
 					.build();
 
 
-			scheduler.scheduleJob(triggerEnd);
-		}else{
-			scheduler.triggerJob(RuleEngineConfig.STOP_JOB);
-		}
+		scheduler.scheduleJob(triggerEnd);
 	}
 
 	

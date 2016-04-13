@@ -15,10 +15,6 @@ public class RuleEngineConfig {
 	public static final JobKey START_JOB= JobKey.jobKey(START,EXECUTE_JOB);
 	public static final JobKey STOP_JOB= JobKey.jobKey(STOP,EXECUTE_JOB);
 
-//	public static final String MANAGER_GROUP = "manager";
-//	public static final String EXE_GROUP = "exe";
-//
-
 	public static final String APPLICATION_CTX = "applicationCtx";
 	public static final String BEAN_CLASS = "beanClass";
 
