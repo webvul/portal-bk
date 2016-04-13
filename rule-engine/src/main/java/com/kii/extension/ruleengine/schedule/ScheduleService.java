@@ -159,9 +159,9 @@ public class ScheduleService {
 		Date nextStart=triggerStart.getNextFireTime();
 
 		if(nextStart.getTime()>=nextStop.getTime()){
-			scheduler.triggerJob(RuleEngineConfig.START_JOB);
+			scheduler.triggerJob(RuleEngineConfig.START_JOB, triggerStart.getJobDataMap());
 		}else{
-			scheduler.triggerJob(RuleEngineConfig.STOP_JOB);
+			scheduler.triggerJob(RuleEngineConfig.STOP_JOB, triggerEnd.getJobDataMap());
 		}
 	}
 
