@@ -1,11 +1,14 @@
 package com.kii.extension.ruleengine;
 
-import com.kii.extension.ruleengine.drools.CommandExec;
-import com.kii.extension.ruleengine.drools.DroolsRuleService;
-import com.kii.extension.ruleengine.schedule.ProxyJob;
-import com.kii.extension.ruleengine.schedule.StartTriggerJob;
-import com.kii.extension.ruleengine.schedule.StopTriggerJob;
-import org.quartz.*;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
+import org.quartz.JobBuilder;
+import org.quartz.JobDataMap;
+import org.quartz.JobDetail;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.SchedulerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -13,15 +16,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.StreamUtils;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import com.kii.extension.ruleengine.drools.CommandExec;
+import com.kii.extension.ruleengine.drools.DroolsRuleService;
+import com.kii.extension.ruleengine.schedule.ProxyJob;
+import com.kii.extension.ruleengine.schedule.StartTriggerJob;
+import com.kii.extension.ruleengine.schedule.StopTriggerJob;
 
 @Configuration
 public class RuleEngineFactory {
-
-
-
-
 
 
 	@Autowired

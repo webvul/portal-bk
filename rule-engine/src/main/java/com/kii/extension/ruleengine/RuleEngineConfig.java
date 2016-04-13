@@ -10,7 +10,7 @@ public class RuleEngineConfig {
 
 	private static final String START = "start";
 	private static final String STOP = "stop";
-	private static final String EXECUTE_JOB = "execute";
+	private static final String EXECUTE_JOB = "ruleEngineTrigger";
 
 	public static final JobKey START_JOB= JobKey.jobKey(START,EXECUTE_JOB);
 	public static final JobKey STOP_JOB= JobKey.jobKey(STOP,EXECUTE_JOB);
