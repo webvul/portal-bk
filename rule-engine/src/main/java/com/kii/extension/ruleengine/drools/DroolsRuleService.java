@@ -1,14 +1,6 @@
 package com.kii.extension.ruleengine.drools;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
+import com.kii.extension.ruleengine.drools.entity.CurrThing;
 import org.apache.commons.codec.Charsets;
 import org.kie.api.KieBase;
 import org.kie.api.KieBaseConfiguration;
@@ -29,7 +21,8 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.kii.extension.ruleengine.drools.entity.CurrThing;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 @Scope(scopeName= ConfigurableBeanFactory.SCOPE_PROTOTYPE)
@@ -164,6 +157,7 @@ public class DroolsRuleService {
 		return kieSession;
 	}
 
+
 	public  void initCondition(String... rules){
 
 
@@ -171,24 +165,30 @@ public class DroolsRuleService {
 
 	/**
 	 * 清空drools fact,trigger生成的rule,用于重新初始化
-	 *
 	 */
 	public void clear(){
 
 		//清空trigger生成的rule
+		boolean isDeletedRule = false;
+		Set<String> deletePathSet=new HashSet<>();
 		for(String drlPath:pathSet){
 			String name=drlPath.substring(drlPath.lastIndexOf("/"),drlPath.length());
 			if(name.startsWith("/comm")){
 				continue;
 			}
 			kfs.delete(drlPath);
+			deletePathSet.add(drlPath);
+			isDeletedRule = true;
 		}
-		KieBuilder kb=ks.newKieBuilder(kfs);
-		kb.buildAll();
-		kieContainer.updateToVersion(kb.getKieModule().getReleaseId());
-
+		pathSet.removeAll(deletePathSet);
+		if(isDeletedRule){
+			KieBuilder kb=ks.newKieBuilder(kfs);
+			kb.buildAll();
+			kieContainer.updateToVersion(kb.getKieModule().getReleaseId());
+		}
 		//清空当前drools内的fact
-		handleMap.keySet().forEach( key -> removeData(handleMap.get(key)));
+		handleMap.keySet().forEach( key -> getSession().delete(handleMap.get(key)) );
+		handleMap.clear();
 	}
 
 
@@ -243,6 +243,7 @@ public class DroolsRuleService {
 		kb.buildAll();
 
 		kieContainer.updateToVersion(kb.getKieModule().getReleaseId());
+		pathSet.remove(path);
 		getSession().getObjects().forEach((obj)->{
 
 			FactHandle handle=getSession().getFactHandle(obj);
@@ -301,9 +302,16 @@ public class DroolsRuleService {
 
 	
 	public void removeData(Object obj) {
-
-		FactHandle handler=handleMap.get(getEntityKey(obj));
-
+		String entityKey = getEntityKey(obj);
+		FactHandle handler=handleMap.get(entityKey);
+		if(handler!=null) {
+			getSession().delete(handler);
+			handleMap.remove(entityKey);
+		}
+	}
+	public void removeFact(Object obj) {
+		String entityKey = getEntityKey(obj);
+		FactHandle handler=handleMap.get(entityKey);
 		if(handler!=null) {
 			getSession().delete(handler);
 		}

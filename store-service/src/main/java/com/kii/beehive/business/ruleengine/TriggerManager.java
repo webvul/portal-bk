@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.kii.beehive.business.event.BusinessEventListenerService;
 import com.kii.beehive.business.manager.ThingTagManager;
 import com.kii.beehive.portal.event.EventListener;
@@ -31,14 +32,6 @@ import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerValidPeriod;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-
-import javax.annotation.PostConstruct;
-import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
 public class TriggerManager {
@@ -78,8 +71,11 @@ public class TriggerManager {
 	public void reinit(){
 
 		service.clear();
+		scheduleService.clearTrigger();
+
 		init();
 	}
+
 	@PostConstruct
 	public void init(){
 		List<TriggerRecord> recordList = triggerDao.getAllTrigger();
@@ -91,8 +87,6 @@ public class TriggerManager {
 			}catch(Exception e){
 				e.printStackTrace();
 			}
-
-
 		});
 
 		thingTagService.iteratorAllThingsStatus(s -> {
@@ -141,11 +135,12 @@ public class TriggerManager {
 
 		String triggerID=record.getId();
 
+		TriggerValidPeriod period=record.getPreparedCondition();
+		if(period!=null){
+			record.setRecordStatus(TriggerRecord.StatusType.disable);
+		}
+
 		try {
-
-			TriggerValidPeriod predicate=record.getPreparedCondition();
-
-			scheduleService.addManagerTask(triggerID,predicate);
 			if (record instanceof SimpleTriggerRecord) {
 				addSimpleToEngine((SimpleTriggerRecord) record);
 			} else if (record instanceof GroupTriggerRecord) {
@@ -166,9 +161,13 @@ public class TriggerManager {
 			} else {
 				throw new IllegalArgumentException("unsupport trigger type");
 			}
+
+			if(period!=null) {
+				scheduleService.addManagerTask(triggerID, period);
+			}
 		} catch (RuntimeException e) {
 
-			triggerDao.removeEntity(triggerID);
+			triggerDao.deleteTriggerRecord(triggerID);
 			throw e;
 
 		} catch (SchedulerException e) {
@@ -188,7 +187,12 @@ public class TriggerManager {
 				thingID = thingInfo.getFullKiiThingID();
 			}
 		}
-		service.createSimpleTrigger(thingID, record);
+		try {
+			service.createSimpleTrigger(thingID,record);
+		} catch (SchedulerException e) {
+			e.printStackTrace();
+			throw new IllegalArgumentException("preparedCondition schedule error :" + e.getMessage());
+		}
 	}
 
 
@@ -276,6 +280,8 @@ public class TriggerManager {
 		triggerDao.deleteTriggerRecord(triggerID);
 
 		service.removeTrigger(triggerID);
+
+		scheduleService.removeManagerTaskForSchedule(triggerID);
 
 		List<EventListener> eventListenerList = eventListenerDao.getEventListenerByTargetKey(triggerID);
 		for (EventListener eventListener : eventListenerList) {

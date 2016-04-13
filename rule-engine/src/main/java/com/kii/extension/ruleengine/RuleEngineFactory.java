@@ -1,14 +1,11 @@
 package com.kii.extension.ruleengine;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-
-import org.quartz.JobBuilder;
-import org.quartz.JobDataMap;
-import org.quartz.JobDetail;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.SchedulerFactory;
+import com.kii.extension.ruleengine.drools.CommandExec;
+import com.kii.extension.ruleengine.drools.DroolsRuleService;
+import com.kii.extension.ruleengine.schedule.ProxyJob;
+import com.kii.extension.ruleengine.schedule.StartTriggerJob;
+import com.kii.extension.ruleengine.schedule.StopTriggerJob;
+import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -16,11 +13,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.StreamUtils;
 
-import com.kii.extension.ruleengine.drools.CommandExec;
-import com.kii.extension.ruleengine.drools.DroolsRuleService;
-import com.kii.extension.ruleengine.schedule.ProxyJob;
-import com.kii.extension.ruleengine.schedule.StartTriggerJob;
-import com.kii.extension.ruleengine.schedule.StopTriggerJob;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 @Configuration
 public class RuleEngineFactory {
@@ -129,14 +123,14 @@ public class RuleEngineFactory {
 	private JobDetail getStartJob(){
 
 		return getJobBuilder(startJob.getClass())
-				.withIdentity(RuleEngineConfig.START_JOB, RuleEngineConfig.MANAGER_GROUP)
+				.withIdentity(RuleEngineConfig.START_JOB)
 				.build();
 	}
 
 	private JobDetail  getStopJob(){
 
 		return getJobBuilder(stopJob.getClass())
-				.withIdentity(RuleEngineConfig.STOP_JOB,RuleEngineConfig.MANAGER_GROUP)
+				.withIdentity(RuleEngineConfig.STOP_JOB)
 				.build();
 	}
 
