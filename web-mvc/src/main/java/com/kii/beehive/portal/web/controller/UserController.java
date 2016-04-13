@@ -56,7 +56,7 @@ public class UserController {
 			}
 		}
 
-		return  userManager.addUser(beehiveUser);
+		return  userManager.addUser(beehiveUser,user.getTeamName());
 
 	}
 
