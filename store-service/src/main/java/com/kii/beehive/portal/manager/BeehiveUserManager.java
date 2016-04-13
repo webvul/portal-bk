@@ -12,7 +12,7 @@ import org.springframework.util.StringUtils;
 import com.kii.beehive.business.service.KiiUserService;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.StringRandomTools;
-import com.kii.beehive.portal.exception.ObjectNotFoundException;
+import com.kii.beehive.portal.exception.UnauthorizedException;
 import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
 import com.kii.beehive.portal.jdbc.dao.TeamDao;
 import com.kii.beehive.portal.jdbc.dao.TeamGroupRelationDao;
@@ -118,8 +118,6 @@ public class BeehiveUserManager {
 		checkTeam(userID);
 		BeehiveUser user = userDao.getUserByID(userID);
 
-		//this.removeUserFromUserGroup(userID, user.getGroups());
-
 		groupUserRelationDao.delete(userID, null);
 
 		kiiUserService.disableBeehiveUser(user);
@@ -149,7 +147,7 @@ public class BeehiveUserManager {
 		if(AuthInfoStore.isTeamIDExist()){
 			TeamUserRelation tur = teamUserRelationDao.findByTeamIDAndUserID(AuthInfoStore.getTeamID(), userID);
 			if(tur == null){
-				throw new ObjectNotFoundException( "userID:" + userID + " Not Found");
+				throw new UnauthorizedException( "user " + userID + " not in curr team");
 			}
 		}
 	}
