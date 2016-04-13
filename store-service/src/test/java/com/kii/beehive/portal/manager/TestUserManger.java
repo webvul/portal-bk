@@ -34,7 +34,7 @@ public class TestUserManger  extends TestInit {
 		user.setUserName(name);
 		user.setCompany("kiicloud");
 
-		Map<String,Object> maps=userManager.addUser(user);
+		Map<String,Object> maps=userManager.addUser(user,null);
 
 		String oneTimeToken=authManager.activite(name, (String) maps.get("activityToken"));
 

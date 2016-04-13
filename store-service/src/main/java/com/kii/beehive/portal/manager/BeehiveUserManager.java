@@ -1,18 +1,24 @@
 package com.kii.beehive.portal.manager;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.kii.beehive.business.service.KiiUserService;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.StringRandomTools;
-import com.kii.beehive.portal.exception.ObjectNotFoundException;
+import com.kii.beehive.portal.exception.UnauthorizedException;
 import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
+import com.kii.beehive.portal.jdbc.dao.TeamDao;
+import com.kii.beehive.portal.jdbc.dao.TeamGroupRelationDao;
 import com.kii.beehive.portal.jdbc.dao.TeamUserRelationDao;
+import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
+import com.kii.beehive.portal.jdbc.entity.Team;
 import com.kii.beehive.portal.jdbc.entity.TeamUserRelation;
 import com.kii.beehive.portal.service.BeehiveUserDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
@@ -26,20 +32,28 @@ public class BeehiveUserManager {
 
 	@Autowired
 	protected TeamUserRelationDao teamUserRelationDao;
+
+	@Autowired
+	protected TeamGroupRelationDao teamGroupRelationDao;
+
 	@Autowired
 	private KiiUserService kiiUserService;
 
 	@Autowired
 	private BeehiveUserDao userDao;
 
+	@Autowired
+	private UserGroupDao userGroupDao;
 
 	@Autowired
 	private GroupUserRelationDao groupUserRelationDao;
 
 
+	@Autowired
+	private TeamDao teamDao;
 
 
-	public Map<String,Object>  addUser(BeehiveUser user) {
+	public Map<String,Object>  addUser(BeehiveUser user,String teamName) {
 
 
 		BeehiveUser existsUser=userDao.getUserByName(user.getUserName());
@@ -62,18 +76,47 @@ public class BeehiveUserManager {
 
 		Map<String,Object> result=new HashMap<>();
 
+		if(!StringUtils.isEmpty(teamName)){
+			Long teamID=addTeam(teamName,user.getId());
+			result.put("teamID",teamID);
+		}
+
 		result.put("userID",user.getId());
 		result.put("activityToken",token);
+
 
 		return result;
 	}
 
 
+	private Long addTeam(String teamName,String userID){
+
+			List<Team> teamList = teamDao.findTeamByTeamName(teamName);
+
+			Long teamID=null;
+			if(teamList.isEmpty()){
+				Team t = new Team();
+				t.setName(teamName);
+				teamID = teamDao.saveOrUpdate(t);
+				TeamUserRelation tur = new TeamUserRelation(teamID, userID, 1);
+				teamUserRelationDao.saveOrUpdate(tur);
+
+			}else if(teamList.size()==1){// user add to team
+				teamID = teamList.get(0).getId();
+				TeamUserRelation tur = new TeamUserRelation(teamID, userID, 0);
+				teamUserRelationDao.saveOrUpdate(tur);
+			}else{
+				throw new IllegalArgumentException();
+			}
+			return teamID;
+
+	}
+
+
+
 	public void deleteUser(String userID) {
 		checkTeam(userID);
 		BeehiveUser user = userDao.getUserByID(userID);
-
-		//this.removeUserFromUserGroup(userID, user.getGroups());
 
 		groupUserRelationDao.delete(userID, null);
 
@@ -104,7 +147,7 @@ public class BeehiveUserManager {
 		if(AuthInfoStore.isTeamIDExist()){
 			TeamUserRelation tur = teamUserRelationDao.findByTeamIDAndUserID(AuthInfoStore.getTeamID(), userID);
 			if(tur == null){
-				throw new ObjectNotFoundException( "userID:" + userID + " Not Found");
+				throw new UnauthorizedException( "user " + userID + " not in curr team");
 			}
 		}
 	}

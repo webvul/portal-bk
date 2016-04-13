@@ -10,10 +10,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.kii.extension.ruleengine.drools.entity.MemberCountResult;
+import com.kii.extension.ruleengine.drools.entity.Trigger;
 import com.kii.extension.ruleengine.drools.entity.TriggerType;
 import com.kii.extension.ruleengine.store.trigger.TriggerGroupPolicyType;
 import com.kii.extension.ruleengine.store.trigger.WhenType;
-import com.kii.extension.ruleengine.drools.entity.Trigger;
 
 public class TestGroupTrigger extends InitTest {
 
