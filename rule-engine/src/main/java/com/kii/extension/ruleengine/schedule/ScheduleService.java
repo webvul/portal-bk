@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.quartz.JobDataMap;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
@@ -26,8 +27,8 @@ import com.kii.extension.ruleengine.store.trigger.TriggerValidPeriod;
 
 @Component
 public class ScheduleService {
-	
-	
+
+
 	public static final String TRIGGER_ID = "triggerID";
 	private static final String STOP_PRE = "Stop-";
 	private static final String START_PRE = "Start-";
@@ -45,10 +46,10 @@ public class ScheduleService {
 			throw new IllegalArgumentException(e);
 		}
 	}
-	
+
 	@PreDestroy
 	public void stop(){
-		
+
 		try {
 			scheduler.shutdown();
 		} catch (SchedulerException e) {
@@ -95,7 +96,7 @@ public class ScheduleService {
 		return triggerMap;
 	}
 
-	
+
 
 	/**
 	 * for reInit
@@ -133,10 +134,10 @@ public class ScheduleService {
 
 	public void addManagerTaskForSchedule(String triggerID, SchedulePeriod period) throws SchedulerException {
 
-
+		JobDataMap jobDataMap = new JobDataMap(){{put(TRIGGER_ID, triggerID);}};
 		Trigger triggerStart= TriggerBuilder.newTrigger()
 				.withIdentity(TriggerKey.triggerKey(START_PRE+triggerID))
-				.usingJobData(TRIGGER_ID,triggerID)
+				.usingJobData(jobDataMap)
 				.forJob(RuleEngineConfig.START_JOB)
 				.withSchedule(cronSchedule(period.getStartCron()))
 				.build();
@@ -147,7 +148,7 @@ public class ScheduleService {
 
 		Trigger triggerEnd= TriggerBuilder.newTrigger()
 				.withIdentity(TriggerKey.triggerKey(STOP_PRE+triggerID))
-				.usingJobData(TRIGGER_ID,triggerID)
+				.usingJobData(jobDataMap)
 				.forJob(RuleEngineConfig.STOP_JOB)
 				.withSchedule(cronSchedule(period.getEndCron()))
 				.build();
@@ -168,11 +169,11 @@ public class ScheduleService {
 	public void addManagerTaskForSimple(String triggerID, SimplePeriod period) throws SchedulerException {
 
 		long now=System.currentTimeMillis();
-
+		JobDataMap jobDataMap = new JobDataMap(){{put(TRIGGER_ID, triggerID);}};
 		if(period.getStartTime()>=now){
 			Trigger triggerStart = TriggerBuilder.newTrigger()
 					.withIdentity(TriggerKey.triggerKey(START_PRE+triggerID))
-					.usingJobData(TRIGGER_ID, triggerID)
+					.usingJobData(jobDataMap)
 					.forJob(RuleEngineConfig.START_JOB)
 					.startAt(new Date(period.getStartTime()))
 					.build();
@@ -180,13 +181,13 @@ public class ScheduleService {
 
 			scheduler.scheduleJob(triggerStart);
 		}else if(period.getEndTime()>=now){
-			scheduler.triggerJob(RuleEngineConfig.START_JOB);
+			scheduler.triggerJob(RuleEngineConfig.START_JOB, jobDataMap);
 		}
 
 		if(period.getEndTime()>=now) {
 			Trigger triggerEnd = TriggerBuilder.newTrigger()
 					.withIdentity(TriggerKey.triggerKey(STOP_PRE+triggerID))
-					.usingJobData(TRIGGER_ID, triggerID)
+					.usingJobData(jobDataMap)
 					.forJob(RuleEngineConfig.STOP_JOB)
 					.startAt(new Date(period.getEndTime()))
 					.build();
@@ -194,11 +195,11 @@ public class ScheduleService {
 
 			scheduler.scheduleJob(triggerEnd);
 		}else{
-			scheduler.triggerJob(RuleEngineConfig.STOP_JOB);
+			scheduler.triggerJob(RuleEngineConfig.STOP_JOB, jobDataMap);
 		}
 	}
 
-	
+
 	public void addManagerTask(String triggerID,TriggerValidPeriod period) throws SchedulerException {
 
 
