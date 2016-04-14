@@ -2,7 +2,6 @@ package com.kii.extension.ruleengine.schedule;
 
 import static org.quartz.CronScheduleBuilder.cronSchedule;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import java.util.Date;
@@ -10,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.quartz.JobDataMap;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
@@ -35,8 +35,8 @@ public class ScheduleService {
 	@Autowired
 	private Scheduler scheduler;
 
-	@PostConstruct
-	public void init(){
+//	@PostConstruct
+	public void startSchedule(){
 
 		try {
 			scheduler.start();
@@ -159,9 +159,14 @@ public class ScheduleService {
 
 		//fire miss trigger by hand
 		if(nextStart.getTime()>=nextStop.getTime()){
-			scheduler.triggerJob(RuleEngineConfig.START_JOB);
+			JobDataMap  dataMap=scheduler.getJobDetail(RuleEngineConfig.START_JOB).getJobDataMap();
+			dataMap.put(TRIGGER_ID, triggerID);
+			scheduler.triggerJob(RuleEngineConfig.START_JOB,dataMap);
 		}else{
-			scheduler.triggerJob(RuleEngineConfig.STOP_JOB);
+			JobDataMap  dataMap=scheduler.getJobDetail(RuleEngineConfig.STOP_JOB).getJobDataMap();
+			dataMap.put(TRIGGER_ID, triggerID);
+
+			scheduler.triggerJob(RuleEngineConfig.STOP_JOB,dataMap);
 		}
 	}
 
@@ -186,7 +191,9 @@ public class ScheduleService {
 			scheduler.scheduleJob(triggerStart);
 		}else if(period.getEndTime()>=now){
 			//fire miss start job by hand
-			scheduler.triggerJob(RuleEngineConfig.START_JOB);
+			JobDataMap  dataMap=scheduler.getJobDetail(RuleEngineConfig.START_JOB).getJobDataMap();
+			dataMap.put(TRIGGER_ID, triggerID);
+			scheduler.triggerJob(RuleEngineConfig.START_JOB,dataMap);
 		}
 
 

@@ -1,0 +1,12 @@
+
+
+rule "${triggerID} unit {$unitName} custom segment:group"
+when
+    UnitSource ( $unitName:unitName, $triggerID:triggerID, $things:things , ( unitName=="${unitName}"  &&  triggerID=="${triggerID}"   ) )
+	accumulate( ThingStatusInRule($thingID:thingID memberOf  $things,${express} );
+                              $result : count($thingID);
+	)
+    then
+		insertLogical(new UnitResult($triggerID,$unitName,$result));
+end
+

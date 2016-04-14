@@ -11,7 +11,7 @@ import com.kii.extension.ruleengine.drools.DroolsTriggerService;
 @Component
 public class StopTriggerJob implements JobInSpring {
 
-	private Logger log= LoggerFactory.getLogger(StartTriggerJob.class);
+	private Logger log= LoggerFactory.getLogger(StopTriggerJob.class);
 
 	@Autowired
 	private DroolsTriggerService bean;

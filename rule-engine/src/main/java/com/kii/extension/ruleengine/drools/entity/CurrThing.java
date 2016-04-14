@@ -4,6 +4,16 @@ public class CurrThing {
 
 	private String thingID;
 
+	private boolean isInit=false;
+
+	public boolean isInit() {
+		return isInit;
+	}
+
+	public void setInit(boolean init) {
+		isInit = init;
+	}
+
 	public String getThing() {
 		return thingID;
 	}

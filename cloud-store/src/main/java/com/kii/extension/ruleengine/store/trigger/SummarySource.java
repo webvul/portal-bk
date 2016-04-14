@@ -5,11 +5,11 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class SummarySource implements  SourceElement{
+public class SummarySource  {
 
 	private List<SummaryExpress> expressList=new ArrayList<>();
 
-	private TriggerSource  source;
+	private TriggerSource source;
 
 	public List<SummaryExpress> getExpressList() {
 		return expressList;
@@ -30,7 +30,7 @@ public class SummarySource implements  SourceElement{
 
 
 	@JsonIgnore
-	public void setSourceSelector(TagSelector  selector){
+	public void setSourceSelector(TagSelector selector){
 		TriggerSource source=new TriggerSource();
 		source.setSelector(selector);
 		this.source=source;
@@ -40,10 +40,5 @@ public class SummarySource implements  SourceElement{
 		this.source = source;
 	}
 
-
-	@Override
-	public SourceElementType getType() {
-		return SourceElementType.summary;
-	}
 
 }

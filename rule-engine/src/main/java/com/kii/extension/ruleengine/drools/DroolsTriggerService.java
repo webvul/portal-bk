@@ -1,6 +1,5 @@
 package com.kii.extension.ruleengine.drools;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +15,6 @@ import com.kii.extension.ruleengine.drools.entity.Summary;
 import com.kii.extension.ruleengine.drools.entity.SummaryValueMap;
 import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
 import com.kii.extension.ruleengine.drools.entity.Trigger;
-import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
 @Component
 public class DroolsTriggerService {
@@ -149,6 +147,7 @@ public class DroolsTriggerService {
 	public void removeTrigger(String triggerID){
 
 
+
 		Trigger trigger=triggerMap.get(triggerID);
 
 		getService(trigger).removeData(trigger);
@@ -162,10 +161,12 @@ public class DroolsTriggerService {
 
 	public void enableTrigger(String triggerID) {
 
+
 		Trigger trigger=triggerMap.get(triggerID);
 
 		trigger.setEnable(true);
 
+		getService(trigger).rejectCurrThingID();
 		getService(trigger).addOrUpdateData(trigger);
 
 	}
@@ -179,29 +180,24 @@ public class DroolsTriggerService {
 		getService(trigger).addOrUpdateData(trigger);
 	}
 
-	public void initThingStatus(String fullThingID,ThingStatus status,Date date){
+	public void setInitSign(boolean sign){
+		cloudService.setInitSign(sign);
+		streamService.setInitSign(sign);
+	}
 
-		ThingStatusInRule newStatus=new ThingStatusInRule();
-		newStatus.setThingID(fullThingID);
-		newStatus.setValues(status.getFields());
-		newStatus.setCreateAt(date);
+	public void initThingStatus(ThingStatusInRule newStatus){
 
 		cloudService.addOrUpdateData(newStatus);
 		streamService.addOrUpdateData(newStatus);
 	}
 
 
-	public void addThingStatus(String fullThingID,ThingStatus status,Date date){
-
-		ThingStatusInRule newStatus=new ThingStatusInRule();
-		newStatus.setThingID(fullThingID);
-		newStatus.setValues(status.getFields());
-		newStatus.setCreateAt(date);
+	public void addThingStatus(ThingStatusInRule newStatus){
 
 		cloudService.addOrUpdateData(newStatus);
 		streamService.addOrUpdateData(newStatus);
 
-		setCurrThingID(fullThingID);
+		setCurrThingID(newStatus.getThingID());
 
 		fireCondition();
 	}

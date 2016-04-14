@@ -1,6 +1,14 @@
 package com.kii.extension.ruleengine.drools;
 
-import com.kii.extension.ruleengine.drools.entity.CurrThing;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.apache.commons.codec.Charsets;
 import org.kie.api.KieBase;
 import org.kie.api.KieBaseConfiguration;
@@ -21,8 +29,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import com.kii.extension.ruleengine.drools.entity.CurrThing;
 
 @Component
 @Scope(scopeName= ConfigurableBeanFactory.SCOPE_PROTOTYPE)
@@ -48,6 +55,12 @@ public class DroolsRuleService {
 
 	public void setCurrThingID(String thingID){
 		this.currThing.setThing(thingID);
+
+		kieSession.update(currThingHandler,currThing);
+	}
+
+	public void setInitSign(boolean sign){
+		this.currThing.setInit(sign);
 
 		kieSession.update(currThingHandler,currThing);
 	}

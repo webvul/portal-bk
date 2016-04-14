@@ -19,7 +19,7 @@ import com.kii.extension.ruleengine.drools.entity.TriggerType;
 import com.kii.extension.ruleengine.store.trigger.Condition;
 import com.kii.extension.ruleengine.store.trigger.CronPrefix;
 import com.kii.extension.ruleengine.store.trigger.IntervalPrefix;
-import com.kii.extension.ruleengine.store.trigger.MultipleSrcTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.multiple.MultipleSrcTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.SchedulePrefix;
 import com.kii.extension.ruleengine.store.trigger.SummaryExpress;
@@ -54,40 +54,61 @@ public class RuleGeneral {
 		}
 	}
 
+	private String loadUnit(String name)  {
 
-	//TODO:not finish
+		name=StringUtils.capitalize(name);
+		try {
+			return StreamUtils.copyToString(
+					loader.getResource("classpath:com/kii/extension/ruleengine/template/unit" + name + ".template").getInputStream(),
+					StandardCharsets.UTF_8);
+		}catch(IOException e){
+			throw new IllegalArgumentException(e);
+		}
+	}
+
+
 	public String generMultipleDrlConfig(MultipleSrcTriggerRecord  record) {
 
-		String unitTemplate = loadTemplate("unitCondition");
+
+		StringBuilder sb=new StringBuilder();
 
 		String fullTemplate = loadTemplate("multiple");
 
-		Map<String, Object> params = new HashMap<>();
+		Map<String, String> params = new HashMap<>();
 		params.put("triggerID", record.getId());
+		params.put("express",generExpress(record.getPredicate()));
+
+		String multipleDrl=StrTemplate.generByMap(fullTemplate,params);
+
+		sb.append(multipleDrl);
 
 		record.getSummarySource().forEach((k, v) -> {
 
-			/*
-			rule "${triggerID} unit {$unitName} custom segment:unit"
-when
-    UnitSource ( $unitName:unitName=="${unitName}", $triggerID:triggerID=="${triggerID}",$thingID:thingID  )
-    CurrThing(thing==$thingID ) from currThing
-    ThingStatusInRule( thingID == $thingID,${express}  )
-then
-	insertLogical(new UnitResult($triggerID,$unitName));
-end
-			 */
+			switch(v.getType()){
 
+				case thing:
+					break;
+				case group:
+					String groupTemplate = loadUnit("group");
 
-			RuleEnginePredicate  predicate=new RuleEnginePredicate();
-			predicate.setCondition(v.getCondition());
-			predicate.setExpress(v.getExpress());
-			params.put("express",generExpress(predicate));
+					Map<String, String> groups = new HashMap<>();
+					groups.put("triggerID", record.getId());
+					groups.put("express",generExpress(record.getPredicate()));
+					groups.put("unitName",k);
+
+					String groupUnit=StrTemplate.generByMap(groupTemplate,groups);
+					sb.append(groupUnit);
+
+					break;
+				case summary:
+					break;
+				default:
+					throw new IllegalArgumentException();
+			}
 
 		});
 
-		return null;
-
+		return sb.toString();
 	}
 
 

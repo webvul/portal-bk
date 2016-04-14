@@ -65,14 +65,16 @@ public class RuleEngineConsole {
 
 				}
 
-				if(cmd.equals("initStatus")){
-					String params=arrays[2];
-
-					ThingStatus status=getStatus(params);
-
-					engine.initThingStatus(arrays[1],status,new Date());
-
-				}
+//				if(cmd.equals("initStatus")){
+//					String params=arrays[2];
+//
+//					ThingStatus status=getStatus(params);
+//
+//
+//
+//					engine.initThingStatus(arrays[1],status,new Date());
+//
+//				}
 
 
 				if(cmd.equals("enable")){

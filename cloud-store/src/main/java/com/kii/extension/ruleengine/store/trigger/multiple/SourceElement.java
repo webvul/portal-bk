@@ -1,8 +1,10 @@
-package com.kii.extension.ruleengine.store.trigger;
+package com.kii.extension.ruleengine.store.trigger.multiple;
 
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
+import com.kii.extension.ruleengine.store.trigger.SummarySource;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME,
 		include = JsonTypeInfo.As.EXISTING_PROPERTY,

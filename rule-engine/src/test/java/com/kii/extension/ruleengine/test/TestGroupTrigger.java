@@ -9,7 +9,7 @@ import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.kii.extension.ruleengine.drools.entity.MemberCountResult;
+//import com.kii.extension.ruleengine.drools.entity.MemberCountResult;
 import com.kii.extension.ruleengine.drools.entity.Trigger;
 import com.kii.extension.ruleengine.drools.entity.TriggerType;
 import com.kii.extension.ruleengine.store.trigger.TriggerGroupPolicyType;
@@ -102,10 +102,10 @@ public class TestGroupTrigger extends InitTest {
 
 		ruleLoader.addOrUpdateData(trigger);
 
-		MemberCountResult result=new MemberCountResult();
-		result.setTriggerID(triggerID);
-
-		ruleLoader.addOrUpdateData(result);
+//		MemberCountResult result=new MemberCountResult();
+//		result.setTriggerID(triggerID);
+//
+//		ruleLoader.addOrUpdateData(result);
 
 
 		for(int i=0;i<5;i++){

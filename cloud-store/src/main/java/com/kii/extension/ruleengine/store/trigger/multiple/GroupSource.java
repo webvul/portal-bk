@@ -1,11 +1,12 @@
-package com.kii.extension.ruleengine.store.trigger;
+package com.kii.extension.ruleengine.store.trigger.multiple;
 
-public class GroupSource implements  SourceElement{
+import com.kii.extension.ruleengine.store.trigger.Condition;
+import com.kii.extension.ruleengine.store.trigger.TriggerSource;
+
+public class GroupSource implements SourceElement {
 
 
-	private TriggerSource  source;
-
-	private TriggerGroupPolicy  policy;
+	private TriggerSource source;
 
 	private String  express;
 
@@ -17,14 +18,6 @@ public class GroupSource implements  SourceElement{
 
 	public void setSource(TriggerSource source) {
 		this.source = source;
-	}
-
-	public TriggerGroupPolicy getPolicy() {
-		return policy;
-	}
-
-	public void setPolicy(TriggerGroupPolicy policy) {
-		this.policy = policy;
 	}
 
 	public String getExpress() {

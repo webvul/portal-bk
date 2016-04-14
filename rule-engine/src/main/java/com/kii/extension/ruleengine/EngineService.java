@@ -3,9 +3,9 @@ package com.kii.extension.ruleengine;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,15 +15,16 @@ import org.springframework.util.StringUtils;
 import com.kii.extension.ruleengine.drools.DroolsTriggerService;
 import com.kii.extension.ruleengine.drools.RuleGeneral;
 import com.kii.extension.ruleengine.drools.entity.Summary;
+import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
 import com.kii.extension.ruleengine.drools.entity.Trigger;
 import com.kii.extension.ruleengine.drools.entity.TriggerType;
 import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.MultipleSrcTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerGroupPolicy;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.multiple.MultipleSrcTriggerRecord;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
 @Component
@@ -37,7 +38,7 @@ public class EngineService {
 	private RuleGeneral  ruleGeneral;
 
 
-	private Set<String>  scheduleSet=new ConcurrentSkipListSet<>();
+//	private Set<String>  scheduleSet=new ConcurrentSkipListSet<>();
 
 
 	//TODO:need been finish
@@ -106,10 +107,7 @@ public class EngineService {
 
 		});
 
-//		if(record.getPredicate().getSchedule()!=null) {
-//			scheduleSet.add(record.getId());
 		droolsTriggerService.fireCondition();
-//		}
 
 	}
 
@@ -139,10 +137,7 @@ public class EngineService {
 
 		droolsTriggerService.addTrigger(trigger,rule);
 
-//		if(predicate.getSchedule()!=null) {
-//			scheduleSet.add(record.getId());
-			droolsTriggerService.fireCondition();
-//		}
+		droolsTriggerService.fireCondition();
 
 	}
 
@@ -170,16 +165,10 @@ public class EngineService {
 
 		droolsTriggerService.addTrigger(trigger,rule);
 
-//		if(record.getPredicate().getSchedule()!=null) {
-//			scheduleSet.add(record.getId());
 		droolsTriggerService.fireCondition();
-//		}
 
 	}
 
-//	public void finishInit(){
-//		droolsTriggerService.fireCondition();
-//	}
 
 	public void changeThingsInTrigger(String triggerID,Set<String> newThings){
 
@@ -194,15 +183,58 @@ public class EngineService {
 
 	}
 
+	public void initThingStatus(List<ThingInfo> thingInfos) {
 
-	public void initThingStatus(String thingID,ThingStatus status,Date date) {
+		droolsTriggerService.setInitSign(true);
 
-		droolsTriggerService.initThingStatus(thingID,status,date);
+		thingInfos.forEach(th->droolsTriggerService.initThingStatus(th.getThingStatusInRule()));
+
+		droolsTriggerService.fireCondition();
+		droolsTriggerService.setInitSign(false);
 	}
 
 	public void updateThingStatus(String thingID,ThingStatus status,Date time) {
 
-		droolsTriggerService.addThingStatus(thingID,status,time);
+
+		ThingStatusInRule newStatus=new ThingStatusInRule();
+		newStatus.setThingID(thingID);
+		newStatus.setValues(status.getFields());
+		newStatus.setCreateAt(time);
+
+		droolsTriggerService.addThingStatus(newStatus);
+	}
+
+
+	public static   class ThingInfo{
+
+		private String thingID;
+
+		private ThingStatus status;
+
+		private Date date;
+
+		public ThingStatusInRule getThingStatusInRule(){
+			ThingStatusInRule newStatus=new ThingStatusInRule();
+
+			newStatus.setThingID(thingID);
+			newStatus.setValues(status.getFields());
+			newStatus.setCreateAt(date);
+
+			return newStatus;
+		}
+
+		public void setThingID(String thingID) {
+			this.thingID = thingID;
+		}
+
+
+		public void setStatus(ThingStatus status) {
+			this.status = status;
+		}
+
+		public void setDate(Date date) {
+			this.date = date;
+		}
 	}
 	
 	public void disableTrigger(String triggerID) {
@@ -212,13 +244,14 @@ public class EngineService {
 	}
 
 
+
+
 	public void enableTrigger(String triggerID) {
+
 
 		droolsTriggerService.enableTrigger(triggerID);
 
-		if(scheduleSet.contains(triggerID)) {
-			droolsTriggerService.fireCondition();
-		}
+		droolsTriggerService.fireCondition();
 
 	}
 

@@ -9,28 +9,19 @@ public class MultipleValueMap {
 
 	private String triggerID;
 
-	private Map<String,Boolean> booleanMap=new HashMap<>();
+	private Map<String,Object> valueMap=new HashMap<>();
 
+	public void setSummaryMap(SummaryValueMap map){
 
-	public boolean getValue(String name){
-		return booleanMap.getOrDefault(name,false);
+		valueMap.putAll(map.getValues());
 	}
 
-	public void setValue(String name){
-		booleanMap.put(name,true);
+	public void setUnitValue(UnitResult result){
+		valueMap.put(result.getUnitName(),result.getValue());
 	}
 
-
-	public Map<String, Boolean> getValues() {
-		return booleanMap;
-	}
-
-	public void setValues(Map<String, Boolean> booleanMap) {
-		this.booleanMap = booleanMap;
-	}
-
-	public void clear(){
-		booleanMap.clear();
+	public Map<String,Object> getValues(){
+		return valueMap;
 	}
 
 	public String getTriggerID() {
@@ -45,7 +36,7 @@ public class MultipleValueMap {
 	public String toString() {
 		return "MultipleValueMap{" +
 				"triggerID='" + triggerID + '\'' +
-				", booleanMap=" + booleanMap +
+				", valueMap=" + valueMap +
 				'}';
 	}
 
@@ -54,12 +45,11 @@ public class MultipleValueMap {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		MultipleValueMap that = (MultipleValueMap) o;
-		return Objects.equal(triggerID, that.triggerID) &&
-				Objects.equal(booleanMap, that.booleanMap);
+		return Objects.equal(triggerID, that.triggerID);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(triggerID, booleanMap);
+		return Objects.hashCode(triggerID);
 	}
 }

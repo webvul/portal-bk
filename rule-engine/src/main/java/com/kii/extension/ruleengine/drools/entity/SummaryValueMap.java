@@ -23,10 +23,15 @@ public class SummaryValueMap {
 		numberMap.put(field,value);
 	}
 
+	public void setSummaryResult(SummaryResult result){
+
+		numberMap.put(result.getSummaryField(),result.getValue());
+
+	}
+
 	public void setValues(Map<String, Number> numberMap) {
 		this.numberMap = numberMap;
 	}
-
 
 
 	public String getTriggerID() {

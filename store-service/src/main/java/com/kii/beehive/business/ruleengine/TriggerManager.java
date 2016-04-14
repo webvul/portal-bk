@@ -88,25 +88,36 @@ public class TriggerManager {
 				e.printStackTrace();
 			}
 		});
+		scheduleService.startSchedule();
+
+		List<EngineService.ThingInfo>  initThings=new ArrayList<>();
 
 		thingTagService.iteratorAllThingsStatus(s -> {
-
 			if (StringUtils.isEmpty(s.getStatus())) {
 				return;
 			}
+			ThingStatus status=null;
 			try {
-				ThingStatus status = mapper.readValue(s.getStatus(), ThingStatus.class);
-				String id = s.getFullKiiThingID();
-
-				service.initThingStatus(id, status, s.getModifyDate());
+				status=mapper.readValue(s.getStatus(), ThingStatus.class);
 			} catch (IOException e) {
 				e.printStackTrace();
+				return;
 			}
+			EngineService.ThingInfo info=new EngineService.ThingInfo();
+			info.setDate(s.getModifyDate());
+			info.setStatus(status);
+			info.setThingID(s.getFullKiiThingID());
+
+			initThings.add(info);
+
 		});
 
+		service.initThingStatus(initThings);
 
 
 	}
+
+
 
 	public Map<String,Object> getRuleEngingDump() {
 

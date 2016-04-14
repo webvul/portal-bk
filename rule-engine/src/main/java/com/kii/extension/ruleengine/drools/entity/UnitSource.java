@@ -1,5 +1,8 @@
 package com.kii.extension.ruleengine.drools.entity;
 
+import java.util.Collection;
+import java.util.HashSet;
+
 import com.google.common.base.Objects;
 
 public class UnitSource {
@@ -8,7 +11,20 @@ public class UnitSource {
 
 	private String unitName;
 
-	private String thingID;
+
+	private String type;
+
+
+	private Collection<String> things=new HashSet<>();
+
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
 
 	public String getTriggerID() {
 		return triggerID;
@@ -26,12 +42,12 @@ public class UnitSource {
 		this.unitName = unitName;
 	}
 
-	public String getThingID() {
-		return thingID;
+	public Collection<String> getThings() {
+		return things;
 	}
 
-	public void setThingID(String thingID) {
-		this.thingID = thingID;
+	public void setThings(Collection<String> things) {
+		this.things = things;
 	}
 
 	@Override
@@ -40,13 +56,12 @@ public class UnitSource {
 		if (o == null || getClass() != o.getClass()) return false;
 		UnitSource that = (UnitSource) o;
 		return Objects.equal(triggerID, that.triggerID) &&
-				Objects.equal(unitName, that.unitName) &&
-				Objects.equal(thingID, that.thingID);
+				Objects.equal(unitName, that.unitName);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(triggerID, unitName, thingID);
+		return Objects.hashCode(triggerID, unitName);
 	}
 
 	@Override
@@ -54,7 +69,7 @@ public class UnitSource {
 		return "UnitSource{" +
 				"triggerID='" + triggerID + '\'' +
 				", unitName='" + unitName + '\'' +
-				", thingID='" + thingID + '\'' +
+				", things='" + things + '\'' +
 				'}';
 	}
 }
