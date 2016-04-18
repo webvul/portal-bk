@@ -10,17 +10,15 @@ public class BeehiveUser extends  PortalEntity {
 
 	private String kiiUserID;
 
-//	private String kiiLoginName;
-
 	private String userName;
 
 	private String phone;
 
 	private String mail;
 
-//	private String role;
+	private String displayName;
 
-	private String company;
+	private String role;
 
 	private String activityToken;
 
@@ -85,21 +83,21 @@ public class BeehiveUser extends  PortalEntity {
 		this.mail = mail;
 	}
 
-//	public String getRole() {
-//		return role;
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
+	}
+
+//	public String getCompany() {
+//		return company;
 //	}
 //
-//	public void setRole(String role) {
-//		this.role = role;
+//	public void setCompany(String company) {
+//		this.company = company;
 //	}
-
-	public String getCompany() {
-		return company;
-	}
-
-	public void setCompany(String company) {
-		this.company = company;
-	}
 
 //	public String getKiiLoginName() {
 //		return kiiLoginName;
@@ -109,6 +107,14 @@ public class BeehiveUser extends  PortalEntity {
 //		this.kiiLoginName = kiiLoginName;
 //	}
 
+
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
 
 	@JsonIgnore
 	public String getDefaultPassword() {

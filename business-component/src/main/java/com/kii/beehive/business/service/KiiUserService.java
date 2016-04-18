@@ -55,7 +55,7 @@ public class KiiUserService {
 
 		KiiUser user=new KiiUser();
 
-		user.setDisplayName(beehiveUser.getUserName());
+		user.setDisplayName(beehiveUser.getDisplayName());
 
 		user.setLoginName(beehiveUser.getId());
 

@@ -36,8 +36,6 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
      */
 	private static final String USER_ID = "211102";
 
-//	private  static final String AUTH_HEADER = "Authorization";
-
 
 	private Logger log= LoggerFactory.getLogger(AuthInterceptor.class);
 
@@ -156,7 +154,9 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
 			}else {
 
+
 				AuthInfo authInfo = authManager.validateAndBindUserToken(token);
+
 				list.set(1, authInfo.getUserID());
 
 				AuthInfoStore.setAuthInfo(authInfo.getUserID());

@@ -1,0 +1,61 @@
+{
+  "tag": {
+    "displayName":"标签管理",
+    "url":"/tags/*",
+
+    "submodule": {
+      "CreateTag": {
+        "method": "POST",
+        "url": "/tags/custom"
+      },
+      "DeleteTag": {
+        "method": "DELETE",
+        "url": "/tags/custom/*"
+      },
+      "SearchTag": {
+        "method": "GET",
+        "url": "/tags/search*"
+      },
+    }
+  },
+  "thing": {
+    "displayName":"设备管理",
+    "url":"/things/*",
+    "submodule": {
+      "createThing": {
+        "method": "POST",
+        "url": "/things"
+      },
+      "DeleteThing": {
+        "method": "DELETE",
+        "url": "things/*"
+      },
+      "SearchThing": {
+        "method": "GET",
+        "url": "/things/search*"
+      },
+      "SearchThingType": {
+        "method": "GET",
+        "url": "/things/types/*"
+      },
+      "SearchThingID": {
+        "method": "GET",
+        "url": "/things/*"
+      },
+      "DeleteThing": {
+        "method": "DELETE",
+        "url": "things/*"
+      }
+    }
+  },
+  "user": {
+    "displayName":"用户管理",
+    "url":"/users/*",
+    "submodule": {
+      "CreateUser": {
+        "method": "POST",
+        "url": "/users"
+      }
+    }
+  }
+}

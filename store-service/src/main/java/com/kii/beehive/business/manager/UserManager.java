@@ -20,9 +20,7 @@ import com.kii.beehive.portal.exception.DuplicateException;
 import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.beehive.portal.exception.InvalidAuthException;
 import com.kii.beehive.portal.exception.UserNotExistException;
-import com.kii.beehive.portal.jdbc.dao.GroupPermissionRelationDao;
 import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
-import com.kii.beehive.portal.jdbc.dao.PermissionDao;
 import com.kii.beehive.portal.jdbc.dao.TeamDao;
 import com.kii.beehive.portal.jdbc.dao.TeamGroupRelationDao;
 import com.kii.beehive.portal.jdbc.dao.TeamUserRelationDao;
@@ -51,12 +49,12 @@ public class UserManager {
 	@Autowired
 	private GroupUserRelationDao groupUserRelationDao;
 
-	@Autowired
-	private GroupPermissionRelationDao groupPermissionRelationDao;
+//	@Autowired
+//	private GroupPermissionRelationDao groupPermissionRelationDao;
 
 
-	@Autowired
-	protected PermissionDao permissionDao;
+//	@Autowired
+//	protected PermissionDao permissionDao;
 
 	@Autowired
 	private BeehiveUserDao userDao;

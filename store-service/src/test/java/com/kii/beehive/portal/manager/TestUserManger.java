@@ -32,7 +32,7 @@ public class TestUserManger  extends TestInit {
 
 		String name="testForUserManger";
 		user.setUserName(name);
-		user.setCompany("kiicloud");
+//		user.setCompany("kiicloud");
 
 		Map<String,Object> maps=userManager.addUser(user,null);
 
