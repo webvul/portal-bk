@@ -9,7 +9,7 @@ import com.kii.extension.sdk.service.AbstractDataAccess;
 
 @BindAppByName(appName="portal",appBindSource="propAppBindTool")
 @Component
-public class PermissionDao extends AbstractDataAccess<RuleDetail> {
+public class RuleDetailDao extends AbstractDataAccess<RuleDetail> {
 
 
 
@@ -21,7 +21,7 @@ public class PermissionDao extends AbstractDataAccess<RuleDetail> {
 
 	@Override
 	protected BucketInfo getBucketInfo() {
-		return new BucketInfo("permission");
+		return new BucketInfo("RuleDetail");
 	}
 
 

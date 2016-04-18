@@ -24,7 +24,7 @@ import com.kii.beehive.portal.jdbc.dao.TeamUserRelationDao;
 import com.kii.beehive.portal.jdbc.entity.AuthInfo;
 import com.kii.beehive.portal.jdbc.entity.Team;
 import com.kii.beehive.portal.service.BeehiveUserDao;
-import com.kii.beehive.portal.service.PermissionDao;
+import com.kii.beehive.portal.service.RuleDetailDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.extension.sdk.context.UserTokenBindTool;
 import com.kii.extension.sdk.entity.KiiUser;
@@ -55,7 +55,7 @@ public class AuthManager {
 	protected TeamUserRelationDao teamUserRelationDao;
 
 	@Autowired
-	private PermissionDao   permissionDao;
+	private RuleDetailDao permissionDao;
 
 
 
