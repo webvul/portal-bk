@@ -22,7 +22,7 @@ when
 	$trigger:Trigger(type ==TriggerType.summary,$triggerID:triggerID)
 	$summary:Summary(triggerID==$triggerID ,$things:things, funName=="sum" )
 	CurrThing(thing memberOf $things|| init == true)
-	accumulate( ThingStatusInRule(thingID memberOf $things , $status:values);
+	accumulate( ThingStatusInRule(thingID memberOf $things , values.get($summary.getFieldName()) != null , $status:values);
                     $sum : sum($status.get($summary.getFieldName()))
                   )
 then
