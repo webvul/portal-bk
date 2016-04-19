@@ -1,24 +1,12 @@
 package com.kii.extension.ruleengine;
 
-import java.util.List;
-
+import com.kii.extension.ruleengine.store.trigger.*;
+import com.kii.extension.ruleengine.store.trigger.condition.AndLogic;
+import com.kii.extension.ruleengine.store.trigger.condition.OrLogic;
 import org.drools.core.time.impl.CronExpression;
 import org.springframework.stereotype.Component;
 
-import com.kii.extension.ruleengine.store.trigger.Condition;
-import com.kii.extension.ruleengine.store.trigger.CronPrefix;
-import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
-import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
-import com.kii.extension.ruleengine.store.trigger.SchedulePrefix;
-import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.TagSelector;
-import com.kii.extension.ruleengine.store.trigger.TargetAction;
-import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.WhenType;
-import com.kii.extension.ruleengine.store.trigger.condition.AndLogic;
-import com.kii.extension.ruleengine.store.trigger.condition.OrLogic;
+import java.util.List;
 
 /**
  * Created by Arno on 16/3/31.
@@ -60,7 +48,7 @@ public class TriggerValidate {
 
         //when condition exist , thingID is not null. And at the same time schedule express can not be null;
         if(thingID == null && predicate.getCondition()!=null){
-            throw new IllegalArgumentException("Source and Schedule can not be null at the same time !");
+            throw new IllegalArgumentException("Source and Condition can not be null at the same time !");
         }
 
         if(thingID == null && predicate==null){
@@ -73,6 +61,28 @@ public class TriggerValidate {
     }
 
     private void validateGroupTrigger(GroupTriggerRecord groupTriggerRecord){
+        TriggerSource triggerSource = groupTriggerRecord.getSource();
+        RuleEnginePredicate predicate = groupTriggerRecord.getPredicate();
+
+        if(
+            triggerSource == null || triggerSource.getSelector() == null ||
+            (
+                (triggerSource.getSelector().getTagList() == null || triggerSource.getSelector().getTagList().size() == 0)
+                &&
+                (triggerSource.getSelector().getThingList() == null || triggerSource.getSelector().getThingList().size() == 0)
+            )
+          ){
+
+            throw new IllegalArgumentException("Group trigger source can not be null but you can create simple trigger !");
+        }
+
+        if (
+                triggerSource.getSelector().getTagList() != null && triggerSource.getSelector().getTagList().size()>0
+                &&
+                triggerSource.getSelector().getThingList() != null && triggerSource.getSelector().getThingList().size()>0
+           ){
+            throw new IllegalArgumentException("TagList && ThingList source can not exist at same time !");
+        }
 
         //source内判定行业模版,暂未实现(等待行业模板)
     }

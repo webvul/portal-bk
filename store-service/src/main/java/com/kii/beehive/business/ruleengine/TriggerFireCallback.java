@@ -37,7 +37,7 @@ public class TriggerFireCallback implements EventCallback {
 
 		execService.doCommand(trigger);
 
-		logTools.outputLog(triggerID);
+		logTools.outputFireLog(triggerID);
 
 	}
 }

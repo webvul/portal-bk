@@ -1,14 +1,5 @@
 package com.kii.beehive.business.ruleengine;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Component;
-
 import com.kii.beehive.business.helper.OpLogTools;
 import com.kii.beehive.business.manager.ThingTagManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
@@ -18,6 +9,14 @@ import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
+
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 @Component
 public class TriggerLogTools {
@@ -55,9 +54,56 @@ public class TriggerLogTools {
 
 	}
 
+	@Async
+	public void outputCreateLog(TriggerRecord  record,String triggerID){
+		//日期时间+当前用户ID+"trigger”+trigger type(simple/group/summary)+”create"+当前triggerID
+		List<String> list=new LinkedList<>();
+		list.add(AuthInfoStore.getUserID());
+		list.add("trigger");
+		list.add(record.getType().name());
+		list.add("create");
+		list.add(triggerID);
+		logTool.write(list);
+	}
 
 	@Async
-	public void outputLog(String triggerID){
+	public void outputDeleteLog(TriggerRecord  record){
+		//日期时间+当前用户ID+"trigger”+trigger type(simple/group/summary)+”delete"+当前triggerID
+		List<String> list=new LinkedList<>();
+		list.add(AuthInfoStore.getUserID());
+		list.add("trigger");
+		list.add(record.getType().name());
+		list.add("delete");
+		list.add(record.getTriggerID());
+		logTool.write(list);
+	}
+
+	@Async
+	public void outputEnableLog(TriggerRecord  record){
+		//日期时间+当前用户ID+"trigger”+trigger type(simple/group/summary)+”enable"+当前triggerID
+		List<String> list=new LinkedList<>();
+		list.add(AuthInfoStore.getUserID());
+		list.add("trigger");
+		list.add(record.getType().name());
+		list.add("enable");
+		list.add(record.getTriggerID());
+		logTool.write(list);
+	}
+
+	@Async
+	public void outputDisableLog(TriggerRecord  record){
+		//日期时间+当前用户ID+"trigger”+trigger type(simple/group/summary)+”disable"+当前triggerID
+		List<String> list=new LinkedList<>();
+		list.add(AuthInfoStore.getUserID());
+		list.add("trigger");
+		list.add(record.getType().name());
+		list.add("disable");
+		list.add(record.getTriggerID());
+		logTool.write(list);
+	}
+
+	@Async
+	public void outputFireLog(String triggerID){
 		TriggerRecord record=dao.getTriggerRecord(triggerID);
 		String triggerType ;
 		Set<String> thingIDs;
