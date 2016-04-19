@@ -252,8 +252,6 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 
 		List<GlobalThingInfo> list = super.queryWithPage(sql, new Object[]{}, pager);
 
-		pager.setStartRow(pager.getStartRow() + list.size());
-
 		return list;
 
 	}

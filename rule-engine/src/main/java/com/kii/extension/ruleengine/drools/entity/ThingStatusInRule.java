@@ -52,6 +52,11 @@ public class ThingStatusInRule {
 		this.values.put(field,value);
 	}
 
+	public Object getNumValue(String field){
+		Object value = this.values.get(field);
+		return value == null ? 0 : value;
+	}
+
 	public String getThingID() {
 		return thingID;
 	}
