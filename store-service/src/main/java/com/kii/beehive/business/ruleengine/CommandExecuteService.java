@@ -12,10 +12,12 @@ import com.kii.beehive.business.manager.AppInfoManager;
 import com.kii.beehive.business.manager.ThingTagManager;
 import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
+import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.extension.ruleengine.service.TriggerRecordDao;
 import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
 import com.kii.extension.ruleengine.store.trigger.TargetAction;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
+import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
 
 
@@ -45,6 +47,11 @@ public class CommandExecuteService {
 	@Autowired
 	private TriggerLogTools  logTool;
 
+	@Autowired
+	private AppInfoDao appInfoDao;
+
+	@Autowired
+	private AppBindToolResolver resolver;
 
 	private AtomicBoolean  sign=new AtomicBoolean(true);
 	public void enable(){

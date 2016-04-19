@@ -10,7 +10,7 @@ public class AppChoice implements Serializable{
 
 	private String appName;
 
-	private boolean bindAdmin;
+	private boolean bindAdmin=true;
 
 
 	public boolean isBindAdmin() {

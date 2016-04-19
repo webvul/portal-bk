@@ -31,7 +31,7 @@ public class BeehiveUserDao extends AbstractDataAccess<BeehiveUser> {
 	}
 
 	public BeehiveUser getUserByName(String userName){
-		QueryParam  query= ConditionBuilder.orCondition().equal("userName",userName).equal("phone",userName).equal("mail",userName).getFinalQueryParam();
+		QueryParam  query= ConditionBuilder.orCondition().equal("_id",userName).equal("userName",userName).equal("phone",userName).equal("mail",userName).getFinalQueryParam();
 
 		List<BeehiveUser>  userList= super.query(query);
 

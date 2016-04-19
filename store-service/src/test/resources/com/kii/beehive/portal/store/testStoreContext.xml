@@ -14,7 +14,10 @@
 
     <bean   class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="properties">
-            <value>beehive.portal.oplog.file=./build/op.log</value>
+            <value>beehive.portal.oplog.file=./build/op.log
+     com.kii.beehive.portal.permission.config.file=demoPermissionConfig
+
+            </value>
         </property>
     </bean>
 

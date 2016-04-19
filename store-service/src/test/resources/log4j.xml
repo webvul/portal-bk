@@ -19,7 +19,7 @@
     </logger>
 
     <logger name="org.apache.http">
-        <level value="info" />
+        <level value="debug" />
     </logger>
 
     <logger name="org.springframework.web">
@@ -35,7 +35,7 @@
     </logger>
 
     <logger name="com.kii" >
-        <level value="info" />
+        <level value="debug" />
     </logger>
 
     <root>
