@@ -1,0 +1,125 @@
+{
+  "displayName":"根",
+  "url":"/*",
+  "submodule": {
+    "tag": {
+      "displayName": "标签管理",
+      "url": "/tags/*",
+      "submodule": {
+        "CreateTag": {
+          "method": "POST",
+          "url": "/tags/custom"
+        },
+        "DeleteTag": {
+          "method": "DELETE",
+          "url": "/tags/custom/*"
+        },
+        "SearchTag": {
+          "method": "GET",
+          "url": "/tags/search*"
+        }
+      }
+    },
+    "thing": {
+      "displayName": "设备管理",
+      "url": "/things/*",
+      "submodule": {
+        "createThing": {
+          "method": "POST",
+          "url": "/things"
+        },
+        "DeleteThing": {
+          "method": "DELETE",
+          "url": "things/*"
+        },
+        "SearchThing": {
+          "method": "GET",
+          "url": "/things/search*"
+        },
+        "SearchThingType": {
+          "method": "GET",
+          "url": "/things/types/*"
+        },
+        "SearchThingID": {
+          "method": "GET",
+          "url": "/things/*"
+        },
+        "DeleteThing": {
+          "method": "DELETE",
+          "url": "things/*"
+        }
+      }
+    },
+    "user": {
+      "displayName": "用户管理",
+      "url": "/users/*",
+      "submodule": {
+        "CreateUser": {
+          "method": "POST",
+          "url": "/users"
+        },
+        "ResetPassword": {
+          "method": "POST",
+          "url": "/users/*/resetpassword"
+        },
+        "UpdateUser": {
+          "method": "PATCH",
+          "url": "/users/*"
+        },
+        "GetUser": {
+          "method": "GET",
+          "url": "/users/*"
+        }
+      }
+    },
+    "auth": {
+      "displayName": "登录管理",
+      "url": "/oauth2/*",
+      "submodule": {
+        "ActiviteUser": {
+          "method": "POST",
+          "url": "/oauth2/activate"
+        },
+        "ResetPassword": {
+          "method": "POST",
+          "url": "/oauth2/initpassword"
+        },
+        "Login": {
+          "method": "POST",
+          "url": "/oauth2/login"
+        },
+        "Logout": {
+          "method": "POST",
+          "url": "/oauth2/logout"
+        },
+        "validatetoken": {
+          "method": "POST",
+          "url": "/oauth2/validatetoken"
+        }
+      }
+    },
+    "system": {
+      "displayName": "系统维护",
+      "url": "/*",
+      "submodule": {
+        "AppEnvInit": {
+          "method": "POST",
+          "url": "/appinit"
+        },
+        "AppRegist": {
+          "method": "POST",
+          "url": "/appRegist/*"
+        },
+        "onboardingHelper": {
+          "method": "POST",
+          "url": "/onboardinghelper/*"
+        },
+        "info": {
+          "displayName":"版本信息",
+          "method": "GET",
+          "url": "/info"
+        }
+      }
+    }
+  }
+}

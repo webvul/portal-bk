@@ -17,14 +17,15 @@ import com.kii.beehive.business.service.KiiUserService;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.StringRandomTools;
 import com.kii.beehive.portal.entitys.AuthRestBean;
+import com.kii.beehive.portal.entitys.PermissionTree;
 import com.kii.beehive.portal.exception.UnauthorizedException;
 import com.kii.beehive.portal.helper.AuthInfoService;
+import com.kii.beehive.portal.helper.PermissionTreeService;
 import com.kii.beehive.portal.jdbc.dao.TeamDao;
 import com.kii.beehive.portal.jdbc.dao.TeamUserRelationDao;
 import com.kii.beehive.portal.jdbc.entity.AuthInfo;
 import com.kii.beehive.portal.jdbc.entity.Team;
 import com.kii.beehive.portal.service.BeehiveUserDao;
-import com.kii.beehive.portal.service.RuleDetailDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.extension.sdk.context.UserTokenBindTool;
 import com.kii.extension.sdk.entity.KiiUser;
@@ -55,7 +56,7 @@ public class AuthManager {
 	protected TeamUserRelationDao teamUserRelationDao;
 
 	@Autowired
-	private RuleDetailDao permissionDao;
+	private PermissionTreeService  permissionTreeService;
 
 
 
@@ -118,6 +119,7 @@ public class AuthManager {
 	public AuthRestBean login(String userName, String password, boolean permanentToken) {
 
 		BeehiveUser  user=userDao.getUserByName(userName);
+
 		String pwd=user.getHashedPwd(password);
 
 		String token = userService.bindToUser(user, pwd);
@@ -218,7 +220,7 @@ public class AuthManager {
 	 * @param token
 	 * @return
 	 */
-	public AuthInfo validateAndBindUserToken(String token)  {
+	public AuthInfo validateAndBindUserToken(String token,String method,String url)  {
 
 		// try to get auth info from auth info cache by token
 		AuthInfo authInfo = authService.getAuthInfoByToken(token);
@@ -232,10 +234,13 @@ public class AuthManager {
 
 		BeehiveUser  user=userDao.getUserByID(authInfo.getUserID());
 
-		String role=user.getRole();
+		PermissionTree permisssionTree=permissionTreeService.getRulePermissionTree(user.getRoles());
 
+		boolean sign=permissionTreeService.verify(method,url);
 
-
+		if(!sign){
+			throw new UnauthorizedException("the url no access right:"+url+" method:"+method);
+		}
 		userTokenBindTool.bindToken(authInfo.getToken());
 
 		return authInfo;

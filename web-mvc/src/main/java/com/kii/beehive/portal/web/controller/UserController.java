@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.CollectUtils;
+import com.kii.beehive.portal.entitys.PermissionTree;
 import com.kii.beehive.portal.manager.AuthManager;
 import com.kii.beehive.portal.manager.BeehiveUserManager;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
@@ -42,7 +44,7 @@ public class UserController {
 	 *
 	 * @param user
 	 */
-	@RequestMapping(value = "/admin/users", method = {RequestMethod.POST})
+	@RequestMapping(value = "/users", method = {RequestMethod.POST})
 	public Map<String, Object> createUser(@RequestBody UserRestBean user) {
 
 		user.verifyInput();
@@ -61,7 +63,7 @@ public class UserController {
 	}
 
 
-	@RequestMapping(path = "/admin/users/{userid}/resetpassword", method = { RequestMethod.POST })
+	@RequestMapping(path = "/users/{userid}/resetpassword", method = { RequestMethod.POST })
 	public Map<String,Object> resetPassword(@PathVariable("userid") String userID) {
 
 
@@ -136,6 +138,35 @@ public class UserController {
 		bean.setBeehiveUser(userManager.getUserByID(userID));
 
 		return bean;
+	}
+
+	@RequestMapping(value = "/users/me", method = {RequestMethod.GET}, consumes = {"*"})
+	public UserRestBean getUser() {
+
+		String userID=AuthInfoStore.getUserID();
+		UserRestBean bean = new UserRestBean();
+		bean.setBeehiveUser(userManager.getUserByID(userID));
+
+		return bean;
+	}
+
+	@RequestMapping(value = "/users/me", method = {RequestMethod.PATCH})
+	public Map<String, String> updateUser( @RequestBody BeehiveUser user) {
+
+		userManager.updateUser(user, AuthInfoStore.getUserID());
+
+
+		Map<String, String> map = new HashMap<>();
+		map.put("userID", AuthInfoStore.getUserID());
+		return map;
+	}
+
+	@RequestMapping(value = "/users/permissionTree", method = {RequestMethod.GET},consumes = {"*"})
+	public PermissionTree getUserPermissTree(){
+
+		String userID=AuthInfoStore.getUserID();
+
+		return userManager.getUsersPermissonTree(userID);
 	}
 
 }

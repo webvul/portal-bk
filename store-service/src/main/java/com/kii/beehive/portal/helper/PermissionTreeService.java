@@ -1,9 +1,15 @@
 package com.kii.beehive.portal.helper;
 
+import javax.annotation.PostConstruct;
+
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
@@ -13,9 +19,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Charsets;
 
 import com.kii.beehive.portal.config.CacheConfig;
-import com.kii.beehive.portal.entitys.PermissionEntry;
-import com.kii.beehive.portal.service.RuleDetailDao;
-import com.kii.beehive.portal.store.entity.RuleDetail;
+import com.kii.beehive.portal.entitys.PatternSet;
+import com.kii.beehive.portal.entitys.PermissionTree;
 
 @Component
 public class PermissionTreeService {
@@ -27,31 +32,52 @@ public class PermissionTreeService {
 	@Autowired
 	private ResourceLoader  loader;
 
-	@Autowired
-	private RuleDetailDao ruleDetailDao;
-
-	@CacheEvict(cacheNames = CacheConfig.TTL_CACHE,key="ruleBindPermiss#rule.id")
-	public void updateRuleDetail(RuleDetail  detail){
 
 
+	private PermissionTree permissionEntry;
+
+	private Map<String,String> fullPathMap=new HashMap<>();
+
+//	private TreeMap<String,PermissionTree> indexMap=new TreeMap<>();
+
+	@Value("${com.kii.beehive.portal.permission.config.file}")
+	private String configName;
+
+	@PostConstruct
+	public void init() throws IOException {
+
+		String json= StreamUtils.copyToString(loader.getResource("classpath:com/kii/beehive/portal/permission/config/"+configName+".json").getInputStream(), Charsets.UTF_8);
+
+
+		permissionEntry=mapper.readValue(json,PermissionTree.class);
+
+		fullPathMap=permissionEntry.fillFullPath();
 
 	}
 
 	@Cacheable(cacheNames = CacheConfig.LONGLIVE_CACHE,key="full_permission_tree")
-	public PermissionEntry getFullPermissionTree() throws IOException {
+	public PermissionTree getFullPermissionTree()  {
 
-		String json= StreamUtils.copyToString(loader.getResource("com/kii/beehive/portal/permission/fullPermissionList.json").getInputStream(), Charsets.UTF_8);
-
-
-		PermissionEntry  tree=mapper.readValue(json,PermissionEntry.class);
-
-		return tree;
+		return permissionEntry.clone();
 	}
 
+	public boolean verify(String method,String url){
 
-	@Cacheable(cacheNames = CacheConfig.TTL_CACHE,key="ruleBindPermiss#rule.id")
-	public PermissionEntry getRulePermissionTree(RuleDetail rule){
+		return permissionEntry.doVerify(method,url);
+	}
 
+	@Cacheable(cacheNames = CacheConfig.TTL_CACHE,key="'permissionRule'#ruleSet.toString()" )
+	public PermissionTree getRulePermissionTree(Set<String> ruleSet){
+
+		PermissionTree newTree=permissionEntry.clone();
+
+		Set<String> set=ruleSet.stream().map((k)-> fullPathMap.get(k)).collect(Collectors.toSet());
+
+		PatternSet pattern=new PatternSet(set);
+
+		newTree.doFilter(pattern);
+
+		return newTree;
 
 	}
 

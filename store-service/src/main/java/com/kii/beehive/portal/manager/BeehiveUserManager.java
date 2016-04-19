@@ -12,7 +12,9 @@ import org.springframework.util.StringUtils;
 import com.kii.beehive.business.service.KiiUserService;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.StringRandomTools;
+import com.kii.beehive.portal.entitys.PermissionTree;
 import com.kii.beehive.portal.exception.UnauthorizedException;
+import com.kii.beehive.portal.helper.PermissionTreeService;
 import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
 import com.kii.beehive.portal.jdbc.dao.TeamDao;
 import com.kii.beehive.portal.jdbc.dao.TeamGroupRelationDao;
@@ -51,6 +53,19 @@ public class BeehiveUserManager {
 
 	@Autowired
 	private TeamDao teamDao;
+
+	@Autowired
+	private PermissionTreeService permissionTreeService;
+
+
+
+	public PermissionTree getUsersPermissonTree(String userName){
+
+		BeehiveUser user=userDao.getUserByName(userName);
+
+		return permissionTreeService.getRulePermissionTree(user.getRoles());
+
+	}
 
 
 	public Map<String,Object>  addUser(BeehiveUser user,String teamName) {
