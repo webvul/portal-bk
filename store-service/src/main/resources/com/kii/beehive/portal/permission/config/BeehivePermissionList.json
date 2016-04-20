@@ -51,24 +51,46 @@
       }
     },
     "user": {
-      "displayName": "用户管理",
+      "displayName": "用户信息",
       "url": "/users/*",
+      "submodule": {
+        "UpdateInfo": {
+          "method": "PATCH",
+          "url": "/users/me"
+        },
+        "GetInfo": {
+          "method": "GET",
+          "url": "/users/me"
+        },
+        "changePwd": {
+          "method": "POST",
+          "url": "/users/changepassword"
+        },
+        "queryInfo":{
+          "method": "GET",
+          "url": "/users/*"
+        }
+      }
+    },
+    "usermanager": {
+      "displayName": "用户管理",
+      "url": "/usermanager/*",
       "submodule": {
         "CreateUser": {
           "method": "POST",
-          "url": "/users"
+          "url": "/usermanager"
         },
         "ResetPassword": {
           "method": "POST",
-          "url": "/users/*/resetpassword"
+          "url": "/usermanager/*/resetpassword"
         },
         "UpdateUser": {
           "method": "PATCH",
-          "url": "/users/*"
+          "url": "/usermanager/*"
         },
         "GetUser": {
           "method": "GET",
-          "url": "/users/*"
+          "url": "/usermanager/*"
         }
       }
     },

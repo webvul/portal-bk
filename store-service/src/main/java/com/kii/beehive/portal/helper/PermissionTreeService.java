@@ -61,25 +61,43 @@ public class PermissionTreeService {
 		return permissionEntry.clone();
 	}
 
-	public boolean verify(String method,String url){
 
-		return permissionEntry.doVerify(method,url);
-	}
 
-	@Cacheable(cacheNames = CacheConfig.TTL_CACHE,key="'permissionRule'#ruleSet.toString()" )
-	public PermissionTree getRulePermissionTree(Set<String> ruleSet){
+	@Cacheable(cacheNames = CacheConfig.TTL_CACHE,key="'acceptPermissionRule'+#ruleSet.toString()" )
+	public PermissionTree getAcceptRulePermissionTree(Set<String> ruleSet){
 
 		PermissionTree newTree=permissionEntry.clone();
 
-		Set<String> set=ruleSet.stream().map((k)-> fullPathMap.get(k)).collect(Collectors.toSet());
+		Set<String> set = ruleSet.stream().map((k) -> fullPathMap.get(k)).collect(Collectors.toSet());
 
-		PatternSet pattern=new PatternSet(set);
+		PatternSet pattern = new PatternSet(set);
 
-		newTree.doFilter(pattern);
+		newTree.doAcceptFilter(pattern);
 
 		return newTree;
 
 	}
+
+	@Cacheable(cacheNames = CacheConfig.TTL_CACHE,key="'denyPermissionRule'+#ruleSet.toString()" )
+	public PermissionTree getDenyRulePermissionTree(Set<String> ruleSet){
+
+		PermissionTree newTree=permissionEntry.clone();
+
+		Set<String> set = ruleSet.stream().map((k) -> fullPathMap.get(k)).collect(Collectors.toSet());
+
+		PatternSet pattern = new PatternSet(set);
+
+		boolean sign=newTree.doDenyFilter(pattern);
+
+		if(sign){
+			return null;
+		}else {
+			return newTree;
+		}
+
+	}
+
+
 
 
 

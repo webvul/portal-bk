@@ -3,20 +3,25 @@ package com.kii.beehive.portal.entitys;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.kii.beehive.portal.auth.UrlTemplateVerify;
 
 public class PermissionTree {
 
-	private String displayName;
 
-	private String url;
 
-	private String fullPath;
+	private String displayName="EMPTY";
+
+	private String url="-";
+
+	private String fullPath="-";
 
 	private String method="*";
 
 	private Map<String,PermissionTree> submodule=new HashMap<>();
+
 
 
 
@@ -60,11 +65,41 @@ public class PermissionTree {
 
 	}
 
-	public void doFilter(PatternSet pattern) {
+	public void doAcceptFilter(PatternSet pattern) {
 
+		if(pattern.getNextLevel().isEmpty()){
+			return;
+		}
 		submodule.keySet().retainAll(pattern.getNextLevel());
 
-		submodule.forEach((k,v)->v.doFilter(pattern.getNextPattern(k)));
+		submodule.forEach((k,v)->v.doAcceptFilter(pattern.getNextPattern(k)));
+	}
+
+	public boolean doDenyFilter(PatternSet pattern) {
+
+		Set<String> removedSet=submodule.keySet().stream().filter(k->{
+
+			PatternSet nextPattern=pattern.getNextPattern(k);
+
+			if(nextPattern==null){
+				return false;
+			}
+
+			if(nextPattern.getNextLevel().isEmpty()){
+				return true;
+			}
+
+			return submodule.get(k).doDenyFilter(nextPattern);
+
+		}).collect(Collectors.toSet());
+
+		submodule.keySet().removeAll(removedSet);
+
+		return  submodule.keySet().isEmpty();
+	}
+
+	private boolean removed(PatternSet pattern){
+		return pattern.getNextLevel().isEmpty();
 	}
 
 
@@ -132,5 +167,6 @@ public class PermissionTree {
 	public void setSubmodule(Map<String, PermissionTree> submodule) {
 		this.submodule = submodule;
 	}
+	
 
 }

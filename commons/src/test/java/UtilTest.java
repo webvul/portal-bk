@@ -11,6 +11,17 @@ public class UtilTest {
 
 
 	@Test
+	public void testSetHash(){
+		Set<String>  set=new HashSet<>();
+		set.add("b");
+		set.add("a");
+		set.add("C");
+
+		System.out.println(set.toString());
+
+
+	}
+	@Test
 	public void testMap(){
 
 

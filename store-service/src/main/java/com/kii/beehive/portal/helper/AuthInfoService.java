@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.exception.TokenTimeoutException;
@@ -32,10 +31,10 @@ public class AuthInfoService {
 
 	private Map<String,AuthInfo> userTokenMap=new ConcurrentHashMap<>();
 
-	@Scheduled(cron="0 0 1 * * ?")
-	public void checkTTL(){
-		//TODO:
-	}
+//	@Scheduled(cron="0 0 1 * * ?")
+//	public void checkTTL(){
+//		//TODO:
+//	}
 
 
     public void createAuthInfoEntry(AuthInfo auth, String token,boolean isPermanentToken) {

@@ -63,7 +63,7 @@ public class TestPermissTree  {
 
 
 
-		PermissionTree ruleTree=service.getRulePermissionTree(set);
+		PermissionTree ruleTree=service.getAcceptRulePermissionTree(set);
 
 		assertTrue(ruleTree.doVerify("PATCH","/users/abc"));
 
@@ -84,7 +84,7 @@ public class TestPermissTree  {
 		set.add("root");
 
 
-		PermissionTree ruleTree=service.getRulePermissionTree(set);
+		PermissionTree ruleTree=service.getAcceptRulePermissionTree(set);
 
 		assertTrue(ruleTree.doVerify("PATCH","/users/abc"));
 
@@ -107,7 +107,7 @@ public class TestPermissTree  {
 		set.add("Logout");
 		set.add("UpdateUser");
 
-		PermissionTree  tree=service.getRulePermissionTree(set);
+		PermissionTree  tree=service.getAcceptRulePermissionTree(set);
 
 		assertFalse(tree.getSubmodule().containsKey("tag"));
 
@@ -120,6 +120,33 @@ public class TestPermissTree  {
 		assertTrue(auth.getSubmodule().containsKey("Login"));
 
 		assertEquals(2,auth.getSubmodule().size());
+
+	}
+
+
+	@Test
+	public void testDeny(){
+
+		Set<String> set=new HashSet<>();
+
+		set.add("info");
+		set.add("Login");
+		set.add("Logout");
+		set.add("UpdateUser");
+
+		PermissionTree  tree=service.getDenyRulePermissionTree(set);
+
+		assertTrue(tree.getSubmodule().containsKey("tag"));
+
+		assertTrue(tree.getSubmodule().containsKey("auth"));
+
+		PermissionTree auth=tree.getSubmodule().get("auth");
+
+		assertTrue(auth.getSubmodule().containsKey("ActiviteUser"));
+
+		assertFalse(auth.getSubmodule().containsKey("Login"));
+
+		assertEquals(3,auth.getSubmodule().size());
 
 	}
 

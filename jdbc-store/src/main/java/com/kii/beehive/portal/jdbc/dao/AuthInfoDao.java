@@ -1,6 +1,5 @@
 package com.kii.beehive.portal.jdbc.dao;
 
-import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -41,7 +40,7 @@ public class AuthInfoDao extends SpringBaseDao<AuthInfo> {
 
 		String sql="select * from auth_info where token = ? ";
 
-		List<AuthInfo> infos=jdbcTemplate.query(sql,new Object[]{token,new Date()},getRowMapper());
+		List<AuthInfo> infos=jdbcTemplate.query(sql,new Object[]{token},getRowMapper());
 
 		if(infos.size()==0){
 			return null;

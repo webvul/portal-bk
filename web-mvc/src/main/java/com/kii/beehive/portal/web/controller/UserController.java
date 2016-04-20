@@ -44,7 +44,7 @@ public class UserController {
 	 *
 	 * @param user
 	 */
-	@RequestMapping(value = "/users", method = {RequestMethod.POST})
+	@RequestMapping(value = "/usermanager", method = {RequestMethod.POST})
 	public Map<String, Object> createUser(@RequestBody UserRestBean user) {
 
 		user.verifyInput();
@@ -63,7 +63,7 @@ public class UserController {
 	}
 
 
-	@RequestMapping(path = "/users/{userid}/resetpassword", method = { RequestMethod.POST })
+	@RequestMapping(path = "/usermanager/{userid}/resetpassword", method = { RequestMethod.POST })
 	public Map<String,Object> resetPassword(@PathVariable("userid") String userID) {
 
 
@@ -74,11 +74,46 @@ public class UserController {
 		map.put("userID", userID);
 		map.put("activityToken", token);
 
-
 		return map;
 
 	}
 
+
+	/**
+	 * 更新用户
+	 * PATCH /users/{userID}
+	 * <p>
+	 * refer to doc "Beehive API - User API" for request/response details
+	 *
+	 * @param user
+	 */
+	@RequestMapping(value = "/usermanager/{userID}", method = {RequestMethod.PATCH})
+	public Map<String, String> updateUser(@PathVariable("userID") String userID, @RequestBody BeehiveUser user) {
+
+		userManager.updateUser(user, userID);
+
+
+		Map<String, String> map = new HashMap<>();
+		map.put("userID", userID);
+		return map;
+	}
+
+	/**
+	 * 通过userID查询用户
+	 * GET /users/{userID}
+	 * <p>
+	 * refer to doc "Beehive API - User API" for request/response details
+	 *
+	 * @param userID
+	 */
+	@RequestMapping(value = "/usermanager/{userID}", method = {RequestMethod.GET}, consumes = {"*"})
+	public UserRestBean getUser(@PathVariable("userID") String userID) {
+
+		UserRestBean bean = new UserRestBean();
+		bean.setBeehiveUser(userManager.getUserByIDDirectly(userID));
+
+		return bean;
+	}
 
 	/**
 	 * 用户修改密码
@@ -104,48 +139,13 @@ public class UserController {
 
 
 
-	/**
-	 * 更新用户
-	 * PATCH /users/{userID}
-	 * <p>
-	 * refer to doc "Beehive API - User API" for request/response details
-	 *
-	 * @param user
-	 */
-	@RequestMapping(value = "/users/{userID}", method = {RequestMethod.PATCH})
-	public Map<String, String> updateUser(@PathVariable("userID") String userID, @RequestBody BeehiveUser user) {
-
-		userManager.updateUser(user, userID);
-
-
-		Map<String, String> map = new HashMap<>();
-		map.put("userID", userID);
-		return map;
-	}
-
-	/**
-	 * 通过userID查询用户
-	 * GET /users/{userID}
-	 * <p>
-	 * refer to doc "Beehive API - User API" for request/response details
-	 *
-	 * @param userID
-	 */
-	@RequestMapping(value = "/users/{userID}", method = {RequestMethod.GET}, consumes = {"*"})
-	public UserRestBean getUser(@PathVariable("userID") String userID) {
-
-		UserRestBean bean = new UserRestBean();
-		bean.setBeehiveUser(userManager.getUserByID(userID));
-
-		return bean;
-	}
 
 	@RequestMapping(value = "/users/me", method = {RequestMethod.GET}, consumes = {"*"})
 	public UserRestBean getUser() {
 
 		String userID=AuthInfoStore.getUserID();
 		UserRestBean bean = new UserRestBean();
-		bean.setBeehiveUser(userManager.getUserByID(userID));
+		bean.setBeehiveUser(userManager.getUserByIDDirectly(userID));
 
 		return bean;
 	}
@@ -160,6 +160,25 @@ public class UserController {
 		map.put("userID", AuthInfoStore.getUserID());
 		return map;
 	}
+
+
+	/**
+	 * 通过userID查询用户
+	 * GET /users/{userID}
+	 * <p>
+	 * refer to doc "Beehive API - User API" for request/response details
+	 *
+	 * @param userID
+	 */
+	@RequestMapping(value = "/users/{userID}", method = {RequestMethod.GET}, consumes = {"*"})
+	public UserRestBean getUserByID(@PathVariable("userID") String userID) {
+
+		UserRestBean bean = new UserRestBean();
+		bean.setBeehiveUser(userManager.getUserByID(userID));
+
+		return bean;
+	}
+
 
 	@RequestMapping(value = "/users/permissionTree", method = {RequestMethod.GET},consumes = {"*"})
 	public PermissionTree getUserPermissTree(){

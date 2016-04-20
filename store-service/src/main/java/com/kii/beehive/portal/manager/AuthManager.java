@@ -20,7 +20,7 @@ import com.kii.beehive.portal.entitys.AuthRestBean;
 import com.kii.beehive.portal.entitys.PermissionTree;
 import com.kii.beehive.portal.exception.UnauthorizedException;
 import com.kii.beehive.portal.helper.AuthInfoService;
-import com.kii.beehive.portal.helper.PermissionTreeService;
+import com.kii.beehive.portal.helper.RuleSetService;
 import com.kii.beehive.portal.jdbc.dao.TeamDao;
 import com.kii.beehive.portal.jdbc.dao.TeamUserRelationDao;
 import com.kii.beehive.portal.jdbc.entity.AuthInfo;
@@ -40,6 +40,11 @@ public class AuthManager {
 	@Autowired
 	private BeehiveUserDao userDao;
 
+
+	@Autowired
+	private RuleSetService ruleService;
+
+
 	@Autowired
 	private AuthInfoService authService;
 
@@ -54,9 +59,6 @@ public class AuthManager {
 
 	@Autowired
 	protected TeamUserRelationDao teamUserRelationDao;
-
-	@Autowired
-	private PermissionTreeService  permissionTreeService;
 
 
 
@@ -231,12 +233,8 @@ public class AuthManager {
 			throw new UnauthorizedException("invaild token");
 		}
 
-
-		BeehiveUser  user=userDao.getUserByID(authInfo.getUserID());
-
-		PermissionTree permisssionTree=permissionTreeService.getRulePermissionTree(user.getRoles());
-
-		boolean sign=permissionTreeService.verify(method,url);
+		PermissionTree permisssionTree=ruleService.getUserPermissionTree(authInfo.getUserID());
+		boolean sign=permisssionTree.doVerify(method,url);
 
 		if(!sign){
 			throw new UnauthorizedException("the url no access right:"+url+" method:"+method);

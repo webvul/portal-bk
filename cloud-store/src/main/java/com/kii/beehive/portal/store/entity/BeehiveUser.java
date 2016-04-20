@@ -1,9 +1,6 @@
 package com.kii.beehive.portal.store.entity;
 
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.BeanUtils;
 
@@ -21,7 +18,7 @@ public class BeehiveUser extends  PortalEntity {
 
 	private String displayName;
 
-	private Set<String> roles=new HashSet<>();
+	private String  roleName;
 
 
 	private String activityToken;
@@ -83,16 +80,14 @@ public class BeehiveUser extends  PortalEntity {
 		this.mail = mail;
 	}
 
-	public Set<String> getRoles() {
-		//TODO:just for Backward compatibility old data
-		if(roles.isEmpty()){
-			roles.add("root");
-		}
-		return roles;
+
+
+	public String getRoleName() {
+		return roleName;
 	}
 
-	public void setRoles(Set<String> roles) {
-		this.roles = roles;
+	public void setRoleName(String roleName) {
+		this.roleName = roleName;
 	}
 
 	public String getDisplayName() {
@@ -122,4 +117,18 @@ public class BeehiveUser extends  PortalEntity {
 		return user;
 
 	}
+
+	private UserRuleSet  ruleSet;
+	public void setRuleSet(UserRuleSet ruleSet) {
+		this.ruleSet=ruleSet;
+	}
+
+	@JsonIgnore
+	public UserRuleSet getRuleSet(UserRuleSet ruleSet) {
+		return ruleSet;
+	}
+
+
+
+
 }

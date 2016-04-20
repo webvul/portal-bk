@@ -19,6 +19,8 @@ import com.kii.extension.sdk.service.AbstractDataAccess;
 @Component
 public class BeehiveUserDao extends AbstractDataAccess<BeehiveUser> {
 
+
+
 	public List<BeehiveUser> getUserByIDs(Collection<String> userIDList) {
 
 		return super.getEntitys(userIDList.toArray(new String[0]));

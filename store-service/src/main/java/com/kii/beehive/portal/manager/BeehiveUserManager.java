@@ -14,7 +14,7 @@ import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.StringRandomTools;
 import com.kii.beehive.portal.entitys.PermissionTree;
 import com.kii.beehive.portal.exception.UnauthorizedException;
-import com.kii.beehive.portal.helper.PermissionTreeService;
+import com.kii.beehive.portal.helper.RuleSetService;
 import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
 import com.kii.beehive.portal.jdbc.dao.TeamDao;
 import com.kii.beehive.portal.jdbc.dao.TeamGroupRelationDao;
@@ -45,6 +45,11 @@ public class BeehiveUserManager {
 	private BeehiveUserDao userDao;
 
 	@Autowired
+	private RuleSetService ruleService;
+
+
+
+	@Autowired
 	private UserGroupDao userGroupDao;
 
 	@Autowired
@@ -54,17 +59,12 @@ public class BeehiveUserManager {
 	@Autowired
 	private TeamDao teamDao;
 
-	@Autowired
-	private PermissionTreeService permissionTreeService;
 
 
 
-	public PermissionTree getUsersPermissonTree(String userName){
+	public PermissionTree getUsersPermissonTree(String userID){
 
-		BeehiveUser user=userDao.getUserByName(userName);
-
-		return permissionTreeService.getRulePermissionTree(user.getRoles());
-
+		return ruleService.getUserPermissionTree(userID);
 	}
 
 
@@ -142,6 +142,12 @@ public class BeehiveUserManager {
 
 	}
 
+	public BeehiveUser getUserByIDDirectly(String userID){
+		return userDao.getUserByID(userID);
+	}
+
+
+
 	public BeehiveUser getUserByID(String userID) {
 
 		checkTeam(userID);
@@ -151,11 +157,12 @@ public class BeehiveUserManager {
 
 	public void updateUser(BeehiveUser user,String userID){
 
-		checkTeam(userID);
+//		checkTeam(userID);
 		userDao.updateEntity(user,userID);
 
 
 	}
+
 
 
 	private void checkTeam(String userID){
