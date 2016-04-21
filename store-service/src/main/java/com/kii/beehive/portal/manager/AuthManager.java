@@ -323,7 +323,7 @@ public class AuthManager {
 			BeehiveUser beehiveUser = userDao.getUserByID(userID);
 			Team team = getTeamByID(userID);
 
-			String beehiveToken=getBeehiveToken(token,token,true);
+			String beehiveToken=getBeehiveToken(token,token,false);
 
 			saveToken(beehiveUser, beehiveToken, team,false);
 
