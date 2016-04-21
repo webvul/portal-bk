@@ -55,7 +55,7 @@ public class PermissionTreeService {
 
 	}
 
-	@Cacheable(cacheNames = CacheConfig.LONGLIVE_CACHE,key="full_permission_tree")
+	@Cacheable(cacheNames = CacheConfig.LONGLIVE_CACHE,key="'full_permission_tree'")
 	public PermissionTree getFullPermissionTree()  {
 
 		return permissionEntry.clone();
