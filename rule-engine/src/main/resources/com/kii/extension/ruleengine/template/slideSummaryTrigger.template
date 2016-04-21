@@ -8,9 +8,9 @@ rule "${triggerID} summary unit:slide windows ${summaryField}"
 when
 	Trigger($triggerID:triggerID,(triggerID=="${triggerID}" && enable=true &&  type ==TriggerType.summary)  )
 	$summary:Summary(triggerID==$triggerID ,$things:things, funName=="${funName}-${sum-suffix}" )
-	CurrThing(thing memberOf $things)
-	accumulate( ThingStatusInRule(thingID memberOf $things , $status:values) over window:${sum-suffix}( ${windowSize});
-                    $sum : ${funName}($status.get($summary.getFieldName()))
+	CurrThing(thing memberOf $things || init == true)
+	accumulate( $thingStatusInRule : ThingStatusInRule(thingID memberOf $things) over window:${sum-suffix}( ${windowSize}) ;
+                    $sum : ${funName}($thingStatusInRule.getNumValue($summary.getFieldName()))
                   )
 then
 	System.out.println("compute  sum summary by slide length"+$sum);

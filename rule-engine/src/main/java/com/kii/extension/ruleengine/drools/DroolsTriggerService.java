@@ -205,7 +205,7 @@ public class DroolsTriggerService {
 	private void setCurrThingID(String fullThingID){
 
 		cloudService.setCurrThingID(fullThingID);
-		cloudService.setCurrThingID(fullThingID);
+		streamService.setCurrThingID(fullThingID);
 	}
 
 	public  void fireCondition(){
