@@ -53,7 +53,7 @@ public class BeehiveUserDao extends AbstractDataAccess<BeehiveUser> {
 	}
 
 
-	public void cleanActivityToken(String id,String pwd) {
+	public void setPassword(String id, String pwd) {
 
 		Map<String,Object>  params=new HashMap<>();
 		params.put("activityToken",null);
@@ -61,6 +61,9 @@ public class BeehiveUserDao extends AbstractDataAccess<BeehiveUser> {
 
 		super.updateEntity(params,id);
 	}
+
+
+
 
 	@Override
 	protected Class<BeehiveUser> getTypeCls() {

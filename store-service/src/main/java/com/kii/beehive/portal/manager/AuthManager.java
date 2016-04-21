@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.util.StringUtils;
 import com.kii.beehive.business.service.KiiUserService;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.StringRandomTools;
+import com.kii.beehive.portal.entitys.AuthInfo;
 import com.kii.beehive.portal.entitys.AuthRestBean;
 import com.kii.beehive.portal.entitys.PermissionTree;
 import com.kii.beehive.portal.exception.UnauthorizedException;
@@ -23,10 +25,10 @@ import com.kii.beehive.portal.helper.AuthInfoService;
 import com.kii.beehive.portal.helper.RuleSetService;
 import com.kii.beehive.portal.jdbc.dao.TeamDao;
 import com.kii.beehive.portal.jdbc.dao.TeamUserRelationDao;
-import com.kii.beehive.portal.jdbc.entity.AuthInfo;
 import com.kii.beehive.portal.jdbc.entity.Team;
 import com.kii.beehive.portal.service.BeehiveUserDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
+import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.context.UserTokenBindTool;
 import com.kii.extension.sdk.entity.KiiUser;
 import com.kii.extension.sdk.exception.KiiCloudException;
@@ -49,7 +51,11 @@ public class AuthManager {
 	private AuthInfoService authService;
 
 	@Autowired
-	private UserTokenBindTool userTokenBindTool;
+	private AppBindToolResolver resolver;
+
+	@Autowired
+	private UserTokenBindTool tokenBind;
+
 
 	@Autowired
 	private KiiUserService userService;
@@ -104,7 +110,7 @@ public class AuthManager {
 
 		oneTimeTokenMap.remove(userName);
 
-		userDao.cleanActivityToken(user.getId(),newPwd);
+		userDao.setPassword(user.getId(),newPwd);
 	}
 
 
@@ -114,11 +120,9 @@ public class AuthManager {
 	 *
 	 * @param userName
 	 * @param password
-	 * @param permanentToken true: save auth info into permanent token cache and DB;
-	 *                       false: save auth info into auth info cache only
 	 * @return
 	 */
-	public AuthRestBean login(String userName, String password, boolean permanentToken) {
+	public AuthRestBean login(String userName, String password) {
 
 		BeehiveUser  user=userDao.getUserByName(userName);
 
@@ -130,10 +134,38 @@ public class AuthManager {
 			throw new UnauthorizedException( "Authentication failed");
 		}
 
-		Team team=this.getTeamByID(user.getId());
-		saveToken(permanentToken, user, token,team);
+		String beehiveToken=getBeehiveToken(token,userName,false);
 
-		AuthRestBean authRestBean = generAuthBean(user, token, team);
+		Team team=this.getTeamByID(user.getId());
+		saveToken(user, beehiveToken,team,false);
+
+		AuthRestBean authRestBean = generAuthBean(user, beehiveToken, team);
+		return authRestBean;
+	}
+
+
+	private static String getBeehiveToken(String token,String userName,boolean sign){
+		return DigestUtils.sha1Hex(token+"_userName_"+userName+"_3partySign"+sign+"_beehive_token");
+	}
+
+
+	public AuthRestBean getTokenByID(String userID) {
+
+		BeehiveUser  user=userDao.getUserByID(userID);
+
+		String token = userService.bindToUser(user, user.getUserPassword());
+
+		if(token == null) {
+			throw new UnauthorizedException( "Authentication failed");
+		}
+
+		Team team=this.getTeamByID(user.getId());
+
+		String beehiveToken=getBeehiveToken(token,userID,true);
+
+		saveToken(user, beehiveToken,team,true);
+
+		AuthRestBean authRestBean = generAuthBean(user, beehiveToken, team);
 		return authRestBean;
 	}
 
@@ -150,24 +182,24 @@ public class AuthManager {
 		return authRestBean;
 	}
 
-	private AuthInfo saveToken(boolean permanentToken, BeehiveUser user, String token,Team team) {
+	private AuthInfo saveToken( BeehiveUser user, String token,Team team,boolean is3Party) {
 		AuthInfo entity = new AuthInfo();
 		entity.setUserID(user.getId());
 
 		if(team!=null) {
 			entity.setTeamID(team.getId());
 		}
-		entity.setToken(token);
 
 		Calendar calendar= Calendar.getInstance();
-		if(permanentToken) {
-			calendar.add(Calendar.YEAR, 50);
+		if(is3Party) {
+			calendar.add(Calendar.HOUR, 2);
 		}else{
 			calendar.add(Calendar.DAY_OF_YEAR,1);
 		}
 		entity.setExpireTime(calendar.getTime());
+		entity.setIs3Party(is3Party);
 
-		authService.createAuthInfoEntry(entity,token,permanentToken);
+		authService.createAuthInfoEntry(entity,token);
 		return entity;
 	}
 
@@ -187,7 +219,7 @@ public class AuthManager {
 
 		userService.changePassword(pwd, newPwd);
 
-		userDao.cleanActivityToken(user.getId(),newPwd);
+		userDao.setPassword(user.getId(),newPwd);
 
 		authService.removeTokenByUserID(user.getId());
 
@@ -205,6 +237,7 @@ public class AuthManager {
 		String token= StringRandomTools.getRandomStr(6);
 
 		user.setActivityToken(user.getHashedPwd(token));
+		user.setUserPassword(user.getDefaultPassword());
 
 		userDao.updateEntity(user,user.getId());
 
@@ -239,7 +272,10 @@ public class AuthManager {
 		if(!sign){
 			throw new UnauthorizedException("the url no access right:"+url+" method:"+method);
 		}
-		userTokenBindTool.bindToken(authInfo.getToken());
+
+		BeehiveUser user=userDao.getUserByID(authInfo.getUserID());
+
+		userService.bindToInfo(user);
 
 		return authInfo;
 	}
@@ -259,7 +295,9 @@ public class AuthManager {
 	 * clean the user token in ThreadLocal
 	 */
 	public void unbindUserToken() {
-		userTokenBindTool.clean();
+
+		resolver.clean();
+		tokenBind.clean();
 	}
 
 
@@ -274,9 +312,9 @@ public class AuthManager {
 
 	public AuthRestBean validateUserToken(String token){
 
-		userTokenBindTool.bindToken(token);
-
 		try {
+
+			resolver.setToken(token);
 
 			KiiUser kiiUser = userService.getKiiUser();
 
@@ -285,9 +323,11 @@ public class AuthManager {
 			BeehiveUser beehiveUser = userDao.getUserByID(userID);
 			Team team = getTeamByID(userID);
 
-			saveToken(false, beehiveUser, token, team);
+			String beehiveToken=getBeehiveToken(token,token,true);
 
-			AuthRestBean authRestBean = generAuthBean(beehiveUser, token, team);
+			saveToken(beehiveUser, beehiveToken, team,false);
+
+			AuthRestBean authRestBean = generAuthBean(beehiveUser, beehiveToken, team);
 
 			return authRestBean;
 		}catch(KiiCloudException ex){

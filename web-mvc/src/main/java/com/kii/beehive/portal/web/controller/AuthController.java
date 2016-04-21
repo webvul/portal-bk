@@ -93,18 +93,29 @@ public class AuthController {
 	public AuthRestBean login(@RequestBody Map<String, Object> request) {
 
 		String userID = (String) request.get("userName");
-		String password = (String) request.get("password");
-		Boolean permanentToken = (Boolean) request.get("permanentToken");
-		// if permanentToken is not set, make it false as default
-		if (permanentToken == null) {
-			permanentToken = false;
+		if(StringUtils.isEmpty(userID)){
+			userID=(String) request.get("userID");
 		}
+		String password = (String) request.get("password");
 
 		if (CollectUtils.containsBlank(userID, password)) {
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "userID or password empty", HttpStatus.BAD_REQUEST);
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "userName or password empty", HttpStatus.BAD_REQUEST);
 		}
 
-		return authManager.login(userID, password, permanentToken);
+		return authManager.login(userID, password);
+
+	}
+
+	@RequestMapping(value = "/getTokenByID", method = {RequestMethod.POST})
+	public AuthRestBean getTokenByID(@RequestBody Map<String, Object> request) {
+
+		String userID = (String) request.get("userID");
+
+		if (CollectUtils.containsBlank(userID)) {
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "userName or password empty", HttpStatus.BAD_REQUEST);
+		}
+
+		return authManager.getTokenByID(userID);
 
 	}
 

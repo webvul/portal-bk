@@ -77,6 +77,10 @@ public class KiiUserService {
 		return loginInfo.getToken();
 	}
 
+	public void bindToInfo(BeehiveUser user){
+		tokenBind.bindUserInfo(user.getId(),user.getUserPassword());
+	}
+
 	public void changePassword(String oldPwd,String newPwd){
 
 		userService.changePassword(oldPwd,newPwd);

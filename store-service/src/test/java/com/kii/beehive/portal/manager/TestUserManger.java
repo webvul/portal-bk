@@ -59,7 +59,7 @@ public class TestUserManger  extends TestInit {
 
 		authManager.initPassword(oneTimeToken,user.getUserName(),"qwerty");
 
-		AuthRestBean  bean=authManager.login(name,"qwerty",false);
+		AuthRestBean  bean=authManager.login(name,"qwerty");
 
 		String newToken=bean.getAccessToken();
 
@@ -81,7 +81,7 @@ public class TestUserManger  extends TestInit {
 //		user.setCompany("kiicloud");
 
 
-		AuthRestBean  rest=authManager.login(name,"qwerty",false);
+		AuthRestBean  rest=authManager.login(name,"qwerty");
 
 		String userID=rest.getUser().getId();
 
@@ -91,7 +91,7 @@ public class TestUserManger  extends TestInit {
 
 		authManager.initPassword(oneTimeToken,name,"qwerty");
 
-		AuthRestBean  bean=authManager.login(name,"qwerty",false);
+		AuthRestBean  bean=authManager.login(name,"qwerty");
 
 		String newToken=bean.getAccessToken();
 
@@ -107,7 +107,7 @@ public class TestUserManger  extends TestInit {
 
 		BeehiveUser  user=userManager.getUserByID("Alfred");
 
-		String pwd=user.getDefaultPassword();
+		String pwd=user.getUserPassword();
 
 		String token=kiiUserService.bindToUser(user,pwd);
 
