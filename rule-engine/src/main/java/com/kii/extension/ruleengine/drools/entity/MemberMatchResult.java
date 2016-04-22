@@ -26,6 +26,13 @@ public class MemberMatchResult {
 		this.triggerID=triggerID;
 		this.result=true;
 	}
+
+	public MemberMatchResult(String triggerID, String name,String thingID){
+		this.thingID=thingID;
+		this.triggerID=triggerID;
+		this.name=name;
+		this.result=true;
+	}
 	public boolean isResult() {
 		return result;
 	}

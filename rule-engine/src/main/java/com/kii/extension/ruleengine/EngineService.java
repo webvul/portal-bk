@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -52,6 +51,10 @@ public class EngineService {
 		trigger.setType(TriggerType.multiple);
 		trigger.setTriggerID(record.getId());
 		trigger.setStream(false);
+
+		String drl=ruleGeneral.generMultipleDrlConfig(record);
+
+		droolsTriggerService.addMultipleTrigger(trigger,drl);
 
 		record.getSummarySource().forEach((name,src)->{
 
@@ -192,7 +195,7 @@ public class EngineService {
 	}
 
 
-	public void  createSimpleTrigger(String thingID, SimpleTriggerRecord record) throws SchedulerException {
+	public void  createSimpleTrigger(String thingID, SimpleTriggerRecord record)  {
 
 
 		Trigger trigger=new Trigger();
@@ -206,6 +209,10 @@ public class EngineService {
 
 		trigger.setEnable(TriggerRecord.StatusType.enable == record.getRecordStatus());
 
+		String rule=ruleGeneral.generDrlConfig(triggerID,TriggerType.simple,record.getPredicate());
+
+		droolsTriggerService.addTrigger(trigger,rule);
+
 		if(!StringUtils.isEmpty(thingID)) {
 			Thing thing=new Thing();
 			thing.setThingID(thingID);
@@ -213,11 +220,6 @@ public class EngineService {
 			thing.setName("comm");
 			droolsTriggerService.addTriggerData(thing);
 		}
-
-		String rule=ruleGeneral.generDrlConfig(triggerID,TriggerType.simple,record.getPredicate());
-
-
-		droolsTriggerService.addTrigger(trigger,rule);
 
 		droolsTriggerService.fireCondition();
 

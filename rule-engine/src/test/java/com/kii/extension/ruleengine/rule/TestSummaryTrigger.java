@@ -20,7 +20,6 @@ import com.kii.extension.ruleengine.store.trigger.SummaryFunctionType;
 import com.kii.extension.ruleengine.store.trigger.SummarySource;
 import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TagSelector;
-import com.kii.extension.ruleengine.store.trigger.TimerUnitType;
 import com.kii.extension.ruleengine.store.trigger.WhenType;
 
 public class TestSummaryTrigger extends  TestInit{
@@ -81,13 +80,13 @@ public class TestSummaryTrigger extends  TestInit{
 		perdicate.setTriggersWhen(WhenType.CONDITION_TRUE);
 		record.setPredicate(perdicate);
 
-//		String triggerID=dao.addKiiEntity(record);
 
 		String triggerID="300";
 		record.setId(triggerID);
 
 		engine.createSummaryTrigger(record,thingMap,false);
 
+		engine.enableTrigger(triggerID);
 
 		Set<String> thingIDs=new HashSet<>();
 
@@ -152,13 +151,13 @@ public class TestSummaryTrigger extends  TestInit{
 		perdicate.setTriggersWhen(WhenType.CONDITION_TRUE);
 		record.setPredicate(perdicate);
 
-//		String triggerID=dao.addKiiEntity(record);
 
 		String triggerID="301";
 		record.setId(triggerID);
 
 		engine.createSummaryTrigger(record,thingMap,true);
 
+		engine.enableTrigger(triggerID);
 
 		Set<String> thingIDs=new HashSet<>();
 
@@ -184,9 +183,8 @@ public class TestSummaryTrigger extends  TestInit{
 		exp2.setStateName("bar");
 
 		SlideFuntion slide2=new SlideFuntion();
-		slide2.setTimeUnit(TimerUnitType.Second);
-		slide2.setInterval(3);
-		slide2.setType(SlideFuntion.SlideType.time);
+		slide2.setLength(1);
+		slide2.setType(SlideFuntion.SlideType.length);
 		exp2.setSlideFuntion(slide2);
 		return exp2;
 	}

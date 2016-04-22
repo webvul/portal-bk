@@ -199,12 +199,8 @@ public class TriggerManager {
 				thingID = thingInfo.getFullKiiThingID();
 			}
 		}
-		try {
-			service.createSimpleTrigger(thingID,record);
-		} catch (SchedulerException e) {
-			e.printStackTrace();
-			throw new IllegalArgumentException("preparedCondition schedule error :" + e.getMessage());
-		}
+		service.createSimpleTrigger(thingID,record);
+
 	}
 
 

@@ -21,7 +21,7 @@ when
 	$trigger:Trigger($triggerID:triggerID,type ==TriggerType.multiple)
 	Group(triggerID=$triggerID,$name:name,$things:things )
     CurrThing(thing memberOf $things ||  init==true )
-	accumulate(MemberMatchResult(triggerID==$triggerID && name==$name );
+	accumulate(MemberMatchResult(triggerID==$triggerID,name==$name,thingID memberOf $things);
                         $thingCount : count(1);
               )
     $map:MultiplesValueMap(trigger==$triggerID)
