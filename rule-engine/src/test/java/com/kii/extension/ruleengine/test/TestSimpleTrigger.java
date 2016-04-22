@@ -40,7 +40,8 @@ public class TestSimpleTrigger extends InitTest {
 		ruleLoader.addCondition("trigger100",getDrlContent("rule100"));
 
 		Trigger trigger=new Trigger();
-		trigger.addThing(String.valueOf(0));
+
+		//trigger.addThing(String.valueOf(0));
 
 		trigger.setType(TriggerType.simple);
 		trigger.setWhen(WhenType.CONDITION_FALSE_TO_TRUE);
@@ -49,6 +50,8 @@ public class TestSimpleTrigger extends InitTest {
 		trigger.setTriggerID(id);
 
 		ruleLoader.addOrUpdateData(trigger);
+
+		addThing(id,String.valueOf(0));
 
 		updateThingState("0", paramNo);
 		ruleLoader.fireCondition();
@@ -81,13 +84,14 @@ public class TestSimpleTrigger extends InitTest {
 
 	}
 
+
+
 	@Test
 	public void testTrigger101(){
 
 		ruleLoader.addCondition("trigger",getDrlContent("rule101"));
 
 		Trigger trigger=new Trigger();
-		trigger.addThing(String.valueOf(1));
 
 		trigger.setType(TriggerType.simple);
 		trigger.setWhen(WhenType.CONDITION_TRUE);
@@ -99,6 +103,8 @@ public class TestSimpleTrigger extends InitTest {
 		ruleLoader.addOrUpdateData(trigger);
 
 		String thingID = "1";
+
+		addThing(triggerID,thingID);
 
 		updateThingState(thingID);
 
@@ -133,7 +139,8 @@ public class TestSimpleTrigger extends InitTest {
 		String triggerID="102";
 
 		Trigger trigger=new Trigger();
-		trigger.addThing(String.valueOf(2));
+		addThing(triggerID,"2");
+
 
 		trigger.setType(TriggerType.simple);
 		trigger.setWhen(WhenType.CONDITION_TRUE_TO_FALSE);
@@ -181,7 +188,8 @@ public class TestSimpleTrigger extends InitTest {
 		String triggerID="103";
 
 		Trigger trigger=new Trigger();
-		trigger.addThing(String.valueOf(2));
+		addThing(triggerID,"2");
+
 
 		trigger.setType(TriggerType.simple);
 		trigger.setWhen(WhenType.CONDITION_CHANGED);

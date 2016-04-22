@@ -1,12 +1,11 @@
 
 
-rule "${triggerID} unit {$unitName} custom segment:group"
+rule "${triggerID} multiple segment:group express ${name}"
 when
-    UnitSource ( $unitName:unitName, $triggerID:triggerID, $things:things , ( unitName=="${unitName}"  &&  triggerID=="${triggerID}"   ) )
-	accumulate( ThingStatusInRule($thingID:thingID memberOf  $things,${express} );
-                              $result : count($thingID);
-	)
-    then
-		insertLogical(new UnitResult($triggerID,$unitName,$result));
+	Trigger($triggerID:triggerID=="${triggerID}" , enable == true)
+    Group( triggerID==$triggerID , $things:things ,$name:name)
+    CurrThing(thing memberOf $things)
+    ThingStatusInRule( $thingID:thingID memberOf $things,${express}  )
+then
+	insertLogical(new MemberMatchResult($triggerID,$thingID));
 end
-

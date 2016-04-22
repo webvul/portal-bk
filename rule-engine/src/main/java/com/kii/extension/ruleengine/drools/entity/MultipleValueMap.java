@@ -16,8 +16,8 @@ public class MultipleValueMap {
 		valueMap.putAll(map.getValues());
 	}
 
-	public void setUnitValue(UnitResult result){
-		valueMap.put(result.getUnitName(),result.getValue());
+	public void setUnitValue(String  name,Object value){
+		valueMap.put(name,value);
 	}
 
 	public Map<String,Object> getValues(){

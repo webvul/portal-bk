@@ -31,13 +31,15 @@ public class TestScheduleTrigger extends InitTest {
 		ruleLoader.addCondition("schedule",getDrlContent("ruleWithSchedule"));
 
 		Trigger trigger=new Trigger();
-		trigger.addThing(String.valueOf(10));
 
 		trigger.setType(TriggerType.simple);
 		trigger.setWhen(WhenType.CONDITION_FALSE_TO_TRUE);
 
 		String id = "500";
 		trigger.setTriggerID(id);
+
+		addThing(id,String.valueOf(10));
+
 
 		ruleLoader.addOrUpdateData(trigger);
 
@@ -56,7 +58,6 @@ public class TestScheduleTrigger extends InitTest {
 		ruleLoader.addCondition("schedule",getDrlContent("ruleWithSchedule"));
 
 		Trigger trigger=new Trigger();
-		trigger.addThing(String.valueOf(11));
 
 		trigger.setType(TriggerType.simple);
 		trigger.setWhen(WhenType.CONDITION_FALSE_TO_TRUE);
@@ -65,6 +66,9 @@ public class TestScheduleTrigger extends InitTest {
 		trigger.setTriggerID(id);
 
 		ruleLoader.addOrUpdateData(trigger);
+
+		addThing(id,String.valueOf(11));
+
 
 		updateThingState("11", paramOk);
 
@@ -84,13 +88,15 @@ public class TestScheduleTrigger extends InitTest {
 		ruleLoader.addCondition("schedule",getDrlContent("ruleWithSchedule"));
 
 		Trigger trigger=new Trigger();
-		trigger.addThing(String.valueOf(11));
 
 		trigger.setType(TriggerType.simple);
 		trigger.setWhen(WhenType.CONDITION_FALSE_TO_TRUE);
 
 		String id = "502";
 		trigger.setTriggerID(id);
+
+		addThing(id,String.valueOf(11));
+
 
 		ruleLoader.addOrUpdateData(trigger);
 

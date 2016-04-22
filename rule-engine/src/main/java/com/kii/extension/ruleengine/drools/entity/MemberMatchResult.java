@@ -11,8 +11,17 @@ public class MemberMatchResult {
 
 	private boolean result=false;
 
+	private String name;
 
-	public MemberMatchResult(String triggerID,String thingID){
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public MemberMatchResult(String triggerID, String thingID){
 		this.thingID=thingID;
 		this.triggerID=triggerID;
 		this.result=true;

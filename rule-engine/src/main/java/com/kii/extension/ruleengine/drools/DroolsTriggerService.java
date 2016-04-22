@@ -13,8 +13,10 @@ import org.springframework.stereotype.Component;
 import com.kii.extension.ruleengine.drools.entity.MatchResult;
 import com.kii.extension.ruleengine.drools.entity.Summary;
 import com.kii.extension.ruleengine.drools.entity.SummaryValueMap;
+import com.kii.extension.ruleengine.drools.entity.ThingCol;
 import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
 import com.kii.extension.ruleengine.drools.entity.Trigger;
+import com.kii.extension.ruleengine.drools.entity.TriggerData;
 
 @Component
 public class DroolsTriggerService {
@@ -34,8 +36,7 @@ public class DroolsTriggerService {
 
 	private final Map<String, Trigger> triggerMap=new ConcurrentHashMap<>();
 
-	private final Map<String,Map<String,Summary>>  summaryMap=new ConcurrentHashMap<>();
-
+	private final Map<String,Map<String,ThingCol>> thingColMap =new ConcurrentHashMap<>();
 
 	/**
 	 * 清空 drools 相关 重新初始化
@@ -44,7 +45,7 @@ public class DroolsTriggerService {
 		cloudService.clear();
 		streamService.clear();
 		triggerMap.clear();
-		summaryMap.clear();
+		thingColMap.clear();
 	}
 
 
@@ -100,48 +101,45 @@ public class DroolsTriggerService {
 
 
 
-	public void addSummary(Summary summary) {
+	public void addTriggerData(TriggerData data) {
+
+		Trigger trigger=triggerMap.get(data.getTriggerID());
+
+		getService(trigger).addOrUpdateData(data);
+
+		if(data instanceof ThingCol) {
+
+			thingColMap.computeIfAbsent(trigger.getTriggerID(), (id) -> new HashMap<>()).put(((ThingCol) data).getName(), (ThingCol)data);
+		}
+	}
+
+
+	public void addSlideSummary(Summary summary,String drl) {
 
 		Trigger trigger=triggerMap.get(summary.getTriggerID());
 
 		getService(trigger).addOrUpdateData(summary);
 
-		summaryMap.computeIfAbsent(trigger.getTriggerID(),(id)->new HashMap<>()).put(summary.getSummaryField(),summary);
+		getService(trigger).addCondition("slide-rule"+summary.getTriggerID()+summary.getName(),drl);
+
+		if(summary instanceof ThingCol) {
+
+			thingColMap.computeIfAbsent(trigger.getTriggerID(), (id) -> new HashMap<>()).put(((ThingCol) summary).getName(), summary);
+		}
+
+//		thingColMap.computeIfAbsent(trigger.getTriggerID(),(id)->new HashMap<>()).put(summary.getSummaryField(),summary);
 
 	}
 
-	public void addSummary(Summary summary,String drl) {
-
-		Trigger trigger=triggerMap.get(summary.getTriggerID());
-
-		getService(trigger).addOrUpdateData(summary);
-
-		getService(trigger).addCondition("slide-rule"+summary.getTriggerID()+summary.getSummaryField(),drl);
-
-		summaryMap.computeIfAbsent(trigger.getTriggerID(),(id)->new HashMap<>()).put(summary.getSummaryField(),summary);
-
-	}
-
-	public void updateThingsInTrigger(String triggerID, Set<String> newThings) {
+	public void updateThingsWithName(String triggerID,String name,Set<String> newThings){
 
 		Trigger trigger=triggerMap.get(triggerID);
 
-		trigger.setThings(newThings);
+		ThingCol data= thingColMap.get(triggerID).get(name);
 
+		data.setThingCol(newThings);
 
-		getService(trigger).addOrUpdateData(trigger);
-
-	}
-
-	public void updateThingsInSummary(String triggerID,String summaryField,Set<String> newThings){
-
-		Trigger trigger=triggerMap.get(triggerID);
-
-		Summary summary=summaryMap.get(triggerID).get(summaryField);
-
-		summary.setThings(newThings);
-
-		getService(trigger).addOrUpdateData(summary);
+		getService(trigger).addOrUpdateData(data);
 	}
 
 	public void removeTrigger(String triggerID){
@@ -153,7 +151,7 @@ public class DroolsTriggerService {
 		getService(trigger).removeData(trigger);
 		getService(trigger).removeCondition("rule"+triggerID);
 
-		Map<String,Summary> map=summaryMap.remove(triggerID);
+		Map<String,ThingCol> map= thingColMap.remove(triggerID);
 		if(map != null ){
 			map.values().forEach(summary-> getService(trigger).removeData(summary));
 		}

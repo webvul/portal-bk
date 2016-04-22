@@ -1,7 +1,6 @@
 package com.kii.extension.ruleengine;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +13,9 @@ import org.springframework.util.StringUtils;
 
 import com.kii.extension.ruleengine.drools.DroolsTriggerService;
 import com.kii.extension.ruleengine.drools.RuleGeneral;
+import com.kii.extension.ruleengine.drools.entity.Group;
 import com.kii.extension.ruleengine.drools.entity.Summary;
+import com.kii.extension.ruleengine.drools.entity.Thing;
 import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
 import com.kii.extension.ruleengine.drools.entity.Trigger;
 import com.kii.extension.ruleengine.drools.entity.TriggerType;
@@ -25,6 +26,8 @@ import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerGroupPolicy;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.multiple.MultipleSrcTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.multiple.SummaryFunSource;
+import com.kii.extension.ruleengine.store.trigger.multiple.ThingSource;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
 @Component
@@ -42,13 +45,55 @@ public class EngineService {
 
 
 	//TODO:need been finish
-	public void createMultipleSourceTrigger(MultipleSrcTriggerRecord record){
+	public void createMultipleSourceTrigger(MultipleSrcTriggerRecord record,Map<String,Set<String> > thingMap){
 
 
 		Trigger trigger=new Trigger();
 		trigger.setType(TriggerType.multiple);
 		trigger.setTriggerID(record.getId());
 		trigger.setStream(false);
+
+		record.getSummarySource().forEach((name,src)->{
+
+			    switch(src.getType()){
+					case summary:
+						SummaryFunSource source=(SummaryFunSource)src;
+
+						Summary summary=new Summary();
+						summary.setTriggerID(trigger.getTriggerID());
+						summary.setFieldName(source.getStateName());
+						summary.setFunName(source.getFunction().name());
+						summary.setName(name);
+						summary.setThingCol(thingMap.get(name));
+
+						droolsTriggerService.addTriggerData(summary);
+						break;
+					case group:
+
+						Group group=new Group();
+						group.setName(name);
+						group.setThingCol(thingMap.get(name));
+						group.setTriggerID(trigger.getTriggerID());
+
+						droolsTriggerService.addTriggerData(group);
+						break;
+					case thing:
+
+						ThingSource  thingSrc=(ThingSource)src;
+						Thing thing=new Thing();
+						thing.setTriggerID(trigger.getTriggerID());
+						thing.setName(name);
+						thing.setFieldName(thingSrc.getStateName());
+						thing.setThingID(thingSrc.getThingID());
+
+						droolsTriggerService.addTriggerData(thing);
+						break;
+					default:
+					}
+
+
+				}
+		);
 
 	}
 
@@ -90,17 +135,17 @@ public class EngineService {
 				summary.setTriggerID(trigger.getTriggerID());
 				summary.setFieldName(exp.getStateName());
 
-				summary.setSummaryField(k+"."+exp.getSummaryAlias());
-				summary.setThings(summaryMap.get(k));
+				summary.setName(k+"."+exp.getSummaryAlias());
+				summary.setThingCol(summaryMap.get(k));
 
 				if(exp.getSlideFuntion()!=null){
 					String drl=ruleGeneral.generSlideConfig(trigger.getTriggerID(),k,exp);
 					summary.setFunName(exp.getFunction().name());
-					droolsTriggerService.addSummary(summary,drl);
+					droolsTriggerService.addSlideSummary(summary,drl);
 
 				}else{
 					summary.setFunName(exp.getFunction().name());
-					droolsTriggerService.addSummary(summary);
+					droolsTriggerService.addTriggerData(summary);
 				}
 
 			});
@@ -119,9 +164,13 @@ public class EngineService {
 		trigger.setTriggerID(record.getId());
 		trigger.setType(TriggerType.group);
 
+		Group group=new Group();
+
 		TriggerGroupPolicy policy=record.getPolicy();
-		trigger.setPolicy(policy.getGroupPolicy());
-		trigger.setNumber(policy.getCriticalNumber());
+		group.setPolicy(policy.getGroupPolicy());
+		group.setNumber(policy.getCriticalNumber());
+		group.setTriggerID(record.getId());
+		group.setName("comm");
 
 		trigger.setStream(false);
 
@@ -129,13 +178,14 @@ public class EngineService {
 
 		trigger.setWhen(predicate.getTriggersWhen());
 
-		trigger.setThings(thingIDs);
+		group.setThingCol(thingIDs);
 
 		trigger.setEnable(record.getRecordStatus()== TriggerRecord.StatusType.enable);
 
 		String rule=ruleGeneral.generGroupDrlConfig(record.getId(),policy.getGroupPolicy(),predicate);
 
 		droolsTriggerService.addTrigger(trigger,rule);
+		droolsTriggerService.addTriggerData(group);
 
 		droolsTriggerService.fireCondition();
 
@@ -157,7 +207,11 @@ public class EngineService {
 		trigger.setEnable(TriggerRecord.StatusType.enable == record.getRecordStatus());
 
 		if(!StringUtils.isEmpty(thingID)) {
-			trigger.setThings(Collections.singleton(thingID));
+			Thing thing=new Thing();
+			thing.setThingID(thingID);
+			thing.setTriggerID(triggerID);
+			thing.setName("comm");
+			droolsTriggerService.addTriggerData(thing);
 		}
 
 		String rule=ruleGeneral.generDrlConfig(triggerID,TriggerType.simple,record.getPredicate());
@@ -172,14 +226,14 @@ public class EngineService {
 
 	public void changeThingsInTrigger(String triggerID,Set<String> newThings){
 
-		droolsTriggerService.updateThingsInTrigger(triggerID,newThings);
+		droolsTriggerService.updateThingsWithName(triggerID,"comm",newThings);
 
 	}
 
 
 	public void changeThingsInSummary(String triggerID,String summaryName,Set<String> newThings){
 
-		droolsTriggerService.updateThingsInSummary( triggerID,summaryName,newThings);
+		droolsTriggerService.updateThingsWithName(triggerID,summaryName,newThings);
 
 	}
 

@@ -2,7 +2,6 @@ package com.kii.extension.ruleengine.demo
 
 import com.kii.extension.ruleengine.drools.entity.*;
 
-global CurrThing currThing;
 
 
 
@@ -13,8 +12,9 @@ global CurrThing currThing;
 rule "add trigger 500's  express "
 	timer (cron:* 0/1 * * * ?)
 when
-    Trigger( $triggerID:triggerID=="500",$things:things  )
-    CurrThing(thing memberOf $things) from currThing
+    Trigger( $triggerID:triggerID=="500")
+    Thing(triggerID==$triggerID,$thingID:thingID)
+    CurrThing(thing == $thingID)
     ThingStatusInRule( $thingID:thingID memberOf $things,(values["foo"]>10&&values["bar"]<0)  )
 then
 	insertLogical(new MatchResult($triggerID));
@@ -25,8 +25,9 @@ end
 rule "add trigger 501's  express "
 	timer (int: 0s 1m)
 when
-    Trigger( $triggerID:triggerID=="501",$things:things  )
-    CurrThing(thing memberOf $things) from currThing
+    Trigger( $triggerID:triggerID=="501"  )
+    Thing(triggerID==$triggerID,$thingID:thingID)
+    CurrThing(thing == $thingID)
     ThingStatusInRule( $thingID:thingID memberOf $things,(values["foo"]>10&&values["bar"]<0)  )
 then
 	insertLogical(new MatchResult($triggerID));

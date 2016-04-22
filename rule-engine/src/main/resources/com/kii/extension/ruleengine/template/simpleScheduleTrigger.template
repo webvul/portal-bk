@@ -10,8 +10,9 @@ import com.kii.extension.ruleengine.drools.CommandExec;
 rule "${triggerID} user group segment:schedule"
    ${timer}
 when
-    Trigger( $triggerID:triggerID,  triggerID =="${triggerID}" && enable == true ,$things:things  )
-    ThingStatusInRule( $thingID:thingID memberOf $things,${express}  )
+    Trigger( $triggerID:triggerID =="${triggerID}" && enable == true  )
+    Thing(thingID:thingID,triggerID==$triggerID)
+    ThingStatusInRule( thingID == $thingID,${express}  )
 then
 	CommandExec exec=(CommandExec)kcontext.getKieRuntime().getEnvironment().get("exec");
     exec.doExecute($triggerID);
