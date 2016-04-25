@@ -25,7 +25,7 @@ import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerGroupPolicy;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.multiple.MultipleSrcTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.multiple.SummaryFunSource;
+import com.kii.extension.ruleengine.store.trigger.multiple.GroupSummarySource;
 import com.kii.extension.ruleengine.store.trigger.multiple.ThingSource;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
@@ -60,18 +60,15 @@ public class EngineService {
 
 			    switch(src.getType()){
 					case summary:
-						SummaryFunSource source=(SummaryFunSource)src;
+						GroupSummarySource source=(GroupSummarySource)src;
 
 						Summary summary=new Summary();
 						summary.setTriggerID(trigger.getTriggerID());
 						summary.setFieldName(source.getStateName());
 						summary.setFunName(source.getFunction().name());
 						summary.setName(name);
-						summary.setThingCol(thingMap.get(name));
 
 						droolsTriggerService.addTriggerData(summary);
-						break;
-					case group:
 
 						Group group=new Group();
 						group.setName(name);
@@ -79,6 +76,7 @@ public class EngineService {
 						group.setTriggerID(trigger.getTriggerID());
 
 						droolsTriggerService.addTriggerData(group);
+
 						break;
 					case thing:
 
@@ -86,8 +84,8 @@ public class EngineService {
 						Thing thing=new Thing();
 						thing.setTriggerID(trigger.getTriggerID());
 						thing.setName(name);
-						thing.setFieldName(thingSrc.getStateName());
-						thing.setThingID(thingSrc.getThingID());
+						thing.setFieldSet(thingSrc.getFieldSet());
+						thing.setThingID(thingMap.get(name).iterator().next());
 
 						droolsTriggerService.addTriggerData(thing);
 						break;

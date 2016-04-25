@@ -10,33 +10,6 @@ public class Summary extends ThingCol implements TriggerData{
 
 	private String fieldName;
 
-//	private String summaryField;
-
-
-
-
-//	private Set<String> things=new HashSet<>();
-
-//	public Set<String> getThings() {
-//		return things;
-//	}
-//
-//	public void setThings(Set<String> things) {
-//		this.things = things;
-//	}
-//
-//	public void addThing(String thingID){
-//		this.things.add(thingID);
-//	}
-
-//	public String getSummaryField() {
-//		return summaryField;
-//	}
-//
-//	public void setSummaryField(String summaryField) {
-//		this.summaryField = summaryField;
-//	}
-
 	public String getTriggerID() {
 		return triggerID;
 	}

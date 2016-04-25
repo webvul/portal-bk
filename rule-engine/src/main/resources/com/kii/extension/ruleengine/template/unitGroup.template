@@ -3,9 +3,9 @@
 rule "${triggerID} multiple segment:group express ${name}"
 when
 	Trigger($triggerID:triggerID=="${triggerID}" , enable == true)
-    Group( triggerID==$triggerID , $things:things ,$name:name)
+    $group:Group( triggerID==$triggerID , $things:things ,$name:name)
     CurrThing(thing memberOf $things)
-    ThingStatusInRule( $thingID:thingID memberOf $things,${express}  )
+    $status:ThingStatusInRule( $thingID:thingID memberOf $things,${express}  )
 then
-	insertLogical(new MemberMatchResult($triggerID,$name,$thingID));
+	insertLogical(new MemberMatchResult($group,$status));
 end

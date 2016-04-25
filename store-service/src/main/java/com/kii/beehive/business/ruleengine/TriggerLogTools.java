@@ -1,5 +1,14 @@
 package com.kii.beehive.business.ruleengine;
 
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
+
 import com.kii.beehive.business.helper.OpLogTools;
 import com.kii.beehive.business.manager.ThingTagManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
@@ -9,14 +18,6 @@ import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Component;
-
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
 
 @Component
 public class TriggerLogTools {
@@ -67,14 +68,14 @@ public class TriggerLogTools {
 	}
 
 	@Async
-	public void outputDeleteLog(TriggerRecord  record){
+	public void outputDeleteLog(String triggerID){
 		//日期时间+当前用户ID+"trigger”+trigger type(simple/group/summary)+”delete"+当前triggerID
 		List<String> list=new LinkedList<>();
 		list.add(AuthInfoStore.getUserID());
 		list.add("trigger");
-		list.add(record.getType().name());
+		list.add(" ");
 		list.add("delete");
-		list.add(record.getTriggerID());
+		list.add(triggerID);
 		logTool.write(list);
 	}
 

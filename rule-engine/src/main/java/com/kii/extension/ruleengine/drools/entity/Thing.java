@@ -1,5 +1,8 @@
 package com.kii.extension.ruleengine.drools.entity;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.google.common.base.Objects;
 
 public class Thing implements TriggerData{
@@ -10,15 +13,14 @@ public class Thing implements TriggerData{
 
 	private String thingID;
 
-	private String fieldName;
+	private Set<String> fieldSet=new HashSet<>();
 
-
-	public String getFieldName() {
-		return fieldName;
+	public Set<String> getFielSet() {
+		return fieldSet;
 	}
 
-	public void setFieldName(String fieldName) {
-		this.fieldName = fieldName;
+	public void setFieldSet(Set<String> fieldSet) {
+		this.fieldSet = fieldSet;
 	}
 
 	public String getTriggerID() {

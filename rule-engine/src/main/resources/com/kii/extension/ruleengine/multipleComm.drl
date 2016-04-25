@@ -3,18 +3,7 @@ package com.kii.extension.ruleengine.drools.rule
 import com.kii.extension.ruleengine.drools.entity.*;
 
 
-rule "copy  all unit summary value to multipleMap"
-  no-loop true
-when
-	Trigger(type ==TriggerType.multiple , $triggerID:triggerID)
-	$map:SummaryValueMap(triggerID==$triggerID)
-	$multipleMap:MultiplesValueMap(trigger==$triggerID)
-then
-	modify($multipleMap){
-    	setSummaryMap($map);
-    };
-    System.out.println("compute  summary value :"+$map.getValues()+" to multiple map ");
-end
+
 
 rule "Multiples unit custom segment:group count"
 when
@@ -35,14 +24,14 @@ end
 rule "put all thing spec status value to multipleMap"
 when
 	$trigger:Trigger($triggerID:triggerID,type ==TriggerType.multiple)
-    Thing(triggerID=$triggerID,$name:name,$thingID:thingID,$fieldName:fieldName )
-    CurrThing(thing == $thingID ||  init==true )
-    ThingStatusInRule( thingID == $thingID, $value:values[$fieldName] )
+	Thing(triggerID=$triggerID,$name:name,$thingID:thingID,$fieldSet:fieldSet )
+	CurrThing(thing == $thingID ||  init==true )
+	ThingStatusInRule( thingID == $thingID, $values:values)
     $map:MultiplesValueMap(trigger==$triggerID)
 then
 	System.out.println("multiple trigger "+$trigger.getTriggerID()+" 's thing value "+$thingID+" name:"+$name);
 	modify($map){
-        	setUnitValue($name,$value);
+        	setFieldValueSet($name,$fieldSet,$values);
     };
 end
 
