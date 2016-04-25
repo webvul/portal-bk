@@ -64,10 +64,6 @@ public class TestGroupTrigger extends TestInit {
 
 		engine.createGroupTrigger(thingIDs,record);
 
-		thingIDs.forEach(id->sendBadThingStatus(id));
-
-		assertEquals(0,exec.getHitCount(triggerID));
-
 		sendGoodThingStatus(thingIDs.iterator().next());
 
 		assertEquals(1,exec.getHitCount(triggerID));

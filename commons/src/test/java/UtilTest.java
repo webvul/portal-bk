@@ -1,4 +1,6 @@
 import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertFalse;
+import static junit.framework.TestCase.assertTrue;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -7,8 +9,43 @@ import java.util.Set;
 
 import org.junit.Test;
 
+import com.kii.beehive.portal.auth.UrlTemplateVerify;
+
 public class UtilTest {
 
+
+	@Test
+	public void testXor(){
+
+		boolean a1=true;
+		boolean b1=true;
+
+
+		boolean a2=false;
+		boolean b2=false;
+
+		assertFalse(a1^b1);
+		assertTrue(a1^b2);
+		assertTrue(a2^b1);
+		assertFalse(a2^b2);
+
+	}
+
+	@Test
+	public void testUrlMatch(){
+
+		assertTrue(UrlTemplateVerify.verfiyUrlTemplate("/**","/abc"));
+
+		assertTrue(UrlTemplateVerify.verfiyUrlTemplate("/**","/abc/sys"));
+
+		assertTrue(UrlTemplateVerify.verfiyUrlTemplate("/**","/a/b/c"));
+
+		assertTrue(UrlTemplateVerify.verfiyUrlTemplate("/*","/abc"));
+
+
+//		assertTrue(UrlTemplateVerify.verfiyUrlTemplate("/[a|b]","/a"));
+
+	}
 
 	@Test
 	public void testSetHash(){

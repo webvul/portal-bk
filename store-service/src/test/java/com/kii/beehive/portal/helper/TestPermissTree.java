@@ -39,14 +39,14 @@ public class TestPermissTree  {
 		assertTrue(subModSet.containsKey("tag"));
 
 
-		assertEquals(4,subModSet.get("system").getSubmodule().size());
+		assertEquals(2,subModSet.get("system").getSubmodule().size());
 
-		PermissionTree  info=subModSet.get("system").getSubmodule().get("info");
+		PermissionTree  info=subModSet.get("system").getSubmodule().get("AppRegist");
 
-		assertEquals("root.system.info",info.getFullPath());
-		assertEquals("/info",info.getUrl());
-		assertEquals("版本信息",info.getDisplayName());
-		assertEquals("GET",info.getMethod());
+		assertEquals("root.system.AppRegist",info.getFullPath());
+		assertEquals("/sys/appRegist/*",info.getUrl());
+		assertEquals("添加新kiiCloud app",info.getDisplayName());
+		assertEquals("POST",info.getMethod());
 
 	}
 
@@ -56,10 +56,10 @@ public class TestPermissTree  {
 
 		Set<String> set=new HashSet<>();
 
-		set.add("info");
 		set.add("Login");
 		set.add("Logout");
 		set.add("UpdateUser");
+		set.add("system");
 
 
 
@@ -69,7 +69,10 @@ public class TestPermissTree  {
 
 		assertFalse(ruleTree.doVerify("GET","/users/abc"));
 
-		assertTrue(ruleTree.doVerify("GET","/info"));
+		assertTrue(ruleTree.doVerify("PATCH","/sys/abc"));
+
+		assertFalse(ruleTree.doVerify("PATCH","/tags/abc"));
+
 
 	}
 
@@ -90,10 +93,12 @@ public class TestPermissTree  {
 
 		assertTrue(ruleTree.doVerify("GET","/users/abc"));
 
-		assertTrue(ruleTree.doVerify("GET","/info"));
+//		assertFalse(ruleTree.doVerify("GET","/sys/appRegist/*"));
 
-		assertTrue(ruleTree.doVerify("GET","/syncuser/abc"));
+		assertTrue(ruleTree.doVerify("POST","/sys/appRegist/*"));
 
+
+		assertTrue(ruleTree.doVerify("POST","/sysappRegist/*"));
 
 	}
 
@@ -125,29 +130,36 @@ public class TestPermissTree  {
 
 
 	@Test
-	public void testDeny(){
+	public void testDenyVerify(){
 
 		Set<String> set=new HashSet<>();
 
-		set.add("info");
+		set.add("system");
 		set.add("Login");
 		set.add("Logout");
 		set.add("UpdateUser");
 
 		PermissionTree  tree=service.getDenyRulePermissionTree(set);
+//
+		assertTrue(tree.doVerify("POST","/tags/abc"));
 
-		assertTrue(tree.getSubmodule().containsKey("tag"));
+		assertFalse(tree.doVerify("POST","/oauth2/logout"));
 
-		assertTrue(tree.getSubmodule().containsKey("auth"));
+//		PermissionTree auth=tree.getSubmodule().get("auth");
 
-		PermissionTree auth=tree.getSubmodule().get("auth");
+		assertTrue(tree.doVerify("POST","/oauth2/ActiviteUser"));
+//
+		assertFalse(tree.doVerify("POST","/oauth2/login"));
+//
+//		assertEquals(3,auth.getSubmodule().size());
 
-		assertTrue(auth.getSubmodule().containsKey("ActiviteUser"));
 
-		assertFalse(auth.getSubmodule().containsKey("Login"));
+		assertFalse(tree.doVerify("/sys/abc"));
 
-		assertEquals(3,auth.getSubmodule().size());
+		assertTrue(tree.doVerify("/info"));
+
 
 	}
+
 
 }

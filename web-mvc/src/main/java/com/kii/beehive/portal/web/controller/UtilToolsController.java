@@ -79,7 +79,7 @@ public class UtilToolsController {
 	 *
 	 * @param paramMap
 	 */
-	@RequestMapping(value = "/appinit", method = {RequestMethod.POST}, consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+	@RequestMapping(value = "/sys/appinit", method = {RequestMethod.POST}, consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
 	public void initAppContext(@RequestBody Map<String, Object> paramMap, HttpServletRequest request) {
 
 		String userName = (String) paramMap.getOrDefault("portal.username", portalUserName);
@@ -101,7 +101,7 @@ public class UtilToolsController {
 		return;
 	}
 
-	@RequestMapping(value = "/appRegist/{appID}", method = {RequestMethod.POST}, consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+	@RequestMapping(value = "/sys/appRegist/{appID}", method = {RequestMethod.POST}, consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
 	public void initAppContext(@PathVariable("appID") String appID, HttpServletRequest request) {
 
 		CallbackUrlParameter param = new CallbackUrlParameter();

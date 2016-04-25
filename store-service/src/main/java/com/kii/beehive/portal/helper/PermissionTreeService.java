@@ -4,9 +4,9 @@ import javax.annotation.PostConstruct;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -68,9 +68,15 @@ public class PermissionTreeService {
 
 		PermissionTree newTree=permissionEntry.clone();
 
-		Set<String> set = ruleSet.stream().map((k) -> fullPathMap.get(k)).collect(Collectors.toSet());
+		Set<String> set=new HashSet<>();
 
-		PatternSet pattern = new PatternSet(set);
+		ruleSet.forEach((k)->{
+			if(fullPathMap.containsKey(k)) {
+				set.add(fullPathMap.get(k));
+			}
+		});
+
+		PatternSet pattern =  PatternSet.getPattern(set);
 
 		newTree.doAcceptFilter(pattern);
 
@@ -83,9 +89,14 @@ public class PermissionTreeService {
 
 		PermissionTree newTree=permissionEntry.clone();
 
-		Set<String> set = ruleSet.stream().map((k) -> fullPathMap.get(k)).collect(Collectors.toSet());
+		Set<String> set=new HashSet<>();
 
-		PatternSet pattern = new PatternSet(set);
+		ruleSet.forEach((k)->{
+			if(fullPathMap.containsKey(k)) {
+				set.add(fullPathMap.get(k));
+			}
+		});
+		PatternSet pattern =  PatternSet.getPattern(set);
 
 		boolean sign=newTree.doDenyFilter(pattern);
 

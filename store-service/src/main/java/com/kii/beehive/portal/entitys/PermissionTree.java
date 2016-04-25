@@ -3,10 +3,9 @@ package com.kii.beehive.portal.entitys;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import com.kii.beehive.portal.auth.UrlTemplateVerify;
+import com.kii.beehive.portal.common.utils.SubStrUtils;
 
 public class PermissionTree {
 
@@ -20,10 +19,13 @@ public class PermissionTree {
 
 	private String method="*";
 
+	private String name;
+
+	private boolean fullMatch=false;
+
+	private boolean isDeny=false;
+
 	private Map<String,PermissionTree> submodule=new HashMap<>();
-
-
-
 
 
 	public PermissionTree clone(){
@@ -35,6 +37,10 @@ public class PermissionTree {
 		entry.setFullPath(fullPath);
 		entry.setMethod(method);
 
+		entry.fullMatch=this.fullMatch;
+		entry.isDeny=this.isDeny;
+		entry.name=this.name;
+
 		submodule.forEach((k,v)->entry.submodule.put(k,v.clone()));
 
 		return entry;
@@ -43,6 +49,8 @@ public class PermissionTree {
 	private  void fillIndexMap(String upperPath,Map<String,String> map) {
 
 		this.fullPath = upperPath;
+
+		this.name= SubStrUtils.getAfterSep(fullPath,'.');
 
 		submodule.forEach((k, v) -> {
 			String fullPath = upperPath + "." + k;
@@ -67,51 +75,87 @@ public class PermissionTree {
 
 	public void doAcceptFilter(PatternSet pattern) {
 
-		if(pattern.getNextLevel().isEmpty()){
+		doFilter(pattern,false);
+//		isDeny=false;
+//
+//		if(pattern.isBranchStop()){
+//			this.fullMatch=true;
+//			return;
+//		}
+//		this.fullMatch=false;
+//		submodule.keySet().retainAll(pattern.getNextLevel());
+//
+//		submodule.forEach((k,v)->v.doFilter(pattern.getNextPattern(k),false));
+	}
+
+
+	private  void doFilter(PatternSet pattern,boolean isDeny) {
+
+		this.isDeny=isDeny;
+
+		if(pattern.isBranchStop()){
+			this.fullMatch=true;
 			return;
 		}
+		this.fullMatch=false;
 		submodule.keySet().retainAll(pattern.getNextLevel());
 
-		submodule.forEach((k,v)->v.doAcceptFilter(pattern.getNextPattern(k)));
+		submodule.forEach((k,v)->v.doFilter(pattern.getNextPattern(k),isDeny));
 	}
 
 	public boolean doDenyFilter(PatternSet pattern) {
 
-		Set<String> removedSet=submodule.keySet().stream().filter(k->{
+		doFilter(pattern,true);
 
-			PatternSet nextPattern=pattern.getNextPattern(k);
+		return false;
 
-			if(nextPattern==null){
-				return false;
-			}
-
-			if(nextPattern.getNextLevel().isEmpty()){
-				return true;
-			}
-
-			return submodule.get(k).doDenyFilter(nextPattern);
-
-		}).collect(Collectors.toSet());
-
-		submodule.keySet().removeAll(removedSet);
-
-		return  submodule.keySet().isEmpty();
+//		Set<String> removedSet=new HashSet<>();
+//
+//		for(Map.Entry<String,PermissionTree>  entry:submodule.entrySet()){
+//
+//			String key=entry.getKey();
+//			PermissionTree subTree=entry.getValue();
+//
+//			PatternSet nextPattern=pattern.getNextPattern(key);
+//			if(nextPattern==null){
+//				continue;
+//			}
+//
+//			if(nextPattern.isBranchStop()){
+//				removedSet.add(key);
+//				continue;
+//			}
+//
+//			if(subTree.doDenyFilter(nextPattern)){
+//				removedSet.add(key);
+//			};
+//		}
+//
+//		submodule.keySet().removeAll(removedSet);
+//
+//		return  submodule.keySet().isEmpty();
 	}
 
-	private boolean removed(PatternSet pattern){
-		return pattern.getNextLevel().isEmpty();
-	}
+	public boolean doVerify(String url){
 
+		return doVerify("*",url);
+	}
 
 	public boolean doVerify(String method,String url){
 
-		if(submodule.isEmpty()){
-			return true;
+
+		if(!verify(method,url)){
+			return false^isDeny;
+		};
+
+		if(fullMatch){
+			return true^isDeny;
 		}
+
 		Optional<PermissionTree>  optional=submodule.values().stream().filter((t)-> t.verify(method,url)).findFirst();
 
 		if(!optional.isPresent()){
-			return false;
+			return false^isDeny;
 		}
 
 		return optional.get().doVerify(method,url);
@@ -123,6 +167,7 @@ public class PermissionTree {
 		if(!this.method.equals("*")  &&  !this.method.toLowerCase().equals(method.toLowerCase())){
 			return false;
 		}
+
 
 		return UrlTemplateVerify.verfiyUrlTemplate(this.url,url);
 	}

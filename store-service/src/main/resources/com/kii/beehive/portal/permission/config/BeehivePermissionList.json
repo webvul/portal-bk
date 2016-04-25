@@ -1,58 +1,26 @@
 {
   "displayName":"根",
-  "url":"/*",
+  "url":"/**",
   "submodule": {
     "tag": {
       "displayName": "标签管理",
-      "url": "/tags/*",
-      "submodule": {
-        "CreateTag": {
-          "method": "POST",
-          "url": "/tags/custom"
-        },
-        "DeleteTag": {
-          "method": "DELETE",
-          "url": "/tags/custom/*"
-        },
-        "SearchTag": {
-          "method": "GET",
-          "url": "/tags/search*"
-        }
-      }
+      "url": "/tags/**"
     },
     "thing": {
       "displayName": "设备管理",
-      "url": "/things/*",
-      "submodule": {
-        "createThing": {
-          "method": "POST",
-          "url": "/things"
-        },
-        "DeleteThing": {
-          "method": "DELETE",
-          "url": "things/*"
-        },
-        "SearchThing": {
-          "method": "GET",
-          "url": "/things/search*"
-        },
-        "SearchThingType": {
-          "method": "GET",
-          "url": "/things/types/*"
-        },
-        "SearchThingID": {
-          "method": "GET",
-          "url": "/things/*"
-        },
-        "DeleteThing": {
-          "method": "DELETE",
-          "url": "things/*"
-        }
-      }
+      "url": "/things/**"
     },
+    "usergroup":{
+      "displayName": "设备管理",
+      "url": "/usergroup/**"
+    },
+    "triggers":{
+      "displayName":"触发器管理",
+      "url":"/triggers/**"
+    }
     "user": {
       "displayName": "用户信息",
-      "url": "/users/*",
+      "url": "/users/**",
       "submodule": {
         "UpdateInfo": {
           "method": "PATCH",
@@ -74,7 +42,7 @@
     },
     "usermanager": {
       "displayName": "用户管理",
-      "url": "/usermanager/*",
+      "url": "/usermanager/**",
       "submodule": {
         "CreateUser": {
           "method": "POST",
@@ -122,24 +90,16 @@
     },
     "system": {
       "displayName": "系统维护",
-      "url": "/*",
+      "url":"/sys/**",
       "submodule": {
         "AppEnvInit": {
           "method": "POST",
-          "url": "/appinit"
+          "url": "/sys/appinit"
         },
         "AppRegist": {
           "method": "POST",
-          "url": "/appRegist/*"
-        },
-        "onboardingHelper": {
-          "method": "POST",
-          "url": "/onboardinghelper/*"
-        },
-        "info": {
-          "displayName":"版本信息",
-          "method": "GET",
-          "url": "/info"
+          "displayName":"添加新kiiCloud app",
+          "url": "/sys/appRegist/*"
         }
       }
     }

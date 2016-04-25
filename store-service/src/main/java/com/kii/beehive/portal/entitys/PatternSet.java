@@ -1,6 +1,7 @@
 package com.kii.beehive.portal.entitys;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -15,21 +16,25 @@ public class PatternSet {
 
 	private Map<String,PatternSet> subSet=new HashMap<>();
 
-	public PatternSet(Set<String> patterns){
+//	private boolean isBranch=true;
 
-		this(patterns.iterator().next());
+	public static PatternSet getPattern(Set<String> names){
 
-		patterns.forEach((v)-> {
-			PatternSet pattern=new PatternSet(v);
-			this.merge(pattern);
-		});
+		Iterator<String> iter=names.iterator();
+
+		PatternSet pattern=new PatternSet(iter.next());
+
+		while(iter.hasNext()){
+			PatternSet subPat=new PatternSet(iter.next());
+			pattern.merge(subPat);
+		};
+		return pattern;
 	}
 
 	private void merge(PatternSet pattern){
 		if (!name.equals(pattern.name)) {
 			throw new IllegalArgumentException();
 		}
-
 
 		pattern.subSet.forEach((k,v)->{
 			PatternSet curr=subSet.get(k);
@@ -59,6 +64,10 @@ public class PatternSet {
 		PatternSet pattern=new PatternSet(tail);
 
 		subSet.put(pattern.getName(),pattern);
+	}
+
+	public boolean isBranchStop(){
+		return subSet.isEmpty();
 	}
 
 	@Override

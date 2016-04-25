@@ -1,10 +1,14 @@
 {
   "displayName":"根",
-  "url":"/*",
+  "url":"/**",
   "submodule": {
+    "usergroup":{
+      "displayName": "用户组管理",
+      "url": "/usergroup/**"
+    },
     "tag": {
       "displayName": "标签管理",
-      "url": "/tags/*",
+      "url": "/tags/**",
       "submodule": {
         "CreateTag": {
           "method": "POST",
@@ -22,7 +26,7 @@
     },
     "thing": {
       "displayName": "设备管理",
-      "url": "/things/*",
+      "url": "/things/**",
       "submodule": {
         "createThing": {
           "method": "POST",
@@ -52,7 +56,7 @@
     },
     "user": {
       "displayName": "用户管理",
-      "url": "/users/*",
+      "url": "/users/**",
       "submodule": {
         "CreateUser": {
           "method": "POST",
@@ -74,7 +78,7 @@
     },
     "auth": {
       "displayName": "登录管理",
-      "url": "/oauth2/*",
+      "url": "/oauth2/**",
       "submodule": {
         "ActiviteUser": {
           "method": "POST",
@@ -100,24 +104,16 @@
     },
     "system": {
       "displayName": "系统维护",
-      "url": "/*",
+      "url":"/sys/**",
       "submodule": {
         "AppEnvInit": {
           "method": "POST",
-          "url": "/appinit"
+          "url": "/sys/appinit"
         },
         "AppRegist": {
           "method": "POST",
-          "url": "/appRegist/*"
-        },
-        "onboardingHelper": {
-          "method": "POST",
-          "url": "/onboardinghelper/*"
-        },
-        "info": {
-          "displayName":"版本信息",
-          "method": "GET",
-          "url": "/info"
+          "displayName":"添加新kiiCloud app",
+          "url": "/sys/appRegist/*"
         }
       }
     }
