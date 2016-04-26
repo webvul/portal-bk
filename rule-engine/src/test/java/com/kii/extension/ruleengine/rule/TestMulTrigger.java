@@ -3,8 +3,10 @@ package com.kii.extension.ruleengine.rule;
 import static junit.framework.TestCase.assertEquals;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -21,6 +23,7 @@ import com.kii.extension.ruleengine.store.trigger.WhenType;
 import com.kii.extension.ruleengine.store.trigger.multiple.GroupSummarySource;
 import com.kii.extension.ruleengine.store.trigger.multiple.MultipleSrcTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.multiple.ThingSource;
+import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
 public class TestMulTrigger extends TestInit {
 
@@ -43,7 +46,7 @@ public class TestMulTrigger extends TestInit {
 		record.setId(triggerID);
 		
 		RuleEnginePredicate predicate=new RuleEnginePredicate();
-		Condition condition= TriggerConditionBuilder.andCondition().equal("one.foo",1).equal("two",2).equal("three",3).getConditionInstance();
+		Condition condition= TriggerConditionBuilder.andCondition().great("one.foo",0).great("two",100).great("three",3).getConditionInstance();
 		predicate.setCondition(condition);
 		predicate.setTriggersWhen(WhenType.CONDITION_TRUE);
 
@@ -65,29 +68,45 @@ public class TestMulTrigger extends TestInit {
 
 		GroupSummarySource summary=new GroupSummarySource();
 		summary.setStateName("foo");
-		summary.setFunction(SummaryFunctionType.sum);
+		summary.setCondition(groupCond);
+		summary.setFunction(SummaryFunctionType.count);
 
 		record.addSource("three",summary);
 
 		Map<String,Set<String>> thingSet=new HashMap<>();
 
-		Set<String> things=new HashSet<>();
-		thingSet.put("three",new HashSet<>(Arrays.asList("thing-104","thing-105","thing-106","thing-107")));
-		thingSet.put("two",new HashSet<>(Arrays.asList("thing-104","thing-105","thing-106","thing-107")));
+		List<String> thList=Arrays.asList("thing-104","thing-105","thing-106","thing-107");
+
+		thingSet.put("three",new HashSet<>(thList));
+		thingSet.put("two",new HashSet<>(thList));
 		thingSet.put("one",new HashSet<>(Arrays.asList("thing-100")));
-
-
 
 		engine.createMultipleSourceTrigger(record,thingSet);
 
+		setFooBarStatus(100,0,"thing-100");
 
+		int i=0;
+		for(String th:thList){
 
+			setFooBarStatus(100+i,200+i,th);
+			i++;
+		}
 
-
-		assertEquals(0,exec.getHitCount(triggerID));
-
+		assertEquals(1,exec.getHitCount(triggerID));
 
 	}
+
+	private void setFooBarStatus(Object val,Object val2,String thingID){
+
+		ThingStatus status=new ThingStatus();
+		status.setField("foo",val);
+		status.setField("bar",val2);
+
+		engine.updateThingStatus(thingID,status,new Date());
+
+	}
+
+
 
 
 }

@@ -51,6 +51,7 @@ public class EngineService {
 		trigger.setType(TriggerType.multiple);
 		trigger.setTriggerID(record.getId());
 		trigger.setStream(false);
+		trigger.setWhen(record.getPredicate().getTriggersWhen());
 
 		String drl=ruleGeneral.generMultipleDrlConfig(record);
 

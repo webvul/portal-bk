@@ -39,6 +39,18 @@ public class Group extends ThingCol implements TriggerData {
 		this.number = number;
 	}
 
+
+	@Override
+	public String toString() {
+		return "Group{" +
+				"triggerID='" + triggerID + '\'' +
+				", policy=" + policy +
+				", number=" + number +
+				", things=" +super.getThings() +
+				", name="+super.getName()+
+				'}';
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;

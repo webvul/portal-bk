@@ -6,7 +6,7 @@ import java.util.Set;
 
 import com.google.common.base.Objects;
 
-public class MultipleValueMap {
+public class MultiplesValueMap {
 
 	private String triggerID;
 
@@ -55,7 +55,7 @@ public class MultipleValueMap {
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
-		MultipleValueMap that = (MultipleValueMap) o;
+		MultiplesValueMap that = (MultiplesValueMap) o;
 		return Objects.equal(triggerID, that.triggerID);
 	}
 

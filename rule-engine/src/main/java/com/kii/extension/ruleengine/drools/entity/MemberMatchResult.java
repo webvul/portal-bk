@@ -18,7 +18,8 @@ public class MemberMatchResult {
 	private Map<String,Object> values=new HashMap<>();
 
 	public Object getSafeValue(String field){
-		return  this.values.getOrDefault(field,0);
+		return
+				this.values.getOrDefault(field,0);
 	}
 
 	public Map<String, Object> getValues() {
@@ -42,6 +43,7 @@ public class MemberMatchResult {
 		this.triggerID=group.getTriggerID();
 		this.name=group.getName();
 		this.values=status.getValues();
+		this.thingID=status.getThingID();
 
 	}
 

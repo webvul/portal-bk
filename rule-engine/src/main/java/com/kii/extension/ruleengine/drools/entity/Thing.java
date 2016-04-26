@@ -15,7 +15,7 @@ public class Thing implements TriggerData{
 
 	private Set<String> fieldSet=new HashSet<>();
 
-	public Set<String> getFielSet() {
+	public Set<String> getFieldSet() {
 		return fieldSet;
 	}
 
@@ -59,5 +59,15 @@ public class Thing implements TriggerData{
 	@Override
 	public int hashCode() {
 		return Objects.hashCode(triggerID, name);
+	}
+
+	@Override
+	public String toString() {
+		return "Thing{" +
+				"triggerID='" + triggerID + '\'' +
+				", name='" + name + '\'' +
+				", thingID='" + thingID + '\'' +
+				", fieldSet=" + fieldSet +
+				'}';
 	}
 }

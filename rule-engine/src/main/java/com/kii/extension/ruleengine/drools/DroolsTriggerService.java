@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import com.kii.extension.ruleengine.drools.entity.MatchResult;
-import com.kii.extension.ruleengine.drools.entity.MultipleValueMap;
+import com.kii.extension.ruleengine.drools.entity.MultiplesValueMap;
 import com.kii.extension.ruleengine.drools.entity.Summary;
 import com.kii.extension.ruleengine.drools.entity.SummaryValueMap;
 import com.kii.extension.ruleengine.drools.entity.ThingCol;
@@ -92,7 +92,7 @@ public class DroolsTriggerService {
 
 		getService(trigger).addOrUpdateData(trigger);
 
-		MultipleValueMap map=new MultipleValueMap();
+		MultiplesValueMap map=new MultiplesValueMap();
 		map.setTriggerID(trigger.getTriggerID());
 		getService(trigger).addOrUpdateData(map);
 
