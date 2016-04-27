@@ -20,7 +20,7 @@ public class ThingSource implements SourceElement {
 	}
 
 	@JsonIgnore
-	public void setStateName(String statusName){
+	public void addStateName(String statusName){
 		fieldSet.add(statusName);
 	}
 

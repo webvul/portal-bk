@@ -46,14 +46,15 @@ public class TestMulTrigger extends TestInit {
 		record.setId(triggerID);
 		
 		RuleEnginePredicate predicate=new RuleEnginePredicate();
-		Condition condition= TriggerConditionBuilder.andCondition().great("one.foo",0).great("two",100).great("three",3).getConditionInstance();
+		Condition condition= TriggerConditionBuilder.andCondition().great("one.foo",0).less("one.bar",0).great("two",100).great("three",3).getConditionInstance();
 		predicate.setCondition(condition);
 		predicate.setTriggersWhen(WhenType.CONDITION_TRUE);
 
 		record.setPredicate(predicate);
 
 		ThingSource  thing=new ThingSource();
-		thing.setStateName("foo");
+		thing.addStateName("foo");
+		thing.addStateName("bar");
 
 		record.addSource("one",thing);
 
@@ -83,7 +84,7 @@ public class TestMulTrigger extends TestInit {
 
 		engine.createMultipleSourceTrigger(record,thingSet);
 
-		setFooBarStatus(100,0,"thing-100");
+		setFooBarStatus(100,-100,"thing-100");
 
 		int i=0;
 		for(String th:thList){
