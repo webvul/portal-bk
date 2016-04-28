@@ -60,7 +60,7 @@ public class TestThing extends TestTemplate {
 	@Before
 	public void before(){
 
-		bindTool.setAppName(appID,token);
+		bindTool.pushAppNameDirectly(appID,token);
 	}
 
 	private String triggerThingID="th.f83120e36100-2cc9-5e11-e7d9-08e1b5e9";
@@ -81,7 +81,7 @@ public class TestThing extends TestTemplate {
 		param.setLayoutPosition(LayoutPosition.STANDALONE);
 
 		param.setThingPassword("qwerty");
-		param.setThingType("demo");
+		param.setThingType("threaddemo");
 		param.setUserID(userID);
 		param.addThingProperty("foo","bar");
 
@@ -103,7 +103,7 @@ public class TestThing extends TestTemplate {
 //		action.setField("lightness",50);
 //
 //		cmd.addAction("open",action);
-//		cmd.setSchema("demo");
+//		cmd.setSchema("threaddemo");
 //		cmd.setSchemaVersion(0);
 
 		service.sendCommand(triggerThingID,getTargetCommand());
@@ -171,7 +171,7 @@ public class TestThing extends TestTemplate {
 		action.setField("lightness",99);
 		command.addAction("business",action);
 		command.addMetadata("source","business");
-		command.setSchema("demo");
+		command.setSchema("threaddemo");
 
 		return command;
 	}

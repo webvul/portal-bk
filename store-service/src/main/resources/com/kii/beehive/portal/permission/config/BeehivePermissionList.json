@@ -17,7 +17,7 @@
     "triggers":{
       "displayName":"触发器管理",
       "url":"/triggers/**"
-    }
+    },
     "user": {
       "displayName": "用户信息",
       "url": "/users/**",

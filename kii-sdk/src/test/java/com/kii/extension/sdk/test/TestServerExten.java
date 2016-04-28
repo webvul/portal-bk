@@ -1,5 +1,6 @@
 package com.kii.extension.sdk.test;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +28,13 @@ public class TestServerExten extends TestTemplate{
 	@Before
 	public void init(){
 
-		resolver.setAppName("test-slave-1");
+		resolver.pushAppNameDirectly("test-slave-1");
 
+	}
+
+	@After
+	public void after(){
+		resolver.pop();
 	}
 
 	@Test

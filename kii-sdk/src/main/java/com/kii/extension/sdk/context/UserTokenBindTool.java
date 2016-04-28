@@ -68,7 +68,7 @@ public class UserTokenBindTool implements TokenBindTool {
 	}
 
 	/**
-	 * clean the values in userLocal
+	 * pop the values in userLocal
 	 */
 	public void clean() {
 		userLocal.remove();

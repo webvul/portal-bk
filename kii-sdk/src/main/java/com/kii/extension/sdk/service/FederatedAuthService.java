@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.beehive.portal.common.utils.StrTemplate;
+import com.kii.extension.sdk.annotation.AppBindParam;
 import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.entity.FederatedAuthResult;
 import com.kii.extension.sdk.entity.SiteType;
@@ -42,10 +43,6 @@ public class FederatedAuthService {
 	@Autowired
 	private KiiCloudClient client;
 
-	@Autowired
-	private AppBindToolResolver bindToolResolver;
-
-
 	private String authInitUrl="http://$(0).$(1).kiiapps.com/api/apps/$(0)/integration/webauth/connect?id=kii";
 
 
@@ -64,16 +61,14 @@ public class FederatedAuthService {
 	 * @param pwd
      * @return
      */
-	public FederatedAuthResult loginSalveApp(AppInfo appInfo, String userName, String pwd){
+	public FederatedAuthResult loginSalveApp(@AppBindParam  AppInfo appInfo, String userName, String pwd){
 
-		bindToolResolver.setAppInfoDirectly(appInfo);
-
-		AppInfo salve=bindToolResolver.getAppInfo();
+		AppInfo salve=resolver.getAppInfo();
 
 		String url=getAuthUrl(salve);
 		FederatedAuthResult result=generAuthRequest(url, salve.getSiteType(), userName, pwd);
 
-		resolver.setAppName(appInfo.getAppID(),result.getAppAuthToken());
+		resolver.setToken(result.getAppAuthToken());
 
 		return result;
 

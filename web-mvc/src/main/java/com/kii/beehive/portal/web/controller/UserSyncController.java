@@ -63,7 +63,7 @@ public class UserSyncController {
 	public Map<String, String> updateUser(@PathVariable("userID") String userID, @RequestBody SyncUserRestBean user) {
 
 
-		// clean the input user id
+		// pop the input user id
 		user.setAliUserID(null);
 
 		userManager.updateUser(user.getBeehiveUser(), userID);

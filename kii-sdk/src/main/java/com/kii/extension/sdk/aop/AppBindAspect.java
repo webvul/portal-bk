@@ -66,7 +66,7 @@ public class AppBindAspect {
 
 		choice.setBindAdmin(appByName.bindAdmin());
 
-		bindTool.setAppChoice(choice);
+		bindTool.pushAppChoice(choice);
 
 	}
 
@@ -78,14 +78,14 @@ public class AppBindAspect {
 		if(appByName==null){
 			return;
 		}
-		bindTool.clean();
+		bindTool.pop();
 
 	}
 
 
 	@After("bindWithParam()")
 	public void  afterCallBindParam(JoinPoint joinPoint ){
-		bindTool.clean();
+		bindTool.pop();
 
 	}
 
@@ -106,12 +106,12 @@ public class AppBindAspect {
 
 					Object arg=args[i];
 					if(arg instanceof AppInfo){
-						bindTool.setAppInfoDirectly((AppInfo)arg);
+						bindTool.pushAppInfoDirectly((AppInfo)arg);
 
 						break;
 					}else if(arg instanceof  String) {
 						param = String.valueOf(args[i]);
-						bindTool.setAppInfoDirectly(param);
+						bindTool.pushAppNameDirectly(param);
 
 						break;
 					}

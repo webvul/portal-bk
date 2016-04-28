@@ -47,7 +47,7 @@
 //
 //		predicate.setCondition(cond);
 //
-//		service.registerBusinessTrigger(thingIDs,"demo",predicate);
+//		service.registerBusinessTrigger(thingIDs,"threaddemo",predicate);
 //
 //
 //

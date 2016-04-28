@@ -45,7 +45,7 @@ public class TestOAuth extends TestTemplate{
 	public void testOAuth(){
 
 
-		appResolver.setAppName(master);
+		appResolver.pushAppNameDirectly(master);
 //
 //		KiiUser user=new KiiUser();
 //		user.setDisplayName("demo1");
@@ -56,7 +56,7 @@ public class TestOAuth extends TestTemplate{
 
 //		tokenResolver.bindUser();
 
-		userTool.bindUserInfo("demo","qwerty");
+		userTool.bindUserInfo("threaddemo","qwerty");
 
 		String token=appResolver.getToken();
 
@@ -67,9 +67,9 @@ public class TestOAuth extends TestTemplate{
 
 		dataService.createObject(val, bucket);
 
-		appResolver.setAppName(salves[0]);
+		appResolver.pushAppNameDirectly(salves[0],token);
 
-		userTool.bindToken(token);
+//		userTool.bindToken(token);
 
 		dataService.createObject(val,bucket);
 

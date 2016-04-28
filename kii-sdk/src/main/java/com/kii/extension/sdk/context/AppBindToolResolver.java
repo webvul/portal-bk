@@ -43,9 +43,7 @@ public class AppBindToolResolver {
 	public void initBindList() {
 		appChoiceLocal = ThreadLocal.withInitial(() -> {
 
-
 			AppChoice choice = new AppChoice();
-
 			choice.setAppName(null);
 			return choice;
 		});
@@ -89,31 +87,22 @@ public class AppBindToolResolver {
 
 	}
 
-	public void setAppInfoDirectly(AppInfo appInfo,String token){
+	public void pushAppNameDirectly(String appName,String token) {
 
 
-		setAppInfoDirectly(appInfo);
-		tokenDirectLocal.set(token);
-
-	}
-
-
-	public void setAppInfoDirectly(String appName,String token) {
-
-
-		setAppInfoDirectly(appName);
+		pushAppNameDirectly(appName);
 		tokenDirectLocal.set(token);
 	}
 
-	public void setAppInfoDirectly(String appName) {
+	public void pushAppNameDirectly(String appName) {
 
 
 		AppInfo appInfo=queryAppInfoByName(appName,null);
 
-		setAppInfoDirectly(appInfo);
+		pushAppInfoDirectly(appInfo);
 	}
 
-	public void setAppInfoDirectly(AppInfo appInfo){
+	public void pushAppInfoDirectly(AppInfo appInfo){
 
 
 		OldInfos oldInfos=new OldInfos();
@@ -128,16 +117,16 @@ public class AppBindToolResolver {
 	}
 
 
-	public void setAppChoice(AppChoice choice,String token){
+	public void pushAppChoice(AppChoice choice,String token){
 
 
-		setAppChoice(choice);
+		pushAppChoice(choice);
 
 		tokenDirectLocal.set(token);
 	}
 
 
-	public void setAppChoice(AppChoice choice){
+	public void pushAppChoice(AppChoice choice){
 
 
 		OldInfos oldInfos=new OldInfos();
@@ -155,27 +144,27 @@ public class AppBindToolResolver {
 		this.appChoiceLocal.set(choice);
 	}
 
-	public void setAppName(String appName,String token){
+//	public void pushAppName(String appName,String token){
+//
+//
+//		AppChoice choice=new AppChoice();
+//
+//		choice.setAppName(appName);
+//
+//		pushAppChoice(choice,token);
+//
+//	}
 
-
-		AppChoice choice=new AppChoice();
-
-		choice.setAppName(appName);
-
-		setAppChoice(choice,token);
-
-	}
-
-	public void setAppName(String appName){
-
-
-		AppChoice choice=new AppChoice();
-
-		choice.setAppName(appName);
-
-		setAppChoice(choice);
-
-	}
+//	public void pushAppName(String appName){
+//
+//
+//		AppChoice choice=new AppChoice();
+//
+//		choice.setAppName(appName);
+//
+//		pushAppChoice(choice);
+//
+//	}
 
 	public void setToken(String token) {
 
@@ -224,23 +213,25 @@ public class AppBindToolResolver {
 
 		appInfoDirectly.set(newAppInfo);
 
-
 		return newAppInfo;
 	}
 
-	public void clean(){
+	public void pop(){
 
 
 		LinkedList<OldInfos> infosQueue=oldInfosThreadLocal.get();
 		if(infosQueue.isEmpty()){
+			clearAll();
 			return;
 		}
 
 		OldInfos infos=infosQueue.removeLast();
+		if(infosQueue.isEmpty()){
+			oldInfosThreadLocal.remove();
+		}
 
 		appInfoDirectly.set(infos.oldAppInfo);
 		appChoiceLocal.set(infos.oldAppChoice);
-
 		tokenDirectLocal.set(infos.token);
 
 	}
@@ -252,6 +243,8 @@ public class AppBindToolResolver {
 		appChoiceLocal.remove();
 		tokenDirectLocal.remove();
 		oldInfosThreadLocal.remove();
+
+		tokenResolver.clean();
 	}
 
 

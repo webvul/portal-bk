@@ -25,7 +25,7 @@ import com.kii.extension.sdk.entity.thingif.ThingCommand;
 @Component
 public class CommandExecuteService {
 
-	public static final String SCHEMA = "demo";
+	public static final String SCHEMA = "threaddemo";
 	private static final int SCHEMA_VERSION = 1;
 
 	@Autowired

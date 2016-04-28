@@ -17,7 +17,7 @@ public class DemoCrossAppDao {
 
 	public String addData(@AppBindParam String appName,FooEntity foo){
 
-		BucketInfo bucket=new BucketInfo("demo");
+		BucketInfo bucket=new BucketInfo("threaddemo");
 		CreateResponse resp=service.createObject(foo, bucket);
 
 		return resp.getObjectID();
@@ -25,7 +25,7 @@ public class DemoCrossAppDao {
 
 	public FooEntity getData(@AppBindParam String appName,String id){
 
-		return service.getObjectByID(id,new BucketInfo("demo"),FooEntity.class);
+		return service.getObjectByID(id,new BucketInfo("threaddemo"),FooEntity.class);
 	}
 
 	public static class FooEntity{

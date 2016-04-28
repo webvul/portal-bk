@@ -30,7 +30,7 @@ public class TestBeehiveUser extends TestInit{
 
 		BeehiveUser user=new BeehiveUser();
 
-//		user.setCompany("demo");
+//		user.setCompany("threaddemo");
 		user.setUserName("王二");
 
 //		user.setCustomField("id", "1234567");

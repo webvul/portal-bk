@@ -130,6 +130,8 @@ public class ServiceExtensionService {
 
 		String adminToken=bindToolResolver.getToken();
 
+		String appID=appInfo.getAppID();
+
 		client.asyncExecuteRequest(request, new FutureCallback<HttpResponse>() {
 			@Override
 			public void completed(HttpResponse httpResponse) {
@@ -138,7 +140,7 @@ public class ServiceExtensionService {
 
 				log.info("deploy server code file completed on app " + appInfo.getAppID());
 
-				bindToolResolver.setAppInfoDirectly(appInfo,adminToken);
+				bindToolResolver.pushAppNameDirectly(appID,adminToken);
 
 				String response= HttpUtils.getResponseBody(httpResponse);
 
@@ -160,7 +162,7 @@ public class ServiceExtensionService {
 
 						log.info("deploy hook file completed on app " + appInfo.getAppID());
 
-						bindToolResolver.setAppInfoDirectly(appInfo,adminToken);
+						bindToolResolver.pushAppNameDirectly(appID,adminToken);
 
 						HttpUriRequest setVerRequest=getBuilder().setCurrentVersion(version).generRequest(mapper);
 
@@ -172,6 +174,7 @@ public class ServiceExtensionService {
 
 								log.info("set server code version completed on app " + appInfo.getAppID());
 								log.info("deployServiceExtension end on app " + appInfo.getAppID());
+
 							}
 
 							@Override
@@ -184,6 +187,7 @@ public class ServiceExtensionService {
 								log.info("set server code version cancelled on app " + appInfo.getAppID());
 							}
 						});
+						bindToolResolver.clearAll();
 					}
 
 					@Override
@@ -196,6 +200,8 @@ public class ServiceExtensionService {
 						log.info("deploy hook file cancelled on app " + appInfo.getAppID());
 					}
 				});
+				bindToolResolver.clearAll();
+
 			}
 
 			@Override
@@ -208,6 +214,8 @@ public class ServiceExtensionService {
 				log.info("deploy server code file cancelled on app " + appInfo.getAppID());
 			}
 		});
+		bindToolResolver.clearAll();
+
 
 	}
 

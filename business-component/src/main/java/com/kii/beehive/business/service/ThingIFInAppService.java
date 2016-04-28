@@ -1,20 +1,28 @@
 package com.kii.beehive.business.service;
 
+import java.util.List;
+import java.util.Set;
+import java.util.function.Function;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
+
 import com.kii.beehive.business.event.BusinessEventBus;
 import com.kii.beehive.business.manager.ThingTagManager;
 import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
+import com.kii.extension.sdk.annotation.AppBindParam;
 import com.kii.extension.sdk.context.AppBindToolResolver;
-import com.kii.extension.sdk.entity.thingif.*;
+import com.kii.extension.sdk.entity.thingif.EndNodeOfGateway;
+import com.kii.extension.sdk.entity.thingif.OnBoardingParam;
+import com.kii.extension.sdk.entity.thingif.OnBoardingResult;
+import com.kii.extension.sdk.entity.thingif.ThingCommand;
+import com.kii.extension.sdk.entity.thingif.ThingStatus;
+import com.kii.extension.sdk.entity.thingif.ThingTrigger;
 import com.kii.extension.sdk.service.ThingIFService;
 import com.kii.extension.sdk.service.TriggerService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Component;
-
-import java.util.List;
-import java.util.Set;
 
 @Component
 public class ThingIFInAppService {
@@ -53,52 +61,60 @@ public class ThingIFInAppService {
 	}
 
 
-	private String getRealThingID(String fullThingID){
+	private <T>  T doExecWithRealThingID(String fullThingID,Function<String,T> function){
 		ThingIDTools.ThingIDCombine combine = ThingIDTools.splitFullKiiThingID(fullThingID);
 
-		resolver.setAppName(combine.kiiAppID);
+		resolver.pushAppNameDirectly(combine.kiiAppID);
 
-		return combine.kiiThingID;
+		T result=function.apply(combine.kiiThingID);
+
+		resolver.pop();
+
+		return result;
 	}
 
 	public void putStatus(String fullThingID,ThingStatus status){
 
 
-		service.putStatus(getRealThingID(fullThingID),status);
+		doExecWithRealThingID(fullThingID,(th)->{
+			 service.putStatus(th,status);
+			return 0;
+		});
 
 	}
 
 	public ThingStatus getStatus(String fullThingID){
 
-		return service.getStatus(getRealThingID(fullThingID));
+
+		return doExecWithRealThingID(fullThingID,(th)-> service.getStatus(th));
 
 	}
 
-	public OnBoardingResult onBoarding(OnBoardingParam param,String appID){
+	public OnBoardingResult onBoarding(OnBoardingParam param,@AppBindParam  String appID){
 
 		KiiAppInfo info=appInfoDao.getAppInfoByID(appID);
 		param.setUserID(info.getFederatedAuthResult().getUserID());
 
-		resolver.setAppName(appID);
 		return service.onBoarding(param);
 	}
 
 	public String sendCommand(ThingCommand  command,String fullThingID){
 
-		return service.sendCommand(getRealThingID(fullThingID),command);
+		return doExecWithRealThingID(fullThingID,(th)-> service.sendCommand(th,command));
 
 	}
 
 	public String createTrigger(String fullThingID,ThingTrigger triggerInfo){
 
-		String thingID=getRealThingID(fullThingID);
-		return triggerService.createTrigger(thingID,triggerInfo);
+		return doExecWithRealThingID(fullThingID,(th)-> triggerService.createTrigger(th,triggerInfo));
 
 	};
 
 	public void removeTrigger(String fullThingID,String triggerID){
-		String thingID=getRealThingID(fullThingID);
-		triggerService.deleteTrigger(thingID,triggerID);
+		doExecWithRealThingID(fullThingID,(th)-> {
+			triggerService.deleteTrigger(th,triggerID);
+			return 0;
+		});
 	}
 
 	/**
@@ -108,8 +124,10 @@ public class ThingIFInAppService {
      */
 	public void removeThing(String fullThingID) {
 
-		String thingID=getRealThingID(fullThingID);
-		service.removeThing(thingID);
+		doExecWithRealThingID(fullThingID,(th)->{
+			service.removeThing(th);
+			return 0;
+		});
 	}
 
 	/**
@@ -122,8 +140,7 @@ public class ThingIFInAppService {
 	 */
 	public List<EndNodeOfGateway> getAllEndNodesOfGateway(String fullThingID) {
 
-		String thingID = getRealThingID(fullThingID);
-		return service.getAllEndNodesOfGateway(thingID);
+		return doExecWithRealThingID(fullThingID,(th)-> service.getAllEndNodesOfGateway(th));
 	}
 
 

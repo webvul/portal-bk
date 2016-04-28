@@ -291,16 +291,6 @@ public class AuthManager {
 
 	}
 
-	/**
-	 * clean the user token in ThreadLocal
-	 */
-	public void unbindUserToken() {
-
-		resolver.clean();
-		tokenBind.clean();
-	}
-
-
 	private  Team getTeamByID(String userID) {
 		List<Team> teamList = teamDao.findTeamByUserID(userID);
 		if (teamList != null && teamList.size() > 0) {

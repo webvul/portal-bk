@@ -35,7 +35,7 @@ public class TestDemo extends InitTest {
 
 
 		ruleLoader.initCondition(
-				getDrlContent("demo"),
+				getDrlContent("threaddemo"),
 				getDrlContent("FireAlarm"),
 				getDrlContent("group")
 		);

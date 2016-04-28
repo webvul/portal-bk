@@ -12,7 +12,7 @@ public class ThingCommand {
 
 	/*
 
-	{"issuer":"USER:92803ea00022-a488-4e11-d7c1-018317e4","actions":[{"power":true}],"schema":"demo","schemaVersion":0,"metadata":{"foo":"bar"}}
+	{"issuer":"USER:92803ea00022-a488-4e11-d7c1-018317e4","actions":[{"power":true}],"schema":"threaddemo","schemaVersion":0,"metadata":{"foo":"bar"}}
 	 */
 
 	private String issuer;

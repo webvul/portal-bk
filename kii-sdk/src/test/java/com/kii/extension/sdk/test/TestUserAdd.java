@@ -1,5 +1,6 @@
 package com.kii.extension.sdk.test;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,16 +19,20 @@ public class TestUserAdd extends  TestTemplate {
 	@Before
 	public void init(){
 
-		resolver.setAppName("portal");
+		resolver.pushAppNameDirectly("portal");
 
 	}
 
+	@After
+	public void after(){
+		resolver.pop();
+	}
 	@Test
 	public void testUserAdd(){
 
 		KiiUser user=new KiiUser();
 
-//		user.setCompany("demo");
+//		user.setCompany("threaddemo");
 		user.setLoginName("abc");
 		user.setPassword("abcdef");
 		user.setDisplayName("历史");
