@@ -1,0 +1,42 @@
+package com.kii.extension.ruleengine.drools.rule
+
+import com.kii.extension.ruleengine.drools.entity.*;
+
+
+
+/*
+rule "Multiples unit custom segment:group count"
+	no-loop true
+when
+	$trigger:Trigger($triggerID:triggerID,type ==TriggerType.multiple)
+	Group(triggerID==$triggerID,$name:name,$things:things )
+    CurrThing(thing memberOf $things ||  init==true )
+	accumulate(MemberMatchResult(triggerID==$triggerID && name==$name,thingID memberOf $things);
+                        $thingCount : count(1)
+              )
+    $map:MultiplesValueMap(triggerID==$triggerID)
+then
+	System.out.println("group all multiple trigger  "+$trigger.getTriggerID()+" value "+$thingCount+"to result"+$name);
+	modify($map){
+        	setUnitValue($name,$thingCount);
+    };
+end
+*/
+
+rule "put all thing spec status value to multipleMap"
+	no-loop true
+when
+	$trigger:Trigger($triggerID:triggerID,type ==TriggerType.multiple)
+	Thing(triggerID==$triggerID,$name:name,$thingID:thingID,$fieldSet:fieldSet )
+	CurrThing(thing == $thingID ||  init==true )
+	ThingStatusInRule( thingID == $thingID, $values:values)
+    $map:MultiplesValueMap(triggerID==$triggerID)
+then
+	System.out.println("multiple trigger "+$trigger.getTriggerID()+" 's thing value "+$thingID+" name:"+$name+" value:"+$values);
+	modify($map){
+        	setFieldValueSet($name,$fieldSet,$values);
+    };
+end
+
+
+

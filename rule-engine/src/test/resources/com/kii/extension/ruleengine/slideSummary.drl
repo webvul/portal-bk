@@ -2,7 +2,6 @@ package com.kii.extension.ruleengine.demo
 
 import com.kii.extension.ruleengine.drools.entity.*;
 
-global CurrThing currThing;
 
 
 
@@ -10,7 +9,7 @@ rule "slide length mode  compute the summary of  fieldName value: funName"
 when
 	$trigger:Trigger(type =="summary",$triggerID:triggerID)
 	$summary:Summary(triggerID==$triggerID ,$things:things, funName=="sum-length" ,$length:length)
-	CurrThing(thing memberOf $things) from currThing
+	CurrThing(thing memberOf $things)
 	accumulate( ThingStatusInRule(thingID memberOf $things , $status:values) over window:length( 10 );
                     $sum : sum($status.get($summary.getFieldName()))
                   )
@@ -24,7 +23,7 @@ rule "slide time mode  compute the summary of  fieldName value: funName"
 when
 	$trigger:Trigger(type =="summary",$triggerID:triggerID)
 	$summary:Summary(triggerID==$triggerID ,$things:things, funName=="sum-time" )
-	CurrThing(thing memberOf $things) from currThing
+	CurrThing(thing memberOf $things)
 	accumulate( ThingStatusInRule(thingID memberOf $things , $status:values) over window:time(1m);
                     $sum : sum($status.get($summary.getFieldName()))
                   )

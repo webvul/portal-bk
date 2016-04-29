@@ -1,5 +1,8 @@
 package com.kii.extension.ruleengine.drools.entity;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.google.common.base.Objects;
 
 public class MemberMatchResult {
@@ -9,20 +12,45 @@ public class MemberMatchResult {
 
 	private String triggerID;
 
-	private boolean result=false;
 
+	private String name;
 
-	public MemberMatchResult(String triggerID,String thingID){
-		this.thingID=thingID;
-		this.triggerID=triggerID;
-		this.result=true;
-	}
-	public boolean isResult() {
-		return result;
+	private Map<String,Object> values=new HashMap<>();
+
+	public Object getSafeValue(String field){
+		return
+				this.values.getOrDefault(field,0);
 	}
 
-	public void setResult(boolean result) {
-		this.result = result;
+	public Map<String, Object> getValues() {
+		return values;
+	}
+
+	public void setValues(Map<String, Object> values) {
+		this.values = values;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public MemberMatchResult(Group group,ThingStatusInRule status){
+
+		this.triggerID=group.getTriggerID();
+		this.name=group.getName();
+		this.values=status.getValues();
+		this.thingID=status.getThingID();
+
+	}
+
+	public MemberMatchResult(String triggerID, String name,String thingID) {
+		this.thingID = thingID;
+		this.triggerID = triggerID;
+		this.name = name;
 	}
 
 	public String getThingID() {
@@ -60,7 +88,6 @@ public class MemberMatchResult {
 		return "MemberMatchResult{" +
 				"thingID='" + thingID + '\'' +
 				", triggerID=" + triggerID +
-				", result=" + result +
 				'}';
 	}
 }

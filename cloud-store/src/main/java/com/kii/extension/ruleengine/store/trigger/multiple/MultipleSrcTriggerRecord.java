@@ -22,4 +22,8 @@ public class MultipleSrcTriggerRecord extends TriggerRecord {
 	public BeehiveTriggerType getType() {
 		return BeehiveTriggerType.Multiple;
 	}
+	
+	public void addSource(String name,SourceElement elem) {
+		summarySource.put(name,elem);
+	}
 }

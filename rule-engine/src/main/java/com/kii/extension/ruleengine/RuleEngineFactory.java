@@ -67,7 +67,10 @@ public class RuleEngineFactory {
 		DroolsRuleService droolsService= new DroolsRuleService(false,
 				getDrlContent("triggerComm"),
 				getDrlContent("groupPolicy"),
-				getDrlContent("summaryCompute"));
+				getDrlContent("summaryCompute"),
+				getDrlContent("multipleSummary"),
+				getDrlContent("multipleComm")
+		);
 
 		droolsService.bindWithInstance("exec",exec);
 
@@ -81,7 +84,10 @@ public class RuleEngineFactory {
 		DroolsRuleService droolsService= new DroolsRuleService(true,
 				getDrlContent("triggerComm"),
 				getDrlContent("groupPolicy"),
-				getDrlContent("summaryCompute"))
+				getDrlContent("summaryCompute"),
+				getDrlContent("multipleSummary"),
+				getDrlContent("multipleComm")
+		)
 				;
 
 		droolsService.bindWithInstance("exec",exec);

@@ -36,9 +36,9 @@ public class TestSummaryTrigger extends InitTest {
 		ruleLoader.addCondition("trigger",getDrlContent("triggerRule"));
 
 		Trigger trigger=new Trigger();
-		for(int i=0;i<5;i++) {
-			trigger.addThing(String.valueOf(i));
-		}
+//		for(int i=0;i<5;i++) {
+//			trigger.addThing(String.valueOf(i));
+//		}
 
 		trigger.setType(TriggerType.summary);
 		trigger.setWhen(WhenType.CONDITION_FALSE_TO_TRUE);
@@ -55,7 +55,7 @@ public class TestSummaryTrigger extends InitTest {
 		}
 		summary.setFieldName("foo");
 		summary.setFunName("sum");
-		summary.setSummaryField("sum_foo");
+		summary.setName("sum_foo");
 		summary.setTriggerID(triggerID);
 
 		ruleLoader.addOrUpdateData(summary);
@@ -66,7 +66,7 @@ public class TestSummaryTrigger extends InitTest {
 		}
 		summary2.setFieldName("bar");
 		summary2.setFunName("count");
-		summary2.setSummaryField("count_bar");
+		summary2.setName("count_bar");
 		summary2.setTriggerID(triggerID);
 
 		ruleLoader.addOrUpdateData(summary2);

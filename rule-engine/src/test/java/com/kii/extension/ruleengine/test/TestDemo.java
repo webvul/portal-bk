@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.kii.extension.ruleengine.StatelessRuleExecute;
 import com.kii.extension.ruleengine.demo.Applicant;
 import com.kii.extension.ruleengine.demo.Message;
+import com.kii.extension.ruleengine.drools.entity.Group;
 import com.kii.extension.ruleengine.drools.entity.Summary;
 import com.kii.extension.ruleengine.drools.entity.SummaryValueMap;
 import com.kii.extension.ruleengine.drools.entity.Trigger;
@@ -53,9 +54,9 @@ public class TestDemo extends InitTest {
 	public void testSummary() throws IOException {
 
 		Trigger trigger=new Trigger();
-		for(int i=0;i<10;i++){
-			trigger.addThing(String.valueOf(i));
-		}
+//		for(int i=0;i<10;i++){
+//			trigger.addThing(String.valueOf(i));
+//		}
 		trigger.setType(TriggerType.summary);
 		String triggerID="100";
 		trigger.setTriggerID(triggerID);
@@ -66,7 +67,7 @@ public class TestDemo extends InitTest {
 		summary.setFieldName("foo");
 		summary.setFunName("sum");
 		summary.setTriggerID(triggerID);
-		summary.setSummaryField("sum_foo");
+		summary.setName("sum_foo");
 		ruleLoader.addOrUpdateData(summary);
 
 
@@ -74,7 +75,7 @@ public class TestDemo extends InitTest {
 		summary2.setFieldName("bar");
 		summary2.setFunName("sum");
 		summary2.setTriggerID(triggerID);
-		summary2.setSummaryField("sum_bar");
+		summary2.setName("sum_bar");
 		ruleLoader.addOrUpdateData(summary2);
 
 		SummaryValueMap map=new SummaryValueMap();
@@ -112,18 +113,31 @@ public class TestDemo extends InitTest {
 		ruleLoader.addCondition("trigger",getDrlContent("triggerRule"));
 		Map<Integer,Trigger> triggerMap=new HashMap<>();
 
-		for(int i=0;i<10;i++){
+		Map<String,Group> groupMap=new HashMap<>();
+
+ 		for(int i=0;i<10;i++){
 			int id=i%3;
-			triggerMap.computeIfAbsent(id,(key)->{
+			Trigger trigger=triggerMap.computeIfAbsent(id,(key)->{
 				Trigger t=new Trigger();
 				t.setTriggerID(String.valueOf(key));
 				return t;
+			});
+			groupMap.computeIfAbsent(trigger.getTriggerID(),(key)->{
+
+				Group group=new Group();
+				group.setTriggerID(trigger.getTriggerID());
+				return group;
+
 			}).addThing(String.valueOf(i));
 		}
 
-		triggerMap.values().forEach(t->{
+		groupMap.values().forEach(t->{
+
 			t.setPolicy(TriggerGroupPolicyType.All);
 			ruleLoader.addOrUpdateData(t);
+		});
+		triggerMap.forEach((k,v)->{
+			ruleLoader.addOrUpdateData(v);
 		});
 
 		ruleLoader.fireCondition();

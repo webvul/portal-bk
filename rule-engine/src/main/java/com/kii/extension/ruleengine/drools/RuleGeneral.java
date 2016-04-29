@@ -18,8 +18,8 @@ import com.kii.beehive.portal.common.utils.StrTemplate;
 import com.kii.extension.ruleengine.drools.entity.TriggerType;
 import com.kii.extension.ruleengine.store.trigger.Condition;
 import com.kii.extension.ruleengine.store.trigger.CronPrefix;
+import com.kii.extension.ruleengine.store.trigger.Express;
 import com.kii.extension.ruleengine.store.trigger.IntervalPrefix;
-import com.kii.extension.ruleengine.store.trigger.multiple.MultipleSrcTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.SchedulePrefix;
 import com.kii.extension.ruleengine.store.trigger.SummaryExpress;
@@ -34,10 +34,13 @@ import com.kii.extension.ruleengine.store.trigger.condition.NotLogic;
 import com.kii.extension.ruleengine.store.trigger.condition.OrLogic;
 import com.kii.extension.ruleengine.store.trigger.condition.Range;
 import com.kii.extension.ruleengine.store.trigger.condition.SimpleCondition;
+import com.kii.extension.ruleengine.store.trigger.multiple.GroupSummarySource;
+import com.kii.extension.ruleengine.store.trigger.multiple.MultipleSrcTriggerRecord;
 
 @Component
 public class RuleGeneral {
 
+	private static final String EVAL_TRUE = " eval( true ) ";
 	private Logger log= LoggerFactory.getLogger(RuleGeneral.class);
 
 	@Autowired
@@ -67,6 +70,8 @@ public class RuleGeneral {
 	}
 
 
+
+
 	public String generMultipleDrlConfig(MultipleSrcTriggerRecord  record) {
 
 
@@ -88,19 +93,32 @@ public class RuleGeneral {
 
 				case thing:
 					break;
-				case group:
+				case summary:
 					String groupTemplate = loadUnit("group");
+
+					GroupSummarySource groupSrc=(GroupSummarySource)v;
 
 					Map<String, String> groups = new HashMap<>();
 					groups.put("triggerID", record.getId());
-					groups.put("express",generExpress(record.getPredicate()));
-					groups.put("unitName",k);
+					groups.put("express",generExpress(groupSrc.getExpress()));
+					groups.put("name",k);
+
+					/*
+
+rule "${triggerID} multiple segment:group express ${name}"
+when
+    Trigger( $triggerID:triggerID, $things:things ,triggerID=="${triggerID}" && enable=true  )
+    CurrThing(thing memberOf $things)
+    ThingStatusInRule( $thingID:thingID memberOf $things,${express}  )
+then
+	insertLogical(new MemberMatchResult($triggerID,$thingID));
+end
+
+					 */
 
 					String groupUnit=StrTemplate.generByMap(groupTemplate,groups);
-					sb.append(groupUnit);
+					sb.append("\n").append(groupUnit).append("\n");
 
-					break;
-				case summary:
 					break;
 				default:
 					throw new IllegalArgumentException();
@@ -259,11 +277,24 @@ end
 
 		if (predicate.getCondition() == null) {
 
-			return " eval( true ) ";
+			return EVAL_TRUE;
 		}
 
 		Condition condition = predicate.getCondition();
 		return generExpress(condition);
+	}
+
+
+	public String generExpress(Express express){
+
+			if(express.getCondition()!=null){
+				return generExpress(express.getCondition());
+			}else if(express.getExpress()!=null){
+				return express.getExpress();
+			}else{
+				return  EVAL_TRUE;
+			}
+
 	}
 
 	public String generExpress(Condition condition){
@@ -458,7 +489,6 @@ end
 
 		return getFinalValue(cond.getExpress(),cond.getValue());
 	}
-
-
+	
 
 }

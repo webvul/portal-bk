@@ -37,9 +37,9 @@ public class TestSlideSummary extends InitTest{
 		ruleLoader.addCondition("trigger",getDrlContent("triggerRule"));
 
 		Trigger trigger=new Trigger();
-		for(int i=0;i<5;i++) {
-			trigger.addThing(String.valueOf(i));
-		}
+//		for(int i=0;i<5;i++) {
+//			trigger.addThing(String.valueOf(i));
+//		}
 
 		trigger.setType(TriggerType.summary);
 		trigger.setWhen(WhenType.CONDITION_FALSE_TO_TRUE);
@@ -56,7 +56,7 @@ public class TestSlideSummary extends InitTest{
 		}
 		summary.setFieldName("foo");
 		summary.setFunName("sum-length");
-		summary.setSummaryField("sum_foo");
+		summary.setName("sum_foo");
 		summary.setTriggerID(triggerID);
 
 		ruleLoader.addOrUpdateData(summary);
@@ -67,7 +67,7 @@ public class TestSlideSummary extends InitTest{
 		}
 		summary2.setFieldName("bar");
 		summary2.setFunName("sum-time");
-		summary2.setSummaryField("sum_bar");
+		summary2.setName("sum_bar");
 		summary2.setTriggerID(triggerID);
 
 		ruleLoader.addOrUpdateData(summary2);

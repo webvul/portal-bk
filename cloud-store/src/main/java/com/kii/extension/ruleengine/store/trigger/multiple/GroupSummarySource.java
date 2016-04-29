@@ -1,20 +1,43 @@
 package com.kii.extension.ruleengine.store.trigger.multiple;
 
-import com.kii.extension.ruleengine.store.trigger.SlideFuntion;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
+
+import com.kii.extension.ruleengine.store.trigger.Condition;
+import com.kii.extension.ruleengine.store.trigger.Express;
 import com.kii.extension.ruleengine.store.trigger.SummaryFunctionType;
 import com.kii.extension.ruleengine.store.trigger.TriggerSource;
 
-public class SummaryFunSource implements SourceElement{
+public class GroupSummarySource implements SourceElement{
 
 
-	private String stateName;
+	private String stateName="NULL_STATE";
 
 	private SummaryFunctionType function;
 
-	private SlideFuntion slideFuntion;
-
 	private TriggerSource source;
 
+
+	@JsonUnwrapped
+	private Express express=new Express();
+
+
+	public Express getExpress() {
+		return express;
+	}
+
+	public void setExpress(Express express) {
+		this.express = express;
+	}
+
+	@JsonIgnore
+	public Condition getCondition() {
+		return express.getCondition();
+	}
+
+	public void setCondition(Condition condition) {
+		this.express.setCondition(condition);
+	}
 
 	public String getStateName() {
 		return stateName;
@@ -30,14 +53,6 @@ public class SummaryFunSource implements SourceElement{
 
 	public void setFunction(SummaryFunctionType function) {
 		this.function = function;
-	}
-
-	public SlideFuntion getSlideFuntion() {
-		return slideFuntion;
-	}
-
-	public void setSlideFuntion(SlideFuntion slideFuntion) {
-		this.slideFuntion = slideFuntion;
 	}
 
 	public TriggerSource getSource() {
