@@ -116,18 +116,7 @@ public class AppBindToolResolver {
 		tokenDirectLocal.remove();
 	}
 
-
-	public void pushAppChoice(AppChoice choice,String token){
-
-
-		pushAppChoice(choice);
-
-		tokenDirectLocal.set(token);
-	}
-
-
 	public void pushAppChoice(AppChoice choice){
-
 
 		OldInfos oldInfos=new OldInfos();
 
@@ -144,27 +133,18 @@ public class AppBindToolResolver {
 		this.appChoiceLocal.set(choice);
 	}
 
-//	public void pushAppName(String appName,String token){
-//
-//
-//		AppChoice choice=new AppChoice();
-//
-//		choice.setAppName(appName);
-//
-//		pushAppChoice(choice,token);
-//
-//	}
 
-//	public void pushAppName(String appName){
-//
-//
-//		AppChoice choice=new AppChoice();
-//
-//		choice.setAppName(appName);
-//
-//		pushAppChoice(choice);
-//
-//	}
+	public void pushAppName(String appName){
+
+
+		AppChoice choice=new AppChoice();
+
+		choice.setAppName(appName);
+
+		pushAppChoice(choice);
+
+	}
+
 
 	public void setToken(String token) {
 

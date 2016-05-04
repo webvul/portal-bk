@@ -152,7 +152,12 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 				}
 				AuthInfoStore.setAuthInfo(appID);
 
-			}else {
+			}else if(subUrl.startsWith("/3rdparty")) {
+
+
+				//TODO:add verify to 3rdparty token.
+				AuthInfoStore.setAuthInfo("3rdparty");
+			}else{
 
 
 				AuthInfo authInfo = authManager.validateAndBindUserToken(token,request.getMethod(),subUrl);

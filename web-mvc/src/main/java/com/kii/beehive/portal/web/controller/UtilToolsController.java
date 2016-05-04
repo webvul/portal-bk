@@ -162,7 +162,7 @@ public class UtilToolsController {
 	}
 
 
-	@RequestMapping(value = "/permissionTree", method = {RequestMethod.GET},consumes = {"*"})
+	@RequestMapping(value = "/sys/permissionTree", method = {RequestMethod.GET},consumes = {"*"})
 	public PermissionTree getFullPermissTree(){
 
 		return permissionTreeService.getFullPermissionTree();

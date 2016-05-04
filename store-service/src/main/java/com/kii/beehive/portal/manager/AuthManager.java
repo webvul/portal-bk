@@ -130,9 +130,6 @@ public class AuthManager {
 
 		String token = userService.bindToUser(user, pwd);
 
-		if(token == null) {
-			throw new UnauthorizedException( "Authentication failed");
-		}
 
 		String beehiveToken=getBeehiveToken(token,userName,false);
 
@@ -145,7 +142,7 @@ public class AuthManager {
 
 
 	private static String getBeehiveToken(String token,String userName,boolean sign){
-		return DigestUtils.sha1Hex(token+"_userName_"+userName+"_3partySign"+sign+"_beehive_token");
+		return DigestUtils.sha1Hex(token+"_userName_"+userName+"_3rdPartySign"+sign+"_beehive_token");
 	}
 
 
@@ -153,15 +150,9 @@ public class AuthManager {
 
 		BeehiveUser  user=userDao.getUserByID(userID);
 
-		String token = userService.bindToUser(user, user.getUserPassword());
-
-		if(token == null) {
-			throw new UnauthorizedException( "Authentication failed");
-		}
-
 		Team team=this.getTeamByID(user.getId());
 
-		String beehiveToken=getBeehiveToken(token,userID,true);
+		String beehiveToken=getBeehiveToken(StringRandomTools.getRandomStr(16),userID,true);
 
 		saveToken(user, beehiveToken,team,true);
 
@@ -182,7 +173,7 @@ public class AuthManager {
 		return authRestBean;
 	}
 
-	private AuthInfo saveToken( BeehiveUser user, String token,Team team,boolean is3Party) {
+	private AuthInfo saveToken( BeehiveUser user, String token,Team team,boolean is3rdParty) {
 		AuthInfo entity = new AuthInfo();
 		entity.setUserID(user.getId());
 
@@ -191,13 +182,13 @@ public class AuthManager {
 		}
 
 		Calendar calendar= Calendar.getInstance();
-		if(is3Party) {
+		if(is3rdParty) {
 			calendar.add(Calendar.HOUR, 2);
 		}else{
 			calendar.add(Calendar.DAY_OF_YEAR,1);
 		}
 		entity.setExpireTime(calendar.getTime());
-		entity.setIs3Party(is3Party);
+		entity.setIs3Party(is3rdParty);
 
 		authService.createAuthInfoEntry(entity,token);
 		return entity;
@@ -275,7 +266,7 @@ public class AuthManager {
 
 		BeehiveUser user=userDao.getUserByID(authInfo.getUserID());
 
-		userService.bindToInfo(user);
+		tokenBind.bindUserInfo(user.getId(),user.getUserPassword());
 
 		return authInfo;
 	}

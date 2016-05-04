@@ -60,7 +60,8 @@ public class TestThing extends TestTemplate {
 	@Before
 	public void before(){
 
-		bindTool.pushAppNameDirectly(appID,token);
+		bindTool.pushAppName(appID);
+		bindTool.setToken(token);
 	}
 
 	private String triggerThingID="th.f83120e36100-2cc9-5e11-e7d9-08e1b5e9";

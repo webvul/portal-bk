@@ -17,6 +17,8 @@ public class TestTokenVerify extends TestInit {
 	@Autowired
 	private UserService service;
 
+
+
 	@Test
 	public void testTokenVerify(){
 
@@ -25,8 +27,6 @@ public class TestTokenVerify extends TestInit {
 		String token=manager.getDefaultOwer(appID).getAppAuthToken();
 
 		assertTrue(manager.verifyAppToken(appID,token));
-
-
 
 	}
 }

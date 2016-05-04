@@ -106,18 +106,7 @@ public class AuthController {
 
 	}
 
-	@RequestMapping(value = "/getTokenByID", method = {RequestMethod.POST})
-	public AuthRestBean getTokenByID(@RequestBody Map<String, Object> request) {
 
-		String userID = (String) request.get("userID");
-
-		if (CollectUtils.containsBlank(userID)) {
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "userName or password empty", HttpStatus.BAD_REQUEST);
-		}
-
-		return authManager.getTokenByID(userID);
-
-	}
 
 	/**
 	 * 用户登出

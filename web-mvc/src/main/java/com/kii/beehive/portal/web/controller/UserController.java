@@ -3,6 +3,7 @@ package com.kii.beehive.portal.web.controller;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -153,7 +154,10 @@ public class UserController {
 	@RequestMapping(value = "/users/me", method = {RequestMethod.PATCH})
 	public Map<String, String> updateUser( @RequestBody BeehiveUser user) {
 
-		userManager.updateUser(user, AuthInfoStore.getUserID());
+
+		BeehiveUser  updateUser=new BeehiveUser();
+		BeanUtils.copyProperties(user,updateUser,"kiiUserID","activityToken","userPassword","roleName","userName");
+		userManager.updateUser(updateUser, AuthInfoStore.getUserID());
 
 
 		Map<String, String> map = new HashMap<>();
