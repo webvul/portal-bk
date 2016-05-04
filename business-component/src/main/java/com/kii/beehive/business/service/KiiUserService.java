@@ -1,6 +1,7 @@
 package com.kii.beehive.business.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.store.entity.BeehiveUser;
@@ -68,6 +69,7 @@ public class KiiUserService {
 
 
 
+	@Cacheable
 	public String bindToUser(BeehiveUser user,String pwd){
 
 		LoginInfo loginInfo=userService.login(user.getId(),pwd);
@@ -77,9 +79,12 @@ public class KiiUserService {
 		return loginInfo.getToken();
 	}
 
-	public void bindToInfo(BeehiveUser user){
-		tokenBind.bindUserInfo(user.getId(),user.getUserPassword());
-	}
+
+
+//
+//	public void bindToInfo(BeehiveUser user){
+//		tokenBind.bindUserInfo(user.getId(),user.getUserPassword());
+//	}
 
 	public void changePassword(String oldPwd,String newPwd){
 

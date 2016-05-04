@@ -6,6 +6,7 @@ package com.kii.beehive.portal.exception;
 public class UnauthorizedException extends StoreServiceException {
 
 	public UnauthorizedException(String msg){
+		super.setErrorCode("UnAuthorizedOperate");
 		super.setMessage(msg);
 	}
 

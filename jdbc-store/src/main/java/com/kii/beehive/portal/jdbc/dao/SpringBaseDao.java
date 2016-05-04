@@ -145,6 +145,8 @@ public abstract class SpringBaseDao<T extends DBEntity> {
 
 	public int updateEntityByID(T entity, long id) {
 
+		entity.setId(id);
+
 		BindClsFullUpdateTool tool = updateTool.cloneInstance(entity, "id", true);
 
 		return tool.execute(entity);

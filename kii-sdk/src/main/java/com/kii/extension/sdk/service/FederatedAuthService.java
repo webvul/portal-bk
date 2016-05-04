@@ -24,12 +24,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.beehive.portal.common.utils.StrTemplate;
 import com.kii.extension.sdk.annotation.AppBindParam;
-import com.kii.extension.sdk.context.AppBindToolResolver;
+import com.kii.extension.sdk.entity.AppInfo;
 import com.kii.extension.sdk.entity.FederatedAuthResult;
 import com.kii.extension.sdk.entity.SiteType;
 import com.kii.extension.sdk.impl.KiiCloudClient;
-import com.kii.extension.sdk.context.TokenBindToolResolver;
-import com.kii.extension.sdk.entity.AppInfo;
+
+
 
 @Component
 public class FederatedAuthService {
@@ -46,12 +46,6 @@ public class FederatedAuthService {
 	private String authInitUrl="http://$(0).$(1).kiiapps.com/api/apps/$(0)/integration/webauth/connect?id=kii";
 
 
-	@Autowired
-	private AppBindToolResolver resolver;
-
-	@Autowired
-	private TokenBindToolResolver tokenResolver;
-
 	/**
 	 * important:
 	 * this method will update the token in ThreadLocal of current thread if login success
@@ -63,13 +57,8 @@ public class FederatedAuthService {
      */
 	public FederatedAuthResult loginSalveApp(@AppBindParam  AppInfo appInfo, String userName, String pwd){
 
-		AppInfo salve=resolver.getAppInfo();
-
-		String url=getAuthUrl(salve);
-		FederatedAuthResult result=generAuthRequest(url, salve.getSiteType(), userName, pwd);
-
-		resolver.setToken(result.getAppAuthToken());
-
+		String url=getAuthUrl(appInfo);
+		FederatedAuthResult result=generAuthRequest(url, appInfo.getSiteType(), userName, pwd);
 		return result;
 
 	}

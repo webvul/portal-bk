@@ -25,7 +25,6 @@ public class AuthInfoService {
 	private Map<String,AuthInfo> userTokenMap=new ConcurrentHashMap<>();
 
 
-
     public void createAuthInfoEntry(AuthInfo authInfo, String token) {
 
         log.debug("createAuthInfoEntry token: " + token + " for userID: " + authInfo.getUserID());

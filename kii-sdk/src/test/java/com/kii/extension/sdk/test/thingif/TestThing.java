@@ -60,7 +60,12 @@ public class TestThing extends TestTemplate {
 	@Before
 	public void before(){
 
+<<<<<<< cfa25e9ab494405e414df11f94e3898e04edcadd
 		bindTool.pushAppNameDirectly(appID,token);
+=======
+		bindTool.setAppName(appID);
+		bindTool.setToken(token);
+>>>>>>> fix problem in review
 	}
 
 	private String triggerThingID="th.f83120e36100-2cc9-5e11-e7d9-08e1b5e9";

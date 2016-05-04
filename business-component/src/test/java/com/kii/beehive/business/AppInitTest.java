@@ -24,4 +24,10 @@ public class AppInitTest extends TestInit {
 
 		appInfoManager.initAppInfos(userName,pwd,masterApp);
 	}
+
+	@Test
+	public void addApp(){
+
+		appInfoManager.addAppInfo("af5647b1",userName,pwd,masterApp);
+	}
 }

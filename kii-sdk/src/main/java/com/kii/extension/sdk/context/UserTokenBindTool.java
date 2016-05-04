@@ -1,13 +1,13 @@
 package com.kii.extension.sdk.context;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import com.kii.extension.sdk.entity.AppInfo;
-import com.kii.extension.sdk.entity.LoginInfo;
 import com.kii.extension.sdk.service.UserService;
 
 
@@ -21,7 +21,8 @@ public class UserTokenBindTool implements TokenBindTool {
 	@Autowired
 	private AppBindToolResolver bindToolResolver;
 
-	private ThreadLocal<Map<String,UserInfo>> userLocal=ThreadLocal.withInitial(()->new HashMap<>());
+
+	private ThreadLocal<Map<String,UserInfo>> userLocal=ThreadLocal.withInitial(()->new ConcurrentHashMap<>());
 
 
 	private void setUserInfo(UserInfo userInfo){
@@ -32,16 +33,11 @@ public class UserTokenBindTool implements TokenBindTool {
 
 	}
 
-
 	public void bindUserInfo(String userName,String password){
 
 		UserInfo user=new UserInfo();
 		user.setUserName(userName);
 		user.setPassword(password);
-
-		LoginInfo login=userService.login(userName,password);
-
-		user.setToken(login.getToken());
 
 		setUserInfo(user);
 	}
@@ -64,6 +60,12 @@ public class UserTokenBindTool implements TokenBindTool {
 			return null;
 		}
 
+		if(StringUtils.isEmpty(info.getToken())){
+
+			String token=userService.login(info.userName,info.password).getToken();
+			info.setToken(token);
+			userLocal.get().put(appInfo.getAppID(),info);
+		}
 		return info.getToken();
 	}
 
