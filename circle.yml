@@ -1,0 +1,11 @@
+machine:
+  timezone:
+    China/Shanghai
+  java:
+    version:
+      oraclejdk8
+
+general:
+  branches:
+    only:
+      - master
