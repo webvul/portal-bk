@@ -9,3 +9,7 @@ general:
   branches:
     only:
       - master
+
+test:
+  override:
+    - ./gradlew build -x test
