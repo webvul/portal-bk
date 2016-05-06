@@ -232,9 +232,9 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 		response.addHeader("Access-Control-Allow-Origin", "*");
 		response.addHeader("Access-Control-Allow-Methods", "GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS");
 		response.addHeader("Access-Control-Allow-Headers", "origin, authorization, accept, content-type");
-		response.addHeader("Access-Control-Max-Age", "99999");
+		response.addHeader("Access-Control-Max-Age", "86400");
 
-		response.setContentType("application/jason");
+//		response.setContentType("application/json");
 
 		response.setStatus(200);
 		response.getWriter().flush();
