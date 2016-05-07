@@ -6,7 +6,7 @@ machine:
 general:
   branches:
     only:
-      - master
+      - develop
 
 test:
   override:
