@@ -45,7 +45,7 @@ public class AuthInfoService {
 
 		if(info.getExpireTime().getTime()<new Date().getTime()){
 			userTokenMap.remove(token);
-			throw new TokenTimeoutException();
+			throw new TokenTimeoutException(token);
 		}
 
 		return info;

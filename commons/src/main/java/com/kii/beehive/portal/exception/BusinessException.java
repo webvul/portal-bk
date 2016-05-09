@@ -1,36 +1,38 @@
 package com.kii.beehive.portal.exception;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class StoreServiceException extends RuntimeException {
+public class BusinessException extends RuntimeException {
 
+
+	private Map<String,String> paramMap=new HashMap<>();
 
 
 	private String errorCode;
-
-	private String message;
 
 	private int statusCode;
 
 
 	public String getErrorCode() {
 
-
-		return this.getClass().getSimpleName();
+		return errorCode;
 	}
 
 	public void setErrorCode(String errorCode) {
 		this.errorCode = errorCode;
 	}
 
-	@Override
-	public String getMessage() {
-		return message;
+	public void addParam(String key,String value){
+		paramMap.put(key,value);
 	}
 
-	public void setMessage(String message) {
-		this.message = message;
+	public Map<String,String> getParamMap(){
+		return paramMap;
 	}
+
 
 	@JsonIgnore
 	public int getStatusCode() {

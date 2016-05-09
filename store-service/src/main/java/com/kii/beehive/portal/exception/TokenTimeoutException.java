@@ -1,11 +1,12 @@
 package com.kii.beehive.portal.exception;
 
-public class TokenTimeoutException extends StoreServiceException {
+public class TokenTimeoutException extends BusinessException {
 
 
-	public TokenTimeoutException(){
-		super.setMessage("the token had time out");
+	public TokenTimeoutException(String token){
 		super.setErrorCode("TOKEN_TIME_OUT");
+
+		super.addParam("token",token);
 	}
 
 	public int getStatusCode(){

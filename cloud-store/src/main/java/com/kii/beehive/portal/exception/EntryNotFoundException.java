@@ -1,29 +1,68 @@
 package com.kii.beehive.portal.exception;
 
 
+import java.util.Collection;
+
 import org.apache.http.HttpStatus;
 
-public class EntryNotFoundException extends StoreServiceException{
+public class EntryNotFoundException extends BusinessException{
+
+	public static EntryNotFoundException thingNotFound(long thingID){
+
+		EntryNotFoundException excep=new EntryNotFoundException(String.valueOf(thingID),"beehive thing");
+
+		return excep;
+	}
+
+	public static EntryNotFoundException thingNotFound(Collection<?> thingIDs){
+
+		EntryNotFoundException excep=new EntryNotFoundException(String.valueOf(thingIDs),"beehive thing");
+
+		return excep;
+	}
+	public static EntryNotFoundException thingNotFound(String thingID){
+
+		EntryNotFoundException excep=new EntryNotFoundException(String.valueOf(thingID),"kiicloud thing");
+
+		return excep;
+	}
+
+	public static EntryNotFoundException existsNullTag(Collection<?> tagIDs){
+
+		EntryNotFoundException excep=new EntryNotFoundException(String.valueOf(tagIDs),"beehive tag");
+
+		excep.setErrorCode("TAG_NOT_EXIST");
+		return excep;
+	}
 
 
-	public EntryNotFoundException(String objectID){
+	public static EntryNotFoundException tagNameNotFound(String  tagName){
 
-		super.setErrorCode("BeehiveObjectNotExist");
+		EntryNotFoundException excep=new EntryNotFoundException(String.valueOf(tagName),"beehive tag");
+
+		excep.setErrorCode("TAGNAME_NOT_EXIST");
+		return excep;
+	}
+
+	public static EntryNotFoundException appNotFound(String  thingID){
+
+		EntryNotFoundException excep=new EntryNotFoundException(String.valueOf(thingID),"kiiApp");
+
+		return excep;
+	}
+
+
+
+
+	public EntryNotFoundException(String objectID,String objectType){
+
+		super.setErrorCode("BEEHIVE_OBJECT_NOT_EXIST");
+
+		super.addParam("objectID",objectID);
+		super.addParam("type",objectType);
 
 		super.setStatusCode(HttpStatus.SC_NOT_FOUND);
 
-		super.setMessage(" entity with objectID is "+objectID+" not exist in beehive");
-
 	}
 
-	public EntryNotFoundException(String errorCode, String message) {
-
-		super.setErrorCode("BeehiveObjectNotExist");
-
-		super.setStatusCode(HttpStatus.SC_NOT_FOUND);
-
-		super.setMessage(message);
-
-
-	}
 }

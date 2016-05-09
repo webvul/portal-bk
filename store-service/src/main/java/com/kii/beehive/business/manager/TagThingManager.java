@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.CollectUtils;
-import com.kii.beehive.portal.exception.ObjectNotFoundException;
+import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.beehive.portal.exception.UnauthorizedException;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
@@ -55,6 +55,7 @@ import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.service.BeehiveUserDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
+import com.kii.extension.sdk.exception.ObjectNotFoundException;
 
 @Component
 @Transactional
@@ -122,12 +123,12 @@ public class TagThingManager {
 
 		// check whether Kii App ID is existing
 		if (kiiAppInfo == null) {
-			throw new ObjectNotFoundException("AppID doesn't exist");
+			throw  EntryNotFoundException.appNotFound(thingInfo.getKiiAppID());
 		}
 
 		// check whether Kii App ID is Master App
 		if (kiiAppInfo.getMasterApp()) {
-			throw new UnauthorizedException("Can't use Master AppID to create thing");
+			throw  EntryNotFoundException.thingNotFound(thingInfo.getId());
 		}
 
 
@@ -163,8 +164,7 @@ public class TagThingManager {
 		if (!accessibleTagIds.stream().map(Object::toString).collect(Collectors.toSet()).containsAll(tagIDs)) {
 			tagIDs.stream().collect(Collectors.toSet()).removeAll(accessibleTagIds.stream().
 					map(Object::toString).collect(Collectors.toSet()));
-			throw new ObjectNotFoundException("Requested tag doesn't exist or is not accessible. TagIds: " +
-					collectionToString(targetTagIds));
+			throw EntryNotFoundException.existsNullTag(tagIDs);
 		}
 
 		StringBuilder sb = new StringBuilder();
@@ -331,7 +331,7 @@ public class TagThingManager {
 			tagId = this.createTag(new TagIndex(TagType.Location, location, null));
 		} else {
 			if (!list.get(0).getCreateBy().equals(AuthInfoStore.getUserID())) {
-				throw new UnauthorizedException("Current user is not the creator of the tag.");
+				throw new UnauthorizedException(UnauthorizedException.NOT_TAG_CREATER);
 			}
 			tagId = list.get(0).getId();
 		}
@@ -475,10 +475,10 @@ public class TagThingManager {
 		List<GlobalThingInfo> things = globalThingDao.findByIDs(thingIds);
 		if (idSet.size() != things.size()) {
 			things.forEach(thing -> idSet.remove(thing.getId()));
-			throw new ObjectNotFoundException("Invalid thing id(s): [" + collectionToString(idSet) + "]");
+			throw EntryNotFoundException.thingNotFound(idSet);
 		}
 		if (null == things || things.isEmpty()) {
-			throw new ObjectNotFoundException("Can't find thing(s): [" + collectionToString(idSet) + "]");
+			throw EntryNotFoundException.thingNotFound(idSet);
 		}
 		return things;
 	}
@@ -489,7 +489,7 @@ public class TagThingManager {
 				.collect(Collectors.toList());
 		if (idSet.size() != thingIds.size()) {
 			thingIds.forEach(id -> idSet.remove(id.toString()));
-			throw new ObjectNotFoundException("Invalid thing id(s): [" + collectionToString(idSet) + "]");
+			throw EntryNotFoundException.thingNotFound(idSet);
 		}
 		return getThingsByIds(thingIds);
 	}
@@ -501,7 +501,7 @@ public class TagThingManager {
 		if (null == tagIndexes || !tagIndexes.stream().map(TagIndex::getId).map(Object::toString).
 				collect(Collectors.toSet()).containsAll(tagIDList)) {
 			tagIds.removeAll(tagIndexes.stream().map(TagIndex::getId).collect(Collectors.toList()));
-			throw new ObjectNotFoundException("Invalid tag id(s): [" + collectionToString(tagIds) + "]");
+			throw EntryNotFoundException.existsNullTag(tagIds);
 		}
 		return tagIndexes;
 	}
@@ -512,8 +512,8 @@ public class TagThingManager {
 		for (String name : displayNames) {
 			List<TagIndex> list = tagIndexDao.findTagByTagTypeAndName(tagType.name(), name);
 			if (null == list || list.isEmpty()) {
-				throw new ObjectNotFoundException("Requested tag name " + name + ", type " + tagType +
-						" doesn't exist");
+				throw EntryNotFoundException.tagNameNotFound(name);
+
 			}
 			tags.add(CollectUtils.getFirst(list));
 		}
@@ -529,7 +529,7 @@ public class TagThingManager {
 				throw new ObjectNotFoundException("Requested tag fullName " + fullName +
 						" doesn't exist");
 			} else if (!isTagCreator(CollectUtils.getFirst(list)) && !isTagOwner(CollectUtils.getFirst(list))) {
-				throw new UnauthorizedException("Current user is not the creator of tag(s).");
+				throw new UnauthorizedException("NOT_TAG_CREATER");
 			}
 			tags.add(CollectUtils.getFirst(list));
 		}

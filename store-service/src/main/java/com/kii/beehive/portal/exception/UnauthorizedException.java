@@ -3,13 +3,24 @@ package com.kii.beehive.portal.exception;
 /**
  * Created by hdchen on 3/24/16.
  */
-public class UnauthorizedException extends StoreServiceException {
+public class UnauthorizedException extends BusinessException {
+
+
+	public static final String NOT_TAG_CREATER="NOT_TAG_CREATER";
+	public static final String USER_BEEN_LOCKED="USER_BEEN_LOCKED";
+	public static final String USER_ALREADY_ACTIVIED="USER_ALREADY_ACTIVIED";
+	public static final String ACTIVITY_TOKEN_INVALID="ACTIVITY_TOKEN_INVALID";
+	public static final String LOGIN_TOKEN_INVALID="LOGIN_TOKEN_INVALID";
+	public static final String ACCESS_INVALID="ACCESS_INVALID";
+	public static final String NOT_IN_CURR_TEAM="NOT_IN_CURR_TEAM";
 
 	public UnauthorizedException(String msg){
-		super.setErrorCode("UnAuthorizedOperate");
-		super.setMessage(msg);
+		super.setErrorCode(msg);
 	}
 
+	public void addContextValue(String key,String value){
+
+	}
 	public int getStatusCode(){
 
 		return 401;

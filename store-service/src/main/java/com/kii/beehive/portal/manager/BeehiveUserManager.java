@@ -68,6 +68,24 @@ public class BeehiveUserManager {
 	}
 
 
+	public void createAdmin(String adminName,String password){
+
+		BeehiveUser  admin=new BeehiveUser();
+
+		admin.setUserName(adminName);
+		String hashedPwd=admin.getHashedPwd(password);
+		admin.setUserPassword(hashedPwd);
+
+		userDao.addEntity(admin);
+
+		String loginID=kiiUserService.addBeehiveUser(admin,admin.getUserPassword());
+
+		admin.setKiiUserID(loginID);
+
+		userDao.updateEntity(admin,admin.getId());
+
+	}
+
 	public Map<String,Object>  addUser(BeehiveUser user,String teamName) {
 
 
@@ -169,7 +187,7 @@ public class BeehiveUserManager {
 		if(AuthInfoStore.isTeamIDExist()){
 			TeamUserRelation tur = teamUserRelationDao.findByTeamIDAndUserID(AuthInfoStore.getTeamID(), userID);
 			if(tur == null){
-				throw new UnauthorizedException( "user " + userID + " not in curr team");
+				throw new UnauthorizedException(UnauthorizedException.NOT_IN_CURR_TEAM);
 			}
 		}
 	}

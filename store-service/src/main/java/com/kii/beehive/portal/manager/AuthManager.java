@@ -71,16 +71,17 @@ public class AuthManager {
 	private Map<String,String> oneTimeTokenMap=new ConcurrentHashMap<>();
 
 
+
 	public String activite(String userName, String token) {
 
 		BeehiveUser user = userDao.getUserByName(userName);
 
 		if(StringUtils.isEmpty(user.getActivityToken())){
-			throw new UnauthorizedException("userID  already activied");
+			throw new UnauthorizedException(UnauthorizedException.USER_ALREADY_ACTIVIED);
 		}
 
 		if(!user.getActivityToken().equals(user.getHashedPwd(token))){
-			throw new UnauthorizedException("activity token  incorrect");
+			throw new UnauthorizedException(UnauthorizedException.ACTIVITY_TOKEN_INVALID);
 		};
 
 		String oneTimeToken= StringRandomTools.getRandomStr(32);
@@ -95,7 +96,7 @@ public class AuthManager {
 
 		if(StringUtils.isEmpty(token)||!token.equals(oneTimeTokenMap.get(userName))){
 
-			throw new UnauthorizedException("token invalid");
+			throw new UnauthorizedException(UnauthorizedException.ACTIVITY_TOKEN_INVALID);
 
 		}
 
@@ -125,6 +126,10 @@ public class AuthManager {
 	public AuthRestBean login(String userName, String password) {
 
 		BeehiveUser  user=userDao.getUserByName(userName);
+
+		if(!StringUtils.isEmpty(user.getActivityToken())){
+			throw new UnauthorizedException(UnauthorizedException.USER_BEEN_LOCKED);
+		}
 
 		String pwd=user.getHashedPwd(password);
 
@@ -254,14 +259,14 @@ public class AuthManager {
 
 		// if auth info not found in both cache and DB, throw Exception
 		if (authInfo == null) {
-			throw new UnauthorizedException("invaild token");
+			throw new UnauthorizedException(UnauthorizedException.LOGIN_TOKEN_INVALID);
 		}
 
 		PermissionTree permisssionTree=ruleService.getUserPermissionTree(authInfo.getUserID());
 		boolean sign=permisssionTree.doVerify(method,url);
 
 		if(!sign){
-			throw new UnauthorizedException("the url no access right:"+url+" method:"+method);
+			throw new UnauthorizedException(UnauthorizedException.ACCESS_INVALID);
 		}
 
 		BeehiveUser user=userDao.getUserByID(authInfo.getUserID());
@@ -312,7 +317,7 @@ public class AuthManager {
 
 			return authRestBean;
 		}catch(KiiCloudException ex){
-			throw new UnauthorizedException("invaild token");
+			throw new UnauthorizedException(UnauthorizedException.LOGIN_TOKEN_INVALID);
 		}
 	}
 

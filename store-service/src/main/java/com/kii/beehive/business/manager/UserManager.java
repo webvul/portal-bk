@@ -117,7 +117,7 @@ public class UserManager {
 	public Long updateUserGroup(UserGroup userGroup, String loginUserID) {
 		List<UserGroup> orgiList = userGroupDao.findUserGroup(loginUserID, userGroup.getId(), null);
 		if (orgiList.size() == 0) {
-			throw new EntryNotFoundException(userGroup.getId().toString());
+			throw new EntryNotFoundException(userGroup.getId().toString(),"UserGroup");
 		}
 
 		List<UserGroup> userGroupList = userGroupDao.findUserGroupByName(userGroup.getName());
