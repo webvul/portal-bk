@@ -1,20 +1,6 @@
 package com.kii.beehive.portal.web.controller;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kii.beehive.portal.common.utils.CollectUtils;
-import com.kii.beehive.portal.exception.StoreServiceException;
-import com.kii.beehive.portal.web.exception.PortalException;
-import com.kii.extension.sdk.exception.KiiCloudException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
+import javax.annotation.PostConstruct;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
@@ -23,6 +9,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import com.kii.beehive.portal.common.utils.CollectUtils;
+import com.kii.beehive.portal.exception.StoreServiceException;
+import com.kii.beehive.portal.web.exception.PortalException;
+import com.kii.extension.sdk.exception.KiiCloudException;
+
 @ControllerAdvice
 public class ExceptionController {
 
@@ -30,6 +36,15 @@ public class ExceptionController {
 
 	@Autowired
 	private ObjectMapper mapper;
+
+	private MultiValueMap<String, String> headers=new LinkedMultiValueMap<>();
+
+	@PostConstruct
+	public void init(){
+
+//		headers.add("Content-Type","application/json;charset=UTF-8");
+
+	}
 
 	@ExceptionHandler(Throwable.class)
 	public ResponseEntity<String> handleGlobalException(Throwable ex) {
@@ -44,7 +59,7 @@ public class ExceptionController {
 
 //		String errJson=mapper.writeValueAsString(errorMap);
 
-		ResponseEntity<String> resp = new ResponseEntity(errorMap, HttpStatus.INTERNAL_SERVER_ERROR);
+		ResponseEntity<String> resp = new ResponseEntity(errorMap, headers,HttpStatus.INTERNAL_SERVER_ERROR);
 		return resp;
 	}
 
@@ -90,7 +105,8 @@ public class ExceptionController {
 
 		String error = convertExeptionToJson(ex);
 
-		ResponseEntity<String> resp = new ResponseEntity(error, HttpStatus.valueOf(ex.getStatusCode()));
+		ResponseEntity<String> resp = new ResponseEntity(error,headers, HttpStatus.valueOf(ex.getStatusCode()));
+
 
 		return resp;
 	}
@@ -102,7 +118,7 @@ public class ExceptionController {
 
 		String error = convertExeptionToJson(ex);
 
-		ResponseEntity<String> resp = new ResponseEntity(error, ex.getStatus());
+		ResponseEntity<String> resp = new ResponseEntity(error,headers, ex.getStatus());
 		return resp;
 	}
 
@@ -115,7 +131,7 @@ public class ExceptionController {
 
 		HttpStatus status = HttpStatus.valueOf(ex.getStatusCode());
 
-		ResponseEntity<String> resp = new ResponseEntity(error, status);
+		ResponseEntity<String> resp = new ResponseEntity(error,headers, status);
 		return resp;
 	}
 }
