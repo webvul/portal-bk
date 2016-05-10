@@ -38,7 +38,7 @@ public class UserRestBean {
 	@JsonIgnore
 	public void verifyInput(){
 		if(StringUtils.isEmpty(beehiveUser.getUserName())&&StringUtils.isEmpty(beehiveUser.getMail())&&StringUtils.isEmpty(beehiveUser.getPhone())){
-			throw new PortalException("RequiredFieldsMissing","username cannot been null", HttpStatus.BAD_REQUEST);
+			throw new PortalException("RequiredFieldsMissing", HttpStatus.BAD_REQUEST);
 		}
 
 	}

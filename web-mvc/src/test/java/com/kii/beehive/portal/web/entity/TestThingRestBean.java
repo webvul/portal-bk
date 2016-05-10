@@ -1,12 +1,12 @@
 package com.kii.beehive.portal.web.entity;
 
 
+import static junit.framework.TestCase.fail;
+
 import org.junit.Test;
 
 import com.kii.beehive.portal.web.WebTestTemplate;
 import com.kii.beehive.portal.web.exception.PortalException;
-
-import static junit.framework.TestCase.fail;
 
 
 public class TestThingRestBean extends WebTestTemplate {
@@ -45,7 +45,6 @@ public class TestThingRestBean extends WebTestTemplate {
             try {
                 bean.verifyInput();
             }catch (PortalException e) {
-                System.out.println(e.getErrorMessage());
                 e.printStackTrace();
                 fail();
             }

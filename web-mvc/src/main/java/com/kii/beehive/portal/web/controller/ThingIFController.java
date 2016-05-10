@@ -1,14 +1,12 @@
 package com.kii.beehive.portal.web.controller;
 
-import com.kii.beehive.business.service.ThingIFCommandService;
-import com.kii.beehive.portal.auth.AuthInfoStore;
-import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
-import com.kii.beehive.portal.jdbc.entity.TagIndex;
-import com.kii.beehive.portal.web.entity.ThingCommandRestBean;
-import com.kii.beehive.portal.web.exception.BeehiveUnAuthorizedException;
-import com.kii.beehive.portal.web.exception.PortalException;
-import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
-import com.kii.extension.ruleengine.store.trigger.TagSelector;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.CollectionUtils;
@@ -17,8 +15,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import com.kii.beehive.business.service.ThingIFCommandService;
+import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
+import com.kii.beehive.portal.jdbc.entity.TagIndex;
+import com.kii.beehive.portal.web.entity.ThingCommandRestBean;
+import com.kii.beehive.portal.web.exception.PortalException;
+import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
+import com.kii.extension.ruleengine.store.trigger.TagSelector;
 
 @RestController
 @RequestMapping(value = "/thing-if")
@@ -45,7 +49,7 @@ public class ThingIFController extends AbstractThingTagController {
 					List<TagIndex> tags = this.getTags(ts.getTagList());
 					tags.forEach(t -> {
 						if (!thingTagManager.isTagCreator(t) && !thingTagManager.isTagOwner(t)) {
-							throw new BeehiveUnAuthorizedException("not tag creator or owner");
+							throw new PortalException("not tag creator or owner",HttpStatus.UNAUTHORIZED);
 						}
 					});
 				}
@@ -56,13 +60,13 @@ public class ThingIFController extends AbstractThingTagController {
 					List<GlobalThingInfo> things = this.getThings(tempThingList);
 					things.forEach(t -> {
 						if (!thingTagManager.isThingCreator(t) && !thingTagManager.isThingOwner(t)) {
-							throw new BeehiveUnAuthorizedException("not thing creator or owner");
+							throw new PortalException("not thing creator or owner",HttpStatus.UNAUTHORIZED);
 						}
 					});
 
 				}
 			} else {
-				throw new PortalException("RequiredFieldsMissing", "tagList or ThingList is empty", HttpStatus
+				throw new PortalException("RequiredFieldsMissing", HttpStatus
 						.BAD_REQUEST);
 			}
 

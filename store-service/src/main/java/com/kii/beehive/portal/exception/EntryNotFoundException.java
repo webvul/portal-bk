@@ -2,6 +2,7 @@ package com.kii.beehive.portal.exception;
 
 
 import java.util.Collection;
+import java.util.List;
 
 import org.apache.http.HttpStatus;
 
@@ -51,7 +52,25 @@ public class EntryNotFoundException extends BusinessException{
 		return excep;
 	}
 
+	public static EntryNotFoundException userNotFound(List<String> userName){
+		EntryNotFoundException excep=new EntryNotFoundException(String.valueOf(userName),"beehiveUser");
 
+		return excep;
+
+	}
+
+	public static  EntryNotFoundException userIDNotFound(Object userName){
+		EntryNotFoundException excep=new EntryNotFoundException(String.valueOf(userName),"beehiveUser");
+
+		return excep;
+
+	}
+	public static EntryNotFoundException userGroupNotFound(List<Long> userName){
+		EntryNotFoundException excep=new EntryNotFoundException(String.valueOf(userName),"userGroup");
+
+		return excep;
+
+	}
 
 
 	public EntryNotFoundException(String objectID,String objectType){

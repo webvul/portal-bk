@@ -1,18 +1,16 @@
 package com.kii.beehive.portal.web.controller;
 
-import com.kii.beehive.business.service.ThingIFInAppService;
-import com.kii.beehive.portal.auth.AuthInfoStore;
-import com.kii.beehive.portal.exception.ObjectNotFoundException;
-import com.kii.beehive.portal.exception.UnauthorizedException;
-import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
-import com.kii.beehive.portal.jdbc.entity.TagIndex;
-import com.kii.beehive.portal.jdbc.entity.TagType;
-import com.kii.beehive.portal.jdbc.entity.UserGroup;
-import com.kii.beehive.portal.store.entity.BeehiveUser;
-import com.kii.beehive.portal.web.entity.ThingRestBean;
-import com.kii.beehive.portal.web.exception.BeehiveUnAuthorizedException;
-import com.kii.beehive.portal.web.exception.PortalException;
-import com.kii.extension.sdk.entity.thingif.EndNodeOfGateway;
+import static java.util.Arrays.asList;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +18,23 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static java.util.Arrays.asList;
+import com.kii.beehive.business.service.ThingIFInAppService;
+import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
+import com.kii.beehive.portal.jdbc.entity.TagIndex;
+import com.kii.beehive.portal.jdbc.entity.TagType;
+import com.kii.beehive.portal.jdbc.entity.UserGroup;
+import com.kii.beehive.portal.store.entity.BeehiveUser;
+import com.kii.beehive.portal.web.entity.ThingRestBean;
+import com.kii.beehive.portal.web.exception.PortalException;
+import com.kii.extension.sdk.entity.thingif.EndNodeOfGateway;
 
 /**
  * Beehive API - Thing API
@@ -47,11 +56,8 @@ public class ThingController extends AbstractThingTagController {
 	 */
 	@RequestMapping(value = "/{globalThingID}/users", method = RequestMethod.GET, consumes = {"*"})
 	public List<BeehiveUser> getUsersByThing(@PathVariable("globalThingID") Long globalThingID) {
-		try {
 			return thingTagManager.getUsersOfAccessibleThing(AuthInfoStore.getUserID(), globalThingID);
-		} catch (ObjectNotFoundException e) {
-			throw new PortalException(e.getMessage(), e.getMessage(), HttpStatus.BAD_REQUEST);
-		}
+
 	}
 
 	/**
@@ -72,11 +78,8 @@ public class ThingController extends AbstractThingTagController {
 	 */
 	@RequestMapping(value = "/{globalThingID}/userGroups", method = RequestMethod.GET, consumes = {"*"})
 	public List<UserGroup> getUserGroupIdsByThing(@PathVariable("globalThingID") Long globalThingID) {
-		try {
 			return thingTagManager.getUserGroupsOfAccessibleThing(AuthInfoStore.getUserID(), globalThingID);
-		} catch (ObjectNotFoundException e) {
-			throw new PortalException(e.getMessage(), e.getMessage(), HttpStatus.BAD_REQUEST);
-		}
+
 	}
 
 	/**
@@ -130,13 +133,9 @@ public class ThingController extends AbstractThingTagController {
 	@RequestMapping(value = "/types/tagID/{tagIDs}", method = {RequestMethod.GET}, consumes = {"*"})
 	public List<String> getThingTypeByTagIDs(@PathVariable("tagIDs") String tagIDs) {
 		List<String> result;
-		try {
 			result = thingTagManager.getThingTypesOfAccessibleThingsByTagIds(AuthInfoStore.getUserID(),
 					asList(tagIDs.split(",")));
-		} catch (ObjectNotFoundException e) {
-			throw new PortalException("Requested tag doesn't exist or is not accessible", e.getMessage(),
-					HttpStatus.BAD_REQUEST);
-		}
+
 		return result;
 	}
 
@@ -150,13 +149,9 @@ public class ThingController extends AbstractThingTagController {
 	 */
 	@RequestMapping(value = "/types/fulltagname/{fullTagNames}", method = {RequestMethod.GET}, consumes = {"*"})
 	public List<String> getThingTypeByTagFullName(@PathVariable("fullTagNames") String fullTagNames) {
-		try {
 			return thingTagManager.getTypesOfAccessibleThingsByTagFullName(AuthInfoStore.getUserID(),
 					asList(fullTagNames.split(",")).stream().collect(Collectors.toSet()));
-		} catch (ObjectNotFoundException e) {
-			throw new PortalException("Some requested tags don't exist or is not accessible", e.getMessage(),
-					HttpStatus.BAD_REQUEST);
-		}
+
 	}
 
 	/**
@@ -171,12 +166,8 @@ public class ThingController extends AbstractThingTagController {
 	@RequestMapping(value = "/{globalThingID}", method = {RequestMethod.GET}, consumes = {"*"})
 	public ThingRestBean getThingByGlobalID(@PathVariable("globalThingID") Long globalThingID) {
 		GlobalThingInfo thingInfo;
-		try {
 			thingInfo = thingTagManager.getAccessibleThingById(AuthInfoStore.getUserID(), globalThingID);
-		} catch (ObjectNotFoundException e) {
-			throw new PortalException("Requested thing doesn't exist or isn't accessible", e.getMessage(),
-					HttpStatus.BAD_REQUEST);
-		}
+
 
 		// set thing into output
 		ThingRestBean thingRestBean = new ThingRestBean();
@@ -219,12 +210,8 @@ public class ThingController extends AbstractThingTagController {
 		if (input.getId() == null) {
 			thingInfo = new GlobalThingInfo();
 		} else {
-			try {
 				thingInfo = thingTagManager.getAccessibleThingById(AuthInfoStore.getUserID(), input.getId());
-			} catch (ObjectNotFoundException e) {
-				throw new PortalException("Requested thing doesn't exist or isn't accessible", e.getMessage(),
-						HttpStatus.BAD_REQUEST);
-			}
+
 		}
 
 		thingInfo.setVendorThingID(input.getVendorThingID());
@@ -237,18 +224,12 @@ public class ThingController extends AbstractThingTagController {
 		List<GlobalThingInfo> gList = thingTagManager.getThingsByVendorThingIds(Arrays.asList(thingInfo.getVendorThingID()));
 
 		if (!gList.isEmpty() && !gList.get(0).getId().equals(input.getId())) {
-			throw new PortalException("DuplicateObject", " Duplicate VenderID : " + thingInfo.getVendorThingID(),
+			throw new PortalException("DuplicateObject",
 					HttpStatus.BAD_REQUEST);
 		}
 
-		Long thingID;
-		try {
-			thingID = thingTagManager.createThing(thingInfo, input.getLocation(), input.getInputTags());
-		} catch (ObjectNotFoundException e) {
-			throw new PortalException(e.getMessage(), e.getMessage(), HttpStatus.BAD_REQUEST);
-		} catch (UnauthorizedException e) {
-			throw new BeehiveUnAuthorizedException(e.getMessage());
-		}
+		Long thingID = thingTagManager.createThing(thingInfo, input.getLocation(), input.getInputTags());
+
 
 		Map<String, Long> map = new HashMap<>();
 		map.put("globalThingID", thingID);
@@ -266,11 +247,8 @@ public class ThingController extends AbstractThingTagController {
 	 */
 	@RequestMapping(value = "/{globalThingID}", method = {RequestMethod.DELETE}, consumes = {"*"})
 	public void removeThing(@PathVariable("globalThingID") Long globalThingID) {
-		try {
 			thingTagManager.removeThing(getCreatedThings(globalThingID.toString()).get(0));
-		} catch (ObjectNotFoundException e) {
-			throw new PortalException("Requested thing doesn't exist", e.getMessage(), HttpStatus.NOT_FOUND);
-		}
+
 	}
 
 
@@ -286,7 +264,7 @@ public class ThingController extends AbstractThingTagController {
 	public void bindThingsToTags(@PathVariable("globalThingIDs") String globalThingIDs,
 								 @PathVariable("fullNames") String fullTagNames) {
 		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(fullTagNames)) {
-			throw new PortalException("RequiredFieldsMissing", "globalThingIDs or tagIDs is empty", HttpStatus
+			throw new PortalException("RequiredFieldsMissing",  HttpStatus
 					.BAD_REQUEST);
 		}
 		List<Long> thingIds = getCreatedThingIds(globalThingIDs);
@@ -308,7 +286,7 @@ public class ThingController extends AbstractThingTagController {
 	public void unbindThingsFromTags(@PathVariable("globalThingIDs") String globalThingIDs,
 									 @PathVariable("fullNames") String fullTagNames) {
 		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(fullTagNames)) {
-			throw new PortalException("RequiredFieldsMissing", "globalThingIDs or tagIDs is empty", HttpStatus
+			throw new PortalException("RequiredFieldsMissing",  HttpStatus
 					.BAD_REQUEST);
 		}
 		List<Long> thingIds = getCreatedThingIds(globalThingIDs);
@@ -329,7 +307,7 @@ public class ThingController extends AbstractThingTagController {
 			("userGroupIDs")
 			String userGroupIDs) {
 		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(userGroupIDs)) {
-			throw new PortalException("RequiredFieldsMissing", "globalThingIDs or userGroupIDs is empty", HttpStatus
+			throw new PortalException("RequiredFieldsMissing", HttpStatus
 					.BAD_REQUEST);
 		}
 		List<Long> thingIds = getCreatedThingIds(globalThingIDs);
@@ -349,7 +327,7 @@ public class ThingController extends AbstractThingTagController {
 			("userGroupIDs")
 			String userGroupIDs) {
 		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(userGroupIDs)) {
-			throw new PortalException("RequiredFieldsMissing", "globalThingIDs or userGroupIDs is empty", HttpStatus
+			throw new PortalException("RequiredFieldsMissing", HttpStatus
 					.BAD_REQUEST);
 		}
 		List<Long> thingIds = getCreatedThingIds(globalThingIDs);
@@ -368,7 +346,7 @@ public class ThingController extends AbstractThingTagController {
 	public void bindThingsToUsers(@PathVariable("globalThingIDs") String globalThingIDs, @PathVariable("userIDs")
 			String userIDs) {
 		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(userIDs)) {
-			throw new PortalException("RequiredFieldsMissing", "globalThingIDs or userIDs is empty", HttpStatus
+			throw new PortalException("RequiredFieldsMissing", HttpStatus
 					.BAD_REQUEST);
 		}
 		List<Long> thingIds = getCreatedThingIds(globalThingIDs);
@@ -387,7 +365,7 @@ public class ThingController extends AbstractThingTagController {
 	public void unbindThingsFromUsers(@PathVariable("globalThingIDs") String globalThingIDs, @PathVariable("userIDs")
 			String userIDs) {
 		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(userIDs)) {
-			throw new PortalException("RequiredFieldsMissing", "globalThingIDs or userIDs is empty", HttpStatus
+			throw new PortalException("RequiredFieldsMissing", HttpStatus
 					.BAD_REQUEST);
 		}
 		List<Long> thingIds = getCreatedThingIds(globalThingIDs);
@@ -408,7 +386,7 @@ public class ThingController extends AbstractThingTagController {
 	public void bindThingsToCustomTags(@PathVariable("globalThingIDs") String globalThingIDs,
 									   @PathVariable("displayNames") String displayNames) {
 		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(displayNames)) {
-			throw new PortalException("RequiredFieldsMissing", "globalThingIDs or displayNames is empty", HttpStatus
+			throw new PortalException("RequiredFieldsMissing",  HttpStatus
 					.BAD_REQUEST);
 		}
 		List<Long> thingIds = getCreatedThingIds(globalThingIDs);
@@ -430,7 +408,7 @@ public class ThingController extends AbstractThingTagController {
 	public void unbindThingsFromCustomTags(@PathVariable("globalThingIDs") String globalThingIDs,
 										   @PathVariable("displayNames") String displayNames) {
 		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(displayNames)) {
-			throw new PortalException("RequiredFieldsMissing", "globalThingIDs or displayNames is empty", HttpStatus
+			throw new PortalException("RequiredFieldsMissing", HttpStatus
 					.BAD_REQUEST);
 		}
 		List<Long> thingIds = getCreatedThingIds(globalThingIDs);

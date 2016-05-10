@@ -119,7 +119,7 @@ public class ThingRestBean extends GlobalThingInfo {
 		this.verifyVendorThingID();
 
 		if(Strings.isBlank(this.getKiiAppID())){
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"KiiAppID is empty", HttpStatus.BAD_REQUEST);
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus.BAD_REQUEST);
 		}
 	}
 
@@ -128,13 +128,13 @@ public class ThingRestBean extends GlobalThingInfo {
 		String vendorThingID = this.getVendorThingID();
 
 		if(Strings.isBlank(vendorThingID)){
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"VendorThingID is empty", HttpStatus.BAD_REQUEST);
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus.BAD_REQUEST);
 		}
 
 		Matcher matcher = validVendorThingIDPattern.matcher(vendorThingID);
 
 		if(!matcher.matches()) {
-			throw new PortalException(ErrorCode.INVALID_INPUT, "VendorThingID:" + vendorThingID + " is invalid", HttpStatus.BAD_REQUEST);
+			throw new PortalException(ErrorCode.INVALID_INPUT, HttpStatus.BAD_REQUEST);
 		}
 
 	}

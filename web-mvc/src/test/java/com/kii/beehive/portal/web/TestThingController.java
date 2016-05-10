@@ -1,11 +1,53 @@
 package com.kii.beehive.portal.web;
 
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertNotNull;
+import static junit.framework.TestCase.assertTrue;
+import static junit.framework.TestCase.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyListOf;
+import static org.mockito.Mockito.anyCollectionOf;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.anySetOf;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
+import org.mockito.stubbing.Answer;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.kii.beehive.business.manager.TagThingManager;
 import com.kii.beehive.business.service.ThingIFCommandService;
 import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.portal.auth.AuthInfoStore;
-import com.kii.beehive.portal.exception.ObjectNotFoundException;
 import com.kii.beehive.portal.exception.UnauthorizedException;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
@@ -28,26 +70,6 @@ import com.kii.extension.sdk.entity.thingif.Action;
 import com.kii.extension.sdk.entity.thingif.OnBoardingParam;
 import com.kii.extension.sdk.entity.thingif.OnBoardingResult;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
-import org.mockito.stubbing.Answer;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-
-import java.util.*;
-
-import static junit.framework.TestCase.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyListOf;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class TestThingController extends WebTestTemplate {
 
@@ -119,14 +141,7 @@ public class TestThingController extends WebTestTemplate {
 
 	@Test
 	public void testGetUsersByThing() throws Exception {
-		doThrow(new ObjectNotFoundException("test")).when(thingTagManager).getAccessibleThingById(anyString(),
-				anyLong());
-		try {
-			thingController.getUsersByThing(100L);
-			fail("Expect an PortalException");
-		} catch (PortalException e) {
-			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
-		}
+
 
 		doReturn(mock(GlobalThingInfo.class)).when(thingTagManager).getAccessibleThingById(anyString(), anyLong());
 		doReturn(null).when(thingTagManager).getUsersOfAccessibleThing(anyString(), anyLong());
@@ -147,14 +162,7 @@ public class TestThingController extends WebTestTemplate {
 
 	@Test
 	public void testGetUserGroupIdsByThing() throws Exception {
-		doThrow(new ObjectNotFoundException("test")).when(thingTagManager).getAccessibleThingById(anyString(),
-				anyLong());
-		try {
-			thingController.getUserGroupIdsByThing(100L);
-			fail("Expect an PortalException");
-		} catch (PortalException e) {
-			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
-		}
+
 
 		doReturn(mock(GlobalThingInfo.class)).when(thingTagManager).getAccessibleThingById(anyString(), anyLong());
 		doReturn(null).when(thingTagManager).getUserGroupsOfAccessibleThing(anyString(), anyLong());
@@ -175,14 +183,7 @@ public class TestThingController extends WebTestTemplate {
 
 	@Test
 	public void testGetThingTypeByTagFullName() throws Exception {
-		doThrow(new ObjectNotFoundException("test")).when(thingTagManager).getTypesOfAccessibleThingsByTagFullName(
-				anyString(), anySetOf(String.class));
-		try {
-			thingController.getThingTypeByTagFullName("test");
-			fail("Expect a PortalException");
-		} catch (PortalException e) {
-			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
-		}
+
 
 		doReturn(null).when(thingTagManager).getTypesOfAccessibleThingsByTagFullName(
 				anyString(), anySetOf(String.class));
@@ -205,9 +206,6 @@ public class TestThingController extends WebTestTemplate {
 			}
 		}
 
-		doThrow(new ObjectNotFoundException("test")).when(thingTagManager).getCreatedThingIds(anyString(),
-				anyListOf(Long.class));
-
 		try {
 			thingController.bindThingsToUserGroups("123", "123");
 			fail("Expect a PortalException");
@@ -216,7 +214,6 @@ public class TestThingController extends WebTestTemplate {
 		}
 
 		doReturn(Arrays.asList(100L)).when(thingTagManager).getCreatedThingIds(anyString(), anyListOf(Long.class));
-		doThrow(new ObjectNotFoundException("test")).when(thingTagManager).getUserGroupIds(anyListOf(String.class));
 
 		try {
 			thingController.bindThingsToUserGroups("123", "123");
@@ -248,8 +245,6 @@ public class TestThingController extends WebTestTemplate {
 			}
 		}
 
-		doThrow(new ObjectNotFoundException("test")).when(thingTagManager).getCreatedThingIds(anyString(),
-				anyListOf(Long.class));
 
 		try {
 			thingController.unbindThingsFromUserGroups("123", "123");
@@ -259,7 +254,6 @@ public class TestThingController extends WebTestTemplate {
 		}
 
 		doReturn(Arrays.asList(100L)).when(thingTagManager).getCreatedThingIds(anyString(), anyListOf(Long.class));
-		doThrow(new ObjectNotFoundException("test")).when(thingTagManager).getUserGroupIds(anyListOf(String.class));
 
 		try {
 			thingController.unbindThingsFromUserGroups("123", "123");
@@ -291,8 +285,7 @@ public class TestThingController extends WebTestTemplate {
 			}
 		}
 
-		doThrow(new ObjectNotFoundException("test")).when(thingTagManager).getCreatedThingIds(anyString(),
-				anyListOf(Long.class));
+
 
 		try {
 			thingController.bindThingsToUsers("100", "someone");
@@ -302,7 +295,6 @@ public class TestThingController extends WebTestTemplate {
 		}
 
 		doReturn(Arrays.asList(100L)).when(thingTagManager).getCreatedThingIds(anyString(), anyListOf(Long.class));
-		doThrow(new ObjectNotFoundException("test")).when(thingTagManager).getUsers(anyListOf(String.class));
 
 		try {
 			thingController.bindThingsToUsers("100", "someone");
@@ -335,8 +327,6 @@ public class TestThingController extends WebTestTemplate {
 			}
 		}
 
-		doThrow(new ObjectNotFoundException("test")).when(thingTagManager).getCreatedThingIds(anyString(),
-				anyListOf(Long.class));
 
 		try {
 			thingController.unbindThingsFromUsers("100", "someone");
@@ -346,7 +336,6 @@ public class TestThingController extends WebTestTemplate {
 		}
 
 		doReturn(Arrays.asList(100L)).when(thingTagManager).getCreatedThingIds(anyString(), anyListOf(Long.class));
-		doThrow(new ObjectNotFoundException("test")).when(thingTagManager).getUsers(anyListOf(String.class));
 
 		try {
 			thingController.unbindThingsFromUsers("100", "someone");
@@ -379,8 +368,6 @@ public class TestThingController extends WebTestTemplate {
 			}
 		}
 
-		doThrow(new ObjectNotFoundException("test")).when(thingTagManager).getCreatedThingIds(anyString(),
-				anyListOf(Long.class));
 
 		try {
 			thingController.bindThingsToCustomTags("100", "test");
@@ -391,8 +378,6 @@ public class TestThingController extends WebTestTemplate {
 
 		doReturn(Arrays.asList(100L)).when(thingTagManager).getCreatedThingIds(anyString(),
 				anyListOf(Long.class));
-		doThrow(new ObjectNotFoundException("test")).when(thingTagManager).getCreatedTagIdsByTypeAndDisplayNames(
-				anyString(), any(TagType.class), anyListOf(String.class));
 
 		try {
 			thingController.bindThingsToCustomTags("100", "test");
@@ -428,8 +413,6 @@ public class TestThingController extends WebTestTemplate {
 			}
 		}
 
-		doThrow(new ObjectNotFoundException("test")).when(thingTagManager).getCreatedThingIds(anyString(),
-				anyListOf(Long.class));
 
 		try {
 			thingController.unbindThingsFromCustomTags("100", "test");
@@ -440,8 +423,6 @@ public class TestThingController extends WebTestTemplate {
 
 		doReturn(Arrays.asList(100L)).when(thingTagManager).getCreatedThingIds(anyString(),
 				anyListOf(Long.class));
-		doThrow(new ObjectNotFoundException("test")).when(thingTagManager).getCreatedTagIdsByTypeAndDisplayNames(
-				anyString(), any(TagType.class), anyListOf(String.class));
 
 		try {
 			thingController.unbindThingsFromCustomTags("100", "test");
@@ -476,8 +457,6 @@ public class TestThingController extends WebTestTemplate {
 			}
 		}
 
-		doThrow(new ObjectNotFoundException("test")).when(thingTagManager).getCreatedThingIds(anyString(),
-				anyListOf(Long.class));
 
 		try {
 			thingController.bindThingsToTags("100", "tagName");
@@ -488,8 +467,7 @@ public class TestThingController extends WebTestTemplate {
 
 		doReturn(Arrays.asList(100L)).when(thingTagManager).getCreatedThingIds(anyString(),
 				anyListOf(Long.class));
-		doThrow(new ObjectNotFoundException("test")).when(thingTagManager).getCreatedTagIdsByFullTagName(
-				anyString(), anyString());
+
 
 		try {
 			thingController.bindThingsToTags("100", "tagName");
@@ -524,8 +502,6 @@ public class TestThingController extends WebTestTemplate {
 			}
 		}
 
-		doThrow(new ObjectNotFoundException("test")).when(thingTagManager).getCreatedThingIds(anyString(),
-				anyListOf(Long.class));
 
 		try {
 			thingController.unbindThingsFromTags("100", "tagName");
@@ -536,8 +512,6 @@ public class TestThingController extends WebTestTemplate {
 
 		doReturn(Arrays.asList(100L)).when(thingTagManager).getCreatedThingIds(anyString(),
 				anyListOf(Long.class));
-		doThrow(new ObjectNotFoundException("test")).when(thingTagManager).getCreatedTagIdsByFullTagName(
-				anyString(), anyString());
 
 		try {
 			thingController.unbindThingsFromTags("100", "tagName");
@@ -755,8 +729,7 @@ public class TestThingController extends WebTestTemplate {
 
 	@Test
 	public void testGetThingByGlobalID() throws Exception {
-		doThrow(new ObjectNotFoundException("test")).when(thingTagManager).getAccessibleThingById(anyString(),
-				anyLong());
+
 		try {
 			thingController.getThingByGlobalID(100L);
 			fail("Expect an PortalException");
@@ -782,8 +755,6 @@ public class TestThingController extends WebTestTemplate {
 
 	@Test
 	public void testRemoveThing() throws Exception {
-		doThrow(new ObjectNotFoundException("test")).when(thingTagManager).
-				getCreatedThingIds(anyString(), anyListOf(Long.class));
 		try {
 			thingController.removeThing(100L);
 			fail("Expect an PortalException");
@@ -792,7 +763,6 @@ public class TestThingController extends WebTestTemplate {
 		}
 
 		doReturn(Arrays.asList(100L)).when(thingTagManager).getCreatedThingIds(anyString(), anyListOf(Long.class));
-		doThrow(new ObjectNotFoundException("test")).when(thingTagManager).getThingsByIds(anyListOf(Long.class));
 
 		try {
 			thingController.removeThing(100L);
@@ -856,8 +826,6 @@ public class TestThingController extends WebTestTemplate {
 
 	@Test
 	public void testGetThingTypeByTagIDs() throws Exception {
-		doThrow(new ObjectNotFoundException("test")).when(thingTagManager).getThingTypesOfAccessibleThingsByTagIds(
-				anyString(), anyCollectionOf(String.class));
 		try {
 			thingController.getThingTypeByTagIDs("test");
 			fail("Expect an PortalException");

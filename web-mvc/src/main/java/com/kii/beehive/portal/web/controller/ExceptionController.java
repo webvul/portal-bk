@@ -1,20 +1,6 @@
 package com.kii.beehive.portal.web.controller;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kii.beehive.portal.common.utils.CollectUtils;
-import com.kii.beehive.portal.exception.StoreServiceException;
-import com.kii.beehive.portal.web.exception.PortalException;
-import com.kii.extension.sdk.exception.KiiCloudException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
+import javax.annotation.PostConstruct;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
@@ -23,6 +9,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import com.kii.beehive.portal.common.utils.CollectUtils;
+import com.kii.beehive.portal.exception.BusinessException;
+import com.kii.beehive.portal.web.exception.PortalException;
+import com.kii.extension.sdk.exception.KiiCloudException;
+
 @ControllerAdvice
 public class ExceptionController {
 
@@ -30,6 +35,16 @@ public class ExceptionController {
 
 	@Autowired
 	private ObjectMapper mapper;
+
+	@Autowired
+	private ResourceLoader loader;
+
+
+
+	@PostConstruct
+	public void init(){
+
+	}
 
 	@ExceptionHandler(Throwable.class)
 	public ResponseEntity<String> handleGlobalException(Throwable ex) {
@@ -83,8 +98,8 @@ public class ExceptionController {
 	}
 
 
-	@ExceptionHandler(StoreServiceException.class)
-	public ResponseEntity<String> handleStoreServiceException(StoreServiceException ex) {
+	@ExceptionHandler(BusinessException.class)
+	public ResponseEntity<String> handleStoreServiceException(BusinessException ex) {
 
 		log.error("store exception ", ex);
 
@@ -105,6 +120,9 @@ public class ExceptionController {
 		ResponseEntity<String> resp = new ResponseEntity(error, ex.getStatus());
 		return resp;
 	}
+
+
+
 
 	@ExceptionHandler(KiiCloudException.class)
 	public ResponseEntity<String> handleKiiCloudException(KiiCloudException ex) {

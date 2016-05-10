@@ -9,7 +9,7 @@ public class SubStrUtils {
 			return str;
 		}
 
-		return str.substring(0,idx);
+		return str.substring(0,idx).trim();
 	}
 
 	public final static String getAfterSep(String str,char sep){
@@ -18,6 +18,6 @@ public class SubStrUtils {
 		if(idx==-1){
 			return str;
 		}
-		return str.substring(idx+1,str.length());
+		return str.substring(idx+1,str.length()).trim();
 	}
 }

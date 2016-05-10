@@ -11,7 +11,6 @@ import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
@@ -41,7 +40,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kii.beehive.business.manager.PortalSyncUserManager;
 import com.kii.beehive.business.manager.TagThingManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
-import com.kii.beehive.portal.exception.ObjectNotFoundException;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.TagGroupRelationDao;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
@@ -135,7 +133,6 @@ public class TestTagController extends WebTestTemplate {
 	public void testGetUsersByFullTagName() throws Exception {
 		doReturn(Collections.singletonList("test")).when(tagThingManager).getUsersOfAccessibleTags(anyString(),
 				anyString());
-		doThrow(new ObjectNotFoundException("test")).when(tagThingManager).getUsers(anyListOf(String.class));
 
 		try {
 			tagController.getUsersByFullTagName("some tag");
@@ -160,7 +157,6 @@ public class TestTagController extends WebTestTemplate {
 	@Test
 	public void testGetUserGroupsByFullTagName() throws Exception {
 		doReturn(Arrays.asList(100L)).when(tagThingManager).getUserGroupsOfAccessibleTags(anyString(), anyString());
-		doThrow(new ObjectNotFoundException("test")).when(tagThingManager).getUserGroupsByIds(anyListOf(Long.class));
 
 		try {
 			tagController.getUserGroupsByFullTagName("some tag");
@@ -232,9 +228,6 @@ public class TestTagController extends WebTestTemplate {
 		} catch (PortalException e) {
 			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
 		}
-
-		doThrow(new ObjectNotFoundException("test")).when(tagThingManager).getCreatedTagIdsByTypeAndDisplayNames(
-				anyString(), any(TagType.class), anyListOf(String.class));
 
 		try {
 			tagController.removeTag("displayName");

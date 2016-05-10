@@ -131,7 +131,7 @@ public class UserController {
 		String newPassord = (String)request.get("newPassword");
 
 		if(CollectUtils.containsBlank(oldPassword, newPassord)) {
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "oldPassword or newPassord empty", HttpStatus.BAD_REQUEST);
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,  HttpStatus.BAD_REQUEST);
 		}
 
 		authManager.changePassword(oldPassword, newPassord);

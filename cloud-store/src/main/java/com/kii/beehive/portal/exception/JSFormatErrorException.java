@@ -2,19 +2,42 @@ package com.kii.beehive.portal.exception;
 
 import javax.script.ScriptException;
 
-public class JSFormatErrorException extends BusinessException {
+public class JSFormatErrorException extends RuntimeException {
 
+
+	private int lineNumber;
+
+	private int columnNumber;
+
+	private String fileName;
+
+	private String message;
 
 	public JSFormatErrorException(ScriptException ex){
 
-		super.setErrorCode("jS_FORMAT_ERROR");
+		lineNumber=ex.getLineNumber();
 
-		super.setStatusCode(500);
+		columnNumber=ex.getColumnNumber();
 
-		super.addParam("lineNumber",String.valueOf(ex.getLineNumber()));
-		super.addParam("columnNumber",String.valueOf(ex.getColumnNumber()));
+		fileName=ex.getFileName();
+
+		message=ex.getMessage();
 	}
 
+	public int getLineNumber() {
+		return lineNumber;
+	}
 
+	public int getColumnNumber() {
+		return columnNumber;
+	}
 
+	public String getFileName() {
+		return fileName;
+	}
+
+	@Override
+	public String getMessage() {
+		return message;
+	}
 }

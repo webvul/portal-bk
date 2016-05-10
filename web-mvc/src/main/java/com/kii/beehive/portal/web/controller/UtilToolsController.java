@@ -33,6 +33,7 @@ import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.store.entity.CallbackUrlParameter;
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
 import com.kii.beehive.portal.web.constant.CallbackNames;
+import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
 import com.kii.beehive.portal.web.help.BeehiveAppInfoManager;
 import com.kii.extension.sdk.entity.FederatedAuthResult;
@@ -131,8 +132,7 @@ public class UtilToolsController {
 		List<GlobalThingInfo> thingInfos = tagThingManager.getThingsByVendorThingIds(Arrays.asList(vendorThingID));
 
 		if (thingInfos.isEmpty()) {
-			throw new PortalException("vendorThingID not found",
-					"vendorThingID " + vendorThingID + " is not found", HttpStatus.NOT_FOUND);
+			throw new PortalException(ErrorCode.NOT_FOUND, HttpStatus.NOT_FOUND);
 		}
 		GlobalThingInfo globalThingInfo = thingInfos.get(0);
 

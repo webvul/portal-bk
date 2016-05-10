@@ -1,21 +1,28 @@
 package com.kii.beehive.portal.web.controller;
 
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.kii.beehive.business.helper.OpLogTools;
 import com.kii.beehive.business.ruleengine.TriggerLogTools;
 import com.kii.beehive.business.ruleengine.TriggerManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
-import com.kii.beehive.portal.web.exception.MethodNotAllowedException;
+import com.kii.beehive.portal.web.constant.ErrorCode;
+import com.kii.beehive.portal.web.exception.PortalException;
 import com.kii.extension.ruleengine.TriggerValidate;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping(path = "/triggers", consumes = { MediaType.APPLICATION_JSON_UTF8_VALUE }, produces = {
@@ -116,7 +123,7 @@ public class CrossTriggerController {
 		result.put("result", "success");
 		TriggerRecord record=mang.getTriggerByID(triggerID);
 		if(!TriggerRecord.StatusType.disable.equals(record.getRecordStatus())){
-			throw new MethodNotAllowedException("only can operating disable Trigger");
+			throw new PortalException(ErrorCode.METHOD_NOT_ALLOWED, HttpStatus.METHOD_NOT_ALLOWED);
 		}
 
 		mang.enableTrigger(triggerID);
@@ -155,7 +162,7 @@ public class CrossTriggerController {
 		result.put("result", "success");
 		TriggerRecord record=mang.getTriggerByID(triggerID);
 		if(!TriggerRecord.StatusType.enable.equals(record.getRecordStatus())){
-			throw new MethodNotAllowedException("only can operating enable Trigger");
+			throw new PortalException(ErrorCode.METHOD_NOT_ALLOWED, HttpStatus.METHOD_NOT_ALLOWED);
 		}
 
 		mang.disableTrigger(triggerID);

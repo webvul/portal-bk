@@ -32,7 +32,7 @@ public class Party3thAuthController {
 		String userID = (String) request.get("userID");
 
 		if (CollectUtils.containsBlank(userID)) {
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "userName or password empty", HttpStatus.BAD_REQUEST);
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,  HttpStatus.BAD_REQUEST);
 		}
 
 		return authManager.getTokenByID(userID);

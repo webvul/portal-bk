@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.exception.DuplicateException;
 import com.kii.beehive.portal.exception.EntryNotFoundException;
-import com.kii.beehive.portal.exception.InvalidAuthException;
+import com.kii.beehive.portal.exception.UnauthorizedException;
 import com.kii.beehive.portal.exception.UserNotExistException;
 import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
 import com.kii.beehive.portal.jdbc.dao.TeamDao;
@@ -32,6 +32,7 @@ import com.kii.beehive.portal.jdbc.entity.TeamUserRelation;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
 import com.kii.beehive.portal.service.BeehiveUserDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
+
 
 @Component
 @Transactional
@@ -49,12 +50,6 @@ public class UserManager {
 	@Autowired
 	private GroupUserRelationDao groupUserRelationDao;
 
-//	@Autowired
-//	private GroupPermissionRelationDao groupPermissionRelationDao;
-
-
-//	@Autowired
-//	protected PermissionDao permissionDao;
 
 	@Autowired
 	private BeehiveUserDao userDao;
@@ -99,7 +94,7 @@ public class UserManager {
 		List<UserGroup> userGroupList = userGroupDao.findUserGroupByName(userGroup.getName());
 
 		if (userGroupList.size() > 0) {
-			throw new DuplicateException(userGroup.getName());
+			throw new DuplicateException(userGroup.getName(),"UserGroup");
 		}
 
 		Long userGroupID = userGroupDao.saveOrUpdate(userGroup);
@@ -122,12 +117,15 @@ public class UserManager {
 
 		List<UserGroup> userGroupList = userGroupDao.findUserGroupByName(userGroup.getName());
 		if (userGroupList.size() > 0 && userGroupList.get(0).getId() != userGroup.getId()) {
-			throw new DuplicateException(userGroup.getName());
+			throw new DuplicateException(userGroup.getName(),"UserGroup");
 		}
 
 		UserGroup orgi = orgiList.get(0);
 		if (!orgi.getCreateBy().equals(loginUserID)) {
-			throw new InvalidAuthException(orgi.getCreateBy(), loginUserID);
+			UnauthorizedException excep= new UnauthorizedException(UnauthorizedException.NOT_GROUP_CREATER);
+			excep.addParam("group",orgi.getName());
+			excep.addParam("currUser",loginUserID);
+			throw excep;
 		}
 		orgi.setName(userGroup.getName());
 		orgi.setDescription(userGroup.getDescription());
@@ -150,6 +148,15 @@ public class UserManager {
 	 * @param userGroupID
 	 */
 	public void addUserToUserGroup(List<String> userIDList, Long userGroupID) {
+
+
+		UserGroup ug = this.userGroupDao.findByID(userGroupID);
+
+		if (!ug.getCreateBy().equals(AuthInfoStore.getUserID())) {
+			UnauthorizedException  excep= new UnauthorizedException(UnauthorizedException.NOT_GROUP_CREATER);
+			excep.addParam("group",ug.getName());
+			excep.addParam("currUser",AuthInfoStore.getUserID());
+		}
 
 		List<BeehiveUser> userList = userDao.getUserByIDs(userIDList);
 		if (userList.size() == 1) {

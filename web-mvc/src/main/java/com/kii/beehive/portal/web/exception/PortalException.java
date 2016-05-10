@@ -10,17 +10,14 @@ public class PortalException extends RuntimeException {
 
 	private String errorCode;
 
-	private String errorMessage;
-
 	private HttpStatus status;
 
 	public PortalException(){
 
 	}
 
-	public PortalException(String errorCode,String errorMsg,HttpStatus status){
+	public PortalException(String errorCode,HttpStatus status){
 		this.errorCode=errorCode;
-		this.errorMessage=errorMsg;
 		this.status=status;
 	}
 
@@ -32,14 +29,6 @@ public class PortalException extends RuntimeException {
 
 	public void setErrorCode(String errorCode) {
 		this.errorCode = errorCode;
-	}
-
-	public String getErrorMessage() {
-		return errorMessage;
-	}
-
-	public void setErrorMessage(String errorMessage) {
-		this.errorMessage = errorMessage;
 	}
 
 	@JsonIgnore

@@ -282,7 +282,7 @@ public class TriggerManager {
 
 		TriggerRecord record = triggerDao.getTriggerRecord(triggerID);
 		if (record == null) {
-			throw new EntryNotFoundException(triggerID);
+			throw  EntryNotFoundException.tagNameNotFound(triggerID);
 		}
 		return record;
 	}

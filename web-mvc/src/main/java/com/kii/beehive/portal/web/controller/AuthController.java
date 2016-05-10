@@ -19,7 +19,6 @@ import com.kii.beehive.portal.common.utils.CollectUtils;
 import com.kii.beehive.portal.entitys.AuthRestBean;
 import com.kii.beehive.portal.manager.AuthManager;
 import com.kii.beehive.portal.web.constant.ErrorCode;
-import com.kii.beehive.portal.web.exception.BeehiveUnAuthorizedException;
 import com.kii.beehive.portal.web.exception.PortalException;
 import com.kii.beehive.portal.web.help.AuthUtils;
 
@@ -52,7 +51,7 @@ public class AuthController {
         String password = (String)request.get("activityToken");
 
         if(CollectUtils.containsBlank(userName, password)) {
-            throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "userID or password empty", HttpStatus.BAD_REQUEST);
+            throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus.BAD_REQUEST);
         }
 
         String result = authManager.activite(userName, password);
@@ -70,7 +69,7 @@ public class AuthController {
 		String token = AuthUtils.getTokenFromHeader(request);
 
 		if (StringUtils.isEmpty(token)) {
-			throw new BeehiveUnAuthorizedException("token miss or invalid format ");
+			throw new PortalException("token miss or invalid format ",HttpStatus.UNAUTHORIZED);
 		}
 		String password = (String) inputMap.get("newPassword");
 		String userID = (String) inputMap.get("userName");
@@ -99,7 +98,7 @@ public class AuthController {
 		String password = (String) request.get("password");
 
 		if (CollectUtils.containsBlank(userID, password)) {
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "userName or password empty", HttpStatus.BAD_REQUEST);
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus.BAD_REQUEST);
 		}
 
 		return authManager.login(userID, password);
@@ -123,7 +122,7 @@ public class AuthController {
 		if(!StringUtils.isEmpty(token)) {
 			authManager.logout(token);
 		}else{
-			throw new BeehiveUnAuthorizedException("token not existed");
+			throw new PortalException("token not existed",HttpStatus.UNAUTHORIZED);
 		}
     }
 
@@ -143,7 +142,7 @@ public class AuthController {
 		String token = AuthUtils.getTokenFromHeader(request);
 
 		if(StringUtils.isEmpty(token)){
-			throw new BeehiveUnAuthorizedException("token miss or invalid format ");
+			throw new PortalException("token miss or invalid format ",HttpStatus.UNAUTHORIZED);
 		}
 
         return authManager.validateUserToken(token);

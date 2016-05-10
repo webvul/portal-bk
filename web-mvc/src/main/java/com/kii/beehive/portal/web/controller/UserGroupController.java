@@ -1,9 +1,25 @@
 package com.kii.beehive.portal.web.controller;
 
 
+import javax.servlet.http.HttpServletRequest;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.kii.beehive.business.manager.UserManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
-import com.kii.beehive.portal.exception.InvalidAuthException;
 import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
 import com.kii.beehive.portal.jdbc.dao.TagGroupRelationDao;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
@@ -14,16 +30,9 @@ import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
 import com.kii.beehive.portal.service.BeehiveUserDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
+import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.entity.UserGroupRestBean;
-import com.kii.beehive.portal.web.exception.BeehiveUnAuthorizedException;
 import com.kii.beehive.portal.web.exception.PortalException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.*;
 
 /**
  * Beehive API - User API
@@ -88,10 +97,7 @@ public class UserGroupController {
 	 */
 	@RequestMapping(value = "/{userGroupID}/user/{userIDs}", method = {RequestMethod.POST})
 	public ResponseEntity addUsersToUserGroup(@PathVariable("userGroupID") Long userGroupID, @PathVariable("userIDs") String userIDs) {
-		UserGroup ug = this.userGroupDao.findByID(userGroupID);
-		if (!ug.getCreateBy().equals(AuthInfoStore.getUserID())) {
-			throw new InvalidAuthException(ug.getCreateBy(), AuthInfoStore.getUserID());
-		}
+
 
 		List<String> userIDList = Arrays.asList(userIDs.split(","));
 		userManager.addUserToUserGroup(userIDList, userGroupID);
@@ -108,9 +114,9 @@ public class UserGroupController {
 	public ResponseEntity removeUsersFromUserGroup(@PathVariable("userGroupID") Long userGroupID, @PathVariable("userIDs") String userIDs) {
 		UserGroup ug = this.userGroupDao.findByID(userGroupID);
 		if (ug == null) {
-			throw new PortalException("UserGroup Not Found", "UserGroup with userGroupID:" + userGroupID + " Not Found", HttpStatus.NOT_FOUND);
+			throw new PortalException("UserGroup Not Found", HttpStatus.NOT_FOUND);
 		} else if (!ug.getCreateBy().equals(AuthInfoStore.getUserID())) {
-			throw new BeehiveUnAuthorizedException("Current user is not the creator of the user group.");
+			throw new PortalException(ErrorCode.NOT_FOUND,HttpStatus.UNAUTHORIZED);
 		} else {
 			List<String> userIDList = new ArrayList<String>();
 			String[] userIDArray = userIDs.split(",");
@@ -118,7 +124,7 @@ public class UserGroupController {
 				if (!uID.equals(AuthInfoStore.getUserID())) {
 					userIDList.add(uID);
 				} else {
-					throw new BeehiveUnAuthorizedException("the creator can't remove");
+					throw new PortalException("the creator can't remove",HttpStatus.UNAUTHORIZED);
 				}
 			}
 			if (userIDList.size() > 0) {
@@ -144,9 +150,9 @@ public class UserGroupController {
 		UserGroup orig = userGroupDao.findByID(userGroupID);
 
 		if (orig == null) {
-			throw new PortalException("UserGroup Not Found", "UserGroup with userGroupID:" + userGroupID + " Not Found", HttpStatus.NOT_FOUND);
+			throw new PortalException("UserGroup Not Found",  HttpStatus.NOT_FOUND);
 		} else if (!orig.getCreateBy().equals(AuthInfoStore.getUserID())) {
-			throw new BeehiveUnAuthorizedException("Current user is not the creator of the user group.");
+			throw new PortalException("Current user is not the creator of the user group.",HttpStatus.UNAUTHORIZED);
 		}
 
 		userManager.deleteUserGroup(userGroupID);
@@ -177,10 +183,10 @@ public class UserGroupController {
 				ugrb.setUsers(list);
 			}
 		} else {
-			throw new BeehiveUnAuthorizedException("Current user is not in the user group.");
+			throw new PortalException("Current user is not in the user group.",HttpStatus.UNAUTHORIZED);
 		}
 		if (ugrb == null) {
-			throw new PortalException("UserGroup Not Found", "UserGroup with userGroupID:" + userGroupID + " Not Found", HttpStatus.NOT_FOUND);
+			throw new PortalException("UserGroup Not Found", HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<>(ugrb, HttpStatus.OK);
 	}
@@ -205,10 +211,10 @@ public class UserGroupController {
 				tagList = tagIndexDao.findByIDs(tagIDList);
 			}
 		} else {
-			throw new BeehiveUnAuthorizedException("Current user is not in the user group.");
+			throw new PortalException("Current user is not in the user group.",HttpStatus.NOT_FOUND);
 		}
 		if (tagList == null) {
-			throw new PortalException("UserGroup Not Found", "UserGroup with userGroupID:" + userGroupID + " Not Found", HttpStatus.NOT_FOUND);
+			throw new PortalException("UserGroup Not Found", HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<>(tagList, HttpStatus.OK);
 	}
@@ -240,7 +246,7 @@ public class UserGroupController {
 		if (checkAuth.size() == 1) {
 			return true;
 		} else {
-			throw new BeehiveUnAuthorizedException("loginUser isn't in the group");
+			throw new PortalException("loginUser isn't in the group",HttpStatus.UNAUTHORIZED);
 		}
 	}
 

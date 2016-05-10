@@ -1,7 +1,5 @@
 package com.kii.beehive.business.manager;
 
-import static com.kii.beehive.portal.common.utils.CollectUtils.collectionToString;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -282,7 +280,7 @@ public class TagThingManager {
 		try {
 			thingIFInAppService.removeThing(fullKiiThingID);
 		} catch (com.kii.extension.sdk.exception.ObjectNotFoundException e) {
-			throw new ObjectNotFoundException("not found in Kii Cloud, full kii thing id: " + fullKiiThingID);
+			throw  EntryNotFoundException.thingNotFound(fullKiiThingID);
 		}
 	}
 
@@ -526,8 +524,7 @@ public class TagThingManager {
 		for (String fullName : fullNames) {
 			List<TagIndex> list = tagIndexDao.findTagByFullTagName(fullName);
 			if (null == list || list.isEmpty()) {
-				throw new ObjectNotFoundException("Requested tag fullName " + fullName +
-						" doesn't exist");
+				throw EntryNotFoundException.tagNameNotFound(fullName);
 			} else if (!isTagCreator(CollectUtils.getFirst(list)) && !isTagOwner(CollectUtils.getFirst(list))) {
 				throw new UnauthorizedException("NOT_TAG_CREATER");
 			}
@@ -541,8 +538,7 @@ public class TagThingManager {
 		if (null == users || !users.stream().map(BeehiveUser::getId).collect(Collectors.toSet())
 				.containsAll(userIDList)) {
 			userIDList.removeAll(users.stream().map(BeehiveUser::getId).collect(Collectors.toList()));
-			throw new ObjectNotFoundException("Invalid user id(s): [" + collectionToString(userIDList) +
-					"]");
+			throw EntryNotFoundException.userNotFound(userIDList);
 		}
 		return users;
 	}
@@ -555,8 +551,7 @@ public class TagThingManager {
 		if (null == userGroups || !userGroups.stream().map(UserGroup::getId).collect(Collectors.toSet()).
 				containsAll(userGroupIds)) {
 			userGroupIds.removeAll(userGroups.stream().map(UserGroup::getId).collect(Collectors.toList()));
-			throw new ObjectNotFoundException("Invalid user group id(s): [" + collectionToString
-					(userGroupIds) + "]");
+			throw  EntryNotFoundException.userGroupNotFound(userGroupIds);
 		}
 		return userGroups;
 	}
@@ -567,8 +562,8 @@ public class TagThingManager {
 		List<Long> userGroupIds = userGroupDao.findUserGroupIds(idSet).orElse(Collections.emptyList());
 		if (idSet.size() != userGroupIds.size()) {
 			idSet.removeAll(userGroupIds);
-			throw new ObjectNotFoundException("Invalid user group id(s): [" + collectionToString
-					(idSet) + "]");
+				throw  EntryNotFoundException.userGroupNotFound(userGroupIds);
+
 		}
 		return userGroupIds;
 	}
@@ -582,11 +577,11 @@ public class TagThingManager {
 	}
 
 	public List<String> getTypesOfAccessibleThingsByTagFullName(String user, Set<String> fullTagNames)
-			throws ObjectNotFoundException {
+			 {
 		List<Long> tagIds = tagUserRelationDao.findTagIds(user).orElse(Collections.emptyList());
 		tagIds = tagIndexDao.findTagIdsByIDsAndFullname(tagIds, fullTagNames).orElse(Collections.emptyList());
 		if (tagIds.size() != fullTagNames.size()) {
-			throw new ObjectNotFoundException("Some requested tags don't exist or are not accessible");
+			throw EntryNotFoundException.existsNullTag(fullTagNames);
 		}
 		return globalThingDao.findByIDs(tagThingRelationDao.findThingIds(tagIds).orElse(Collections.emptyList())).
 				stream().map(GlobalThingInfo::getType).collect(Collectors.toList());
@@ -614,7 +609,7 @@ public class TagThingManager {
 			}
 		}
 
-		throw new ObjectNotFoundException("Requested thing doesn't exist or is not accessible");
+		throw EntryNotFoundException.thingNotFound(thingId);
 	}
 
 	public List<TagIndex> getAccessibleTagsByTagTypeAndName(String userId, String tagType, String displayName) {
@@ -632,7 +627,7 @@ public class TagThingManager {
 		List<Long> result = tagIndexDao.getCreatedTagIdsByTypeAndDisplayNames(userId, type, displayNames).
 				orElse(Collections.emptyList());
 		if (result.isEmpty()) {
-			throw new ObjectNotFoundException("Can't find any tags created by user " + userId);
+			throw EntryNotFoundException.userIDNotFound(userId);
 		}
 		return result;
 	}
@@ -643,7 +638,7 @@ public class TagThingManager {
 		List<Long> result = tagIndexDao.findTagIdsByCreatorAndFullTagNames(userId, fullTagNameList).
 				orElse(Collections.emptyList());
 		if (result.isEmpty()) {
-			throw new ObjectNotFoundException("Can't find any tags created by user " + userId);
+			throw EntryNotFoundException.userIDNotFound(userId);
 		}
 		return result;
 	}
@@ -652,7 +647,7 @@ public class TagThingManager {
 			throws ObjectNotFoundException {
 		List<Long> result = globalThingDao.findThingIdsByCreator(userId, thingIds).orElse(Collections.emptyList());
 		if (result.isEmpty()) {
-			throw new ObjectNotFoundException("Can't find any things created by user " + userId);
+			throw EntryNotFoundException.userIDNotFound(userId);
 		}
 		return result;
 	}
@@ -667,7 +662,7 @@ public class TagThingManager {
 		List<Long> allIds = new ArrayList(tagIds1);
 		allIds.addAll(tagIds2);
 		if (allIds.isEmpty()) {
-			throw new ObjectNotFoundException("Can't find any accessible tags for user " + userId);
+			throw EntryNotFoundException.userIDNotFound(userId);
 		}
 		return tagIndexDao.findByIDs(allIds);
 	}

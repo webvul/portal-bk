@@ -13,14 +13,13 @@ public class UnauthorizedException extends BusinessException {
 	public static final String LOGIN_TOKEN_INVALID="LOGIN_TOKEN_INVALID";
 	public static final String ACCESS_INVALID="ACCESS_INVALID";
 	public static final String NOT_IN_CURR_TEAM="NOT_IN_CURR_TEAM";
+	public static final String NOT_GROUP_CREATER="NOT_GROUP_CREATER";
 
 	public UnauthorizedException(String msg){
 		super.setErrorCode(msg);
 	}
 
-	public void addContextValue(String key,String value){
 
-	}
 	public int getStatusCode(){
 
 		return 401;

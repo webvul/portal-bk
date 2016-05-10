@@ -1,22 +1,31 @@
 package com.kii.beehive.portal.web.controller;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.logging.log4j.util.Strings;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.kii.beehive.portal.auth.AuthInfoStore;
-import com.kii.beehive.portal.exception.ObjectNotFoundException;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagType;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.constant.ErrorCode;
-import com.kii.beehive.portal.web.exception.BeehiveUnAuthorizedException;
 import com.kii.beehive.portal.web.exception.PortalException;
-import org.apache.logging.log4j.util.Strings;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.*;
-import java.util.stream.Collectors;
+import com.kii.extension.sdk.exception.ObjectNotFoundException;
 
 /**
  * Beehive API - Thing API
@@ -40,7 +49,7 @@ public class TagController extends AbstractThingTagController {
 	public Map<String, Object> createTag(@RequestBody TagIndex tag) {
 		String displayName = tag.getDisplayName();
 		if (Strings.isBlank(displayName)) {
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "DisplayName is empty",
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,
 					HttpStatus.BAD_REQUEST);
 		}
 
@@ -48,14 +57,14 @@ public class TagController extends AbstractThingTagController {
 			try {
 				TagIndex existedTag = thingTagManager.getTagIndexes(Arrays.asList(tag.getId().toString())).get(0);
 				if (!thingTagManager.isTagCreator(existedTag)) {
-					throw new BeehiveUnAuthorizedException("Requested tag isn't created by current user");
+					throw new PortalException("Requested tag isn't created by current user",HttpStatus.UNAUTHORIZED);
 				}
 			} catch (ObjectNotFoundException e) {
-				throw new PortalException(HttpStatus.BAD_REQUEST + "", "Requested tag doesn't exists",
+				throw new PortalException(HttpStatus.BAD_REQUEST + "",
 						HttpStatus.BAD_REQUEST);
 			}
 		} else if (thingTagManager.isTagDisplayNamePresent(AuthInfoStore.getTeamID(), TagType.Custom, displayName)) {
-			throw new PortalException(HttpStatus.BAD_REQUEST + "", "Requested displayName already exists",
+			throw new PortalException(HttpStatus.BAD_REQUEST + "",
 					HttpStatus.BAD_REQUEST);
 		}
 		tag.setTagType(TagType.Custom);
@@ -81,7 +90,7 @@ public class TagController extends AbstractThingTagController {
 	public void removeTag(@PathVariable("displayName") String displayName) {
 
 		if (Strings.isBlank(displayName)) {
-			throw new PortalException("RequiredFieldsMissing", "displayName is empty", HttpStatus.BAD_REQUEST);
+			throw new PortalException("RequiredFieldsMissing", HttpStatus.BAD_REQUEST);
 		}
 
 		getCreatedTagIds(TagType.Custom, displayName).forEach(id -> thingTagManager.removeTag(id));
@@ -151,7 +160,7 @@ public class TagController extends AbstractThingTagController {
 	@RequestMapping(value = "/{fullNames}/users/{userIDs}", method = {RequestMethod.POST})
 	public void bindTagToUser(@PathVariable("fullNames") String fullNames, @PathVariable("userIDs") String userIds) {
 		if (Strings.isBlank(fullNames) || Strings.isBlank(userIds)) {
-			throw new PortalException("RequiredFieldsMissing", "tagIDs or userIDs is empty", HttpStatus
+			throw new PortalException("RequiredFieldsMissing", HttpStatus
 					.BAD_REQUEST);
 		}
 		List<Long> tagIds = getCreatedTagIds(fullNames);
@@ -169,7 +178,7 @@ public class TagController extends AbstractThingTagController {
 	@RequestMapping(value = "/{fullNames}/users/{userIDs}", method = {RequestMethod.DELETE}, consumes = {"*"})
 	public void unbindTagFromUser(@PathVariable("fullNames") String fullNames, @PathVariable("userIDs") String userIds) {
 		if (Strings.isBlank(fullNames) || Strings.isBlank(userIds)) {
-			throw new PortalException("RequiredFieldsMissing", "tagIDs or userIDs is empty", HttpStatus
+			throw new PortalException("RequiredFieldsMissing", HttpStatus
 					.BAD_REQUEST);
 		}
 		List<Long> tagIds = getCreatedTagIds(fullNames);
@@ -187,7 +196,7 @@ public class TagController extends AbstractThingTagController {
 	public void bindTagToUserGroup(@PathVariable("fullNames") String fullNames, @PathVariable("userGroupIDs") String
 			userGroupIDs) {
 		if (Strings.isBlank(fullNames) || Strings.isBlank(userGroupIDs)) {
-			throw new PortalException("RequiredFieldsMissing", "tagIDs or userGroupIDs is empty", HttpStatus
+			throw new PortalException("RequiredFieldsMissing",  HttpStatus
 					.BAD_REQUEST);
 		}
 
@@ -207,7 +216,7 @@ public class TagController extends AbstractThingTagController {
 	@RequestMapping(value = "/{fullNames}/userGroups/{userGroupIDs}", method = {RequestMethod.DELETE}, consumes = {"*"})
 	public void unbindTagsFromUserGroups(@PathVariable("fullNames") String fullNames, @PathVariable("userGroupIDs") String userGroupIDs) {
 		if (Strings.isBlank(fullNames) || Strings.isBlank(userGroupIDs)) {
-			throw new PortalException("RequiredFieldsMissing", "tagIDs or userGroupIDs is empty", HttpStatus
+			throw new PortalException("RequiredFieldsMissing",  HttpStatus
 					.BAD_REQUEST);
 		}
 		List<Long> tagIds = getCreatedTagIds(fullNames);
@@ -234,11 +243,8 @@ public class TagController extends AbstractThingTagController {
 	@RequestMapping(value = "/{fullTagName}/users", method = RequestMethod.GET, consumes = {"*"})
 	public List<BeehiveUser> getUsersByFullTagName(@PathVariable("fullTagName") String fullTagName) {
 		List<String> userId = thingTagManager.getUsersOfAccessibleTags(AuthInfoStore.getUserID(), fullTagName);
-		try {
-			return thingTagManager.getUsers(userId);
-		} catch (ObjectNotFoundException e) {
-			throw new PortalException(e.getMessage(), e.getMessage(), HttpStatus.BAD_REQUEST);
-		}
+		return thingTagManager.getUsers(userId);
+
 	}
 
 	/**
@@ -261,11 +267,8 @@ public class TagController extends AbstractThingTagController {
 	@RequestMapping(value = "/{fullTagName}/userGroups", method = RequestMethod.GET, consumes = {"*"})
 	public List<UserGroup> getUserGroupsByFullTagName(@PathVariable("fullTagName") String fullTagName) {
 		List<Long> userGroupIds = thingTagManager.getUserGroupsOfAccessibleTags(AuthInfoStore.getUserID(), fullTagName);
-		try {
-			return thingTagManager.getUserGroupsByIds(userGroupIds);
-		} catch (ObjectNotFoundException e) {
-			throw new PortalException(e.getMessage(), e.getMessage(), HttpStatus.BAD_REQUEST);
-		}
+		return thingTagManager.getUserGroupsByIds(userGroupIds);
+
 	}
 }
 

@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -25,7 +26,7 @@ import com.kii.beehive.portal.service.DeviceSupplierDao;
 import com.kii.beehive.portal.store.entity.DeviceSupplier;
 import com.kii.beehive.portal.web.constant.CallbackNames;
 import com.kii.beehive.portal.web.constant.Constants;
-import com.kii.beehive.portal.web.exception.BeehiveUnAuthorizedException;
+import com.kii.beehive.portal.web.exception.PortalException;
 import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.exception.ObjectNotFoundException;
 
@@ -112,7 +113,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 		String token=AuthUtils.getTokenFromHeader(request);
 
 		if(StringUtils.isEmpty(token)){
-			throw new BeehiveUnAuthorizedException("token miss or invalid format ");
+			throw new PortalException("token miss or invalid format ",HttpStatus.UNAUTHORIZED);
 		}
 		list.set(1,token);
 
@@ -138,7 +139,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 					supplier = supplierDao.getSupplierByID(token);
 				}catch(ObjectNotFoundException e) {
 					log.debug(e.getMessage(), e);
-					throw new BeehiveUnAuthorizedException(" DeviceSupplier Token invalid");
+					throw new PortalException(" DeviceSupplier Token invalid",HttpStatus.UNAUTHORIZED);
 				}
 
 				AuthInfoStore.setAuthInfo(supplier.getId());
@@ -148,7 +149,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 				String appID=request.getHeader(Constants.HEADER_KII);
 
 				if(!appInfoManager.verifyAppToken(appID,token)){
-					throw new BeehiveUnAuthorizedException(" app callback unauthorized:app id "+appID);
+					throw new PortalException(" app callback unauthorized:app id "+appID, HttpStatus.UNAUTHORIZED);
 				}
 				AuthInfoStore.setAuthInfo(appID);
 
@@ -169,7 +170,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 			}
 
 			list.add("authSuccess");
-		}catch(BeehiveUnAuthorizedException e){
+		}catch(PortalException e){
 			list.add("UnauthorizedAccess");
 			logTool.write(list);
 			throw e;

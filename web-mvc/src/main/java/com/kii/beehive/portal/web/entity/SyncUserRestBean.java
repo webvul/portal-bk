@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.kii.beehive.portal.store.entity.CustomProperty;
 import com.kii.beehive.portal.store.entity.PortalSyncUser;
+import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
 
 public class SyncUserRestBean extends PortalSyncUser {
@@ -73,15 +74,15 @@ public class SyncUserRestBean extends PortalSyncUser {
 	@JsonIgnore
 	public void verifyInput(){
 		if(StringUtils.isEmpty(this.getUserName())){
-			throw new PortalException("RequiredFieldsMissing","username cannot been null", HttpStatus.BAD_REQUEST);
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus.BAD_REQUEST);
 		}
 
 		if(StringUtils.isEmpty(this.getAliUserID())){
-			throw new PortalException("RequiredFieldsMissing","userID cannot been null", HttpStatus.BAD_REQUEST);
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus.BAD_REQUEST);
 		}
 
 		if(StringUtils.isEmpty(this.getRole())){
-			throw new PortalException("RequiredFieldsMissing","role cannot been null", HttpStatus.BAD_REQUEST);
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus.BAD_REQUEST);
 		}
 
 	}

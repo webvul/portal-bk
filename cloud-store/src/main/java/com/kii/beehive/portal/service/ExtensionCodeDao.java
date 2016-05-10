@@ -58,25 +58,23 @@ public class ExtensionCodeDao extends AbstractDataAccess<ExtensionCodeEntity> {
 
 	}
 
-	public void addGlobalExtensionCode(ExtensionCodeEntity entity){
+	public void addGlobalExtensionCode(ExtensionCodeEntity entity) {
 		entity.setAppID("*");
 
-
 		try {
-			 JavaScriptCheck.checkJSFormat(entity.getJsBody());
+
+			JavaScriptCheck.checkJSFormat(entity.getJsBody());
 
 		}catch(ScriptException ex){
 			throw new JSFormatErrorException(ex);
 		}
 
-
 		super.addEntity(entity,"global_"+entity.getFunctionName());
 	}
 
-	public void addExtensionCodeToApp(ExtensionCodeEntity entity,String appID){
+	public void addExtensionCodeToApp(ExtensionCodeEntity entity,String appID) {
 
 		entity.setAppID(appID);
-
 		try {
 			JavaScriptCheck.checkJSFormat(entity.getJsBody());
 

@@ -45,7 +45,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.kii.beehive.business.manager.TagThingManager;
 import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.portal.auth.AuthInfoStore;
-import com.kii.beehive.portal.exception.ObjectNotFoundException;
 import com.kii.beehive.portal.exception.UnauthorizedException;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
@@ -391,11 +390,9 @@ public class TestTagThingManager {
 	public void testGetThingTypesOfAccessibleThingsByTagIds() throws Exception {
 		doReturn(Optional.ofNullable(Collections.emptyList())).when(tagUserRelationDao).
 				findAccessibleTagIds(anyString(), anyCollectionOf(Long.class));
-		try {
 			tagThingManager.getThingTypesOfAccessibleThingsByTagIds("user", Collections.singletonList("100"));
 			fail("Expect an ObjectNotFoundException");
-		} catch (ObjectNotFoundException e) {
-		}
+
 
 		doReturn(Optional.ofNullable(Arrays.asList(100L, 200L))).when(tagUserRelationDao).
 				findAccessibleTagIds(anyString(), anyCollectionOf(Long.class));
@@ -407,11 +404,9 @@ public class TestTagThingManager {
 		tagThingManager.getThingTypesOfAccessibleThingsByTagIds("user", Arrays.asList("100", "200"));
 		assertEquals("100,200", received[0]);
 
-		try {
 			tagThingManager.getThingTypesOfAccessibleThingsByTagIds("user", Arrays.asList("100dsf", "200"));
 			fail("Expect an ObjectNotFoundException");
-		} catch (ObjectNotFoundException e) {
-		}
+
 	}
 
 	@Test
@@ -466,12 +461,9 @@ public class TestTagThingManager {
 		doReturn(Optional.ofNullable(tagIds)).when(tagUserRelationDao).findTagIds(anyString());
 		doReturn(Optional.ofNullable(Collections.emptyList())).when(tagIndexDao).
 				findTagIdsByIDsAndFullname(anyListOf(Long.class), anyCollectionOf(String.class));
-		try {
 			tagThingManager.getTypesOfAccessibleThingsByTagFullName("someone", Arrays.asList("test123").
 					stream().collect(Collectors.toSet()));
 			fail("Expect an ObjectNotFoundException");
-		} catch (ObjectNotFoundException e) {
-		}
 
 		Set<Long> received = new HashSet();
 		doReturn(Optional.ofNullable(tagIds)).when(tagIndexDao).findTagIdsByIDsAndFullname(anyListOf(Long.class),
@@ -491,11 +483,9 @@ public class TestTagThingManager {
 		doReturn(null).when(thingUserRelationDao).find(anyLong(), anyString());
 		doReturn(Collections.emptyList()).when(thingUserGroupRelationDao).findByThingIdAndUserId(anyLong(),
 				anyString());
-		try {
 			tagThingManager.getAccessibleThingById("someone", 100L);
 			fail("Expect an ObjectNotFoundException");
-		} catch (ObjectNotFoundException e) {
-		}
+
 
 		doReturn(mock(GlobalThingInfo.class)).when(globalThingDao).findByID(any(Serializable.class));
 		doReturn(mock(ThingUserRelation.class)).when(thingUserRelationDao).find(anyLong(), anyString());
@@ -514,11 +504,9 @@ public class TestTagThingManager {
 		// invalid kiiAppID
 		doReturn(null).when(appInfoDao).getAppInfoByID(anyString());
 		thingInfo.setKiiAppID("KiiAppId");
-		try {
 			tagThingManager.createThing(thingInfo, "location", Collections.emptyList());
 			fail("Expect an ObjectNotFoundException");
-		} catch (ObjectNotFoundException e) {
-		}
+
 
 		KiiAppInfo appInfo = new KiiAppInfo();
 		appInfo.setMasterApp(true);
