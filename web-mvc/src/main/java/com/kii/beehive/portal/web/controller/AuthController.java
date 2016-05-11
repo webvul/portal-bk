@@ -69,7 +69,7 @@ public class AuthController {
 		String token = AuthUtils.getTokenFromHeader(request);
 
 		if (StringUtils.isEmpty(token)) {
-			throw new PortalException("token miss or invalid format ",HttpStatus.UNAUTHORIZED);
+			throw new PortalException(ErrorCode.INVALID_TOKEN,HttpStatus.UNAUTHORIZED);
 		}
 		String password = (String) inputMap.get("newPassword");
 		String userID = (String) inputMap.get("userName");
@@ -122,7 +122,7 @@ public class AuthController {
 		if(!StringUtils.isEmpty(token)) {
 			authManager.logout(token);
 		}else{
-			throw new PortalException("token not existed",HttpStatus.UNAUTHORIZED);
+			throw new PortalException(ErrorCode.TOKEN_MISS,HttpStatus.UNAUTHORIZED);
 		}
     }
 
@@ -142,7 +142,7 @@ public class AuthController {
 		String token = AuthUtils.getTokenFromHeader(request);
 
 		if(StringUtils.isEmpty(token)){
-			throw new PortalException("token miss or invalid format ",HttpStatus.UNAUTHORIZED);
+			throw new PortalException(ErrorCode.INVALID_TOKEN,HttpStatus.UNAUTHORIZED);
 		}
 
         return authManager.validateUserToken(token);

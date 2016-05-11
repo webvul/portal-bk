@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -18,6 +19,7 @@ import com.kii.extension.ruleengine.drools.CommandExec;
 import com.kii.extension.ruleengine.drools.DroolsRuleService;
 import com.kii.extension.ruleengine.drools.entity.CurrThing;
 import com.kii.extension.ruleengine.drools.entity.MatchResult;
+import com.kii.extension.ruleengine.drools.entity.Thing;
 import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -27,6 +29,7 @@ public class InitTest {
 
 
 	@Autowired
+	@Qualifier("cloudDroolsService")
 	protected DroolsRuleService ruleLoader;
 
 	@Autowired
@@ -72,7 +75,7 @@ public class InitTest {
 
 		curr.setThing("NONE");
 
-		ruleLoader.setGlobal("currThing",curr);
+		ruleLoader.addOrUpdateData(curr);
 
 		ruleLoader.bindWithInstance("exec",exec);
 	}
@@ -98,6 +101,7 @@ public class InitTest {
 		status.setValues(new HashMap<>(values));
 
 		addThingStatus(thingID, status);
+
 	}
 
 	private void addThingStatus(String thingID, ThingStatusInRule status) {
@@ -108,7 +112,7 @@ public class InitTest {
 
 		curr.setThing(thingID);
 
-
+		ruleLoader.addOrUpdateData(curr);
 
 	}
 
@@ -122,5 +126,13 @@ public class InitTest {
 
 		addThingStatus(thingID, status);
 
+	}
+
+	protected void addThing(String id,String thingID) {
+		Thing thing=new Thing();
+		thing.setThingID(thingID);
+		thing.setTriggerID(id);
+
+		ruleLoader.addOrUpdateData(thing);
 	}
 }

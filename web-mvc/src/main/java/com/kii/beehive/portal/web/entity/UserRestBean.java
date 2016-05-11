@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 import com.kii.beehive.portal.store.entity.BeehiveUser;
+import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
 
 public class UserRestBean {
@@ -38,7 +39,7 @@ public class UserRestBean {
 	@JsonIgnore
 	public void verifyInput(){
 		if(StringUtils.isEmpty(beehiveUser.getUserName())&&StringUtils.isEmpty(beehiveUser.getMail())&&StringUtils.isEmpty(beehiveUser.getPhone())){
-			throw new PortalException("RequiredFieldsMissing", HttpStatus.BAD_REQUEST);
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus.BAD_REQUEST);
 		}
 
 	}

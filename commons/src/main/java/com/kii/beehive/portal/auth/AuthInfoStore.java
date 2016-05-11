@@ -1,17 +1,14 @@
 package com.kii.beehive.portal.auth;
 
 
-
 public class AuthInfoStore {
 
-	private static ThreadLocal<String>  local=ThreadLocal.withInitial(()-> "anonymous");
-	
+	private static ThreadLocal<String>  user=ThreadLocal.withInitial(()-> "anonymous");
+
 	private static ThreadLocal<Long>  team=ThreadLocal.withInitial(()-> null);
 
-//	private static ThreadLocal<Boolean>  isAdmin=ThreadLocal.withInitial(()->false);
-
 	public static void setAuthInfo(String userID){
-		local.set(userID);
+		user.set(userID);
 	}
 	
 	public static void setTeamID(Long teamID){
@@ -26,23 +23,16 @@ public class AuthInfoStore {
 		return getTeamID() != null;
 	}
 
-//	public static void setAdmin(){
-//		isAdmin.set(true);
-//	}
-//
-//	public static boolean isAmin(){
-//		return isAdmin.get();
-//	}
 
 	public static String getUserID(){
 
-		return local.get();
+		return user.get();
 
 	}
 
 	public static void clear(){
 
-		local.remove();
+		user.remove();
 		team.remove();
 	}
 }

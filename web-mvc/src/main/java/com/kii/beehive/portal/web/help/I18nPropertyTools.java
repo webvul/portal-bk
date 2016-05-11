@@ -18,7 +18,7 @@ import com.google.common.base.Charsets;
 import com.kii.beehive.portal.common.utils.SubStrUtils;
 
 @Component
-public class PropertyTools {
+public class I18nPropertyTools {
 
 
 	@Autowired
@@ -47,7 +47,7 @@ public class PropertyTools {
 	private  PropertyEntry loadPropertyFile(String name, Locale locale)throws IOException{
 
 
-		String localeSeq=locale.getDisplayName();
+		String localeSeq=locale.toString();
 
 		String fullFileName=propFilePath+name+"."+localeSeq+".properties";
 
@@ -75,6 +75,7 @@ public class PropertyTools {
 				String value=SubStrUtils.getAfterSep(line,'=');
 
 				valueMap.put(key,value);
+				line=lineReader.readLine();
 			}
 		}
 

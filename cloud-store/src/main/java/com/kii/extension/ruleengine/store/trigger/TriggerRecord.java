@@ -35,7 +35,6 @@ public abstract  class TriggerRecord extends KiiEntity {
 
 	private List<ExecuteTarget>  targets=new ArrayList<>();
 
-//	private TriggerType type;
 
 	private StatusType recordStatus;
 

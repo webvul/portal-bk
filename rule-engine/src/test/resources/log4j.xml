@@ -23,9 +23,9 @@
 		<level value="info" />
 	</logger>
 
-    <!-- logger name="org.drools" >
-        <level value="trace" />
-    </logger  -->
+    <logger name="org.drools" >
+        <level value="debug" />
+    </logger>
 
     <logger name="org.quartz">
         <level value="info" />

@@ -19,6 +19,7 @@ import com.kii.beehive.business.service.ThingIFCommandService;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
+import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.entity.ThingCommandRestBean;
 import com.kii.beehive.portal.web.exception.PortalException;
 import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
@@ -49,7 +50,7 @@ public class ThingIFController extends AbstractThingTagController {
 					List<TagIndex> tags = this.getTags(ts.getTagList());
 					tags.forEach(t -> {
 						if (!thingTagManager.isTagCreator(t) && !thingTagManager.isTagOwner(t)) {
-							throw new PortalException("not tag creator or owner",HttpStatus.UNAUTHORIZED);
+							throw new PortalException(ErrorCode.TAG_NO_PRIVATE,HttpStatus.UNAUTHORIZED);
 						}
 					});
 				}
@@ -60,13 +61,13 @@ public class ThingIFController extends AbstractThingTagController {
 					List<GlobalThingInfo> things = this.getThings(tempThingList);
 					things.forEach(t -> {
 						if (!thingTagManager.isThingCreator(t) && !thingTagManager.isThingOwner(t)) {
-							throw new PortalException("not thing creator or owner",HttpStatus.UNAUTHORIZED);
+							throw new PortalException(ErrorCode.TAG_NO_PRIVATE,HttpStatus.UNAUTHORIZED);
 						}
 					});
 
 				}
 			} else {
-				throw new PortalException("RequiredFieldsMissing", HttpStatus
+				throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus
 						.BAD_REQUEST);
 			}
 

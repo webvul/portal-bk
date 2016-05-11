@@ -8,22 +8,30 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.entitys.AuthInfo;
 import com.kii.beehive.portal.exception.TokenTimeoutException;
+import com.kii.beehive.portal.store.entity.BeehiveUser;
+import com.kii.extension.sdk.annotation.BindAppByName;
+import com.kii.extension.sdk.context.UserTokenBindTool;
 
 /**
  * this class queries the url permission on the given user/token and constructs AuthInfoEntry to store these info
  *
  */
 @Component
+@BindAppByName(appName="portal",appBindSource="propAppBindTool")
 public class AuthInfoService {
 
     private Logger log= LoggerFactory.getLogger(AuthInfoService.class);
 
 	private Map<String,AuthInfo> userTokenMap=new ConcurrentHashMap<>();
 
+
+	@Autowired
+	private UserTokenBindTool tokenBind;
 
     public void createAuthInfoEntry(AuthInfo authInfo, String token) {
 
@@ -37,12 +45,24 @@ public class AuthInfoService {
 
 
 
+	public void bindUser(BeehiveUser user){
+
+		tokenBind.bindUserInfo(user.getId(),user.getUserPassword());
+
+	}
+
+
+
+
 
 	public AuthInfo getAuthInfoByToken(String token){
 
 
 		AuthInfo info= userTokenMap.get(token);
 
+		if(info==null){
+			return null;
+		}
 		if(info.getExpireTime().getTime()<new Date().getTime()){
 			userTokenMap.remove(token);
 			throw new TokenTimeoutException(token);

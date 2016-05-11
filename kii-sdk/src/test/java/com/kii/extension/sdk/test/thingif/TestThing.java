@@ -59,6 +59,7 @@ public class TestThing extends TestTemplate {
 	private String userID="f83120e36100-2cc9-5e11-44a9-045a59eb";
 	@Before
 	public void before(){
+
 		bindTool.pushAppName(appID);
 		bindTool.setToken(token);
 	}

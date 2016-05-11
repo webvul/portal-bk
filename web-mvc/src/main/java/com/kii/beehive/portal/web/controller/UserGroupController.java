@@ -114,7 +114,7 @@ public class UserGroupController {
 	public ResponseEntity removeUsersFromUserGroup(@PathVariable("userGroupID") Long userGroupID, @PathVariable("userIDs") String userIDs) {
 		UserGroup ug = this.userGroupDao.findByID(userGroupID);
 		if (ug == null) {
-			throw new PortalException("UserGroup Not Found", HttpStatus.NOT_FOUND);
+			throw new PortalException(ErrorCode.USERGROUP_NO_PRIVATE, HttpStatus.NOT_FOUND);
 		} else if (!ug.getCreateBy().equals(AuthInfoStore.getUserID())) {
 			throw new PortalException(ErrorCode.NOT_FOUND,HttpStatus.UNAUTHORIZED);
 		} else {
@@ -124,7 +124,7 @@ public class UserGroupController {
 				if (!uID.equals(AuthInfoStore.getUserID())) {
 					userIDList.add(uID);
 				} else {
-					throw new PortalException("the creator can't remove",HttpStatus.UNAUTHORIZED);
+					throw new PortalException(ErrorCode.USERGROUP_NO_PRIVATE,HttpStatus.UNAUTHORIZED);
 				}
 			}
 			if (userIDList.size() > 0) {
@@ -150,9 +150,9 @@ public class UserGroupController {
 		UserGroup orig = userGroupDao.findByID(userGroupID);
 
 		if (orig == null) {
-			throw new PortalException("UserGroup Not Found",  HttpStatus.NOT_FOUND);
+			throw new PortalException(ErrorCode.USERGROUP_NOTFOUND,  HttpStatus.NOT_FOUND);
 		} else if (!orig.getCreateBy().equals(AuthInfoStore.getUserID())) {
-			throw new PortalException("Current user is not the creator of the user group.",HttpStatus.UNAUTHORIZED);
+			throw new PortalException(ErrorCode.USERGROUP_NO_PRIVATE,HttpStatus.UNAUTHORIZED);
 		}
 
 		userManager.deleteUserGroup(userGroupID);
@@ -183,10 +183,10 @@ public class UserGroupController {
 				ugrb.setUsers(list);
 			}
 		} else {
-			throw new PortalException("Current user is not in the user group.",HttpStatus.UNAUTHORIZED);
+			throw new PortalException(ErrorCode.USERGROUP_NO_PRIVATE,HttpStatus.UNAUTHORIZED);
 		}
 		if (ugrb == null) {
-			throw new PortalException("UserGroup Not Found", HttpStatus.NOT_FOUND);
+			throw new PortalException(ErrorCode.USERGROUP_NOTFOUND, HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<>(ugrb, HttpStatus.OK);
 	}
@@ -211,10 +211,10 @@ public class UserGroupController {
 				tagList = tagIndexDao.findByIDs(tagIDList);
 			}
 		} else {
-			throw new PortalException("Current user is not in the user group.",HttpStatus.NOT_FOUND);
+			throw new PortalException(ErrorCode.USERGROUP_NO_PRIVATE,HttpStatus.NOT_FOUND);
 		}
 		if (tagList == null) {
-			throw new PortalException("UserGroup Not Found", HttpStatus.NOT_FOUND);
+			throw new PortalException(ErrorCode.USERGROUP_NO_PRIVATE, HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<>(tagList, HttpStatus.OK);
 	}
@@ -246,7 +246,7 @@ public class UserGroupController {
 		if (checkAuth.size() == 1) {
 			return true;
 		} else {
-			throw new PortalException("loginUser isn't in the group",HttpStatus.UNAUTHORIZED);
+			throw new PortalException(ErrorCode.USERGROUP_NO_PRIVATE,HttpStatus.UNAUTHORIZED);
 		}
 	}
 

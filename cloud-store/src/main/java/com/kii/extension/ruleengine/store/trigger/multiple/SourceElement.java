@@ -11,7 +11,6 @@ import com.kii.extension.ruleengine.store.trigger.SummarySource;
 		property = "type")
 @JsonSubTypes({
 		@JsonSubTypes.Type(value = SummarySource.class,name="thing"),
-		@JsonSubTypes.Type(value = GroupSource.class,name="group"),
 		@JsonSubTypes.Type(value = ThingSource.class,name="summary"),
 })
 public interface SourceElement {
@@ -21,8 +20,9 @@ public interface SourceElement {
 
 
 	public static enum SourceElementType{
-		thing,group,summary;
+		thing,summary;
 	}
+
 
 
 

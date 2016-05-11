@@ -34,7 +34,6 @@ public class TestRuleLoader extends InitTest {
 		ruleLoader.addCondition("trigger100",getDrlContent("rule100"));
 
 		Trigger trigger=new Trigger();
-		trigger.addThing(String.valueOf(0));
 
 		trigger.setType(TriggerType.simple);
 		trigger.setWhen(WhenType.CONDITION_FALSE_TO_TRUE);
@@ -45,6 +44,7 @@ public class TestRuleLoader extends InitTest {
 
 		ruleLoader.addOrUpdateData(trigger);
 
+		addThing(i,String.valueOf(0));
 
 		updateThingState("0", paramOk);
 

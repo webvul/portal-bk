@@ -2,21 +2,18 @@ package com.kii.extension.ruleengine.demo
 
 import com.kii.extension.ruleengine.drools.entity.*;
 
-global CurrThing currThing;
 
 
 
 /////////////////////////////////////
-//simple trigger 100,when:false to true
+//simple trigger 103,when:change
 /////////////////////////////////////
-
 rule "add trigger 100's  express "
 when
-    Trigger( $triggerID:triggerID=="100",$things:things  )
-    CurrThing(thing memberOf $things) from currThing
-    ThingStatusInRule( $thingID:thingID memberOf $things,(values["foo"]>10&&values["bar"]<0)  )
+    Thing($triggerID:triggerID=="100",$thingID:thingID)
+    CurrThing(thing == $thingID)
+    ThingStatusInRule( thingID==$thingID,values["foo"]>10&&values["bar"]<0  )
 then
 	insertLogical(new MatchResult($triggerID));
 end
-
 

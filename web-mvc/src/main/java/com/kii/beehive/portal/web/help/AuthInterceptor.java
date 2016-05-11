@@ -26,6 +26,7 @@ import com.kii.beehive.portal.service.DeviceSupplierDao;
 import com.kii.beehive.portal.store.entity.DeviceSupplier;
 import com.kii.beehive.portal.web.constant.CallbackNames;
 import com.kii.beehive.portal.web.constant.Constants;
+import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
 import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.exception.ObjectNotFoundException;
@@ -113,7 +114,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 		String token=AuthUtils.getTokenFromHeader(request);
 
 		if(StringUtils.isEmpty(token)){
-			throw new PortalException("token miss or invalid format ",HttpStatus.UNAUTHORIZED);
+			throw new PortalException(ErrorCode.INVALID_TOKEN,HttpStatus.UNAUTHORIZED);
 		}
 		list.set(1,token);
 
@@ -139,7 +140,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 					supplier = supplierDao.getSupplierByID(token);
 				}catch(ObjectNotFoundException e) {
 					log.debug(e.getMessage(), e);
-					throw new PortalException(" DeviceSupplier Token invalid",HttpStatus.UNAUTHORIZED);
+					throw new PortalException(ErrorCode.INVALID_TOKEN,HttpStatus.UNAUTHORIZED);
 				}
 
 				AuthInfoStore.setAuthInfo(supplier.getId());
@@ -149,7 +150,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 				String appID=request.getHeader(Constants.HEADER_KII);
 
 				if(!appInfoManager.verifyAppToken(appID,token)){
-					throw new PortalException(" app callback unauthorized:app id "+appID, HttpStatus.UNAUTHORIZED);
+					throw new PortalException(ErrorCode.INVALID_INPUT, HttpStatus.UNAUTHORIZED);
 				}
 				AuthInfoStore.setAuthInfo(appID);
 

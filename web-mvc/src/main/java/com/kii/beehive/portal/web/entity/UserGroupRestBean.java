@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
+import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
 
 public class UserGroupRestBean extends UserGroup {
@@ -55,7 +56,7 @@ public class UserGroupRestBean extends UserGroup {
     public void verifyInput(){
 
         if(Strings.isBlank(userGroupName)) {
-            throw new PortalException("RequiredFieldsMissing", HttpStatus.BAD_REQUEST);
+            throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus.BAD_REQUEST);
         }
 
     }

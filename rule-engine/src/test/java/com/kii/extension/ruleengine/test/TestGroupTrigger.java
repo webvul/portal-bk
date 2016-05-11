@@ -9,11 +9,13 @@ import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
 
-//import com.kii.extension.ruleengine.drools.entity.MemberCountResult;
+import com.kii.extension.ruleengine.drools.entity.Group;
 import com.kii.extension.ruleengine.drools.entity.Trigger;
 import com.kii.extension.ruleengine.drools.entity.TriggerType;
 import com.kii.extension.ruleengine.store.trigger.TriggerGroupPolicyType;
 import com.kii.extension.ruleengine.store.trigger.WhenType;
+
+//import com.kii.extension.ruleengine.drools.entity.MemberCountResult;
 
 public class TestGroupTrigger extends InitTest {
 
@@ -39,18 +41,28 @@ public class TestGroupTrigger extends InitTest {
 
 		Trigger trigger=new Trigger();
 
-		for(int i=0;i<5;i++) {
-			trigger.addThing(String.valueOf(i));
-		}
+
+
+		String triggerID = "200";
+
+		Group group=new Group();
+
 		trigger.setType(TriggerType.group);
-		trigger.setPolicy(TriggerGroupPolicyType.All);
+		group.setPolicy(TriggerGroupPolicyType.All);
+		group.setTriggerID(triggerID);
+
+		for(int i=0;i<5;i++) {
+			group.addThing(String.valueOf(i));
+		}
+
 		trigger.setWhen(WhenType.CONDITION_FALSE_TO_TRUE);
 //		trigger.setPreviousResult(false);
 
-		String triggerID = "200";
+
 		trigger.setTriggerID(triggerID);
 
 		ruleLoader.addOrUpdateData(trigger);
+		ruleLoader.addOrUpdateData(group);
 
 
 
@@ -88,19 +100,24 @@ public class TestGroupTrigger extends InitTest {
 
 		Trigger trigger=new Trigger();
 
+		String triggerID = "201";
+
+		Group group=new Group();
+		group.setTriggerID(triggerID);
 		for(int i=0;i<5;i++) {
-			trigger.addThing(String.valueOf(i));
+			group.addThing(String.valueOf(i));
 		}
-		trigger.setPolicy(TriggerGroupPolicyType.Any);
+		group.setPolicy(TriggerGroupPolicyType.Any);
 		trigger.setType(TriggerType.group);
 
 		trigger.setWhen(WhenType.CONDITION_TRUE);
 //		trigger.setPreviousResult(false);
 
-		String triggerID = "201";
 		trigger.setTriggerID(triggerID);
 
 		ruleLoader.addOrUpdateData(trigger);
+
+		ruleLoader.addOrUpdateData(group);
 
 //		MemberCountResult result=new MemberCountResult();
 //		result.setTriggerID(triggerID);
@@ -143,21 +160,27 @@ public class TestGroupTrigger extends InitTest {
 
 
 		Trigger trigger=new Trigger();
+		String triggerID = "202";
+
+		Group group=new Group();
+		group.setTriggerID(triggerID);
 
 		for(int i=0;i<5;i++) {
-			trigger.addThing(String.valueOf(i));
+			group.addThing(String.valueOf(i));
 		}
-		trigger.setPolicy(TriggerGroupPolicyType.Some);
+		group.setPolicy(TriggerGroupPolicyType.Some);
 		trigger.setType(TriggerType.group);
 
-		trigger.setNumber(3);
+		group.setNumber(3);
 		trigger.setWhen(WhenType.CONDITION_FALSE_TO_TRUE);
 //		trigger.setPreviousResult(false);
 
-		String triggerID = "202";
+
 		trigger.setTriggerID(triggerID);
 
 		ruleLoader.addOrUpdateData(trigger);
+
+		ruleLoader.addOrUpdateData(group);
 
 
 		for(int i=0;i<5;i++){

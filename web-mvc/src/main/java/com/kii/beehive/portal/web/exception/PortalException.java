@@ -2,47 +2,20 @@ package com.kii.beehive.portal.web.exception;
 
 import org.springframework.http.HttpStatus;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.kii.beehive.portal.exception.BusinessException;
 
-public class PortalException extends RuntimeException {
+public class PortalException extends BusinessException {
 
 	private static final long serialVersionUID = -2799530582371715829L;
 
-	private String errorCode;
-
-	private HttpStatus status;
-
-	public PortalException(){
-
-	}
-
 	public PortalException(String errorCode,HttpStatus status){
-		this.errorCode=errorCode;
-		this.status=status;
+		this.setErrorCode(errorCode);
+		super.setStatusCode(status.value());
 	}
 
-	@JsonIgnore
-	@Override
-	public StackTraceElement[] getStackTrace(){
-		return super.getStackTrace();
-	}
+	public HttpStatus getStatus(){
 
-	public void setErrorCode(String errorCode) {
-		this.errorCode = errorCode;
+		return HttpStatus.valueOf(super.getStatusCode());
 	}
-
-	@JsonIgnore
-	public HttpStatus getStatus() {
-		return status;
-	}
-
-	public void setStatus(HttpStatus status) {
-		this.status = status;
-	}
-
-	public String getErrorCode(){
-		return errorCode;
-	}
-
 
 }

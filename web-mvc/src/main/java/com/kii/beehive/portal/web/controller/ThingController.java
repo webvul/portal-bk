@@ -32,6 +32,7 @@ import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagType;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
+import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.entity.ThingRestBean;
 import com.kii.beehive.portal.web.exception.PortalException;
 import com.kii.extension.sdk.entity.thingif.EndNodeOfGateway;
@@ -224,7 +225,7 @@ public class ThingController extends AbstractThingTagController {
 		List<GlobalThingInfo> gList = thingTagManager.getThingsByVendorThingIds(Arrays.asList(thingInfo.getVendorThingID()));
 
 		if (!gList.isEmpty() && !gList.get(0).getId().equals(input.getId())) {
-			throw new PortalException("DuplicateObject",
+			throw new PortalException(ErrorCode.DUPLICATE_OBJECT,
 					HttpStatus.BAD_REQUEST);
 		}
 
@@ -286,7 +287,7 @@ public class ThingController extends AbstractThingTagController {
 	public void unbindThingsFromTags(@PathVariable("globalThingIDs") String globalThingIDs,
 									 @PathVariable("fullNames") String fullTagNames) {
 		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(fullTagNames)) {
-			throw new PortalException("RequiredFieldsMissing",  HttpStatus
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,  HttpStatus
 					.BAD_REQUEST);
 		}
 		List<Long> thingIds = getCreatedThingIds(globalThingIDs);
@@ -307,7 +308,7 @@ public class ThingController extends AbstractThingTagController {
 			("userGroupIDs")
 			String userGroupIDs) {
 		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(userGroupIDs)) {
-			throw new PortalException("RequiredFieldsMissing", HttpStatus
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus
 					.BAD_REQUEST);
 		}
 		List<Long> thingIds = getCreatedThingIds(globalThingIDs);
@@ -327,7 +328,7 @@ public class ThingController extends AbstractThingTagController {
 			("userGroupIDs")
 			String userGroupIDs) {
 		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(userGroupIDs)) {
-			throw new PortalException("RequiredFieldsMissing", HttpStatus
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus
 					.BAD_REQUEST);
 		}
 		List<Long> thingIds = getCreatedThingIds(globalThingIDs);
@@ -346,7 +347,7 @@ public class ThingController extends AbstractThingTagController {
 	public void bindThingsToUsers(@PathVariable("globalThingIDs") String globalThingIDs, @PathVariable("userIDs")
 			String userIDs) {
 		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(userIDs)) {
-			throw new PortalException("RequiredFieldsMissing", HttpStatus
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus
 					.BAD_REQUEST);
 		}
 		List<Long> thingIds = getCreatedThingIds(globalThingIDs);
@@ -365,7 +366,7 @@ public class ThingController extends AbstractThingTagController {
 	public void unbindThingsFromUsers(@PathVariable("globalThingIDs") String globalThingIDs, @PathVariable("userIDs")
 			String userIDs) {
 		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(userIDs)) {
-			throw new PortalException("RequiredFieldsMissing", HttpStatus
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus
 					.BAD_REQUEST);
 		}
 		List<Long> thingIds = getCreatedThingIds(globalThingIDs);
@@ -386,7 +387,7 @@ public class ThingController extends AbstractThingTagController {
 	public void bindThingsToCustomTags(@PathVariable("globalThingIDs") String globalThingIDs,
 									   @PathVariable("displayNames") String displayNames) {
 		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(displayNames)) {
-			throw new PortalException("RequiredFieldsMissing",  HttpStatus
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,  HttpStatus
 					.BAD_REQUEST);
 		}
 		List<Long> thingIds = getCreatedThingIds(globalThingIDs);
@@ -408,7 +409,7 @@ public class ThingController extends AbstractThingTagController {
 	public void unbindThingsFromCustomTags(@PathVariable("globalThingIDs") String globalThingIDs,
 										   @PathVariable("displayNames") String displayNames) {
 		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(displayNames)) {
-			throw new PortalException("RequiredFieldsMissing", HttpStatus
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus
 					.BAD_REQUEST);
 		}
 		List<Long> thingIds = getCreatedThingIds(globalThingIDs);

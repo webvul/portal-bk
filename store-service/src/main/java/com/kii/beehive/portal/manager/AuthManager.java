@@ -21,6 +21,7 @@ import com.kii.beehive.portal.entitys.AuthInfo;
 import com.kii.beehive.portal.entitys.AuthRestBean;
 import com.kii.beehive.portal.entitys.PermissionTree;
 import com.kii.beehive.portal.exception.UnauthorizedException;
+import com.kii.beehive.portal.exception.UserNotExistException;
 import com.kii.beehive.portal.helper.AuthInfoService;
 import com.kii.beehive.portal.helper.RuleSetService;
 import com.kii.beehive.portal.jdbc.dao.TeamDao;
@@ -29,7 +30,6 @@ import com.kii.beehive.portal.jdbc.entity.Team;
 import com.kii.beehive.portal.service.BeehiveUserDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.extension.sdk.context.AppBindToolResolver;
-import com.kii.extension.sdk.context.UserTokenBindTool;
 import com.kii.extension.sdk.entity.KiiUser;
 import com.kii.extension.sdk.exception.KiiCloudException;
 
@@ -53,8 +53,8 @@ public class AuthManager {
 	@Autowired
 	private AppBindToolResolver resolver;
 
-	@Autowired
-	private UserTokenBindTool tokenBind;
+//	@Autowired
+//	private UserTokenBindTool tokenBind;
 
 
 	@Autowired
@@ -127,7 +127,12 @@ public class AuthManager {
 
 		BeehiveUser  user=userDao.getUserByName(userName);
 
-		if(!StringUtils.isEmpty(user.getActivityToken())){
+		if(user==null){
+			throw new UserNotExistException(userName);
+		}
+
+
+		if(!StringUtils.isEmpty(user.getActivityToken())) {
 			throw new UnauthorizedException(UnauthorizedException.USER_BEEN_LOCKED);
 		}
 
@@ -213,6 +218,7 @@ public class AuthManager {
 		String pwd=user.getHashedPwd(oldPassword);
 		String newPwd=user.getHashedPwd(newPassword);
 
+		userService.bindToUser(user,pwd);
 		userService.changePassword(pwd, newPwd);
 
 		userDao.setPassword(user.getId(),newPwd);
@@ -271,7 +277,7 @@ public class AuthManager {
 
 		BeehiveUser user=userDao.getUserByID(authInfo.getUserID());
 
-		tokenBind.bindUserInfo(user.getId(),user.getUserPassword());
+		authService.bindUser(user);
 
 		return authInfo;
 	}

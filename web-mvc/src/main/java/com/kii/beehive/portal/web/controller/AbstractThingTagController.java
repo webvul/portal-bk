@@ -15,6 +15,7 @@ import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagType;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
+import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
 
 /**
@@ -41,7 +42,7 @@ public abstract class AbstractThingTagController extends AbstractController {
 				map(Long::valueOf).collect(Collectors.toList());
 		if (strThingIds.size() != thingIds.size()) {
 			thingIds.forEach(id -> strThingIds.remove(id.toString()));
-			throw new PortalException("Invalid thing id(s)", HttpStatus.BAD_REQUEST);
+			throw new PortalException(ErrorCode.INVALID_INPUT, HttpStatus.BAD_REQUEST);
 		}
 		return thingTagManager.getCreatedThingIds(AuthInfoStore.getUserID(), thingIds);
 
