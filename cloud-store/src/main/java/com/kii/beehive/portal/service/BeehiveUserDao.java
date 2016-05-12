@@ -43,7 +43,28 @@ public class BeehiveUserDao extends AbstractDataAccess<BeehiveUser> {
 			return userList.get(0);
 		}
 	}
-	
+
+	/**
+	 * 查询用户是否注册过
+	 * userName、phone、mail 任意一个都可以作为登录名，所以不能重复
+	 * @param user
+	 * @return
+	 */
+	public BeehiveUser getUserByLoginId(BeehiveUser user){
+		QueryParam  query= ConditionBuilder.orCondition().equal("userName",user.getUserName()).equal("phone",user.getPhone())
+				.equal("mail",user.getMail()).getFinalQueryParam();
+
+		List<BeehiveUser>  userList= super.query(query);
+
+		if(userList.isEmpty()){
+			return null;
+		}else if(userList.size()>1){
+			throw new IllegalArgumentException("user more than one");
+		}else{
+			return userList.get(0);
+		}
+	}
+
 	public void deleteUser(String userID) {
 
 		super.removeEntity(userID);

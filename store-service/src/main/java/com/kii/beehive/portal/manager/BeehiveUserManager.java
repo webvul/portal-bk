@@ -89,7 +89,7 @@ public class BeehiveUserManager {
 	public Map<String,Object>  addUser(BeehiveUser user,String teamName) {
 
 
-		BeehiveUser existsUser=userDao.getUserByName(user.getUserName());
+		BeehiveUser existsUser=userDao.getUserByLoginId(user);
 
 		if(existsUser!=null){
 			throw new IllegalArgumentException("the username had existed,please change a loginName or email or phone Number");
