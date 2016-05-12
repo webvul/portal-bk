@@ -182,6 +182,15 @@ public class BeehiveUserManager {
 	}
 
 
+	public List<BeehiveUser> simpleQueryUser(Map<String, Object> queryMap) {
+
+		if (queryMap.isEmpty()) {
+			return userDao.getAllUsers();
+		} else {
+			return userDao.getUsersBySimpleQuery(queryMap);
+		}
+	}
+
 
 	private void checkTeam(String userID){
 		if(AuthInfoStore.isTeamIDExist()){

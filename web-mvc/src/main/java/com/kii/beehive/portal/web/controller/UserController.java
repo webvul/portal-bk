@@ -1,7 +1,10 @@
 package com.kii.beehive.portal.web.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -192,4 +195,21 @@ public class UserController {
 		return userManager.getUsersPermissonTree(userID);
 	}
 
+
+	/**
+	 * 查询用户
+	 * POST /users/simplequery
+	 *
+	 * refer to doc "Beehive API - User API" for request/response details
+	 *
+	 * @param queryMap
+	 */
+	@RequestMapping(path="/users/simplequery",method={RequestMethod.POST})
+	public List<UserRestBean> queryUserByProps(@RequestBody Map<String,Object> queryMap){
+
+		return  userManager.simpleQueryUser(queryMap).stream()
+				.map((e) -> new UserRestBean(e))
+				.collect(Collectors.toCollection(ArrayList::new));
+
+	}
 }

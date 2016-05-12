@@ -2,10 +2,8 @@ package com.kii.beehive.portal.web.entity;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
-
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
@@ -16,6 +14,15 @@ public class UserRestBean {
 	private BeehiveUser  beehiveUser;
 
 	private String teamName;
+
+	public UserRestBean(){
+
+	}
+
+	public UserRestBean(BeehiveUser user){
+		this.beehiveUser = user;
+	}
+
 
 	public String getTeamName() {
 		return teamName;

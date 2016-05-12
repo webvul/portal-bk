@@ -4,9 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.springframework.stereotype.Component;
-
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.entity.BucketInfo;
@@ -62,8 +60,28 @@ public class BeehiveUserDao extends AbstractDataAccess<BeehiveUser> {
 		super.updateEntity(params,id);
 	}
 
+	public List<BeehiveUser> getAllUsers() {
+		return super.getAll();
+	}
+
+	public List<BeehiveUser> getUsersBySimpleQuery(Map<String, Object> params) {
+		QueryParam query = getEntitysByFields(params);
+
+		return super.fullQuery(query);
+	}
 
 
+	public QueryParam getEntitysByFields(Map<String, Object> fields) {
+
+		ConditionBuilder builder = ConditionBuilder.andCondition();
+
+		fields.forEach((k, v) -> {
+			builder.equal(k, v);
+		});
+
+		return builder.getFinalCondition().build();
+
+	}
 
 	@Override
 	protected Class<BeehiveUser> getTypeCls() {
