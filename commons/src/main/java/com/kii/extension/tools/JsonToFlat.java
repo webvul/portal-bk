@@ -16,44 +16,56 @@ public class JsonToFlat {
 
 	static {
 
+		mapper=new ObjectMapper();
 		mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 		mapper.configure(SerializationFeature.INDENT_OUTPUT, false);
 	}
 
-	public String flatJson(String jsonStr) throws IOException {
+	public static String flatJson(String jsonStr) throws IOException {
 
 		Map<String,Object>  map=mapper.readValue(jsonStr,Map.class);
 
 		Map<String,Object> result=new HashMap<>();
 
+		fillMap(result,map,null);
 
 		return mapper.writeValueAsString(result);
 
 	}
 
-	private void fillMap(Map<String,Object> result,Object source,String prefix){
+	private static void fillMap(Map<String,Object> result,Object source,String prefix){
 
+		if (Map.class.isAssignableFrom(source.getClass())) {
 
+			Map subMap=(Map)source;
 
-		subMap.forEach((k,v)->{
+			subMap.forEach((k, v) -> {
+				fillMap(result,  v, getNextPrefix(prefix,k));
+			});
 
-			if(v instanceof  Map){
-				fillMap(result,(Map)v,prefix+"."+k);
-			}else  if(v instanceof Collection){
+		}else if(Collection.class.isAssignableFrom(source.getClass())){
 
-				int idx=0;
-				for(Object o:((Collection)v)){
-					fillMap(result,o,prefix+"."+idx);
-					idx++;
-				}
-
-			}else {
-				result.put(prefix + "." + k, v);
+			int idx = 0;
+			for (Object o : ((Collection) source)) {
+				fillMap(result, o,getNextPrefix(prefix,idx));
+				idx++;
 			}
-		});
+		}else{
+
+			result.put(prefix,source);
+		}
 
 		return;
 	}
 
+
+	private static String getNextPrefix(String prefix,Object curr){
+		if(prefix==null){
+
+			return String.valueOf(curr);
+		}else{
+			return prefix+"."+curr;
+		}
+	}
 
 }

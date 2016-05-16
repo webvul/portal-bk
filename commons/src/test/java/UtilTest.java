@@ -2,16 +2,69 @@ import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.kii.beehive.portal.auth.UrlTemplateVerify;
+import com.kii.extension.tools.JsonToFlat;
 
 public class UtilTest {
+
+
+	@Test
+	public void testJsonFlat() throws IOException {
+
+		Map<String,Object> input=new HashMap<>();
+		input.put("a",123);
+
+		Map<String,Object> one=new HashMap<>();
+		one.put("one","abc");
+		List<String> lista=new ArrayList();
+		lista.add("x");
+		lista.add("y");
+		lista.add("z");
+
+		Set<Integer> setb=new HashSet<>();
+		setb.add(1);
+		setb.add(2);
+		setb.add(3);
+
+		Map<String,Object> two=new HashMap<>();
+		two.put("two",2);
+		two.put("set",setb);
+
+		one.put("three",two);
+		one.put("two",lista);
+
+		input.put("one",one);
+
+		input.put("c","abcdef");
+
+		 ObjectMapper mapper=new ObjectMapper();
+
+		String json=mapper.writeValueAsString(input);
+
+		System.out.println(json);
+
+
+		String newJson= JsonToFlat.flatJson(json);
+
+
+		Map<String,Object> newMap=mapper.readValue(newJson,Map.class);
+
+		System.out.println(newMap);
+
+
+	}
 
 
 	@Test
