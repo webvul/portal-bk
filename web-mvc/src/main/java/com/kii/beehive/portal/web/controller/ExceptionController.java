@@ -132,6 +132,7 @@ public class ExceptionController {
 
 		error.put("errorMessage",msg);
 		error.put("errorCode",code);
+		error.put("errorParam",ex.getParamMap());
 
 		return error;
 	}
