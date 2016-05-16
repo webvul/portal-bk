@@ -44,18 +44,5 @@ public class TestRuleGeneral {
 
 	}
 
-	@Test
-	public void testCompute(){
 
-		String templace=" ($s{abc.foo} *  10.3 + $p{abc.bar}) >= $e{xyz} ";
-
-		String result=replace.convertExpress(templace);
-
-
-		assertEquals("( values[\"abc.foo\"]  *  10.3 +  values[\"abc.bar\"] ) >=  ext.params[\"xyz\"] ",result );
-
-
-
-
-	}
 }
