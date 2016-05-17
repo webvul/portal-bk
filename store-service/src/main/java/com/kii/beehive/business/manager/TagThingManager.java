@@ -638,7 +638,7 @@ public class TagThingManager {
 		List<Long> result = tagIndexDao.findTagIdsByCreatorAndFullTagNames(userId, fullTagNameList).
 				orElse(Collections.emptyList());
 		if (result.isEmpty()) {
-			throw EntryNotFoundException.userIDNotFound(userId);
+			throw EntryNotFoundException.tagNameNotFound(fullTagNames);
 		}
 		return result;
 	}

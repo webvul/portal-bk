@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.entity.BucketInfo;
@@ -51,10 +52,14 @@ public class BeehiveUserDao extends AbstractDataAccess<BeehiveUser> {
 	 * @return
 	 */
 	public BeehiveUser getUserByLoginId(BeehiveUser user){
-		QueryParam  query= ConditionBuilder.orCondition().equal("userName",user.getUserName()).equal("phone",user.getPhone())
-				.equal("mail",user.getMail()).getFinalQueryParam();
-
-		List<BeehiveUser>  userList= super.query(query);
+		ConditionBuilder conditionBuilder = ConditionBuilder.orCondition().equal("userName",user.getUserName());
+		if(StringUtils.hasText(user.getPhone())){
+			conditionBuilder.equal("phone",user.getPhone());
+		}
+		if(StringUtils.hasText(user.getMail())){
+			conditionBuilder.equal("mail",user.getMail());
+		}
+		List<BeehiveUser>  userList= super.query(conditionBuilder.getFinalQueryParam());
 
 		if(userList.isEmpty()){
 			return null;
