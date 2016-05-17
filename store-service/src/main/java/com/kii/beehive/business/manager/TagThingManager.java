@@ -405,6 +405,14 @@ public class TagThingManager {
 			for (UserGroup ug : userGroupList) {
 				ThingUserGroupRelation tgr = thingUserGroupRelationDao.find(thing.getId(), ug.getId());
 				if (tgr != null) return true;
+				//carlos group->tag->thing relation
+				List<Long> tagIds = tagGroupRelationDao.findTagIdsByUserGroupId(ug.getId())
+						.orElse(Collections.emptyList());
+				for (Long tagId : tagIds) {
+					TagThingRelation tagThingRelation = tagThingRelationDao.findByThingIDAndTagID(thing.getId(), tagId);
+					if (tagThingRelation != null) return true;
+				}
+
 			}
 			return false;
 		}
