@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.commons.codec.Charsets;
 import org.kie.api.KieBase;
 import org.kie.api.KieBaseConfiguration;
@@ -16,8 +15,6 @@ import org.kie.api.KieServices;
 import org.kie.api.builder.KieBuilder;
 import org.kie.api.builder.KieFileSystem;
 import org.kie.api.conf.EventProcessingOption;
-import org.kie.api.event.rule.DebugAgendaEventListener;
-import org.kie.api.event.rule.DebugRuleRuntimeEventListener;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.KieSessionConfiguration;
@@ -28,7 +25,6 @@ import org.kie.api.runtime.rule.QueryResultsRow;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
 import com.kii.extension.ruleengine.drools.entity.CurrThing;
 
 @Component
@@ -154,8 +150,8 @@ public class DroolsRuleService {
 
 		kieSession = kieBase.newKieSession(ksconf,null);
 
-		kieSession.addEventListener(new DebugAgendaEventListener());
-		kieSession.addEventListener(new DebugRuleRuntimeEventListener());
+//		kieSession.addEventListener(new DebugAgendaEventListener());
+//		kieSession.addEventListener(new DebugRuleRuntimeEventListener());
 
 		currThing.setThing("NONE");
 		currThingHandler=kieSession.insert(currThing);
