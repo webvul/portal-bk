@@ -340,3 +340,12 @@ CREATE TABLE IF NOT EXISTS `rel_thing_group` (
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB;
+
+CREATE TABLE `industry_template` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `thing_type` varchar(20) NOT NULL,
+  `name` varchar(20) NOT NULL,
+  `version` varchar(10) NOT NULL,
+  `content` mediumtext,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8;

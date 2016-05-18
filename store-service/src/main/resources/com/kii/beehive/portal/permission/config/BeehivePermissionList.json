@@ -18,6 +18,10 @@
       "displayName":"触发器管理",
       "url":"/triggers/**"
     },
+    "industrytemplate":{
+      "displayName":"行业模板管理",
+      "url":"/industrytemplate/**"
+    },
     "user": {
       "displayName": "用户信息",
       "url": "/users/**",
