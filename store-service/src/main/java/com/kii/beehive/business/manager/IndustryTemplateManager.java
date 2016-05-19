@@ -2,11 +2,11 @@ package com.kii.beehive.business.manager;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import com.kii.beehive.portal.jdbc.dao.map.IndustryTemplateMapDao;
+import com.kii.beehive.portal.jdbc.dao.IndustryTemplateDao;
+import com.kii.beehive.portal.jdbc.entity.IndustryTemplate;
 import com.kii.beehive.portal.jdbc.entity.map.IndustryTemplateMap;
 
 /**
@@ -16,7 +16,7 @@ import com.kii.beehive.portal.jdbc.entity.map.IndustryTemplateMap;
 public class IndustryTemplateManager {
 
     @Autowired
-    private IndustryTemplateMapDao dao;
+    private IndustryTemplateDao dao;
 
     /**
      * get industry template
@@ -26,39 +26,35 @@ public class IndustryTemplateManager {
      * @param verison
      * @return
      */
-    public List<Map<String, Object>> getIndustryTemplate(String thingType, String name, String verison) {
+    public List<IndustryTemplate> getIndustryTemplate(String thingType, String name, String verison) {
 
         List<String> fields = new ArrayList<>();
         List<Object> values = new ArrayList<>();
 
         if(!Strings.isBlank(thingType)) {
-            fields.add(IndustryTemplateMap.THING_TYPE);
+            fields.add(IndustryTemplate.THING_TYPE);
             values.add(thingType);
         }
 
         if(!Strings.isBlank(name)) {
-            fields.add(IndustryTemplateMap.NAME);
+            fields.add(IndustryTemplate.NAME);
             values.add(name);
         }
 
         if(!Strings.isBlank(verison)) {
-            fields.add(IndustryTemplateMap.VERSION);
+            fields.add(IndustryTemplate.VERSION);
             values.add(verison);
         }
 
-        return dao.findByField(IndustryTemplateMap.TABLE_NAME, fields, values);
+        return dao.findByField(fields, values);
 
     }
 
     /**
      * add industry template
      *
-     * @param thingType
-     * @param name
-     * @param verison
-     * @param content
      */
-    public void insertIndustryTemplate(String thingType, String name, String verison, String content) {
+    public void insertIndustryTemplate(IndustryTemplate industryTemplate) {
 
         String[] fields = new String[] {
                 IndustryTemplateMap.THING_TYPE,
@@ -67,11 +63,7 @@ public class IndustryTemplateManager {
                 IndustryTemplateMap.CONTENT
         };
 
-        Object[] values = new Object[] {
-                thingType, name, verison, content
-        };
-
-        dao.insert(IndustryTemplateMap.TABLE_NAME, fields, values);
+        dao.insert(industryTemplate);
 
     }
 
