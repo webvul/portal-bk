@@ -10,11 +10,11 @@ import com.kii.extension.ruleengine.drools.entity.*;
 rule "${triggerID} user custom segment:group"
 when
     Trigger( $triggerID:triggerID,(triggerID=="${triggerID}" && enable=true &&  type ==TriggerType.group)  )
-	Group(triggerID==$triggerID,$things:things )
+	$group:Group(triggerID==$triggerID,$things:things )
     CurrThing(thing memberOf $things)
-    ThingStatusInRule( $thingID:thingID memberOf $things,${express}  )
+    $status:ThingStatusInRule( $thingID:thingID memberOf $things,${express}  )
 then
-	insertLogical(new MemberMatchResult($triggerID,$thingID));
+	insertLogical(new MemberMatchResult($group,$status));
 end
 
 
