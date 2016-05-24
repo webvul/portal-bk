@@ -41,7 +41,7 @@ public class EntryNotFoundException extends BusinessException{
 
 		EntryNotFoundException excep=new EntryNotFoundException(String.valueOf(tagName),"beehive tag");
 
-		excep.setErrorCode("TAGNAME_NOT_EXIST");
+		excep.setErrorCode("TAG_NAME_NOT_EXIST");
 		return excep;
 	}
 
