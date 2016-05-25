@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.kii.beehive.portal.jdbc.dao.IndustryTemplateDao;
 import com.kii.beehive.portal.jdbc.entity.IndustryTemplate;
-import com.kii.beehive.portal.jdbc.entity.map.IndustryTemplateMap;
 
 /**
  * this class provides the industry template related functions
@@ -55,13 +54,6 @@ public class IndustryTemplateManager {
      *
      */
     public void insertIndustryTemplate(IndustryTemplate industryTemplate) {
-
-        String[] fields = new String[] {
-                IndustryTemplateMap.THING_TYPE,
-                IndustryTemplateMap.NAME,
-                IndustryTemplateMap.VERSION,
-                IndustryTemplateMap.CONTENT
-        };
 
         dao.insert(industryTemplate);
 
