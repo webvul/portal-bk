@@ -8,7 +8,7 @@ import com.kii.beehive.portal.jdbc.entity.IndustryTemplate;
 public class IndustryTemplateDao extends SpringBaseDao<IndustryTemplate> {
 
 	
-	public static final String TABLE_NAME = "rel_industry_template";
+	public static final String TABLE_NAME = "industry_template";
 	public static final String KEY = "id";
 	
 	@Override
