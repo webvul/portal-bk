@@ -6,6 +6,7 @@ package com.kii.beehive.portal.exception;
 public class UnauthorizedException extends BusinessException {
 
 
+	public static final String NOT_THING_CREATOR="NOT_THING_CREATOR";
 	public static final String NOT_TAG_CREATER="NOT_TAG_CREATER";
 	public static final String USER_BEEN_LOCKED="USER_BEEN_LOCKED";
 	public static final String USER_ALREADY_ACTIVIED="USER_ALREADY_ACTIVIED";

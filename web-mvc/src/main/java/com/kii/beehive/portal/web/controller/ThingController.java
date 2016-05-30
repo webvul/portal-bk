@@ -211,8 +211,8 @@ public class ThingController extends AbstractThingTagController {
 		if (input.getId() == null) {
 			thingInfo = new GlobalThingInfo();
 		} else {
-				thingInfo = thingTagManager.getAccessibleThingById(AuthInfoStore.getUserID(), input.getId());
-
+//			thingInfo = thingTagManager.getAccessibleThingById(AuthInfoStore.getUserID(), input.getId());
+			thingInfo = thingTagManager.getCanUpdateThingById(AuthInfoStore.getUserID(), input.getId());
 		}
 
 		thingInfo.setVendorThingID(input.getVendorThingID());

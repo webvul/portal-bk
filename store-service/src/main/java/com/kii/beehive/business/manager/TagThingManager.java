@@ -619,6 +619,17 @@ public class TagThingManager {
 
 		throw EntryNotFoundException.thingNotFound(thingId);
 	}
+	public GlobalThingInfo getCanUpdateThingById(String userId, Long thingId) throws ObjectNotFoundException {
+		if (null != thingUserRelationDao.find(thingId, userId)) { // must be creator
+			GlobalThingInfo thingInfo = globalThingDao.findByID(thingId);
+			if (null != thingInfo) {
+				return thingInfo;
+			}
+		}
+		UnauthorizedException  excep= new UnauthorizedException(UnauthorizedException.NOT_THING_CREATOR);
+		excep.addParam("user",userId);
+		throw excep;
+	}
 
 	public List<TagIndex> getAccessibleTagsByTagTypeAndName(String userId, String tagType, String displayName) {
 		List<Long> tagIds1 = tagUserRelationDao.findTagIds(userId, tagType, displayName).
