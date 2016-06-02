@@ -13,16 +13,28 @@ public class UserRestBean {
 
 	private BeehiveUser  beehiveUser;
 
+
+	private String password;
+
 	private String teamName;
 
 	public UserRestBean(){
 
 	}
 
+
 	public UserRestBean(BeehiveUser user){
 		this.beehiveUser = user;
 	}
 
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
 
 	public String getTeamName() {
 		return teamName;

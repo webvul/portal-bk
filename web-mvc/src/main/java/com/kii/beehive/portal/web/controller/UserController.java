@@ -144,6 +144,8 @@ public class UserController {
 
 
 
+
+
 	@RequestMapping(value = "/users/me", method = {RequestMethod.GET}, consumes = {"*"})
 	public UserRestBean getUser() {
 

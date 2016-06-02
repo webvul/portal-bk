@@ -2,6 +2,7 @@ package com.kii.beehive.portal.manager;
 
 
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -71,6 +72,41 @@ public class AuthManager {
 	private Map<String,String> oneTimeTokenMap=new ConcurrentHashMap<>();
 
 
+
+	public Map<String,String> createUserDirectly(BeehiveUser user,String password){
+
+
+		BeehiveUser existsUser=userDao.getUserByLoginId(user);
+
+		if(existsUser!=null){
+			throw new IllegalArgumentException("the username had existed,please change a loginName or email or phone Number");
+		}
+
+		userDao.addKiiEntity(user);
+
+		String pwd=user.getHashedPwd(password);
+
+		String loginID=userService.addBeehiveUser(user,pwd);
+
+		user.setKiiUserID(loginID);
+
+		user.setUserPassword(pwd);
+
+		userDao.updateEntity(user,user.getId());
+
+		String token = userService.bindToUser(user, pwd);
+
+		String beehiveToken=getBeehiveToken(token,user.getUserName(),false);
+
+		Map<String,String> result=new HashMap<>();
+
+		result.put("userID",user.getId());
+		result.put("token",beehiveToken);
+
+		return result;
+
+
+	}
 
 	public String activite(String userName, String token) {
 
