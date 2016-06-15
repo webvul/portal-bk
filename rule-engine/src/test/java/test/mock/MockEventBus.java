@@ -3,6 +3,7 @@ package test.mock;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -57,7 +58,7 @@ public class MockEventBus implements EventCallback {
 
 
 	@Override
-	public void onTriggerFire(String triggerID) {
+	public void onTriggerFire(String triggerID, Map<String,String> params) {
 
 	}
 }

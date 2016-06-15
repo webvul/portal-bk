@@ -1,0 +1,27 @@
+package com.kii.extension.ruleengine.demo
+
+import com.kii.extension.ruleengine.drools.entity.*;
+
+import com.kii.extension.ruleengine.drools.CommandExec;
+
+
+
+/////////////////////////////////////
+//simple trigger 701,when:change
+/////////////////////////////////////
+rule "add trigger 701's  express "
+when
+    $status:ThingStatusInRule( $thingID:thingID,values["foo"]>10&&values["bar"]<0  )
+then
+
+    System.out.println("fire");
+	MatchResult result=new MatchResult($thingID);
+	result.setParam("a",$status.getValue("foo"));
+	result.setParam("b",$status.getValue("bar"));
+	result.setDelay($status.getValue("delay"));
+	insertLogical(result);
+
+    CommandExec exec=(CommandExec)kcontext.getKieRuntime().getEnvironment().get("exec");
+    exec.doExecute("701",result);
+
+end

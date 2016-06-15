@@ -20,11 +20,11 @@ public class TestSummaryTrigger extends InitTest {
 	public void init() throws IOException {
 
 
-		ruleLoader.initCondition(
-				getDrlContent("triggerComm"),
-				getDrlContent("summaryCompute"),
-				getDrlContent("slideSummary")
-		);
+//		ruleLoader.initCondition(
+//				getDrlContent("triggerComm"),
+//				getDrlContent("summaryCompute"),
+//				getDrlContent("slideSummary")
+//		);
 
 		initGlobal();
 
@@ -34,8 +34,9 @@ public class TestSummaryTrigger extends InitTest {
 	public void testTrigger300(){
 
 		ruleLoader.addCondition("trigger",getDrlContent("triggerRule"));
+		String triggerID="300";
 
-		Trigger trigger=new Trigger();
+		Trigger trigger=new Trigger(triggerID);
 //		for(int i=0;i<5;i++) {
 //			trigger.addThing(String.valueOf(i));
 //		}
@@ -44,8 +45,7 @@ public class TestSummaryTrigger extends InitTest {
 		trigger.setWhen(WhenType.CONDITION_FALSE_TO_TRUE);
 //		trigger.setPreviousResult(false);
 
-		String triggerID="300";
-		trigger.setTriggerID(triggerID);
+//		trigger.setTriggerID(triggerID);
 
 		ruleLoader.addOrUpdateData(trigger);
 

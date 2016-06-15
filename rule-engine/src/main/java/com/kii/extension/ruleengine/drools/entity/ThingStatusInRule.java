@@ -25,12 +25,15 @@ public class ThingStatusInRule {
 		return Objects.hashCode(thingID);
 	}
 
-	private String thingID;
+	private final String thingID;
 
 	private Date createAt;
 
 	private Map<String,Object> values=new HashMap<>();
 
+	public ThingStatusInRule(String thingID){
+		this.thingID=thingID;
+	}
 
 	public Date getCreateAt() {
 		return createAt;
@@ -57,13 +60,18 @@ public class ThingStatusInRule {
 		return value == null ? 0 : value;
 	}
 
+	public String getValue(String field){
+		Object value = this.values.get(field);
+		if(value==null){
+			return null;
+		}
+		return String.valueOf(value);
+	}
+
 	public String getThingID() {
 		return thingID;
 	}
 
-	public void setThingID(String thingID) {
-		this.thingID = thingID;
-	}
 
 	@Override
 	public String toString() {

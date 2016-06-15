@@ -12,6 +12,7 @@ import org.springframework.util.StringUtils;
 
 import com.kii.extension.ruleengine.drools.DroolsTriggerService;
 import com.kii.extension.ruleengine.drools.RuleGeneral;
+import com.kii.extension.ruleengine.drools.entity.ExternalValues;
 import com.kii.extension.ruleengine.drools.entity.Group;
 import com.kii.extension.ruleengine.drools.entity.Summary;
 import com.kii.extension.ruleengine.drools.entity.Thing;
@@ -47,9 +48,8 @@ public class EngineService {
 	public void createMultipleSourceTrigger(MultipleSrcTriggerRecord record,Map<String,Set<String> > thingMap){
 
 
-		Trigger trigger=new Trigger();
+		Trigger trigger=new Trigger(record.getId());
 		trigger.setType(TriggerType.multiple);
-		trigger.setTriggerID(record.getId());
 		trigger.setStream(false);
 		trigger.setWhen(record.getPredicate().getTriggersWhen());
 
@@ -117,9 +117,8 @@ public class EngineService {
 	public void createSummaryTrigger(SummaryTriggerRecord record, Map<String,Set<String> > summaryMap,boolean isStream){
 
 
-		Trigger trigger=new Trigger();
+		Trigger trigger=new Trigger(record.getId());
 
-		trigger.setTriggerID(record.getId());
 		trigger.setType(TriggerType.summary);
 		trigger.setWhen(record.getPredicate().getTriggersWhen());
 		trigger.setStream(isStream);
@@ -161,9 +160,8 @@ public class EngineService {
 	public void createGroupTrigger(Collection<String> thingIDs, GroupTriggerRecord record){
 
 
-		Trigger trigger=new Trigger();
+		Trigger trigger=new Trigger(record.getId());
 
-		trigger.setTriggerID(record.getId());
 		trigger.setType(TriggerType.group);
 
 		Group group=new Group();
@@ -196,12 +194,12 @@ public class EngineService {
 
 	public void  createSimpleTrigger(String thingID, SimpleTriggerRecord record)  {
 
-
-		Trigger trigger=new Trigger();
-
 		String triggerID=record.getId();
 
-		trigger.setTriggerID(triggerID);
+		Trigger trigger=new Trigger(triggerID);
+
+
+
 		trigger.setType(TriggerType.simple);
 		trigger.setStream(false);
 		trigger.setWhen(record.getPredicate().getTriggersWhen());
@@ -238,11 +236,11 @@ public class EngineService {
 
 	}
 
-	public void initThingStatus(List<ThingInfo> thingInfos) {
+	public void initThingStatus(List<ThingStatusInRule> thingInfos) {
 
 		droolsTriggerService.setInitSign(true);
 
-		thingInfos.forEach(th->droolsTriggerService.initThingStatus(th.getThingStatusInRule()));
+		thingInfos.forEach(th->droolsTriggerService.initThingStatus(th));
 
 		droolsTriggerService.fireCondition();
 		droolsTriggerService.setInitSign(false);
@@ -251,46 +249,57 @@ public class EngineService {
 	public void updateThingStatus(String thingID,ThingStatus status,Date time) {
 
 
-		ThingStatusInRule newStatus=new ThingStatusInRule();
-		newStatus.setThingID(thingID);
+		ThingStatusInRule newStatus=new ThingStatusInRule(thingID);
 		newStatus.setValues(status.getFields());
 		newStatus.setCreateAt(time);
 
 		droolsTriggerService.addThingStatus(newStatus);
 	}
 
+	public void updateExternalValue(String name,String key,Object value){
 
-	public static   class ThingInfo{
+		ExternalValues  values=new ExternalValues(name);
 
-		private String thingID;
+		droolsTriggerService.addExternalValue(values);
 
-		private ThingStatus status;
-
-		private Date date;
-
-		public ThingStatusInRule getThingStatusInRule(){
-			ThingStatusInRule newStatus=new ThingStatusInRule();
-
-			newStatus.setThingID(thingID);
-			newStatus.setValues(status.getFields());
-			newStatus.setCreateAt(date);
-
-			return newStatus;
-		}
-
-		public void setThingID(String thingID) {
-			this.thingID = thingID;
-		}
-
-
-		public void setStatus(ThingStatus status) {
-			this.status = status;
-		}
-
-		public void setDate(Date date) {
-			this.date = date;
-		}
 	}
+
+
+	public void updateExternalValues(String name,Map<String,Object> values){
+		ExternalValues  val=new ExternalValues(name);
+		val.setValues(values);
+
+		droolsTriggerService.addExternalValue(val);
+
+	}
+
+//	public static   class ThingInfo{
+//
+//		private String thingID;
+//
+//		private ThingStatus status;
+//
+//		private Date date;
+//
+//		public ThingStatusInRule getThingStatusInRule(){
+//
+//
+//			return newStatus;
+//		}
+//
+//		public void setThingID(String thingID) {
+//			this.thingID = thingID;
+//		}
+//
+//
+//		public void setStatus(ThingStatus status) {
+//			this.status = status;
+//		}
+//
+//		public void setDate(Date date) {
+//			this.date = date;
+//		}
+//	}
 	
 	public void disableTrigger(String triggerID) {
 

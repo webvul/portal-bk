@@ -8,7 +8,7 @@ import com.kii.extension.ruleengine.store.trigger.WhenType;
 
 public class Trigger {
 
-	private String triggerID;
+	private final String triggerID;
 
 	private TriggerType type;
 
@@ -18,12 +18,14 @@ public class Trigger {
 
 	private boolean isStream=false;
 
-	public Trigger(){
+	public Trigger(String triggerID){
 
+		this.triggerID=triggerID;
 	}
 
 	public Trigger(Trigger trigger){
 
+		this.triggerID=trigger.getTriggerID();
 		BeanUtils.copyProperties(trigger,this);
 	}
 
@@ -63,9 +65,6 @@ public class Trigger {
 		return triggerID;
 	}
 
-	public void setTriggerID(String triggerID) {
-		this.triggerID = triggerID;
-	}
 
 
 	@Override

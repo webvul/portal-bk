@@ -35,11 +35,10 @@ public class TestDemo extends InitTest {
 	public void init() throws IOException {
 
 
-		ruleLoader.initCondition(
-				getDrlContent("threaddemo"),
-				getDrlContent("FireAlarm"),
-				getDrlContent("group")
-		);
+//		ruleLoader.initCondition(
+//				getDrlContent("FireAlarm"),
+//				getDrlContent("group")
+//		);
 
 		execute.initCondition(getDrlContent("demo1"));
 
@@ -53,13 +52,15 @@ public class TestDemo extends InitTest {
 	@Test
 	public void testSummary() throws IOException {
 
-		Trigger trigger=new Trigger();
 //		for(int i=0;i<10;i++){
 //			trigger.addThing(String.valueOf(i));
 //		}
-		trigger.setType(TriggerType.summary);
 		String triggerID="100";
-		trigger.setTriggerID(triggerID);
+
+		Trigger trigger=new Trigger(triggerID);
+
+//		trigger.setTriggerID(triggerID);
+		trigger.setType(TriggerType.summary);
 
 		ruleLoader.addOrUpdateData(trigger);
 
@@ -118,8 +119,8 @@ public class TestDemo extends InitTest {
  		for(int i=0;i<10;i++){
 			int id=i%3;
 			Trigger trigger=triggerMap.computeIfAbsent(id,(key)->{
-				Trigger t=new Trigger();
-				t.setTriggerID(String.valueOf(key));
+				Trigger t=new Trigger(String.valueOf(key));
+//				t.setTriggerID();
 				return t;
 			});
 			groupMap.computeIfAbsent(trigger.getTriggerID(),(key)->{
@@ -214,4 +215,7 @@ public class TestDemo extends InitTest {
 
 
 	}
+
+
+
 }

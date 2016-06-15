@@ -13,7 +13,13 @@ when
     Trigger( $triggerID:triggerID =="${triggerID}" && enable == true  )
     Thing(thingID:thingID,triggerID==$triggerID)
     ThingStatusInRule( thingID == $thingID,${express}  )
+    $result:ResultParam(triggerID==$triggerID)
 then
+
+	modify($result){
+		${settingList}
+	}
 	CommandExec exec=(CommandExec)kcontext.getKieRuntime().getEnvironment().get("exec");
-    exec.doExecute($triggerID);
+    exec.doExecute($triggerID,$result);
+    $result.clearAll();
 end

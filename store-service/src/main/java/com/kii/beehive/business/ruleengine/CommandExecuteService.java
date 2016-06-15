@@ -1,16 +1,18 @@
 package com.kii.beehive.business.ruleengine;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import com.kii.beehive.business.manager.AppInfoManager;
 import com.kii.beehive.business.manager.ThingTagManager;
 import com.kii.beehive.business.service.ThingIFInAppService;
+import com.kii.beehive.portal.common.utils.StrTemplate;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.extension.ruleengine.service.TriggerRecordDao;
@@ -18,6 +20,7 @@ import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
 import com.kii.extension.ruleengine.store.trigger.TargetAction;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.sdk.context.AppBindToolResolver;
+import com.kii.extension.sdk.entity.thingif.Action;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
 
 
@@ -65,7 +68,7 @@ public class CommandExecuteService {
 	}
 
 
-	public void doCommand(TriggerRecord  record) {
+	public void doCommand(TriggerRecord  record,Map<String,String> params) {
 
 		if(!sign.get()){
 			return;
@@ -80,9 +83,19 @@ public class CommandExecuteService {
 			Set<GlobalThingInfo>  thingList=thingTagService.getThingInfos(target.getSelector());
 
 
-			thingList.forEach(thing->{
+			thingList.stream().filter((th)-> !StringUtils.isEmpty(th.getFullKiiThingID())).forEach(thing->{
 
-				sendCmdToThing(thing,action,record.getId());
+				ThingCommand command=target.getCommand().getCommand();
+
+				for (Map<String, Action> actionMap : command.getActions()) {
+
+					actionMap.values().forEach((act)->{
+						act.getFields().forEach((n,v)->{
+							act.setField(n, StrTemplate.generByMap(n,params));
+						});
+					});
+				}
+				sendCmd(command, thing);
 
 
 			});
@@ -92,54 +105,10 @@ public class CommandExecuteService {
 
 	}
 
-	public void doCommand(String triggerID){
-
-		TriggerRecord record=triggerDao.getEnableTriggerRecord(triggerID);
-
-		if(record==null){
-			return;
-		}
-
-		doCommand(record);
-	}
-
-
-	public  void sendCmdToThing(GlobalThingInfo thingInfo,TargetAction target,String triggerID){
-
-
-		// send command only when command is not null and thing completed onboarding
-		if(target.getCommand()!=null && !Strings.isBlank(thingInfo.getFullKiiThingID())) {
-
-			sendCmd(target.getCommand(), thingInfo);
-		}
-
-		//TODO:need think about it again.
-//		if(target.getServiceCode()!=null){
-//			callServiceCode(target.getServiceCode(),triggerID);
-//		}
-
-	}
-
-//	private void callServiceCode(ServiceCode serviceCode, String triggerID) {
-//
-//		String serviceName=serviceCode.getEndpoint();
-//		Object param=serviceCode.getParameters();
-//		JsonNode result=extensionService.callServiceExtension(serviceCode.getTargetAppID(),serviceName,param,JsonNode.class);
-//
-//		ClientTriggerResult  clientResult=new ClientTriggerResult();
-//
-//		clientResult.setResult(result);
-//		clientResult.setServiceName(serviceCode.getEndpoint());
-//		clientResult.setTriggerID(triggerID);
-//
-//		resultDao.addEntity(clientResult);
-//
-//	}
 
 	private void sendCmd(ThingCommand command, GlobalThingInfo thingInfo) {
 		String appID=thingInfo.getKiiAppID();
 
-//		resolver.setAppInfoDirectly(appInfoDao.getAppInfoByID(appID).getAppInfo());
 
 		command.setUserID(appInfoManager.getDefaultOwer(appID).getUserID());
 		command.setSchema(SCHEMA);

@@ -24,6 +24,7 @@ import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.service.EventListenerDao;
 import com.kii.extension.ruleengine.EngineService;
+import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
 import com.kii.extension.ruleengine.schedule.ScheduleService;
 import com.kii.extension.ruleengine.service.TriggerRecordDao;
 import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
@@ -90,7 +91,7 @@ public class TriggerManager {
 		});
 		scheduleService.startSchedule();
 
-		List<EngineService.ThingInfo>  initThings=new ArrayList<>();
+		List<ThingStatusInRule>  initThings=new ArrayList<>();
 
 		thingTagService.iteratorAllThingsStatus(s -> {
 			if (StringUtils.isEmpty(s.getStatus())) {
@@ -103,10 +104,10 @@ public class TriggerManager {
 				e.printStackTrace();
 				return;
 			}
-			EngineService.ThingInfo info=new EngineService.ThingInfo();
-			info.setDate(s.getModifyDate());
-			info.setStatus(status);
-			info.setThingID(s.getFullKiiThingID());
+			ThingStatusInRule info=new ThingStatusInRule(s.getFullKiiThingID());
+			info.setCreateAt(s.getModifyDate());
+			info.setValues(status.getFields());
+//			info.setThingID(s.getFullKiiThingID());
 
 			initThings.add(info);
 

@@ -16,9 +16,9 @@ public class TestScheduleTrigger extends InitTest {
 
 
 
-		ruleLoader.initCondition(
-				getDrlContent("triggerComm")
-		);
+//		ruleLoader.initCondition(
+//				getDrlContent("triggerComm")
+//		);
 
 		initGlobal();
 
@@ -29,14 +29,14 @@ public class TestScheduleTrigger extends InitTest {
 	public void testCron() throws IOException {
 
 		ruleLoader.addCondition("schedule",getDrlContent("ruleWithSchedule"));
+		String id = "500";
 
-		Trigger trigger=new Trigger();
+		Trigger trigger=new Trigger(id);
 
 		trigger.setType(TriggerType.simple);
 		trigger.setWhen(WhenType.CONDITION_FALSE_TO_TRUE);
 
-		String id = "500";
-		trigger.setTriggerID(id);
+//		trigger.setTriggerID(id);
 
 		addThing(id,String.valueOf(10));
 
@@ -57,13 +57,14 @@ public class TestScheduleTrigger extends InitTest {
 
 		ruleLoader.addCondition("schedule",getDrlContent("ruleWithSchedule"));
 
-		Trigger trigger=new Trigger();
+		String id = "501";
+
+		Trigger trigger=new Trigger(id);
 
 		trigger.setType(TriggerType.simple);
 		trigger.setWhen(WhenType.CONDITION_FALSE_TO_TRUE);
 
-		String id = "501";
-		trigger.setTriggerID(id);
+//		trigger.setTriggerID(id);
 
 		ruleLoader.addOrUpdateData(trigger);
 
@@ -86,14 +87,14 @@ public class TestScheduleTrigger extends InitTest {
 	public void testPeriod() throws IOException, InterruptedException {
 
 		ruleLoader.addCondition("schedule",getDrlContent("ruleWithSchedule"));
+		String id = "502";
 
-		Trigger trigger=new Trigger();
+		Trigger trigger=new Trigger(id);
 
 		trigger.setType(TriggerType.simple);
 		trigger.setWhen(WhenType.CONDITION_FALSE_TO_TRUE);
 
-		String id = "502";
-		trigger.setTriggerID(id);
+//		trigger.setTriggerID(id);
 
 		addThing(id,String.valueOf(11));
 

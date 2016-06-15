@@ -5,7 +5,8 @@ import java.util.Map;
 
 import com.google.common.base.Objects;
 
-public class MatchResult {
+public class ResultParam {
+
 
 	private final String triggerID;
 
@@ -13,17 +14,9 @@ public class MatchResult {
 
 	private Map<String,String> params=new HashMap<>();
 
-	public MatchResult(String triggerID){
+	public ResultParam(String triggerID){
 		this.triggerID=triggerID;
 	}
-
-	public MatchResult(ResultParam param){
-
-		this.triggerID=param.getTriggerID();
-		this.delay=param.getDelay();
-		this.params.putAll(param.getParams());
-	}
-
 
 	public String getTriggerID() {
 		return triggerID;
@@ -34,7 +27,7 @@ public class MatchResult {
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
-		MatchResult that = (MatchResult) o;
+		ResultParam that = (ResultParam) o;
 		return  Objects.equal(triggerID,that.triggerID) ;
 	}
 
@@ -45,7 +38,7 @@ public class MatchResult {
 
 	@Override
 	public String toString() {
-		return "MatchResult{" +
+		return "ResultParam{" +
 				"triggerID='" + triggerID + '\'' +
 				", delay=" + delay +
 				", params=" + params +
@@ -70,5 +63,10 @@ public class MatchResult {
 
 	public void setParams(Map<String, String> params) {
 		this.params = params;
+	}
+
+	public void clearAll(){
+		this.delay=null;
+		this.params.clear();
 	}
 }

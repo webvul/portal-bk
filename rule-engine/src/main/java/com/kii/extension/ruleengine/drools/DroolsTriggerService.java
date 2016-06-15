@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import com.kii.extension.ruleengine.drools.entity.ExternalValues;
 import com.kii.extension.ruleengine.drools.entity.MatchResult;
 import com.kii.extension.ruleengine.drools.entity.MultiplesValueMap;
 import com.kii.extension.ruleengine.drools.entity.Summary;
@@ -39,9 +40,7 @@ public class DroolsTriggerService {
 
 	private final Map<String,Map<String,ThingCol>> thingColMap =new ConcurrentHashMap<>();
 
-	/**
-	 * 清空 drools 相关 重新初始化
-	 */
+
 	public void clear(){
 		cloudService.clear();
 		streamService.clear();
@@ -215,6 +214,13 @@ public class DroolsTriggerService {
 		fireCondition();
 	}
 
+	public void addExternalValue(ExternalValues newValues){
+
+		cloudService.addOrUpdateData(newValues);
+		streamService.addOrUpdateData(newValues);
+
+	}
+
 	private void setCurrThingID(String fullThingID){
 
 		cloudService.setCurrThingID(fullThingID);
@@ -227,12 +233,12 @@ public class DroolsTriggerService {
 
 		List<MatchResult> results=cloudService.doQuery("get Match Result by TriggerID");
 
-		results.forEach(r-> exec.doExecute(r.getTriggerID()));
+		results.forEach(r-> exec.doExecute(r.getTriggerID(),r));
 
 		streamService.fireCondition();
 		results=streamService.doQuery("get Match Result by TriggerID");
 
-		results.forEach(r-> exec.doExecute(r.getTriggerID()));
+		results.forEach(r-> exec.doExecute(r.getTriggerID(),r));
 
 	}
 	

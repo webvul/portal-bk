@@ -22,9 +22,9 @@ public class TestSimpleTrigger extends InitTest {
 
 
 
-		ruleLoader.initCondition(
-				getDrlContent("triggerComm")
-		);
+//		ruleLoader.initCondition(
+//				getDrlContent("triggerComm")
+//		);
 
 		initGlobal();
 
@@ -38,16 +38,16 @@ public class TestSimpleTrigger extends InitTest {
 	public void testTrigger100(){
 
 		ruleLoader.addCondition("trigger100",getDrlContent("rule100"));
+		String id = "100";
 
-		Trigger trigger=new Trigger();
+		Trigger trigger=new Trigger(id);
 
 		//trigger.addThing(String.valueOf(0));
 
 		trigger.setType(TriggerType.simple);
 		trigger.setWhen(WhenType.CONDITION_FALSE_TO_TRUE);
 
-		String id = "100";
-		trigger.setTriggerID(id);
+//		trigger.setTriggerID(id);
 
 		ruleLoader.addOrUpdateData(trigger);
 
@@ -91,14 +91,15 @@ public class TestSimpleTrigger extends InitTest {
 
 		ruleLoader.addCondition("trigger",getDrlContent("rule101"));
 
-		Trigger trigger=new Trigger();
+		String triggerID = "101";
+
+		Trigger trigger=new Trigger(triggerID);
 
 		trigger.setType(TriggerType.simple);
 		trigger.setWhen(WhenType.CONDITION_TRUE);
 
-		String triggerID = "101";
 
-		trigger.setTriggerID(triggerID);
+//		trigger.setTriggerID(triggerID);
 
 		ruleLoader.addOrUpdateData(trigger);
 
@@ -138,14 +139,14 @@ public class TestSimpleTrigger extends InitTest {
 
 		String triggerID="102";
 
-		Trigger trigger=new Trigger();
+		Trigger trigger=new Trigger(triggerID);
 		addThing(triggerID,"2");
 
 
 		trigger.setType(TriggerType.simple);
 		trigger.setWhen(WhenType.CONDITION_TRUE_TO_FALSE);
 
-		trigger.setTriggerID(triggerID);
+//		trigger.setTriggerID(triggerID);
 
 		ruleLoader.addOrUpdateData(trigger);
 
@@ -187,14 +188,14 @@ public class TestSimpleTrigger extends InitTest {
 
 		String triggerID="103";
 
-		Trigger trigger=new Trigger();
+		Trigger trigger=new Trigger(triggerID);
 		addThing(triggerID,"2");
 
 
 		trigger.setType(TriggerType.simple);
 		trigger.setWhen(WhenType.CONDITION_CHANGED);
 
-		trigger.setTriggerID(triggerID);
+//		trigger.setTriggerID(triggerID);
 
 		ruleLoader.addOrUpdateData(trigger);
 

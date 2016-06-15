@@ -24,10 +24,10 @@ public class TestGroupTrigger extends InitTest {
 	public void init() throws IOException {
 
 
-		ruleLoader.initCondition(
-				getDrlContent("triggerComm"),
-				getDrlContent("groupPolicy")
-		);
+//		ruleLoader.initCondition(
+//				getDrlContent("triggerComm"),
+//				getDrlContent("groupPolicy")
+//		);
 
 		ruleLoader.addCondition("trigger",getDrlContent("triggerRule"));
 
@@ -39,11 +39,11 @@ public class TestGroupTrigger extends InitTest {
 	public void testTrigger200(){
 
 
-		Trigger trigger=new Trigger();
 
 
 
 		String triggerID = "200";
+		Trigger trigger=new Trigger(triggerID);
 
 		Group group=new Group();
 
@@ -59,7 +59,6 @@ public class TestGroupTrigger extends InitTest {
 //		trigger.setPreviousResult(false);
 
 
-		trigger.setTriggerID(triggerID);
 
 		ruleLoader.addOrUpdateData(trigger);
 		ruleLoader.addOrUpdateData(group);
@@ -98,9 +97,9 @@ public class TestGroupTrigger extends InitTest {
 	public void testTrigger201(){
 
 
-		Trigger trigger=new Trigger();
 
 		String triggerID = "201";
+		Trigger trigger=new Trigger(triggerID);
 
 		Group group=new Group();
 		group.setTriggerID(triggerID);
@@ -113,7 +112,7 @@ public class TestGroupTrigger extends InitTest {
 		trigger.setWhen(WhenType.CONDITION_TRUE);
 //		trigger.setPreviousResult(false);
 
-		trigger.setTriggerID(triggerID);
+//		trigger.setTriggerID(triggerID);
 
 		ruleLoader.addOrUpdateData(trigger);
 
@@ -159,8 +158,8 @@ public class TestGroupTrigger extends InitTest {
 	public void testTrigger202(){
 
 
-		Trigger trigger=new Trigger();
 		String triggerID = "202";
+		Trigger trigger=new Trigger(triggerID);
 
 		Group group=new Group();
 		group.setTriggerID(triggerID);
@@ -176,7 +175,7 @@ public class TestGroupTrigger extends InitTest {
 //		trigger.setPreviousResult(false);
 
 
-		trigger.setTriggerID(triggerID);
+//		trigger.setTriggerID(triggerID);
 
 		ruleLoader.addOrUpdateData(trigger);
 

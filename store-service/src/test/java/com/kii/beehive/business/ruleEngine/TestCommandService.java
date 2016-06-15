@@ -1,6 +1,7 @@
 package com.kii.beehive.business.ruleEngine;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.junit.Test;
@@ -49,7 +50,7 @@ public class TestCommandService extends TestInit {
 
 		trigger.setTarget(targets);
 
-		cmdService.doCommand(trigger);
+		cmdService.doCommand(trigger,new HashMap<>());
 
 	}
 

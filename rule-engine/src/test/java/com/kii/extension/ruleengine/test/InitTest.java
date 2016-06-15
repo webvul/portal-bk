@@ -95,8 +95,8 @@ public class InitTest {
 
 
 	protected  void updateThingState(String thingID,Map<String,Object> values){
-		ThingStatusInRule status=new ThingStatusInRule();
-		status.setThingID(thingID);
+		ThingStatusInRule status=new ThingStatusInRule(thingID);
+//		status.setThingID(thingID);
 		status.setCreateAt(new Date());
 		status.setValues(new HashMap<>(values));
 
@@ -118,8 +118,8 @@ public class InitTest {
 
 	protected void updateThingState(String thingID){
 
-		ThingStatusInRule status=new ThingStatusInRule();
-		status.setThingID(thingID);
+		ThingStatusInRule status=new ThingStatusInRule(thingID);
+//		status.setThingID(thingID);
 
 		status.addValue("foo",Math.random()*100-50);
 		status.addValue("bar",Math.random()*10-5);
