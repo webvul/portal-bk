@@ -29,7 +29,7 @@ public class SearchManager {
 		//HttpClient
 		CloseableHttpClient closeableHttpClient = httpClientBuilder.build();
 
-		HttpPost httpPost = new HttpPost(elasticsearchHost + thing.getKiiAppID() + "/_search?pretty");
+		HttpPost httpPost = new HttpPost(elasticsearchHost + thing.getKiiAppID() + "/_search");
 
 		try {
 			StringEntity params = new StringEntity(queryString);
@@ -58,7 +58,7 @@ public class SearchManager {
 
 	public String queryBuilder(String venderThingID, long startDate, long endDate, String intervalField, String[] avgFields) {
 		String dateField = "_modified";
-		String termField = "age";
+		String termField = "target";
 
 		StringBuilder avgFieldSb = new StringBuilder();
 		for (String avgField : avgFields) {
