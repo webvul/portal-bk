@@ -5,6 +5,7 @@ import com.kii.beehive.business.manager.TagThingManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
+import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.beehive.portal.web.entity.SearchRestBean;
 import com.kii.beehive.portal.web.exception.PortalException;
 import org.apache.logging.log4j.util.Strings;
@@ -34,8 +35,9 @@ public class SearchController extends AbstractThingTagController {
 	@RequestMapping(value = "/historical", method = {RequestMethod.POST})
 	public String historical(@RequestBody SearchRestBean searchRestBean) {
 		if (Strings.isBlank(searchRestBean.getVenderThingID()) || Strings.isBlank(searchRestBean.getIntervalField())
+				|| Strings.isBlank(searchRestBean.getOperatorField())
 				|| searchRestBean.getStartDate() == null || searchRestBean.getEndDate() == null
-				|| searchRestBean.getAvgFields() == null || searchRestBean.getAvgFields().length == 0) {
+				|| searchRestBean.getFields() == null || searchRestBean.getFields().length == 0) {
 			throw new PortalException("RequiredFieldsMissing", HttpStatus.BAD_REQUEST);
 		}
 
@@ -44,12 +46,13 @@ public class SearchController extends AbstractThingTagController {
 		if (thing == null) {
 			throw EntryNotFoundException.thingNotFound(searchRestBean.getVenderThingID());
 		}
-		if (!"211102".equals(AuthInfoStore.getUserID())) {//non-admin
+		if (!Constants.ADMIN_ID.equals(AuthInfoStore.getUserID())) {//non-admin
 			thingTagManager.getAccessibleThingById(AuthInfoStore.getUserID(), thing.getId());
 		}
 
 		String queryString = searchManager.queryBuilder(searchRestBean.getVenderThingID(), searchRestBean.getStartDate(),
-				searchRestBean.getEndDate(), searchRestBean.getIntervalField(), searchRestBean.getAvgFields());
+				searchRestBean.getEndDate(), searchRestBean.getIntervalField(), searchRestBean.getOperatorField(), searchRestBean
+						.getFields());
 		String result = searchManager.search(thing, queryString);
 		return result;
 	}

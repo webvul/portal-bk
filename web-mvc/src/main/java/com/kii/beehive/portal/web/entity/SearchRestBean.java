@@ -6,7 +6,8 @@ public class SearchRestBean {
 	private Long startDate;
 	private Long endDate;
 	private String intervalField;
-	private String[] avgFields;
+	private String operatorField;
+	private String[] fields;
 
 	public String getVenderThingID() {
 		return venderThingID;
@@ -40,11 +41,19 @@ public class SearchRestBean {
 		this.intervalField = intervalField;
 	}
 
-	public String[] getAvgFields() {
-		return avgFields;
+	public String[] getFields() {
+		return fields;
 	}
 
-	public void setAvgFields(String[] avgFields) {
-		this.avgFields = avgFields;
+	public void setFields(String[] fields) {
+		this.fields = fields;
+	}
+
+	public String getOperatorField() {
+		return operatorField;
+	}
+
+	public void setOperatorField(String operatorField) {
+		this.operatorField = operatorField;
 	}
 }

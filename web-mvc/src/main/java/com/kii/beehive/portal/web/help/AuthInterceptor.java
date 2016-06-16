@@ -1,22 +1,6 @@
 package com.kii.beehive.portal.web.help;
 
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import java.io.IOException;
-import java.util.Enumeration;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.util.StringUtils;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
-
 import com.kii.beehive.business.helper.OpLogTools;
 import com.kii.beehive.business.manager.AppInfoManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
@@ -30,22 +14,34 @@ import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
 import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.exception.ObjectNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.util.StringUtils;
+import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Enumeration;
+import java.util.LinkedList;
+import java.util.List;
 
 public class AuthInterceptor extends HandlerInterceptorAdapter {
 
-    /**
-     * @deprecated only for testing, so should not appear in any source code except for junit
-     */
-	private static final String USER_ID = "211102";
+	/**
+	 * @deprecated only for testing, so should not appear in any source code except for junit
+	 */
 
-
-	private Logger log= LoggerFactory.getLogger(AuthInterceptor.class);
+	private Logger log = LoggerFactory.getLogger(AuthInterceptor.class);
 
 	@Value("${spring.profile}")
-	private String  env;
+	private String env;
 
 	@Autowired
-    private AuthManager authManager;
+	private AuthManager authManager;
 
 	@Autowired
 	private OpLogTools logTool;
@@ -55,27 +51,27 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 	private DeviceSupplierDao supplierDao;
 
 	@Autowired
-	private AppInfoManager  appInfoManager;
+	private AppInfoManager appInfoManager;
 
 	@Autowired
-	private AppBindToolResolver  appInfoResolver;
+	private AppBindToolResolver appInfoResolver;
 
-    /**
-     * validate the token from header "Authorization"
-     * the token is assigned after login success
-     *
-     * @param request
-     * @param response
-     * @param handler
-     * @return
-     */
-    @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+	/**
+	 * validate the token from header "Authorization"
+	 * the token is assigned after login success
+	 *
+	 * @param request
+	 * @param response
+	 * @param handler
+	 * @return
+	 */
+	@Override
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
 		logRequest(request);
 
 		// bypass the method OPTIONS
-		if(Constants.HTTP_METHOD_OPTIONS.equalsIgnoreCase(request.getMethod())) {
+		if (Constants.HTTP_METHOD_OPTIONS.equalsIgnoreCase(request.getMethod())) {
 			this.handleCORSMethodOptions(request, response, handler);
 			return false;
 		}
@@ -84,85 +80,85 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 		this.handleCORSMethodOthers(request, response, handler);
 
 
-		String url=request.getRequestURI();
+		String url = request.getRequestURI();
 
 
-		int idx=url.indexOf(Constants.URL_PREFIX);
-		String subUrl=url.substring(idx+4).trim();
+		int idx = url.indexOf(Constants.URL_PREFIX);
+		String subUrl = url.substring(idx + 4).trim();
 
-		List<String> list=new LinkedList<>();
+		List<String> list = new LinkedList<>();
 
 		list.add(subUrl);
 		list.add(request.getHeader(Constants.ACCESS_TOKEN));
 
 //		try {
 
-			// below APIs don't need to check token and permission
+		// below APIs don't need to check token and permission
 
-		if(subUrl.startsWith(Constants.URL_OAUTH2)
-					|| subUrl.startsWith("/onboardinghelper")
-					|| subUrl.contains("/debug/")){
+		if (subUrl.startsWith(Constants.URL_OAUTH2)
+				|| subUrl.startsWith("/onboardinghelper")
+				|| subUrl.contains("/debug/")) {
 
-				list.set(1,subUrl);
-				logTool.write(list);
+			list.set(1, subUrl);
+			logTool.write(list);
 
-				return  super.preHandle(request, response, handler);
+			return super.preHandle(request, response, handler);
 
 		}
 
 
-		String token=AuthUtils.getTokenFromHeader(request);
+		String token = AuthUtils.getTokenFromHeader(request);
 
-		if(StringUtils.isEmpty(token)){
-			throw new PortalException(ErrorCode.INVALID_TOKEN,HttpStatus.UNAUTHORIZED);
+		if (StringUtils.isEmpty(token)) {
+			throw new PortalException(ErrorCode.INVALID_TOKEN, HttpStatus.UNAUTHORIZED);
 		}
-		list.set(1,token);
+		list.set(1, token);
 
-		try{
+		try {
 			// TODO this checking is for testing only, must remove after testing complete
-			if (Constants.SUPER_TOKEN.equals(token)&&(!"production".equals(env))) {
+			if (Constants.SUPER_TOKEN.equals(token) && (!"production".equals(env))) {
 
 //				authManager.saveToken(USER_ID, token);
 
-				AuthInfoStore.setAuthInfo(USER_ID);
+				AuthInfoStore.setAuthInfo(Constants.ADMIN_ID);
 				AuthInfoStore.setTeamID(null);
-				list.set(1,USER_ID);
+				list.set(1, Constants.ADMIN_ID);
 				logTool.write(list);
 
-				return  super.preHandle(request, response, handler);
+				return super.preHandle(request, response, handler);
 			}
 
-			if(subUrl.startsWith(Constants.URL_USER_SYNC)){
+			if (subUrl.startsWith(Constants.URL_USER_SYNC)) {
 				//usersynccallback
 
-				DeviceSupplier supplier= null;
+				DeviceSupplier supplier = null;
 				try {
 					supplier = supplierDao.getSupplierByID(token);
-				}catch(ObjectNotFoundException e) {
+				} catch (ObjectNotFoundException e) {
 					log.debug(e.getMessage(), e);
-					throw new PortalException(ErrorCode.INVALID_TOKEN,HttpStatus.UNAUTHORIZED);
+					throw new PortalException(ErrorCode.INVALID_TOKEN, HttpStatus.UNAUTHORIZED);
 				}
 
 				AuthInfoStore.setAuthInfo(supplier.getId());
-			}else if(subUrl.startsWith(CallbackNames.CALLBACK_URL)){
+			} else if (subUrl.startsWith(CallbackNames.CALLBACK_URL)) {
 				//trigger app callvback
 
-				String appID=request.getHeader(Constants.HEADER_KII);
+				String appID = request.getHeader(Constants.HEADER_KII);
 
-				if(!appInfoManager.verifyAppToken(appID,token)){
+				if (!appInfoManager.verifyAppToken(appID, token)) {
 					throw new PortalException(ErrorCode.INVALID_INPUT, HttpStatus.UNAUTHORIZED);
 				}
 				AuthInfoStore.setAuthInfo(appID);
 
-			}else if(subUrl.startsWith("/3rdparty")) {
+			} else if (subUrl.startsWith("/3rdparty")) {
 
 
 				//TODO:add verify to 3rdparty token.
 				AuthInfoStore.setAuthInfo("3rdparty");
-			}else{
+			} else {
 
 
-				AuthInfo authInfo = authManager.validateAndBindUserToken(token,request.getMethod(),subUrl);
+				AuthInfo authInfo = authManager.validateAndBindUserToken(token, request.getMethod(), subUrl);
 
 				list.set(1, authInfo.getUserID());
 
@@ -171,25 +167,25 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 			}
 
 			list.add("authSuccess");
-		}catch(PortalException e){
+		} catch (PortalException e) {
 			list.add("UnauthorizedAccess");
 			logTool.write(list);
 			throw e;
 		}
-		list.set(1,AuthInfoStore.getUserID());
+		list.set(1, AuthInfoStore.getUserID());
 		logTool.write(list);
 
 		return super.preHandle(request, response, handler);
 
-    }
+	}
 
-    @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+	@Override
+	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
 //        authManager.unbindUserToken();
 		AuthInfoStore.clear();
 		appInfoResolver.clearAll();
 		super.afterCompletion(request, response, handler, ex);
-    }
+	}
 
 	private void logRequest(HttpServletRequest request) {
 		log.info("############### API Request ###############");
@@ -198,7 +194,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
 		StringBuffer param = new StringBuffer();
 		Enumeration<String> paramNames = request.getParameterNames();
-		while(paramNames.hasMoreElements()) {
+		while (paramNames.hasMoreElements()) {
 			String name = paramNames.nextElement();
 			String value = request.getParameter(name);
 			param.append(" <").append(name).append("=").append(value).append(">");
@@ -207,7 +203,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
 		StringBuffer header = new StringBuffer();
 		Enumeration<String> headerNames = request.getHeaderNames();
-		while(headerNames.hasMoreElements()) {
+		while (headerNames.hasMoreElements()) {
 			String name = headerNames.nextElement();
 			String value = request.getHeader(name);
 			header.append(" <").append(name).append("=").append(value).append(">");
@@ -225,7 +221,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 	 * @param handler
 	 * @return
 	 * @throws IOException
-     */
+	 */
 	private void handleCORSMethodOptions(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
 
 		// Add HTML5 CORS headers

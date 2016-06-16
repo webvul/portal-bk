@@ -24,9 +24,11 @@ public class TestSearchManager {
 		thing.setKiiAppID("f3a8dd68");
 		long startDate = 1462865748745L;
 		long endDate = 1463484501724L;
+		String operatorField = "avg";
 		String intervalField = "1m";
 		String[] avgFields = new String[]{"humidiy", "temprature"};
-		String queryString = manager.queryBuilder(thing.getVendorThingID(), startDate, endDate, intervalField, avgFields);
+		String queryString = manager.queryBuilder(thing.getVendorThingID(), startDate, endDate, intervalField, operatorField,
+				avgFields);
 		System.out.println(queryString);
 		System.out.println(manager.search(thing, queryString));
 	}

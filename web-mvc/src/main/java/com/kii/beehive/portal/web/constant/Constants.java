@@ -6,7 +6,7 @@ public class Constants {
 	public static final String SUPER_TOKEN = "super_token";
 	public static final String HEADER_BEARER = "Bearer ";
 	public static final String HEADER_KII = "x-kii-appid";
-	
+
 	public static final String URL_PREFIX = "/api/";
 	public static final String URL_OAUTH2 = "/oauth2";
 	public static final String URL_OAUTH2_REGISTER = "/oauth2/register";
@@ -14,7 +14,7 @@ public class Constants {
 	public static final String URL_USER = "/users";
 	public static final String URL_USER_SYNC = "/usersync";
 
-	
-	public static final String HTTP_METHOD_OPTIONS = "OPTIONS";
 
+	public static final String HTTP_METHOD_OPTIONS = "OPTIONS";
+	public static final String ADMIN_ID = "211102";
 }

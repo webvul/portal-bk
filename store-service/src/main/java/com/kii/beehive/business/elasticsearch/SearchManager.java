@@ -56,7 +56,8 @@ public class SearchManager {
 		return "";
 	}
 
-	public String queryBuilder(String venderThingID, long startDate, long endDate, String intervalField, String[] avgFields) {
+	public String queryBuilder(String venderThingID, long startDate, long endDate, String intervalField, String
+			operatorField, String[] avgFields) {
 		String dateField = "_modified";
 		String termField = "target";
 
@@ -64,7 +65,7 @@ public class SearchManager {
 		for (String avgField : avgFields) {
 			if (avgFieldSb.length() > 0)
 				avgFieldSb.append(",");
-			avgFieldSb.append("\"avg_").append(avgField).append("\" : {\"avg\": { \"field\": \"state.actionResults.").append(avgField).append("\"}}");
+			avgFieldSb.append("\"").append(avgField).append("\" : {\"").append(operatorField).append("\": { \"field\": \"state.actionResults.").append(avgField).append("\"}}");
 		}
 
 		StringBuilder sb = new StringBuilder();
