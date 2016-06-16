@@ -1,17 +1,17 @@
 package com.kii.beehive.business.manager;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
+import com.kii.beehive.business.service.ThingIFInAppService;
+import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.common.utils.CollectUtils;
+import com.kii.beehive.portal.exception.EntryNotFoundException;
+import com.kii.beehive.portal.exception.UnauthorizedException;
+import com.kii.beehive.portal.jdbc.dao.*;
+import com.kii.beehive.portal.jdbc.entity.*;
+import com.kii.beehive.portal.service.AppInfoDao;
+import com.kii.beehive.portal.service.BeehiveUserDao;
+import com.kii.beehive.portal.store.entity.BeehiveUser;
+import com.kii.beehive.portal.store.entity.KiiAppInfo;
+import com.kii.extension.sdk.exception.ObjectNotFoundException;
 import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,41 +19,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kii.beehive.business.service.ThingIFInAppService;
-import com.kii.beehive.portal.auth.AuthInfoStore;
-import com.kii.beehive.portal.common.utils.CollectUtils;
-import com.kii.beehive.portal.exception.EntryNotFoundException;
-import com.kii.beehive.portal.exception.UnauthorizedException;
-import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
-import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
-import com.kii.beehive.portal.jdbc.dao.TagGroupRelationDao;
-import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
-import com.kii.beehive.portal.jdbc.dao.TagThingRelationDao;
-import com.kii.beehive.portal.jdbc.dao.TagUserRelationDao;
-import com.kii.beehive.portal.jdbc.dao.TeamDao;
-import com.kii.beehive.portal.jdbc.dao.TeamTagRelationDao;
-import com.kii.beehive.portal.jdbc.dao.TeamThingRelationDao;
-import com.kii.beehive.portal.jdbc.dao.ThingUserGroupRelationDao;
-import com.kii.beehive.portal.jdbc.dao.ThingUserRelationDao;
-import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
-import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
-import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
-import com.kii.beehive.portal.jdbc.entity.TagGroupRelation;
-import com.kii.beehive.portal.jdbc.entity.TagIndex;
-import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
-import com.kii.beehive.portal.jdbc.entity.TagType;
-import com.kii.beehive.portal.jdbc.entity.TagUserRelation;
-import com.kii.beehive.portal.jdbc.entity.Team;
-import com.kii.beehive.portal.jdbc.entity.TeamTagRelation;
-import com.kii.beehive.portal.jdbc.entity.TeamThingRelation;
-import com.kii.beehive.portal.jdbc.entity.ThingUserGroupRelation;
-import com.kii.beehive.portal.jdbc.entity.ThingUserRelation;
-import com.kii.beehive.portal.jdbc.entity.UserGroup;
-import com.kii.beehive.portal.service.AppInfoDao;
-import com.kii.beehive.portal.service.BeehiveUserDao;
-import com.kii.beehive.portal.store.entity.BeehiveUser;
-import com.kii.beehive.portal.store.entity.KiiAppInfo;
-import com.kii.extension.sdk.exception.ObjectNotFoundException;
+import java.util.*;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Component
 @Transactional
@@ -121,12 +89,12 @@ public class TagThingManager {
 
 		// check whether Kii App ID is existing
 		if (kiiAppInfo == null) {
-			throw  EntryNotFoundException.appNotFound(thingInfo.getKiiAppID());
+			throw EntryNotFoundException.appNotFound(thingInfo.getKiiAppID());
 		}
 
 		// check whether Kii App ID is Master App
 		if (kiiAppInfo.getMasterApp()) {
-			throw  EntryNotFoundException.thingNotFound(thingInfo.getId());
+			throw EntryNotFoundException.thingNotFound(thingInfo.getId());
 		}
 
 
@@ -280,7 +248,7 @@ public class TagThingManager {
 		try {
 			thingIFInAppService.removeThing(fullKiiThingID);
 		} catch (com.kii.extension.sdk.exception.ObjectNotFoundException e) {
-			throw  EntryNotFoundException.thingNotFound(fullKiiThingID);
+			throw EntryNotFoundException.thingNotFound(fullKiiThingID);
 		}
 	}
 
@@ -343,6 +311,10 @@ public class TagThingManager {
 
 	public List<GlobalThingInfo> getThingsByVendorThingIds(Collection<String> vendorThingIds) {
 		return globalThingDao.getThingsByVendorIDArray(vendorThingIds).orElse(Collections.emptyList());
+	}
+
+	public GlobalThingInfo getThingsByVendorThingId(String vendorThingId) {
+		return globalThingDao.getThingByVendorThingID(vendorThingId);
 	}
 
 	public List<TagIndex> findTagIndexByGlobalThingID(Long globalThingID) {
@@ -559,7 +531,7 @@ public class TagThingManager {
 		if (null == userGroups || !userGroups.stream().map(UserGroup::getId).collect(Collectors.toSet()).
 				containsAll(userGroupIds)) {
 			userGroupIds.removeAll(userGroups.stream().map(UserGroup::getId).collect(Collectors.toList()));
-			throw  EntryNotFoundException.userGroupNotFound(userGroupIds);
+			throw EntryNotFoundException.userGroupNotFound(userGroupIds);
 		}
 		return userGroups;
 	}
@@ -570,7 +542,7 @@ public class TagThingManager {
 		List<Long> userGroupIds = userGroupDao.findUserGroupIds(idSet).orElse(Collections.emptyList());
 		if (idSet.size() != userGroupIds.size()) {
 			idSet.removeAll(userGroupIds);
-				throw  EntryNotFoundException.userGroupNotFound(userGroupIds);
+			throw EntryNotFoundException.userGroupNotFound(userGroupIds);
 
 		}
 		return userGroupIds;
@@ -584,8 +556,7 @@ public class TagThingManager {
 		return globalThingDao.findThingTypesWithThingCount(getAccessibleThingIds(user)).orElse(Collections.emptyList());
 	}
 
-	public List<String> getTypesOfAccessibleThingsByTagFullName(String user, Set<String> fullTagNames)
-			 {
+	public List<String> getTypesOfAccessibleThingsByTagFullName(String user, Set<String> fullTagNames) {
 		List<Long> tagIds = tagUserRelationDao.findTagIds(user).orElse(Collections.emptyList());
 		tagIds = tagIndexDao.findTagIdsByIDsAndFullname(tagIds, fullTagNames).orElse(Collections.emptyList());
 		if (tagIds.size() != fullTagNames.size()) {
@@ -619,6 +590,7 @@ public class TagThingManager {
 
 		throw EntryNotFoundException.thingNotFound(thingId);
 	}
+
 	public GlobalThingInfo getCanUpdateThingById(String userId, Long thingId) throws ObjectNotFoundException {
 		if (null != thingUserRelationDao.find(thingId, userId)) { // must be creator
 			GlobalThingInfo thingInfo = globalThingDao.findByID(thingId);
@@ -626,8 +598,8 @@ public class TagThingManager {
 				return thingInfo;
 			}
 		}
-		UnauthorizedException  excep= new UnauthorizedException(UnauthorizedException.NOT_THING_CREATOR);
-		excep.addParam("user",userId);
+		UnauthorizedException excep = new UnauthorizedException(UnauthorizedException.NOT_THING_CREATOR);
+		excep.addParam("user", userId);
 		throw excep;
 	}
 
