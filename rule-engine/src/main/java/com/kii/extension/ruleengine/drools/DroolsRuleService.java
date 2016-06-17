@@ -30,6 +30,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.kii.extension.ruleengine.drools.entity.CurrThing;
+import com.kii.extension.ruleengine.drools.entity.ExternalCollect;
+import com.kii.extension.ruleengine.drools.entity.ExternalValues;
 
 @Component
 @Scope(scopeName= ConfigurableBeanFactory.SCOPE_PROTOTYPE)
@@ -47,10 +49,13 @@ public class DroolsRuleService {
 	private final Map<String,FactHandle> handleMap=new ConcurrentHashMap<>();
 	private final Set<String> pathSet=new HashSet<>();
 
-
 	private final FactHandle  currThingHandler;
+	private final FactHandle  externalHandler;
 
-	private CurrThing currThing=new CurrThing();
+
+	private final CurrThing currThing=new CurrThing();
+
+	private final ExternalCollect  external=new ExternalCollect();
 
 	public void setCurrThingID(String thingID){
 		this.currThing.setThing(thingID);
@@ -159,6 +164,9 @@ public class DroolsRuleService {
 
 		currThing.setThing("NONE");
 		currThingHandler=kieSession.insert(currThing);
+
+		externalHandler=kieSession.insert(external);
+
 		handleMap.clear();
 	}
 
@@ -264,6 +272,15 @@ public class DroolsRuleService {
 		getSession().setGlobal(name,key);
 	}
 
+	public void addOrUpdateExternal(ExternalValues entity){
+
+		external.putEntity(entity.getName(),entity);
+
+		getSession().update(externalHandler,external);
+
+	}
+
+
 	public void addOrUpdateData(Object entity){
 
 
@@ -313,6 +330,8 @@ public class DroolsRuleService {
 			handleMap.remove(entityKey);
 		}
 	}
+
+
 	public void removeFact(Object obj) {
 		String entityKey = getEntityKey(obj);
 		FactHandle handler=handleMap.get(entityKey);

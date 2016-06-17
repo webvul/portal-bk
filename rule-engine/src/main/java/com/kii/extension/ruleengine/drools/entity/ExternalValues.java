@@ -28,6 +28,10 @@ public class ExternalValues {
 		this.values = values;
 	}
 
+	public void addValue(String key,Object value){
+		values.put(key,value);
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
@@ -39,5 +43,17 @@ public class ExternalValues {
 	@Override
 	public int hashCode() {
 		return Objects.hash(name);
+	}
+	
+	public ExternalValues merge(ExternalValues newV) {
+
+		values.putAll(newV.getValues());
+
+		return this;
+	}
+	
+	public Object getValue(String name) {
+
+		return values.get(name);
 	}
 }

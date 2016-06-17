@@ -62,7 +62,7 @@ public class TestGroupTrigger extends TestInit {
 
 		Set<String> thingIDs=tagService.getKiiThingIDs(selector);
 
-		engine.createGroupTrigger(thingIDs,record);
+		engine.createGroupTrigger(record,thingIDs);
 
 		sendGoodThingStatus(thingIDs.iterator().next());
 
@@ -117,7 +117,7 @@ public class TestGroupTrigger extends TestInit {
 
 		Set<String> thingIDs=tagService.getKiiThingIDs(selector);
 
-		engine.createGroupTrigger(thingIDs,record);
+		engine.createGroupTrigger(record,thingIDs);
 
 		thingIDs.forEach(id->sendBadThingStatus(id));
 
@@ -176,7 +176,7 @@ public class TestGroupTrigger extends TestInit {
 
 		Set<String> thingIDs=tagService.getKiiThingIDs(selector);
 
-		engine.createGroupTrigger(thingIDs,record);
+		engine.createGroupTrigger(record,thingIDs);
 
 		thingIDs.forEach(id->sendBadThingStatus(id));
 
@@ -230,7 +230,7 @@ public class TestGroupTrigger extends TestInit {
 
 		Set<String> thingIDs=tagService.getKiiThingIDs(selector);
 
-		engine.createGroupTrigger(thingIDs,record);
+		engine.createGroupTrigger(record,thingIDs);
 
 		thingIDs.forEach(id->sendBadThingStatus(id));
 

@@ -1,5 +1,7 @@
 package com.kii.extension.ruleengine.template;
 
+import java.util.ArrayList;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -59,16 +61,16 @@ public class TestTemplateGeneral {
 		predicate.setCondition(condition);
 		predicate.setSchedule(prefix);
 
-		log.info(general.generDrlConfig("abcSchedule", TriggerType.simple,predicate));
+		log.info(general.generDrlConfig("abcSchedule", TriggerType.simple,predicate,new ArrayList<>()));
 
 		predicate.setSchedule(null);
 
-		log.info(general.generDrlConfig("abc", TriggerType.simple,predicate));
+		log.info(general.generDrlConfig("abc", TriggerType.simple,predicate,new ArrayList<>()));
 
-		log.info(general.generDrlConfig("abc", TriggerType.summary,predicate));
+		log.info(general.generDrlConfig("abc", TriggerType.summary,predicate,new ArrayList<>()));
 
 		predicate.setSchedule(prefix);
-		log.info(general.generDrlConfig("abcSchedule", TriggerType.summary,predicate));
+		log.info(general.generDrlConfig("abcSchedule", TriggerType.summary,predicate,new ArrayList<>()));
 
 
 		log.info(general.generGroupDrlConfig("abcGroup", TriggerGroupPolicyType.Any,predicate));
@@ -82,7 +84,7 @@ public class TestTemplateGeneral {
 
 		predicate.setCondition(null);
 
-		log.info(general.generDrlConfig("schedule", TriggerType.simple,predicate));
+		log.info(general.generDrlConfig("schedule", TriggerType.simple,predicate,new ArrayList<>()));
 
 
 

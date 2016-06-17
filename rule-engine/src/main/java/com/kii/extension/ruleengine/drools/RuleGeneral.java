@@ -16,6 +16,7 @@ import org.springframework.util.StringUtils;
 
 import com.kii.beehive.portal.common.utils.StrTemplate;
 import com.kii.extension.ruleengine.drools.entity.TriggerType;
+import com.kii.extension.ruleengine.store.trigger.CommandParam;
 import com.kii.extension.ruleengine.store.trigger.Condition;
 import com.kii.extension.ruleengine.store.trigger.CronPrefix;
 import com.kii.extension.ruleengine.store.trigger.Express;
@@ -45,6 +46,9 @@ public class RuleGeneral {
 
 	@Autowired
 	private ResourceLoader  loader;
+
+	@Autowired
+	private ExpressConvert  convert;
 
 	private String loadTemplate(String name)  {
 
@@ -209,7 +213,7 @@ end
 
 
 
-	public String generDrlConfig(String triggerID, TriggerType type, RuleEnginePredicate predicate){
+	public String generDrlConfig(String triggerID, TriggerType type, RuleEnginePredicate predicate, List<CommandParam> paramList){
 
 
 		Map<String,String> params=new HashMap<>();
@@ -229,6 +233,8 @@ end
 			template=loadTemplate(type.name());
 		}
 
+		params.put("paramList",getParamMappingList(paramList));
+
 		params.put("triggerID",triggerID);
 		params.put("express",generExpress(predicate));
 
@@ -236,6 +242,29 @@ end
 
 		log.info(triggerID+"\n"+fullDrl);
 		return fullDrl;
+	}
+
+	private static String ParamBindTemplate="result.setParam(${0},${1}); \n";
+
+	private String getParamMappingList(List<CommandParam>  paramList){
+
+
+		/*
+			MatchResult result=new MatchResult($thingID);
+	result.setParam("a",$status.getValue("foo"));
+	result.setParam("b",$status.getValue("bar"));
+	result.setDelay($status.getValue("delay"));
+		 */
+		StringBuilder sb=new StringBuilder();
+
+		paramList.forEach((param)->{
+
+			String result=StrTemplate.gener(ParamBindTemplate,param.getName(),convert.convertRightExpress(param.getExpress()));
+
+			sb.append(result);
+		});
+
+		return sb.toString();
 	}
 
 

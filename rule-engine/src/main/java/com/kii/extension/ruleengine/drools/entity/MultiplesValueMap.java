@@ -35,6 +35,22 @@ public class MultiplesValueMap {
 		return valueMap;
 	}
 
+	public Object getValue(String key){
+		return valueMap.get(key);
+	}
+
+
+	public Object getNumValue(String key){
+		Object val= valueMap.get(key);
+		if(val==null){
+			return 0;
+		}else if(val instanceof  String) {
+			return Double.parseDouble((String)val);
+		}else{
+			return val;
+		}
+	}
+
 	public String getTriggerID() {
 		return triggerID;
 	}

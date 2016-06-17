@@ -18,6 +18,7 @@ public class Trigger {
 
 	private boolean isStream=false;
 
+
 	public Trigger(String triggerID){
 
 		this.triggerID=triggerID;

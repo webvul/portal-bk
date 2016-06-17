@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.kii.extension.ruleengine.drools.entity.ExternalValues;
 import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
 
 public class TestExtend extends InitTest{
@@ -28,6 +29,11 @@ public class TestExtend extends InitTest{
 		ruleLoader.addCondition("ruleResult",getDrlContent("ruleResult"));
 		ruleLoader.fireCondition();
 		ruleLoader.addOrUpdateData(status);
+
+		ExternalValues  ext=new ExternalValues("name");
+		ext.addValue("abc",3);
+
+		ruleLoader.addOrUpdateExternal(ext);
 
 		ruleLoader.fireCondition();
 

@@ -8,12 +8,18 @@ import com.kii.extension.ruleengine.drools.entity.*;
 
 rule "${triggerID} user custom segment:simple"
 when
+    $ext:ExternalCollect()
     Trigger( $triggerID:triggerID, (triggerID=="${triggerID}" && enable==true &&  type ==TriggerType.simple ) )
     Thing($thingID:thingID,$triggerID==$triggerID)
     CurrThing(thing == $thingID)
-    ThingStatusInRule(thingID == $thingID,${express}  )
+    $status:ThingStatusInRule(thingID == $thingID,${express}  )
 then
-	insertLogical(new MatchResult($triggerID));
+
+	MatchResult result=new MatchResult($thingID);
+
+	${fillParam}
+
+	insertLogical(result);
 end
 
 

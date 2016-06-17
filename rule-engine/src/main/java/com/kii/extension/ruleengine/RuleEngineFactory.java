@@ -66,8 +66,8 @@ public class RuleEngineFactory {
 
 		DroolsRuleService droolsService= new DroolsRuleService(false,
 				getDrlContent("triggerComm"),
-				getDrlContent("groupPolicy"),
-				getDrlContent("summaryCompute"),
+//				getDrlContent("groupPolicy"),
+//				getDrlContent("summaryCompute"),
 				getDrlContent("multipleSummary"),
 				getDrlContent("multipleComm")
 		);
@@ -83,8 +83,8 @@ public class RuleEngineFactory {
 
 		DroolsRuleService droolsService= new DroolsRuleService(true,
 				getDrlContent("triggerComm"),
-				getDrlContent("groupPolicy"),
-				getDrlContent("summaryCompute"),
+//				getDrlContent("groupPolicy"),
+//				getDrlContent("summaryCompute"),
 				getDrlContent("multipleSummary"),
 				getDrlContent("multipleComm")
 		)

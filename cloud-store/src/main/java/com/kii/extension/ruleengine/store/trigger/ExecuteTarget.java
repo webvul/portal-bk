@@ -1,5 +1,8 @@
 package com.kii.extension.ruleengine.store.trigger;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 
@@ -7,6 +10,9 @@ public class ExecuteTarget {
 
 
 	private TagSelector selector;
+
+	private TargetAction command;
+
 
 	@JsonUnwrapped
 	public TagSelector getSelector() {
@@ -16,7 +22,6 @@ public class ExecuteTarget {
 	public void setSelector(TagSelector selector) {
 		this.selector = selector;
 	}
-	private TargetAction command;
 
 
 	@JsonUnwrapped

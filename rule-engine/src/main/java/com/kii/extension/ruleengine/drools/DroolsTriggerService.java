@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import com.kii.extension.ruleengine.drools.entity.ExternalValues;
 import com.kii.extension.ruleengine.drools.entity.MatchResult;
 import com.kii.extension.ruleengine.drools.entity.MultiplesValueMap;
+import com.kii.extension.ruleengine.drools.entity.ResultParam;
 import com.kii.extension.ruleengine.drools.entity.Summary;
 import com.kii.extension.ruleengine.drools.entity.SummaryValueMap;
 import com.kii.extension.ruleengine.drools.entity.ThingCol;
@@ -70,11 +71,17 @@ public class DroolsTriggerService {
 
 	}
 
-	public void addTrigger(Trigger triggerInput,String ruleContent){
+	public void addTrigger(Trigger triggerInput,String ruleContent,boolean withSchedule){
 
 
 		Trigger trigger=new Trigger(triggerInput);
 		triggerMap.put(trigger.getTriggerID(),trigger);
+
+		if(withSchedule){
+			ResultParam param=new ResultParam(trigger.getTriggerID());
+
+			getService(trigger).addOrUpdateData(param);
+		}
 
 
 		getService(trigger).addCondition("rule"+trigger.getTriggerID(),ruleContent);
@@ -83,13 +90,19 @@ public class DroolsTriggerService {
 
 	}
 
-	public void addMultipleTrigger(Trigger triggerInput,String ruleContent){
+	public void addMultipleTrigger(Trigger triggerInput,String ruleContent,boolean withSchedule){
 		Trigger trigger=new Trigger(triggerInput);
 		triggerMap.put(trigger.getTriggerID(),trigger);
 
 		getService(trigger).addCondition("rule"+trigger.getTriggerID(),ruleContent);
 
 		getService(trigger).addOrUpdateData(trigger);
+
+
+		if(withSchedule){
+			ResultParam param=new ResultParam(trigger.getTriggerID());
+			getService(trigger).addOrUpdateData(param);
+		}
 
 		MultiplesValueMap map=new MultiplesValueMap();
 		map.setTriggerID(trigger.getTriggerID());
@@ -112,7 +125,6 @@ public class DroolsTriggerService {
 		getService(trigger).addOrUpdateData(map);
 
 	}
-
 
 
 	public void addTriggerData(TriggerData data) {
@@ -216,8 +228,9 @@ public class DroolsTriggerService {
 
 	public void addExternalValue(ExternalValues newValues){
 
-		cloudService.addOrUpdateData(newValues);
-		streamService.addOrUpdateData(newValues);
+
+		cloudService.addOrUpdateExternal(newValues);
+		streamService.addOrUpdateExternal(newValues);
 
 	}
 

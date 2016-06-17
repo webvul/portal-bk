@@ -208,7 +208,7 @@ public class TriggerManager {
 	private void addGroupToEngine(GroupTriggerRecord record) {
 
 		Set<String> thingIDs = thingTagService.getKiiThingIDs(record.getSource().getSelector());
-		service.createGroupTrigger(thingIDs, record);
+		service.createGroupTrigger(record,thingIDs);
 	}
 
 	private void addSummaryToEngine(SummaryTriggerRecord record) {
@@ -226,7 +226,11 @@ public class TriggerManager {
 			thingMap.put(k, thingTagService.getKiiThingIDs(v.getSource().getSelector()));
 		});
 
-		service.createSummaryTrigger(record, thingMap, isStream.get());
+		if(isStream.get()) {
+			service.createStreamSummaryTrigger(record, thingMap);
+		}else{
+			service.createSummaryTrigger(record,thingMap);
+		}
 	}
 
 	public void disableTrigger(String triggerID) {

@@ -25,7 +25,7 @@ public abstract  class TriggerRecord extends KiiEntity {
 
 	private String triggerName;
 
-	private CustomProperty  custom=new CustomProperty();
+//	private CustomProperty  custom=new CustomProperty();
 
 	private String userID;
 
@@ -34,6 +34,9 @@ public abstract  class TriggerRecord extends KiiEntity {
 	private RuleEnginePredicate predicate;
 
 	private List<ExecuteTarget>  targets=new ArrayList<>();
+
+	private List<CommandParam> targetParamList=new ArrayList<>();
+
 
 
 	private StatusType recordStatus;
@@ -127,22 +130,32 @@ public abstract  class TriggerRecord extends KiiEntity {
 		this.triggerName = triggerName;
 	}
 
-	public CustomProperty getCustom() {
-		return custom;
+//	public CustomProperty getCustom() {
+//		return custom;
+//	}
+//
+//	public void setCustom(CustomProperty custom) {
+//		this.custom = custom;
+//	}
+//
+//	@JsonIgnore
+//	public Object getCustomProperty(String key){
+//		return custom.getCustom().get(key);
+//	}
+//
+//	@JsonIgnore
+//	public void setCustomProperty(String key,Object val){
+//		 custom.addProperty(key,val);
+//	}
+
+	public List<CommandParam> getTargetParamList() {
+		return targetParamList;
 	}
 
-	public void setCustom(CustomProperty custom) {
-		this.custom = custom;
+	public void setTargetParamList(List<CommandParam> targetParamList) {
+		this.targetParamList = targetParamList;
 	}
 
-	@JsonIgnore
-	public Object getCustomProperty(String key){
-		return custom.getCustom().get(key);
-	}
 
-	@JsonIgnore
-	public void setCustomProperty(String key,Object val){
-		 custom.addProperty(key,val);
-	}
 
 }

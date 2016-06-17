@@ -84,7 +84,7 @@ public class TestSummaryTrigger extends  TestInit{
 		String triggerID="300";
 		record.setId(triggerID);
 
-		engine.createSummaryTrigger(record,thingMap,false);
+		engine.createSummaryTrigger(record,thingMap);
 
 		engine.enableTrigger(triggerID);
 
@@ -155,7 +155,7 @@ public class TestSummaryTrigger extends  TestInit{
 		String triggerID="301";
 		record.setId(triggerID);
 
-		engine.createSummaryTrigger(record,thingMap,true);
+		engine.createStreamSummaryTrigger(record,thingMap);
 
 		engine.enableTrigger(triggerID);
 

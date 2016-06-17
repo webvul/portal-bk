@@ -2,6 +2,8 @@ package com.kii.extension.ruleengine;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -19,14 +21,17 @@ import com.kii.extension.ruleengine.drools.entity.Thing;
 import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
 import com.kii.extension.ruleengine.drools.entity.Trigger;
 import com.kii.extension.ruleengine.drools.entity.TriggerType;
+import com.kii.extension.ruleengine.store.trigger.Condition;
 import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.SummaryFunctionType;
 import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.TriggerGroupPolicy;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.multiple.MultipleSrcTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.TriggerSource;
+import com.kii.extension.ruleengine.store.trigger.condition.All;
 import com.kii.extension.ruleengine.store.trigger.multiple.GroupSummarySource;
+import com.kii.extension.ruleengine.store.trigger.multiple.MultipleSrcTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.multiple.ThingSource;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
@@ -41,9 +46,6 @@ public class EngineService {
 	private RuleGeneral  ruleGeneral;
 
 
-//	private Set<String>  scheduleSet=new ConcurrentSkipListSet<>();
-
-
 	//TODO:need been finish
 	public void createMultipleSourceTrigger(MultipleSrcTriggerRecord record,Map<String,Set<String> > thingMap){
 
@@ -55,7 +57,7 @@ public class EngineService {
 
 		String drl=ruleGeneral.generMultipleDrlConfig(record);
 
-		droolsTriggerService.addMultipleTrigger(trigger,drl);
+		droolsTriggerService.addMultipleTrigger(trigger,drl,record.getPredicate().getSchedule()!=null);
 
 		record.getSummarySource().forEach((name,src)->{
 
@@ -100,9 +102,6 @@ public class EngineService {
 	}
 
 
-	/**
-	 * 清空 drools 相关 重新初始化
-	 */
 	public void clear(){
 		droolsTriggerService.clear();
 	}
@@ -114,17 +113,17 @@ public class EngineService {
 
 	}
 
-	public void createSummaryTrigger(SummaryTriggerRecord record, Map<String,Set<String> > summaryMap,boolean isStream){
 
+	public void createStreamSummaryTrigger(SummaryTriggerRecord record, Map<String,Set<String> > summaryMap){
 
 		Trigger trigger=new Trigger(record.getId());
 
 		trigger.setType(TriggerType.summary);
 		trigger.setWhen(record.getPredicate().getTriggersWhen());
-		trigger.setStream(isStream);
+		trigger.setStream(true);
 		trigger.setEnable(record.getRecordStatus()== TriggerRecord.StatusType.enable);
 
-		String 	rule = ruleGeneral.generDrlConfig(record.getId(), TriggerType.summary, record.getPredicate());
+		String 	rule = ruleGeneral.generDrlConfig(record.getId(), TriggerType.summary, record.getPredicate(),record.getTargetParamList());
 
 		droolsTriggerService.addSummaryTrigger(trigger,rule);
 
@@ -156,6 +155,83 @@ public class EngineService {
 		droolsTriggerService.fireCondition();
 
 	}
+
+	public void createSummaryTrigger(SummaryTriggerRecord record,Map<String,Set<String> > summaryMap){
+
+		MultipleSrcTriggerRecord convertRecord=new MultipleSrcTriggerRecord();
+		convertRecord.setId(record.getId());
+		convertRecord.setPreparedCondition(record.getPreparedCondition());
+		convertRecord.setTargetParamList(record.getTargetParamList());
+		convertRecord.setPredicate(record.getPredicate());
+
+		Map<String,Set<String>> thingMap=new HashMap<>();
+
+		record.getSummarySource().forEach((k,v)->{
+
+			TriggerSource  source=v.getSource();
+
+			v.getExpressList().forEach((exp)->{
+
+				GroupSummarySource  elem=new GroupSummarySource();
+
+				elem.setFunction(exp.getFunction());
+				elem.setStateName(exp.getStateName());
+				elem.setSource(source);
+
+				String index=k+"."+exp.getSummaryAlias();
+				convertRecord.addSource(index,elem);
+				thingMap.put(index,summaryMap.get(k));
+
+			});
+		});
+
+		this.createMultipleSourceTrigger(convertRecord,thingMap);
+	}
+
+	public void createGroupTrigger(GroupTriggerRecord record,Collection<String> thingIDs){
+
+		MultipleSrcTriggerRecord convertRecord=new MultipleSrcTriggerRecord();
+		convertRecord.setId(record.getId());
+		convertRecord.setPreparedCondition(record.getPreparedCondition());
+		convertRecord.setTargetParamList(record.getTargetParamList());
+
+		Condition cond=new All();
+		switch(record.getPolicy().getGroupPolicy()){
+			//	Any,All,Some,Percent,None;
+
+			case All:
+				cond=TriggerConditionBuilder.newCondition().equal("comm",thingIDs.size()).getConditionInstance();
+				break;
+			case Any:
+				cond=TriggerConditionBuilder.newCondition().greatAndEq("comm",1).getConditionInstance();
+				break;
+			case Some:
+				cond=TriggerConditionBuilder.newCondition().greatAndEq("comm",record.getPolicy().getCriticalNumber()).getConditionInstance();
+				break;
+			case Percent:
+				int percent=(record.getPolicy().getCriticalNumber()*thingIDs.size())/100;
+				cond=TriggerConditionBuilder.newCondition().equal("comm",percent).getConditionInstance();
+				break;
+			case None:
+				cond=TriggerConditionBuilder.newCondition().equal("comm",0).getConditionInstance();
+		}
+		RuleEnginePredicate predicate=new RuleEnginePredicate();
+		predicate.setCondition(cond);
+		convertRecord.setPredicate(predicate);
+
+		Map<String,Set<String>> thingMap=new HashMap<>();
+		thingMap.put("comm",new HashSet<>(thingIDs));
+
+		GroupSummarySource  elem=new GroupSummarySource();
+
+		elem.setFunction(SummaryFunctionType.count);
+		elem.setCondition(record.getPredicate().getCondition());
+		elem.setSource(record.getSource());
+
+		this.createMultipleSourceTrigger(convertRecord,thingMap);
+	}
+
+	/*
 
 	public void createGroupTrigger(Collection<String> thingIDs, GroupTriggerRecord record){
 
@@ -190,6 +266,7 @@ public class EngineService {
 		droolsTriggerService.fireCondition();
 
 	}
+	*/
 
 
 	public void  createSimpleTrigger(String thingID, SimpleTriggerRecord record)  {
@@ -198,17 +275,15 @@ public class EngineService {
 
 		Trigger trigger=new Trigger(triggerID);
 
-
-
 		trigger.setType(TriggerType.simple);
 		trigger.setStream(false);
 		trigger.setWhen(record.getPredicate().getTriggersWhen());
 
 		trigger.setEnable(TriggerRecord.StatusType.enable == record.getRecordStatus());
 
-		String rule=ruleGeneral.generDrlConfig(triggerID,TriggerType.simple,record.getPredicate());
+		String rule=ruleGeneral.generDrlConfig(triggerID,TriggerType.simple,record.getPredicate(),record.getTargetParamList());
 
-		droolsTriggerService.addTrigger(trigger,rule);
+		droolsTriggerService.addTrigger(trigger,rule,record.getPredicate().getSchedule()!=null);
 
 		if(!StringUtils.isEmpty(thingID)) {
 			Thing thing=new Thing();
@@ -217,6 +292,8 @@ public class EngineService {
 			thing.setName("comm");
 			droolsTriggerService.addTriggerData(thing);
 		}
+
+
 
 		droolsTriggerService.fireCondition();
 
@@ -273,41 +350,12 @@ public class EngineService {
 
 	}
 
-//	public static   class ThingInfo{
-//
-//		private String thingID;
-//
-//		private ThingStatus status;
-//
-//		private Date date;
-//
-//		public ThingStatusInRule getThingStatusInRule(){
-//
-//
-//			return newStatus;
-//		}
-//
-//		public void setThingID(String thingID) {
-//			this.thingID = thingID;
-//		}
-//
-//
-//		public void setStatus(ThingStatus status) {
-//			this.status = status;
-//		}
-//
-//		public void setDate(Date date) {
-//			this.date = date;
-//		}
-//	}
 	
 	public void disableTrigger(String triggerID) {
 
 		droolsTriggerService.disableTrigger(triggerID);
 
 	}
-
-
 
 
 	public void enableTrigger(String triggerID) {

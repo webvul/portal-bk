@@ -148,7 +148,7 @@ public class RuleEngineConsole {
 
 					record.setPolicy(policy);
 
-					engine.createGroupTrigger(Arrays.asList(thingIDs),record);
+					engine.createGroupTrigger(record,Arrays.asList(thingIDs));
 				}
 
 				if(cmd.equals("dump")){
