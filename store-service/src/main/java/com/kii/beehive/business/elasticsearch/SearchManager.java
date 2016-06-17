@@ -40,9 +40,7 @@ public class SearchManager {
 			HttpEntity entity = httpResponse.getEntity();
 
 			if (entity != null) {
-				ObjectMapper mapper = new ObjectMapper();
-				JsonNode actualObj = mapper.readTree(EntityUtils.toString(entity));
-				return actualObj.get("aggregations").get("time_buckets").toString();
+				return EntityUtils.toString(entity);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -56,7 +54,29 @@ public class SearchManager {
 		return "";
 	}
 
-	public String queryBuilder(String venderThingID, long startDate, long endDate, String intervalField, String
+	public String extractResultForAggs(String result) {
+		ObjectMapper mapper = new ObjectMapper();
+		JsonNode actualObj = null;
+		try {
+			actualObj = mapper.readTree(result);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return actualObj.get("aggregations").get("time_buckets").toString();
+	}
+
+	public String extractResultForHistorical(String result) throws IOException {
+		ObjectMapper mapper = new ObjectMapper();
+		JsonNode actualObj = null;
+		try {
+			actualObj = mapper.readTree(result);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return actualObj.get("hits").toString();
+	}
+
+	public String queryBuilderForAggs(String venderThingID, long startDate, long endDate, String intervalField, String
 			operatorField, String[] avgFields) {
 		String dateField = "_modified";
 		String termField = "target";
@@ -79,6 +99,22 @@ public class SearchManager {
 				.append("\"aggs\" : {")
 				.append(avgFieldSb)
 				.append("}}}");
+		sb.append("}");
+		return sb.toString();
+	}
+
+	public String queryBuilderForHistorical(String venderThingID, long startDate, long endDate, int size, int from) {
+		String dateField = "_modified";
+		String termField = "age";
+
+		StringBuilder sb = new StringBuilder();
+		sb.append("{\"query\" : {\"filtered\" : {")
+				.append("\"query\":{\"term\": {\"").append(termField).append("\":\"").append(venderThingID).append("\"}},")
+				.append("\"filter\": {\"range\": {\"").append(dateField).append("\": {\"gte\":").append(startDate).append(",\"lte\":").append(endDate).append("}}}}")
+				.append("},");
+		sb.append("\"size\": ").append(size).append(",");
+		sb.append("\"from\": ").append(from).append(",");
+		sb.append("\"sort\": [{ \"").append(dateField).append("\": { \"order\": \"desc\" }}]");
 		sb.append("}");
 		return sb.toString();
 	}

@@ -27,13 +27,13 @@ public class SearchController extends AbstractThingTagController {
 	protected TagThingManager thingTagManager;
 
 	/**
-	 * GET /report/historical
+	 * POST /report/historical/aggregate
 	 *
 	 * @param searchRestBean
 	 * @return
 	 */
-	@RequestMapping(value = "/historical", method = {RequestMethod.POST})
-	public String historical(@RequestBody SearchRestBean searchRestBean) {
+	@RequestMapping(value = "/historical/aggregate", method = {RequestMethod.POST})
+	public String aggregate(@RequestBody SearchRestBean searchRestBean) {
 		if (Strings.isBlank(searchRestBean.getVenderThingID()) || Strings.isBlank(searchRestBean.getIntervalField())
 				|| Strings.isBlank(searchRestBean.getOperatorField())
 				|| searchRestBean.getStartDate() == null || searchRestBean.getEndDate() == null
@@ -50,11 +50,45 @@ public class SearchController extends AbstractThingTagController {
 			thingTagManager.getAccessibleThingById(AuthInfoStore.getUserID(), thing.getId());
 		}
 
-		String queryString = searchManager.queryBuilder(searchRestBean.getVenderThingID(), searchRestBean.getStartDate(),
+		String queryString = searchManager.queryBuilderForAggs(searchRestBean.getVenderThingID(), searchRestBean.getStartDate(),
 				searchRestBean.getEndDate(), searchRestBean.getIntervalField(), searchRestBean.getOperatorField(), searchRestBean
 						.getFields());
 		String result = searchManager.search(thing, queryString);
-		return result;
+		return searchManager.extractResultForAggs(result);
+	}
+
+	/**
+	 * POST /report/historical/aggregate
+	 *
+	 * @param searchRestBean
+	 * @return
+	 */
+	@RequestMapping(value = "/historical", method = {RequestMethod.POST})
+	public String historical(@RequestBody SearchRestBean searchRestBean) {
+		if (Strings.isBlank(searchRestBean.getVenderThingID())
+				|| searchRestBean.getStartDate() == null || searchRestBean.getEndDate() == null
+				|| searchRestBean.getSize() == 0) {
+			throw new PortalException("RequiredFieldsMissing", HttpStatus.BAD_REQUEST);
+		}
+
+		if (searchRestBean.getSize() > 100) {
+			searchRestBean.setSize(100);
+		}
+
+		GlobalThingInfo thing = thingTagManager.getThingsByVendorThingId(searchRestBean.getVenderThingID());
+
+		if (thing == null) {
+			throw EntryNotFoundException.thingNotFound(searchRestBean.getVenderThingID());
+		}
+		if (!Constants.ADMIN_ID.equals(AuthInfoStore.getUserID())) {//non-admin
+			thingTagManager.getAccessibleThingById(AuthInfoStore.getUserID(), thing.getId());
+		}
+
+		String queryString = searchManager.queryBuilderForAggs(searchRestBean.getVenderThingID(), searchRestBean.getStartDate(),
+				searchRestBean.getEndDate(), searchRestBean.getIntervalField(), searchRestBean.getOperatorField(), searchRestBean
+						.getFields());
+		String result = searchManager.search(thing, queryString);
+		return searchManager.extractResultForAggs(result);
 	}
 
 

@@ -8,6 +8,8 @@ public class SearchRestBean {
 	private String intervalField;
 	private String operatorField;
 	private String[] fields;
+	private int size;
+	private int from;
 
 	public String getVenderThingID() {
 		return venderThingID;
@@ -55,5 +57,21 @@ public class SearchRestBean {
 
 	public void setOperatorField(String operatorField) {
 		this.operatorField = operatorField;
+	}
+
+	public int getSize() {
+		return size;
+	}
+
+	public void setSize(int size) {
+		this.size = size;
+	}
+
+	public int getFrom() {
+		return from;
+	}
+
+	public void setFrom(int from) {
+		this.from = from;
 	}
 }
