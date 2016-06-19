@@ -1,7 +1,26 @@
 package com.kii.beehive.portal.web.controller;
 
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertNotNull;
+import static junit.framework.TestCase.assertNull;
+import static junit.framework.TestCase.assertTrue;
+import static junit.framework.TestCase.fail;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.apache.logging.log4j.util.Strings;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kii.beehive.business.service.ThingIFInAppService;
+import com.kii.beehive.portal.common.utils.CollectUtils;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
@@ -9,19 +28,9 @@ import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagType;
 import com.kii.beehive.portal.web.WebTestTemplate;
 import com.kii.beehive.portal.web.constant.Constants;
+import com.kii.extension.sdk.entity.thingif.CommandStateType;
 import com.kii.extension.sdk.entity.thingif.OnBoardingParam;
 import com.kii.extension.sdk.entity.thingif.OnBoardingResult;
-import org.apache.logging.log4j.util.Strings;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-
-import java.util.*;
-
-import static junit.framework.TestCase.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 public class TestThingIFController extends WebTestTemplate {
@@ -53,6 +62,14 @@ public class TestThingIFController extends WebTestTemplate {
 	private List<Long> tagIDListForTests = new ArrayList<>();
 
 	private String tokenForTest = BEARER_SUPER_TOKEN;
+
+	/**
+	 * this variable is used to receive the response of some test cases, so that some other test cases can use these
+	 * response if required
+	 * the key is used to indicate the response, could be the method name of test case
+	 * the value is the response of test case
+	 */
+	private Map<String, Object> tempResponseMap = new HashMap<>();
 
 	/**
 	 * 1. add tags in displayNames
@@ -698,6 +715,8 @@ public class TestThingIFController extends WebTestTemplate {
 
 		List<List<Map<String, Object>>> list = mapper.readValue(result, List.class);
 
+		this.tempResponseMap.put("testSendCommandToThingListAndTagList", list);
+
 		System.out.println("========================================================");
 		System.out.println("Response: " + result);
 		System.out.println("========================================================");
@@ -804,6 +823,57 @@ public class TestThingIFController extends WebTestTemplate {
 		assertEquals(globalThingIDX, globalThingID);
 
 
+	}
+
+	/**
+	 * this test case is based on the result of test case "testSendCommandToThingListAndTagList",
+	 * will query the command details sent from test case "testSendCommandToThingListAndTagList"
+	 *
+	 * 1. the number of command details is expected to be the same with the commands sent in test case
+	 * "testSendCommandToThingListAndTagList"
+	 * 2. actions and command result of each command are expected to be returned
+	 *
+	 */
+	@Test
+	public void testGetCommand() throws Exception {
+		// get commands sent in test case "testSendCommandToThingListAndTagList"
+		this.testSendCommandToThingListAndTagList();
+		List<List<Map<String, Object>>> commands = (List<List<Map<String, Object>>>)this.tempResponseMap.get("testSendCommandToThingListAndTagList");
+
+		List<Map<String, Object>> request = new ArrayList<>();
+		for(List<Map<String, Object>> command : commands) {
+			request.addAll(command);
+		}
+
+		// query command details
+		String ctx = mapper.writeValueAsString(request);
+
+		String result = this.mockMvc.perform(
+				post("/thing-if/command/search").content(ctx)
+						.contentType(MediaType.APPLICATION_JSON)
+						.characterEncoding("UTF-8")
+						.header(Constants.ACCESS_TOKEN, tokenForTest)
+		)
+				.andExpect(status().isOk())
+				.andReturn().getResponse().getContentAsString();
+
+		List<Map<String, Object>> list = mapper.readValue(result, List.class);
+
+		System.out.println("========================================================");
+		System.out.println("Response: " + result);
+		System.out.println("========================================================");
+
+		// 1. the number of command details is expected to be the same with the commands sent in test case
+		// "testSendCommandToThingListAndTagList"
+		assertTrue(list.size() == request.size());
+
+		// 2. actions and command result of each command are expected to be returned
+		for(Map<String, Object> commandDetail : list) {
+			assertTrue(Strings.isNotBlank((String)commandDetail.get("commandID")));
+			assertTrue((int)commandDetail.get("globalThingID") > 0);
+			assertTrue(CollectUtils.hasElement((List)commandDetail.get("actions")));
+			assertEquals(CommandStateType.SENDING.name(), commandDetail.get("commandState"));
+		}
 	}
 
 }

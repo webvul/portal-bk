@@ -10,6 +10,7 @@ public class ErrorCode {
 	public static final String INVALID_TOKEN="INVALID_TOKEN";
 	public static final String TOKEN_MISS="TOKEN_MISS";
 	public static final String TAG_NO_PRIVATE="TAG_NO_PRIVATE";
+	public static final String THING_NO_PRIVATE="THING_NO_PRIVATE";
 	public static final String BAD_REQUEST="BAD_REQUEST";
 	public static final String DUPLICATE_OBJECT="DUPLICATE_OBJECT";
 	public static final String USERGROUP_NOTFOUND="USERGROUP_NOTFOUND";

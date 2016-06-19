@@ -7,22 +7,43 @@ import java.util.Map;
 
 public class CommandDetail extends ThingCommand {
 
-	private CommandStateType state;
+//	{
+//		"schema" : "some schema",
+//			"schemaVersion" : 1,
+//			"target" : "thing:th.aba700e36100-6698-6e11-ff53-011a1535",
+//			"commandState" : "SENDING",
+//			"issuer" : "user:aba700e36100-4558-5e11-ad5b-07aea12c",
+//			"actions" : [ {
+//					"turnPower" : {
+//						"power" : "on"
+//					}
+//				}, {
+//					"changeColor" : {
+//						"color" : "#123456"
+//					}
+//				} ],
+//		"metadata" : { },
+//		"commandID" : "5457ed80-35ff-11e6-8966-00163e007aba",
+//			"createdAt" : 1466328142936,
+//			"modifiedAt" : 1466328142936
+//	}
+
+	private CommandStateType commandState;
 
 	private List<Map<String,ActionResult>> actionResults=new ArrayList<>();
 
 	private String firedByTriggerID;
 
-	private Date created;
+	private Date createdAt;
 
-	private Date modified;
+	private Date modifiedAt;
 
-	public CommandStateType getState() {
-		return state;
+	public CommandStateType getCommandState() {
+		return commandState;
 	}
 
-	public void setState(CommandStateType state) {
-		this.state = state;
+	public void setCommandState(CommandStateType commandState) {
+		this.commandState = commandState;
 	}
 
 	public List<Map<String,ActionResult>> getActionResults() {
@@ -41,19 +62,19 @@ public class CommandDetail extends ThingCommand {
 		this.firedByTriggerID = firedByTriggerID;
 	}
 
-	public Date getCreated() {
-		return created;
+	public Date getCreatedAt() {
+		return createdAt;
 	}
 
-	public void setCreated(Date created) {
-		this.created = created;
+	public void setCreatedAt(Date createdAt) {
+		this.createdAt = createdAt;
 	}
 
-	public Date getModified() {
-		return modified;
+	public Date getModifiedAt() {
+		return modifiedAt;
 	}
 
-	public void setModified(Date modified) {
-		this.modified = modified;
+	public void setModifiedAt(Date modifiedAt) {
+		this.modifiedAt = modifiedAt;
 	}
 }

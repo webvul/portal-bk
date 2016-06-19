@@ -17,17 +17,24 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.business.service.ThingIFCommandService;
 import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.common.utils.CollectUtils;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.web.constant.ErrorCode;
+import com.kii.beehive.portal.web.entity.ThingCommandDetailRestBean;
 import com.kii.beehive.portal.web.entity.ThingCommandRestBean;
 import com.kii.beehive.portal.web.exception.PortalException;
 import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
 import com.kii.extension.ruleengine.store.trigger.TagSelector;
+import com.kii.extension.sdk.entity.thingif.CommandDetail;
 
 @RestController
 @RequestMapping(value = "/thing-if")
 public class ThingIFController extends AbstractThingTagController {
+
+	private static final String GLOBAL_THING_ID = "globalThingID";
+
+	private static final String COMMAND_ID = "commandID";
 
 	@Autowired
 	private ThingIFCommandService thingIFCommandService;
@@ -48,22 +55,14 @@ public class ThingIFController extends AbstractThingTagController {
 			if (ts != null && (!CollectionUtils.isEmpty(ts.getTagList()) || !CollectionUtils.isEmpty(ts.getThingList()))) {
 				if (!CollectionUtils.isEmpty(ts.getTagList())) {
 					List<TagIndex> tags = this.getTags(ts.getTagList());
-					tags.forEach(t -> {
-						if (!thingTagManager.isTagCreator(t) && !thingTagManager.isTagOwner(t)) {
-							throw new PortalException(ErrorCode.TAG_NO_PRIVATE,HttpStatus.UNAUTHORIZED);
-						}
-					});
+					this.checkPermissonOnTags(tags);
 				}
 
 				if (!CollectionUtils.isEmpty(ts.getThingList())) {
 					List<String> tempThingList = ts.getThingList().stream().map(String::valueOf).collect(Collectors
 							.toList());
 					List<GlobalThingInfo> things = this.getThings(tempThingList);
-					things.forEach(t -> {
-						if (!thingTagManager.isThingCreator(t) && !thingTagManager.isThingOwner(t)) {
-							throw new PortalException(ErrorCode.TAG_NO_PRIVATE,HttpStatus.UNAUTHORIZED);
-						}
-					});
+					this.checkPermissionOnThings(things);
 
 				}
 			} else {
@@ -89,8 +88,8 @@ public class ThingIFController extends AbstractThingTagController {
 			Set<Map.Entry<Long, String>> entrySet = commandResult.entrySet();
 			for (Map.Entry<Long, String> entry : entrySet) {
 				HashMap<String, Object> map = new HashMap<>();
-				map.put("globalThingID", entry.getKey());
-				map.put("commandID", entry.getValue());
+				map.put(GLOBAL_THING_ID, entry.getKey());
+				map.put(COMMAND_ID, entry.getValue());
 
 				subResponseList.add(map);
 			}
@@ -100,6 +99,82 @@ public class ThingIFController extends AbstractThingTagController {
 
 		return responseList;
 	}
+
+	/**
+	 * get command details
+	 *
+	 * @param searchList
+	 * @return
+	 */
+	@RequestMapping(value = "/command/search", method = {RequestMethod.POST})
+	public List<ThingCommandDetailRestBean> getCommand(@RequestBody List<Map<String, Object>> searchList) {
+
+		List<ThingCommandDetailRestBean> responseList = new ArrayList<>();
+
+		// if no search list, return empty result
+		if(!CollectUtils.hasElement(searchList)){
+			return responseList;
+		}
+
+		// check permission
+		List<Long> tempThingList = new ArrayList<>();
+		for (Map<String, Object> search : searchList) {
+			tempThingList.add(((Integer) search.get(GLOBAL_THING_ID)).longValue());
+		}
+
+		List<GlobalThingInfo> things = thingTagManager.getThingsByIds(tempThingList);
+		this.checkPermissionOnThings(things);
+
+		// get command details of each pair of global thing id and command id
+		for (GlobalThingInfo thing : things) {
+			String commandID = (String)searchList.stream().filter((search) -> ((Integer)search.get(GLOBAL_THING_ID)).longValue()
+					== thing
+					.getId()).findFirst().get().get(COMMAND_ID);
+
+			CommandDetail commandDetail = thingIFCommandService.readCommand(thing, commandID);
+			ThingCommandDetailRestBean restBean = new ThingCommandDetailRestBean(thing, commandID, commandDetail);
+			responseList.add(restBean);
+		}
+
+		return responseList;
+	}
+
+	/**
+	 * throw UNAUTHORIZED exception if neither creator nor owner of any tag
+	 * @param tags
+	 */
+	private void checkPermissonOnTags(List<TagIndex> tags) {
+
+		if(!CollectUtils.hasElement(tags)){
+			return;
+		}
+
+		tags.forEach(t -> {
+			if (!thingTagManager.isTagCreator(t) && !thingTagManager.isTagOwner(t)) {
+				throw new PortalException(ErrorCode.TAG_NO_PRIVATE,HttpStatus.UNAUTHORIZED);
+			}
+		});
+
+	}
+
+	/**
+	 * throw UNAUTHORIZED exception if neither creator nor owner of any thing
+	 * @param things
+	 */
+	private void checkPermissionOnThings(List<GlobalThingInfo> things) {
+
+		if(!CollectUtils.hasElement(things)){
+			return;
+		}
+
+		things.forEach(t -> {
+			if (!thingTagManager.isThingCreator(t) && !thingTagManager.isThingOwner(t)) {
+				throw new PortalException(ErrorCode.THING_NO_PRIVATE,HttpStatus.UNAUTHORIZED);
+			}
+		});
+
+	}
+
 
 
 }
