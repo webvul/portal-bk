@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kii.beehive.business.manager.AppInfoManager;
 import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.portal.common.utils.CollectUtils;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
@@ -31,9 +32,13 @@ import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.extension.sdk.entity.thingif.CommandStateType;
 import com.kii.extension.sdk.entity.thingif.OnBoardingParam;
 import com.kii.extension.sdk.entity.thingif.OnBoardingResult;
+import com.kii.extension.sdk.entity.thingif.ThingCommand;
 
 
 public class TestThingIFController extends WebTestTemplate {
+
+	@Autowired
+	private AppInfoManager appInfoManager;
 
 	@Autowired
 	private ThingIFInAppService thingIFInAppService;
@@ -869,11 +874,184 @@ public class TestThingIFController extends WebTestTemplate {
 
 		// 2. actions and command result of each command are expected to be returned
 		for(Map<String, Object> commandDetail : list) {
-			assertTrue(Strings.isNotBlank((String)commandDetail.get("commandID")));
-			assertTrue((int)commandDetail.get("globalThingID") > 0);
+
+			int globalThingID = (int)commandDetail.get("globalThingID");
+
+			String commandID = (String)request.stream().filter((n) -> (int)n.get("globalThingID") == globalThingID)
+					.findFirst().get().get("commandID");
+
+			assertEquals(commandID, (String)commandDetail.get("commandID"));
 			assertTrue(CollectUtils.hasElement((List)commandDetail.get("actions")));
 			assertEquals(CommandStateType.SENDING.name(), commandDetail.get("commandState"));
 		}
+	}
+
+	/**
+	 * below scenario will be tested:
+	 *
+	 * 1. send command1 to vendor thing id "someVendorThingID1"
+	 * 2. sleep 10 seconds (mark the 5th second as timestampA)
+	 * 3. send command2 to vendor thing id "someVendorThingID2"
+	 * 4. send command3 to vendor thing id "someVendorThingID1"
+	 * 5. sleep 10 seconds (mark the 5th second as timestampB)
+	 * 6. send command4 to vendor thing id "someVendorThingID1"
+	 * 7. when query the commands sent to vendor thing id "someVendorThingID1" before timestampB, command1 and
+	 * command3 will be returned
+	 * 8. when query the commands sent to vendor thing id "someVendorThingID1" before timestampB and after
+	 * timestampA, command3 will be returned
+	 * 9. when query the commands sent to vendor thing id "someVendorThingID1" after timestampA, command3 and command4
+	 * will be returned
+	 *
+	 */
+	@Test
+	public void testGetCommandsOfSingleThing() throws Exception {
+
+		// create command
+		Map<String, Object> command = this.createCommand();
+		String comandStr = mapper.writeValueAsString(command);
+		ThingCommand thingCommand = mapper.readValue(comandStr, ThingCommand.class);
+
+		// get full kii thing ids of "someVendorThingID1" and "someVendorThingID2"
+		GlobalThingInfo thing1 = globalThingDao.getThingByVendorThingID("someVendorThingID1");
+		GlobalThingInfo thing2 = globalThingDao.getThingByVendorThingID("someVendorThingID2");
+		long globalThingID1 = thing1.getId();
+		long globalThingID2 = thing2.getId();
+		String fullKiiThingID1 = thing1.getFullKiiThingID();
+		String fullKiiThingID2 = thing2.getFullKiiThingID();
+		String userID1 = appInfoManager.getDefaultOwer(thing1.getKiiAppID()).getUserID();
+		String userID2 = appInfoManager.getDefaultOwer(thing2.getKiiAppID()).getUserID();
+
+		// 1. send command1 to vendor thing id "someVendorThingID1";
+		thingCommand.setUserID(userID1);
+		String command1 = thingIFInAppService.sendCommand(thingCommand, fullKiiThingID1);
+
+		// 2. sleep 10 seconds (mark the 5th second as timestampA)
+		Thread.sleep(5000);
+		long timestampA = System.currentTimeMillis();
+		Thread.sleep(5000);
+
+		// 3. send command2 to vendor thing id "someVendorThingID2"
+		thingCommand.setUserID(userID2);
+		String command2 = thingIFInAppService.sendCommand(thingCommand, fullKiiThingID2);
+
+		// 4. send command3 to vendor thing id "someVendorThingID1"
+		thingCommand.setUserID(userID1);
+		String command3 = thingIFInAppService.sendCommand(thingCommand, fullKiiThingID1);
+
+		// 5. sleep 10 seconds (mark the 5th second as timestampB)
+		Thread.sleep(5000);
+		long timestampB = System.currentTimeMillis();
+		Thread.sleep(5000);
+
+		// 6. send command4 to vendor thing id "someVendorThingID1"
+		thingCommand.setUserID(userID1);
+		String command4 = thingIFInAppService.sendCommand(thingCommand, fullKiiThingID1);
+
+		// 7. when query the commands sent to vendor thing id "someVendorThingID1" before timestampB, command1 and
+		// command3 will be returned
+		Map<String, Object> request = new HashMap<>();
+		request.put("globalThingID", globalThingID1);
+		request.put("end", timestampB);
+
+		String ctx = mapper.writeValueAsString(request);
+
+		String result = this.mockMvc.perform(
+				post("/thing-if/command/list").content(ctx)
+						.contentType(MediaType.APPLICATION_JSON)
+						.characterEncoding("UTF-8")
+						.header(Constants.ACCESS_TOKEN, tokenForTest)
+		)
+				.andExpect(status().isOk())
+				.andReturn().getResponse().getContentAsString();
+
+		List<Map<String, Object>> list = mapper.readValue(result, List.class);
+
+		System.out.println("========================================================");
+		System.out.println("Response: " + result);
+		System.out.println("========================================================");
+
+		assertTrue(list.size() == 2);
+		for(Map<String, Object> commandDetail : list) {
+
+			int globalThingID = (int)commandDetail.get("globalThingID");
+			String commandID = (String)commandDetail.get("commandID");
+
+			assertEquals(globalThingID1, globalThingID);
+			assertTrue(command1.equals(commandID) || command3.equals(commandID));
+			assertTrue(CollectUtils.hasElement((List)commandDetail.get("actions")));
+			assertEquals(CommandStateType.SENDING.name(), commandDetail.get("commandState"));
+		}
+
+
+		// 8. when query the commands sent to vendor thing id "someVendorThingID1" before timestampB and after
+		// timestampA, command3 will be returned
+		request = new HashMap<>();
+		request.put("globalThingID", globalThingID1);
+		request.put("start", timestampA);
+		request.put("end", timestampB);
+
+		ctx = mapper.writeValueAsString(request);
+
+		result = this.mockMvc.perform(
+				post("/thing-if/command/list").content(ctx)
+						.contentType(MediaType.APPLICATION_JSON)
+						.characterEncoding("UTF-8")
+						.header(Constants.ACCESS_TOKEN, tokenForTest)
+		)
+				.andExpect(status().isOk())
+				.andReturn().getResponse().getContentAsString();
+
+		list = mapper.readValue(result, List.class);
+
+		System.out.println("========================================================");
+		System.out.println("Response: " + result);
+		System.out.println("========================================================");
+
+		assertTrue(list.size() == 1);
+
+		Map<String, Object> commandDetailMap = list.get(0);
+		assertEquals(globalThingID1, (int)commandDetailMap.get("globalThingID"));
+		assertEquals(command3, (String)commandDetailMap.get("commandID"));
+		assertTrue(CollectUtils.hasElement((List)commandDetailMap.get("actions")));
+		assertEquals(CommandStateType.SENDING.name(), commandDetailMap.get("commandState"));
+
+
+		// 9. when query the commands sent to vendor thing id "someVendorThingID1" after timestampA, command3 and
+		// command4 will be returned
+		request = new HashMap<>();
+		request.put("globalThingID", globalThingID1);
+		request.put("start", timestampA);
+
+		ctx = mapper.writeValueAsString(request);
+
+		result = this.mockMvc.perform(
+				post("/thing-if/command/list").content(ctx)
+						.contentType(MediaType.APPLICATION_JSON)
+						.characterEncoding("UTF-8")
+						.header(Constants.ACCESS_TOKEN, tokenForTest)
+		)
+				.andExpect(status().isOk())
+				.andReturn().getResponse().getContentAsString();
+
+		list = mapper.readValue(result, List.class);
+
+		System.out.println("========================================================");
+		System.out.println("Response: " + result);
+		System.out.println("========================================================");
+
+		assertTrue(list.size() == 2);
+		for(Map<String, Object> commandDetail : list) {
+
+			int globalThingID = (int)commandDetail.get("globalThingID");
+			String commandID = (String)commandDetail.get("commandID");
+
+			assertEquals(globalThingID1, globalThingID);
+			assertTrue(command3.equals(commandID) || command4.equals(commandID));
+			assertTrue(CollectUtils.hasElement((List)commandDetail.get("actions")));
+			assertEquals(CommandStateType.SENDING.name(), commandDetail.get("commandState"));
+		}
+
+
 	}
 
 }

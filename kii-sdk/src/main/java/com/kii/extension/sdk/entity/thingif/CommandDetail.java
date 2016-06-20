@@ -28,6 +28,8 @@ public class CommandDetail extends ThingCommand {
 //			"modifiedAt" : 1466328142936
 //	}
 
+	private String commandID;
+
 	private CommandStateType commandState;
 
 	private List<Map<String,ActionResult>> actionResults=new ArrayList<>();
@@ -37,6 +39,14 @@ public class CommandDetail extends ThingCommand {
 	private Date createdAt;
 
 	private Date modifiedAt;
+
+	public String getCommandID() {
+		return commandID;
+	}
+
+	public void setCommandID(String commandID) {
+		this.commandID = commandID;
+	}
 
 	public CommandStateType getCommandState() {
 		return commandState;

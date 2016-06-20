@@ -11,12 +11,9 @@ public class ThingCommandDetailRestBean extends CommandDetail {
 
 	private long globalThingID = 0;
 
-	private String commandID = null;
-
-	public ThingCommandDetailRestBean(GlobalThingInfo thing, String commandID, CommandDetail commandDetail) {
+	public ThingCommandDetailRestBean(GlobalThingInfo thing, CommandDetail commandDetail) {
 
 		this.globalThingID = thing.getId();
-		this.commandID = commandID;
 
 		BeanUtils.copyProperties(commandDetail, this);
 	}
@@ -25,7 +22,4 @@ public class ThingCommandDetailRestBean extends CommandDetail {
 		return globalThingID;
 	}
 
-	public String getCommandID() {
-		return commandID;
-	}
 }
