@@ -47,9 +47,9 @@ public class ExpressConvert {
 				valueName="numValue";
 			}
 
-			if(!isCondition){
+//			if(!isCondition){
 				valueName=StringUtils.capitalize(valueName);
-			}
+//			}
 
 			String replaceString= StrTemplate.gener(template,field,valueName);
 
@@ -60,9 +60,9 @@ public class ExpressConvert {
 		return sb.toString();
 	}
 
-	private static final String S_FIELD=" ${1}(\"${0}\") ";
+	private static final String S_FIELD=" get${1}(\"${0}\") ";
 //	private static final String P_FIELD=" ${1}(\"${0}\") ";
-	private static final String E_FIELD=" $ext.${1}(\"${0}\") ";
+	private static final String E_FIELD=" $ext.get${1}(\"${0}\") ";
 
 	private static final String S_EXP=" $status.get${1}(\"${0}\") ";
 	private static final String P_EXP=" $muiMap.get${1}(\"${0}\") ";

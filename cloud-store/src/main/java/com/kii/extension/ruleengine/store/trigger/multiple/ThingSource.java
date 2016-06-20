@@ -4,12 +4,27 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
+
+import com.kii.extension.ruleengine.store.trigger.Express;
 
 public class ThingSource implements SourceElement {
 
-	private long thingID;
+	private String thingID;
 
-	private boolean allStatus=false;
+	private boolean allStatus=true;
+
+	@JsonUnwrapped
+	private Express express=new Express();
+
+
+	public Express getExpress() {
+		return express;
+	}
+
+	public void setExpress(Express express) {
+		this.express = express;
+	}
 
 	public boolean isAllStatus() {
 		return allStatus;
@@ -34,11 +49,11 @@ public class ThingSource implements SourceElement {
 		fieldSet.add(statusName);
 	}
 
-	public long getThingID() {
+	public String getThingID() {
 		return thingID;
 	}
 
-	public void setThingID(long thingID) {
+	public void setThingID(String thingID) {
 		this.thingID = thingID;
 	}
 
