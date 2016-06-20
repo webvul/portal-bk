@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -25,6 +26,7 @@ import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
 		"classpath:./ruleTestContext.xml"})
+@Ignore
 public class InitTest {
 
 
@@ -78,6 +80,7 @@ public class InitTest {
 		ruleLoader.addOrUpdateData(curr);
 
 		ruleLoader.bindWithInstance("exec",exec);
+
 	}
 
 	protected String getDrlContent(String fileName) {

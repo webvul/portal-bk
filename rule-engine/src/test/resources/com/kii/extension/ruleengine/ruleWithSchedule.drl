@@ -15,7 +15,7 @@ when
     Trigger( $triggerID:triggerID=="500")
     Thing(triggerID==$triggerID,$thingID:thingID)
     CurrThing(thing == $thingID)
-    ThingStatusInRule( $thingID:thingID memberOf $things,(values["foo"]>10&&values["bar"]<0)  )
+    ThingStatusInRule( thingID == $thingID ,(values["foo"]>10&&values["bar"]<0)  )
 then
 	insertLogical(new MatchResult($triggerID));
 	System.out.println("the cron been fired:"+System.currentTimeMillis());
@@ -28,7 +28,7 @@ when
     Trigger( $triggerID:triggerID=="501"  )
     Thing(triggerID==$triggerID,$thingID:thingID)
     CurrThing(thing == $thingID)
-    ThingStatusInRule( $thingID:thingID memberOf $things,(values["foo"]>10&&values["bar"]<0)  )
+    ThingStatusInRule( thingID==$thingID,(values["foo"]>10&&values["bar"]<0)  )
 then
 	insertLogical(new MatchResult($triggerID));
 	System.out.println("the interval been fired:"+System.currentTimeMillis());

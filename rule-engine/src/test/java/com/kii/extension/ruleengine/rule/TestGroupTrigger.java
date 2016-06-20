@@ -2,13 +2,19 @@ package com.kii.extension.ruleengine.rule;
 
 import static junit.framework.TestCase.assertEquals;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.kii.beehive.business.manager.ThingTagManager;
 import com.kii.extension.ruleengine.TriggerConditionBuilder;
+import com.kii.extension.ruleengine.store.trigger.CommandParam;
 import com.kii.extension.ruleengine.store.trigger.Condition;
 import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
@@ -25,8 +31,12 @@ public class TestGroupTrigger extends TestInit {
 	@Autowired
 	private ThingTagManager tagService;
 
+
+	@Autowired
+	private ObjectMapper mapper;
+
 	@Test
-	public void testGroupTrigger(){
+	public void testGroupTrigger() throws JsonProcessingException {
 
 
 		GroupTriggerRecord record=new GroupTriggerRecord();
@@ -60,7 +70,21 @@ public class TestGroupTrigger extends TestInit {
 
 		record.setRecordStatus(TriggerRecord.StatusType.enable);
 
+		List<CommandParam> paramList=new ArrayList<>();
+		CommandParam param=new CommandParam();
+		param.setName("foo_a");
+		param.setExpress("$p{comm}");
+		paramList.add(param);
+
+		CommandParam param2=new CommandParam();
+		param2.setName("ext_b");
+		param2.setExpress("$e{demo.two}");
+		paramList.add(param2);
+
+		record.setTargetParamList(paramList);
+
 		Set<String> thingIDs=tagService.getKiiThingIDs(selector);
+
 
 		engine.createGroupTrigger(record,thingIDs);
 

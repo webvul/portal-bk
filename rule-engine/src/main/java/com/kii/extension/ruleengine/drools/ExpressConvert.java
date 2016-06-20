@@ -1,7 +1,5 @@
 package com.kii.extension.ruleengine.drools;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -14,32 +12,34 @@ import com.kii.beehive.portal.common.utils.StrTemplate;
 public class ExpressConvert {
 
 
-	public String convertRightExpress(String express){
-		return convertExpress(express,false);
+	public String convertRightExpress(String express,boolean isSimpleExp){
+		return convertExpress(express,false,isSimpleExp);
 
 	}
 
 	public  String convertExpress(String express) {
 
-		return convertExpress(express,true);
+		return convertExpress(express,true,false);
 	}
 
-	private  String convertExpress(String express,boolean sign){
+	private  String convertExpress(String express,boolean isCondition,boolean isSimpleExp){
 
 		StringBuffer sb=new StringBuffer();
 
 		String result = express;
-		Pattern pattern= Pattern.compile("\\$([sep])\\{([^\\}]+)\\}([i]?)");
+
+		Pattern pattern= Pattern.compile("\\$([ep])\\{([^\\}]+)\\}([i]?)");
 
 		Matcher matcher=pattern.matcher(result);
 
 		while(matcher.find()) {
 
-			String type = matcher.group(1);
+			boolean isExp= "e".equals(matcher.group(1));
+
 			String field = matcher.group(2);
 			String isInt=matcher.group(3);
 
-			String template = patternMap.get(type);
+			String template = getExpTemplate(isCondition,isSimpleExp,isExp);
 
 			String valueName="value";
 
@@ -47,8 +47,7 @@ public class ExpressConvert {
 				valueName="numValue";
 			}
 
-			if(!sign){
-				template = expMap.get(type);
+			if(!isCondition){
 				valueName=StringUtils.capitalize(valueName);
 			}
 
@@ -62,27 +61,47 @@ public class ExpressConvert {
 	}
 
 	private static final String S_FIELD=" ${1}(\"${0}\") ";
-	private static final String P_FIELD=" ${1}(\"${0}\") ";
+//	private static final String P_FIELD=" ${1}(\"${0}\") ";
 	private static final String E_FIELD=" $ext.${1}(\"${0}\") ";
 
 	private static final String S_EXP=" $status.get${1}(\"${0}\") ";
 	private static final String P_EXP=" $muiMap.get${1}(\"${0}\") ";
 	private static final String E_EXP=" $ext.get${1}(\"${0}\") ";
 
-	private static final Map<String,String> patternMap=new HashMap<>();
-	private static final Map<String,String> expMap=new HashMap<>();
+	private String getExpTemplate(boolean isCondition,boolean isSimple,boolean isExt){
 
-	static{
+		if(isCondition) {
+			if(isExt){
+				return E_FIELD;
+			}else{
+				return S_FIELD;
+			}
+		}else{
+			if (isExt) {
+				return E_EXP;
+			} else if (isSimple) {
+				return S_EXP;
+			} else {
+				return P_EXP;
+			}
 
-		patternMap.put("s",S_FIELD);
-		patternMap.put("p",P_FIELD);
-		patternMap.put("e",E_FIELD);
-
-		expMap.put("s",S_EXP);
-		expMap.put("p",P_EXP);
-		expMap.put("e",E_EXP);
-
+		}
 	}
+
+//	private static final Map<String,String> patternMap=new HashMap<>();
+//	private static final Map<String,String> expMap=new HashMap<>();
+//
+//	static{
+//
+//		patternMap.put("s",S_FIELD);
+//		patternMap.put("p",P_FIELD);
+//		patternMap.put("e",E_FIELD);
+//
+//		expMap.put("s",S_EXP);
+//		expMap.put("p",P_EXP);
+//		expMap.put("e",E_EXP);
+//
+//	}
 
 
 

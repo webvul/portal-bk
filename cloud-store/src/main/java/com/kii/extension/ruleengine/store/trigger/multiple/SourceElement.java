@@ -4,14 +4,12 @@ package com.kii.extension.ruleengine.store.trigger.multiple;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
-import com.kii.extension.ruleengine.store.trigger.SummarySource;
-
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME,
 		include = JsonTypeInfo.As.EXISTING_PROPERTY,
 		property = "type")
 @JsonSubTypes({
-		@JsonSubTypes.Type(value = SummarySource.class,name="thing"),
-		@JsonSubTypes.Type(value = ThingSource.class,name="summary"),
+		@JsonSubTypes.Type(value = GroupSummarySource.class,name="summary"),
+		@JsonSubTypes.Type(value = ThingSource.class,name="thing"),
 })
 public interface SourceElement {
 

@@ -1,6 +1,5 @@
 package com.kii.extension.ruleengine.store.trigger.multiple;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 import com.kii.extension.ruleengine.store.trigger.Condition;
@@ -30,12 +29,12 @@ public class GroupSummarySource implements SourceElement{
 		this.express = express;
 	}
 
-	@JsonIgnore
-	public Condition getCondition() {
-		return express.getCondition();
-	}
+//	@JsonIgnore
+//	public Condition getCondition() {
+//		return express.getCondition();
+//	}
 
-	public void setCondition(Condition condition) {
+	public void setTheCondition(Condition condition) {
 		this.express.setCondition(condition);
 	}
 

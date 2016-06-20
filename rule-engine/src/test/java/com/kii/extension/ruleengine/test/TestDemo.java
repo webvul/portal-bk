@@ -1,8 +1,5 @@
 package com.kii.extension.ruleengine.test;
 
-import static junit.framework.TestCase.assertFalse;
-import static junit.framework.TestCase.assertTrue;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,35 +9,23 @@ import org.junit.Test;
 import org.kie.api.runtime.rule.FactHandle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import com.kii.extension.ruleengine.StatelessRuleExecute;
-import com.kii.extension.ruleengine.demo.Applicant;
 import com.kii.extension.ruleengine.demo.Message;
 import com.kii.extension.ruleengine.drools.entity.Group;
 import com.kii.extension.ruleengine.drools.entity.Summary;
 import com.kii.extension.ruleengine.drools.entity.SummaryValueMap;
 import com.kii.extension.ruleengine.drools.entity.Trigger;
 import com.kii.extension.ruleengine.drools.entity.TriggerType;
-import com.kii.extension.ruleengine.store.trigger.TriggerGroupPolicyType;
+
+//import com.kii.extension.ruleengine.StatelessRuleExecute;
 
 public class TestDemo extends InitTest {
 
 	private Logger log= LoggerFactory.getLogger(TestDemo.class);
 
-	@Autowired
-	protected StatelessRuleExecute execute;
 
 	@Before
 	public void init() throws IOException {
-
-
-//		ruleLoader.initCondition(
-//				getDrlContent("FireAlarm"),
-//				getDrlContent("group")
-//		);
-
-		execute.initCondition(getDrlContent("demo1"));
 
 
 		for(int i=0;i<10;i++){
@@ -134,7 +119,7 @@ public class TestDemo extends InitTest {
 
 		groupMap.values().forEach(t->{
 
-			t.setPolicy(TriggerGroupPolicyType.All);
+//			t.setPolicy(TriggerGroupPolicyType.All);
 			ruleLoader.addOrUpdateData(t);
 		});
 		triggerMap.forEach((k,v)->{
@@ -145,58 +130,6 @@ public class TestDemo extends InitTest {
 
 	}
 
-//	@Test
-//	public void testFireAlarm(){
-//
-//		String[] names = new String[]{"kitchen", "bedroom", "office", "livingroom"};
-//		Map<String,Room> name2room = new HashMap<String,Room>();
-//		for( String name: names ){
-//			Room room = new Room();
-//			room.setName(name);
-//			name2room.put( name, room );
-//			ruleLoader.addOrUpdateData(room);
-//
-//			Sprinkler sprinkler = new Sprinkler( );
-//			sprinkler.setOn(false);
-//			sprinkler.setRoom(room);
-//
-//			ruleLoader.addOrUpdateData( sprinkler );
-//		}
-//
-//		ruleLoader.fireCondition();
-//
-//		Fire newFire=new Fire();
-//		newFire.setRoom(name2room.get(names[0]));
-//
-//		FactHandle holder=ruleLoader.addOrUpdateData(newFire);
-//
-//		ruleLoader.fireCondition();
-//
-//		ruleLoader.removeData(holder);
-//
-//		ruleLoader.fireCondition();
-//	}
-
-	@Test
-	public void testExecute() throws IOException{
-
-		Applicant applicant = new Applicant();
-		applicant.setAge(16);
-		applicant.setName("agent.smith");
-		applicant.setValid(true);
-
-		Applicant  result=execute.doExecute(applicant);
-
-		assertFalse(applicant.isValid());
-
-		applicant.setAge(19);
-		applicant.setValid(true);
-
-		execute.doExecute(applicant);
-
-		assertTrue(applicant.isValid());
-
-	}
 
 	@Test
 	public void testFire() throws IOException {

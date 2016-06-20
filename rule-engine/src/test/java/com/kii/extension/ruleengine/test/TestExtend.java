@@ -13,13 +13,11 @@ public class TestExtend extends InitTest{
 
 	private Logger log= LoggerFactory.getLogger(TestDemo.class);
 
-//	@Autowired
-//	protected StatelessRuleExecute execute;
+
 
 	@Test
 	public void testParam() throws IOException {
 
-//		execute.initCondition(getDrlContent("ruleResult"));
 
 		ThingStatusInRule status=new ThingStatusInRule("aaa");
 		status.addValue("foo",33);
@@ -37,7 +35,7 @@ public class TestExtend extends InitTest{
 
 		ruleLoader.fireCondition();
 
-		System.in.read();
+//		System.in.read();
 
 
 	}

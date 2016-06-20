@@ -14,7 +14,7 @@ when
     Trigger( $triggerID:triggerID, ( triggerID=="${triggerID}" &&  enable == true && type ==TriggerType.multiple) )
     $muiMap:MultiplesValueMap( triggerID==$triggerID, ${express}  )
 then
-	MatchResult result=new MatchResult($thingID);
+	MatchResult result=new MatchResult($triggerID);
 
 	${fillParam}
 

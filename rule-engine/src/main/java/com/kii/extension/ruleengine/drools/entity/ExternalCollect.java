@@ -1,12 +1,21 @@
 package com.kii.extension.ruleengine.drools.entity;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ExternalCollect {
+public class ExternalCollect implements Serializable{
 
 	private Map<String,ExternalValues> externalValuesMap=new ConcurrentHashMap<>();
 
+
+	public Map<String, ExternalValues> getExternalValuesMap() {
+		return externalValuesMap;
+	}
+
+	public void setExternalValuesMap(Map<String, ExternalValues> externalValuesMap) {
+		this.externalValuesMap = externalValuesMap;
+	}
 
 	public ExternalValues getEntity(String name){
 		return externalValuesMap.get(name);
@@ -14,13 +23,20 @@ public class ExternalCollect {
 
 	public void putEntity(String name,ExternalValues  values){
 
-		externalValuesMap.merge(name,values,(oldV,newV)-> oldV.merge(newV));
+		externalValuesMap.merge(name,values,(oldV,newV)-> {
+			oldV.merge(newV);
+			return oldV;
+		});
 
 	}
 
 	public Object getValue(String fullPath){
 
 		int idx=fullPath.indexOf(".");
+
+		if(idx==-1){
+			return null;
+		}
 
 		String key= fullPath.substring(0,idx);
 		String name=fullPath.substring(idx+1);
@@ -31,6 +47,10 @@ public class ExternalCollect {
 	public Object getNumValue(String fullPath){
 
 		int idx=fullPath.indexOf(".");
+
+		if(idx==-1){
+			return null;
+		}
 
 		String key= fullPath.substring(0,idx);
 		String name=fullPath.substring(idx+1);

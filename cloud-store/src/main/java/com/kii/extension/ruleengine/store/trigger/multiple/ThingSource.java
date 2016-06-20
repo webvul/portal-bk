@@ -9,6 +9,16 @@ public class ThingSource implements SourceElement {
 
 	private long thingID;
 
+	private boolean allStatus=false;
+
+	public boolean isAllStatus() {
+		return allStatus;
+	}
+
+	public void setAllStatus(boolean allStatus) {
+		this.allStatus = allStatus;
+	}
+
 	private Set<String> fieldSet=new HashSet<>();
 
 	public Set<String> getFieldSet() {

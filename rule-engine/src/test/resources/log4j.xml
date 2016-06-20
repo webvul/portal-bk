@@ -32,7 +32,7 @@
     </logger>
 
     <logger name="com.kii" >
-        <level value="info" />
+        <level value="debug" />
     </logger>
 
 	<root>

@@ -40,5 +40,4 @@ public class SummarySource  {
 		this.source = source;
 	}
 
-
 }

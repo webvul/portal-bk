@@ -2,16 +2,15 @@ package com.kii.extension.ruleengine.drools.entity;
 
 import com.google.common.base.Objects;
 
-import com.kii.extension.ruleengine.store.trigger.TriggerGroupPolicyType;
+import com.kii.extension.ruleengine.store.trigger.Express;
 
 public class Group extends ThingCol implements TriggerData {
 
 	private String triggerID;
 
 
-	private TriggerGroupPolicyType policy=TriggerGroupPolicyType.None;
+	private Express express;
 
-	private int number;
 
 	public String getTriggerID() {
 		return triggerID;
@@ -22,30 +21,18 @@ public class Group extends ThingCol implements TriggerData {
 		this.triggerID = triggerID;
 	}
 
-
-	public TriggerGroupPolicyType getPolicy() {
-		return policy;
+	public Express getExpress() {
+		return express;
 	}
 
-	public void setPolicy(TriggerGroupPolicyType policy) {
-		this.policy = policy;
+	public void setExpress(Express express) {
+		this.express = express;
 	}
-
-	public int getNumber() {
-		return number;
-	}
-
-	public void setNumber(int number) {
-		this.number = number;
-	}
-
 
 	@Override
 	public String toString() {
 		return "Group{" +
 				"triggerID='" + triggerID + '\'' +
-				", policy=" + policy +
-				", number=" + number +
 				", things=" +super.getThings() +
 				", name="+super.getName()+
 				'}';

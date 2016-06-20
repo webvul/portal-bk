@@ -13,4 +13,7 @@
 
     <bean class="com.kii.extension.ruleengine.drools.RuleGeneral" />
 
+    <bean class="com.kii.extension.ruleengine.drools.ExpressConvert" />
+
+
 </beans>

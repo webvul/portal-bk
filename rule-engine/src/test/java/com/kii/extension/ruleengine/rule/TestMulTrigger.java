@@ -61,7 +61,7 @@ public class TestMulTrigger extends TestInit {
 		GroupSummarySource group=new GroupSummarySource();
 		Condition groupCond=TriggerConditionBuilder.newCondition().great("foo",0).getConditionInstance();
 
-		group.setCondition(groupCond);
+		group.setTheCondition(groupCond);
 		group.setFunction(SummaryFunctionType.sum);
 		group.setStateName("bar");
 
@@ -69,7 +69,7 @@ public class TestMulTrigger extends TestInit {
 
 		GroupSummarySource summary=new GroupSummarySource();
 		summary.setStateName("foo");
-		summary.setCondition(groupCond);
+		summary.setTheCondition(groupCond);
 		summary.setFunction(SummaryFunctionType.count);
 
 		record.addSource("three",summary);

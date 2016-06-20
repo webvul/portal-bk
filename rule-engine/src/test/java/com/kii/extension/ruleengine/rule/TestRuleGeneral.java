@@ -15,7 +15,7 @@ public class TestRuleGeneral {
 	@Test
 	public void test(){
 
-		String template=" $s{abc.foo}i and $p{abc.bar} or $e{name.xyz} ";
+		String template=" $p{abc.foo}i and $p{abc.bar} or $e{name.xyz} ";
 
 		String result=replace.convertExpress(template);
 
@@ -23,9 +23,9 @@ public class TestRuleGeneral {
 		assertEquals("  numValue(\"abc.foo\")  and  value(\"abc.bar\")  or  $ext.value(\"name.xyz\")  ",result );
 
 
-		result=replace.convertRightExpress(template);
+		result=replace.convertRightExpress(template,true);
 
-		assertEquals("  $status.getNumValue(\"abc.foo\")  and  $muiMap.getValue(\"abc.bar\")  or  $ext.getValue(\"name.xyz\")  ",result );
+		assertEquals("  $status.getNumValue(\"abc.foo\")  and  $status.getValue(\"abc.bar\")  or  $ext.getValue(\"name.xyz\")  ",result );
 
 	}
 }

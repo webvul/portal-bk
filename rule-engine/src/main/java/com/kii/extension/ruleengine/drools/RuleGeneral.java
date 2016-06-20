@@ -24,7 +24,6 @@ import com.kii.extension.ruleengine.store.trigger.IntervalPrefix;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.SchedulePrefix;
 import com.kii.extension.ruleengine.store.trigger.SummaryExpress;
-import com.kii.extension.ruleengine.store.trigger.TriggerGroupPolicyType;
 import com.kii.extension.ruleengine.store.trigger.condition.AndLogic;
 import com.kii.extension.ruleengine.store.trigger.condition.Equal;
 import com.kii.extension.ruleengine.store.trigger.condition.ExpressCondition;
@@ -86,6 +85,8 @@ public class RuleGeneral {
 		Map<String, String> params = new HashMap<>();
 		params.put("triggerID", record.getId());
 		params.put("express",generExpress(record.getPredicate()));
+
+		params.put("fillParam",getParamMappingList(record.getTargetParamList(),false));
 
 		String multipleDrl=StrTemplate.generByMap(fullTemplate,params);
 
@@ -168,48 +169,48 @@ end
 		return fullDrl;
 	}
 
-
-	public String generGroupDrlConfig(String triggerID, TriggerGroupPolicyType policy, RuleEnginePredicate predicate){
-
-
-		Map<String,String> params=new HashMap<>();
-
-		String template=null;
-		if(predicate.getSchedule()!=null){
-
-			template = loadTemplate(TriggerType.group.name() + "Schedule");
-			params.put("timer",generTimer(predicate.getSchedule()));
-
-			String policyExp=null;
-			switch(policy){
-				case Any:
-					policyExp=" >0 ";
-					break;
-				case All:
-					policyExp=" == $things.size() ";
-					break;
-				case Some:
-					policyExp=" >=$trigger.getNumber() ";
-					break;
-				case Percent:
-					policyExp=">=$trigger.getNumber()*$things.size()/100";
-					break;
-				default:
-					throw new IllegalArgumentException("invalid group policy");
-			}
-			params.put("groupPolicy",policyExp);
-		}else {
-			template=loadTemplate(TriggerType.group.name());
-		}
-
-		params.put("triggerID",triggerID);
-		params.put("express",generExpress(predicate));
-
-		String fullDrl=StrTemplate.generByMap(template,params);
-
-		log.info(triggerID+"\n"+fullDrl);
-		return fullDrl;
-	}
+//
+//	public String generGroupDrlConfig(String triggerID, TriggerGroupPolicyType policy, RuleEnginePredicate predicate){
+//
+//
+//		Map<String,String> params=new HashMap<>();
+//
+//		String template=null;
+//		if(predicate.getSchedule()!=null){
+//
+//			template = loadTemplate(TriggerType.group.name() + "Schedule");
+//			params.put("timer",generTimer(predicate.getSchedule()));
+//
+//			String policyExp=null;
+//			switch(policy){
+//				case Any:
+//					policyExp=" >0 ";
+//					break;
+//				case All:
+//					policyExp=" == $things.size() ";
+//					break;
+//				case Some:
+//					policyExp=" >=$trigger.getNumber() ";
+//					break;
+//				case Percent:
+//					policyExp=">=$trigger.getNumber()*$things.size()/100";
+//					break;
+//				default:
+//					throw new IllegalArgumentException("invalid group policy");
+//			}
+//			params.put("groupPolicy",policyExp);
+//		}else {
+//			template=loadTemplate(TriggerType.group.name());
+//		}
+//
+//		params.put("triggerID",triggerID);
+//		params.put("express",generExpress(predicate));
+//
+//		String fullDrl=StrTemplate.generByMap(template,params);
+//
+//		log.info(triggerID+"\n"+fullDrl);
+//		return fullDrl;
+//	}
 
 
 
@@ -233,7 +234,7 @@ end
 			template=loadTemplate(type.name());
 		}
 
-		params.put("paramList",getParamMappingList(paramList));
+		params.put("fillParam",getParamMappingList(paramList,type==TriggerType.simple));
 
 		params.put("triggerID",triggerID);
 		params.put("express",generExpress(predicate));
@@ -244,9 +245,9 @@ end
 		return fullDrl;
 	}
 
-	private static String ParamBindTemplate="result.setParam(${0},${1}); \n";
+	private static String ParamBindTemplate="result.setParam(\"${0}\",${1}); \n";
 
-	private String getParamMappingList(List<CommandParam>  paramList){
+	private String getParamMappingList(List<CommandParam>  paramList,boolean isSimpleTrigger){
 
 
 		/*
@@ -259,7 +260,7 @@ end
 
 		paramList.forEach((param)->{
 
-			String result=StrTemplate.gener(ParamBindTemplate,param.getName(),convert.convertRightExpress(param.getExpress()));
+			String result=StrTemplate.gener(ParamBindTemplate,param.getName(),convert.convertRightExpress(param.getExpress(),isSimpleTrigger));
 
 			sb.append(result);
 		});
@@ -301,7 +302,7 @@ end
 
 
 		if (predicate.getExpress() != null) {
-			return replace.convertExpress(predicate.getExpress());
+			return convert.convertExpress(predicate.getExpress());
 		}
 
 		if (predicate.getCondition() == null) {
@@ -492,7 +493,6 @@ end
 		return list.toString();
 	}
 
-	private ExpressConvert replace=new ExpressConvert();
 
 	private String getFinalValue(String express,Object obj){
 
@@ -505,7 +505,7 @@ end
 			}
 		}else if(!StringUtils.isEmpty(express)){
 
-			return replace.convertExpress(express);
+			return convert.convertExpress(express);
 		}else{
 			throw new IllegalArgumentException("condition invalidFormat ,exp:"+express+" obj:"+obj);
 		}
@@ -515,7 +515,6 @@ end
 
 
 	private String getFinalValue(ExpressCondition cond){
-
 		return getFinalValue(cond.getExpress(),cond.getValue());
 	}
 	

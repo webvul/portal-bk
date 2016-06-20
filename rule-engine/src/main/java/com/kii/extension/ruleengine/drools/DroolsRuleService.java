@@ -25,6 +25,8 @@ import org.kie.api.runtime.conf.TimedRuleExectionOption;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.api.runtime.rule.QueryResults;
 import org.kie.api.runtime.rule.QueryResultsRow;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -36,6 +38,8 @@ import com.kii.extension.ruleengine.drools.entity.ExternalValues;
 @Component
 @Scope(scopeName= ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class DroolsRuleService {
+
+	private Logger log= LoggerFactory.getLogger(DroolsRuleService.class);
 
 
 	private final KieSession kieSession;
@@ -217,6 +221,8 @@ public class DroolsRuleService {
 
 
 		this.rejectCurrThingID();
+
+		log.debug("add rule:"+rule);
 
 		String drlName="src/main/resources/user_"+name+".drl";
 

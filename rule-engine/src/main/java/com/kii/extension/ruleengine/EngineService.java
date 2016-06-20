@@ -12,6 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.kii.extension.ruleengine.drools.DroolsTriggerService;
 import com.kii.extension.ruleengine.drools.RuleGeneral;
 import com.kii.extension.ruleengine.drools.entity.ExternalValues;
@@ -22,6 +25,7 @@ import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
 import com.kii.extension.ruleengine.drools.entity.Trigger;
 import com.kii.extension.ruleengine.drools.entity.TriggerType;
 import com.kii.extension.ruleengine.store.trigger.Condition;
+import com.kii.extension.ruleengine.store.trigger.Express;
 import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
@@ -45,10 +49,22 @@ public class EngineService {
 	@Autowired
 	private RuleGeneral  ruleGeneral;
 
+	@Autowired
+	private ObjectMapper mapper;
+
 
 	//TODO:need been finish
 	public void createMultipleSourceTrigger(MultipleSrcTriggerRecord record,Map<String,Set<String> > thingMap){
 
+
+		String json= null;
+		try {
+			json = mapper.writeValueAsString(record);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+			throw new IllegalArgumentException(e);
+		}
+		System.out.println(json);
 
 		Trigger trigger=new Trigger(record.getId());
 		trigger.setType(TriggerType.multiple);
@@ -77,6 +93,7 @@ public class EngineService {
 						group.setName(name);
 						group.setThingCol(thingMap.get(name));
 						group.setTriggerID(trigger.getTriggerID());
+						group.setExpress(source.getExpress());
 
 						droolsTriggerService.addTriggerData(group);
 
@@ -87,7 +104,9 @@ public class EngineService {
 						Thing thing=new Thing();
 						thing.setTriggerID(trigger.getTriggerID());
 						thing.setName(name);
-						thing.setFieldSet(thingSrc.getFieldSet());
+						if(!thingSrc.isAllStatus()){
+							thing.setFieldSet(thingSrc.getFieldSet());
+						}
 						thing.setThingID(thingMap.get(name).iterator().next());
 
 						droolsTriggerService.addTriggerData(thing);
@@ -163,6 +182,7 @@ public class EngineService {
 		convertRecord.setPreparedCondition(record.getPreparedCondition());
 		convertRecord.setTargetParamList(record.getTargetParamList());
 		convertRecord.setPredicate(record.getPredicate());
+		convertRecord.setTarget(record.getTargets());
 
 		Map<String,Set<String>> thingMap=new HashMap<>();
 
@@ -194,6 +214,7 @@ public class EngineService {
 		convertRecord.setId(record.getId());
 		convertRecord.setPreparedCondition(record.getPreparedCondition());
 		convertRecord.setTargetParamList(record.getTargetParamList());
+		convertRecord.setTarget(record.getTargets());
 
 		Condition cond=new All();
 		switch(record.getPolicy().getGroupPolicy()){
@@ -225,9 +246,13 @@ public class EngineService {
 		GroupSummarySource  elem=new GroupSummarySource();
 
 		elem.setFunction(SummaryFunctionType.count);
-		elem.setCondition(record.getPredicate().getCondition());
+		Express exp=new Express();
+		exp.setCondition(record.getPredicate().getCondition());
+		elem.setExpress(exp);
+
 		elem.setSource(record.getSource());
 
+		convertRecord.addSource("comm",elem);
 		this.createMultipleSourceTrigger(convertRecord,thingMap);
 	}
 
@@ -337,6 +362,7 @@ public class EngineService {
 
 		ExternalValues  values=new ExternalValues(name);
 
+		values.addValue(key,value);
 		droolsTriggerService.addExternalValue(values);
 
 	}

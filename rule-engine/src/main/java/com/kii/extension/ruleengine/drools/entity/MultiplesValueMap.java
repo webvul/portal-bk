@@ -20,10 +20,19 @@ public class MultiplesValueMap {
 
 	public void setFieldValueSet(String name, Set<String> fieldSet, Map<String,Object> values){
 
-		fieldSet.forEach((field)->{
-			String fullName=name+"."+field;
-			valueMap.put(fullName,values.get(field));
-		});
+		if(fieldSet.isEmpty()){
+
+			values.forEach((k,v)->{
+				valueMap.put(name+"."+k,v);
+			});
+
+		}else {
+
+			fieldSet.forEach((field) -> {
+				String fullName = name + "." + field;
+				valueMap.put(fullName, values.get(field));
+			});
+		}
 
 	}
 

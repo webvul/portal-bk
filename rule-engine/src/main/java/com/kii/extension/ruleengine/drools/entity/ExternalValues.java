@@ -1,10 +1,11 @@
 package com.kii.extension.ruleengine.drools.entity;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class ExternalValues {
+public class ExternalValues implements Serializable {
 
 
 	private Map<String,Object> values=new HashMap<>();
