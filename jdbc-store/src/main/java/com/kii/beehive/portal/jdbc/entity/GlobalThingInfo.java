@@ -20,7 +20,7 @@ public class GlobalThingInfo extends DBEntity {
 
 	private String schemaName;
 
-	private Integer schemaVersion;
+	private String schemaVersion;
 
 
 	public final static String ID_GLOBAL_THING = "id_global_thing";
@@ -100,11 +100,11 @@ public class GlobalThingInfo extends DBEntity {
 	}
 
 	@JdbcField(column = SCHEMA_VERSION)
-	public Integer getSchemaVersion() {
+	public String getSchemaVersion() {
 		return schemaVersion;
 	}
 
-	public void setSchemaVersion(Integer schemaVersion) {
+	public void setSchemaVersion(String schemaVersion) {
 		this.schemaVersion = schemaVersion;
 	}
 

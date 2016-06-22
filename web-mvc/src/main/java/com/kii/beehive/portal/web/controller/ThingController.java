@@ -238,7 +238,7 @@ public class ThingController extends AbstractThingTagController {
 
 		input.verifyInput();
 
-		if (Strings.isBlank(input.getSchemaName()) || input.getSchemaVersion() == null) {
+		if (Strings.isBlank(input.getSchemaName()) || Strings.isBlank(input.getSchemaVersion())) {
 			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus.BAD_REQUEST);
 		}
 
