@@ -7,4 +7,5 @@ include 'jdbc-store'
 include 'cloud-store'
 include 'rule-engine'
 include 'business-component'
+include 'plugin-sg'
 
