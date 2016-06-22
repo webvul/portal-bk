@@ -31,6 +31,9 @@ public abstract class AbstractDataAccess<T> {
 	@Autowired
 	private DataService service;
 
+	protected BucketInfo getBucketInfoInstance() {
+		return bucketInfo;
+	}
 
 	public  boolean checkExist(String id){
 		return service.checkObjectExist(id,bucketInfo);

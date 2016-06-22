@@ -96,4 +96,8 @@ public class ThingCommand {
 	public void setDescription(String description) {
 		this.description = description;
 	}
+
+	public void setActions(List<Map<String, Action>> actions) {
+		this.actions = actions;
+	}
 }

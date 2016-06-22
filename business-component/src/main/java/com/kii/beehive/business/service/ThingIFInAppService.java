@@ -15,6 +15,7 @@ import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
 import com.kii.extension.sdk.annotation.AppBindParam;
 import com.kii.extension.sdk.context.AppBindToolResolver;
+import com.kii.extension.sdk.entity.thingif.CommandDetail;
 import com.kii.extension.sdk.entity.thingif.EndNodeOfGateway;
 import com.kii.extension.sdk.entity.thingif.OnBoardingParam;
 import com.kii.extension.sdk.entity.thingif.OnBoardingResult;
@@ -101,6 +102,12 @@ public class ThingIFInAppService {
 	public String sendCommand(ThingCommand  command,String fullThingID){
 
 		return doExecWithRealThingID(fullThingID,(th)-> service.sendCommand(th,command));
+
+	}
+
+	public CommandDetail readCommand(String fullThingID, String commandID) {
+
+		return doExecWithRealThingID(fullThingID, (th) -> service.readCommand(th, commandID));
 
 	}
 
