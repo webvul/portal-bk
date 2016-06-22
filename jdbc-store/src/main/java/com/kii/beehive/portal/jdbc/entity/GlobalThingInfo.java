@@ -4,7 +4,7 @@ import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.jdbc.annotation.JdbcField;
 import com.kii.beehive.portal.jdbc.annotation.JdbcFieldType;
 
-public class GlobalThingInfo extends DBEntity{
+public class GlobalThingInfo extends DBEntity {
 
 	private String vendorThingID;
 
@@ -18,7 +18,11 @@ public class GlobalThingInfo extends DBEntity{
 
 	private String fullKiiThingID;
 
-	
+	private String schemaName;
+
+	private Integer schemaVersion;
+
+
 	public final static String ID_GLOBAL_THING = "id_global_thing";
 	public final static String VANDOR_THING_ID = "vendor_thing_id";
 	public final static String KII_APP_ID = "kii_app_id";
@@ -26,15 +30,17 @@ public class GlobalThingInfo extends DBEntity{
 	public final static String STATUS = "status";
 	public final static String CUSTOM_INFO = "custom_info";
 	public final static String FULL_KII_THING_ID = "full_kii_thing_id";
+	public final static String SCHEMA_NAME = "schema_name";
+	public final static String SCHEMA_VERSION = "schema_version";
 
 
 	@Override
-	@JdbcField(column=ID_GLOBAL_THING)
-	public Long getId(){
+	@JdbcField(column = ID_GLOBAL_THING)
+	public Long getId() {
 		return super.getId();
 	}
 
-	@JdbcField(column=VANDOR_THING_ID)
+	@JdbcField(column = VANDOR_THING_ID)
 	public String getVendorThingID() {
 		return vendorThingID;
 	}
@@ -43,7 +49,7 @@ public class GlobalThingInfo extends DBEntity{
 		this.vendorThingID = vendorThingID;
 	}
 
-	@JdbcField(column=KII_APP_ID)
+	@JdbcField(column = KII_APP_ID)
 	public String getKiiAppID() {
 		return kiiAppID;
 	}
@@ -52,7 +58,7 @@ public class GlobalThingInfo extends DBEntity{
 		this.kiiAppID = kiiAppID;
 	}
 
-	@JdbcField(column=THING_TYPE)
+	@JdbcField(column = THING_TYPE)
 	public String getType() {
 		return type;
 	}
@@ -61,7 +67,7 @@ public class GlobalThingInfo extends DBEntity{
 		this.type = type;
 	}
 
-	@JdbcField(column = STATUS,type= JdbcFieldType.Json)
+	@JdbcField(column = STATUS, type = JdbcFieldType.Json)
 	public String getStatus() {
 		return status;
 	}
@@ -70,7 +76,7 @@ public class GlobalThingInfo extends DBEntity{
 		this.status = status;
 	}
 
-	@JdbcField(column = CUSTOM_INFO ,type= JdbcFieldType.Json)
+	@JdbcField(column = CUSTOM_INFO, type = JdbcFieldType.Json)
 	public String getCustom() {
 		return consumer;
 	}
@@ -79,12 +85,30 @@ public class GlobalThingInfo extends DBEntity{
 		this.consumer = custom;
 	}
 
-	@JdbcField(column=FULL_KII_THING_ID)
+	@JdbcField(column = FULL_KII_THING_ID)
 	public String getFullKiiThingID() {
 		return fullKiiThingID;
 	}
 
-	public String getKiiThingID(){
+	@JdbcField(column = SCHEMA_NAME)
+	public String getSchemaName() {
+		return schemaName;
+	}
+
+	public void setSchemaName(String schemaName) {
+		this.schemaName = schemaName;
+	}
+
+	@JdbcField(column = SCHEMA_VERSION)
+	public Integer getSchemaVersion() {
+		return schemaVersion;
+	}
+
+	public void setSchemaVersion(Integer schemaVersion) {
+		this.schemaVersion = schemaVersion;
+	}
+
+	public String getKiiThingID() {
 		return kiiThingID;
 	}
 
@@ -96,29 +120,29 @@ public class GlobalThingInfo extends DBEntity{
 
 		ThingIDTools.ThingIDCombine idCombine = ThingIDTools.splitFullKiiThingID(fullkiiThingID);
 
-		this.kiiThingID=idCombine.kiiThingID;
-		this.kiiAppID=idCombine.kiiAppID;
+		this.kiiThingID = idCombine.kiiThingID;
+		this.kiiAppID = idCombine.kiiAppID;
 	}
 
 	@Override
-	public boolean equals(Object obj){
+	public boolean equals(Object obj) {
 
-		if(obj == null){
+		if (obj == null) {
 			return false;
 		}
 
-		if(obj instanceof GlobalThingInfo){
-			GlobalThingInfo  info=(GlobalThingInfo)obj;
+		if (obj instanceof GlobalThingInfo) {
+			GlobalThingInfo info = (GlobalThingInfo) obj;
 
 			return this.getId().equals(info.getId());
-		}else{
+		} else {
 			return false;
 		}
 	}
 
 
 	@Override
-	public int hashCode(){
+	public int hashCode() {
 		return this.getId().intValue();
 
 	}
@@ -144,6 +168,6 @@ public class GlobalThingInfo extends DBEntity{
 		builder.append("]");
 		return builder.toString();
 	}
-	
-	
+
+
 }
