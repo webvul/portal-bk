@@ -20,7 +20,7 @@ import com.kii.extension.ruleengine.drools.CommandExec;
 import com.kii.extension.ruleengine.drools.DroolsRuleService;
 import com.kii.extension.ruleengine.drools.entity.CurrThing;
 import com.kii.extension.ruleengine.drools.entity.MatchResult;
-import com.kii.extension.ruleengine.drools.entity.Thing;
+import com.kii.extension.ruleengine.drools.entity.SingleThing;
 import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -75,7 +75,6 @@ public class InitTest {
 
 	protected void initGlobal() throws IOException {
 
-		curr.setThing("NONE");
 
 		ruleLoader.addOrUpdateData(curr);
 
@@ -113,8 +112,6 @@ public class InitTest {
 		ruleLoader.addOrUpdateData(status);
 
 
-		curr.setThing(thingID);
-
 		ruleLoader.addOrUpdateData(curr);
 
 	}
@@ -132,7 +129,7 @@ public class InitTest {
 	}
 
 	protected void addThing(String id,String thingID) {
-		Thing thing=new Thing();
+		SingleThing thing=new SingleThing();
 		thing.setThingID(thingID);
 		thing.setTriggerID(id);
 

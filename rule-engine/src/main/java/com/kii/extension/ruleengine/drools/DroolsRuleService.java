@@ -61,20 +61,9 @@ public class DroolsRuleService {
 
 	private final ExternalCollect  external=new ExternalCollect();
 
-	public void setCurrThingID(String thingID){
-		this.currThing.setThing(thingID);
-
-		kieSession.update(currThingHandler,currThing);
-	}
 
 	public void setInitSign(boolean sign){
 		this.currThing.setInit(sign);
-
-		kieSession.update(currThingHandler,currThing);
-	}
-
-	public void rejectCurrThingID(){
-		this.currThing.setThing("NONE");
 
 		kieSession.update(currThingHandler,currThing);
 	}
@@ -163,10 +152,10 @@ public class DroolsRuleService {
 		kieSession = kieBase.newKieSession(ksconf,null);
 
 
-		kieSession.addEventListener(new DebugAgendaEventListener());
-		kieSession.addEventListener(new DebugRuleRuntimeEventListener());
-
-		currThing.setThing("NONE");
+		if(!isStream) {
+			kieSession.addEventListener(new DebugAgendaEventListener());
+			kieSession.addEventListener(new DebugRuleRuntimeEventListener());
+		}
 		currThingHandler=kieSession.insert(currThing);
 
 		externalHandler=kieSession.insert(external);
@@ -218,9 +207,6 @@ public class DroolsRuleService {
 
 	public synchronized void addCondition(String name,String rule){
 
-
-
-		this.rejectCurrThingID();
 
 		log.debug("add rule:"+rule);
 

@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +37,7 @@ import com.kii.extension.ruleengine.store.trigger.condition.Range;
 import com.kii.extension.ruleengine.store.trigger.condition.SimpleCondition;
 import com.kii.extension.ruleengine.store.trigger.multiple.GroupSummarySource;
 import com.kii.extension.ruleengine.store.trigger.multiple.MultipleSrcTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.multiple.ThingSource;
 
 @Component
 public class RuleGeneral {
@@ -75,7 +77,7 @@ public class RuleGeneral {
 
 
 
-	public String generMultipleDrlConfig(MultipleSrcTriggerRecord  record) {
+	public String generMultipleDrlConfig(MultipleSrcTriggerRecord  record,Map<String,Set<String>>  thingMap) {
 
 
 		StringBuilder sb=new StringBuilder();
@@ -91,12 +93,23 @@ public class RuleGeneral {
 		String multipleDrl=StrTemplate.generByMap(fullTemplate,params);
 
 		sb.append(multipleDrl);
-
 		record.getSummarySource().forEach((k, v) -> {
 
 			switch(v.getType()){
 
 				case thing:
+					String thingTemplate = loadUnit("thing");
+
+					ThingSource thingSrc=(ThingSource)v;
+
+					Map<String, String> things = new HashMap<>();
+					things.put("triggerID", record.getId());
+					things.put("express",generExpress(thingSrc.getExpress()));
+					things.put("name",k);
+
+					String thingUnit=StrTemplate.generByMap(thingTemplate,things);
+					sb.append("\n").append(thingUnit).append("\n");
+
 					break;
 				case summary:
 					String groupTemplate = loadUnit("group");
@@ -108,19 +121,6 @@ public class RuleGeneral {
 					groups.put("express",generExpress(groupSrc.getExpress()));
 					groups.put("name",k);
 
-					/*
-
-rule "${triggerID} multiple segment:group express ${name}"
-when
-    Trigger( $triggerID:triggerID, $things:things ,triggerID=="${triggerID}" && enable=true  )
-    CurrThing(thing memberOf $things)
-    ThingStatusInRule( $thingID:thingID memberOf $things,${express}  )
-then
-	insertLogical(new MemberMatchResult($triggerID,$thingID));
-end
-
-					 */
-
 					String groupUnit=StrTemplate.generByMap(groupTemplate,groups);
 					sb.append("\n").append(groupUnit).append("\n");
 
@@ -130,6 +130,8 @@ end
 			}
 
 		});
+
+		sb.append("\n\n");
 
 		return sb.toString();
 	}

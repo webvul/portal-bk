@@ -227,7 +227,7 @@ public class TriggerManager {
 		});
 
 		if(isStream.get()) {
-			service.createStreamSummaryTrigger(record, thingMap);
+//			service.createStreamSummaryTrigger(record, thingMap);
 		}else{
 			service.createSummaryTrigger(record,thingMap);
 		}

@@ -1,3 +1,4 @@
+/*
 package com.kii.extension.ruleengine.drools.rule
 
 import com.kii.extension.ruleengine.drools.entity.*;
@@ -9,8 +10,6 @@ rule "put all thing spec status value to multipleMap"
 	no-loop true
 when
 	$trigger:Trigger($triggerID:triggerID,type ==TriggerType.multiple)
-	Thing(triggerID==$triggerID,$name:name,$thingID:thingID,$fieldSet:fieldSet )
-	CurrThing(thing == $thingID ||  init==true )
 	ThingStatusInRule( thingID == $thingID, $values:values)
     $map:MultiplesValueMap(triggerID==$triggerID)
 then
@@ -20,5 +19,5 @@ then
     };
 end
 
-
+*/
 

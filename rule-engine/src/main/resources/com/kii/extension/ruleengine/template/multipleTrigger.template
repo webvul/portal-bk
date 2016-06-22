@@ -9,6 +9,7 @@ import com.kii.extension.ruleengine.drools.entity.*;
 
 
 rule "${triggerID} user custom segment:multiple "
+
 when
 	$ext:ExternalCollect()
     Trigger( $triggerID:triggerID, ( triggerID=="${triggerID}" &&  enable == true && type ==TriggerType.multiple) )

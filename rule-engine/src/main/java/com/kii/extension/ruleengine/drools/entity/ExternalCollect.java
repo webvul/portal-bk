@@ -63,4 +63,11 @@ public class ExternalCollect implements Serializable{
 
 	}
 
+
+	@Override
+	public String toString() {
+		return "ExternalCollect{" +
+				"externalValuesMap=" + externalValuesMap +
+				'}';
+	}
 }

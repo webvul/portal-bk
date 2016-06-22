@@ -13,6 +13,7 @@ rule "${triggerID} user custom segment:multiple "
    ${timer}
 when
     $ext:ExternalCollect()
+    CurrThing(init == false)
     Trigger( $triggerID:triggerID, ( triggerID=="${triggerID}" &&  enable == true && type ==TriggerType.multiple) )
     $muiMap:MultipleValueMap( triggerID==$triggerID, ${express}  )
     $result:ResultParam(triggerID==$triggerID)

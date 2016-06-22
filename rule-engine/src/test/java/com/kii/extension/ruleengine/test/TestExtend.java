@@ -11,7 +11,7 @@ import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
 
 public class TestExtend extends InitTest{
 
-	private Logger log= LoggerFactory.getLogger(TestDemo.class);
+	private Logger log= LoggerFactory.getLogger(TestExtend.class);
 
 
 

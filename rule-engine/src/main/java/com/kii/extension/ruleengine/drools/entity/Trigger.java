@@ -2,8 +2,6 @@ package com.kii.extension.ruleengine.drools.entity;
 
 import org.springframework.beans.BeanUtils;
 
-import com.google.common.base.Objects;
-
 import com.kii.extension.ruleengine.store.trigger.WhenType;
 
 public class Trigger {
@@ -66,20 +64,6 @@ public class Trigger {
 		return triggerID;
 	}
 
-
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		Trigger trigger = (Trigger) o;
-		return Objects.equal(triggerID,trigger.triggerID) ;
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hashCode(triggerID);
-	}
 
 	@Override
 	public String toString() {

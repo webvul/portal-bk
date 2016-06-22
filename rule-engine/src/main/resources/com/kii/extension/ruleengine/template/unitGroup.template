@@ -1,12 +1,13 @@
 
 
 rule "${triggerID} multiple segment:group express ${name}"
+
 when
     $ext:ExternalCollect()
 	Trigger($triggerID:triggerID=="${triggerID}" , enable == true)
-    $group:Group( triggerID==$triggerID , $things:things ,$name:name)
-    CurrThing(thing memberOf $things)
+    $summary:Summary( triggerID==$triggerID , $things:things ,name=="${name}" )
     $status:ThingStatusInRule( $thingID:thingID memberOf $things,${express}  )
 then
-	insertLogical(new MemberMatchResult($group,$status));
+	System.out.println("compute  group status summary "+$summary.getName());
+	insertLogical(new MemberMatchResult($summary,$status));
 end

@@ -2,30 +2,30 @@ package com.kii.extension.ruleengine.drools.rule
 
 import com.kii.extension.ruleengine.drools.entity.*;
 
-
-
 rule "copy  all multiples's unit summary value to multipleMap"
   no-loop true
 when
 	Trigger(type ==TriggerType.multiple , $triggerID:triggerID)
 	$summary:SummaryResult(triggerID==$triggerID)
+	$thing:ThingResult(triggerID==$triggerID)
 	$multiplesMap:MultiplesValueMap(triggerID==$triggerID)
 then
 	modify($multiplesMap){
-    	setSummaryValue($summary);
+    	setSummaryValue($summary),
+    	setThingValue($thing)
     };
     System.out.println("compute  summary value :"+$multiplesMap.getValues()+" to multiple map ");
 end
 
 
+
 rule "in unit,compute the  summary of  fieldName value: funName"
 when
+    CurrThing(init == false)
 	$trigger:Trigger(type==TriggerType.multiple,$triggerID:triggerID)
-	$summary:Summary(triggerID==$triggerID, funName=="sum" ,$name:name)
-	Group(triggerID==$triggerID&&name==$name,$things:things)
-	CurrThing(thing memberOf $things|| init == true)
+	$summary:Summary(triggerID==$triggerID, funName=="sum" ,$name:name,$things:things)
 	accumulate( $status : MemberMatchResult(thingID memberOf $things);
-                    $sum : sum($status.getSafeValue($summary.getFieldName()))
+                    $sum : sum($status.getNumValue($summary.getFieldName()))
                   )
 then
 	System.out.println("compute  sum summary "+$sum);
@@ -35,57 +35,53 @@ end
 
 rule "in unit,compute the  count of  fieldName value: funName"
 when
+    CurrThing(init == false)
 	$trigger:Trigger(type==TriggerType.multiple,$triggerID:triggerID)
-	$summary:Summary(triggerID==$triggerID, funName=="count" ,$name:name)
-	Group(triggerID==$triggerID&&name==$name,$things:things)
-	CurrThing(thing memberOf $things|| init == true)
+	$summary:Summary(triggerID==$triggerID, funName=="count" ,$name:name,$things:things)
 	accumulate( $status : MemberMatchResult(thingID memberOf $things);
                     $sum : count(1)
                   )
 then
-	System.out.println("compute  sum summary "+$sum);
+	System.out.println("compute  count summary "+$sum);
 	insert(new SummaryResult($triggerID,$name,$sum));
 end
 
 rule "in unit,compute the  max of  fieldName value: funName"
 when
+    CurrThing(init == false)
 	$trigger:Trigger(type==TriggerType.multiple,$triggerID:triggerID)
-	$summary:Summary(triggerID==$triggerID, funName=="max" ,$name:name)
-	Group(triggerID==$triggerID&&name==$name,$things:things)
-	CurrThing(thing memberOf $things|| init == true)
+	$summary:Summary(triggerID==$triggerID, funName=="max" ,$name:name,$things:things)
 	accumulate( $status : MemberMatchResult(thingID memberOf $things);
-                    $sum : max($status.getSafeValue($summary.getFieldName()))
+                    $sum : max($status.getNumValue($summary.getFieldName()))
                   )
 then
-	System.out.println("compute  sum summary "+$sum);
+	System.out.println("compute  max summary "+$sum);
 	insert(new SummaryResult($triggerID,$name,$sum));
 end
 
 rule "in unit,compute the  min of  fieldName value: funName"
 when
+    CurrThing(init == false)
 	$trigger:Trigger(type==TriggerType.multiple,$triggerID:triggerID)
-	$summary:Summary(triggerID==$triggerID, funName=="min" ,$name:name)
-	Group(triggerID==$triggerID&&name==$name,$things:things)
-	CurrThing(thing memberOf $things|| init == true)
+	$summary:Summary(triggerID==$triggerID, funName=="min" ,$name:name,$things:things)
 	accumulate( $status : MemberMatchResult(thingID memberOf $things);
-                    $sum : min($status.getSafeValue($summary.getFieldName()))
+                    $sum : min($status.getNumValue($summary.getFieldName()))
                   )
 then
-	System.out.println("compute  sum summary "+$sum);
+	System.out.println("compute  min summary "+$sum);
 	insert(new SummaryResult($triggerID,$name,$sum));
 end
 
 
 rule "in unit,compute the  avg of  fieldName value: funName"
 when
+    CurrThing(init == false)
 	$trigger:Trigger(type==TriggerType.multiple,$triggerID:triggerID)
-	$summary:Summary(triggerID==$triggerID, funName=="average" ,$name:name)
-	Group(triggerID==$triggerID&&name==$name,$things:things)
-	CurrThing(thing memberOf $things|| init == true)
+	$summary:Summary(triggerID==$triggerID, funName=="average" ,$name:name,$things:things)
 	accumulate( $status : MemberMatchResult(thingID memberOf $things);
-                    $sum : average($status.getSafeValue($summary.getFieldName()))
+                    $sum : average($status.getNumValue($summary.getFieldName()))
                   )
 then
-	System.out.println("compute  sum summary "+$sum);
+	System.out.println("compute  avg summary "+$sum);
 	insert(new SummaryResult($triggerID,$name,$sum));
 end

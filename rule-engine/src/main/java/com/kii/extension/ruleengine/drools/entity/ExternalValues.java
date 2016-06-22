@@ -3,7 +3,6 @@ package com.kii.extension.ruleengine.drools.entity;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public class ExternalValues implements Serializable {
 
@@ -33,19 +32,6 @@ public class ExternalValues implements Serializable {
 		values.put(key,value);
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		ExternalValues that = (ExternalValues) o;
-		return Objects.equals(name, that.name);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(name);
-	}
-	
 	public ExternalValues merge(ExternalValues newV) {
 
 		values.putAll(newV.getValues());

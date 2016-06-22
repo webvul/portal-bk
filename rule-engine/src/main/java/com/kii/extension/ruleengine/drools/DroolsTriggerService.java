@@ -15,8 +15,6 @@ import com.kii.extension.ruleengine.drools.entity.MatchResult;
 import com.kii.extension.ruleengine.drools.entity.MultiplesValueMap;
 import com.kii.extension.ruleengine.drools.entity.ResultParam;
 import com.kii.extension.ruleengine.drools.entity.Summary;
-import com.kii.extension.ruleengine.drools.entity.SummaryValueMap;
-import com.kii.extension.ruleengine.drools.entity.ThingCol;
 import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
 import com.kii.extension.ruleengine.drools.entity.Trigger;
 import com.kii.extension.ruleengine.drools.entity.TriggerData;
@@ -39,7 +37,7 @@ public class DroolsTriggerService {
 
 	private final Map<String, Trigger> triggerMap=new ConcurrentHashMap<>();
 
-	private final Map<String,Map<String,ThingCol>> thingColMap =new ConcurrentHashMap<>();
+	private final Map<String,Map<String,Summary>> thingColMap =new ConcurrentHashMap<>();
 
 
 	public void clear(){
@@ -55,7 +53,7 @@ public class DroolsTriggerService {
 		Map<String,Object> map=new HashMap<>();
 
 		map.put("cloud",cloudService.getEngineEntitys());
-		map.put("stream",streamService.getEngineEntitys());
+//		map.put("stream",streamService.getEngineEntitys());
 
 		return map;
 
@@ -110,32 +108,15 @@ public class DroolsTriggerService {
 
 	}
 
-	public void addSummaryTrigger(Trigger triggerInput,String ruleContent){
-
-
-		Trigger trigger=new Trigger(triggerInput);
-		triggerMap.put(trigger.getTriggerID(),trigger);
-
-		getService(trigger).addCondition("rule"+trigger.getTriggerID(),ruleContent);
-
-		getService(trigger).addOrUpdateData(trigger);
-
-		SummaryValueMap map=new SummaryValueMap();
-		map.setTriggerID(trigger.getTriggerID());
-		getService(trigger).addOrUpdateData(map);
-
-	}
-
-
 	public void addTriggerData(TriggerData data) {
 
 		Trigger trigger=triggerMap.get(data.getTriggerID());
 
 		getService(trigger).addOrUpdateData(data);
 
-		if(data instanceof ThingCol) {
+		if(data instanceof Summary) {
 
-			thingColMap.computeIfAbsent(trigger.getTriggerID(), (id) -> new HashMap<>()).put(((ThingCol) data).getName(), (ThingCol)data);
+			thingColMap.computeIfAbsent(trigger.getTriggerID(), (id) -> new HashMap<>()).put((data).getName(), (Summary) data);
 		}
 	}
 
@@ -148,12 +129,8 @@ public class DroolsTriggerService {
 
 		getService(trigger).addCondition("slide-rule"+summary.getTriggerID()+summary.getName(),drl);
 
-		if(summary instanceof ThingCol) {
 
-			thingColMap.computeIfAbsent(trigger.getTriggerID(), (id) -> new HashMap<>()).put(((ThingCol) summary).getName(), summary);
-		}
-
-//		thingColMap.computeIfAbsent(trigger.getTriggerID(),(id)->new HashMap<>()).put(summary.getSummaryField(),summary);
+		thingColMap.computeIfAbsent(trigger.getTriggerID(), (id) -> new HashMap<>()).put((summary).getName(), summary);
 
 	}
 
@@ -161,7 +138,7 @@ public class DroolsTriggerService {
 
 		Trigger trigger=triggerMap.get(triggerID);
 
-		ThingCol data= thingColMap.get(triggerID).get(name);
+		Summary data= thingColMap.get(triggerID).get(name);
 
 		data.setThingCol(newThings);
 
@@ -177,7 +154,7 @@ public class DroolsTriggerService {
 		getService(trigger).removeData(trigger);
 		getService(trigger).removeCondition("rule"+triggerID);
 
-		Map<String,ThingCol> map= thingColMap.remove(triggerID);
+		Map<String,Summary> map= thingColMap.remove(triggerID);
 		if(map != null ){
 			map.values().forEach(summary-> getService(trigger).removeData(summary));
 		}
@@ -190,7 +167,6 @@ public class DroolsTriggerService {
 
 		trigger.setEnable(true);
 
-		getService(trigger).rejectCurrThingID();
 		getService(trigger).addOrUpdateData(trigger);
 
 	}
@@ -207,6 +183,8 @@ public class DroolsTriggerService {
 	public void setInitSign(boolean sign){
 		cloudService.setInitSign(sign);
 		streamService.setInitSign(sign);
+
+		fireCondition();
 	}
 
 	public void initThingStatus(ThingStatusInRule newStatus){
@@ -221,8 +199,6 @@ public class DroolsTriggerService {
 		cloudService.addOrUpdateData(newStatus);
 		streamService.addOrUpdateData(newStatus);
 
-		setCurrThingID(newStatus.getThingID());
-
 		fireCondition();
 	}
 
@@ -232,13 +208,9 @@ public class DroolsTriggerService {
 		cloudService.addOrUpdateExternal(newValues);
 		streamService.addOrUpdateExternal(newValues);
 
+		fireCondition();
 	}
 
-	private void setCurrThingID(String fullThingID){
-
-		cloudService.setCurrThingID(fullThingID);
-		streamService.setCurrThingID(fullThingID);
-	}
 
 	public  void fireCondition(){
 

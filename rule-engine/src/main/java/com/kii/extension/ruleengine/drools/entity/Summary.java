@@ -1,22 +1,36 @@
 package com.kii.extension.ruleengine.drools.entity;
 
-import com.google.common.base.Objects;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
-public class Summary extends ThingCol implements TriggerData{
+public class Summary  extends  TriggerData{
 
-	private String triggerID;
 
 	private String funName;
 
 	private String fieldName;
 
-	public String getTriggerID() {
-		return triggerID;
+	protected Set<String> things=new HashSet<>();
+
+
+	public Set<String> getThings() {
+		return things;
 	}
 
-	public void setTriggerID(String triggerID) {
-		this.triggerID = triggerID;
+	public void setThings(Set<String> things) {
+		this.things=things;
 	}
+
+
+	public void addThing(String thing){
+		things.add(thing);
+	}
+
+	public void setThingCol(Collection<String> things) {
+		this.things.addAll(things);
+	}
+
 
 	public String getFunName() {
 		return funName;
@@ -34,28 +48,15 @@ public class Summary extends ThingCol implements TriggerData{
 		this.fieldName = fieldName;
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		Summary summary = (Summary) o;
-		return Objects.equal(triggerID,summary.triggerID)  &&
-				Objects.equal(super.getName(), summary.getName());
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hashCode(triggerID, super.getName());
-	}
 
 	@Override
 	public String toString() {
 		return "Summary{" +
-				"triggerID='" + triggerID + '\'' +
+				"triggerID='" + super.getTriggerID() + '\'' +
 				", funName='" + funName + '\'' +
 				", fieldName='" + fieldName + '\'' +
-				", summaryField='" + name + '\'' +
-				", things=" + super.getThings() +
+				", name='" + super.getName() + '\'' +
+				", things=" + things +
 				'}';
 	}
 }

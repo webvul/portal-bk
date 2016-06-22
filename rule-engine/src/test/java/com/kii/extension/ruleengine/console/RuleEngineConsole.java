@@ -3,6 +3,7 @@ package com.kii.extension.ruleengine.console;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -40,15 +41,17 @@ public class RuleEngineConsole {
 		Set<String> triggerSet=new HashSet<>();
 		Map<String,Set<String>>  thingMap=new HashMap<>();
 
-		engine.updateExternalValue("demo","one","111");
+		engine.updateExternalValue("demo","one",111);
 
-		engine.updateExternalValue("demo","two","222");
+		engine.updateExternalValue("demo","two",222);
 
 
 		engine.updateThingStatus("a",getStatus("foo=100,bar=-10"),new Date());
-		engine.updateThingStatus("b",getStatus("foo=10,bar=0"),new Date());
-		engine.updateThingStatus("c",getStatus("foo=0,bar=10"),new Date());
-		engine.updateThingStatus("d",getStatus("foo=-10,bar=100"),new Date());
+		engine.updateThingStatus("b",getStatus("foo=10,bar=-100"),new Date());
+		engine.updateThingStatus("c",getStatus("foo=-10,bar=10"),new Date());
+		engine.updateThingStatus("d",getStatus("foo=-100,bar=100"),new Date());
+
+
 
 		Set<String> ths=new HashSet<>();
 		ths.add("a");
@@ -57,6 +60,15 @@ public class RuleEngineConsole {
 		ths.add("d");
 
 		thingMap.put("comm",ths);
+		thingMap.put("one",ths);
+		thingMap.put("two",ths);
+		thingMap.put("three", Collections.singleton("c"));
+		thingMap.put("four", Collections.singleton("d"));
+		thingMap.put("five",ths);
+		thingMap.put("six",ths);
+		thingMap.put("seven", Collections.singleton("b"));
+		thingMap.put("eight", Collections.singleton("a"));
+
 
 		while(true){
 
@@ -123,6 +135,7 @@ public class RuleEngineConsole {
 					System.out.println("create trigger "+triggerID);
 
 					triggerSet.add(id);
+
 				}
 
 				if(cmd.equals("newSimple")){
@@ -211,10 +224,9 @@ public class RuleEngineConsole {
 		if(!params.contains(",")){
 			fillStatus(status, params);
 		}else {
-			for (String param : StringUtils.split(params, ",")) {
+			for (String param : params.split(",")) {
 				fillStatus(status, param);
 			}
-			;
 		}
 
 		return status;
@@ -226,6 +238,11 @@ public class RuleEngineConsole {
 		String key=param.substring(0,idx);
 		String value=param.substring(idx+1);
 
-		status.setField(key,value);
+		try{
+			Double val=Double.parseDouble(value);
+			status.setField(key,val);
+		}catch(NumberFormatException e) {
+			status.setField(key, value);
+		}
 	}
 }

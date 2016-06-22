@@ -53,8 +53,8 @@ public class TestMulTrigger extends TestInit {
 		record.setPredicate(predicate);
 
 		ThingSource  thing=new ThingSource();
-		thing.addStateName("foo");
-		thing.addStateName("bar");
+//		thing.addStateName("foo");
+//		thing.addStateName("bar");
 
 		record.addSource("one",thing);
 

@@ -2,9 +2,6 @@ package com.kii.extension.ruleengine.drools.entity;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-
-import com.google.common.base.Objects;
 
 public class MultiplesValueMap {
 
@@ -14,30 +11,20 @@ public class MultiplesValueMap {
 
 	public void setSummaryValue(SummaryResult result){
 
-		valueMap.put(result.getSummaryField(),result.getValue());
-	}
-
-
-	public void setFieldValueSet(String name, Set<String> fieldSet, Map<String,Object> values){
-
-		if(fieldSet.isEmpty()){
-
-			values.forEach((k,v)->{
-				valueMap.put(name+"."+k,v);
-			});
-
-		}else {
-
-			fieldSet.forEach((field) -> {
-				String fullName = name + "." + field;
-				valueMap.put(fullName, values.get(field));
-			});
-		}
-
-	}
-
-	public void setUnitValue(String  name,Object value){
+		String name=result.getName();
+		Object value=result.getValue();
 		valueMap.put(name,value);
+
+	}
+
+	public void setThingValue(ThingResult result){
+
+		String name=result.getName();
+
+		Map<String,Object> map=result.getValue();
+		map.forEach((k,v)->{
+			valueMap.put(name+"."+k,v);
+		});
 	}
 
 	public Map<String,Object> getValues(){
@@ -45,7 +32,12 @@ public class MultiplesValueMap {
 	}
 
 	public Object getValue(String key){
-		return valueMap.get(key);
+
+		if(!valueMap.containsKey(key)){
+			return 0;
+		}
+		return  valueMap.get(key);
+
 	}
 
 
@@ -76,16 +68,4 @@ public class MultiplesValueMap {
 				'}';
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		MultiplesValueMap that = (MultiplesValueMap) o;
-		return Objects.equal(triggerID, that.triggerID);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hashCode(triggerID);
-	}
 }
