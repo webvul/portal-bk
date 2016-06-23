@@ -347,5 +347,9 @@ CREATE TABLE `industry_template` (
   `name` varchar(20) NOT NULL,
   `version` varchar(10) NOT NULL,
   `content` mediumtext,
+  `create_by` varchar(45) DEFAULT NULL,
+  `create_date` datetime DEFAULT NULL,
+  `modify_by` varchar(45) DEFAULT NULL,
+  `modify_date` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8;

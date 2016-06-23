@@ -48,7 +48,13 @@ public class IndustryTemplateManager {
         return dao.findByField(fields, values);
 
     }
+    public IndustryTemplate findByID(Long id) {
+        return dao.findByID(id);
+    }
 
+    public void updateIndustryTemplate(IndustryTemplate industryTemplate) {
+        dao.updateEntityAllByID(industryTemplate);
+    }
     /**
      * add industry template
      *
