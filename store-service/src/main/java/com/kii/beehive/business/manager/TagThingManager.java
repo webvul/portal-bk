@@ -101,13 +101,13 @@ public class TagThingManager {
 		long thingID = globalThingDao.saveOrUpdate(thingInfo);
 
 		// set location tag and location tag-thing relation
-		if (Strings.isBlank(location)) {
-			location = DEFAULT_LOCATION;
-		}
+		//if (Strings.isBlank(location)) {
+		//	location = DEFAULT_LOCATION;
+		//}
 
 
 		if (thingInfo.getId() == null) { //create
-			this.saveOrUpdateThingLocation(thingID, location);
+			//this.saveOrUpdateThingLocation(thingID, location);
 
 			ThingUserRelation relation = new ThingUserRelation();
 			relation.setUserId(thingInfo.getCreateBy());
