@@ -20,6 +20,15 @@ public class BeehiveUser extends  PortalEntity {
 
 	private String  roleName;
 
+	private Integer  faceSubjectId; // face++
+
+	public Integer getFaceSubjectId() {
+		return faceSubjectId;
+	}
+
+	public void setFaceSubjectId(Integer faceSubjectId) {
+		this.faceSubjectId = faceSubjectId;
+	}
 
 	private String activityToken;
 

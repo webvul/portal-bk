@@ -1,11 +1,15 @@
 package com.kii.beehive.portal.web.controller;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,8 +19,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.CollectUtils;
 import com.kii.beehive.portal.entitys.PermissionTree;
@@ -213,5 +219,32 @@ public class UserController {
 				.map((e) -> new UserRestBean(e))
 				.collect(Collectors.toCollection(ArrayList::new));
 
+	}
+
+
+	@RequestMapping(value="/photo", method=RequestMethod.POST , consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+	public @ResponseBody BeehiveUser uploadFacePhoto(
+			@RequestParam(value = "userId") String userId,
+			@RequestParam(value = "photos") CommonsMultipartFile[] photos) throws IOException {
+
+		Map<String, Object> map = new HashMap<>();
+		map.put("userId", userId);
+
+		if ( photos.length == 0 ) {
+			throw new PortalException(ErrorCode.INVALID_INPUT, HttpStatus.BAD_REQUEST);
+		}
+		List<File> photoFiles = new ArrayList<>();
+		for (CommonsMultipartFile photo : photos) {
+			File photoFile = new File(userManager.getFacePhotoDir() + userId + "-" + UUID.randomUUID() + "-" + photo.getOriginalFilename());
+			byte[] bytes = photo.getBytes();
+			BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(photoFile));
+			stream.write(bytes);
+			stream.close();
+			photoFiles.add(photoFile);
+		}
+
+		BeehiveUser user = userManager.updateUserWithFace(userId, photoFiles);
+
+		return user;
 	}
 }

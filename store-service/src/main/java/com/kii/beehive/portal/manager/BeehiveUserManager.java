@@ -1,19 +1,24 @@
 package com.kii.beehive.portal.manager;
 
+import javax.annotation.PostConstruct;
+import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.kii.beehive.business.service.KiiUserService;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.StringRandomTools;
 import com.kii.beehive.portal.entitys.PermissionTree;
 import com.kii.beehive.portal.exception.UnauthorizedException;
+import com.kii.beehive.portal.extend.FacePlusPlusService;
+import com.kii.beehive.portal.extend.entitys.FaceUser;
 import com.kii.beehive.portal.helper.RuleSetService;
 import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
 import com.kii.beehive.portal.jdbc.dao.TeamDao;
@@ -47,6 +52,9 @@ public class BeehiveUserManager {
 	@Autowired
 	private RuleSetService ruleService;
 
+	@Autowired
+	private FacePlusPlusService facePlusPlusService;
+
 
 
 	@Autowired
@@ -59,8 +67,24 @@ public class BeehiveUserManager {
 	@Autowired
 	private TeamDao teamDao;
 
+	@Value("${face.photo.dir}")
+	private String facePhotoDir;
 
+	public String getFacePhotoDir() {
+		return facePhotoDir;
+	}
 
+	@PostConstruct
+	public void init() throws JsonProcessingException {
+		//init dir
+		File facePhotoDirFile = new File(facePhotoDir);
+		if (!facePhotoDirFile.exists()) {
+			boolean isMkdirs = facePhotoDirFile.mkdirs();
+			if (!isMkdirs) {
+				throw new RuntimeException("create face++ upload photo dir error ! ");
+			}
+		}
+	}
 
 	public PermissionTree getUsersPermissonTree(String userID){
 
@@ -180,6 +204,38 @@ public class BeehiveUserManager {
 
 
 	}
+
+	/**
+	 *
+	 */
+	public BeehiveUser updateUserWithFace( String userId, List<File> photoFiles ){
+		BeehiveUser user = userDao.getUserByID(userId);
+		if(user == null) {
+		}
+		List<Integer> photoIds = new ArrayList<>();
+		List<Map<String, Object>> photoList = facePlusPlusService.buildUploadPhotos(photoFiles);
+		for (Map<String, Object> photoMap : photoList) {
+			Integer photoId = (Integer) ( (Map<String, Object>)photoMap.get("data") ).get("id");
+			if(photoId == null) {
+				throw new RuntimeException("upload face++ photo error ! ");
+			}
+			photoIds.add(photoId);
+		}
+		FaceUser faceUser = new FaceUser();
+		faceUser.setSubject_type(FaceUser.SUBJECT_TYPE_EMPLOYEE);
+		faceUser.setName(user.getUserName());
+		faceUser.setPhoto_ids(photoIds);
+		Map<String, Object> userMap = facePlusPlusService.buildSubject(faceUser);
+		Integer faceSubjectId = (Integer) ( (Map<String, Object>)userMap.get("data") ).get("id");
+		if(faceSubjectId == null){
+			throw new RuntimeException("register face++ user error ! ");
+		}
+		//
+		user.setFaceSubjectId(faceSubjectId);
+		userDao.updateEntity(user,userId);
+		return user;
+	}
+
 
 
 	public List<BeehiveUser> simpleQueryUser(Map<String, Object> queryMap) {

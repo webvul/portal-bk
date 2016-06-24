@@ -30,5 +30,9 @@
 			<bean class="com.kii.beehive.portal.web.help.AuthInterceptor" />
 		</mvc:interceptor>
 	</mvc:interceptors>
+	<!-- 配置MultipartResolver 用于文件上传 使用spring的CommosMultipartResolver -->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		
+	</bean>
 
 </beans>
