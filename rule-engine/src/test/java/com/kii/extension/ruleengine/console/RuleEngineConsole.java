@@ -17,8 +17,9 @@ import org.springframework.util.StringUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.extension.ruleengine.EngineService;
-import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
+import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.multiple.MultipleSrcTriggerRecord;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
@@ -119,44 +120,46 @@ public class RuleEngineConsole {
 
 					thingMap.put(summaryID,set);
 				}
-				if (cmd.equals("newMul")){
+				if (cmd.equals("newTrigger")){
 
 					String id=String.valueOf(System.currentTimeMillis());
 
 					String json=getFileContext(arrays[1]);
 
-					MultipleSrcTriggerRecord record=mapper.readValue(json,MultipleSrcTriggerRecord.class);
+					TriggerRecord record=mapper.readValue(json,TriggerRecord.class);
 					record.setId(id);
+					record.setRecordStatus(TriggerRecord.StatusType.enable);
 
+					switch(record.getType()) {
+						case Simple:
+							SimpleTriggerRecord rec=(SimpleTriggerRecord)record;
+							char thID= (char) ((int)rec.getSource().getThingID()+'a');
 
-					engine.createMultipleSourceTrigger(record,thingMap);
+							engine.createSimpleTrigger(String.valueOf(thID),rec);
+
+							break;
+						case Multiple:
+
+							engine.createMultipleSourceTrigger((MultipleSrcTriggerRecord) record, thingMap);
+							break;
+						case Group:
+							GroupTriggerRecord recGroup=(GroupTriggerRecord)record;
+
+							engine.createGroupTrigger(recGroup, thingMap.get(recGroup.getSource().getTagList().iterator().next()));
+
+							break;
+						case Summary:
+
+							SummaryTriggerRecord recSummary=(SummaryTriggerRecord)record;
+
+							engine.createSummaryTrigger(recSummary, thingMap);
+
+							break;
+					}
 					triggerID=id;
 
 					System.out.println("create trigger "+triggerID);
 
-					triggerSet.add(id);
-
-				}
-
-				if(cmd.equals("newSimple")){
-					String id=String.valueOf(System.currentTimeMillis());
-
-					String thingID=arrays[1];
-
-					String json=getFileContext(arrays[2]);
-
-					RuleEnginePredicate predicate=mapper.readValue(json,RuleEnginePredicate.class);
-
-					SimpleTriggerRecord record=new SimpleTriggerRecord();
-					record.setPredicate(predicate);
-					record.setId(id);
-					record.setRecordStatus(TriggerRecord.StatusType.disable);
-					record.setSource(new SimpleTriggerRecord.ThingID());
-
-					engine.createSimpleTrigger(thingID,record);
-
-					triggerID=id;
-					System.out.println("create trigger "+triggerID);
 					triggerSet.add(id);
 
 				}

@@ -1,7 +1,7 @@
 {
   "predicate" : {
     "condition" : {
-      "field" : "comm",
+      "field" : "foo",
       "upperIncluded" : false,
       "lowerLimit" : 1,
       "lowerIncluded" : true,
@@ -27,34 +27,15 @@
     "name" : "ext_b",
     "express" : "$e{demo.two}"
   } ],
-  "type" : "Multiple",
-  "summarySource" : {
-    "comm" : {
-      "stateName" : "NULL_STATE",
-      "function" : "count",
-      "source" : {
-        "thingList" : [ ],
-        "tagList" : [ "Location-2F-room1", "Location-2F_room1" ],
-        "andExpress" : false
-      },
-      "condition" : {
-        "clauses" : [ {
-          "field" : "foo",
-          "upperIncluded" : false,
-          "lowerLimit" : 0,
-          "lowerIncluded" : false,
-          "type" : "range"
-        }, {
-          "field" : "bar",
-          "upperLimit" : 0,
-          "upperIncluded" : false,
-          "lowerIncluded" : false,
-          "type" : "range"
-        } ],
-        "type" : "and"
-      },
-      "type" : "summary"
-    }
+  "type" : "Group",
+  "policy" : {
+    "groupPolicy" : "Percent",
+    "criticalNumber" : 75
+  },
+  "source" : {
+    "thingList" : [ ],
+    "tagList" : [ "one"],
+    "andExpress" : false
   },
   "triggerID" : "202"
 }

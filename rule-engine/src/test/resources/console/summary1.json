@@ -1,6 +1,6 @@
 {
   "predicate" : {
-    "express" :"$p{three.power}!=0",
+    "express" :"$p{one}>$p{two}",
     "triggersWhen":"CONDITION_TRUE"
   },
   "targets" : [ {
@@ -21,64 +21,8 @@
     "name" : "ext_b",
     "express" : "$e{demo.two}"
   } ],
-  "type" : "Multiple",
+  "type" : "Summary",
   "summarySource" : {
-    "eight" : {
-      "thingID" : "a",
-      "type" : "thing",
-      "condition" : {
-        "clauses" : [  {
-          "field" : "bar",
-          "upperLimit" : 0,
-          "upperIncluded" : false,
-          "lowerIncluded" : false,
-          "type" : "range"
-        } ],
-        "type" : "and"
-      }
-    },
-    "three" : {
-      "thingID" : "c",
-      "type" : "thing",
-      "condition" : {
-        "clauses" : [  {
-          "field" : "bar",
-          "upperLimit" : 0,
-          "upperIncluded" : false,
-          "lowerIncluded" : false,
-          "type" : "range"
-        } ],
-        "type" : "and"
-      }
-    },
-    "four" : {
-      "thingID" : "d",
-      "type" : "thing",
-      "condition" : {
-        "clauses" : [  {
-          "field" : "bar",
-          "upperLimit" : 0,
-          "upperIncluded" : false,
-          "lowerIncluded" : false,
-          "type" : "range"
-        } ],
-        "type" : "and"
-      }
-    },
-    "seven" : {
-      "thingID" : "b",
-      "type" : "thing",
-      "condition" : {
-        "clauses" : [  {
-          "field" : "foo",
-          "lowerLimit" : 0,
-          "upperIncluded" : false,
-          "lowerIncluded" : false,
-          "type" : "range"
-        } ],
-        "type" : "and"
-      }
-    },
     "one" : {
       "stateName" : "foo",
       "function" : "average",
@@ -119,7 +63,6 @@
       },
       "type" : "summary"
     }
-
 
   },
   "triggerID" : "000"
