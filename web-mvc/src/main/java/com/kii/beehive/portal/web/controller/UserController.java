@@ -222,7 +222,7 @@ public class UserController {
 	}
 
 
-	@RequestMapping(value="/photo", method=RequestMethod.POST , consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+	@RequestMapping(value="/users/photo", method=RequestMethod.POST , consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
 	public @ResponseBody BeehiveUser uploadFacePhoto(
 			@RequestParam(value = "userId") String userId,
 			@RequestParam(value = "photos") CommonsMultipartFile[] photos) throws IOException {
