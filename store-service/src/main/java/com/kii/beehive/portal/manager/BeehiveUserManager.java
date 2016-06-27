@@ -211,6 +211,10 @@ public class BeehiveUserManager {
 	public BeehiveUser updateUserWithFace( String userId, List<File> photoFiles ){
 		BeehiveUser user = userDao.getUserByID(userId);
 		if(user == null) {
+			throw new RuntimeException("can not find user ! ");
+		}
+		if( !StringUtils.isEmpty(user.getFaceSubjectId()) ) {
+			throw new RuntimeException("user already registered face++! ");
 		}
 		List<Integer> photoIds = new ArrayList<>();
 		List<Map<String, Object>> photoList = facePlusPlusService.buildUploadPhotos(photoFiles);
