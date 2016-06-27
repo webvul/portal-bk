@@ -9,8 +9,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.kii.extension.ruleengine.EngineService;
 import com.kii.extension.ruleengine.drools.CommandExec;
+import com.kii.extension.ruleengine.store.trigger.CommandToThing;
 import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
-import com.kii.extension.ruleengine.store.trigger.TargetAction;
 import com.kii.extension.sdk.entity.thingif.Action;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
@@ -69,15 +69,14 @@ public class TestInit {
 
 	public ExecuteTarget getTarget(){
 
-		ExecuteTarget target=new ExecuteTarget();
-		TargetAction action=new TargetAction();
+		CommandToThing target=new CommandToThing();
+
 		ThingCommand command=new ThingCommand();
 		Action thingAction=new Action();
 		thingAction.setField("power",true);
 		command.addAction("ON",thingAction);
 
-		action.setCommand(command);
-		target.setCommand(action);
+		target.setCommand(command);
 
 		return target;
 	}

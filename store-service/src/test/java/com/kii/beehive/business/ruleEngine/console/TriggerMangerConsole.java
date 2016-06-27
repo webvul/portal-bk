@@ -16,11 +16,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kii.beehive.business.ruleengine.CommandExecuteService;
 import com.kii.beehive.business.ruleengine.ThingStatusChangeCallback;
 import com.kii.beehive.business.ruleengine.TriggerManager;
+import com.kii.extension.ruleengine.store.trigger.CommandToThing;
 import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
 import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.TargetAction;
 import com.kii.extension.ruleengine.store.trigger.TriggerGroupPolicy;
 import com.kii.extension.ruleengine.store.trigger.TriggerGroupPolicyType;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
@@ -177,14 +177,12 @@ public class TriggerMangerConsole {
 
 	private static List<ExecuteTarget> getTargets() {
 		List<ExecuteTarget> targets=new ArrayList<>();
-		ExecuteTarget target=new ExecuteTarget();
-		TargetAction command=new TargetAction();
+		CommandToThing target=new CommandToThing();
 		ThingCommand thingCmd=new ThingCommand();
 		Action action=new Action();
 		action.setField("power","ON");
 		thingCmd.addAction("power",action);
-		command.setCommand(thingCmd);
-		target.setCommand(command);
+		target.setCommand(thingCmd);
 		targets.add(target);
 		return targets;
 	}

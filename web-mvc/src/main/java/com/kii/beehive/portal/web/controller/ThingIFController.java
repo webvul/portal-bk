@@ -1,33 +1,28 @@
 package com.kii.beehive.portal.web.controller;
 
+
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
+
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.business.service.ThingIFCommandService;
-import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.CollectUtils;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.entity.ThingCommandDetailRestBean;
-import com.kii.beehive.portal.web.entity.ThingCommandRestBean;
 import com.kii.beehive.portal.web.exception.PortalException;
-import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
-import com.kii.extension.ruleengine.store.trigger.TagSelector;
 import com.kii.extension.sdk.entity.thingif.CommandDetail;
+
 
 @RestController
 @RequestMapping(value = "/thing-if")
@@ -39,69 +34,6 @@ public class ThingIFController extends AbstractThingTagController {
 
 	@Autowired
 	private ThingIFCommandService thingIFCommandService;
-
-	/**
-	 * 发送命令
-	 * POST /thing-if/command
-	 * <p>
-	 * refer to doc "Beehive API - Thing-IF API" for request/response details
-	 *
-	 * @param restBeanList
-	 */
-	@RequestMapping(value = "/command", method = {RequestMethod.POST})
-	public List<List<Map<String, Object>>> sendCommand(@RequestBody List<ThingCommandRestBean> restBeanList) {
-
-		// construct command request
-		List<ExecuteTarget> targets = new ArrayList<>();
-		for (ThingCommandRestBean restBean : restBeanList) {
-			TagSelector ts = restBean.getSelector();
-			if (ts != null && (!CollectionUtils.isEmpty(ts.getTagList()) || !CollectionUtils.isEmpty(ts.getThingList()))) {
-				if (!CollectionUtils.isEmpty(ts.getTagList())) {
-					List<TagIndex> tags = this.getTags(ts.getTagList());
-					this.checkPermissionOnTags(tags);
-				}
-
-				if (!CollectionUtils.isEmpty(ts.getThingList())) {
-					List<String> tempThingList = ts.getThingList().stream().map(String::valueOf).collect(Collectors
-							.toList());
-					List<GlobalThingInfo> things = this.getThings(tempThingList);
-					this.checkPermissionOnThings(things);
-
-				}
-			} else {
-				throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus
-						.BAD_REQUEST);
-			}
-
-			targets.add(restBean);
-		}
-
-		String userID = AuthInfoStore.getUserID();
-
-		// send command request
-		List<Map<Long, String>> commandResultList = thingIFCommandService.doCommand(targets, userID);
-
-		// format command response
-		List<List<Map<String, Object>>> responseList = new ArrayList<>();
-
-		for (Map<Long, String> commandResult : commandResultList) {
-
-			List<Map<String, Object>> subResponseList = new ArrayList<>();
-
-			Set<Map.Entry<Long, String>> entrySet = commandResult.entrySet();
-			for (Map.Entry<Long, String> entry : entrySet) {
-				HashMap<String, Object> map = new HashMap<>();
-				map.put(GLOBAL_THING_ID, entry.getKey());
-				map.put(COMMAND_ID, entry.getValue());
-
-				subResponseList.add(map);
-			}
-
-			responseList.add(subResponseList);
-		}
-
-		return responseList;
-	}
 
 	/**
 	 * 查询命令详细（单个设备）
@@ -128,7 +60,7 @@ public class ThingIFController extends AbstractThingTagController {
 		Long endDateTime = this.safeToLong(search.get("end"));
 
 		if(globalThingID == null) {
-			throw new PortalException(ErrorCode.BAD_REQUEST,HttpStatus.BAD_REQUEST);
+			throw new PortalException(ErrorCode.BAD_REQUEST, HttpStatus.BAD_REQUEST);
 		}
 
 		// check permission
@@ -249,5 +181,6 @@ public class ThingIFController extends AbstractThingTagController {
 
 		throw new PortalException(ErrorCode.BAD_REQUEST, HttpStatus.BAD_REQUEST);
 	}
+
 
 }

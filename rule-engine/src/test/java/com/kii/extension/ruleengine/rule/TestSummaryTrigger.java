@@ -43,7 +43,7 @@ public class TestSummaryTrigger extends  TestInit{
 		selector.setAndExpress(false);
 		
 		SummarySource source=new SummarySource();
-		source.setSourceSelector(selector);
+		source.setSource(selector);
 		
 		SummaryExpress exp1=new SummaryExpress();
 		exp1.setFunction(SummaryFunctionType.sum);
@@ -59,7 +59,7 @@ public class TestSummaryTrigger extends  TestInit{
 		selector2.setAndExpress(false);
 
 		SummarySource target=new SummarySource();
-		target.setSourceSelector(selector2);
+		target.setSource(selector2);
 		SummaryExpress exp2=new SummaryExpress();
 		exp2.setSummaryAlias("bar_sum");
 		exp2.setFunction(SummaryFunctionType.sum);
@@ -122,7 +122,7 @@ public class TestSummaryTrigger extends  TestInit{
 		selector.setAndExpress(false);
 
 		SummarySource source=new SummarySource();
-		source.setSourceSelector(selector);
+		source.setSource(selector);
 		source.addExpress(exp1);
 		record.addSummarySource("source",source);
 		thingMap.put("source",tagService.getKiiThingIDs(selector));
@@ -132,7 +132,7 @@ public class TestSummaryTrigger extends  TestInit{
 		selector2.setAndExpress(false);
 
 		SummarySource target=new SummarySource();
-		target.setSourceSelector(selector2);
+		target.setSource(selector2);
 		SummaryExpress exp2 = getTargetExpress();
 
 		target.addExpress(exp2);

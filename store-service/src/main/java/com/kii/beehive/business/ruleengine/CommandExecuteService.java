@@ -16,8 +16,9 @@ import com.kii.beehive.portal.common.utils.StrTemplate;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.extension.ruleengine.service.TriggerRecordDao;
+import com.kii.extension.ruleengine.store.trigger.CommandToThing;
 import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
-import com.kii.extension.ruleengine.store.trigger.TargetAction;
+import com.kii.extension.ruleengine.store.trigger.CallHttpApi;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.entity.thingif.Action;
@@ -46,6 +47,8 @@ public class CommandExecuteService {
 	private ThingTagManager thingTagService;
 
 
+	@Autowired
+	private HttpCallService  httpCallService;
 
 	@Autowired
 	private TriggerLogTools  logTool;
@@ -75,31 +78,39 @@ public class CommandExecuteService {
 		}
 		List<ExecuteTarget> targets=record.getTargets();
 
-		targets.forEach(target->{
+		targets.forEach(target-> {
 
-			TargetAction action=target.getCommand();
+					switch (target.getType()) {
 
+						case "ThingCommand":
+							CommandToThing command=(CommandToThing)target;
 
-			Set<GlobalThingInfo>  thingList=thingTagService.getThingInfos(target.getSelector());
+							Set<GlobalThingInfo> thingList = thingTagService.getThingInfos(command.getSelector());
 
+							thingList.stream().filter((th) -> !StringUtils.isEmpty(th.getFullKiiThingID())).forEach(thing -> {
 
-			thingList.stream().filter((th)-> !StringUtils.isEmpty(th.getFullKiiThingID())).forEach(thing->{
+								for (Map<String, Action> actionMap : command.getCommand().getActions()) {
 
-				ThingCommand command=target.getCommand().getCommand();
+									actionMap.values().forEach((act) -> {
+										act.getFields().forEach((n, v) -> {
+											act.setField(n, StrTemplate.generByMap(n, params));
+										});
+									});
+								}
+								sendCmd(command.getCommand(), thing);
 
-				for (Map<String, Action> actionMap : command.getActions()) {
+							});
+							logTool.outputCommandLog(thingList,record);
+							break;
+						case "HttpApiCall":
+							CallHttpApi call=(CallHttpApi)target;
 
-					actionMap.values().forEach((act)->{
-						act.getFields().forEach((n,v)->{
-							act.setField(n, StrTemplate.generByMap(n,params));
-						});
-					});
-				}
-				sendCmd(command, thing);
+							call.fillParam(params);
 
+							httpCallService.doHttpApiCall(call);
 
-			});
-			logTool.outputCommandLog(thingList,record);
+							break;
+					}
 
 		});
 

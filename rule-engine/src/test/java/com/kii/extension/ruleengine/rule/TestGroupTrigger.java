@@ -22,7 +22,6 @@ import com.kii.extension.ruleengine.store.trigger.TagSelector;
 import com.kii.extension.ruleengine.store.trigger.TriggerGroupPolicy;
 import com.kii.extension.ruleengine.store.trigger.TriggerGroupPolicyType;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.TriggerSource;
 import com.kii.extension.ruleengine.store.trigger.WhenType;
 
 public class TestGroupTrigger extends TestInit {
@@ -47,9 +46,7 @@ public class TestGroupTrigger extends TestInit {
 		selector.addTag("Location-2F_room1");
 		selector.setAndExpress(false);
 		
-		TriggerSource source=new TriggerSource();
-		source.setSelector(selector);
-		record.setSource(source);
+		record.setSource(selector);
 
 		record.addTarget(getTarget() );
 
@@ -117,9 +114,7 @@ public class TestGroupTrigger extends TestInit {
 		selector.addTag("Location-2F_room1");
 		selector.setAndExpress(false);
 
-		TriggerSource source=new TriggerSource();
-		source.setSelector(selector);
-		record.setSource(source);
+		record.setSource(selector);
 
 		record.addTarget(getTarget() );
 
@@ -174,9 +169,8 @@ public class TestGroupTrigger extends TestInit {
 		selector.addTag("Location-2F_room1");
 		selector.setAndExpress(false);
 
-		TriggerSource source=new TriggerSource();
-		source.setSelector(selector);
-		record.setSource(source);
+
+		record.setSource(selector);
 
 		record.addTarget(getTarget() );
 
@@ -229,9 +223,7 @@ public class TestGroupTrigger extends TestInit {
 		selector.addTag("Location-2F_room1");
 		selector.setAndExpress(false);
 
-		TriggerSource source=new TriggerSource();
-		source.setSelector(selector);
-		record.setSource(source);
+		record.setSource(selector);
 
 		record.addTarget(getTarget() );
 

@@ -1,35 +1,21 @@
 package com.kii.extension.ruleengine.store.trigger;
 
-import java.util.ArrayList;
-import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
-
-public class ExecuteTarget {
-
-
-	private TagSelector selector;
-
-	private TargetAction command;
-
-
-	@JsonUnwrapped
-	public TagSelector getSelector() {
-		return selector;
-	}
-
-	public void setSelector(TagSelector selector) {
-		this.selector = selector;
-	}
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME,
+		include = JsonTypeInfo.As.EXISTING_PROPERTY,
+		property = "type",
+		defaultImpl=CommandToThing.class )
+@JsonSubTypes({
+		@JsonSubTypes.Type(value = CommandToThing.class,name="ThingCommand"),
+		@JsonSubTypes.Type(value = CallHttpApi.class,name="HttpApiCall")
+})
+public interface ExecuteTarget {
 
 
-	@JsonUnwrapped
-	public TargetAction getCommand() {
-		return command;
-	}
+	String  getType();
 
-	public void setCommand(TargetAction command) {
-		this.command = command;
-	}
+
 }

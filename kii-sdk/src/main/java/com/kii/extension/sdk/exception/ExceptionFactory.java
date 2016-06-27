@@ -95,6 +95,11 @@ public class ExceptionFactory {
 
 	public void checkResponse(HttpResponse response,URI uri)throws KiiCloudException{
 
+		int status=response.getStatusLine().getStatusCode();
+		if(status>=200&&status<300){
+			return;
+		}
+
 		OperateType type=getOperateType(uri);
 
 		Map<Integer,Class<? extends KiiCloudException>> map=exceptionMap.getOrDefault(type,new HashMap<>());

@@ -16,13 +16,13 @@ import com.kii.beehive.business.ruleengine.ThingStatusChangeCallback;
 import com.kii.beehive.business.ruleengine.TriggerManager;
 import com.kii.extension.ruleengine.TriggerConditionBuilder;
 import com.kii.extension.ruleengine.drools.CommandExec;
+import com.kii.extension.ruleengine.store.trigger.CommandToThing;
 import com.kii.extension.ruleengine.store.trigger.Condition;
 import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
 import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.IntervalPrefix;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.TargetAction;
 import com.kii.extension.ruleengine.store.trigger.TimerUnitType;
 import com.kii.extension.ruleengine.store.trigger.WhenType;
 import com.kii.extension.sdk.entity.thingif.Action;
@@ -49,15 +49,13 @@ public class TestSimple {
 
 	public ExecuteTarget getTarget(){
 
-		ExecuteTarget target=new ExecuteTarget();
-		TargetAction action=new TargetAction();
+		CommandToThing target=new CommandToThing();
 		ThingCommand command=new ThingCommand();
 		Action thingAction=new Action();
 		thingAction.setField("power",true);
 		command.addAction("ON",thingAction);
 
-		action.setCommand(command);
-		target.setCommand(action);
+		target.setCommand(command);
 
 		return target;
 	}

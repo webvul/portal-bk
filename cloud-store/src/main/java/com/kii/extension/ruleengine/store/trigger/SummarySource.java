@@ -9,7 +9,7 @@ public class SummarySource  {
 
 	private List<SummaryExpress> expressList=new ArrayList<>();
 
-	private TriggerSource source;
+	private TagSelector source;
 
 	public List<SummaryExpress> getExpressList() {
 		return expressList;
@@ -24,19 +24,13 @@ public class SummarySource  {
 		this.expressList = expressList;
 	}
 
-	public TriggerSource getSource() {
+	public TagSelector getSource() {
 		return source;
 	}
 
 
-	@JsonIgnore
-	public void setSourceSelector(TagSelector selector){
-		TriggerSource source=new TriggerSource();
-		source.setSelector(selector);
-		this.source=source;
-	}
 
-	public void setSource(TriggerSource source) {
+	public void setSource(TagSelector source) {
 		this.source = source;
 	}
 

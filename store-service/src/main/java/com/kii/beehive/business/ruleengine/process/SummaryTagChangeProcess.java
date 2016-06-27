@@ -50,6 +50,6 @@ public class SummaryTagChangeProcess implements TagChangeProcess {
 			return;
 		}
 
-		engine.changeThingsInSummary(triggerID,groupID,thingTagService.getKiiThingIDs(summary.getSource().getSelector()));
+		engine.changeThingsInSummary(triggerID,groupID,thingTagService.getKiiThingIDs(summary.getSource()));
 	}
 }
