@@ -38,22 +38,7 @@ public class CommandExec {
 		int oldValue=map.computeIfAbsent(triggerID,(id)->new AtomicInteger(0)).incrementAndGet();
 		log.info("execute trigger  " + triggerID+" been fire "+oldValue+" with params:"+result.getParams());
 
-		if(StringUtils.isEmpty(result.getDelay())) {
-
-			callback.onTriggerFire(triggerID, result.getParams());
-
-		}else{
-			Callable<Integer> call=new Callable<Integer>() {
-				@Override
-				public Integer call() throws Exception {
-					callback.onTriggerFire(triggerID,result.getParams());
-					return 0;
-				}
-			};
-			int delay=Integer.parseInt(result.getDelay());
-			executeService.schedule(call,delay, TimeUnit.MINUTES );
-
-		}
+		callExecute(triggerID,result.getDelay(),result.getParams());
 
 	}
 
@@ -64,22 +49,25 @@ public class CommandExec {
 		int oldValue=map.computeIfAbsent(triggerID,(id)->new AtomicInteger(0)).incrementAndGet();
 		log.info("execute trigger  " + triggerID+" been fire "+oldValue+" with params:"+result.getParams());
 
-		if(StringUtils.isEmpty(result.getDelay())) {
+		callExecute(triggerID,result.getDelay(),result.getParams());
+	}
 
-			callback.onTriggerFire(triggerID, result.getParams());
 
+	private  void  callExecute(String triggerID,String delayStr,Map<String,String> params){
+
+		Callable<Integer> call=new Callable<Integer>() {
+			@Override
+			public Integer call() throws Exception {
+				callback.onTriggerFire(triggerID,params);
+				return 0;
+			}
+		};
+
+		if(!StringUtils.isEmpty(delayStr)) {
+			int delay = Integer.parseInt(delayStr);
+			executeService.schedule(call, delay, TimeUnit.MINUTES);
 		}else{
-			Callable<Integer> call=new Callable<Integer>() {
-				@Override
-				public Integer call() throws Exception {
-					callback.onTriggerFire(triggerID,result.getParams());
-					return 0;
-				}
-			};
-			int delay=Integer.parseInt(result.getDelay());
-
-			executeService.schedule(call,delay, TimeUnit.MINUTES );
-
+			executeService.submit(call);
 		}
 
 	}

@@ -27,6 +27,7 @@ public class TriggerFireCallback implements EventCallback {
 	@Autowired
 	private TriggerRecordDao triggerRecordDao;
 
+
 	@Override
 	public void onTriggerFire(String triggerID,Map<String,String> params) {
 
@@ -36,6 +37,7 @@ public class TriggerFireCallback implements EventCallback {
 			log.error("the trigger not been found :"+triggerID);
 			return;
 		}
+
 
 		execService.doCommand(trigger,params);
 

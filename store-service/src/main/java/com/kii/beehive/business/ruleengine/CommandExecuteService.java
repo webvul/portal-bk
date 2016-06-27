@@ -71,6 +71,7 @@ public class CommandExecuteService {
 	}
 
 
+
 	public void doCommand(TriggerRecord  record,Map<String,String> params) {
 
 		if(!sign.get()){
