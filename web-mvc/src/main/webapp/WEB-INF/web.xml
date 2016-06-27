@@ -27,7 +27,7 @@
         </servlet-class>
         <init-param>
             <param-name>contextConfigLocation</param-name>
-            <param-value></param-value>
+            <param-value>/WEB-INF/SpringMVC.xml</param-value>
         </init-param>
         <init-param>
             <param-name>dispatchOptionsRequest</param-name>
@@ -41,6 +41,27 @@
         <url-pattern>/api/*</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>SpringWebSocket</servlet-name>
+        <servlet-class>
+            org.springframework.web.servlet.DispatcherServlet
+        </servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>/WEB-INF/SpringWebSocket.xml</param-value>
+        </init-param>
+        <init-param>
+            <param-name>dispatchOptionsRequest</param-name>
+            <param-value>true</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>SpringWebSocket</servlet-name>
+        <url-pattern>/websocket/*</url-pattern>
+    </servlet-mapping>
+
     <filter>
         <filter-name>charsetFilter</filter-name>
         <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
@@ -52,6 +73,10 @@
     <filter-mapping>
         <filter-name>charsetFilter</filter-name>
         <servlet-name>SpringMVC</servlet-name>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>charsetFilter</filter-name>
+        <servlet-name>SpringWebSocket</servlet-name>
     </filter-mapping>
 
 

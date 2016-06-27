@@ -19,25 +19,27 @@
         - log4j.xxx.xml
     -->
 
-    <bean   class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="locations" value="classpath:com/kii/beehive/portal/web/config.${spring.profile}.properties"/>
     </bean>
 
-    <context:annotation-config/>
-
-    <context:component-scan base-package="com.kii.beehive" />
+    <context:component-scan base-package="com.kii.beehive">
+        <context:exclude-filter type="regex" expression="com.kii.beehive.portal.web.config.*"></context:exclude-filter>
+        <context:exclude-filter type="regex"
+                                expression="com.kii.beehive.portal.web.controller.*"></context:exclude-filter>
+    </context:component-scan>
 
 
     <!-- cache -->
-    <cache:annotation-driven />
+    <cache:annotation-driven/>
 
     <bean id="cacheManager"
-          class="org.springframework.cache.ehcache.EhCacheCacheManager" >
-        <property name="cacheManager" ref="ehcache" />
+          class="org.springframework.cache.ehcache.EhCacheCacheManager">
+        <property name="cacheManager" ref="ehcache"/>
     </bean>
 
-    <bean id="ehcache" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean" >
-        <property name="configLocation" value="classpath:com/kii/beehive/config/ehcache.xml" />
+    <bean id="ehcache" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+        <property name="configLocation" value="classpath:com/kii/beehive/config/ehcache.xml"/>
     </bean>
 
     <!-- task  -->
@@ -48,31 +50,32 @@
 
 
     <!-- aop -->
-    <bean id="appBindAspect"  class="com.kii.extension.sdk.aop.AppBindAspect" />
-    <bean class="com.kii.beehive.portal.aop.ContextAspect" />
-    <bean id="appLogAspect" class="com.kii.beehive.portal.aop.LogAspect" />
+    <bean id="appBindAspect" class="com.kii.extension.sdk.aop.AppBindAspect"/>
+    <bean class="com.kii.beehive.portal.aop.ContextAspect"/>
+    <bean id="appLogAspect" class="com.kii.beehive.portal.aop.LogAspect"/>
 
-    <bean id="controllerLogAspect" class="com.kii.beehive.portal.web.aop.ControllerLogAspect" />
+    <bean id="controllerLogAspect" class="com.kii.beehive.portal.web.aop.ControllerLogAspect"/>
 
     <!-- kiicloud connect -->
-    <bean class="com.kii.extension.factory.KiiCloudSDKConfig" />
+    <bean class="com.kii.extension.factory.KiiCloudSDKConfig"/>
 
-    <bean class="com.kii.extension.sdk.service.DevPortalService" >
-        <property name="devPortalUrl"  value="${beehive.kiicloud.dev-portal.url}" />
+    <bean class="com.kii.extension.sdk.service.DevPortalService">
+        <property name="devPortalUrl" value="${beehive.kiicloud.dev-portal.url}"/>
     </bean>
 
-    <bean name="propAppBindTool" class="com.kii.extension.factory.LocalPropertyBindTool" >
-            <property name="propFileName" value="classpath:com/kii/beehive/portal/web/beehive.portal.store.${spring.profile}.properties" />
+    <bean name="propAppBindTool" class="com.kii.extension.factory.LocalPropertyBindTool">
+        <property name="propFileName"
+                  value="classpath:com/kii/beehive/portal/web/beehive.portal.store.${spring.profile}.properties"/>
     </bean>
 
-    <bean class="com.kii.extension.ruleengine.RuleEngineConfig" />
+    <bean class="com.kii.extension.ruleengine.RuleEngineConfig"/>
 
 
     <!-- log4j    -->
 
-    <bean id="log4jInitializer" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" >
-        <property name="targetClass" value="org.springframework.util.Log4jConfigurer" />
-        <property name="targetMethod" value="initLogging" />
+    <bean id="log4jInitializer" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="targetClass" value="org.springframework.util.Log4jConfigurer"/>
+        <property name="targetMethod" value="initLogging"/>
         <property name="arguments">
             <list>
                 <value>classpath:com/kii/beehive/portal/web/log4j.${spring.profile}.xml</value>
@@ -80,9 +83,9 @@
         </property>
     </bean>
 
-     <bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+    <bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="jdbcUrl" value="${beehive.jdbc.url}" />
+        <property name="jdbcUrl" value="${beehive.jdbc.url}"/>
         <property name="username" value="${beehive.jdbc.username}"/>
         <property name="password" value="${beehive.jdbc.password}"/>
     </bean>
