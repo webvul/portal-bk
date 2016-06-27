@@ -3,8 +3,6 @@ package com.kii.extension.ruleengine.drools.entity;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.common.base.Objects;
-
 public class MemberMatchResult {
 
 
@@ -17,9 +15,19 @@ public class MemberMatchResult {
 
 	private Map<String,Object> values=new HashMap<>();
 
-	public Object getSafeValue(String field){
-		return
-				this.values.getOrDefault(field,0);
+	public Object getNumValue(String field){
+		Object val=values.get(field);
+		if(val==null){
+			return 0;
+		}
+		if(val instanceof String) {
+			try {
+				return Double.parseDouble(String.valueOf(val));
+			}catch(NumberFormatException e){
+				return 0;
+			}
+		}
+		return val;
 	}
 
 	public Map<String, Object> getValues() {
@@ -38,7 +46,7 @@ public class MemberMatchResult {
 		this.name = name;
 	}
 
-	public MemberMatchResult(Group group,ThingStatusInRule status){
+	public MemberMatchResult(Summary group, ThingStatusInRule status){
 
 		this.triggerID=group.getTriggerID();
 		this.name=group.getName();
@@ -69,19 +77,6 @@ public class MemberMatchResult {
 		this.triggerID = triggerID;
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		MemberMatchResult that = (MemberMatchResult) o;
-		return Objects.equal(triggerID,that.triggerID) &&
-				Objects.equal(thingID, that.thingID);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hashCode(thingID, triggerID);
-	}
 
 	@Override
 	public String toString() {

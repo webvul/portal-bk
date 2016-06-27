@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -19,12 +20,13 @@ import com.kii.extension.ruleengine.drools.CommandExec;
 import com.kii.extension.ruleengine.drools.DroolsRuleService;
 import com.kii.extension.ruleengine.drools.entity.CurrThing;
 import com.kii.extension.ruleengine.drools.entity.MatchResult;
-import com.kii.extension.ruleengine.drools.entity.Thing;
+import com.kii.extension.ruleengine.drools.entity.SingleThing;
 import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
 		"classpath:./ruleTestContext.xml"})
+@Ignore
 public class InitTest {
 
 
@@ -73,11 +75,11 @@ public class InitTest {
 
 	protected void initGlobal() throws IOException {
 
-		curr.setThing("NONE");
 
 		ruleLoader.addOrUpdateData(curr);
 
 		ruleLoader.bindWithInstance("exec",exec);
+
 	}
 
 	protected String getDrlContent(String fileName) {
@@ -95,8 +97,8 @@ public class InitTest {
 
 
 	protected  void updateThingState(String thingID,Map<String,Object> values){
-		ThingStatusInRule status=new ThingStatusInRule();
-		status.setThingID(thingID);
+		ThingStatusInRule status=new ThingStatusInRule(thingID);
+//		status.setThingID(thingID);
 		status.setCreateAt(new Date());
 		status.setValues(new HashMap<>(values));
 
@@ -110,16 +112,14 @@ public class InitTest {
 		ruleLoader.addOrUpdateData(status);
 
 
-		curr.setThing(thingID);
-
 		ruleLoader.addOrUpdateData(curr);
 
 	}
 
 	protected void updateThingState(String thingID){
 
-		ThingStatusInRule status=new ThingStatusInRule();
-		status.setThingID(thingID);
+		ThingStatusInRule status=new ThingStatusInRule(thingID);
+//		status.setThingID(thingID);
 
 		status.addValue("foo",Math.random()*100-50);
 		status.addValue("bar",Math.random()*10-5);
@@ -129,7 +129,7 @@ public class InitTest {
 	}
 
 	protected void addThing(String id,String thingID) {
-		Thing thing=new Thing();
+		SingleThing thing=new SingleThing();
 		thing.setThingID(thingID);
 		thing.setTriggerID(id);
 

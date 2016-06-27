@@ -9,4 +9,7 @@ dependencies {
 
 	compile "com.fasterxml.jackson.core:jackson-annotations:2.6.3"
 
+	compile 'org.apache.httpcomponents:httpasyncclient:4.1'
+
+
 }

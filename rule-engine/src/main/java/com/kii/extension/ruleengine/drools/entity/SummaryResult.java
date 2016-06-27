@@ -1,60 +1,44 @@
 package com.kii.extension.ruleengine.drools.entity;
 
-import com.google.common.base.Objects;
-
 public class SummaryResult {
 
-	private String triggerID;
+	private final String triggerID;
 
-	private String summaryField;
 
-	private Number  value;
+	private final String name;
 
-	public SummaryResult(){
+	private final Object value;
 
-	}
+
 
 	public SummaryResult(String triggerID,String summaryField,Number value){
 		this.triggerID=triggerID;
+		this.name=summaryField;
 		this.value=value;
-		this.summaryField=summaryField;
 	}
+
 
 	public String getTriggerID() {
 		return triggerID;
 	}
 
-	public void setTriggerID(String triggerID) {
-		this.triggerID = triggerID;
-	}
-
-	public String getSummaryField() {
-		return summaryField;
-	}
-
-	public void setSummaryField(String summaryField) {
-		this.summaryField = summaryField;
-	}
-
-	public Number getValue() {
+	public Object  getValue() {
 		return value;
 	}
 
-	public void setValue(Number value) {
-		this.value = value;
+	public String getName(){
+		return name;
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		SummaryResult that = (SummaryResult) o;
-		return Objects.equal(triggerID,that.triggerID) &&
-				Objects.equal(summaryField, that.summaryField);
-	}
+
 
 	@Override
-	public int hashCode() {
-		return Objects.hashCode(triggerID, summaryField);
+	public String toString() {
+		return "SummaryResult{" +
+				"triggerID='" + triggerID + '\'' +
+				", name=" + name +
+				", values="+ value+
+				'}';
 	}
+
 }

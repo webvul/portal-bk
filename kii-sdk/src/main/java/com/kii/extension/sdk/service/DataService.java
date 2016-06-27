@@ -177,7 +177,6 @@ public class DataService {
 
 		HttpUriRequest request=getBuilder().bindBucketInfo(bucket).header(id).generRequest(mapper);
 
-		client.shutdownExceptionFactory();
 
 		HttpResponse response = client.doRequest(request);
 

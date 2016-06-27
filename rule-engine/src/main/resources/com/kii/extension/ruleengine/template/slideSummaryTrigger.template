@@ -8,7 +8,7 @@ rule "${triggerID} summary unit:slide windows ${summaryField}"
 when
 	Trigger($triggerID:triggerID,(triggerID=="${triggerID}" && enable=true &&  type ==TriggerType.summary)  )
 	$summary:Summary(triggerID==$triggerID ,$things:things, funName=="${funName}-${sum-suffix}" )
-	CurrThing(thing memberOf $things || init == true)
+    CurrThing(init == false)
 	accumulate( $thingStatusInRule : ThingStatusInRule(thingID memberOf $things) over window:${sum-suffix}( ${windowSize}) ;
                     $sum : ${funName}($thingStatusInRule.getNumValue($summary.getFieldName()))
                   )

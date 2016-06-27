@@ -4,13 +4,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.kie.api.definition.type.Role;
-import org.kie.api.definition.type.Timestamp;
-
 import com.google.common.base.Objects;
 
-@Role(Role.Type.EVENT)
-@Timestamp("createAt")
+//@Role(Role.Type.EVENT)
+//@Timestamp("createAt")
 public class ThingStatusInRule {
 	@Override
 	public boolean equals(Object o) {
@@ -25,12 +22,15 @@ public class ThingStatusInRule {
 		return Objects.hashCode(thingID);
 	}
 
-	private String thingID;
+	private final String thingID;
 
 	private Date createAt;
 
 	private Map<String,Object> values=new HashMap<>();
 
+	public ThingStatusInRule(String thingID){
+		this.thingID=thingID;
+	}
 
 	public Date getCreateAt() {
 		return createAt;
@@ -52,18 +52,25 @@ public class ThingStatusInRule {
 		this.values.put(field,value);
 	}
 
+
+
 	public Object getNumValue(String field){
 		Object value = this.values.get(field);
 		return value == null ? 0 : value;
+	}
+
+	public Object getValue(String field){
+		Object value = this.values.get(field);
+		if(value==null){
+			return null;
+		}
+		return value;
 	}
 
 	public String getThingID() {
 		return thingID;
 	}
 
-	public void setThingID(String thingID) {
-		this.thingID = thingID;
-	}
 
 	@Override
 	public String toString() {

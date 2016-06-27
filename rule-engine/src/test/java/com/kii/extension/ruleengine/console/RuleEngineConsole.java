@@ -3,9 +3,12 @@ package com.kii.extension.ruleengine.console;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.util.FileCopyUtils;
@@ -15,11 +18,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.extension.ruleengine.EngineService;
 import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.TriggerGroupPolicy;
-import com.kii.extension.ruleengine.store.trigger.TriggerGroupPolicyType;
+import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.multiple.MultipleSrcTriggerRecord;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
 
@@ -35,6 +37,40 @@ public class RuleEngineConsole {
 
 		System.out.println(">>> input command\n");
 
+		String triggerID=null;
+
+		Set<String> triggerSet=new HashSet<>();
+		Map<String,Set<String>>  thingMap=new HashMap<>();
+
+		engine.updateExternalValue("demo","one",111);
+
+		engine.updateExternalValue("demo","two",222);
+
+
+		engine.updateThingStatus("a",getStatus("foo=100,bar=-10"),new Date());
+		engine.updateThingStatus("b",getStatus("foo=10,bar=-100"),new Date());
+		engine.updateThingStatus("c",getStatus("foo=-10,bar=10"),new Date());
+		engine.updateThingStatus("d",getStatus("foo=-100,bar=100"),new Date());
+
+
+
+		Set<String> ths=new HashSet<>();
+		ths.add("a");
+		ths.add("b");
+		ths.add("c");
+		ths.add("d");
+
+		thingMap.put("comm",ths);
+		thingMap.put("one",ths);
+		thingMap.put("two",ths);
+		thingMap.put("three", Collections.singleton("c"));
+		thingMap.put("four", Collections.singleton("d"));
+		thingMap.put("five",ths);
+		thingMap.put("six",ths);
+		thingMap.put("seven", Collections.singleton("b"));
+		thingMap.put("eight", Collections.singleton("a"));
+
+
 		while(true){
 
 
@@ -49,14 +85,13 @@ public class RuleEngineConsole {
 
 				String[] arrays= StringUtils.tokenizeToStringArray(input," ");
 
-
 				String cmd=arrays[0];
 
 				if(cmd.equals("exit")){
 					System.exit(0);
 				}
 
-				if(cmd.equals("updateStatus")){
+				if(cmd.equals("setStatus")){
 					String params=arrays[2];
 
 					ThingStatus status=getStatus(params);
@@ -65,90 +100,85 @@ public class RuleEngineConsole {
 
 				}
 
-//				if(cmd.equals("initStatus")){
-//					String params=arrays[2];
-//
-//					ThingStatus status=getStatus(params);
-//
-//
-//
-//					engine.initThingStatus(arrays[1],status,new Date());
-//
-//				}
-
-
 				if(cmd.equals("enable")){
-
-					String triggerID=arrays[1];
 
 					engine.enableTrigger(triggerID);
 				}
 				if(cmd.equals("disable")){
-					String triggerID=arrays[1];
 					engine.disableTrigger(triggerID);
 				}
 				if(cmd.equals("remove")){
-					String triggerID=arrays[1];
 					engine.removeTrigger(triggerID);
 				}
-				if(cmd.equals("update")){
-					String triggerID=arrays[1];
+				if(cmd.equals("setThingCol")){
+
+					String summaryID=arrays[1];
 					String[] things=arrays[2].split(",");
 
-					engine.changeThingsInTrigger(triggerID,new HashSet(Arrays.asList(things)));
+					Set<String> set=new HashSet<>();
+					set.addAll(Arrays.asList(things));
 
+					thingMap.put(summaryID,set);
 				}
-				if(cmd.equals("updateSummary")){
-					String triggerID=arrays[1];
-					String summaryName=arrays[2];
-					String[] things=arrays[3].split(",");
+				if (cmd.equals("newTrigger")){
 
-					engine.changeThingsInSummary(triggerID,summaryName,new HashSet(Arrays.asList(things)));
-				}
-				if(cmd.equals("newSimple")){
-					String triggerID=arrays[1];
-					String thingID=arrays[2];
+					String id=String.valueOf(System.currentTimeMillis());
 
-					String json=getFileContext(arrays[3]);
+					String json=getFileContext(arrays[1]);
 
-					RuleEnginePredicate predicate=mapper.readValue(json,RuleEnginePredicate.class);
-
-					SimpleTriggerRecord record=new SimpleTriggerRecord();
-					record.setPredicate(predicate);
-					record.setId(triggerID);
-					record.setRecordStatus(TriggerRecord.StatusType.disable);
-					record.setSource(new SimpleTriggerRecord.ThingID());
-
-					engine.createSimpleTrigger(thingID,record);
-				}
-
-				if(cmd.equals("createGroup")){
-					String triggerID=arrays[1];
-					String[] thingIDs=arrays[2].split(",");
-
-					String json=getFileContext(arrays[3]);
-
-
-
-					RuleEnginePredicate predicate=mapper.readValue(json,RuleEnginePredicate.class);
-
-					GroupTriggerRecord record=new GroupTriggerRecord();
+					TriggerRecord record=mapper.readValue(json,TriggerRecord.class);
+					record.setId(id);
 					record.setRecordStatus(TriggerRecord.StatusType.enable);
-					record.setPredicate(predicate);
-					record.setId(triggerID);
 
+					switch(record.getType()) {
+						case Simple:
+							SimpleTriggerRecord rec=(SimpleTriggerRecord)record;
+							char thID= (char) ((int)rec.getSource().getThingID()+'a');
 
-					String[] policys=arrays[4].split(":");
+							engine.createSimpleTrigger(String.valueOf(thID),rec);
 
-					String policyType=policys[0];
-					int number=Integer.parseInt(policys[1]);
-					TriggerGroupPolicy policy=new TriggerGroupPolicy();
-					policy.setCriticalNumber(number);
-					policy.setGroupPolicy(TriggerGroupPolicyType.valueOf(policyType));
+							break;
+						case Multiple:
 
-					record.setPolicy(policy);
+							engine.createMultipleSourceTrigger((MultipleSrcTriggerRecord) record, thingMap);
+							break;
+						case Group:
+							GroupTriggerRecord recGroup=(GroupTriggerRecord)record;
 
-					engine.createGroupTrigger(Arrays.asList(thingIDs),record);
+							engine.createGroupTrigger(recGroup, thingMap.get(recGroup.getSource().getTagList().iterator().next()));
+
+							break;
+						case Summary:
+
+							SummaryTriggerRecord recSummary=(SummaryTriggerRecord)record;
+
+							engine.createSummaryTrigger(recSummary, thingMap);
+
+							break;
+					}
+					triggerID=id;
+
+					System.out.println("create trigger "+triggerID);
+
+					triggerSet.add(id);
+
+				}
+
+				if(cmd.equals("selectTrigger")){
+					triggerID=arrays[1];
+				}
+
+				if(cmd.equals("listTrigger")){
+
+					triggerSet.forEach((s)->System.out.println("s"));
+				}
+				if(cmd.equals("setExternalParam")){
+
+					String name=arrays[1];
+					String value=arrays[2];
+
+					engine.updateExternalValue("demo",name,value);
+
 				}
 
 				if(cmd.equals("dump")){
@@ -159,6 +189,7 @@ public class RuleEngineConsole {
 
 					System.out.println(json);
 
+					System.out.println("thing Map:"+thingMap);
 
 				}
 
@@ -196,10 +227,9 @@ public class RuleEngineConsole {
 		if(!params.contains(",")){
 			fillStatus(status, params);
 		}else {
-			for (String param : StringUtils.split(params, ",")) {
+			for (String param : params.split(",")) {
 				fillStatus(status, param);
 			}
-			;
 		}
 
 		return status;
@@ -211,6 +241,11 @@ public class RuleEngineConsole {
 		String key=param.substring(0,idx);
 		String value=param.substring(idx+1);
 
-		status.setField(key,value);
+		try{
+			Double val=Double.parseDouble(value);
+			status.setField(key,val);
+		}catch(NumberFormatException e) {
+			status.setField(key, value);
+		}
 	}
 }

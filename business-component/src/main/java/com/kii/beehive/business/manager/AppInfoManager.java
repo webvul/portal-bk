@@ -125,52 +125,34 @@ public class AppInfoManager {
 	 */
 	public void initAppInfos(String userName,String pwd,String masterID){
 
-		log.info("initAppInfos start");
 
 		Map<String,AppInfo> appInfoMap=new HashMap<>();
 
 		// login dev portal
-		log.info("initAppInfos => login dev portal");
 		portalService.login(userName,pwd);
 
-		// get kii app list from dev portal
-		log.info("initAppInfos => get kii app list from dev portal");
 		portalService.getAppInfoList().forEach(app->appInfoMap.put(app.getAppID(),app));
 
-		// exclude portal app from kii app list
 		String portalAppID=appBindTool.getAppInfo("portal").getAppID();
 		appInfoMap.remove(portalAppID);
 
-		// exclude master app from kii app list
 		AppInfo  master=appInfoMap.remove(masterID);
 
-		// configure master app for federated authentication
-		log.info("initAppInfos => configure master app for federated authentication");
 		if(!masterSalveService.isMaster(master)) {
 			masterSalveService.setMaster(master);
 		}
 
-		// save master app info into bucket "KiiAppInfoStore" of portal app
-		log.info("initAppInfos => save master app info into bucket \"KiiAppInfoStore\" of portal app");
 		KiiAppInfo masterAppInfo=new KiiAppInfo();
 		masterAppInfo.setAppInfo(master);
 		masterAppInfo.setMasterApp(true);
 
 		appDao.setMasterAppInfo(masterAppInfo);
 
-		// create default owner if not existing yet
-		// * this step must be after master app created
-		log.info("initAppInfos => create default owner if not existing yet");
 		userDao.addDefaultOwner(DEFAULT_NAME,DEFAULT_PWD);
 
-		// for each app in kii app list,
-		//  1. configure it as slave app for federated authentication
-		//  2. save it into bucket "KiiAppInfoStore" of portal app
 		appInfoMap.values().forEach((app)->{
 
-			log.info("initAppInfos => start setSalveApp for " + app.getAppID());
 			setSlaveApp(master, app);
-			log.info("initAppInfos => end setSalveApp for " + app.getAppID());
 
 		});
 
@@ -192,26 +174,18 @@ public class AppInfoManager {
 
 		String currMaster=masterSalveService.checkMaster(app);
 
-		// configure slave app for federated authentication
-		log.info("initAppInfos => configure slave app for federated authentication");
 		if(!master.getAppID().equals(currMaster)){
 
 			AppMasterSalveService.ClientInfo  clientInfo=masterSalveService.addSalveApp(master,app);
 			masterSalveService.registInSalve(clientInfo,master,app);
 		}
 
-		// the Kii Cloud API for federated authentication is not stable and http code 503(via IllegalArgumentException) may be returned sometimes,
-		// so below retry is added
+
 		FederatedAuthResult result = null;
 		final int retryCount = 6;
 		for (int i = 0; i < retryCount; i++) {
-			if(i > 0) {
-				log.info("initAppInfos => login and get federated auth result, retryCount: " + i);
-			}
 
 			try {
-				// login and get federated auth result
-				log.info("initAppInfos => login and get federated auth result");
 				result=federatedAuthService.loginSalveApp(app,DEFAULT_NAME,DEFAULT_PWD);
 				break;
 			} catch (IllegalArgumentException e) {
@@ -229,8 +203,6 @@ public class AppInfoManager {
 			}
 		}
 
-		// save slave app info and federated auth result into bucket "KiiAppInfoStore" of portal app
-		log.info("initAppInfos => save slave app info and federated auth result into bucket \"KiiAppInfoStore\" of portal app");
 		appInfo.setFederatedAuthResult(result);
 		appDao.addAppInfo(appInfo);
 	}

@@ -1,34 +1,30 @@
 package com.kii.extension.ruleengine.store.trigger.multiple;
 
-import java.util.HashSet;
-import java.util.Set;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.kii.extension.ruleengine.store.trigger.Express;
 
 public class ThingSource implements SourceElement {
 
-	private long thingID;
+	private String thingID;
 
-	private Set<String> fieldSet=new HashSet<>();
+	@JsonUnwrapped
+	private Express express=new Express();
 
-	public Set<String> getFieldSet() {
-		return fieldSet;
+
+	public Express getExpress() {
+		return express;
 	}
 
-	public void setFieldSet(Set<String> fieldSet) {
-		this.fieldSet = fieldSet;
+	public void setExpress(Express express) {
+		this.express = express;
 	}
 
-	@JsonIgnore
-	public void addStateName(String statusName){
-		fieldSet.add(statusName);
-	}
-
-	public long getThingID() {
+	public String getThingID() {
 		return thingID;
 	}
 
-	public void setThingID(long thingID) {
+	public void setThingID(String thingID) {
 		this.thingID = thingID;
 	}
 

@@ -1,5 +1,8 @@
 package com.kii.extension.ruleengine.template;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -13,11 +16,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.extension.ruleengine.TriggerConditionBuilder;
 import com.kii.extension.ruleengine.drools.RuleGeneral;
+import com.kii.extension.ruleengine.drools.entity.ExternalValues;
 import com.kii.extension.ruleengine.drools.entity.TriggerType;
+import com.kii.extension.ruleengine.store.trigger.CommandParam;
 import com.kii.extension.ruleengine.store.trigger.Condition;
 import com.kii.extension.ruleengine.store.trigger.CronPrefix;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
-import com.kii.extension.ruleengine.store.trigger.TriggerGroupPolicyType;
 import com.kii.extension.ruleengine.store.trigger.WhenType;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -59,30 +63,53 @@ public class TestTemplateGeneral {
 		predicate.setCondition(condition);
 		predicate.setSchedule(prefix);
 
-		log.info(general.generDrlConfig("abcSchedule", TriggerType.simple,predicate));
+		List<ExternalValues> extList=new ArrayList<>();
+		ExternalValues value1=new ExternalValues("demo");
+		value1.addValue("aaa",123);
+		value1.addValue("bbb",321);
+		value1.addValue("ccc","abc");
+	    extList.add(value1);
+
+		List<CommandParam> paramList=new ArrayList<>();
+		CommandParam param1=new CommandParam();
+		param1.setExpress("$p{foo}");
+		param1.setName("s_foo");
+		paramList.add(param1);
+
+		CommandParam param2=new CommandParam();
+		param2.setExpress("$e{bar}");
+		param2.setName("e_foo");
+		paramList.add(param2);
+
+		CommandParam param3=new CommandParam();
+		param3.setExpress("$p{abc}");
+		param3.setName("p_abc");
+		paramList.add(param3);
+
+		log.info(general.generDrlConfig("abcSchedule", TriggerType.simple,predicate,paramList));
 
 		predicate.setSchedule(null);
 
-		log.info(general.generDrlConfig("abc", TriggerType.simple,predicate));
+		log.info(general.generDrlConfig("abc", TriggerType.simple,predicate,paramList));
 
-		log.info(general.generDrlConfig("abc", TriggerType.summary,predicate));
+//		log.info(general.generDrlConfig("abc", TriggerType.summary,predicate,paramList));
 
 		predicate.setSchedule(prefix);
-		log.info(general.generDrlConfig("abcSchedule", TriggerType.summary,predicate));
+//		log.info(general.generDrlConfig("abcSchedule", TriggerType.summary,predicate,paramList));
 
 
-		log.info(general.generGroupDrlConfig("abcGroup", TriggerGroupPolicyType.Any,predicate));
-
-		log.info(general.generGroupDrlConfig("abcGroup", TriggerGroupPolicyType.All,predicate));
-
-		log.info(general.generGroupDrlConfig("abcGroup", TriggerGroupPolicyType.Percent,predicate));
-
-		log.info(general.generGroupDrlConfig("abcGroup", TriggerGroupPolicyType.Some,predicate));
+//		log.info(general.generGroupDrlConfig("abcGroup", TriggerGroupPolicyType.Any,predicate));
+//
+//		log.info(general.generGroupDrlConfig("abcGroup", TriggerGroupPolicyType.All,predicate));
+//
+//		log.info(general.generGroupDrlConfig("abcGroup", TriggerGroupPolicyType.Percent,predicate));
+//
+//		log.info(general.generGroupDrlConfig("abcGroup", TriggerGroupPolicyType.Some,predicate));
 
 
 		predicate.setCondition(null);
 
-		log.info(general.generDrlConfig("schedule", TriggerType.simple,predicate));
+		log.info(general.generDrlConfig("schedule", TriggerType.simple,predicate,new ArrayList<>()));
 
 
 

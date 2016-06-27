@@ -17,10 +17,10 @@ public class TestRuleLoader extends InitTest {
 	public void init() throws IOException {
 
 
-
-		ruleLoader.initCondition(
-				getDrlContent("triggerComm")
-		);
+//
+//		ruleLoader.initCondition(
+//				getDrlContent("triggerComm")
+//		);
 
 		initGlobal();
 
@@ -32,15 +32,15 @@ public class TestRuleLoader extends InitTest {
 	public void testTrigger100(){
 
 		ruleLoader.addCondition("trigger100",getDrlContent("rule100"));
+		String i = "100";
 
-		Trigger trigger=new Trigger();
+		Trigger trigger=new Trigger(i);
 
 		trigger.setType(TriggerType.simple);
 		trigger.setWhen(WhenType.CONDITION_FALSE_TO_TRUE);
 //		trigger.setPreviousResult(false);
 
-		String i = "100";
-		trigger.setTriggerID(i);
+//		trigger.setTriggerID(i);
 
 		ruleLoader.addOrUpdateData(trigger);
 

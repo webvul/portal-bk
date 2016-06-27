@@ -23,9 +23,6 @@ import com.kii.extension.sdk.entity.KiiEntity;
 })
 public abstract  class TriggerRecord extends KiiEntity {
 
-	private String triggerName;
-
-	private CustomProperty  custom=new CustomProperty();
 
 	private String userID;
 
@@ -35,6 +32,7 @@ public abstract  class TriggerRecord extends KiiEntity {
 
 	private List<ExecuteTarget>  targets=new ArrayList<>();
 
+	private List<CommandParam> targetParamList=new ArrayList<>();
 
 	private StatusType recordStatus;
 
@@ -119,30 +117,22 @@ public abstract  class TriggerRecord extends KiiEntity {
 		enable,disable,deleted;
 	}
 
-	public String getTriggerName() {
-		return triggerName;
+	public void addTargetParam(String name,String param){
+		CommandParam cmdParam=new CommandParam();
+		cmdParam.setExpress(param);
+		cmdParam.setName(name);
+
+		targetParamList.add(cmdParam);
+
+	}
+	public List<CommandParam> getTargetParamList() {
+		return targetParamList;
 	}
 
-	public void setTriggerName(String triggerName) {
-		this.triggerName = triggerName;
+	public void setTargetParamList(List<CommandParam> targetParamList) {
+		this.targetParamList = targetParamList;
 	}
 
-	public CustomProperty getCustom() {
-		return custom;
-	}
 
-	public void setCustom(CustomProperty custom) {
-		this.custom = custom;
-	}
-
-	@JsonIgnore
-	public Object getCustomProperty(String key){
-		return custom.getCustom().get(key);
-	}
-
-	@JsonIgnore
-	public void setCustomProperty(String key,Object val){
-		 custom.addProperty(key,val);
-	}
 
 }

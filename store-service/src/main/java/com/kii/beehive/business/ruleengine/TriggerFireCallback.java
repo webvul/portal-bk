@@ -1,5 +1,7 @@
 package com.kii.beehive.business.ruleengine;
 
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +27,9 @@ public class TriggerFireCallback implements EventCallback {
 	@Autowired
 	private TriggerRecordDao triggerRecordDao;
 
+
 	@Override
-	public void onTriggerFire(String triggerID) {
+	public void onTriggerFire(String triggerID,Map<String,String> params) {
 
 		TriggerRecord trigger=triggerRecordDao.getEnableTriggerRecord(triggerID);
 
@@ -35,7 +38,8 @@ public class TriggerFireCallback implements EventCallback {
 			return;
 		}
 
-		execService.doCommand(trigger);
+
+		execService.doCommand(trigger,params);
 
 		logTools.outputFireLog(triggerID);
 

@@ -45,7 +45,7 @@ public class GroupTriggerProcess implements TagChangeProcess {
 			return;
 		}
 
-		Set<String> thingIDList=thingTagService.getKiiThingIDs(trigger.getSource().getSelector());
+		Set<String> thingIDList=thingTagService.getKiiThingIDs(trigger.getSource());
 		engine.changeThingsInTrigger(trigger.getId(),thingIDList);
 	}
 }

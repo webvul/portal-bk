@@ -13,13 +13,13 @@ end
 rule "fire all trigger:when false->true,trigger  fire"
 when
 	$trigger:Trigger($triggerID:triggerID,when == WhenType.CONDITION_FALSE_TO_TRUE)
-    MatchResult(triggerID==$triggerID)
+    $result:MatchResult(triggerID==$triggerID)
     not ( TriggerResult(triggerID==$triggerID) )
 then
 	System.out.println("false-true "+$triggerID+" been fired");
 	insert(new TriggerResult($triggerID));
 	CommandExec exec=(CommandExec)kcontext.getKieRuntime().getEnvironment().get("exec");
-    exec.doExecute($triggerID);
+    exec.doExecute($triggerID,$result);
 end
 
 
@@ -36,13 +36,13 @@ end
 rule "fire all trigger:when false->true change,trigger  fire"
 when
 	$trigger:Trigger($triggerID:triggerID, when == WhenType.CONDITION_CHANGED)
-    MatchResult(triggerID==$triggerID)
+    $result:MatchResult(triggerID==$triggerID)
     not ( TriggerResult(triggerID==$triggerID) )
 then
 	System.out.println("change "+$triggerID+" been fired:false>true");
-	insert(new TriggerResult($triggerID));
+	insert(new TriggerResult($result));
 	CommandExec exec=(CommandExec)kcontext.getKieRuntime().getEnvironment().get("exec");
-    exec.doExecute($triggerID);
+    exec.doExecute($triggerID,$result);
 end
 
 rule "fire all trigger:when true->false change,trigger  fire"
@@ -52,9 +52,10 @@ when
     $result:TriggerResult(triggerID==$triggerID)
 then
 	System.out.println("change "+$triggerID+" been fired:true->false");
-	delete($result);
 	CommandExec exec=(CommandExec)kcontext.getKieRuntime().getEnvironment().get("exec");
-    exec.doExecute($triggerID);
+    exec.doExecute($triggerID,$result.getMatchResult());
+    delete($result);
+
 end
 
 
@@ -65,18 +66,19 @@ when
     $result:TriggerResult(triggerID==$triggerID)
 then
 	System.out.println("true-false "+ $triggerID +" fired ");
-	delete($result);
     CommandExec exec=(CommandExec)kcontext.getKieRuntime().getEnvironment().get("exec");
-    exec.doExecute($triggerID);
+    exec.doExecute($triggerID,$result.getMatchResult());
+    delete($result);
+
 end
 
 
 rule "fire trigger:when true->false,trigger not fire "
 when
 	$trigger:Trigger($triggerID:triggerID,when == WhenType.CONDITION_TRUE_TO_FALSE )
-    MatchResult(triggerID==$triggerID)
+    $result:MatchResult(triggerID==$triggerID)
     not ( TriggerResult(triggerID==$triggerID) )
 then
 	System.out.println("true-false "+ $triggerID +" not fired");
-	insert(new TriggerResult($triggerID));
+	insert(new TriggerResult($result));
 end

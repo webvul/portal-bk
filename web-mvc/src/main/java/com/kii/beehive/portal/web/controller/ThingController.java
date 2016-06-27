@@ -238,7 +238,8 @@ public class ThingController extends AbstractThingTagController {
 
 		input.verifyInput();
 
-		if (Strings.isBlank(input.getSchemaName()) || Strings.isBlank(input.getSchemaVersion())) {
+		if (Strings.isBlank(input.getSchemaName()) || Strings.isBlank(input.getSchemaVersion())
+				|| Strings.isBlank(input.getGatewayVendorThingID())) {
 			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus.BAD_REQUEST);
 		}
 
@@ -250,6 +251,8 @@ public class ThingController extends AbstractThingTagController {
 			thingInfo = thingTagManager.getCanUpdateThingById(AuthInfoStore.getUserID(), input.getId());
 		}
 
+		GlobalThingInfo gateway = thingTagManager.getThingsByVendorThingId(input.getGatewayVendorThingID());
+
 		thingInfo.setVendorThingID(input.getVendorThingID());
 		thingInfo.setKiiAppID(input.getKiiAppID());
 		thingInfo.setType(input.getType());
@@ -257,6 +260,7 @@ public class ThingController extends AbstractThingTagController {
 		thingInfo.setCustom(input.getCustom());
 		thingInfo.setSchemaName(input.getSchemaName());
 		thingInfo.setSchemaVersion(input.getSchemaVersion());
+		thingInfo.setCreateBy(gateway.getCreateBy());
 
 		List<GlobalThingInfo> gList = thingTagManager.getThingsByVendorThingIds(Arrays.asList(thingInfo.getVendorThingID()));
 
@@ -272,7 +276,6 @@ public class ThingController extends AbstractThingTagController {
 		map.put("globalThingID", thingID);
 		return map;
 	}
-
 
 	/**
 	 * 移除设备

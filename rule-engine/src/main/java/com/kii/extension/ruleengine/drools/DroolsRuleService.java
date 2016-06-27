@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+
 import org.apache.commons.codec.Charsets;
 import org.kie.api.KieBase;
 import org.kie.api.KieBaseConfiguration;
@@ -15,6 +16,8 @@ import org.kie.api.KieServices;
 import org.kie.api.builder.KieBuilder;
 import org.kie.api.builder.KieFileSystem;
 import org.kie.api.conf.EventProcessingOption;
+import org.kie.api.event.rule.DebugAgendaEventListener;
+import org.kie.api.event.rule.DebugRuleRuntimeEventListener;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.KieSessionConfiguration;
@@ -22,14 +25,21 @@ import org.kie.api.runtime.conf.TimedRuleExectionOption;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.api.runtime.rule.QueryResults;
 import org.kie.api.runtime.rule.QueryResultsRow;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
 import com.kii.extension.ruleengine.drools.entity.CurrThing;
+import com.kii.extension.ruleengine.drools.entity.ExternalCollect;
+import com.kii.extension.ruleengine.drools.entity.ExternalValues;
 
 @Component
 @Scope(scopeName= ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class DroolsRuleService {
+
+	private Logger log= LoggerFactory.getLogger(DroolsRuleService.class);
 
 
 	private final KieSession kieSession;
@@ -40,29 +50,20 @@ public class DroolsRuleService {
 
 	private final KieFileSystem kfs;
 
-
 	private final Map<String,FactHandle> handleMap=new ConcurrentHashMap<>();
 	private final Set<String> pathSet=new HashSet<>();
 
-
 	private final FactHandle  currThingHandler;
+	private final FactHandle  externalHandler;
 
-	private CurrThing currThing=new CurrThing();
 
-	public void setCurrThingID(String thingID){
-		this.currThing.setThing(thingID);
+	private final CurrThing currThing=new CurrThing();
 
-		kieSession.update(currThingHandler,currThing);
-	}
+	private final ExternalCollect  external=new ExternalCollect();
+
 
 	public void setInitSign(boolean sign){
 		this.currThing.setInit(sign);
-
-		kieSession.update(currThingHandler,currThing);
-	}
-
-	public void rejectCurrThingID(){
-		this.currThing.setThing("NONE");
 
 		kieSession.update(currThingHandler,currThing);
 	}
@@ -150,11 +151,15 @@ public class DroolsRuleService {
 
 		kieSession = kieBase.newKieSession(ksconf,null);
 
-//		kieSession.addEventListener(new DebugAgendaEventListener());
-//		kieSession.addEventListener(new DebugRuleRuntimeEventListener());
 
-		currThing.setThing("NONE");
+		if(!isStream) {
+			kieSession.addEventListener(new DebugAgendaEventListener());
+			kieSession.addEventListener(new DebugRuleRuntimeEventListener());
+		}
 		currThingHandler=kieSession.insert(currThing);
+
+		externalHandler=kieSession.insert(external);
+
 		handleMap.clear();
 	}
 
@@ -167,17 +172,9 @@ public class DroolsRuleService {
 	}
 
 
-	public  void initCondition(String... rules){
 
-
-	}
-
-	/**
-	 * 清空drools fact,trigger生成的rule,用于重新初始化
-	 */
 	public void clear(){
 
-		//清空trigger生成的rule
 		boolean isDeletedRule = false;
 		Set<String> deletePathSet=new HashSet<>();
 		for(String drlPath:pathSet){
@@ -195,7 +192,6 @@ public class DroolsRuleService {
 			kb.buildAll();
 			kieContainer.updateToVersion(kb.getKieModule().getReleaseId());
 		}
-		//清空当前drools内的fact
 		handleMap.keySet().forEach( key -> getSession().delete(handleMap.get(key)) );
 		handleMap.clear();
 	}
@@ -212,8 +208,7 @@ public class DroolsRuleService {
 	public synchronized void addCondition(String name,String rule){
 
 
-
-		this.rejectCurrThingID();
+		log.debug("add rule:"+rule);
 
 		String drlName="src/main/resources/user_"+name+".drl";
 
@@ -269,6 +264,15 @@ public class DroolsRuleService {
 		getSession().setGlobal(name,key);
 	}
 
+	public void addOrUpdateExternal(ExternalValues entity){
+
+		external.putEntity(entity.getName(),entity);
+
+		getSession().update(externalHandler,external);
+
+	}
+
+
 	public void addOrUpdateData(Object entity){
 
 
@@ -318,6 +322,8 @@ public class DroolsRuleService {
 			handleMap.remove(entityKey);
 		}
 	}
+
+
 	public void removeFact(Object obj) {
 		String entityKey = getEntityKey(obj);
 		FactHandle handler=handleMap.get(entityKey);

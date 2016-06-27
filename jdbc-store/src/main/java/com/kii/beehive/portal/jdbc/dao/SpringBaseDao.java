@@ -1,16 +1,10 @@
 package com.kii.beehive.portal.jdbc.dao;
 
-import javax.sql.DataSource;
-
-import java.io.Serializable;
-import java.lang.reflect.ParameterizedType;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.jdbc.entity.DBEntity;
+import com.kii.beehive.portal.jdbc.helper.AnnationBeanSqlParameterSource;
+import com.kii.beehive.portal.jdbc.helper.BindClsFullUpdateTool;
+import com.kii.beehive.portal.jdbc.helper.BindClsRowMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,11 +14,10 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 
-import com.kii.beehive.portal.auth.AuthInfoStore;
-import com.kii.beehive.portal.jdbc.entity.DBEntity;
-import com.kii.beehive.portal.jdbc.helper.AnnationBeanSqlParameterSource;
-import com.kii.beehive.portal.jdbc.helper.BindClsFullUpdateTool;
-import com.kii.beehive.portal.jdbc.helper.BindClsRowMapper;
+import javax.sql.DataSource;
+import java.io.Serializable;
+import java.lang.reflect.ParameterizedType;
+import java.util.*;
 
 public abstract class SpringBaseDao<T extends DBEntity> {
 
@@ -65,8 +58,8 @@ public abstract class SpringBaseDao<T extends DBEntity> {
 
 	public long insert(T entity) {
 
-
-		entity.setCreateBy(AuthInfoStore.getUserID());
+		if (entity.getCreateBy() == null)
+			entity.setCreateBy(AuthInfoStore.getUserID());
 		entity.setCreateDate(new Date());
 		entity.setModifyBy(AuthInfoStore.getUserID());
 		entity.setModifyDate(new Date());

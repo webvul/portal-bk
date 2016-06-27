@@ -1,12 +1,26 @@
 package com.kii.extension.ruleengine;
 
-import com.kii.extension.ruleengine.store.trigger.*;
-import com.kii.extension.ruleengine.store.trigger.condition.AndLogic;
-import com.kii.extension.ruleengine.store.trigger.condition.OrLogic;
+import java.util.List;
+
 import org.drools.core.time.impl.CronExpression;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import com.kii.extension.ruleengine.store.trigger.CallHttpApi;
+import com.kii.extension.ruleengine.store.trigger.CommandToThing;
+import com.kii.extension.ruleengine.store.trigger.Condition;
+import com.kii.extension.ruleengine.store.trigger.CronPrefix;
+import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
+import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
+import com.kii.extension.ruleengine.store.trigger.SchedulePrefix;
+import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.TagSelector;
+import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.WhenType;
+import com.kii.extension.ruleengine.store.trigger.condition.AndLogic;
+import com.kii.extension.ruleengine.store.trigger.condition.OrLogic;
+import com.kii.extension.sdk.entity.thingif.ThingCommand;
 
 /**
  * Created by Arno on 16/3/31.
@@ -61,15 +75,15 @@ public class TriggerValidate {
     }
 
     private void validateGroupTrigger(GroupTriggerRecord groupTriggerRecord){
-        TriggerSource triggerSource = groupTriggerRecord.getSource();
+		TagSelector triggerSource = groupTriggerRecord.getSource();
         RuleEnginePredicate predicate = groupTriggerRecord.getPredicate();
 
         if(
-            triggerSource == null || triggerSource.getSelector() == null ||
+            triggerSource == null  ||
             (
-                (triggerSource.getSelector().getTagList() == null || triggerSource.getSelector().getTagList().size() == 0)
+                (triggerSource.getTagList() == null || triggerSource.getTagList().size() == 0)
                 &&
-                (triggerSource.getSelector().getThingList() == null || triggerSource.getSelector().getThingList().size() == 0)
+                (triggerSource.getThingList() == null || triggerSource.getThingList().size() == 0)
             )
           ){
 
@@ -77,9 +91,9 @@ public class TriggerValidate {
         }
 
         if (
-                triggerSource.getSelector().getTagList() != null && triggerSource.getSelector().getTagList().size()>0
+                triggerSource.getTagList() != null && triggerSource.getTagList().size()>0
                 &&
-                triggerSource.getSelector().getThingList() != null && triggerSource.getSelector().getThingList().size()>0
+                triggerSource.getThingList() != null && triggerSource.getThingList().size()>0
            ){
             throw new IllegalArgumentException("TagList && ThingList source can not exist at same time !");
         }
@@ -131,28 +145,35 @@ public class TriggerValidate {
 
     private void validateTargets(List<ExecuteTarget> executeTargets){
         for(ExecuteTarget executeTarget : executeTargets){
-            TagSelector tagSelector = executeTarget.getSelector();
-            TargetAction command = executeTarget.getCommand();
 
-            if(tagSelector == null){
-                throw new IllegalArgumentException("TagSelector can not be null !");
-            }
 
-            if(tagSelector.getThingList() == null && tagSelector.getTagList() == null){
-                throw new IllegalArgumentException("Thing can not be null !");
-            }
+			if(  executeTarget instanceof  CommandToThing) {
 
-            if(tagSelector.getThingList() != null && tagSelector.getTagList() != null && tagSelector.getTagList().size()>0 && tagSelector.getThingList().size()>0){
-                throw new IllegalArgumentException("ThingList and TagList can not be specified at the same time !");
-            }
+				CommandToThing ctt = (CommandToThing) executeTarget;
 
-            if(command == null || command.getCommand()==null || command.getCommand().getActions() == null || command.getCommand().getActions().size() == 0){
-                throw new IllegalArgumentException("Command can not be null !");
-            }
+				TagSelector tagSelector = ctt.getSelector();
+				ThingCommand command = ctt.getCommand();
 
-            //判定每个target内只能有同一种type的thing(暂未实现,需要行业模板)
+				if (tagSelector == null) {
+					throw new IllegalArgumentException("TagSelector can not be null !");
+				}
 
-            //action中的内容判定暂时未实现(需要行业模版)
+				if (tagSelector.getThingList() == null && tagSelector.getTagList() == null) {
+					throw new IllegalArgumentException("Thing can not be null !");
+				}
+
+				if (tagSelector.getThingList() != null && tagSelector.getTagList() != null && tagSelector.getTagList().size() > 0 && tagSelector.getThingList().size() > 0) {
+					throw new IllegalArgumentException("ThingList and TagList can not be specified at the same time !");
+				}
+
+				if (command == null || command.getActions() == null || command.getActions().size() == 0) {
+					throw new IllegalArgumentException("Command can not be null !");
+				}
+			}else if(executeTarget instanceof CallHttpApi){
+
+
+			}
+
         }
 
     }

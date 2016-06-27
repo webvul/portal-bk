@@ -1,6 +1,6 @@
 
 ext{
-	droolsVersion = "6.3.0.Final"
+	droolsVersion = "6.4.0.Final"
 }
 
 dependencies {

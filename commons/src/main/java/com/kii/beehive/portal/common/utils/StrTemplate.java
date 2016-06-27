@@ -45,13 +45,13 @@ public class StrTemplate {
 			String token = "\\$\\{" + key + "\\}";
 
 			String  value= Matcher.quoteReplacement(entry.getValue());
-			//TODO:do not using regExp
 
 			result = result.replaceAll(token, value);
 		}
 
 		return result;
 	}
+
 
 	public static final String gener(String template, String... params) {
 

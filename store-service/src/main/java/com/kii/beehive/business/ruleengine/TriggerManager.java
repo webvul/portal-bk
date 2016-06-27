@@ -4,6 +4,7 @@ import javax.annotation.PostConstruct;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,13 +25,17 @@ import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.service.EventListenerDao;
 import com.kii.extension.ruleengine.EngineService;
+import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
 import com.kii.extension.ruleengine.schedule.ScheduleService;
 import com.kii.extension.ruleengine.service.TriggerRecordDao;
 import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.SummarySource;
 import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerValidPeriod;
+import com.kii.extension.ruleengine.store.trigger.multiple.MultipleSrcTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.multiple.ThingSource;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
 @Component
@@ -90,7 +95,7 @@ public class TriggerManager {
 		});
 		scheduleService.startSchedule();
 
-		List<EngineService.ThingInfo>  initThings=new ArrayList<>();
+		List<ThingStatusInRule>  initThings=new ArrayList<>();
 
 		thingTagService.iteratorAllThingsStatus(s -> {
 			if (StringUtils.isEmpty(s.getStatus())) {
@@ -103,10 +108,10 @@ public class TriggerManager {
 				e.printStackTrace();
 				return;
 			}
-			EngineService.ThingInfo info=new EngineService.ThingInfo();
-			info.setDate(s.getModifyDate());
-			info.setStatus(status);
-			info.setThingID(s.getFullKiiThingID());
+			ThingStatusInRule info=new ThingStatusInRule(s.getFullKiiThingID());
+			info.setCreateAt(s.getModifyDate());
+			info.setValues(status.getFields());
+//			info.setThingID(s.getFullKiiThingID());
 
 			initThings.add(info);
 
@@ -158,8 +163,8 @@ public class TriggerManager {
 			} else if (record instanceof GroupTriggerRecord) {
 				GroupTriggerRecord groupRecord = ((GroupTriggerRecord) record);
 				addGroupToEngine(groupRecord);
-				if (!groupRecord.getSource().getSelector().getTagList().isEmpty()) {
-					eventService.addGroupTagChangeListener(groupRecord.getSource().getSelector().getTagList(), triggerID);
+				if (!groupRecord.getSource().getTagList().isEmpty()) {
+					eventService.addGroupTagChangeListener(groupRecord.getSource().getTagList(), triggerID);
 				}
 
 			} else if (record instanceof SummaryTriggerRecord) {
@@ -167,7 +172,7 @@ public class TriggerManager {
 
 				addSummaryToEngine(summaryRecord);
 				summaryRecord.getSummarySource().forEach((k, v) -> {
-					eventService.addSummaryTagChangeListener(v.getSource().getSelector().getTagList(), triggerID, k);
+					eventService.addSummaryTagChangeListener(v.getSource().getTagList(), triggerID, k);
 				});
 
 			} else {
@@ -206,8 +211,8 @@ public class TriggerManager {
 
 	private void addGroupToEngine(GroupTriggerRecord record) {
 
-		Set<String> thingIDs = thingTagService.getKiiThingIDs(record.getSource().getSelector());
-		service.createGroupTrigger(thingIDs, record);
+		Set<String> thingIDs = thingTagService.getKiiThingIDs(record.getSource());
+		service.createGroupTrigger(record,thingIDs);
 	}
 
 	private void addSummaryToEngine(SummaryTriggerRecord record) {
@@ -222,12 +227,42 @@ public class TriggerManager {
 			}
 			;
 
-			thingMap.put(k, thingTagService.getKiiThingIDs(v.getSource().getSelector()));
+			thingMap.put(k, thingTagService.getKiiThingIDs(v.getSource()));
 		});
 
-		service.createSummaryTrigger(record, thingMap, isStream.get());
+		if(isStream.get()) {
+//			service.createStreamSummaryTrigger(record, thingMap);
+		}else{
+			service.createSummaryTrigger(record,thingMap);
+		}
 	}
 
+
+
+	private void addMulToEngine(MultipleSrcTriggerRecord record) {
+		Map<String, Set<String>> thingMap = new HashMap<>();
+
+		final AtomicBoolean isStream = new AtomicBoolean(false);
+
+		record.getSummarySource().forEach((k, v) -> {
+
+			switch(v.getType()){
+				case thing:
+					ThingSource  thing=(ThingSource)v;
+					thingMap.put(k, Collections.singleton(thingTagService.getThingByID(Integer.parseInt(thing.getThingID())).getFullKiiThingID()));
+				case summary:
+					SummarySource summary=(SummarySource)v;
+					thingMap.put(k, thingTagService.getKiiThingIDs(summary.getSource()));
+					break;
+			}
+		});
+
+		if(isStream.get()) {
+//			service.createStreamSummaryTrigger(record, thingMap);
+		}else{
+			service.createMultipleSourceTrigger(record,thingMap);
+		}
+	}
 	public void disableTrigger(String triggerID) {
 		triggerDao.disableTrigger(triggerID);
 

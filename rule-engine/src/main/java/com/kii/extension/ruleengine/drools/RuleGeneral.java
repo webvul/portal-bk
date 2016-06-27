@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,7 @@ import org.springframework.util.StringUtils;
 
 import com.kii.beehive.portal.common.utils.StrTemplate;
 import com.kii.extension.ruleengine.drools.entity.TriggerType;
+import com.kii.extension.ruleengine.store.trigger.CommandParam;
 import com.kii.extension.ruleengine.store.trigger.Condition;
 import com.kii.extension.ruleengine.store.trigger.CronPrefix;
 import com.kii.extension.ruleengine.store.trigger.Express;
@@ -23,7 +25,6 @@ import com.kii.extension.ruleengine.store.trigger.IntervalPrefix;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.SchedulePrefix;
 import com.kii.extension.ruleengine.store.trigger.SummaryExpress;
-import com.kii.extension.ruleengine.store.trigger.TriggerGroupPolicyType;
 import com.kii.extension.ruleengine.store.trigger.condition.AndLogic;
 import com.kii.extension.ruleengine.store.trigger.condition.Equal;
 import com.kii.extension.ruleengine.store.trigger.condition.ExpressCondition;
@@ -36,6 +37,7 @@ import com.kii.extension.ruleengine.store.trigger.condition.Range;
 import com.kii.extension.ruleengine.store.trigger.condition.SimpleCondition;
 import com.kii.extension.ruleengine.store.trigger.multiple.GroupSummarySource;
 import com.kii.extension.ruleengine.store.trigger.multiple.MultipleSrcTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.multiple.ThingSource;
 
 @Component
 public class RuleGeneral {
@@ -45,6 +47,9 @@ public class RuleGeneral {
 
 	@Autowired
 	private ResourceLoader  loader;
+
+	@Autowired
+	private ExpressConvert  convert;
 
 	private String loadTemplate(String name)  {
 
@@ -72,7 +77,7 @@ public class RuleGeneral {
 
 
 
-	public String generMultipleDrlConfig(MultipleSrcTriggerRecord  record) {
+	public String generMultipleDrlConfig(MultipleSrcTriggerRecord  record,Map<String,Set<String>>  thingMap) {
 
 
 		StringBuilder sb=new StringBuilder();
@@ -83,15 +88,28 @@ public class RuleGeneral {
 		params.put("triggerID", record.getId());
 		params.put("express",generExpress(record.getPredicate()));
 
+		params.put("fillParam",getParamMappingList(record.getTargetParamList(),false));
+
 		String multipleDrl=StrTemplate.generByMap(fullTemplate,params);
 
 		sb.append(multipleDrl);
-
 		record.getSummarySource().forEach((k, v) -> {
 
 			switch(v.getType()){
 
 				case thing:
+					String thingTemplate = loadUnit("thing");
+
+					ThingSource thingSrc=(ThingSource)v;
+
+					Map<String, String> things = new HashMap<>();
+					things.put("triggerID", record.getId());
+					things.put("express",generExpress(thingSrc.getExpress()));
+					things.put("name",k);
+
+					String thingUnit=StrTemplate.generByMap(thingTemplate,things);
+					sb.append("\n").append(thingUnit).append("\n");
+
 					break;
 				case summary:
 					String groupTemplate = loadUnit("group");
@@ -103,19 +121,6 @@ public class RuleGeneral {
 					groups.put("express",generExpress(groupSrc.getExpress()));
 					groups.put("name",k);
 
-					/*
-
-rule "${triggerID} multiple segment:group express ${name}"
-when
-    Trigger( $triggerID:triggerID, $things:things ,triggerID=="${triggerID}" && enable=true  )
-    CurrThing(thing memberOf $things)
-    ThingStatusInRule( $thingID:thingID memberOf $things,${express}  )
-then
-	insertLogical(new MemberMatchResult($triggerID,$thingID));
-end
-
-					 */
-
 					String groupUnit=StrTemplate.generByMap(groupTemplate,groups);
 					sb.append("\n").append(groupUnit).append("\n");
 
@@ -125,6 +130,8 @@ end
 			}
 
 		});
+
+		sb.append("\n\n");
 
 		return sb.toString();
 	}
@@ -164,52 +171,52 @@ end
 		return fullDrl;
 	}
 
+//
+//	public String generGroupDrlConfig(String triggerID, TriggerGroupPolicyType policy, RuleEnginePredicate predicate){
+//
+//
+//		Map<String,String> params=new HashMap<>();
+//
+//		String template=null;
+//		if(predicate.getSchedule()!=null){
+//
+//			template = loadTemplate(TriggerType.group.name() + "Schedule");
+//			params.put("timer",generTimer(predicate.getSchedule()));
+//
+//			String policyExp=null;
+//			switch(policy){
+//				case Any:
+//					policyExp=" >0 ";
+//					break;
+//				case All:
+//					policyExp=" == $things.size() ";
+//					break;
+//				case Some:
+//					policyExp=" >=$trigger.getNumber() ";
+//					break;
+//				case Percent:
+//					policyExp=">=$trigger.getNumber()*$things.size()/100";
+//					break;
+//				default:
+//					throw new IllegalArgumentException("invalid group policy");
+//			}
+//			params.put("groupPolicy",policyExp);
+//		}else {
+//			template=loadTemplate(TriggerType.group.name());
+//		}
+//
+//		params.put("triggerID",triggerID);
+//		params.put("express",generExpress(predicate));
+//
+//		String fullDrl=StrTemplate.generByMap(template,params);
+//
+//		log.info(triggerID+"\n"+fullDrl);
+//		return fullDrl;
+//	}
 
-	public String generGroupDrlConfig(String triggerID, TriggerGroupPolicyType policy, RuleEnginePredicate predicate){
 
 
-		Map<String,String> params=new HashMap<>();
-
-		String template=null;
-		if(predicate.getSchedule()!=null){
-
-			template = loadTemplate(TriggerType.group.name() + "Schedule");
-			params.put("timer",generTimer(predicate.getSchedule()));
-
-			String policyExp=null;
-			switch(policy){
-				case Any:
-					policyExp=" >0 ";
-					break;
-				case All:
-					policyExp=" == $things.size() ";
-					break;
-				case Some:
-					policyExp=" >=$trigger.getNumber() ";
-					break;
-				case Percent:
-					policyExp=">=$trigger.getNumber()*$things.size()/100";
-					break;
-				default:
-					throw new IllegalArgumentException("invalid group policy");
-			}
-			params.put("groupPolicy",policyExp);
-		}else {
-			template=loadTemplate(TriggerType.group.name());
-		}
-
-		params.put("triggerID",triggerID);
-		params.put("express",generExpress(predicate));
-
-		String fullDrl=StrTemplate.generByMap(template,params);
-
-		log.info(triggerID+"\n"+fullDrl);
-		return fullDrl;
-	}
-
-
-
-	public String generDrlConfig(String triggerID, TriggerType type, RuleEnginePredicate predicate){
+	public String generDrlConfig(String triggerID, TriggerType type, RuleEnginePredicate predicate, List<CommandParam> paramList){
 
 
 		Map<String,String> params=new HashMap<>();
@@ -229,6 +236,8 @@ end
 			template=loadTemplate(type.name());
 		}
 
+		params.put("fillParam",getParamMappingList(paramList,type==TriggerType.simple));
+
 		params.put("triggerID",triggerID);
 		params.put("express",generExpress(predicate));
 
@@ -236,6 +245,29 @@ end
 
 		log.info(triggerID+"\n"+fullDrl);
 		return fullDrl;
+	}
+
+	private static String ParamBindTemplate="result.setParam(\"${0}\",${1}); \n";
+
+	private String getParamMappingList(List<CommandParam>  paramList,boolean isSimpleTrigger){
+
+
+		/*
+			MatchResult result=new MatchResult($thingID);
+	result.setParam("a",$status.getValue("foo"));
+	result.setParam("b",$status.getValue("bar"));
+	result.setDelay($status.getValue("delay"));
+		 */
+		StringBuilder sb=new StringBuilder();
+
+		paramList.forEach((param)->{
+
+			String result=StrTemplate.gener(ParamBindTemplate,param.getName(),convert.convertRightExpress(param.getExpress(),isSimpleTrigger));
+
+			sb.append(result);
+		});
+
+		return sb.toString();
 	}
 
 
@@ -272,7 +304,7 @@ end
 
 
 		if (predicate.getExpress() != null) {
-			return replace.convertExpress(predicate.getExpress());
+			return convert.convertExpress(predicate.getExpress());
 		}
 
 		if (predicate.getCondition() == null) {
@@ -463,7 +495,6 @@ end
 		return list.toString();
 	}
 
-	private ExpressConvert replace=new ExpressConvert();
 
 	private String getFinalValue(String express,Object obj){
 
@@ -476,7 +507,7 @@ end
 			}
 		}else if(!StringUtils.isEmpty(express)){
 
-			return replace.convertExpress(express);
+			return convert.convertExpress(express);
 		}else{
 			throw new IllegalArgumentException("condition invalidFormat ,exp:"+express+" obj:"+obj);
 		}
@@ -486,7 +517,6 @@ end
 
 
 	private String getFinalValue(ExpressCondition cond){
-
 		return getFinalValue(cond.getExpress(),cond.getValue());
 	}
 	

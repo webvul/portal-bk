@@ -126,7 +126,7 @@ public class TriggerLogTools {
 			GroupTriggerRecord groupTriggerRecord = (GroupTriggerRecord)record;
 			triggerType = groupTriggerRecord.getType().name();
 
-			thingIDs = thingTagService.getKiiThingIDs(groupTriggerRecord.getSource().getSelector());
+			thingIDs = thingTagService.getKiiThingIDs(groupTriggerRecord.getSource());
 
 		}else if(record instanceof SummaryTriggerRecord && ((SummaryTriggerRecord)record).getSummarySource() != null){
 			SummaryTriggerRecord summaryTriggerRecord = (SummaryTriggerRecord)record;

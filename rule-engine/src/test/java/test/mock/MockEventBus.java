@@ -1,18 +1,14 @@
 package test.mock;
 
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.util.StreamUtils;
 
 import com.kii.extension.ruleengine.EventCallback;
 import com.kii.extension.ruleengine.drools.CommandExec;
-import com.kii.extension.ruleengine.drools.DroolsRuleService;
 
 
 @Configuration
@@ -29,35 +25,35 @@ public class MockEventBus implements EventCallback {
 
 
 
-	private String getDrlContent(String fileName) {
+//	private String getDrlContent(String fileName) {
+//
+//		try {
+//			return StreamUtils.copyToString(loader.getResource("classpath:com/kii/extension/ruleengine/"+fileName+".drl").getInputStream(), StandardCharsets.UTF_8);
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//			throw new IllegalArgumentException(e);
+//		}
+//
+//	}
 
-		try {
-			return StreamUtils.copyToString(loader.getResource("classpath:com/kii/extension/ruleengine/"+fileName+".drl").getInputStream(), StandardCharsets.UTF_8);
-		} catch (IOException e) {
-			e.printStackTrace();
-			throw new IllegalArgumentException(e);
-		}
 
-	}
-
-
-	@Bean(name="testDroolsService")
-	public DroolsRuleService getCloudService(){
-
-		DroolsRuleService droolsService= new DroolsRuleService(false,
-				getDrlContent("triggerComm"),
-				getDrlContent("groupPolicy"),
-				getDrlContent("summaryCompute"));
-
-		droolsService.bindWithInstance("exec",exec);
-
-		return droolsService;
-
-	}
+//	@Bean(name="testDroolsService")
+//	public DroolsRuleService getCloudService(){
+//
+//		DroolsRuleService droolsService= new DroolsRuleService(false,
+//				getDrlContent("triggerComm"),
+//				getDrlContent("groupPolicy"),
+//				getDrlContent("summaryCompute"));
+//
+//		droolsService.bindWithInstance("exec",exec);
+//
+//		return droolsService;
+//
+//	}
 
 
 	@Override
-	public void onTriggerFire(String triggerID) {
+	public void onTriggerFire(String triggerID, Map<String,String> params) {
 
 	}
 }

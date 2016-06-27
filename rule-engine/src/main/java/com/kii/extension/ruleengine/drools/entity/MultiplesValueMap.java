@@ -2,9 +2,6 @@ package com.kii.extension.ruleengine.drools.entity;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-
-import com.google.common.base.Objects;
 
 public class MultiplesValueMap {
 
@@ -14,25 +11,45 @@ public class MultiplesValueMap {
 
 	public void setSummaryValue(SummaryResult result){
 
-		valueMap.put(result.getSummaryField(),result.getValue());
-	}
-
-
-	public void setFieldValueSet(String name, Set<String> fieldSet, Map<String,Object> values){
-
-		fieldSet.forEach((field)->{
-			String fullName=name+"."+field;
-			valueMap.put(fullName,values.get(field));
-		});
-
-	}
-
-	public void setUnitValue(String  name,Object value){
+		String name=result.getName();
+		Object value=result.getValue();
 		valueMap.put(name,value);
+
+	}
+
+	public void setThingValue(ThingResult result){
+
+		String name=result.getName();
+
+		Map<String,Object> map=result.getValue();
+		map.forEach((k,v)->{
+			valueMap.put(name+"."+k,v);
+		});
 	}
 
 	public Map<String,Object> getValues(){
 		return valueMap;
+	}
+
+	public Object getValue(String key){
+
+		if(!valueMap.containsKey(key)){
+			return 0;
+		}
+		return  valueMap.get(key);
+
+	}
+
+
+	public Object getNumValue(String key){
+		Object val= valueMap.get(key);
+		if(val==null){
+			return 0;
+		}else if(val instanceof  String) {
+			return Double.parseDouble((String)val);
+		}else{
+			return val;
+		}
 	}
 
 	public String getTriggerID() {
@@ -51,16 +68,4 @@ public class MultiplesValueMap {
 				'}';
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		MultiplesValueMap that = (MultiplesValueMap) o;
-		return Objects.equal(triggerID, that.triggerID);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hashCode(triggerID);
-	}
 }

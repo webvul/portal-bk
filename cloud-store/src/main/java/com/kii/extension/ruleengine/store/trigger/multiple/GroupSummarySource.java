@@ -1,12 +1,11 @@
 package com.kii.extension.ruleengine.store.trigger.multiple;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 import com.kii.extension.ruleengine.store.trigger.Condition;
 import com.kii.extension.ruleengine.store.trigger.Express;
 import com.kii.extension.ruleengine.store.trigger.SummaryFunctionType;
-import com.kii.extension.ruleengine.store.trigger.TriggerSource;
+import com.kii.extension.ruleengine.store.trigger.TagSelector;
 
 public class GroupSummarySource implements SourceElement{
 
@@ -15,7 +14,7 @@ public class GroupSummarySource implements SourceElement{
 
 	private SummaryFunctionType function;
 
-	private TriggerSource source;
+	private TagSelector source;
 
 
 	@JsonUnwrapped
@@ -30,12 +29,12 @@ public class GroupSummarySource implements SourceElement{
 		this.express = express;
 	}
 
-	@JsonIgnore
-	public Condition getCondition() {
-		return express.getCondition();
-	}
+//	@JsonIgnore
+//	public Condition getCondition() {
+//		return express.getCondition();
+//	}
 
-	public void setCondition(Condition condition) {
+	public void setTheCondition(Condition condition) {
 		this.express.setCondition(condition);
 	}
 
@@ -55,11 +54,11 @@ public class GroupSummarySource implements SourceElement{
 		this.function = function;
 	}
 
-	public TriggerSource getSource() {
+	public TagSelector getSource() {
 		return source;
 	}
 
-	public void setSource(TriggerSource source) {
+	public void setSource(TagSelector source) {
 		this.source = source;
 	}
 

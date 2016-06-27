@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class GroupTriggerRecord extends TriggerRecord{
 
-	private TriggerSource  source;
+	private TagSelector  source;
 
 	private TriggerGroupPolicy  policy;
 
@@ -30,19 +30,19 @@ public class GroupTriggerRecord extends TriggerRecord{
 		this.policy.setCriticalNumber(number);
 	}
 
-	public TriggerSource getSource() {
+	public TagSelector getSource() {
 		return source;
 	}
 
-	@JsonIgnore
-	public void setTagSelector(TagSelector selector){
+//	@JsonIgnore
+//	public void setTagSelector(TagSelector selector){
+//
+//		this.source=new TriggerSource();
+//		source.setSelector(selector);
+//	}
 
-		this.source=new TriggerSource();
-		source.setSelector(selector);
-	}
 
-
-	public void setSource(TriggerSource source) {
+	public void setSource(TagSelector source) {
 		this.source = source;
 	}
 
