@@ -12,6 +12,6 @@
         http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
     <context:annotation-config/>
-    <mvc:annotation-driven/>
     <bean class="com.kii.beehive.portal.web.config.WebMvcConfig"/>
+
 </beans>
