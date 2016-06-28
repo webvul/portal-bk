@@ -225,6 +225,7 @@ public class UserController {
 	@RequestMapping(value="/user/photo", method=RequestMethod.POST , consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
 	public @ResponseBody BeehiveUser uploadFacePhoto(
 			@RequestParam(value = "userId") String userId,
+			@RequestParam(value = "clearOldPhoto", defaultValue = "false") Boolean clearOldPhoto,
 			@RequestParam(value = "photos") CommonsMultipartFile[] photos) throws IOException {
 
 		Map<String, Object> map = new HashMap<>();
@@ -243,7 +244,7 @@ public class UserController {
 			photoFiles.add(photoFile);
 		}
 
-		BeehiveUser user = userManager.updateUserWithFace(userId, photoFiles);
+		BeehiveUser user = userManager.updateUserWithFace(userId, clearOldPhoto, photoFiles);
 
 		return user;
 	}

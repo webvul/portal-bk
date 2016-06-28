@@ -3,7 +3,9 @@ package com.kii.beehive.business.ruleengine;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,9 +18,9 @@ import com.kii.beehive.portal.common.utils.StrTemplate;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.extension.ruleengine.service.TriggerRecordDao;
+import com.kii.extension.ruleengine.store.trigger.CallHttpApi;
 import com.kii.extension.ruleengine.store.trigger.CommandToThing;
 import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
-import com.kii.extension.ruleengine.store.trigger.CallHttpApi;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.entity.thingif.Action;
@@ -59,27 +61,24 @@ public class CommandExecuteService {
 	@Autowired
 	private AppBindToolResolver resolver;
 
-	private AtomicBoolean  sign=new AtomicBoolean(true);
-	public void enable(){
 
-		sign.set(true);
-	}
-
-	public void disable(){
-
-		sign.set(false);
-	}
-
+	private ScheduledExecutorService executeService=new ScheduledThreadPoolExecutor(10);
 
 
 	public void doCommand(TriggerRecord  record,Map<String,String> params) {
 
-		if(!sign.get()){
-			return;
-		}
 		List<ExecuteTarget> targets=record.getTargets();
 
-		targets.forEach(target-> {
+		int idx=0;
+
+		for(ExecuteTarget target:targets){
+
+			String delayParam="delay_"+idx;
+
+
+			Runnable run=new Runnable() {
+				@Override
+				public void run() {
 
 					switch (target.getType()) {
 
@@ -112,8 +111,22 @@ public class CommandExecuteService {
 
 							break;
 					}
+				}
+			};
 
-		});
+			String delay=params.get(delayParam);
+
+			if(StringUtils.isEmpty(delay)) {
+				executeService.submit(run);
+			}else{
+				long delayInt=Long.parseLong(delay);
+				executeService.schedule(run,delayInt, TimeUnit.MINUTES);
+			}
+
+			idx++;
+
+		}
+
 
 	}
 

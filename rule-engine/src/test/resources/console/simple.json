@@ -4,6 +4,7 @@
     "triggersWhen":"CONDITION_TRUE"
   },
   "targets" : [ {
+    "delay":"$p{delay}",
     "command" : {
       "actions" : [ {
         "ON" : {

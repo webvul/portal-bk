@@ -107,14 +107,30 @@ public class FacePlusPlusApiAccessBuilder {
 		return invoke;
 	}
 
+	/**
+	 * get face++ user by id
+	 * @return
+	 */
+	public HttpUriRequest buildGetSubjectById(Integer id) {
 
+		String fullUrl = baseUrl + "/subject/" + id;
+
+		HttpUriRequest invoke = new HttpInvokeBuilder().setUrl(fullUrl)
+				.buildCustomCall("get", null).clearContentType().generRequest(objectMapper);
+
+		return invoke;
+	}
+
+	/**
+	 * get all face++ user
+	 * @return
+	 */
 	public HttpUriRequest buildGetSubjects() {
 
 		String fullUrl = baseUrl + "/mobile-admin/subjects";
 
 		HttpUriRequest invoke = new HttpInvokeBuilder().setUrl(fullUrl)
 				.buildCustomCall("get", null).generRequest(objectMapper);
-		invoke.setHeader("Content-Type", "application/json");
 
 		return invoke;
 	}

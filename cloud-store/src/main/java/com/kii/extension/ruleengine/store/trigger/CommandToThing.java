@@ -10,6 +10,18 @@ public class CommandToThing implements   ExecuteTarget {
 
 	private ThingCommand command;
 
+	private String delay;
+
+	@Override
+	public String getDelay() {
+		return delay;
+	}
+
+	@Override
+	public void setDelay(String delay) {
+		this.delay=delay;
+	}
+
 	public ThingCommand getCommand() {
 		return command;
 	}
