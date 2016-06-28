@@ -41,7 +41,7 @@ public class TriggerMangerConsole {
 
 		CommandExecuteService execService=context.getBean(CommandExecuteService.class);
 
-		execService.disable();
+//		execService.disable();
 
 		ObjectMapper mapper=context.getBean(ObjectMapper.class);
 

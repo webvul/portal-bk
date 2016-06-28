@@ -2,17 +2,12 @@ package com.kii.extension.ruleengine.drools;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import com.kii.extension.ruleengine.EventCallback;
 import com.kii.extension.ruleengine.drools.entity.MatchResult;
@@ -28,7 +23,6 @@ public class CommandExec {
 	private EventCallback callback;
 
 
-	private ScheduledExecutorService  executeService=new ScheduledThreadPoolExecutor(10);
 
 	private Map<String,AtomicInteger> map=new HashMap<>();
 
@@ -38,7 +32,7 @@ public class CommandExec {
 		int oldValue=map.computeIfAbsent(triggerID,(id)->new AtomicInteger(0)).incrementAndGet();
 		log.info("execute trigger  " + triggerID+" been fire "+oldValue+" with params:"+result.getParams());
 
-		callExecute(triggerID,result.getDelay(),result.getParams());
+		callback.onTriggerFire(triggerID,result.getParams());
 
 	}
 
@@ -49,27 +43,7 @@ public class CommandExec {
 		int oldValue=map.computeIfAbsent(triggerID,(id)->new AtomicInteger(0)).incrementAndGet();
 		log.info("execute trigger  " + triggerID+" been fire "+oldValue+" with params:"+result.getParams());
 
-		callExecute(triggerID,result.getDelay(),result.getParams());
-	}
-
-
-	private  void  callExecute(String triggerID,String delayStr,Map<String,String> params){
-
-		Callable<Integer> call=new Callable<Integer>() {
-			@Override
-			public Integer call() throws Exception {
-				callback.onTriggerFire(triggerID,params);
-				return 0;
-			}
-		};
-
-		if(!StringUtils.isEmpty(delayStr)) {
-			int delay = Integer.parseInt(delayStr);
-			executeService.schedule(call, delay, TimeUnit.MINUTES);
-		}else{
-			executeService.submit(call);
-		}
-
+		callback.onTriggerFire(triggerID,result.getParams());
 	}
 
 

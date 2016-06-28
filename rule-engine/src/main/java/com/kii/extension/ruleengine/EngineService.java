@@ -22,7 +22,9 @@ import com.kii.extension.ruleengine.drools.entity.Summary;
 import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
 import com.kii.extension.ruleengine.drools.entity.Trigger;
 import com.kii.extension.ruleengine.drools.entity.TriggerType;
+import com.kii.extension.ruleengine.store.trigger.CommandParam;
 import com.kii.extension.ruleengine.store.trigger.Condition;
+import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
 import com.kii.extension.ruleengine.store.trigger.Express;
 import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
@@ -50,7 +52,33 @@ public class EngineService {
 	private ObjectMapper mapper;
 
 
+	private void fillDelayParam(TriggerRecord record){
+
+
+		List<CommandParam>  list=record.getTargetParamList();
+
+		int i=0;
+		for(ExecuteTarget target:record.getTargets()){
+
+			String delay=target.getDelay();
+
+			CommandParam  param=new CommandParam();
+			param.setName("delay_"+i);
+			param.setExpress(delay);
+
+			list.add(param);
+			i++;
+		}
+
+		record.setTargetParamList(list);
+
+
+	}
+
+
 	public void createMultipleSourceTrigger(MultipleSrcTriggerRecord record,Map<String,Set<String> > thingMap){
+
+		fillDelayParam(record);
 
 		Trigger trigger=new Trigger(record.getId());
 		trigger.setType(TriggerType.multiple);
@@ -273,6 +301,8 @@ public class EngineService {
 
 
 	public void  createSimpleTrigger(String thingID, SimpleTriggerRecord record)  {
+
+		fillDelayParam(record);
 
 		String triggerID=record.getId();
 

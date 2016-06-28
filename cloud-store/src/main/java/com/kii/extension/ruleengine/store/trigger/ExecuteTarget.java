@@ -17,5 +17,9 @@ public interface ExecuteTarget {
 
 	String  getType();
 
+	String  getDelay();
+
+	void setDelay(String delay);
+
 
 }

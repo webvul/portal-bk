@@ -64,11 +64,6 @@ public class TriggerManager {
 	@Autowired
 	private EventListenerDao eventListenerDao;
 
-
-	@Autowired
-	private CommandExecuteService commandService;
-
-
 	@Autowired
 	private ScheduleService scheduleService;
 

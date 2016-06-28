@@ -13,6 +13,19 @@ public class CallHttpApi implements ExecuteTarget {
 	}
 
 
+	private String delay;
+
+	@Override
+	public String getDelay() {
+		return delay;
+	}
+
+	@Override
+	public void setDelay(String delay) {
+		this.delay=delay;
+	}
+
+
 	public void fillParam(Map<String, String> params) {
 
 		url= StrTemplate.generByMap(url,params);
