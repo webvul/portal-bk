@@ -1,32 +1,43 @@
-apply plugin: 'distribution'
-
 dependencies {
     compile project(":cloud-store")
     compile project(":store-service")
     compile group: 'com.floragunn', name: 'search-guard-2', version: '2.3.3.0-rc1'
-    compile "org.elasticsearch:elasticsearch:2.3.3"
+    compile "org.elasticsearch:elasticsearch:${elasticsearchVersion}"
     compile "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
     compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.4.1'
 }
 
-distTar.shouldRunAfter(":plugin-sg:jar")
+ant.propertyfile(file: "src/plugin-metadata/plugin-descriptor.properties") {
+    entry(key: "version", value: "$project.version")
+    entry(key: "elasticsearch.version", value: "${elasticsearchVersion}")
+    entry(key: "java.version", value: "1.7")
+    entry(key: "classname", value: "com.kii.beehive.portal.plugin.searchguard.AuthenticationPlugin")
+}
 
-distributions {
-    main {
-        contents {
-            from getBuildDir().absolutePath + '/libs'
-            from parent.project(":kii-sdk").getBuildDir().absolutePath + '/libs'
-            from parent.project(":cloud-store").getBuildDir().absolutePath + '/libs'
-            from parent.project(":store-service").getBuildDir().absolutePath + '/libs'
+jar.doLast { task ->
+    ant.checksum file: task.archivePath
+}
 
-            //from configurations.compile.collect { it }
-            from configurations.compile.find { it.name.startsWith("spring-beans") }
-            from configurations.compile.find { it.name.startsWith("spring-core") }
-            from configurations.compile.find { it.name.startsWith("jackson-databind") }
-            from configurations.compile.find { it.name.startsWith("jackson-annotations") }
-            from configurations.compile.find { it.name.startsWith("httpcore") }
-            from configurations.compile.find { it.name.startsWith("httpclient") }
-            from configurations.compile.find { it.name.startsWith("commons-logging") }
-        }
-    }
+task buildPluginZip(type: Zip, dependsOn: [":plugin-sg:jar"]) {
+    classifier = 'plugin'
+    from getBuildDir().absolutePath + '/libs'
+    from parent.project(":kii-sdk").getBuildDir().absolutePath + '/libs'
+    from parent.project(":cloud-store").getBuildDir().absolutePath + '/libs'
+    from parent.project(":store-service").getBuildDir().absolutePath + '/libs'
+
+    //from configurations.compile.collect { it }
+    from configurations.compile.find { it.name.startsWith("spring-beans") }
+    from configurations.compile.find { it.name.startsWith("spring-core") }
+    from configurations.compile.find { it.name.startsWith("jackson-databind") }
+    from configurations.compile.find { it.name.startsWith("jackson-annotations") }
+    from configurations.compile.find { it.name.startsWith("httpcore") }
+    from configurations.compile.find { it.name.startsWith("httpclient") }
+    from configurations.compile.find { it.name.startsWith("commons-logging") }
+    from 'src/plugin-metadata'
+}
+
+buildPluginZip.shouldRunAfter(":plugin-sg:jar")
+
+artifacts {
+    archives buildPluginZip
 }

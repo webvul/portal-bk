@@ -1,69 +1,69 @@
 ext {
-	springVersion = "4.2.3.RELEASE"
-	aspectjVersion="1.8.1"
-	jacksonVersion="2.6.1"
+    springVersion = "4.2.3.RELEASE"
+    aspectjVersion = "1.8.1"
+    jacksonVersion = "2.6.1"
+    elasticsearchVersion = "2.3.3"
 }
 
 allprojects {
-	group 'com.kii.beehive'
-	version '1.0-SNAPSHOT'
+    group 'com.kii.beehive'
+    version '1.0-SNAPSHOT'
 
-	apply plugin: 'java'
-
-
-	repositories {
-		mavenLocal()
-		mavenCentral()
-		jcenter()
-
-	}
-
-	compileJava {
-		//enable compilation in a separate daemon process
-		options.fork = true
-
-		options.encoding= "UTF-8"
-	}
+    apply plugin: 'java'
 
 
-	dependencies {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        jcenter()
+
+    }
+
+    compileJava {
+        //enable compilation in a separate daemon process
+        options.fork = true
+
+        options.encoding = "UTF-8"
+    }
 
 
-		compile  "com.google.guava:guava:19.0"
-		compile  "org.apache.logging.log4j:log4j-core:2.3"
-		compile  "org.slf4j:slf4j-log4j12:1.7.6"
-
-		testCompile "org.springframework:spring-test:${springVersion}"
-
-		testCompile 'junit:junit:4.12'
-
-		testCompile "org.powermock:powermock-api-mockito:1.6.2"
-		testCompile "org.powermock:powermock-module-junit4:1.6.2"
-		testCompile "org.powermock:powermock-module-junit4-rule:1.6.2"
-		testCompile "org.mockito:mockito-core:1.10.18"
+    dependencies {
 
 
+        compile "com.google.guava:guava:19.0"
+        compile "org.apache.logging.log4j:log4j-core:2.3"
+        compile "org.slf4j:slf4j-log4j12:1.7.6"
 
-	}
+        testCompile "org.springframework:spring-test:${springVersion}"
+
+        testCompile 'junit:junit:4.12'
+
+        testCompile "org.powermock:powermock-api-mockito:1.6.2"
+        testCompile "org.powermock:powermock-module-junit4:1.6.2"
+        testCompile "org.powermock:powermock-module-junit4-rule:1.6.2"
+        testCompile "org.mockito:mockito-core:1.10.18"
+
+
+    }
 }
 
-task cleanold(type:Delete,dependsOn:'clean'){
-	delete('/opt/tomcat/webapps/beehive-portal.war')
+task cleanold(type: Delete, dependsOn: 'clean') {
+    delete('/opt/tomcat/webapps/beehive-portal.war')
 }
 
-task pullGit(type:Exec,dependsOn:"cleanold") {
-	workingDir  './'
-	commandLine 'git', 'pull', 'origin','master'
+task pullGit(type: Exec, dependsOn: "cleanold") {
+    workingDir './'
+    commandLine 'git', 'pull', 'origin', 'master'
 }
 
-task buildwar(type:War , dependsOn:['pullGit','assemble']){
+task buildwar(type: War, dependsOn: ['pullGit', 'assemble']) {
 
-	archiveName "beehive-portal.war"
+    archiveName "beehive-portal.war"
 }
 
-task deploy(type:Copy,dependsOn:'buildwar'){
+task deploy(type: Copy, dependsOn: 'buildwar') {
 
-	from('./web-mvc/build/libs/beehive-portal.war')
-	into('/opt/tomcat/webapps')
+    from('./web-mvc/build/libs/beehive-portal.war')
+    into('/opt/tomcat/webapps')
 }
 
