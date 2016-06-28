@@ -12,11 +12,10 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 public class JsonToFlat {
 
 
-	private static ObjectMapper mapper;
+	private static ObjectMapper mapper=new ObjectMapper();
 
 	static {
 
-		mapper=new ObjectMapper();
 		mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 		mapper.configure(SerializationFeature.INDENT_OUTPUT, false);
 	}
@@ -26,46 +25,33 @@ public class JsonToFlat {
 		Map<String,Object>  map=mapper.readValue(jsonStr,Map.class);
 
 		Map<String,Object> result=new HashMap<>();
-
-		fillMap(result,map,null);
-
 		return mapper.writeValueAsString(result);
 
 	}
 
 	private static void fillMap(Map<String,Object> result,Object source,String prefix){
 
-		if (Map.class.isAssignableFrom(source.getClass())) {
 
-			Map subMap=(Map)source;
 
-			subMap.forEach((k, v) -> {
-				fillMap(result,  v, getNextPrefix(prefix,k));
-			});
+		result.forEach((k,v)->{
 
-		}else if(Collection.class.isAssignableFrom(source.getClass())){
+			if(v instanceof  Map){
+				fillMap(result,(Map)v,prefix+"."+k);
+			}else  if(v instanceof Collection){
 
-			int idx = 0;
-			for (Object o : ((Collection) source)) {
-				fillMap(result, o,getNextPrefix(prefix,idx));
-				idx++;
+				int idx=0;
+				for(Object o:((Collection)v)){
+					fillMap(result,o,prefix+"."+idx);
+					idx++;
+				}
+
+			}else {
+				result.put(prefix + "." + k, v);
 			}
-		}else{
-
-			result.put(prefix,source);
-		}
+		});
 
 		return;
 	}
 
-
-	private static String getNextPrefix(String prefix,Object curr){
-		if(prefix==null){
-
-			return String.valueOf(curr);
-		}else{
-			return prefix+"."+curr;
-		}
-	}
 
 }
