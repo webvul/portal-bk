@@ -14,10 +14,6 @@ ant.propertyfile(file: "src/plugin-metadata/plugin-descriptor.properties") {
     entry(key: "classname", value: "com.kii.beehive.portal.plugin.searchguard.AuthenticationPlugin")
 }
 
-jar.doLast { task ->
-    ant.checksum file: task.archivePath
-}
-
 task buildPluginZip(type: Zip, dependsOn: [":plugin-sg:jar"]) {
     classifier = 'plugin'
     from getBuildDir().absolutePath + '/libs'
@@ -37,6 +33,10 @@ task buildPluginZip(type: Zip, dependsOn: [":plugin-sg:jar"]) {
 }
 
 buildPluginZip.shouldRunAfter(":plugin-sg:jar")
+
+buildPluginZip.doLast { task ->
+    ant.checksum file: task.archivePath
+}
 
 artifacts {
     archives buildPluginZip
