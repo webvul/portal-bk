@@ -26,8 +26,12 @@
             org.springframework.web.servlet.DispatcherServlet
         </servlet-class>
         <init-param>
-            <param-name>contextConfigLocation</param-name>
-            <param-value>/WEB-INF/SpringMVC.xml</param-value>
+            <param-name>contextClass</param-name>
+            <param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>
+        </init-param>
+        <init-param>
+                <param-name>contextConfigLocation</param-name>
+                <param-value>com.kii.beehive.portal.web.config.WebMvcConfig</param-value>
         </init-param>
         <init-param>
             <param-name>dispatchOptionsRequest</param-name>
@@ -40,6 +44,7 @@
         <servlet-name>SpringMVC</servlet-name>
         <url-pattern>/api/*</url-pattern>
     </servlet-mapping>
+
 
     <servlet>
         <servlet-name>SpringWebSocket</servlet-name>
