@@ -3,6 +3,8 @@ package com.kii.beehive.portal.plugin.searchguard.auth;
 import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import org.elasticsearch.ElasticsearchSecurityException;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.rest.BytesRestResponse;
@@ -72,14 +74,23 @@ public class BeehiveHttpAuthenticator implements HTTPAuthenticator {
 			}
 		} else if (request.hasContent()) {
 			ObjectMapper mapper = new ObjectMapper();
-			try {
-				BeehiveAuthCredential credential = mapper.readValue(request.content().streamInput(),
-						BeehiveAuthCredential.class);
-				return new AuthCredentials(credential.getUserID(),
-						credential.getPassword().getBytes(StandardCharsets.UTF_8)).markComplete();
-			} catch (IOException e) {
-				throw new ElasticsearchSecurityException(e.getMessage(), e);
-			}
+			return AccessController.doPrivileged(
+					new PrivilegedAction<AuthCredentials>() {
+						@Override
+						public AuthCredentials run() {
+							BeehiveAuthCredential credential = null;
+							try {
+								credential = mapper.readValue(request.content().streamInput(),
+										BeehiveAuthCredential.class);
+							} catch (IOException e) {
+								throw new ElasticsearchSecurityException(
+										BeehiveHttpAuthenticator.class.getSimpleName() + ": " + e.getMessage(), e);
+							}
+							return new AuthCredentials(credential.getUserID(),
+									credential.getPassword().getBytes(StandardCharsets.UTF_8)).markComplete();
+						}
+					}
+			);
 		}
 		return null;
 	}

@@ -4,6 +4,9 @@ import static com.kii.beehive.portal.plugin.searchguard.auth.BeehiveHttpAuthenti
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Arrays;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -14,6 +17,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.elasticsearch.ElasticsearchSecurityException;
 import org.elasticsearch.common.settings.Settings;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.floragunn.searchguard.auth.AuthenticationBackend;
 import com.floragunn.searchguard.configuration.ConfigChangeListener;
@@ -81,7 +85,22 @@ public class BeehiveAuthenticationProxy implements AuthenticationBackend, Config
 				BeehiveAuthCredential authInfo = new BeehiveAuthCredential();
 				authInfo.setUserID(credentials.getUsername());
 				authInfo.setPassword(new String(credentials.getPassword()));
-				request.setEntity(new StringEntity(mapper.writeValueAsString(authInfo)));
+				request.setEntity(AccessController.doPrivileged(new PrivilegedAction<StringEntity>() {
+					@Override
+					public StringEntity run() {
+						try {
+							return new StringEntity(mapper.writeValueAsString(authInfo));
+						} catch (UnsupportedEncodingException e) {
+							throw new ElasticsearchSecurityException(
+									BeehiveAuthenticationProxy.class.getSimpleName() + ": " +
+											e.getMessage(), e);
+						} catch (JsonProcessingException e) {
+							throw new ElasticsearchSecurityException(
+									BeehiveAuthenticationProxy.class.getSimpleName() + ": " +
+											e.getMessage(), e);
+						}
+					}
+				}));
 			}
 			request.setHeader("Content-Type", "application/json");
 
@@ -95,14 +114,29 @@ public class BeehiveAuthenticationProxy implements AuthenticationBackend, Config
 				while (0 < (len = br.read(buf))) {
 					sb.append(buf, 0, len);
 				}
-				AuthRestBean auth = mapper.readValue(sb.toString(), AuthRestBean.class);
+				AuthRestBean auth = AccessController.doPrivileged(
+						new PrivilegedAction<AuthRestBean>() {
+							@Override
+							public AuthRestBean run() {
+								try {
+									return mapper.readValue(sb.toString(), AuthRestBean.class);
+								} catch (IOException e) {
+									throw new ElasticsearchSecurityException(
+											BeehiveAuthenticationProxy.class.getSimpleName() + ": " +
+													e.getMessage(), e);
+								}
+							}
+						}
+				);
 				return new User(auth.getUser().getUserName(), Arrays.asList(auth.getUser().getRoleName()));
 			} else {
 				throw new ElasticsearchSecurityException(response.getStatusLine().getStatusCode() + ", " + response
 						.getEntity().getContent().toString());
 			}
 		} catch (IOException e) {
-			throw new ElasticsearchSecurityException(e.getMessage(), e);
+			throw new ElasticsearchSecurityException(
+					BeehiveAuthenticationProxy.class.getSimpleName() + ": " +
+							e.getMessage(), e);
 		}
 	}
 
