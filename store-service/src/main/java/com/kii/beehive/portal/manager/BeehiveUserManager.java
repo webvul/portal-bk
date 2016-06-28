@@ -208,14 +208,12 @@ public class BeehiveUserManager {
 	/**
 	 *
 	 */
-	public BeehiveUser updateUserWithFace( String userId, List<File> photoFiles ){
+	public BeehiveUser updateUserWithFace( String userId, Boolean clearOldPhoto, List<File> photoFiles ){
 		BeehiveUser user = userDao.getUserByID(userId);
 		if(user == null) {
 			throw new RuntimeException("can not find user ! ");
 		}
-		if( !StringUtils.isEmpty(user.getFaceSubjectId()) ) {
-			throw new RuntimeException("user already registered face++! ");
-		}
+
 		List<Integer> photoIds = new ArrayList<>();
 		List<Map<String, Object>> photoList = facePlusPlusService.buildUploadPhotos(photoFiles);
 		for (Map<String, Object> photoMap : photoList) {
@@ -225,18 +223,38 @@ public class BeehiveUserManager {
 			}
 			photoIds.add(photoId);
 		}
-		FaceUser faceUser = new FaceUser();
-		faceUser.setSubject_type(FaceUser.SUBJECT_TYPE_EMPLOYEE);
-		faceUser.setName(user.getUserName());
-		faceUser.setPhoto_ids(photoIds);
-		Map<String, Object> userMap = facePlusPlusService.buildSubject(faceUser);
-		Integer faceSubjectId = (Integer) ( (Map<String, Object>)userMap.get("data") ).get("id");
-		if(faceSubjectId == null){
-			throw new RuntimeException("register face++ user error ! ");
+		if( StringUtils.isEmpty(user.getFaceSubjectId()) ) { // register
+			FaceUser faceUser = new FaceUser();
+			faceUser.setSubject_type(FaceUser.SUBJECT_TYPE_EMPLOYEE);
+			faceUser.setName(user.getUserName());
+			faceUser.setPhoto_ids(photoIds);
+			Map<String, Object> userMap = facePlusPlusService.buildSubject(faceUser);
+			Integer faceSubjectId = (Integer) ( (Map<String, Object>)userMap.get("data") ).get("id");
+			if(faceSubjectId == null){
+				throw new RuntimeException("register face++ user error ! ");
+			}
+			//
+			user.setFaceSubjectId(faceSubjectId);
+			userDao.updateEntity(user,userId);
+		}else {// update
+//			throw new RuntimeException("user already registered face++! ");
+			if(clearOldPhoto){// 丢弃原来的照片
+
+			}else { // 保留原来的 照片
+				Map<String, Object> userMap = facePlusPlusService.buildGetSubjectById(user.getFaceSubjectId());
+				List<Map<String, Object>> oldPhotos = (List<Map<String, Object>>) ( ((Map<String, Object>)userMap.get("data")).get("photos") );
+				for( Map<String, Object> lodPhoto : oldPhotos) {
+					photoIds.add( (Integer) lodPhoto.get("id") );
+				}
+			}
+
+			FaceUser faceUser = new FaceUser();
+			faceUser.setId(user.getFaceSubjectId());
+			faceUser.setName(user.getUserName());
+			faceUser.setPhoto_ids(photoIds);
+			facePlusPlusService.buildUpdateSubject(faceUser);
 		}
-		//
-		user.setFaceSubjectId(faceSubjectId);
-		userDao.updateEntity(user,userId);
+
 		return user;
 	}
 

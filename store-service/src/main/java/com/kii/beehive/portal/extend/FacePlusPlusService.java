@@ -49,60 +49,13 @@ public class FacePlusPlusService {
     public void init() throws JsonProcessingException {
         loginServer();
 
-//        {
-//            FaceUser faceUser = new FaceUser();
-//            faceUser.setSubject_type(0);
-//            faceUser.setName("beehive_user_photoId:no-" + new Random().nextInt(1000));
-//            buildSubject(faceUser);
-//        }
-///*
-        for (int i = 0; i < 0; i++) {
-
-            List<Integer> photos = new ArrayList<>();
-            Integer anyPhotoId = null;
-            for (int j = 1; j < 11; j++) {
-//                File photoFile = new File("/Users/user/Downloads/"+j+".jpg");
-                File photoFile = new File("/Users/user/Downloads/alan2.jpg");
-//                photoFile = null;
-                Map<String, Object> photoMap = buildUploadPhoto(photoFile);
-                Integer photoId = (Integer) ( (Map<String, Object>)photoMap.get("data") ).get("id");
-                photos.add(photoId);
-                anyPhotoId = photoId;
-            }
-
-            FaceUser faceUser = new FaceUser();
-            faceUser.setSubject_type(0);
-            faceUser.setName("beehive_user_photoId:" + anyPhotoId);
-            faceUser.setPhoto_ids(photos);
-            Map<String, Object> userMap = buildSubject(faceUser);
-            Integer userId = (Integer) ( (Map<String, Object>)userMap.get("data") ).get("id");
-//            //
-//            photoMap = buildUploadPhoto(null);
-//            photoId = (Integer) ( (Map<String, Object>)photoMap.get("data") ).get("id");
-//            //
-//            faceUser = new FaceUser();
-//            faceUser.setId(userId);
-//            faceUser.setPhoto_ids(Arrays.asList(photoId));
-//            buildUpdateSubject(faceUser);
-
-
-            //用相同的photoId,api是过的 产生的新用户 而且 返回值里面是有photoId列表的,
-            //但是好像在https://v2.koalacam.net/subject/employee 这个网站里面看不到识别照片
-            //获取用户的api列表的里面 这种用户没有photoId 【photo_ids属性为空】
-//            faceUser.setName(faceUser.getName()+"-2");
-//            buildSubject(faceUser);
-
-        }
-
-//        buildGetSubjects();
-//*/
 
     }
 
 
     public Map<String, Object> buildUploadPhoto(File photoFile) {
         if(photoFile == null)
-            photoFile = new File("/Users/user/Downloads/2.jpg");
+            throw new RuntimeException("photo file can not null!");
 
         String responseBody = null;
         HttpUriRequest faceRequest = facePlusPlusApiAccessBuilder.buildUploadPhoto(photoFile);
@@ -142,7 +95,7 @@ public class FacePlusPlusService {
         }
         return result;
     }
-    //register
+    //update
     public Map<String, Object> buildUpdateSubject(FaceUser faceUser) {
 
         HttpUriRequest faceRequest = facePlusPlusApiAccessBuilder.buildUpdateSubject(faceUser);
@@ -151,6 +104,27 @@ public class FacePlusPlusService {
         String responseBody = null;
         responseBody = httpClient.executeRequest(faceRequest);
         log.debug("update face++ \n" + responseBody);
+        Map<String, Object> result = null;
+        try {
+            result = objectMapper.readValue(responseBody, new TypeReference<HashMap>() {});
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+	/**
+	 * get face++ user by id
+     * @param id
+     */
+    public Map<String, Object> buildGetSubjectById(Integer id) {
+
+        HttpUriRequest faceRequest = facePlusPlusApiAccessBuilder.buildGetSubjectById(id);
+        faceRequest.setHeader("cookie", cookieList.get(0));
+        log.debug("buildGetSubjectById :" + faceRequest.getURI());
+        String responseBody = null;
+        responseBody = httpClient.executeRequest(faceRequest);
+        log.debug("buildGetSubjectById: \n" + responseBody);
         Map<String, Object> result = null;
         try {
             result = objectMapper.readValue(responseBody, new TypeReference<HashMap>() {});
