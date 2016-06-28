@@ -11,6 +11,7 @@
         <mime-type>application/json</mime-type>
     </mime-mapping>
 
+    <!--
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
@@ -19,6 +20,7 @@
         <param-name>contextConfigLocation</param-name>
         <param-value>/WEB-INF/portalWebContext.xml</param-value>
     </context-param>
+    -->
 
     <servlet>
         <servlet-name>SpringMVC</servlet-name>
