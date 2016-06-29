@@ -1,8 +1,6 @@
-//package com.kii.beehive.portal.jdbc.dao;
+package com.kii.beehive.portal.jdbc.dao;
+
+//public class BeehiveUserJdbcDao extends SpringBaseDao<GlobalThingInfo>  {
 //
-//import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 //
-////public class BeehiveUserJdbcDao extends SpringBaseDao<GlobalThingInfo>  {
-////
-////
-////}
+//}
