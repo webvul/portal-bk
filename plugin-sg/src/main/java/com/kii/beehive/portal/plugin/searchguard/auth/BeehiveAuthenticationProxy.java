@@ -34,10 +34,6 @@ public class BeehiveAuthenticationProxy implements AuthenticationBackend, Config
 
 	private static final String PROP_API_ROOT = "beehive.api.root";
 
-	private static final String PROP_VALIDATE_TOKEN = "beehive.api.validatetoken";
-
-	private static final String PROP_LOGIN = "beehive.api.login";
-
 	private static final String PROP_ADMIN_TOKEN = "beehive.admin.token";
 
 	private final ObjectMapper mapper;
@@ -52,9 +48,7 @@ public class BeehiveAuthenticationProxy implements AuthenticationBackend, Config
 
 	private final String QUERY_USER = "/usermanager/";
 
-	private final String LOGIN_PARAM_USERID = "userID";
-
-	private final String LOGIN_PARAM_PASSWORD = "password";
+	private static final String ADMIN = "admin";
 
 	public BeehiveAuthenticationProxy(final Settings settings) {
 		super();
@@ -76,8 +70,11 @@ public class BeehiveAuthenticationProxy implements AuthenticationBackend, Config
 		}
 
 		try (CloseableHttpClient client = HttpClientBuilder.create().build()) {
-			HttpPost request = null;
+			HttpPost request;
 			if (BeehiveAuth.equals(credentials.getUsername())) {
+				if (ADMIN_TOKEN.equals(credentials.getNativeCredentials().toString())) {
+					return new User(ADMIN, Arrays.asList(ADMIN));
+				}
 				request = new HttpPost(API_ROOT + VALIDATE_TOKEN);
 				request.setHeader("Authorization", "Bearer " + credentials.getNativeCredentials().toString());
 			} else {
