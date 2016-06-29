@@ -12,9 +12,12 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
+import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -53,6 +56,11 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
 	}
 
+	@Override
+	public void configureViewResolvers(ViewResolverRegistry registry){
+		 registry.beanName();
+	}
+
 	@Bean
 	public CommonsMultipartResolver getResolver(){
 		return new CommonsMultipartResolver();
@@ -64,6 +72,15 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 		jsonMarshaller.setObjectMapper(mapper);
 
 		return jsonMarshaller;
+	}
+
+
+	@Bean(name="jsonView")
+	public View getJsonView() {
+
+		MappingJackson2JsonView view=new MappingJackson2JsonView();
+		view.setUpdateContentLength(true);
+		return view;
 	}
 
 }
