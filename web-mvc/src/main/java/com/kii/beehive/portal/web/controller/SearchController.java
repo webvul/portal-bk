@@ -50,7 +50,9 @@ public class SearchController extends AbstractThingTagController {
 			thingTagManager.getAccessibleThingById(AuthInfoStore.getUserID(), thing.getId());
 		}
 
-		String queryString = searchManager.queryBuilderForAggs(searchRestBean.getVenderThingID(), searchRestBean.getStartDate(),
+		String kiiThingID = "thing:" + thing.getFullKiiThingID().substring(thing.getFullKiiThingID().indexOf("-") + 1);
+
+		String queryString = searchManager.queryBuilderForAggs(kiiThingID, searchRestBean.getStartDate(),
 				searchRestBean.getEndDate(), searchRestBean.getIntervalField(), searchRestBean.getOperatorField(), searchRestBean
 						.getFields());
 		String result = searchManager.search(thing, queryString);
@@ -58,7 +60,7 @@ public class SearchController extends AbstractThingTagController {
 	}
 
 	/**
-	 * POST /report/historical/aggregate
+	 * POST /report/historical
 	 *
 	 * @param searchRestBean
 	 * @return
@@ -84,11 +86,12 @@ public class SearchController extends AbstractThingTagController {
 			thingTagManager.getAccessibleThingById(AuthInfoStore.getUserID(), thing.getId());
 		}
 
-		String queryString = searchManager.queryBuilderForAggs(searchRestBean.getVenderThingID(), searchRestBean.getStartDate(),
-				searchRestBean.getEndDate(), searchRestBean.getIntervalField(), searchRestBean.getOperatorField(), searchRestBean
-						.getFields());
+		String kiiThingID = "thing:" + thing.getFullKiiThingID().substring(thing.getFullKiiThingID().indexOf("-") + 1);
+
+		String queryString = searchManager.queryBuilderForHistorical(kiiThingID, searchRestBean.getStartDate(),
+				searchRestBean.getEndDate(), searchRestBean.getSize(), searchRestBean.getFrom());
 		String result = searchManager.search(thing, queryString);
-		return searchManager.extractResultForAggs(result);
+		return searchManager.extractResultForHistorical(result);
 	}
 
 
