@@ -18,7 +18,7 @@ import com.kii.beehive.portal.web.socket.EchoHandler;
 @Configuration
 @EnableWebMvc
 @EnableWebSocket
-@Import(WebSocketMessageBrokerConfig.class)
+@Import({WebSocketMessageBrokerConfig.class, PropertySourcesPlaceholderConfig.class})
 @ComponentScan(basePackages = {"com.kii.beehive.portal.web.controller"}, useDefaultFilters = false, includeFilters = {
 		@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = STOMPMessageController.class)})
 public class WebSocketConfig implements WebSocketConfigurer {

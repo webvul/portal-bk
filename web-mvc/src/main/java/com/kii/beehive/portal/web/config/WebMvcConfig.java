@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -26,6 +27,7 @@ import com.kii.beehive.portal.web.help.AuthInterceptor;
 
 @EnableWebMvc
 @Configuration
+@Import(PropertySourcesPlaceholderConfig.class)
 @ComponentScan(basePackages = {"com.kii.beehive.portal.web.controller"}, excludeFilters = {
 		@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = STOMPMessageController.class)})
 public class WebMvcConfig extends WebMvcConfigurerAdapter {
@@ -34,7 +36,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 	private ObjectMapper mapper;
 
 	@Autowired
-	private AuthInterceptor  authInterceptor;
+	private AuthInterceptor authInterceptor;
 
 	@Override
 	public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
@@ -57,12 +59,12 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 	}
 
 	@Override
-	public void configureViewResolvers(ViewResolverRegistry registry){
-		 registry.beanName();
+	public void configureViewResolvers(ViewResolverRegistry registry) {
+		registry.beanName();
 	}
 
 	@Bean
-	public CommonsMultipartResolver getResolver(){
+	public CommonsMultipartResolver getResolver() {
 		return new CommonsMultipartResolver();
 	}
 
@@ -75,10 +77,10 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 	}
 
 
-	@Bean(name="jsonView")
+	@Bean(name = "jsonView")
 	public View getJsonView() {
 
-		MappingJackson2JsonView view=new MappingJackson2JsonView();
+		MappingJackson2JsonView view = new MappingJackson2JsonView();
 		view.setUpdateContentLength(true);
 		return view;
 	}
