@@ -154,11 +154,11 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 				}
 				AuthInfoStore.setAuthInfo(appID);
 
-			} else if (subUrl.startsWith("/3rdparty")) {
+			} else if (subUrl.startsWith("/party3rd")) {
 
 
 				//TODO:add verify to 3rdparty token.
-				AuthInfoStore.setAuthInfo("3rdparty");
+				AuthInfoStore.setAuthInfo("party3rd");
 			} else {
 
 
