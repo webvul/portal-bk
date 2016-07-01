@@ -97,7 +97,7 @@ public class BeehiveUserDao extends AbstractDataAccess<BeehiveUser> {
 	}
 
 
-	public QueryParam getEntitysByFields(Map<String, Object> fields) {
+	private  QueryParam getEntitysByFields(Map<String, Object> fields) {
 
 		ConditionBuilder builder = ConditionBuilder.andCondition();
 
