@@ -2,7 +2,6 @@ package com.kii.beehive.portal.web.config;
 
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -15,13 +14,10 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.kii.beehive.portal.web.controller.STOMPMessageController;
 import com.kii.beehive.portal.web.help.AuthInterceptor;
 
@@ -47,14 +43,6 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 		converters.add(createJsonMessageConverter());
 
 		super.configureMessageConverters(converters);
-
-	}
-
-
-	@Override
-	public void addInterceptors(InterceptorRegistry registry) {
-
-		registry.addInterceptor(authInterceptor).addPathPatterns("/**");
 
 	}
 
