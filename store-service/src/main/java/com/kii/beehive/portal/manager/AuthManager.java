@@ -359,7 +359,9 @@ public class AuthManager {
 
 			return authRestBean;
 		}catch(KiiCloudException ex){
-			throw new UnauthorizedException(UnauthorizedException.LOGIN_TOKEN_INVALID);
+			UnauthorizedException  excep= new UnauthorizedException(UnauthorizedException.LOGIN_TOKEN_INVALID);
+			excep.addParam("token",token);
+			throw excep;
 		}
 	}
 
