@@ -11,10 +11,10 @@ import org.springframework.http.HttpStatus;
 
 import com.kii.beehive.business.manager.TagThingManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagType;
-import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
 
@@ -64,9 +64,9 @@ public abstract class AbstractThingTagController extends AbstractController {
 
 	}
 
-	protected Set<String> getUserIds(String userIDs) {
+	protected Set<Long> getUserIds(String userIDs) {
 		return thingTagManager.getUsers(Arrays.asList(userIDs.split(","))).stream().
-					map(BeehiveUser::getId).collect(Collectors.toSet());
+					mapToLong(BeehiveJdbcUser::getId).collect(Collectors.toSet());
 
 	}
 

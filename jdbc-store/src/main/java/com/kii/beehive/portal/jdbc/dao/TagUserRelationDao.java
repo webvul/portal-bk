@@ -1,11 +1,17 @@
 package com.kii.beehive.portal.jdbc.dao;
 
-import com.kii.beehive.portal.jdbc.entity.TagIndex;
-import com.kii.beehive.portal.jdbc.entity.TagUserRelation;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Repository;
 
-import java.util.*;
+import com.kii.beehive.portal.jdbc.entity.TagIndex;
+import com.kii.beehive.portal.jdbc.entity.TagUserRelation;
 
 /**
  * Created by hdchen on 3/18/16.
@@ -56,19 +62,19 @@ public class TagUserRelationDao extends SpringBaseDao<TagUserRelation> {
 		return KEY;
 	}
 
-	public Optional<List<Long>> findTagIds(String userId) {
+	public Optional<List<Long>> findTagIds(Long userId) {
 		if (null == userId) {
 			return Optional.ofNullable(null);
 		}
 		return Optional.ofNullable(jdbcTemplate.queryForList(SQL_FIND_TAGIDS, new Object[]{userId}, Long.class));
 	}
 
-	public List<String> findUserIds(Long tagId) {
-		if (null == tagId) {
-			return null;
-		}
-		return jdbcTemplate.queryForList(SQL_FIND_USERIDS, new Object[]{tagId}, String.class);
-	}
+//	public List<String> findUserIds(Long tagId) {
+//		if (null == tagId) {
+//			return null;
+//		}
+//		return jdbcTemplate.queryForList(SQL_FIND_USERIDS, new Object[]{tagId}, String.class);
+//	}
 
 	public List<TagUserRelation> findByTagId(Long tagId) {
 		if (null == tagId) {
@@ -77,14 +83,14 @@ public class TagUserRelationDao extends SpringBaseDao<TagUserRelation> {
 		return findBySingleField(TagUserRelation.TAG_ID, tagId);
 	}
 
-	public Optional<List<TagUserRelation>> findByUserId(String userId) {
+	public Optional<List<TagUserRelation>> findByUserId(Long userId) {
 		if (null == userId) {
 			return Optional.ofNullable(null);
 		}
 		return Optional.ofNullable(findBySingleField(TagUserRelation.USER_ID, userId));
 	}
 
-	public TagUserRelation find(Long tagId, String userId) {
+	public TagUserRelation find(Long tagId, Long userId) {
 		if (null == tagId || null == userId) {
 			return null;
 		}
@@ -103,14 +109,14 @@ public class TagUserRelationDao extends SpringBaseDao<TagUserRelation> {
 		jdbcTemplate.update(SQL_DELETE_BY_TAGID, tagId);
 	}
 
-	public void deleteByTagIdAndUserId(Long tagId, String userId) {
+	public void deleteByTagIdAndUserId(Long tagId, Long userId) {
 		if (null == tagId || null == userId) {
 			return;
 		}
 		jdbcTemplate.update(SQL_DELETE_BY_TAGID_AND_USERID, tagId, userId);
 	}
 
-	public Optional<List<Long>> findAccessibleTagIds(String userId, Collection<Long> tagIds) {
+	public Optional<List<Long>> findAccessibleTagIds(Long userId, Collection<Long> tagIds) {
 		if (null == userId || null == tagIds || tagIds.isEmpty()) {
 			return Optional.ofNullable(null);
 		}
@@ -120,8 +126,8 @@ public class TagUserRelationDao extends SpringBaseDao<TagUserRelation> {
 		return Optional.ofNullable(namedJdbcTemplate.queryForList(SQL_FIND_ACCESSIBLE_TAGIDS, params, Long.class));
 	}
 
-	public Optional<List<Long>> findTagIds(String userId, String tagType, String displayName) {
-		if (Strings.isBlank(userId)) {
+	public Optional<List<Long>> findTagIds(Long userId, String tagType, String displayName) {
+		if (userId==null) {
 			return Optional.ofNullable(null);
 		}
 		if (Strings.isBlank(tagType) && Strings.isBlank(displayName)) {
@@ -146,16 +152,16 @@ public class TagUserRelationDao extends SpringBaseDao<TagUserRelation> {
 				params.toArray(new Object[]{}), Long.class));
 	}
 
-	public Optional<List<String>> findUserIds(List<Long> tagIds) {
-		if (null == tagIds || tagIds.isEmpty()) {
-			return Optional.ofNullable(null);
-		}
-		return Optional.ofNullable(findSingleFieldBySingleField(TagUserRelation.USER_ID, TagUserRelation.TAG_ID,
-				tagIds, String.class));
-	}
+//	public Optional<List<String>> findUserIds(List<Long> tagIds) {
+//		if (null == tagIds || tagIds.isEmpty()) {
+//			return Optional.ofNullable(null);
+//		}
+//		return Optional.ofNullable(findSingleFieldBySingleField(TagUserRelation.USER_ID, TagUserRelation.TAG_ID,
+//				tagIds, String.class));
+//	}
 
-	public Optional<List<Long>> findTagIds(String userId, List<String> fullTagName) {
-		if (Strings.isBlank(userId) || null == fullTagName || fullTagName.isEmpty()) {
+	public Optional<List<Long>> findTagIds(Long userId, List<String> fullTagName) {
+		if (userId==null || null == fullTagName || fullTagName.isEmpty()) {
 			return Optional.ofNullable(null);
 		}
 

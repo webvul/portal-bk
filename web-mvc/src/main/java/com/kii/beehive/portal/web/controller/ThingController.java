@@ -390,7 +390,7 @@ public class ThingController extends AbstractThingTagController {
 					.BAD_REQUEST);
 		}
 		List<Long> thingIds = getCreatedThingIds(globalThingIDs);
-		Set<String> userIds = getUserIds(userIDs);
+		Set<Long> userIds = getUserIds(userIDs);
 		thingTagManager.bindThingsToUsers(thingIds, userIds);
 	}
 

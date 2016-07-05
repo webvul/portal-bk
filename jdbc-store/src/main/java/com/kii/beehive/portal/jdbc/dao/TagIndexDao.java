@@ -1,14 +1,20 @@
 package com.kii.beehive.portal.jdbc.dao;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import org.apache.logging.log4j.util.Strings;
+import org.springframework.stereotype.Repository;
+
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
 import com.kii.beehive.portal.jdbc.entity.TagType;
 import com.kii.beehive.portal.jdbc.entity.TeamUserRelation;
-import org.apache.logging.log4j.util.Strings;
-import org.springframework.stereotype.Repository;
-
-import java.util.*;
 
 @Repository
 public class TagIndexDao extends SpringBaseDao<TagIndex> {
@@ -77,9 +83,9 @@ public class TagIndexDao extends SpringBaseDao<TagIndex> {
 		return rows;
 	}
 
-	public List<TagIndex> findUserTagByTypeAndName(String userId, String tagType, String displayName) {
+	public List<TagIndex> findUserTagByTypeAndName(Long userId, String tagType, String displayName) {
 		List<Object> params = new ArrayList<>();
-		params.add(userId);
+		params.add(String.valueOf(userId));
 		StringBuilder sb = new StringBuilder(SQL_FIND_USER_TAG);
 		if (!Strings.isBlank(tagType)) {
 			sb.append(" AND ");
@@ -143,7 +149,7 @@ public class TagIndexDao extends SpringBaseDao<TagIndex> {
 		return rows;
 	}
 
-	public List<String> findUserLocations(String userId, String parentLocation) {
+	public List<String> findUserLocations(Long userId, String parentLocation) {
 		List<Object> params = new ArrayList<>();
 		params.add(userId);
 		StringBuilder sb = new StringBuilder(SQL_FIND_USER_LOCATION);
@@ -152,7 +158,7 @@ public class TagIndexDao extends SpringBaseDao<TagIndex> {
 			params.add(parentLocation + '%');
 		}
 		sb.append(" ORDER BY t.").append(TagIndex.DISPLAY_NAME);
-		return jdbcTemplate.queryForList(sb.toString(), params.toArray(new Object[]{}), String.class);
+		return jdbcTemplate.queryForList(sb.toString(), params.toArray(new Object[0]), String.class);
 	}
 
 	public List<String> findLocations(String parentLocation) {
@@ -253,7 +259,7 @@ public class TagIndexDao extends SpringBaseDao<TagIndex> {
 				Long.class));
 	}
 
-	public Optional<List<Long>> findTagIdsByCreatorAndFullTagNames(String userId, List<String> fullTagNameList) {
+	public Optional<List<Long>> findTagIdsByCreatorAndFullTagNames(Long userId, List<String> fullTagNameList) {
 		if (null == userId) {
 			return Optional.ofNullable(null);
 		}
@@ -263,13 +269,13 @@ public class TagIndexDao extends SpringBaseDao<TagIndex> {
 					Long.class));
 		}
 		Map<String, Object> params = new HashMap();
-		params.put("creator", userId);
+		params.put("creator", String.valueOf(userId));
 		params.put("names", fullTagNameList);
 		return Optional.ofNullable(namedJdbcTemplate.queryForList(SQL_FIND_TAGIDS_BY_CREATOR_AND_FULLNAMES, params,
 				Long.class));
 	}
 
-	public Optional<List<Long>> getCreatedTagIdsByTypeAndDisplayNames(String userId, TagType type,
+	public Optional<List<Long>> getCreatedTagIdsByTypeAndDisplayNames(Long userId, TagType type,
 																	  List<String> displayNames) {
 		if (null == userId) {
 			return Optional.ofNullable(null);
@@ -279,7 +285,7 @@ public class TagIndexDao extends SpringBaseDao<TagIndex> {
 					Long.class));
 		}
 		Map<String, Object> params = new HashMap();
-		params.put("creator", userId);
+		params.put("creator", String.valueOf(userId));
 		params.put("type", type.name());
 
 		if (null == displayNames || displayNames.isEmpty()) {

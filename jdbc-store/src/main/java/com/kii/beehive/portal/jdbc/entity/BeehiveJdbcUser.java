@@ -6,6 +6,8 @@ import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import com.kii.beehive.portal.jdbc.annotation.JdbcField;
+
 public class BeehiveJdbcUser extends DBEntity{
 
 
@@ -44,6 +46,13 @@ public class BeehiveJdbcUser extends DBEntity{
 		}else {
 			return userID;
 		}
+	}
+
+	@JdbcField(column = "beehive_user_id")
+	@Override
+	public Long getId(){
+
+		return super.getId();
 	}
 
 	public String getUserID() {

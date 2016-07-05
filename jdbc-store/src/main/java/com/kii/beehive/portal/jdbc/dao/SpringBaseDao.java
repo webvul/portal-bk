@@ -1,10 +1,17 @@
 package com.kii.beehive.portal.jdbc.dao;
 
-import com.kii.beehive.portal.auth.AuthInfoStore;
-import com.kii.beehive.portal.jdbc.entity.DBEntity;
-import com.kii.beehive.portal.jdbc.helper.AnnationBeanSqlParameterSource;
-import com.kii.beehive.portal.jdbc.helper.BindClsFullUpdateTool;
-import com.kii.beehive.portal.jdbc.helper.BindClsRowMapper;
+import javax.sql.DataSource;
+
+import java.io.Serializable;
+import java.lang.reflect.ParameterizedType;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +21,11 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 
-import javax.sql.DataSource;
-import java.io.Serializable;
-import java.lang.reflect.ParameterizedType;
-import java.util.*;
+import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.jdbc.entity.DBEntity;
+import com.kii.beehive.portal.jdbc.helper.AnnationBeanSqlParameterSource;
+import com.kii.beehive.portal.jdbc.helper.BindClsFullUpdateTool;
+import com.kii.beehive.portal.jdbc.helper.BindClsRowMapper;
 
 public abstract class SpringBaseDao<T extends DBEntity> {
 
@@ -50,6 +58,9 @@ public abstract class SpringBaseDao<T extends DBEntity> {
 		this.updateTool = BindClsFullUpdateTool.newInstance(dataSource, getTableName(), "id", entityClass, getKey());
 		this.rowMapper = new BindClsRowMapper<T>(entityClass);
 	}
+
+
+
 
 
 	protected RowMapper<T> getRowMapper() {
@@ -90,6 +101,28 @@ public abstract class SpringBaseDao<T extends DBEntity> {
 		}
 		Map<String, Collection> param = Collections.singletonMap("list", ids);
 		return namedJdbcTemplate.query(SQL_FIND_BY_IDS, param, getRowMapper());
+	}
+
+
+	public  List<T> findByFields(Map<String,Object> queryParam){
+
+		String sql = "SELECT t.* FROM " + this.getTableName() + " t WHERE 1=1 ";
+
+
+		List<Object> params=new ArrayList<>();
+
+		for(Map.Entry<String,Object> entry:queryParam.entrySet()){
+
+			String field=entry.getKey();
+			Object o=entry.getValue();
+
+			sql+=" and  t."+field+" = ? ";
+			params.add(o);
+
+		}
+
+		return jdbcTemplate.query(sql,params.toArray(new Object[0]),getRowMapper());
+
 	}
 
 	public List<T> findBySingleField(String fieldName, Object value) {

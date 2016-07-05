@@ -65,7 +65,7 @@ public class UserManager {
 
 
 
-	private void addTeamInfo(String teamName,String userID){
+	private void addTeamInfo(String teamName,Long userID){
 
 		//create team
 		if(!Strings.isBlank(teamName)){
@@ -88,7 +88,7 @@ public class UserManager {
 
 	}
 
-	public Long createUserGroup(UserGroup userGroup, String loginUserID) {
+	public Long createUserGroup(UserGroup userGroup, Long loginUserID) {
 		// create user group
 
 		List<UserGroup> userGroupList = userGroupDao.findUserGroupByName(userGroup.getName());
@@ -109,7 +109,7 @@ public class UserManager {
 		return userGroupID;
 	}
 
-	public Long updateUserGroup(UserGroup userGroup, String loginUserID) {
+	public Long updateUserGroup(UserGroup userGroup, Long loginUserID) {
 		List<UserGroup> orgiList = userGroupDao.findUserGroup(loginUserID, userGroup.getId(), null);
 		if (orgiList.size() == 0) {
 			throw new EntryNotFoundException(userGroup.getId().toString(),"UserGroup");
@@ -147,7 +147,7 @@ public class UserManager {
 	 * @param userIDList  the already existing userIDs under the user group will not be added again
 	 * @param userGroupID
 	 */
-	public void addUserToUserGroup(List<String> userIDList, Long userGroupID) {
+	public void addUserToUserGroup(List<Long> userIDList, Long userGroupID) {
 
 
 		UserGroup ug = this.userGroupDao.findByID(userGroupID);
@@ -188,7 +188,7 @@ public class UserManager {
 	 * @param userIDs
 	 * @return
 	 */
-	public Set<String> checkNonExistingUserID(Collection<String> userIDs) {
+	public Set<String> checkNonExistingUserID(Collection<Long> userIDs) {
 
 		if (userIDs == null) {
 			return new HashSet<String>();
@@ -215,7 +215,7 @@ public class UserManager {
 	 *
 	 * @param userIDs
 	 */
-	public void validateUserIDExisting(Set<String> userIDs) {
+	public void validateUserIDExisting(Set<Long> userIDs) {
 
 		Set<String> nonExistingUserIDList = this.checkNonExistingUserID(userIDs);
 

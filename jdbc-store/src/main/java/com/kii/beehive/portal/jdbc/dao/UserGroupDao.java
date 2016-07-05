@@ -1,16 +1,15 @@
 package com.kii.beehive.portal.jdbc.dao;
 
-import com.kii.beehive.portal.auth.AuthInfoStore;
-import com.kii.beehive.portal.jdbc.entity.UserGroup;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.jdbc.entity.UserGroup;
 
 @Repository
 public class UserGroupDao extends SpringBaseDao<UserGroup> {
@@ -19,7 +18,7 @@ public class UserGroupDao extends SpringBaseDao<UserGroup> {
 	public static final String KEY = "user_group_id";
 	private Logger log = LoggerFactory.getLogger(UserGroupDao.class);
 
-	public List<UserGroup> findUserGroup(String userID, Long userGroupID, String name) {
+	public List<UserGroup> findUserGroup(Long userID, Long userGroupID, String name) {
 
 		List<Object> params = new ArrayList<Object>();
 
@@ -35,7 +34,7 @@ public class UserGroupDao extends SpringBaseDao<UserGroup> {
 
 		sql.append(" INNER JOIN rel_group_user r ON u.user_group_id = r.user_group_id ");
 
-		if (!Strings.isBlank(userID)) {
+		if (userID!=null) {
 			if (where.length() > 0) where.append(" AND ");
 			where.append(" r.user_id = ? ");
 			params.add(userID);
@@ -129,11 +128,11 @@ public class UserGroupDao extends SpringBaseDao<UserGroup> {
 		return KEY;
 	}
 
-	public Optional<List<Long>> findUserGroupIds(Set<Long> groupIdSet) {
-		if (null == groupIdSet || groupIdSet.isEmpty()) {
-			return Optional.ofNullable(null);
-		}
-		return Optional.ofNullable(findSingleFieldBySingleField(UserGroup.USER_GROUP_ID, UserGroup.USER_GROUP_ID,
-				groupIdSet, Long.class));
-	}
+//	public Optional<List<Long>> findUserGroupIds(Set<Long> groupIdSet) {
+//		if (null == groupIdSet || groupIdSet.isEmpty()) {
+//			return Optional.ofNullable(null);
+//		}
+//		return Optional.ofNullable(findSingleFieldBySingleField(UserGroup.USER_GROUP_ID, UserGroup.USER_GROUP_ID,
+//				groupIdSet, Long.class));
+//	}
 }

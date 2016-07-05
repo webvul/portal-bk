@@ -13,8 +13,10 @@ import java.util.Set;
 import org.springframework.stereotype.Repository;
 
 import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.common.utils.StrTemplate;
 import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
+import com.kii.beehive.portal.jdbc.entity.ThingUserRelation;
 
 @Repository
 public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
@@ -284,7 +286,7 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 		return Optional.ofNullable(namedJdbcTemplate.queryForList(sb.toString(), params));
 	}
 
-	public Optional<List<Long>> findThingIdsByCreator(String userId, List<Long> thingIds) {
+	public Optional<List<Long>> findThingIdsByCreator(Long userId, List<Long> thingIds) {
 		if (null == userId) {
 			return Optional.ofNullable(null);
 		}
@@ -296,8 +298,24 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 		sb.append(" AND ").append(GlobalThingInfo.ID_GLOBAL_THING).append(" IN (:ids)");
 
 		Map<String, Object> params = new HashMap();
-		params.put("creator", userId);
+		params.put("creator", String.valueOf(userId));
 		params.put("ids", thingIds);
 		return Optional.ofNullable(namedJdbcTemplate.queryForList(sb.toString(), params, Long.class));
 	}
+
+
+	public List<GlobalThingInfo> findThingIds(Long userId) {
+		String sqlTmp="select th.* from  ${0} th  inner join  ${1} rel   on th.{2} = rel.{3}  where rel.${4}  = ? ";
+		String sql= StrTemplate.gener(sqlTmp,TABLE_NAME,ThingUserRelationDao.TABLE_NAME,GlobalThingInfo.ID_GLOBAL_THING,ThingUserRelation.THING_ID,ThingUserRelation.USER_ID);
+
+		List<GlobalThingInfo> rows = jdbcTemplate.query(sql,new Object[]{userId},getRowMapper());
+		return rows;
+	}
+
+//	public List<GlobalThingInfo> findByUserId(String userId) {
+//		if (null == userId) {
+//			return null;
+//		}
+//		return findBySingleField(ThingUserRelation.USER_ID, userId);
+//	}
 }

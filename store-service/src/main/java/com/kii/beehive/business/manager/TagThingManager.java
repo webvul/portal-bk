@@ -65,7 +65,7 @@ public class TagThingManager {
 	private ThingIFInAppService thingIFInAppService;
 
 	@Autowired
-	private BeehiveUserDao userDao;
+	private BeehiveUserJdbcDao userDao;
 
 	@Autowired
 	private UserGroupDao userGroupDao;
@@ -110,7 +110,7 @@ public class TagThingManager {
 			//this.saveOrUpdateThingLocation(thingID, location);
 
 			ThingUserRelation relation = new ThingUserRelation();
-			relation.setUserId(thingInfo.getCreateBy());
+			relation.setBeehiveUserID(Long.parseLong(thingInfo.getCreateBy()));
 			relation.setThingId(thingID);
 			thingUserRelationDao.saveOrUpdate(relation);
 		}
@@ -416,13 +416,13 @@ public class TagThingManager {
 		userIds.forEach(userId -> tagIds.forEach(tagId -> tagUserRelationDao.deleteByTagIdAndUserId(tagId, userId)));
 	}
 
-	public void bindThingsToUsers(Collection<Long> thingIds, Collection<String> userIds) {
+	public void bindThingsToUsers(Collection<Long> thingIds, Collection<Long> userIds) {
 		thingIds.forEach(thingId -> userIds.forEach(userId -> {
 			ThingUserRelation relation = thingUserRelationDao.find(thingId, userId);
 			if (null == relation) {
 				relation = new ThingUserRelation();
 				relation.setThingId(thingId);
-				relation.setUserId(userId);
+				relation.setBeehiveUserID(userId);
 				thingUserRelationDao.insert(relation);
 			}
 		}));
@@ -513,7 +513,7 @@ public class TagThingManager {
 		return tags;
 	}
 
-	public List<BeehiveUser> getUsers(List<String> userIDList) throws ObjectNotFoundException {
+	public List<BeehiveUser> getUsers(List<Long> userIDList) throws ObjectNotFoundException {
 		List<BeehiveUser> users = userDao.getUserByIDs(userIDList);
 		if (null == users || !users.stream().map(BeehiveUser::getId).collect(Collectors.toSet())
 				.containsAll(userIDList)) {

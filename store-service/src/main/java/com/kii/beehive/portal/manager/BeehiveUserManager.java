@@ -1,17 +1,21 @@
 package com.kii.beehive.portal.manager;
 
 import javax.annotation.PostConstruct;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
+
 import com.kii.beehive.business.service.KiiUserService;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.StringRandomTools;
@@ -20,14 +24,15 @@ import com.kii.beehive.portal.exception.UnauthorizedException;
 import com.kii.beehive.portal.extend.FacePlusPlusService;
 import com.kii.beehive.portal.extend.entitys.FaceUser;
 import com.kii.beehive.portal.helper.RuleSetService;
+import com.kii.beehive.portal.jdbc.dao.BeehiveUserJdbcDao;
 import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
 import com.kii.beehive.portal.jdbc.dao.TeamDao;
 import com.kii.beehive.portal.jdbc.dao.TeamGroupRelationDao;
 import com.kii.beehive.portal.jdbc.dao.TeamUserRelationDao;
 import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
+import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 import com.kii.beehive.portal.jdbc.entity.Team;
 import com.kii.beehive.portal.jdbc.entity.TeamUserRelation;
-import com.kii.beehive.portal.service.BeehiveUserDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 
 @Component
@@ -47,7 +52,7 @@ public class BeehiveUserManager {
 	private KiiUserService kiiUserService;
 
 	@Autowired
-	private BeehiveUserDao userDao;
+	private BeehiveUserJdbcDao userDao;
 
 	@Autowired
 	private RuleSetService ruleService;
@@ -94,23 +99,23 @@ public class BeehiveUserManager {
 
 	public void createAdmin(String adminName,String password){
 
-		BeehiveUser  admin=new BeehiveUser();
+		BeehiveJdbcUser admin=new BeehiveJdbcUser();
 
 		admin.setUserName(adminName);
 		String hashedPwd=admin.getHashedPwd(password);
 		admin.setUserPassword(hashedPwd);
 
-		userDao.addEntity(admin);
+		userDao.insert(admin);
 
 		String loginID=kiiUserService.addBeehiveUser(admin,admin.getUserPassword());
 
 		admin.setKiiUserID(loginID);
 
-		userDao.updateEntity(admin,admin.getId());
+		userDao.updateEntityAllByID(admin);
 
 	}
 
-	public Map<String,Object>  addUser(BeehiveUser user,String teamName) {
+	public Map<String,Object>  addUser(BeehiveJdbcUser user,String teamName) {
 
 
 		BeehiveUser existsUser=userDao.getUserByLoginId(user);
@@ -171,9 +176,9 @@ public class BeehiveUserManager {
 
 
 
-	public void deleteUser(String userID) {
+	public void deleteUser(Long userID) {
 		checkTeam(userID);
-		BeehiveUser user = userDao.getUserByID(userID);
+		BeehiveJdbcUser user = userDao.getUserByID(userID);
 
 		groupUserRelationDao.delete(userID, null);
 
@@ -184,20 +189,20 @@ public class BeehiveUserManager {
 
 	}
 
-	public BeehiveUser getUserByIDDirectly(String userID){
+	public BeehiveJdbcUser getUserByIDDirectly(Long userID){
 		return userDao.getUserByID(userID);
 	}
 
 
 
-	public BeehiveUser getUserByID(String userID) {
+	public BeehiveJdbcUser getUserByID(Long userID) {
 
 		checkTeam(userID);
 		return userDao.getUserByID(userID);
 	}
 
 
-	public void updateUser(BeehiveUser user,String userID){
+	public void updateUser(BeehiveJdbcUser user,String userID){
 
 //		checkTeam(userID);
 		userDao.updateEntity(user,userID);
@@ -208,8 +213,8 @@ public class BeehiveUserManager {
 	/**
 	 *
 	 */
-	public BeehiveUser updateUserWithFace( String userId, Boolean clearOldPhoto, List<File> photoFiles ){
-		BeehiveUser user = userDao.getUserByID(userId);
+	public BeehiveJdbcUser updateUserWithFace( String userId, Boolean clearOldPhoto, List<File> photoFiles ){
+		BeehiveJdbcUser user = userDao.getUserByID(userId);
 		if(user == null) {
 			throw new RuntimeException("can not find user ! ");
 		}
@@ -260,7 +265,7 @@ public class BeehiveUserManager {
 
 
 
-	public List<BeehiveUser> simpleQueryUser(Map<String, Object> queryMap) {
+	public List<BeehiveJdbcUser> simpleQueryUser(Map<String, Object> queryMap) {
 
 		if (queryMap.isEmpty()) {
 			return userDao.getAllUsers();
@@ -270,7 +275,7 @@ public class BeehiveUserManager {
 	}
 
 
-	private void checkTeam(String userID){
+	private void checkTeam(Long userID){
 		if(AuthInfoStore.isTeamIDExist()){
 			TeamUserRelation tur = teamUserRelationDao.findByTeamIDAndUserID(AuthInfoStore.getTeamID(), userID);
 			if(tur == null){

@@ -28,16 +28,16 @@ public class TeamDao extends SpringBaseDao<Team> {
 		return this.findBySingleField(Team.NAME, teamName);
 	}
 	
-	public List<Team> findTeamByUserID(String userID) {
+	public List<Team> findTeamByUserID(Long userID) {
 		String sql = "SELECT t.* from "+TABLE_NAME+" t  "
 					+ "INNER JOIN rel_team_user r ON t.team_id=r.team_id "
-					+ " WHERE r.user_id= ?";
+					+ " WHERE r.beehive_user_id= ?";
 
 		List<Team> rows = jdbcTemplate.query(sql, new Object[]{userID} ,getRowMapper() );
 	    return rows;
 	}
 
-	public Team getTeamByUserID(String userID){
+	public Team getTeamByUserID(Long userID){
 		List<Team> teamList = findTeamByUserID(userID);
 		if (teamList != null && teamList.size() > 0) {
 			return teamList.get(0);

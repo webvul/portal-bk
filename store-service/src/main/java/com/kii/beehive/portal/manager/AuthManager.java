@@ -27,6 +27,7 @@ import com.kii.beehive.portal.helper.AuthInfoService;
 import com.kii.beehive.portal.helper.RuleSetService;
 import com.kii.beehive.portal.jdbc.dao.TeamDao;
 import com.kii.beehive.portal.jdbc.dao.TeamUserRelationDao;
+import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 import com.kii.beehive.portal.jdbc.entity.Team;
 import com.kii.beehive.portal.service.BeehiveUserDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
@@ -161,7 +162,7 @@ public class AuthManager {
 	 */
 	public AuthRestBean login(String userName, String password) {
 
-		BeehiveUser  user=userDao.getUserByName(userName);
+		BeehiveJdbcUser user=userDao.getUserByName(userName);
 
 		if(user==null){
 			throw new UserNotExistException(userName);
@@ -329,7 +330,7 @@ public class AuthManager {
 
 	}
 
-	private  Team getTeamByID(String userID) {
+	private  Team getTeamByID(Long userID) {
 		List<Team> teamList = teamDao.findTeamByUserID(userID);
 		if (teamList != null && teamList.size() > 0) {
 			return teamList.get(0);
