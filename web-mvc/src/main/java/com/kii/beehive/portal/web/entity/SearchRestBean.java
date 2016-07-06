@@ -2,21 +2,22 @@ package com.kii.beehive.portal.web.entity;
 
 public class SearchRestBean {
 
-	private String venderThingID;
+	private String vendorThingID;
 	private Long startDate;
 	private Long endDate;
 	private String intervalField;
+	private int unit;
 	private String operatorField;
 	private String[] fields;
 	private int size;
 	private int from;
 
-	public String getVenderThingID() {
-		return venderThingID;
+	public String getVendorThingID() {
+		return vendorThingID;
 	}
 
-	public void setVenderThingID(String venderThingID) {
-		this.venderThingID = venderThingID;
+	public void setVendorThingID(String vendorThingID) {
+		this.vendorThingID = vendorThingID;
 	}
 
 	public Long getStartDate() {
@@ -73,5 +74,13 @@ public class SearchRestBean {
 
 	public void setFrom(int from) {
 		this.from = from;
+	}
+
+	public int getUnit() {
+		return unit;
+	}
+
+	public void setUnit(int unit) {
+		this.unit = unit;
 	}
 }

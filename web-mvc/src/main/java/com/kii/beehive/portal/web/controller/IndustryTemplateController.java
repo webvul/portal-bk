@@ -62,7 +62,7 @@ public class IndustryTemplateController {
 //
 //        return result;
 //    }
-    @RequestMapping(path = "", method = {RequestMethod.GET})
+    @RequestMapping(path = "", method = {RequestMethod.GET}, consumes = { "*" })
     public IndustryTemplateRestBean query(@RequestParam("thingType") String thingType, @RequestParam("name") String name, @RequestParam("version") String version) throws IOException {
 
         List<IndustryTemplate> list = industryTemplateManager.getIndustryTemplate(thingType, name, version);
@@ -142,7 +142,7 @@ public class IndustryTemplateController {
      * @return
      * @throws IOException
      */
-    @RequestMapping(path = "/sample", method = {RequestMethod.GET})
+    @RequestMapping(path = "/sample", method = {RequestMethod.GET}, consumes = { "*" })
     public Map<String, Object> querySample() throws IOException {
 
         List<IndustryTemplate> list = industryTemplateManager.getIndustryTemplate("demoThingType", "demoName",

@@ -161,13 +161,14 @@ public class AuthController {
 	 *
 	 * @return
 	 */
-	@RequestMapping(value = "/validatetoken", method = {RequestMethod.POST})
+	@RequestMapping(value = "/validatetoken", method = {RequestMethod.POST, RequestMethod.GET},consumes = {MediaType.ALL_VALUE})
 	public AuthRestBean validateUserToken(HttpServletRequest request) {
 
 		String token = AuthUtils.getTokenFromHeader(request);
 
 		if(StringUtils.isEmpty(token)){
-			throw new PortalException(ErrorCode.INVALID_TOKEN,HttpStatus.UNAUTHORIZED);
+			PortalException excep= new PortalException(ErrorCode.TOKEN_MISS,HttpStatus.UNAUTHORIZED);
+			throw excep;
 		}
 
         return authManager.validateUserToken(token);

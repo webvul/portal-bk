@@ -1,7 +1,7 @@
 dependencies {
     compile project(":cloud-store")
     compile project(":store-service")
-    compile group: 'com.floragunn', name: 'search-guard-2', version: '2.3.3.0-rc1'
+    compile "com.floragunn:search-guard-2:${searchGuardVersion}"
     compile "org.elasticsearch:elasticsearch:${elasticsearchVersion}"
     compile "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
     compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.4.1'

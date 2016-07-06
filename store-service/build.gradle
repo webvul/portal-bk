@@ -1,15 +1,15 @@
 dependencies {
 
-	compile project(":business-component")
-	compile project(":jdbc-store")
+    compile project(":business-component")
+    compile project(":jdbc-store")
 
-	compile project(":cloud-store")
-	compile project(":rule-engine")
+    compile project(":cloud-store")
+    compile project(":rule-engine")
 
+    compile "org.elasticsearch:elasticsearch:${elasticsearchVersion}"
+    compile "com.floragunn:search-guard-2:${searchGuardVersion}"
+    compile "com.floragunn:search-guard-ssl:${searchGuardSSLVersion}"
 
-	testCompile 'org.eclipse.jetty:jetty-server:9.3.2.v20150730'
-	testCompile 'org.eclipse.jetty:jetty-webapp:9.3.2.v20150730'
-
-
-
+    testCompile 'org.eclipse.jetty:jetty-server:9.3.2.v20150730'
+    testCompile 'org.eclipse.jetty:jetty-webapp:9.3.2.v20150730'
 }

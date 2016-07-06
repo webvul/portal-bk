@@ -28,4 +28,9 @@ public class STOMPMessageController {
 		simpMessagingTemplate.convertAndSend("/topic/operator", message);
 		return "Receive: " + message;
 	}
+
+	@RequestMapping(value = "/send/{message}/{topic}")
+	public void sendMessageToTopic(@PathVariable("message") String message, @PathVariable("topic") String topic) {
+		simpMessagingTemplate.convertAndSend("/topic/" + topic, message);
+	}
 }
