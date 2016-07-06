@@ -34,17 +34,17 @@ public class SearchController extends AbstractThingTagController {
 	 */
 	@RequestMapping(value = "/historical/aggregate", method = {RequestMethod.POST})
 	public String aggregate(@RequestBody SearchRestBean searchRestBean) {
-		if (Strings.isBlank(searchRestBean.getVenderThingID()) || Strings.isBlank(searchRestBean.getIntervalField())
+		if (Strings.isBlank(searchRestBean.getVendorThingID()) || Strings.isBlank(searchRestBean.getIntervalField())
 				|| Strings.isBlank(searchRestBean.getOperatorField())
 				|| searchRestBean.getStartDate() == null || searchRestBean.getEndDate() == null
 				|| searchRestBean.getFields() == null || searchRestBean.getFields().length == 0) {
 			throw new PortalException("RequiredFieldsMissing", HttpStatus.BAD_REQUEST);
 		}
 
-		GlobalThingInfo thing = thingTagManager.getThingsByVendorThingId(searchRestBean.getVenderThingID());
+		GlobalThingInfo thing = thingTagManager.getThingsByVendorThingId(searchRestBean.getVendorThingID());
 
 		if (thing == null) {
-			throw EntryNotFoundException.thingNotFound(searchRestBean.getVenderThingID());
+			throw EntryNotFoundException.thingNotFound(searchRestBean.getVendorThingID());
 		}
 		if (!Constants.ADMIN_ID.equals(AuthInfoStore.getUserID())) {//non-admin
 			thingTagManager.getAccessibleThingById(AuthInfoStore.getUserID(), thing.getId());
@@ -67,7 +67,7 @@ public class SearchController extends AbstractThingTagController {
 	 */
 	@RequestMapping(value = "/historical", method = {RequestMethod.POST})
 	public String historical(@RequestBody SearchRestBean searchRestBean) {
-		if (Strings.isBlank(searchRestBean.getVenderThingID())
+		if (Strings.isBlank(searchRestBean.getVendorThingID())
 				|| searchRestBean.getStartDate() == null || searchRestBean.getEndDate() == null
 				|| searchRestBean.getSize() == 0) {
 			throw new PortalException("RequiredFieldsMissing", HttpStatus.BAD_REQUEST);
@@ -77,10 +77,10 @@ public class SearchController extends AbstractThingTagController {
 			searchRestBean.setSize(100);
 		}
 
-		GlobalThingInfo thing = thingTagManager.getThingsByVendorThingId(searchRestBean.getVenderThingID());
+		GlobalThingInfo thing = thingTagManager.getThingsByVendorThingId(searchRestBean.getVendorThingID());
 
 		if (thing == null) {
-			throw EntryNotFoundException.thingNotFound(searchRestBean.getVenderThingID());
+			throw EntryNotFoundException.thingNotFound(searchRestBean.getVendorThingID());
 		}
 		if (!Constants.ADMIN_ID.equals(AuthInfoStore.getUserID())) {//non-admin
 			thingTagManager.getAccessibleThingById(AuthInfoStore.getUserID(), thing.getId());
