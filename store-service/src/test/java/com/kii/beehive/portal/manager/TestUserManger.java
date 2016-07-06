@@ -13,11 +13,11 @@ import com.kii.beehive.portal.entitys.AuthRestBean;
 import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 import com.kii.beehive.portal.service.BeehiveUserDao;
 import com.kii.beehive.portal.service.UserRuleDao;
-import com.kii.beehive.portal.store.TestInit;
+import com.kii.beehive.portal.store.StoreServiceTestInit;
 import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.service.UserService;
 
-public class TestUserManger  extends TestInit {
+public class TestUserManger  extends StoreServiceTestInit {
 
 	@Autowired
 	private BeehiveUserManager  userManager;

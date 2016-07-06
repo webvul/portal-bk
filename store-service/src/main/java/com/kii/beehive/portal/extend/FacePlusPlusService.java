@@ -15,6 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -47,6 +49,11 @@ public class FacePlusPlusService {
 
     @PostConstruct
     public void init() throws JsonProcessingException {
+
+		String profile=System.getProperty("spring.profile");
+		if(StringUtils.isEmpty(profile)||profile.equals("local")){
+			return;
+		}
         loginServer();
 
 

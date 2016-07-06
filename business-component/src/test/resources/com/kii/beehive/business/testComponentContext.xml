@@ -41,6 +41,6 @@
 
     <import resource="classpath:com/kii/beehive/portal/jdbc/portaljdbcContext.xml" />
 
-
+    <import resource="classpath:com/kii/beehive/store/testKiiStoreContext.xml" />
 
 </beans>

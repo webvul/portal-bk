@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 @ContextConfiguration(locations = { "classpath:com/kii/beehive/portal/store/testStoreContext.xml" })
 @Transactional
 @Rollback
-public class TestInit {
+public class StoreServiceTestInit {
 
 
 //	@Autowired

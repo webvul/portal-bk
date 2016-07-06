@@ -142,7 +142,7 @@ public class BeehiveUserJdbcDao extends SpringBaseDao<BeehiveJdbcUser>  {
 	public BeehiveJdbcUser getUserByUserID(String  userID) {
 
 
-		String sqlTmp="select * from ${0} where userID = ? ";
+		String sqlTmp="select * from ${0} where user_id = ? ";
 
 		String fullSql= StrTemplate.gener(sqlTmp,TABLE_NAME);
 		try {
@@ -156,7 +156,7 @@ public class BeehiveUserJdbcDao extends SpringBaseDao<BeehiveJdbcUser>  {
 	public List<BeehiveJdbcUser> getUserByUserIDs(Collection<String>  userIDList) {
 
 
-		String sqlTmp="select * from ${0} where userID in (:list)  ";
+		String sqlTmp="select * from ${0} where user_id in (:list)  ";
 
 		String fullSql= StrTemplate.gener(sqlTmp,TABLE_NAME);
 
@@ -167,7 +167,7 @@ public class BeehiveUserJdbcDao extends SpringBaseDao<BeehiveJdbcUser>  {
 
 	public BeehiveJdbcUser getUserByName(String userName){
 
-		String sql="select * from ${0} where userName = :name or  phone = :name or mail = :name ";
+		String sql="select * from ${0} where user_name = :name or  phone = :name or user_mail = :name ";
 
 		String fullSql= StrTemplate.gener(sql,TABLE_NAME);
 		try {
@@ -187,17 +187,17 @@ public class BeehiveUserJdbcDao extends SpringBaseDao<BeehiveJdbcUser>  {
 	public BeehiveJdbcUser getUserByLoginId(BeehiveJdbcUser user){
 
 
-		String sql="select * from ${0} where userName =  ? ";
+		String sql="select * from ${0} where user_name =  ? ";
 		List<Object> params=new ArrayList<>();
 
 		params.add(user.getUserName());
 
 		if(StringUtils.hasText(user.getPhone())){
-			sql+="  or phone =  ? ";
+			sql+="  or mobile =  ? ";
 			params.add(user.getPhone());
 		}
 		if(StringUtils.hasText(user.getMail())){
-			sql+= " or  mail = ? ";
+			sql+= " or user_mail = ? ";
 			params.add(user.getMail());
 		}
 
@@ -222,8 +222,8 @@ public class BeehiveUserJdbcDao extends SpringBaseDao<BeehiveJdbcUser>  {
 	public void setPassword(Long id, String pwd) {
 
 		Map<String,Object> params=new HashMap<>();
-		params.put("activityToken",null);
-		params.put("userPassword",pwd);
+		params.put("activity_token",null);
+		params.put("user_password",pwd);
 
 		super.updateEntityByID(params,id);
 	}
@@ -246,10 +246,11 @@ public class BeehiveUserJdbcDao extends SpringBaseDao<BeehiveJdbcUser>  {
 
 		user.setId(id);
 
-		String userID= DigestUtils.sha1Hex(String.valueOf(id));
+		if(StringUtils.isEmpty(user.getUserID())) {
+			String userID = DigestUtils.sha1Hex(String.valueOf(id)+"_beehive_hash_"+user.getUserName()+"_name");
 
-		user.setUserID(userID);
-
+			user.setUserID(userID);
+		}
 		return user;
 
 	}

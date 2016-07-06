@@ -4,9 +4,9 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.kii.beehive.business.manager.AppInfoManager;
-import com.kii.beehive.portal.store.TestInit;
+import com.kii.beehive.portal.store.StoreServiceTestInit;
 
-public class TestAppInfoInit extends TestInit {
+public class TestAppInfoInit extends StoreServiceTestInit {
 
 	@Autowired
 	private AppInfoManager manager;

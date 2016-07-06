@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.kii.beehive.portal.service.DeviceSupplierDao;
 import com.kii.beehive.portal.store.entity.DeviceSupplier;
 
-public class TestDeviceSupplier extends TestInit {
+public class TestDeviceSupplier extends StoreServiceTestInit {
 
 	@Autowired
 	private DeviceSupplierDao deviceDao;

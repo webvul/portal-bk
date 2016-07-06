@@ -14,9 +14,13 @@
 
     <bean   class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="properties">
-            <value>beehive.portal.oplog.file=./build/op.log
-     com.kii.beehive.portal.permission.config.file=demoPermissionConfig
-
+            <value>
+                beehive.portal.oplog.file=./build/op.log
+                com.kii.beehive.portal.permission.config.file=demoPermissionConfig
+                face.web_socket.uri=demo
+                face.web_socket.username=demo
+                face.web_socket.password=demo
+                beehive.portal.elasticsearch.host=foo
             </value>
         </property>
     </bean>
@@ -25,6 +29,10 @@
 
 
     <context:component-scan base-package="com.kii.beehive" />
+
+    <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
 
 
     <import resource="classpath:com/kii/beehive/business/testComponentContext.xml" />

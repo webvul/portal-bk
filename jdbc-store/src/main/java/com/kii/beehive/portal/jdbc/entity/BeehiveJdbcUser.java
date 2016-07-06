@@ -22,15 +22,6 @@ public class BeehiveJdbcUser extends DBEntity{
 
 	private String  roleName;
 
-	private Integer  faceSubjectId; // face++
-
-	public Integer getFaceSubjectId() {
-		return faceSubjectId;
-	}
-
-	public void setFaceSubjectId(Integer faceSubjectId) {
-		this.faceSubjectId = faceSubjectId;
-	}
 
 	private String activityToken;
 
@@ -38,6 +29,18 @@ public class BeehiveJdbcUser extends DBEntity{
 
 	private String userID;
 
+
+	private Integer  faceSubjectId; // face++
+
+
+	@JdbcField(column="face_subject_id")
+	public Integer getFaceSubjectId() {
+		return faceSubjectId;
+	}
+
+	public void setFaceSubjectId(Integer faceSubjectId) {
+		this.faceSubjectId = faceSubjectId;
+	}
 
 
 	@JdbcField(column = "beehive_user_id")
@@ -47,6 +50,7 @@ public class BeehiveJdbcUser extends DBEntity{
 		return super.getId();
 	}
 
+	@JdbcField(column="user_id")
 	public String getUserID() {
 		return userID;
 	}
@@ -55,6 +59,7 @@ public class BeehiveJdbcUser extends DBEntity{
 		this.userID = userID;
 	}
 
+	@JdbcField(column="user_password")
 	public String getUserPassword() {
 		return userPassword;
 	}
@@ -63,6 +68,7 @@ public class BeehiveJdbcUser extends DBEntity{
 		this.userPassword = userPassword;
 	}
 
+	@JdbcField(column="activity_token")
 	public String getActivityToken() {
 		return activityToken;
 	}
@@ -71,7 +77,7 @@ public class BeehiveJdbcUser extends DBEntity{
 		this.activityToken = activityToken;
 	}
 
-
+	@JdbcField(column="kii_user_id")
 	public String getKiiUserID() {
 		return kiiUserID;
 	}
@@ -80,6 +86,7 @@ public class BeehiveJdbcUser extends DBEntity{
 		this.kiiUserID = kiiUserID;
 	}
 
+	@JdbcField(column="user_name")
 	public String getUserName() {
 		return userName;
 	}
@@ -88,6 +95,7 @@ public class BeehiveJdbcUser extends DBEntity{
 		this.userName = userName;
 	}
 
+	@JdbcField(column="mobile")
 	public String getPhone() {
 		return phone;
 	}
@@ -96,6 +104,7 @@ public class BeehiveJdbcUser extends DBEntity{
 		this.phone = phone;
 	}
 
+	@JdbcField(column = "user_mail")
 	public String getMail() {
 		return mail;
 	}
@@ -105,7 +114,7 @@ public class BeehiveJdbcUser extends DBEntity{
 	}
 
 
-
+	@JdbcField(column = "role_name")
 	public String getRoleName() {
 		return roleName;
 	}
@@ -114,6 +123,7 @@ public class BeehiveJdbcUser extends DBEntity{
 		this.roleName = roleName;
 	}
 
+	@JdbcField(column = "display_name")
 	public String getDisplayName() {
 		return displayName;
 	}

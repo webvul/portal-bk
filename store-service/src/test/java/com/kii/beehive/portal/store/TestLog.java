@@ -2,7 +2,7 @@ package com.kii.beehive.portal.store;
 
 import com.kii.beehive.portal.aop.LogAspect;
 
-public class TestLog extends  TestInit {
+public class TestLog extends StoreServiceTestInit {
 
 
 	private LogAspect aspect;

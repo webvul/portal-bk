@@ -25,6 +25,8 @@ public class TestInit {
 	@Before
 	public void init(){
 
+		System.setProperty("spring.profile","local");
+
 	}
 
 	@Test

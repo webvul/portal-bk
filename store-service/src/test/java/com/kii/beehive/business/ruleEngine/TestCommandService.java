@@ -9,7 +9,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.kii.beehive.business.ruleengine.CommandExecuteService;
-import com.kii.beehive.portal.store.TestInit;
+import com.kii.beehive.portal.store.StoreServiceTestInit;
 import com.kii.extension.ruleengine.store.trigger.CallHttpApi;
 import com.kii.extension.ruleengine.store.trigger.CommandToThing;
 import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
@@ -19,7 +19,7 @@ import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.sdk.entity.thingif.Action;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
 
-public class TestCommandService extends TestInit {
+public class TestCommandService extends StoreServiceTestInit {
 
 	@Autowired
 	private CommandExecuteService cmdService;

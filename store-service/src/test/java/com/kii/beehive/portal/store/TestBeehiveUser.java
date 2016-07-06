@@ -12,7 +12,7 @@ import com.kii.beehive.business.manager.PortalSyncUserManager;
 import com.kii.beehive.portal.service.PortalSyncUserDao;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
 
-public class TestBeehiveUser extends TestInit{
+public class TestBeehiveUser extends StoreServiceTestInit {
 
 	@Autowired
 	private PortalSyncUserDao userDao;
