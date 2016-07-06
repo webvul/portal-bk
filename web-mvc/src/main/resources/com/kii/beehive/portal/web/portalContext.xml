@@ -63,12 +63,12 @@
         <property name="devPortalUrl" value="${beehive.kiicloud.dev-portal.url}"/>
     </bean>
 
-    <!--
+
     <bean name="propAppBindTool" class="com.kii.extension.factory.LocalPropertyBindTool">
         <property name="propFileName"
                   value="classpath:com/kii/beehive/portal/web/beehive.portal.store.${spring.profile}.properties"/>
     </bean>
-    -->
+
 
     <bean class="com.kii.extension.ruleengine.RuleEngineConfig"/>
 
