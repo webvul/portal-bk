@@ -1,12 +1,14 @@
 package com.kii.beehive.portal.extend;
 
 import javax.annotation.PostConstruct;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.protocol.HttpClientContext;
@@ -15,11 +17,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.kii.beehive.portal.extend.entitys.FaceUser;
 import com.kii.beehive.portal.helper.HttpClient;
 
@@ -50,10 +52,7 @@ public class FacePlusPlusService {
     @PostConstruct
     public void init() throws JsonProcessingException {
 
-		String profile=System.getProperty("spring.profile");
-		if(StringUtils.isEmpty(profile)||profile.equals("local")){
-			return;
-		}
+
         loginServer();
 
 

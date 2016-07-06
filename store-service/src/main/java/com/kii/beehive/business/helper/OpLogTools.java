@@ -43,12 +43,6 @@ public class OpLogTools {
 	@PostConstruct
 	public void init() {
 
-		String profile=System.getProperty("spring.profile");
-
-		if(StringUtils.isEmpty(profile)||profile.equals("local")){
-			return;
-		}
-
 		int idx = fullPath.lastIndexOf("/");
 
 		path = fullPath.substring(0, idx);

@@ -167,7 +167,7 @@ public class BeehiveUserJdbcDao extends SpringBaseDao<BeehiveJdbcUser>  {
 
 	public BeehiveJdbcUser getUserByName(String userName){
 
-		String sql="select * from ${0} where user_name = :name or  phone = :name or user_mail = :name ";
+		String sql="select * from ${0} where user_name = :name or  mobile = :name or user_mail = :name ";
 
 		String fullSql= StrTemplate.gener(sql,TABLE_NAME);
 		try {
