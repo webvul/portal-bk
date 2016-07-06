@@ -17,7 +17,7 @@ public class TeamUserRelation extends DBEntity{
 	
 	public final static String ID = "id";
 	public final static String USER_ID = "beehive_user_id";
-	public final static String OLD_USER_ID = "user_id";
+//	public final static String OLD_USER_ID = "user_id";
 
 	public final static String TEAM_ID = "team_id";
 	public final static String VAILD = "vaild";
@@ -61,15 +61,15 @@ public class TeamUserRelation extends DBEntity{
 	}
 
 
-	@JdbcField(column=OLD_USER_ID)
-	public String getUserID() {
-		return userID;
-	}
-
-
-	public void setUserID(String userID) {
-		this.userID = userID;
-	}
+//	@JdbcField(column=OLD_USER_ID)
+//	public String getUserID() {
+//		return userID;
+//	}
+//
+//
+//	public void setUserID(String userID) {
+//		this.userID = userID;
+//	}
 
 	@JdbcField(column=VAILD)
 	public int getVaild() {

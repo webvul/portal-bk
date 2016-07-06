@@ -2,16 +2,18 @@ package com.kii.beehive.portal.web.entity;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
-import com.kii.beehive.portal.store.entity.BeehiveUser;
+
+import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
 
 public class UserRestBean {
 
 
-	private BeehiveUser  beehiveUser;
+	private BeehiveJdbcUser beehiveUser;
 
 
 	private String password;
@@ -23,7 +25,7 @@ public class UserRestBean {
 	}
 
 
-	public UserRestBean(BeehiveUser user){
+	public UserRestBean(BeehiveJdbcUser user){
 		this.beehiveUser = user;
 	}
 
@@ -47,11 +49,11 @@ public class UserRestBean {
 
 
 	@JsonUnwrapped
-	public BeehiveUser getBeehiveUser() {
+	public BeehiveJdbcUser getBeehiveUser() {
 		return beehiveUser;
 	}
 
-	public void setBeehiveUser(BeehiveUser user) {
+	public void setBeehiveUser(BeehiveJdbcUser user) {
 		this.beehiveUser = user.cloneView();
 	}
 

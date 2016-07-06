@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.common.utils.StrTemplate;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
 
 @Repository
@@ -91,6 +92,8 @@ public class UserGroupDao extends SpringBaseDao<UserGroup> {
 		return rows;
 	}
 
+
+
 	public List<UserGroup> findUserGroup(Long permissionID, Long userGroupID) {
 		if (permissionID == null) {
 			return null;
@@ -116,6 +119,32 @@ public class UserGroupDao extends SpringBaseDao<UserGroup> {
 		return rows;
 	}
 
+
+	public  List<UserGroup> getAllGroupByRelTagRelThing(Long thingID){
+
+		String sql="select g.* from ${0} g " +
+				" inner join ${1} rel_tag on rel_tag.user_group_id = g.user_group_id  "+
+				" inner join 4{3} rel_tag_th on rel_tag_th.thing_id = rel_tag.tag_id "+
+				" where rel_tag_th.thing_id = ?";
+
+		String fullSql= StrTemplate.gener(sql,TABLE_NAME, TagGroupRelationDao.TABLE_NAME,TagIndexDao.TABLE_NAME, TagThingRelationDao.TABLE_NAME);
+
+		return super.jdbcTemplate.query(fullSql,new Object[]{thingID},getRowMapper());
+
+	}
+
+
+	public  List<UserGroup> getAllGroupByRelThing(Long thingID){
+
+		String sql="select g.* from ${0} g " +
+				" inner join ${1} rel_th on rel_th.user_group_id = g.user_group_id  "+
+				" where rel_th.thing_id = ?";
+
+		String fullSql= StrTemplate.gener(sql,TABLE_NAME, ThingUserGroupRelationDao.TABLE_NAME);
+
+		return super.jdbcTemplate.query(fullSql,new Object[]{thingID},getRowMapper());
+
+	}
 
 	@Override
 	public String getTableName() {

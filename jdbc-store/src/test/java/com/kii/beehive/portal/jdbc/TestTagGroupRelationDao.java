@@ -1,22 +1,31 @@
 package com.kii.beehive.portal.jdbc;
 
-import com.kii.beehive.portal.auth.AuthInfoStore;
-import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
-import com.kii.beehive.portal.jdbc.dao.TagGroupRelationDao;
-import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
-import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
-import com.kii.beehive.portal.jdbc.entity.*;
+import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static junit.framework.TestCase.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
+import com.kii.beehive.portal.jdbc.dao.TagGroupRelationDao;
+import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
+import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
+import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
+import com.kii.beehive.portal.jdbc.entity.TagGroupRelation;
+import com.kii.beehive.portal.jdbc.entity.TagIndex;
+import com.kii.beehive.portal.jdbc.entity.TagType;
+import com.kii.beehive.portal.jdbc.entity.UserGroup;
 
 public class TestTagGroupRelationDao extends TestTemplate {
 
@@ -149,37 +158,37 @@ public class TestTagGroupRelationDao extends TestTemplate {
 		});
 
 		GroupUserRelation gurelation = new GroupUserRelation();
-		gurelation.setUserID("Someone");
+		gurelation.setBeehiveUserID(101l);
 		gurelation.setUserGroupID(userGroupId);
 		groupUserRelationDao.saveOrUpdate(gurelation);
 
-		Set<Long> tagIds = tagGroupRelationDao.findTagIdsByUserId("Someone", null, null).orElse(Collections.emptyList()).
+		Set<Long> tagIds = tagGroupRelationDao.findTagIdsByUserId(101l, null, null).
 				stream().collect(Collectors.toSet());
 		assertEquals("Number of ids doesn't match", 9, tagIds.size());
 		assertTrue("Ids don't match", tagIds.containsAll(allTagIds));
 
-		tagIds = tagGroupRelationDao.findTagIdsByUserId("Someone 2", null, null).orElse(Collections.emptyList()).
+		tagIds = tagGroupRelationDao.findTagIdsByUserId(102l, null, null).
 				stream().collect(Collectors.toSet());
 		assertTrue("Should not find any ids", tagIds.isEmpty());
 
-		tagIds = tagGroupRelationDao.findTagIdsByUserId("Someone", TagType.Location.name(), null).
-				orElse(Collections.emptyList()).stream().collect(Collectors.toSet());
+		tagIds = tagGroupRelationDao.findTagIdsByUserId(101l, TagType.Location.name(), null).
+				stream().collect(Collectors.toSet());
 		Assert.assertEquals("Should have 3 ids", 3, tagIds.size());
 		assertTrue("Ids don't match", tagIds.containsAll(allTagIds.subList(3, 6)));
 
-		tagIds = tagGroupRelationDao.findTagIdsByUserId("Someone", null, "Location 1").
-				orElse(Collections.emptyList()).stream().collect(Collectors.toSet());
+		tagIds = tagGroupRelationDao.findTagIdsByUserId(101l, null, "Location 1").
+				stream().collect(Collectors.toSet());
 		Assert.assertEquals("Should have 2 ids", 2, tagIds.size());
 		assertTrue("Ids don't match", tagIds.contains(allTagIds.get(3)) && tagIds.contains(allTagIds.get(6)));
 
-		tagIds = tagGroupRelationDao.findTagIdsByUserId("Someone", TagType.Location.name(), "Location 1").
-				orElse(Collections.emptyList()).stream().collect(Collectors.toSet());
+		tagIds = tagGroupRelationDao.findTagIdsByUserId(101l, TagType.Location.name(), "Location 1").
+				stream().collect(Collectors.toSet());
 		Assert.assertEquals("Should have 1 id", 1, tagIds.size());
 		Assert.assertEquals("Id doesn't match", allTagIds.get(3), tagIds.iterator().next());
 
 		List<String> tagNameList = new ArrayList<String>();
 		tagNameList.add(TagType.Location.getTagName("Location 1"));
-		tagIds = tagGroupRelationDao.findTagIdsByUserIdAndFullTagName("Someone", tagNameList).
+		tagIds = tagGroupRelationDao.findTagIdsByUserIdAndFullTagName(101l, tagNameList).
 				orElse(Collections.emptyList()).stream().collect(Collectors.toSet());
 		Assert.assertEquals("Should have 1 id", 1, tagIds.size());
 		Assert.assertEquals("Id doesn't match", allTagIds.get(3), tagIds.iterator().next());

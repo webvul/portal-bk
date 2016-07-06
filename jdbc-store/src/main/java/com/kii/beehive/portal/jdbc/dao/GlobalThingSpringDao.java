@@ -257,34 +257,34 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 		return list;
 
 	}
+//
+//	public Optional<List<GlobalThingInfo>> findByIDsAndType(Set<Long> thingIds, String thingType) {
+//		if (null == thingIds || thingIds.isEmpty()) {
+//			return Optional.ofNullable(null);
+//		}
+//
+//		Map<String, Object> params = new HashMap();
+//		params.put("list", thingIds);
+//		StringBuilder sb = new StringBuilder(SQL_FIND_BY_IDS);
+//		if (null != thingType && !thingType.isEmpty()) {
+//			sb.append(" AND t.").append(GlobalThingInfo.THING_TYPE).append(" = :type");
+//			params.put("type", thingType);
+//		}
+//		return Optional.ofNullable(namedJdbcTemplate.query(sb.toString(), params, getRowMapper()));
+//	}
 
-	public Optional<List<GlobalThingInfo>> findByIDsAndType(Set<Long> thingIds, String thingType) {
-		if (null == thingIds || thingIds.isEmpty()) {
-			return Optional.ofNullable(null);
-		}
-
-		Map<String, Object> params = new HashMap();
-		params.put("list", thingIds);
-		StringBuilder sb = new StringBuilder(SQL_FIND_BY_IDS);
-		if (null != thingType && !thingType.isEmpty()) {
-			sb.append(" AND t.").append(GlobalThingInfo.THING_TYPE).append(" = :type");
-			params.put("type", thingType);
-		}
-		return Optional.ofNullable(namedJdbcTemplate.query(sb.toString(), params, getRowMapper()));
-	}
-
-	public Optional<List<Map<String, Object>>> findThingTypesWithThingCount(Set<Long> thingIds) {
-		if (null == thingIds || thingIds.isEmpty()) {
-			return Optional.ofNullable(null);
-		}
-		StringBuilder sb = new StringBuilder("SELECT ");
-		sb.append(GlobalThingInfo.THING_TYPE).append(" AS type, COUNT(*) AS count FROM ").append(this.getTableName()).
-				append(" WHERE ").append(this.getKey()).append(" IN (:list) ").append(" GROUP BY ").
-				append(GlobalThingInfo.THING_TYPE);
-		Map<String, Object> params = new HashMap();
-		params.put("list", thingIds);
-		return Optional.ofNullable(namedJdbcTemplate.queryForList(sb.toString(), params));
-	}
+//	public Optional<List<Map<String, Object>>> findThingTypesWithThingCount(Set<Long> thingIds) {
+//		if (null == thingIds || thingIds.isEmpty()) {
+//			return Optional.ofNullable(null);
+//		}
+//		StringBuilder sb = new StringBuilder("SELECT ");
+//		sb.append(GlobalThingInfo.THING_TYPE).append(" AS type, COUNT(*) AS count FROM ").append(this.getTableName()).
+//				append(" WHERE ").append(this.getKey()).append(" IN (:list) ").append(" GROUP BY ").
+//				append(GlobalThingInfo.THING_TYPE);
+//		Map<String, Object> params = new HashMap();
+//		params.put("list", thingIds);
+//		return Optional.ofNullable(namedJdbcTemplate.queryForList(sb.toString(), params));
+//	}
 
 	public Optional<List<Long>> findThingIdsByCreator(Long userId, List<Long> thingIds) {
 		if (null == userId) {
@@ -304,7 +304,7 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 	}
 
 
-	public List<GlobalThingInfo> findThingIds(Long userId) {
+	public List<GlobalThingInfo> findThingByUserID(Long userId) {
 		String sqlTmp="select th.* from  ${0} th  inner join  ${1} rel   on th.{2} = rel.{3}  where rel.${4}  = ? ";
 		String sql= StrTemplate.gener(sqlTmp,TABLE_NAME,ThingUserRelationDao.TABLE_NAME,GlobalThingInfo.ID_GLOBAL_THING,ThingUserRelation.THING_ID,ThingUserRelation.USER_ID);
 
@@ -312,10 +312,55 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 		return rows;
 	}
 
-//	public List<GlobalThingInfo> findByUserId(String userId) {
-//		if (null == userId) {
-//			return null;
-//		}
-//		return findBySingleField(ThingUserRelation.USER_ID, userId);
-//	}
+
+	public GlobalThingInfo findThingByUserIDThingID(Long userId,Long thingId) {
+		String sqlTmp="select th.* from  ${0} th  inner join  ${1} rel   on th.{2} = rel.{3}  where rel.${4}  = ? and rel.${5} = ? ";
+		String sql= StrTemplate.gener(sqlTmp,TABLE_NAME,ThingUserRelationDao.TABLE_NAME,GlobalThingInfo.ID_GLOBAL_THING,ThingUserRelation.THING_ID,ThingUserRelation.USER_ID,ThingUserRelation.THING_ID);
+
+		List<GlobalThingInfo> rows = jdbcTemplate.query(sql,new Object[]{userId,thingId},getRowMapper());
+		if(rows.isEmpty()){
+			return null;
+		}else{
+			return rows.get(0);
+		}
+	}
+
+	public GlobalThingInfo findThingByGroupIDRelUserIDWithThingID(Long userId,Long thingID) {
+		String sqlTmp="select th.* from  ${0} th " +
+				" inner join  ${1} rel   on th.thing_id = rel.thing_id" +
+				" inner join  ${2} rel_user on rel_user.beehive_user_id = rel.beehive_user_id " +
+				" where rel_user.beehive_user_id   = ? and th.thing_id = ?  ";
+		String sql= StrTemplate.gener(sqlTmp,TABLE_NAME,ThingUserGroupRelationDao.TABLE_NAME,UserGroupDao.TABLE_NAME);
+
+		List<GlobalThingInfo> rows = jdbcTemplate.query(sql,new Object[]{userId,thingID},getRowMapper());
+		if(rows.isEmpty()){
+			return null;
+		}else{
+			return rows.get(0);
+		}
+	}
+
+	public List<GlobalThingInfo> findThingByGroupIDRelUserID(Long userId) {
+		String sqlTmp="select th.* from  ${0} th " +
+				" inner join  ${1} rel   on th.thing_id = rel.thing_id" +
+				" inner join  ${2} rel_user on rel_user.beehive_user_id = rel.beehive_user_id " +
+				" where rel_user.beehive_user_id   = ? ";
+		String sql= StrTemplate.gener(sqlTmp,TABLE_NAME,ThingUserGroupRelationDao.TABLE_NAME,UserGroupDao.TABLE_NAME);
+
+		return  jdbcTemplate.query(sql,new Object[]{userId},getRowMapper());
+
+	}
+
+	public List<GlobalThingInfo> findThingByTagRelUserID(Long userId) {
+		String sqlTmp="select th.* from  ${0} th " +
+				" inner join  ${1} rel   on th.thing_id = rel.thing_id" +
+				" inner join  ${2} rel_user on rel_user.beehive_user_id = rel.beehive_user_id " +
+				" where rel_user.beehive_user_id   = ? ";
+		String sql= StrTemplate.gener(sqlTmp,TABLE_NAME,TagThingRelationDao.TABLE_NAME,TagUserRelationDao.TABLE_NAME);
+
+		return  jdbcTemplate.query(sql,new Object[]{userId},getRowMapper());
+
+	}
+
+
 }

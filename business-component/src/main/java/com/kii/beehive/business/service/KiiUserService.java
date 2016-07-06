@@ -3,7 +3,7 @@ package com.kii.beehive.business.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.kii.beehive.portal.store.entity.BeehiveUser;
+import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.context.UserTokenBindTool;
 import com.kii.extension.sdk.entity.KiiUser;
@@ -51,13 +51,13 @@ public class KiiUserService {
 
 
 
-	public String  addBeehiveUser(BeehiveUser beehiveUser,String pwd){
+	public String  addBeehiveUser(BeehiveJdbcUser beehiveUser, String pwd){
 
 		KiiUser user=new KiiUser();
 
 		user.setDisplayName(beehiveUser.getDisplayName());
 
-		user.setLoginName(beehiveUser.getId());
+		user.setLoginName(beehiveUser.getUserID());
 
 		user.setPassword(pwd);
 
@@ -66,9 +66,9 @@ public class KiiUserService {
 		return kiiUserID;
 	}
 
-	public String bindToUser(BeehiveUser user,String pwd){
+	public String bindToUser(BeehiveJdbcUser user, String pwd){
 
-		LoginInfo loginInfo=userService.login(user.getId(),pwd);
+		LoginInfo loginInfo=userService.login(user.getUserID(),pwd);
 
 		tokenBind.bindToken(loginInfo.getToken());
 
@@ -87,7 +87,7 @@ public class KiiUserService {
 		userService.removeUserByID(kiiUserID);
 	}
 
-	public void disableBeehiveUser(BeehiveUser user) {
+	public void disableBeehiveUser(BeehiveJdbcUser user) {
 		userService.disableUser(user.getKiiUserID());
 	}
 

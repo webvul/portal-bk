@@ -1,6 +1,7 @@
 package com.kii.beehive.portal.web.controller;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -11,7 +12,6 @@ import org.springframework.http.HttpStatus;
 
 import com.kii.beehive.business.manager.TagThingManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
-import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagType;
@@ -44,7 +44,7 @@ public abstract class AbstractThingTagController extends AbstractController {
 			thingIds.forEach(id -> strThingIds.remove(id.toString()));
 			throw new PortalException(ErrorCode.INVALID_INPUT, HttpStatus.BAD_REQUEST);
 		}
-		return thingTagManager.getCreatedThingIds(AuthInfoStore.getUserID(), thingIds);
+		return thingTagManager.getCreatedThingIds(AuthInfoStore.getUserIDInLong(), thingIds);
 
 	}
 
@@ -54,25 +54,30 @@ public abstract class AbstractThingTagController extends AbstractController {
 	 * @throws PortalException if no tags can be found
 	 */
 	protected List<Long> getCreatedTagIds(String fullTagNames) {
-		return thingTagManager.getCreatedTagIdsByFullTagName(AuthInfoStore.getUserID(), fullTagNames);
+		return thingTagManager.getCreatedTagIdsByFullTagName(AuthInfoStore.getUserIDInLong(), fullTagNames);
 
 	}
 
 	protected List<Long> getCreatedTagIds(TagType type, String displayNames) {
-		return thingTagManager.getCreatedTagIdsByTypeAndDisplayNames(AuthInfoStore.getUserID(), type,
+		return thingTagManager.getCreatedTagIdsByTypeAndDisplayNames(AuthInfoStore.getUserIDInLong(), type,
 					Arrays.asList(displayNames.split(",")));
 
 	}
 
-	protected Set<Long> getUserIds(String userIDs) {
-		return thingTagManager.getUsers(Arrays.asList(userIDs.split(","))).stream().
-					mapToLong(BeehiveJdbcUser::getId).collect(Collectors.toSet());
+	protected Set<String> getUserIds(String userIDs) {
 
+
+		return new HashSet(Arrays.asList(userIDs.split(",")));
 	}
 
-	protected List<Long> getUserGroupIds(String userGroupIDs) {
-		return thingTagManager.getUserGroupIds(Arrays.asList(userGroupIDs.split(",")));
+	protected Set<Long> getUserGroupIds(String userGroupIDs) {
 
+		Set<Long> idSet = Arrays.asList(userGroupIDs.split(",")).stream()
+				.map(Long::valueOf).collect(Collectors.toSet());
+
+		thingTagManager.checkUserGroupIds(idSet);
+
+		return idSet;
 	}
 
 	protected List<TagIndex> getTags(List<String> fullNameList) {

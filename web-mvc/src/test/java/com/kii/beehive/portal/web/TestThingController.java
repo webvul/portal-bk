@@ -139,20 +139,20 @@ public class TestThingController extends WebTestTemplate {
 	public void testGetUsersByThing() throws Exception {
 
 
-		doReturn(mock(GlobalThingInfo.class)).when(thingTagManager).getAccessibleThingById(anyString(), anyLong());
-		doReturn(null).when(thingTagManager).getUsersOfAccessibleThing(anyString(), anyLong());
+		doReturn(mock(GlobalThingInfo.class)).when(thingTagManager).getAccessibleThingById(anyLong(), anyLong());
+		doReturn(null).when(thingTagManager).getUsersOfAccessibleThing(anyLong(), anyLong());
 
 		thingController.getUsersByThing(100L);
 
-		verify(thingTagManager, times(2)).getUsersOfAccessibleThing(anyString(), anyLong());
+		verify(thingTagManager, times(2)).getUsersOfAccessibleThing(anyLong(), anyLong());
 	}
 
 	@Test
 	public void testGetThingsByUser() throws Exception {
-		doReturn(null).when(thingTagManager).getAccessibleThingsByUserId(anyString());
+		doReturn(null).when(thingTagManager).getAccessibleThingsByUserId(anyLong());
 		thingController.getThingsByUser();
 
-		doReturn(Arrays.asList(mock(GlobalThingInfo.class))).when(thingTagManager).getAccessibleThingsByUserId(anyString());
+		doReturn(Arrays.asList(mock(GlobalThingInfo.class))).when(thingTagManager).getAccessibleThingsByUserId(anyLong());
 		thingController.getThingsByUser();
 	}
 
@@ -160,20 +160,20 @@ public class TestThingController extends WebTestTemplate {
 	public void testGetUserGroupIdsByThing() throws Exception {
 
 
-		doReturn(mock(GlobalThingInfo.class)).when(thingTagManager).getAccessibleThingById(anyString(), anyLong());
-		doReturn(null).when(thingTagManager).getUserGroupsOfAccessibleThing(anyString(), anyLong());
+		doReturn(mock(GlobalThingInfo.class)).when(thingTagManager).getAccessibleThingById(anyLong(), anyLong());
+		doReturn(null).when(thingTagManager).getUserGroupsOfAccessibleThing(anyLong(), anyLong());
 
 		thingController.getUserGroupIdsByThing(100L);
 
-		verify(thingTagManager, times(2)).getUserGroupsOfAccessibleThing(anyString(), anyLong());
+		verify(thingTagManager, times(2)).getUserGroupsOfAccessibleThing(anyLong(), anyLong());
 	}
 
 	@Test
 	public void testGetThingsByUserGroup() throws Exception {
-		doReturn(null).when(thingTagManager).getAccessibleThingsByUserId(anyString());
+		doReturn(null).when(thingTagManager).getAccessibleThingsByUserId(anyLong());
 		thingController.getThingsByUserGroup(100L);
 
-		doReturn(Arrays.asList(mock(GlobalThingInfo.class))).when(thingTagManager).getAccessibleThingsByUserId(anyString());
+		doReturn(Arrays.asList(mock(GlobalThingInfo.class))).when(thingTagManager).getAccessibleThingsByUserId(anyLong());
 		thingController.getThingsByUserGroup(100L);
 	}
 
@@ -182,7 +182,7 @@ public class TestThingController extends WebTestTemplate {
 
 
 		doReturn(null).when(thingTagManager).getTypesOfAccessibleThingsByTagFullName(
-				anyString(), anySetOf(String.class));
+				anyLong(), anySetOf(String.class));
 		thingController.getThingTypeByTagFullName("test");
 	}
 
@@ -209,7 +209,7 @@ public class TestThingController extends WebTestTemplate {
 			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
 		}
 
-		doReturn(Arrays.asList(100L)).when(thingTagManager).getCreatedThingIds(anyString(), anyListOf(Long.class));
+		doReturn(Arrays.asList(100L)).when(thingTagManager).getCreatedThingIds(anyLong(), anyListOf(Long.class));
 
 		try {
 			thingController.bindThingsToUserGroups("123", "123");
@@ -218,7 +218,7 @@ public class TestThingController extends WebTestTemplate {
 			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
 		}
 
-		doReturn(Arrays.asList(100L)).when(thingTagManager).getUserGroupIds(anyListOf(String.class));
+//		doReturn(Arrays.asList(100L)).when(thingTagManager).getUserGroupIds(anyListOf(String.class));
 		doNothing().when(thingTagManager).bindThingsToUserGroups(anyCollectionOf(Long.class),
 				anyCollectionOf(Long.class));
 
@@ -249,7 +249,7 @@ public class TestThingController extends WebTestTemplate {
 			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
 		}
 
-		doReturn(Arrays.asList(100L)).when(thingTagManager).getCreatedThingIds(anyString(), anyListOf(Long.class));
+		doReturn(Arrays.asList(100L)).when(thingTagManager).getCreatedThingIds(anyLong(), anyListOf(Long.class));
 
 		try {
 			thingController.unbindThingsFromUserGroups("123", "123");
@@ -258,7 +258,7 @@ public class TestThingController extends WebTestTemplate {
 			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
 		}
 
-		doReturn(Arrays.asList(100L)).when(thingTagManager).getUserGroupIds(anyListOf(String.class));
+//		doReturn(Arrays.asList(100L)).when(thingTagManager).getUserGroupIds(anyListOf(String.class));
 		doNothing().when(thingTagManager).bindThingsToUserGroups(anyCollectionOf(Long.class),
 				anyCollectionOf(Long.class));
 
@@ -290,7 +290,7 @@ public class TestThingController extends WebTestTemplate {
 			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
 		}
 
-		doReturn(Arrays.asList(100L)).when(thingTagManager).getCreatedThingIds(anyString(), anyListOf(Long.class));
+		doReturn(Arrays.asList(100L)).when(thingTagManager).getCreatedThingIds(anyLong(), anyListOf(Long.class));
 
 		try {
 			thingController.bindThingsToUsers("100", "someone");
@@ -331,7 +331,7 @@ public class TestThingController extends WebTestTemplate {
 			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
 		}
 
-		doReturn(Arrays.asList(100L)).when(thingTagManager).getCreatedThingIds(anyString(), anyListOf(Long.class));
+		doReturn(Arrays.asList(100L)).when(thingTagManager).getCreatedThingIds(anyLong(), anyListOf(Long.class));
 
 		try {
 			thingController.unbindThingsFromUsers("100", "someone");
@@ -372,7 +372,7 @@ public class TestThingController extends WebTestTemplate {
 			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
 		}
 
-		doReturn(Arrays.asList(100L)).when(thingTagManager).getCreatedThingIds(anyString(),
+		doReturn(Arrays.asList(100L)).when(thingTagManager).getCreatedThingIds(anyLong(),
 				anyListOf(Long.class));
 
 		try {
@@ -383,7 +383,7 @@ public class TestThingController extends WebTestTemplate {
 		}
 
 		doReturn(Arrays.asList(200L)).when(thingTagManager).getCreatedTagIdsByTypeAndDisplayNames(
-				anyString(), any(TagType.class), anyListOf(String.class));
+				anyLong(), any(TagType.class), anyListOf(String.class));
 
 		doNothing().when(thingTagManager).bindTagsToThings(anyListOf(Long.class), anyListOf(Long.class));
 		doNothing().when(thingIFInAppService).onTagIDsChangeFire(anyListOf(Long.class), eq(true));
@@ -417,7 +417,7 @@ public class TestThingController extends WebTestTemplate {
 			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
 		}
 
-		doReturn(Arrays.asList(100L)).when(thingTagManager).getCreatedThingIds(anyString(),
+		doReturn(Arrays.asList(100L)).when(thingTagManager).getCreatedThingIds(anyLong(),
 				anyListOf(Long.class));
 
 		try {
@@ -428,7 +428,7 @@ public class TestThingController extends WebTestTemplate {
 		}
 
 		doReturn(Arrays.asList(200L)).when(thingTagManager).getCreatedTagIdsByTypeAndDisplayNames(
-				anyString(), any(TagType.class), anyListOf(String.class));
+				anyLong(), any(TagType.class), anyListOf(String.class));
 		doNothing().when(thingTagManager).unbindTagsFromThings(anyListOf(Long.class), anyListOf(Long.class));
 		doNothing().when(thingIFInAppService).onTagIDsChangeFire(anyListOf(Long.class), eq(false));
 
@@ -461,7 +461,7 @@ public class TestThingController extends WebTestTemplate {
 			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
 		}
 
-		doReturn(Arrays.asList(100L)).when(thingTagManager).getCreatedThingIds(anyString(),
+		doReturn(Arrays.asList(100L)).when(thingTagManager).getCreatedThingIds(anyLong(),
 				anyListOf(Long.class));
 
 
@@ -473,7 +473,7 @@ public class TestThingController extends WebTestTemplate {
 		}
 
 		doReturn(Arrays.asList(200L)).when(thingTagManager).getCreatedTagIdsByFullTagName(
-				anyString(), anyString());
+				anyLong(), anyString());
 		doNothing().when(thingTagManager).bindTagsToThings(anyListOf(Long.class), anyListOf(Long.class));
 		doNothing().when(thingIFInAppService).onTagIDsChangeFire(anyListOf(Long.class), eq(true));
 
@@ -506,7 +506,7 @@ public class TestThingController extends WebTestTemplate {
 			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
 		}
 
-		doReturn(Arrays.asList(100L)).when(thingTagManager).getCreatedThingIds(anyString(),
+		doReturn(Arrays.asList(100L)).when(thingTagManager).getCreatedThingIds(anyLong(),
 				anyListOf(Long.class));
 
 		try {
@@ -517,7 +517,7 @@ public class TestThingController extends WebTestTemplate {
 		}
 
 		doReturn(Arrays.asList(200L)).when(thingTagManager).getCreatedTagIdsByFullTagName(
-				anyString(), anyString());
+				anyLong(), anyString());
 		doNothing().when(thingTagManager).bindTagsToThings(anyListOf(Long.class), anyListOf(Long.class));
 		doNothing().when(thingIFInAppService).onTagIDsChangeFire(anyListOf(Long.class), eq(false));
 
@@ -733,7 +733,7 @@ public class TestThingController extends WebTestTemplate {
 			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
 		}
 
-		doReturn(mock(GlobalThingInfo.class)).when(thingTagManager).getAccessibleThingById(anyString(), anyLong());
+		doReturn(mock(GlobalThingInfo.class)).when(thingTagManager).getAccessibleThingById(anyLong(), anyLong());
 		TagIndex location = new TagIndex();
 		location.setTagType(TagType.Location);
 		location.setDisplayName("location");
@@ -758,7 +758,7 @@ public class TestThingController extends WebTestTemplate {
 			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
 		}
 
-		doReturn(Arrays.asList(100L)).when(thingTagManager).getCreatedThingIds(anyString(), anyListOf(Long.class));
+		doReturn(Arrays.asList(100L)).when(thingTagManager).getCreatedThingIds(anyLong(), anyListOf(Long.class));
 
 		try {
 			thingController.removeThing(100L);
@@ -779,7 +779,7 @@ public class TestThingController extends WebTestTemplate {
 
 	@Test
 	public void testGetThingsByTagExpress() throws Exception {
-		doReturn(Collections.emptyList()).when(thingTagManager).getAccessibleTagsByTagTypeAndName(anyString(),
+		doReturn(Collections.emptyList()).when(thingTagManager).getAccessibleTagsByTagTypeAndName(anyLong(),
 				anyString(), anyString());
 		GlobalThingInfo thingInfo = new GlobalThingInfo();
 		thingInfo.setKiiAppID("KiiAppID");
@@ -802,7 +802,7 @@ public class TestThingController extends WebTestTemplate {
 		thingInfo.setCreateBy("Someone");
 		thingInfo.setType("LED");
 
-		doReturn(Arrays.asList(thingInfo)).when(thingTagManager).getAccessibleThingsByType(anyString(), anyString());
+		doReturn(Arrays.asList(thingInfo)).when(thingTagManager).getAccessibleThingsByType(anyString(), anyLong());
 
 		List<ThingRestBean> result = thingController.getThingsByType("test");
 		assertNotNull("Should not be null", result);
@@ -816,7 +816,7 @@ public class TestThingController extends WebTestTemplate {
 
 	@Test
 	public void testGetAllType() throws Exception {
-		doReturn(Collections.emptyList()).when(thingTagManager).getTypesOfAccessibleThingsWithCount(anyString());
+		doReturn(Collections.emptyList()).when(thingTagManager).getTypesOfAccessibleThingsWithCount(anyLong());
 		thingController.getAllType();
 	}
 
@@ -830,7 +830,7 @@ public class TestThingController extends WebTestTemplate {
 		}
 
 		doReturn(Collections.singletonList("testLED")).when(thingTagManager).getThingTypesOfAccessibleThingsByTagIds(
-				anyString(), anyCollectionOf(String.class));
+				anyLong(), anyCollectionOf(String.class));
 		List<String> result = thingController.getThingTypeByTagIDs("test");
 		assertTrue("Unexpected data", null != result && result.size() == 1 && result.get(0).equals("testLED"));
 	}

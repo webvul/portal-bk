@@ -280,7 +280,7 @@ public  class BindClsFullUpdateTool<T extends DBEntity> extends SqlUpdate {
 	}
 
 	private void fillParamMap(Map<String,Object> paramMap){
-		paramMap.put("modifyBy", AuthInfoStore.getUserID());
+		paramMap.put("modifyBy", String.valueOf(AuthInfoStore.getUserIDInLong()));
 		paramMap.put("modifyDate",new Date());
 	}
 

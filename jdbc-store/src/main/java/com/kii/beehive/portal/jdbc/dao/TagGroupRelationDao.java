@@ -1,14 +1,19 @@
 package com.kii.beehive.portal.jdbc.dao;
 
-import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
-import com.kii.beehive.portal.jdbc.entity.TagGroupRelation;
-import com.kii.beehive.portal.jdbc.entity.TagIndex;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
-import java.util.*;
+import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
+import com.kii.beehive.portal.jdbc.entity.TagGroupRelation;
+import com.kii.beehive.portal.jdbc.entity.TagIndex;
 
 @Repository
 public class TagGroupRelationDao extends SpringBaseDao<TagGroupRelation> {
@@ -92,15 +97,16 @@ public class TagGroupRelationDao extends SpringBaseDao<TagGroupRelation> {
 				TagGroupRelation.USER_GROUP_ID, userGroupId, Long.class));
 	}
 
-	public Optional<List<Long>> findTagIdsByUserId(String userId, String tagType, String displayName) {
-		if (Strings.isBlank(userId)) {
-			return Optional.ofNullable(null);
+	public  List<Long> findTagIdsByUserId(Long userId, String tagType, String displayName) {
+		if (userId==null) {
+			return  new ArrayList<>();
 		}
 		List<Object> params = new ArrayList();
 		params.add(userId);
+
 		if (Strings.isBlank(tagType) && Strings.isBlank(displayName)) {
-			return Optional.ofNullable(jdbcTemplate.queryForList(SQL_FIND_TAGIDS_BY_USER_AND_FILTER_BY,
-					params.toArray(new Object[]{}), Long.class));
+			return jdbcTemplate.queryForList(SQL_FIND_TAGIDS_BY_USER_AND_FILTER_BY,
+					params.toArray(new Object[]{}), Long.class);
 		}
 
 		StringBuilder sb = new StringBuilder();
@@ -118,8 +124,7 @@ public class TagGroupRelationDao extends SpringBaseDao<TagGroupRelation> {
 		sb = new StringBuilder(SQL_FIND_TAGIDS_BY_USER_AND_FILTER_BY).append(" INNER JOIN ").
 				append(TagIndexDao.TABLE_NAME).append(" t3 ON t.").append(TagGroupRelation.TAG_ID)
 				.append(" = t3.").append(TagIndex.TAG_ID).append(" AND ").append(sb);
-		return Optional.ofNullable(jdbcTemplate.queryForList(sb.toString(), params.toArray(new Object[]{}),
-				Long.class));
+		return jdbcTemplate.queryForList(sb.toString(), params.toArray(new Object[]{}),Long.class);
 	}
 
 	public Optional<List<Long>> findUserGroupIdsByTagIds(List<Long> tagIds) {
@@ -130,10 +135,8 @@ public class TagGroupRelationDao extends SpringBaseDao<TagGroupRelation> {
 				tagIds, Long.class));
 	}
 
-	public Optional<List<Long>> findTagIdsByUserIdAndFullTagName(String userId, List<String> fullTagName) {
-		if (Strings.isBlank(userId)) {
-			return Optional.ofNullable(null);
-		}
+	public Optional<List<Long>> findTagIdsByUserIdAndFullTagName(Long userId, List<String> fullTagName) {
+
 
 		Map<String, Object> params = new HashMap();
 		params.put("userID", userId);
@@ -155,7 +158,7 @@ public class TagGroupRelationDao extends SpringBaseDao<TagGroupRelation> {
 	 * @param userId
 	 * @return a list of tag ids which user can access through the user groups
 	 */
-	public Optional<List<Long>> findTagIdsByUserId(String userId) {
+	public Optional<List<Long>> findTagIdsByUserId(Long userId) {
 		return findTagIdsByUserIdAndFullTagName(userId, null);
 	}
 }

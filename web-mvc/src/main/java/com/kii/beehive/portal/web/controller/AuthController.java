@@ -17,9 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.portal.common.utils.CollectUtils;
 import com.kii.beehive.portal.entitys.AuthRestBean;
+import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 import com.kii.beehive.portal.manager.AuthManager;
 import com.kii.beehive.portal.manager.BeehiveUserManager;
-import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.entity.UserRestBean;
 import com.kii.beehive.portal.web.exception.PortalException;
@@ -90,7 +90,7 @@ public class AuthController {
 
 		user.verifyInput();
 
-		BeehiveUser beehiveUser = user.getBeehiveUser();
+		BeehiveJdbcUser beehiveUser = user.getBeehiveUser();
 		if(StringUtils.isEmpty(beehiveUser.getUserName())){
 			if(!StringUtils.isEmpty(beehiveUser.getMail())){
 				beehiveUser.setUserName(beehiveUser.getMail());

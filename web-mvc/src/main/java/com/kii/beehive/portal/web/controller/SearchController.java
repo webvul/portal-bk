@@ -1,5 +1,13 @@
 package com.kii.beehive.portal.web.controller;
 
+import org.apache.logging.log4j.util.Strings;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.kii.beehive.business.elasticsearch.SearchManager;
 import com.kii.beehive.business.manager.TagThingManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
@@ -8,13 +16,6 @@ import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.beehive.portal.web.entity.SearchRestBean;
 import com.kii.beehive.portal.web.exception.PortalException;
-import org.apache.logging.log4j.util.Strings;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping(value = "/report")
@@ -47,7 +48,7 @@ public class SearchController extends AbstractThingTagController {
 			throw EntryNotFoundException.thingNotFound(searchRestBean.getVenderThingID());
 		}
 		if (!Constants.ADMIN_ID.equals(AuthInfoStore.getUserID())) {//non-admin
-			thingTagManager.getAccessibleThingById(AuthInfoStore.getUserID(), thing.getId());
+			thingTagManager.getAccessibleThingById(AuthInfoStore.getUserIDInLong(), thing.getId());
 		}
 
 		String queryString = searchManager.queryBuilderForAggs(searchRestBean.getVenderThingID(), searchRestBean.getStartDate(),
@@ -81,7 +82,7 @@ public class SearchController extends AbstractThingTagController {
 			throw EntryNotFoundException.thingNotFound(searchRestBean.getVenderThingID());
 		}
 		if (!Constants.ADMIN_ID.equals(AuthInfoStore.getUserID())) {//non-admin
-			thingTagManager.getAccessibleThingById(AuthInfoStore.getUserID(), thing.getId());
+			thingTagManager.getAccessibleThingById(AuthInfoStore.getUserIDInLong(), thing.getId());
 		}
 
 		String queryString = searchManager.queryBuilderForAggs(searchRestBean.getVenderThingID(), searchRestBean.getStartDate(),

@@ -1,28 +1,19 @@
 package com.kii.beehive.portal.manager;
 
-import javax.annotation.PostConstruct;
-
-import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 import com.kii.beehive.business.service.KiiUserService;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.StringRandomTools;
 import com.kii.beehive.portal.entitys.PermissionTree;
 import com.kii.beehive.portal.exception.UnauthorizedException;
-import com.kii.beehive.portal.extend.FacePlusPlusService;
-import com.kii.beehive.portal.extend.entitys.FaceUser;
 import com.kii.beehive.portal.helper.RuleSetService;
 import com.kii.beehive.portal.jdbc.dao.BeehiveUserJdbcDao;
 import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
@@ -33,7 +24,6 @@ import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
 import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 import com.kii.beehive.portal.jdbc.entity.Team;
 import com.kii.beehive.portal.jdbc.entity.TeamUserRelation;
-import com.kii.beehive.portal.store.entity.BeehiveUser;
 
 @Component
 @Transactional
@@ -58,11 +48,6 @@ public class BeehiveUserManager {
 	private RuleSetService ruleService;
 
 	@Autowired
-	private FacePlusPlusService facePlusPlusService;
-
-
-
-	@Autowired
 	private UserGroupDao userGroupDao;
 
 	@Autowired
@@ -72,24 +57,23 @@ public class BeehiveUserManager {
 	@Autowired
 	private TeamDao teamDao;
 
-	@Value("${face.photo.dir}")
-	private String facePhotoDir;
 
-	public String getFacePhotoDir() {
-		return facePhotoDir;
-	}
-
-	@PostConstruct
-	public void init() throws JsonProcessingException {
-		//init dir
-		File facePhotoDirFile = new File(facePhotoDir);
-		if (!facePhotoDirFile.exists()) {
-			boolean isMkdirs = facePhotoDirFile.mkdirs();
-			if (!isMkdirs) {
-				throw new RuntimeException("create face++ upload photo dir error ! ");
-			}
-		}
-	}
+//
+//	public String getFacePhotoDir() {
+//		return facePhotoDir;
+//	}
+//
+//	@PostConstruct
+//	public void init() throws JsonProcessingException {
+//		//init dir
+//		File facePhotoDirFile = new File(facePhotoDir);
+//		if (!facePhotoDirFile.exists()) {
+//			boolean isMkdirs = facePhotoDirFile.mkdirs();
+//			if (!isMkdirs) {
+//				throw new RuntimeException("create face++ upload photo dir error ! ");
+//			}
+//		}
+//	}
 
 	public PermissionTree getUsersPermissonTree(String userID){
 
@@ -118,13 +102,13 @@ public class BeehiveUserManager {
 	public Map<String,Object>  addUser(BeehiveJdbcUser user,String teamName) {
 
 
-		BeehiveUser existsUser=userDao.getUserByLoginId(user);
+		BeehiveJdbcUser existsUser=userDao.getUserByLoginId(user);
 
 		if(existsUser!=null){
 			throw new IllegalArgumentException("the username had existed,please change a loginName or email or phone Number");
 		}
 
-		userDao.addKiiEntity(user);
+		user=userDao.addUser(user);
 
 		String loginID=kiiUserService.addBeehiveUser(user,user.getDefaultPassword());
 
@@ -134,7 +118,7 @@ public class BeehiveUserManager {
 
 		user.setActivityToken(user.getHashedPwd(token));
 
-		userDao.updateEntity(user,user.getId());
+		userDao.updateEntityAllByID(user);
 
 		Map<String,Object> result=new HashMap<>();
 
@@ -151,7 +135,7 @@ public class BeehiveUserManager {
 	}
 
 
-	private Long addTeam(String teamName,String userID){
+	private Long addTeam(String teamName,Long userID){
 
 			List<Team> teamList = teamDao.findTeamByTeamName(teamName);
 
@@ -189,23 +173,28 @@ public class BeehiveUserManager {
 
 	}
 
-	public BeehiveJdbcUser getUserByIDDirectly(Long userID){
-		return userDao.getUserByID(userID);
+	public BeehiveJdbcUser getUserByIDDirectly(String userID){
+		return userDao.getUserByUserID(userID);
 	}
 
 
 
-	public BeehiveJdbcUser getUserByID(Long userID) {
+	public BeehiveJdbcUser getUserByID(String userID) {
 
-		checkTeam(userID);
-		return userDao.getUserByID(userID);
+
+//		checkTeam(userID);
+		return userDao.getUserByUserID(userID);
 	}
 
 
 	public void updateUser(BeehiveJdbcUser user,String userID){
 
 //		checkTeam(userID);
-		userDao.updateEntity(user,userID);
+
+		BeehiveJdbcUser oldUser=userDao.getUserByUserID(userID);
+
+
+		userDao.updateEntityByID(user,oldUser.getId());
 
 
 	}
@@ -213,55 +202,7 @@ public class BeehiveUserManager {
 	/**
 	 *
 	 */
-	public BeehiveJdbcUser updateUserWithFace( String userId, Boolean clearOldPhoto, List<File> photoFiles ){
-		BeehiveJdbcUser user = userDao.getUserByID(userId);
-		if(user == null) {
-			throw new RuntimeException("can not find user ! ");
-		}
 
-		List<Integer> photoIds = new ArrayList<>();
-		List<Map<String, Object>> photoList = facePlusPlusService.buildUploadPhotos(photoFiles);
-		for (Map<String, Object> photoMap : photoList) {
-			Integer photoId = (Integer) ( (Map<String, Object>)photoMap.get("data") ).get("id");
-			if(photoId == null) {
-				throw new RuntimeException("upload face++ photo error ! ");
-			}
-			photoIds.add(photoId);
-		}
-		if( StringUtils.isEmpty(user.getFaceSubjectId()) ) { // register
-			FaceUser faceUser = new FaceUser();
-			faceUser.setSubject_type(FaceUser.SUBJECT_TYPE_EMPLOYEE);
-			faceUser.setName(user.getUserName());
-			faceUser.setPhoto_ids(photoIds);
-			Map<String, Object> userMap = facePlusPlusService.buildSubject(faceUser);
-			Integer faceSubjectId = (Integer) ( (Map<String, Object>)userMap.get("data") ).get("id");
-			if(faceSubjectId == null){
-				throw new RuntimeException("register face++ user error ! ");
-			}
-			//
-			user.setFaceSubjectId(faceSubjectId);
-			userDao.updateEntity(user,userId);
-		}else {// update
-//			throw new RuntimeException("user already registered face++! ");
-			if(clearOldPhoto){// 丢弃原来的照片
-
-			}else { // 保留原来的 照片
-				Map<String, Object> userMap = facePlusPlusService.buildGetSubjectById(user.getFaceSubjectId());
-				List<Map<String, Object>> oldPhotos = (List<Map<String, Object>>) ( ((Map<String, Object>)userMap.get("data")).get("photos") );
-				for( Map<String, Object> lodPhoto : oldPhotos) {
-					photoIds.add( (Integer) lodPhoto.get("id") );
-				}
-			}
-
-			FaceUser faceUser = new FaceUser();
-			faceUser.setId(user.getFaceSubjectId());
-			faceUser.setName(user.getUserName());
-			faceUser.setPhoto_ids(photoIds);
-			facePlusPlusService.buildUpdateSubject(faceUser);
-		}
-
-		return user;
-	}
 
 
 

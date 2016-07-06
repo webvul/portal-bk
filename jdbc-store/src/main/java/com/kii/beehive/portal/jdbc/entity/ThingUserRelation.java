@@ -9,7 +9,7 @@ public class ThingUserRelation extends DBEntity {
     final public static String ID = "id";
     final public static String THING_ID = "thing_id";
     final public static String USER_ID = "beehive_user_id";
-	final public static String OLD_USER_ID = "user_id";
+//	final public static String OLD_USER_ID = "user_id";
 
     private Long id;
     private Long thingId;

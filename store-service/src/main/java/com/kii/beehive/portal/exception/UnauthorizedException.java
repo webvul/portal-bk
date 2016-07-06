@@ -16,6 +16,8 @@ public class UnauthorizedException extends BusinessException {
 	public static final String NOT_IN_CURR_TEAM="NOT_IN_CURR_TEAM";
 	public static final String NOT_GROUP_CREATER="NOT_GROUP_CREATER";
 
+	public static final String USERGROUP_NO_PRIVATE="USERGROUP_NO_PRIVATE";
+
 	public UnauthorizedException(String msg){
 		super.setErrorCode(msg);
 	}

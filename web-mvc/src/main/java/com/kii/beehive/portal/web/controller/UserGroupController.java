@@ -20,18 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.business.manager.UserManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
-import com.kii.beehive.portal.jdbc.dao.BeehiveUserJdbcDao;
-import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
-import com.kii.beehive.portal.jdbc.dao.TagGroupRelationDao;
-import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
-import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
-import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
-import com.kii.beehive.portal.jdbc.entity.TagGroupRelation;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
-import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.entity.UserGroupRestBean;
-import com.kii.beehive.portal.web.exception.PortalException;
 
 /**
  * Beehive API - User API
@@ -45,24 +36,24 @@ public class UserGroupController {
 //	@Autowired
 //	private BeehiveUserDao beehiveUserDao;
 
-	@Autowired
-	private BeehiveUserJdbcDao beehiveUserDao;
-
-	@Autowired
-	private TagGroupRelationDao tagGroupRelationDao;
-
-	@Autowired
-	private TagIndexDao tagIndexDao;
+//	@Autowired
+//	private BeehiveUserJdbcDao beehiveUserDao;
+//
+//	@Autowired
+//	private TagGroupRelationDao tagGroupRelationDao;
+//
+//	@Autowired
+//	private TagIndexDao tagIndexDao;
 
 	@Autowired
 	protected UserManager userManager;
 
-	@Autowired
-	protected UserGroupDao userGroupDao;
-
-
-	@Autowired
-	protected GroupUserRelationDao groupUserRelationDao;
+//	@Autowired
+//	protected UserGroupDao userGroupDao;
+//
+//
+//	@Autowired
+//	protected GroupUserRelationDao groupUserRelationDao;
 
 	/**
 	 * 创建用户群组
@@ -81,9 +72,9 @@ public class UserGroupController {
 		UserGroup userGroup = userGroupRestBean.getUserGroup();
 		Long userGroupID = null;
 		if (userGroup.getId() == null) {//create
-			userGroupID = userManager.createUserGroup(userGroup, AuthInfoStore.getUserID());
+			userGroupID = userManager.createUserGroup(userGroup, AuthInfoStore.getUserIDInLong());
 		} else {//update
-			userGroupID = userManager.updateUserGroup(userGroup, AuthInfoStore.getUserID());
+			userGroupID = userManager.updateUserGroup(userGroup, AuthInfoStore.getUserIDInLong());
 		}
 
 		Map<String, Object> resultMap = new HashMap<>();
@@ -101,9 +92,13 @@ public class UserGroupController {
 	public ResponseEntity addUsersToUserGroup(@PathVariable("userGroupID") Long userGroupID, @PathVariable("userIDs") String userIDs) {
 
 
-		List<String> userIDList = Arrays.asList(userIDs.split(","));
+		List<String> userIDList = getIDList(userIDs);
 		userManager.addUserToUserGroup(userIDList, userGroupID);
 		return new ResponseEntity<>(HttpStatus.OK);
+	}
+
+	private List<String> getIDList(@PathVariable("userIDs") String userIDs) {
+		return  Arrays.asList(userIDs.split(","));
 	}
 
 	/**
@@ -113,28 +108,11 @@ public class UserGroupController {
 	 * @param userGroupID
 	 */
 	@RequestMapping(value = "/{userGroupID}/user/{userIDs}", method = {RequestMethod.DELETE}, consumes = {"*"})
-	public ResponseEntity removeUsersFromUserGroup(@PathVariable("userGroupID") Long userGroupID, @PathVariable("userIDs") String userIDs) {
-		UserGroup ug = this.userGroupDao.findByID(userGroupID);
-		if (ug == null) {
-			throw new PortalException(ErrorCode.USERGROUP_NO_PRIVATE, HttpStatus.NOT_FOUND);
-		} else if (!ug.getCreateBy().equals(AuthInfoStore.getUserID())) {
-			throw new PortalException(ErrorCode.NOT_FOUND,HttpStatus.UNAUTHORIZED);
-		} else {
-			List<String> userIDList = new ArrayList<String>();
-			String[] userIDArray = userIDs.split(",");
-			for (String uID : userIDArray) {
-				if (!uID.equals(AuthInfoStore.getUserID())) {
-					userIDList.add(uID);
-				} else {
-					throw new PortalException(ErrorCode.USERGROUP_NO_PRIVATE,HttpStatus.UNAUTHORIZED);
-				}
-			}
-			if (userIDList.size() > 0) {
-				groupUserRelationDao.deleteUsers(userIDList, userGroupID);
-			}
+	public  void removeUsersFromUserGroup(@PathVariable("userGroupID") Long userGroupID, @PathVariable("userIDs") String userIDs) {
 
-		}
-		return new ResponseEntity<>(HttpStatus.OK);
+		userManager.removeUserFromGroup(userGroupID,getIDList(userIDs));
+
+		return ;
 	}
 
 	/**
@@ -149,13 +127,7 @@ public class UserGroupController {
 	@RequestMapping(value = "/{userGroupID}", method = {RequestMethod.DELETE}, consumes = {"*"})
 	public ResponseEntity deleteUserGroup(@PathVariable("userGroupID") Long userGroupID) {
 
-		UserGroup orig = userGroupDao.findByID(userGroupID);
 
-		if (orig == null) {
-			throw new PortalException(ErrorCode.USERGROUP_NOTFOUND,  HttpStatus.NOT_FOUND);
-		} else if (!orig.getCreateBy().equals(AuthInfoStore.getUserID())) {
-			throw new PortalException(ErrorCode.USERGROUP_NO_PRIVATE,HttpStatus.UNAUTHORIZED);
-		}
 
 		userManager.deleteUserGroup(userGroupID);
 
@@ -173,30 +145,11 @@ public class UserGroupController {
 	 */
 	@RequestMapping(value = "/{userGroupID}", method = {RequestMethod.GET}, consumes = {"*"})
 	public UserGroupRestBean getUserGroupDetail(@PathVariable("userGroupID") Long userGroupID) {
-		UserGroupRestBean ugrb = null;
-		if (isGroupOfUser(AuthInfoStore.getUserID(), userGroupID)) {
 
-			List<BeehiveJdbcUser>  userList=beehiveUserDao.findByUserGroupID(userGroupID);
+		UserGroup ug=userManager.getUserGroupDetail(userGroupID);
 
-			UserGroup ug = userGroupDao.findByID(userGroupID);
-			ugrb = new UserGroupRestBean(ug);
-			ugrb.setUsers(userList);
+		UserGroupRestBean ugrb = new UserGroupRestBean(ug);
 
-//			List<GroupUserRelation> relList = groupUserRelationDao.findByUserGroupID(userGroupID);
-//			if (relList.size() > 0) {
-//				List<String> userIdList = new ArrayList<String>();
-//				relList.forEach(gur -> userIdList.add(gur.getUserID()));
-//				List<BeehiveUser> list = beehiveUserDao.getUserByIDs(userIdList);
-//				UserGroup ug = userGroupDao.findByID(userGroupID);
-//				ugrb = new UserGroupRestBean(ug);
-//				ugrb.setUsers(list);
-//			}
-		} else {
-			throw new PortalException(ErrorCode.USERGROUP_NO_PRIVATE,HttpStatus.UNAUTHORIZED);
-		}
-		if (ugrb == null) {
-			throw new PortalException(ErrorCode.USERGROUP_NOTFOUND, HttpStatus.NOT_FOUND);
-		}
 		return ugrb;
 	}
 
@@ -210,22 +163,23 @@ public class UserGroupController {
 	 * @param userGroupID
 	 */
 	@RequestMapping(value = "/{userGroupID}/tags", method = {RequestMethod.GET}, consumes = {"*"})
-	public ResponseEntity<List<TagIndex>> getUserGroupTag(@PathVariable("userGroupID") Long userGroupID, HttpServletRequest httpRequest) {
-		List<TagIndex> tagList = null;
-		if (isGroupOfUser(AuthInfoStore.getUserID(), userGroupID)) {
-			List<Long> tagIDList = new ArrayList<Long>();
-			List<TagGroupRelation> relList = tagGroupRelationDao.findByUserGroupID(userGroupID);
-			if (relList.size() > 0) {
-				relList.forEach(tgr -> tagIDList.add(tgr.getTagID()));
-				tagList = tagIndexDao.findByIDs(tagIDList);
-			}
-		} else {
-			throw new PortalException(ErrorCode.USERGROUP_NO_PRIVATE,HttpStatus.NOT_FOUND);
-		}
-		if (tagList == null) {
-			throw new PortalException(ErrorCode.USERGROUP_NO_PRIVATE, HttpStatus.NOT_FOUND);
-		}
-		return new ResponseEntity<>(tagList, HttpStatus.OK);
+	public List<TagIndex> getUserGroupTag(@PathVariable("userGroupID") Long userGroupID) {
+//		List<TagIndex> tagList = null;
+//		if (isGroupOfUser(AuthInfoStore.getUserIDInLong(), userGroupID)) {
+//			List<Long> tagIDList = new ArrayList<Long>();
+//			List<TagGroupRelation> relList = tagGroupRelationDao.findByUserGroupID(userGroupID);
+//			if (relList.size() > 0) {
+//				relList.forEach(tgr -> tagIDList.add(tgr.getTagID()));
+//				tagList = tagIndexDao.findByIDs(tagIDList);
+//			}
+//		} else {
+//			throw new PortalException(ErrorCode.USERGROUP_NO_PRIVATE,HttpStatus.NOT_FOUND);
+//		}
+//		if (tagList == null) {
+//			throw new PortalException(ErrorCode.USERGROUP_NO_PRIVATE, HttpStatus.NOT_FOUND);
+//		}
+		return userManager.getTagIndexList(userGroupID);
+
 	}
 
 	/**
@@ -236,28 +190,19 @@ public class UserGroupController {
 	 * refer to doc "Tech Design - Beehive API", section "Inquire User Group (查询用户群组)" for more details
 	 */
 	@RequestMapping(value = "/list", method = {RequestMethod.GET}, consumes = {"*"})
-	public ResponseEntity<List<UserGroupRestBean>> getUserGroupList() {
-		List<UserGroup> list = list = userGroupDao.findUserGroup(AuthInfoStore.getUserID(), null, null);
+	public List<UserGroupRestBean> getUserGroupList() {
+		List<UserGroup> list  = userManager.findUserGroup();
 		List<UserGroupRestBean> restBeanList = this.convertList(list);
-		return new ResponseEntity<>(restBeanList, HttpStatus.OK);
+		return restBeanList;
 	}
 
 	@RequestMapping(value = "/all", method = {RequestMethod.GET}, consumes = {"*"})
-	public ResponseEntity<List<UserGroupRestBean>> getUserGroupAll() {
-		List<UserGroup> list = userGroupDao.findAll();
+	public List<UserGroupRestBean> getUserGroupAll() {
+		List<UserGroup> list = userManager.findAll();
 		List<UserGroupRestBean> restBeanList = this.convertList(list);
-		return new ResponseEntity<>(restBeanList, HttpStatus.OK);
+		return restBeanList;
 	}
 
-	private boolean isGroupOfUser(String loginUserID, Long userGroupID) {
-		List<UserGroup> checkAuth = userGroupDao.findUserGroup(loginUserID, userGroupID, null);
-
-		if (checkAuth.size() == 1) {
-			return true;
-		} else {
-			throw new PortalException(ErrorCode.USERGROUP_NO_PRIVATE,HttpStatus.UNAUTHORIZED);
-		}
-	}
 
 	private List<UserGroupRestBean> convertList(List<UserGroup> userGroupList) {
 

@@ -1,18 +1,16 @@
 package com.kii.beehive.portal.jdbc;
 
-import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
-import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
-import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
-import com.kii.beehive.portal.jdbc.entity.UserGroup;
+import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertNull;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Collections;
-import java.util.List;
-
-import static junit.framework.TestCase.assertEquals;
-import static org.junit.Assert.assertNull;
+import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
+import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
+import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
+import com.kii.beehive.portal.jdbc.entity.UserGroup;
 
 public class TestGroupUserRelationDao extends TestTemplate {
 
@@ -36,7 +34,7 @@ public class TestGroupUserRelationDao extends TestTemplate {
 
 
 		rel.setUserGroupID(userGroup.getId());
-		rel.setUserID("UserTest");
+		rel.setBeehiveUserID(101l);
 		long id4 = dao.insert(rel);
 		rel.setId(id4);
 	}
@@ -44,17 +42,17 @@ public class TestGroupUserRelationDao extends TestTemplate {
 	@Test
 	public void testFindByID() {
 		GroupUserRelation entity = dao.findByID(rel.getId());
-		assertEquals(rel.getUserID(), entity.getUserID());
+		assertEquals(rel.getBeehiveUserID(), entity.getBeehiveUserID());
 		assertEquals(rel.getUserGroupID(), entity.getUserGroupID());
 	}
 
 	@Test
 	public void testFindByUserIDAndUserGroupID() {
-		GroupUserRelation entity = dao.findByUserIDAndUserGroupID(rel.getUserID(), userGroup.getId());
-		assertEquals(rel.getUserID(), entity.getUserID());
+		GroupUserRelation entity = dao.findByUserIDAndUserGroupID(rel.getBeehiveUserID(), userGroup.getId());
+		assertEquals(rel.getBeehiveUserID(), entity.getBeehiveUserID());
 		assertEquals(rel.getUserGroupID(), entity.getUserGroupID());
 
-		entity = dao.findByUserIDAndUserGroupID(rel.getUserID(), null);
+		entity = dao.findByUserIDAndUserGroupID(rel.getBeehiveUserID(), null);
 		assertNull(entity);
 		entity = dao.findByUserIDAndUserGroupID(null, userGroup.getId());
 		assertNull(entity);
@@ -64,14 +62,14 @@ public class TestGroupUserRelationDao extends TestTemplate {
 
 	@Test
 	public void testDelete() {
-		dao.delete(rel.getUserID(), userGroup.getId());
+		dao.delete(rel.getBeehiveUserID(), userGroup.getId());
 		GroupUserRelation entity = dao.findByID(rel.getId());
 		assertNull(entity);
 	}
 
 	@Test
 	public void testDeleteByUserGroupID() {
-		dao.delete(rel.getUserID(), null);
+		dao.delete(rel.getBeehiveUserID(), null);
 		GroupUserRelation entity = dao.findByID(rel.getId());
 		assertNull(entity);
 	}
@@ -96,11 +94,8 @@ public class TestGroupUserRelationDao extends TestTemplate {
 
 		GroupUserRelation relation = new GroupUserRelation();
 		relation.setUserGroupID(groupId);
-		relation.setUserID("Someone");
+		relation.setBeehiveUserID(101l);
 		dao.saveOrUpdate(relation);
 
-		List<String> users = dao.findUserIds(Collections.singleton(groupId)).orElse(Collections.emptyList());
-		assertEquals(1, users.size());
-		assertEquals("Someone", users.get(0));
 	}
 }

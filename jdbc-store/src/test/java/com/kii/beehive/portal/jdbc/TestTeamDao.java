@@ -33,7 +33,7 @@ public class TestTeamDao extends TestTemplate {
 		long id = dao.saveOrUpdate(team);
 		team.setId(id);
 		
-		rel.setUserID("UserTest");
+		rel.setBeehiveUserID(101l);
 		rel.setTeamID(team.getId());
 		rel.setVaild(1);
 		long id4 = teamUserRelationDao.insert(rel);
@@ -90,7 +90,7 @@ public class TestTeamDao extends TestTemplate {
 	
 	@Test
 	public void findTeamByUserID(){
-		List<Team> list = dao.findTeamByUserID(rel.getUserID());
+		List<Team> list = dao.findTeamByUserID(rel.getBeehiveUserID());
 		assertEquals(1, list.size());
 	}
 

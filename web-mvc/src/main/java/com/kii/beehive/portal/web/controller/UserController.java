@@ -1,5 +1,7 @@
 package com.kii.beehive.portal.web.controller;
 
+import javax.annotation.PostConstruct;
+
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -8,10 +10,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
@@ -23,9 +26,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
+
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.CollectUtils;
 import com.kii.beehive.portal.entitys.PermissionTree;
+import com.kii.beehive.portal.helper.BeehiveFacePlusPlusService;
+import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 import com.kii.beehive.portal.manager.AuthManager;
 import com.kii.beehive.portal.manager.BeehiveUserManager;
 import com.kii.beehive.portal.store.entity.BeehiveUser;
@@ -45,6 +51,24 @@ public class UserController {
 	@Autowired
 	private AuthManager authManager;
 
+	@Autowired
+	private BeehiveFacePlusPlusService service;
+
+
+	@Value("${face.photo.dir}")
+	private String facePhotoDir;
+
+	private File photoDir;
+
+	@PostConstruct
+	public void init(){
+
+		photoDir=new File(facePhotoDir);
+		if(!photoDir.exists()){
+
+			photoDir.mkdirs();
+		}
+	}
 
 	/**
 	 * 创建用户
@@ -59,7 +83,7 @@ public class UserController {
 
 		user.verifyInput();
 
-		BeehiveUser beehiveUser = user.getBeehiveUser();
+		BeehiveJdbcUser beehiveUser = user.getBeehiveUser();
 		if(StringUtils.isEmpty(beehiveUser.getUserName())){
 			if(!StringUtils.isEmpty(beehiveUser.getMail())){
 				beehiveUser.setUserName(beehiveUser.getMail());
@@ -98,7 +122,7 @@ public class UserController {
 	 * @param user
 	 */
 	@RequestMapping(value = "/usermanager/{userID}", method = {RequestMethod.PATCH})
-	public Map<String, String> updateUser(@PathVariable("userID") String userID, @RequestBody BeehiveUser user) {
+	public Map<String, String> updateUser(@PathVariable("userID") String userID, @RequestBody BeehiveJdbcUser user) {
 
 		userManager.updateUser(user, userID);
 
@@ -166,7 +190,7 @@ public class UserController {
 	public Map<String, String> updateUser( @RequestBody BeehiveUser user) {
 
 
-		BeehiveUser  updateUser=new BeehiveUser();
+		BeehiveJdbcUser  updateUser=new BeehiveJdbcUser();
 		BeanUtils.copyProperties(user,updateUser,"kiiUserID","activityToken","userPassword","roleName","userName");
 		userManager.updateUser(updateUser, AuthInfoStore.getUserID());
 
@@ -223,7 +247,7 @@ public class UserController {
 
 
 	@RequestMapping(value="/user/photo", method=RequestMethod.POST , consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-	public @ResponseBody BeehiveUser uploadFacePhoto(
+	public @ResponseBody BeehiveJdbcUser uploadFacePhoto(
 			@RequestParam(value = "userId") String userId,
 			@RequestParam(value = "clearOldPhoto", defaultValue = "false") Boolean clearOldPhoto,
 			@RequestParam(value = "photos") CommonsMultipartFile[] photos) throws IOException {
@@ -235,8 +259,10 @@ public class UserController {
 			throw new PortalException(ErrorCode.INVALID_INPUT, HttpStatus.BAD_REQUEST);
 		}
 		List<File> photoFiles = new ArrayList<>();
+
 		for (CommonsMultipartFile photo : photos) {
-			File photoFile = new File(userManager.getFacePhotoDir() + userId + "-" + UUID.randomUUID() + "-" + photo.getOriginalFilename());
+
+			File photoFile = File.createTempFile("photo-"+userId+"-",photo.getOriginalFilename(),photoDir);
 			byte[] bytes = photo.getBytes();
 			BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(photoFile));
 			stream.write(bytes);
@@ -244,7 +270,7 @@ public class UserController {
 			photoFiles.add(photoFile);
 		}
 
-		BeehiveUser user = userManager.updateUserWithFace(userId, clearOldPhoto, photoFiles);
+		BeehiveJdbcUser user = service.updateUserWithFace(userId, clearOldPhoto, photoFiles);
 
 		return user;
 	}

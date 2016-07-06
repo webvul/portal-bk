@@ -32,7 +32,7 @@ public class TestTeamUserRelationDao extends TestTemplate {
 		long teamId = teamDao.saveOrUpdate(team);
 		team.setId(teamId);
 
-		rel.setUserID("UserTest");
+		rel.setBeehiveUserID(101l);
 		rel.setTeamID(team.getId());
 		rel.setVaild(1);
 		long id4 = dao.insert(rel);
@@ -43,18 +43,18 @@ public class TestTeamUserRelationDao extends TestTemplate {
 	public void testFindByID() {
 		TeamUserRelation entity = dao.findByID(rel.getId());
 		assertEquals(rel.getTeamID(), entity.getTeamID());
-		assertEquals(rel.getUserID(), entity.getUserID());
+		assertEquals(rel.getBeehiveUserID(), entity.getBeehiveUserID());
 	}
 
 	@Test
 	public void testFindByUserIDAndUserGroupID() {
-		TeamUserRelation entity = dao.findByTeamIDAndUserID(rel.getTeamID(), rel.getUserID());
+		TeamUserRelation entity = dao.findByTeamIDAndUserID(rel.getTeamID(), rel.getBeehiveUserID());
 		assertEquals(rel.getTeamID(), entity.getTeamID());
-		assertEquals(rel.getUserID(), entity.getUserID());
+		assertEquals(rel.getBeehiveUserID(), entity.getBeehiveUserID());
 
 		entity = dao.findByTeamIDAndUserID(rel.getTeamID(), null);
 		assertNull(entity);
-		entity = dao.findByTeamIDAndUserID(null, rel.getUserID());
+		entity = dao.findByTeamIDAndUserID(null, rel.getBeehiveUserID());
 		assertNull(entity);
 		entity = dao.findByTeamIDAndUserID(null, null);
 		assertNull(entity);
@@ -62,7 +62,7 @@ public class TestTeamUserRelationDao extends TestTemplate {
 
 	@Test
 	public void testDelete() {
-		dao.delete(rel.getTeamID(), rel.getUserID());
+		dao.delete(rel.getTeamID(), rel.getBeehiveUserID());
 		TeamUserRelation entity = dao.findByID(rel.getId());
 		assertNull(entity);
 	}
@@ -76,7 +76,7 @@ public class TestTeamUserRelationDao extends TestTemplate {
 
 	@Test
 	public void testDeleteByUserID() {
-		dao.delete(null, rel.getUserID());
+		dao.delete(null, rel.getBeehiveUserID());
 		TeamUserRelation entity = dao.findByID(rel.getId());
 		assertNull(entity);
 	}

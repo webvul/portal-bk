@@ -11,6 +11,8 @@ import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Repository;
 
 import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.common.utils.StrTemplate;
+import com.kii.beehive.portal.jdbc.entity.TagGroupRelation;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
 import com.kii.beehive.portal.jdbc.entity.TagType;
@@ -82,6 +84,27 @@ public class TagIndexDao extends SpringBaseDao<TagIndex> {
 		List<TagIndex> rows = jdbcTemplate.query(sql.toString(), params.toArray(new Object[params.size()]), getRowMapper());
 		return rows;
 	}
+
+
+	public List<TagIndex> getTagListByGroupID(Long userId) {
+
+
+		String sqlTmp="select t.* from ${0} t inner join  ${1} rel on rel.${3} = t.${4} where  rel.${2}  = ? ";
+		String sql= StrTemplate.gener(sqlTmp,TABLE_NAME,TagGroupRelationDao.TABLE_NAME, TagGroupRelation.USER_GROUP_ID,TagIndex.TAG_ID,TagGroupRelation.TAG_ID);
+
+		return jdbcTemplate.query(sql,new Object[]{userId}, getRowMapper());
+	}
+
+	public List<TagIndex> findUserTagByUserID(Long userId) {
+
+
+		String sqlTmp="select t.* from ${0} t inner join  ${1} rel on rel.tag_id = t.tag_id where  rel.beehive_user_id = ? ";
+		String sql= StrTemplate.gener(sqlTmp,TABLE_NAME,TagUserRelationDao.TABLE_NAME);
+
+		return jdbcTemplate.query(sql,new Object[]{userId}, getRowMapper());
+	}
+
+
 
 	public List<TagIndex> findUserTagByTypeAndName(Long userId, String tagType, String displayName) {
 		List<Object> params = new ArrayList<>();

@@ -113,22 +113,22 @@ public class TestUserGroupDao extends TestTemplate {
 		GroupUserRelation rel = new GroupUserRelation();
 		
 		rel.setUserGroupID(userGroup.getId());
-		rel.setUserID("UserTest");
+		rel.setBeehiveUserID(101l);
 		groupUserRelationDao.insert(rel);
 		
-		List<UserGroup> list = dao.findUserGroup(rel.getUserID(), null , null);
+		List<UserGroup> list = dao.findUserGroup(rel.getBeehiveUserID(), null , null);
 		assertTrue(list.size() > 0);
 		
-		list = dao.findUserGroup(rel.getUserID(), userGroup.getId() , null);
+		list = dao.findUserGroup(rel.getBeehiveUserID(), userGroup.getId() , null);
 		assertTrue(list.size() > 0);
 		UserGroup ug = list.get(0);
 		assertEquals(userGroup.getName(), ug.getName());
 		assertEquals(userGroup.getDescription(), ug.getDescription());
 		
-		list = dao.findUserGroup(rel.getUserID(), null , userGroup.getName());
+		list = dao.findUserGroup(rel.getBeehiveUserID(), null , userGroup.getName());
 		assertTrue(list.size() > 0);
 		
-		list = dao.findUserGroup(rel.getUserID(), userGroup.getId() , userGroup.getName());
+		list = dao.findUserGroup(rel.getBeehiveUserID(), userGroup.getId() , userGroup.getName());
 		assertTrue(list.size() > 0);
 		
 		list = dao.findUserGroup(null, null , null);
@@ -146,7 +146,7 @@ public class TestUserGroupDao extends TestTemplate {
 		GroupUserRelation rel = new GroupUserRelation();
 		
 		rel.setUserGroupID(userGroup.getId());
-		rel.setUserID("UserTest");
+		rel.setBeehiveUserID(101l);
 		groupUserRelationDao.insert(rel);
 		
 		Team t = new Team();
@@ -156,19 +156,19 @@ public class TestUserGroupDao extends TestTemplate {
 		
 		teamGroupRelationDao.saveOrUpdate(new TeamGroupRelation(teamID,userGroup.getId()));
 		
-		List<UserGroup> list = dao.findUserGroup(rel.getUserID(), null , null);
+		List<UserGroup> list = dao.findUserGroup(rel.getBeehiveUserID(), null , null);
 		assertTrue(list.size() > 0);
 		
-		list = dao.findUserGroup(rel.getUserID(), userGroup.getId() , null);
+		list = dao.findUserGroup(rel.getBeehiveUserID(), userGroup.getId() , null);
 		assertTrue(list.size() > 0);
 		UserGroup ug = list.get(0);
 		assertEquals(userGroup.getName(), ug.getName());
 		assertEquals(userGroup.getDescription(), ug.getDescription());
 		
-		list = dao.findUserGroup(rel.getUserID(), null , userGroup.getName());
+		list = dao.findUserGroup(rel.getBeehiveUserID(), null , userGroup.getName());
 		assertTrue(list.size() > 0);
 		
-		list = dao.findUserGroup(rel.getUserID(), userGroup.getId() , userGroup.getName());
+		list = dao.findUserGroup(rel.getBeehiveUserID(), userGroup.getId() , userGroup.getName());
 		assertTrue(list.size() > 0);
 		
 		list = dao.findUserGroup(null, null , null);

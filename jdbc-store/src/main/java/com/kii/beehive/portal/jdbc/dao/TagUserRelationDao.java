@@ -2,6 +2,7 @@ package com.kii.beehive.portal.jdbc.dao;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,7 @@ import java.util.Optional;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Repository;
 
+import com.kii.beehive.portal.common.utils.StrTemplate;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagUserRelation;
 
@@ -62,33 +64,30 @@ public class TagUserRelationDao extends SpringBaseDao<TagUserRelation> {
 		return KEY;
 	}
 
-	public Optional<List<Long>> findTagIds(Long userId) {
-		if (null == userId) {
-			return Optional.ofNullable(null);
-		}
-		return Optional.ofNullable(jdbcTemplate.queryForList(SQL_FIND_TAGIDS, new Object[]{userId}, Long.class));
+	public List<Long> findTagIds(Long userId) {
+
+		return jdbcTemplate.queryForList(SQL_FIND_TAGIDS, new Object[]{userId}, Long.class);
 	}
 
-//	public List<String> findUserIds(Long tagId) {
-//		if (null == tagId) {
-//			return null;
-//		}
-//		return jdbcTemplate.queryForList(SQL_FIND_USERIDS, new Object[]{tagId}, String.class);
-//	}
+	public List<TagUserRelation> findByTagIds(Collection<Long> tagIds) {
+		String sqlTmp="select * from  ${0} t where t.${1} in (:ids) ";
+		String sql= StrTemplate.gener(sqlTmp,TABLE_NAME,TagUserRelation.TAG_ID);
+
+		return namedJdbcTemplate.query(sql, Collections.singletonMap("ids",tagIds),getRowMapper());
+	}
+
 
 	public List<TagUserRelation> findByTagId(Long tagId) {
-		if (null == tagId) {
-			return null;
-		}
+
 		return findBySingleField(TagUserRelation.TAG_ID, tagId);
 	}
 
-	public Optional<List<TagUserRelation>> findByUserId(Long userId) {
-		if (null == userId) {
-			return Optional.ofNullable(null);
-		}
-		return Optional.ofNullable(findBySingleField(TagUserRelation.USER_ID, userId));
-	}
+//	public Optional<List<TagUserRelation>> findByUserId(Long userId) {
+//		if (null == userId) {
+//			return Optional.ofNullable(null);
+//		}
+//		return Optional.ofNullable(findBySingleField(TagUserRelation.USER_ID, userId));
+//	}
 
 	public TagUserRelation find(Long tagId, Long userId) {
 		if (null == tagId || null == userId) {
@@ -126,9 +125,9 @@ public class TagUserRelationDao extends SpringBaseDao<TagUserRelation> {
 		return Optional.ofNullable(namedJdbcTemplate.queryForList(SQL_FIND_ACCESSIBLE_TAGIDS, params, Long.class));
 	}
 
-	public Optional<List<Long>> findTagIds(Long userId, String tagType, String displayName) {
+	public List<Long> findTagIds(Long userId, String tagType, String displayName) {
 		if (userId==null) {
-			return Optional.ofNullable(null);
+			return new ArrayList<>();
 		}
 		if (Strings.isBlank(tagType) && Strings.isBlank(displayName)) {
 			return findTagIds(userId);
@@ -148,8 +147,8 @@ public class TagUserRelationDao extends SpringBaseDao<TagUserRelation> {
 			sb.append(TagIndex.DISPLAY_NAME).append(" = ?");
 			params.add(displayName);
 		}
-		return Optional.ofNullable(jdbcTemplate.queryForList(SQL_FIND_TAGIDS_FILTER_BY + sb.toString(),
-				params.toArray(new Object[]{}), Long.class));
+		return jdbcTemplate.queryForList(SQL_FIND_TAGIDS_FILTER_BY + sb.toString(),
+				params.toArray(new Object[]{}), Long.class);
 	}
 
 //	public Optional<List<String>> findUserIds(List<Long> tagIds) {
@@ -160,15 +159,15 @@ public class TagUserRelationDao extends SpringBaseDao<TagUserRelation> {
 //				tagIds, String.class));
 //	}
 
-	public Optional<List<Long>> findTagIds(Long userId, List<String> fullTagName) {
+	public List<Long> findTagIds(Long userId, List<String> fullTagName) {
 		if (userId==null || null == fullTagName || fullTagName.isEmpty()) {
-			return Optional.ofNullable(null);
+			return new ArrayList<>();
 		}
 
 		Map<String, Object> params = new HashMap();
 		params.put("userID", userId);
 		params.put("fullNames", fullTagName);
-		return Optional.ofNullable(namedJdbcTemplate.queryForList(SQL_FIND_TAGIDS_FILTER_BY_FULLTAGANME, params,
-				Long.class));
+		return namedJdbcTemplate.queryForList(SQL_FIND_TAGIDS_FILTER_BY_FULLTAGANME, params,
+				Long.class);
 	}
 }

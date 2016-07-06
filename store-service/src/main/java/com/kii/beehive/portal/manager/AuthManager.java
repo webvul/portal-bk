@@ -25,12 +25,11 @@ import com.kii.beehive.portal.exception.UnauthorizedException;
 import com.kii.beehive.portal.exception.UserNotExistException;
 import com.kii.beehive.portal.helper.AuthInfoService;
 import com.kii.beehive.portal.helper.RuleSetService;
+import com.kii.beehive.portal.jdbc.dao.BeehiveUserJdbcDao;
 import com.kii.beehive.portal.jdbc.dao.TeamDao;
 import com.kii.beehive.portal.jdbc.dao.TeamUserRelationDao;
 import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 import com.kii.beehive.portal.jdbc.entity.Team;
-import com.kii.beehive.portal.service.BeehiveUserDao;
-import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.entity.KiiUser;
 import com.kii.extension.sdk.exception.KiiCloudException;
@@ -42,7 +41,7 @@ public class AuthManager {
 	private Logger log = LoggerFactory.getLogger(AuthManager.class);
 
 	@Autowired
-	private BeehiveUserDao userDao;
+	private BeehiveUserJdbcDao userDao;
 
 
 	@Autowired
@@ -55,8 +54,6 @@ public class AuthManager {
 	@Autowired
 	private AppBindToolResolver resolver;
 
-//	@Autowired
-//	private UserTokenBindTool tokenBind;
 
 
 	@Autowired
@@ -74,16 +71,18 @@ public class AuthManager {
 
 
 
-	public Map<String,String> createUserDirectly(BeehiveUser user,String password){
+	public Map<String,String> createUserDirectly(BeehiveJdbcUser user,String password){
 
 
-		BeehiveUser existsUser=userDao.getUserByLoginId(user);
+		BeehiveJdbcUser existsUser=userDao.getUserByLoginId(user);
 
 		if(existsUser!=null){
 			throw new IllegalArgumentException("the username had existed,please change a loginName or email or phone Number");
 		}
 
-		userDao.addKiiEntity(user);
+
+		userDao.addUser(user);
+
 
 		String pwd=user.getHashedPwd(password);
 
@@ -93,7 +92,7 @@ public class AuthManager {
 
 		user.setUserPassword(pwd);
 
-		userDao.updateEntity(user,user.getId());
+		userDao.updateEntityAllByID(user);
 
 		String token = userService.bindToUser(user, pwd);
 
@@ -101,7 +100,7 @@ public class AuthManager {
 
 		Map<String,String> result=new HashMap<>();
 
-		result.put("userID",user.getId());
+		result.put("userID",user.getUserID());
 		result.put("token",beehiveToken);
 
 		return result;
@@ -111,7 +110,7 @@ public class AuthManager {
 
 	public String activite(String userName, String token) {
 
-		BeehiveUser user = userDao.getUserByName(userName);
+		BeehiveJdbcUser user = userDao.getUserByName(userName);
 
 		if(StringUtils.isEmpty(user.getActivityToken())){
 			throw new UnauthorizedException(UnauthorizedException.USER_ALREADY_ACTIVIED);
@@ -137,7 +136,7 @@ public class AuthManager {
 
 		}
 
-		BeehiveUser  user=userDao.getUserByName(userName);
+		BeehiveJdbcUser  user=userDao.getUserByName(userName);
 
 		String pwd=user.getDefaultPassword();
 		String newPwd=user.getHashedPwd(newPassword);
@@ -195,7 +194,7 @@ public class AuthManager {
 
 	public AuthRestBean getTokenByID(String userID) {
 
-		BeehiveUser  user=userDao.getUserByID(userID);
+		BeehiveJdbcUser  user=userDao.getUserByUserID(userID);
 
 		Team team=this.getTeamByID(user.getId());
 
@@ -207,7 +206,7 @@ public class AuthManager {
 		return authRestBean;
 	}
 
-	private AuthRestBean generAuthBean(BeehiveUser user, String token, Team team) {
+	private AuthRestBean generAuthBean(BeehiveJdbcUser user, String token, Team team) {
 		AuthRestBean authRestBean = new AuthRestBean();
 		authRestBean.setUser(user);
 
@@ -220,9 +219,9 @@ public class AuthManager {
 		return authRestBean;
 	}
 
-	private AuthInfo saveToken( BeehiveUser user, String token,Team team,boolean is3rdParty) {
+	private AuthInfo saveToken( BeehiveJdbcUser user, String token,Team team,boolean is3rdParty) {
 		AuthInfo entity = new AuthInfo();
-		entity.setUserID(user.getId());
+		entity.setUserID(user.getUserID());
 
 		if(team!=null) {
 			entity.setTeamID(team.getId());
@@ -250,7 +249,7 @@ public class AuthManager {
 	 */
 	public void changePassword(String oldPassword, String newPassword) {
 
-		BeehiveUser  user=userDao.getUserByID(AuthInfoStore.getUserID());
+		BeehiveJdbcUser  user=userDao.getUserByUserID(AuthInfoStore.getUserID());
 
 		String pwd=user.getHashedPwd(oldPassword);
 		String newPwd=user.getHashedPwd(newPassword);
@@ -260,14 +259,14 @@ public class AuthManager {
 
 		userDao.setPassword(user.getId(),newPwd);
 
-		authService.removeTokenByUserID(user.getId());
+		authService.removeTokenByUserID(user.getUserID());
 
 	}
 
 
 	public String  resetPwd(String userID) {
 
-		BeehiveUser user=userDao.getUserByID(userID);
+		BeehiveJdbcUser user=userDao.getUserByUserID(userID);
 
 		userService.bindToUser(user,user.getUserPassword());
 
@@ -278,9 +277,9 @@ public class AuthManager {
 		user.setActivityToken(user.getHashedPwd(token));
 		user.setUserPassword(user.getDefaultPassword());
 
-		userDao.updateEntity(user,user.getId());
+		userDao.updateEntityAllByID(user);
 
-		authService.removeTokenByUserID(user.getId());
+		authService.removeTokenByUserID(user.getUserID());
 
 		return token;
 
@@ -312,7 +311,7 @@ public class AuthManager {
 			throw new UnauthorizedException(UnauthorizedException.ACCESS_INVALID);
 		}
 
-		BeehiveUser user=userDao.getUserByID(authInfo.getUserID());
+		BeehiveJdbcUser user=userDao.getUserByUserID(authInfo.getUserID());
 
 		authService.bindUser(user);
 
@@ -349,8 +348,8 @@ public class AuthManager {
 
 			String userID = kiiUser.getLoginName();
 
-			BeehiveUser beehiveUser = userDao.getUserByID(userID);
-			Team team = getTeamByID(userID);
+			BeehiveJdbcUser beehiveUser = userDao.getUserByUserID(userID);
+			Team team = getTeamByID(Long.parseLong(userID));
 
 			String beehiveToken=getBeehiveToken(token,token,false);
 

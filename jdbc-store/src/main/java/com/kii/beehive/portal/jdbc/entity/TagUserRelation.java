@@ -9,7 +9,7 @@ public class TagUserRelation extends DBEntity {
 	final public static String ID = "id";
 	final public static String TAG_ID = "tag_id";
 	final public static String USER_ID = "beehive_user_id";
-	final public static String OLD_USER_ID = "user_id";
+//	final public static String OLD_USER_ID = "user_id";
 
 
 	private Long id;
@@ -25,8 +25,8 @@ public class TagUserRelation extends DBEntity {
 
 	}
 
-	public TagUserRelation(Long tagId, String userId) {
-		this.userId = userId;
+	public TagUserRelation(Long tagId, Long userId) {
+		this.beehiveUserID = userId;
 		this.tagId = tagId;
 	}
 
@@ -59,12 +59,12 @@ public class TagUserRelation extends DBEntity {
 		this.tagId = tagId;
 	}
 
-	@JdbcField(column = USER_ID)
-	public String getUserId() {
-		return userId;
-	}
-
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
+//	@JdbcField(column = USER_ID)
+//	public String getUserId() {
+//		return userId;
+//	}
+//
+//	public void setUserId(String userId) {
+//		this.userId = userId;
+//	}
 }

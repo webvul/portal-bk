@@ -36,6 +36,8 @@ public class UserGroupRestBean extends UserGroup {
 
         userGroupName = userGroup.getName();
 
+		users=userGroup.getUserList();
+
     }
 
     @JsonIgnore

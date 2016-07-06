@@ -9,8 +9,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +24,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 
 import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.common.utils.StrTemplate;
 import com.kii.beehive.portal.jdbc.entity.DBEntity;
 import com.kii.beehive.portal.jdbc.helper.AnnationBeanSqlParameterSource;
 import com.kii.beehive.portal.jdbc.helper.BindClsFullUpdateTool;
@@ -29,8 +32,7 @@ import com.kii.beehive.portal.jdbc.helper.BindClsRowMapper;
 
 public abstract class SpringBaseDao<T extends DBEntity> {
 
-	protected final String SQL_FIND_BY_IDS = "SELECT t.* FROM " + this.getTableName() + " t WHERE t." +
-			this.getKey() + " IN (:list) ";
+
 	protected JdbcTemplate jdbcTemplate;
 	protected NamedParameterJdbcTemplate namedJdbcTemplate;
 	private Logger log = LoggerFactory.getLogger(BaseDao.class);
@@ -72,7 +74,7 @@ public abstract class SpringBaseDao<T extends DBEntity> {
 		if (entity.getCreateBy() == null)
 			entity.setCreateBy(AuthInfoStore.getUserID());
 		entity.setCreateDate(new Date());
-		entity.setModifyBy(AuthInfoStore.getUserID());
+		entity.setModifyBy(String.valueOf(AuthInfoStore.getUserIDInLong()));
 		entity.setModifyDate(new Date());
 		SqlParameterSource parameters = new AnnationBeanSqlParameterSource(entity);
 		Number id = insertTool.executeAndReturnKey(parameters);
@@ -94,6 +96,28 @@ public abstract class SpringBaseDao<T extends DBEntity> {
 			return null;
 		}
 	}
+
+	protected final String SQL_FIND_BY_IDS_TMP = "SELECT t.${0} FROM ${1}  t WHERE t.${0}  IN (:list) ";
+
+	public Set<Long> checkIdList(Collection<Long> ids){
+
+		if (null == ids || ids.isEmpty()) {
+			return Collections.emptySet();
+		}
+
+		String sql= StrTemplate.gener(SQL_FIND_BY_IDS_TMP,this.getKey(),this.getTableName());
+
+		Set<Long> set=new HashSet<>( namedJdbcTemplate.queryForList(sql,Collections.singletonMap("list",ids),Long.class) );
+
+		Set<Long>  oldSet=new HashSet(ids);
+		oldSet.removeAll(set);
+
+		return oldSet;
+	}
+
+	protected final String SQL_FIND_BY_IDS = "SELECT t.* FROM " + this.getTableName() + " t WHERE t." +
+			this.getKey() + " IN (:list) ";
+
 
 	public List<T> findByIDs(Collection<Long> ids) {
 		if (null == ids || ids.isEmpty()) {
@@ -210,7 +234,7 @@ public abstract class SpringBaseDao<T extends DBEntity> {
 
 		Object[] newParams = new Object[params.length + 2];
 
-		newParams[0] = AuthInfoStore.getUserID();
+		newParams[0] = String.valueOf(AuthInfoStore.getUserIDInLong());
 		newParams[1] = new Date();
 		System.arraycopy(params, 0, newParams, 2, params.length);
 

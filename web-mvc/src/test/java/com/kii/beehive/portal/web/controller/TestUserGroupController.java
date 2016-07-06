@@ -89,7 +89,7 @@ public class TestUserGroupController extends WebTestTemplate {
 		this.testCreateUserGroup();
 
 		// add users to user group
-		String userID = "211102";
+		Long userID = 211102l;
 
 		String result = this.mockMvc.perform(
 				post("/usergroup/" + userGroupID + "/user/" + userID)

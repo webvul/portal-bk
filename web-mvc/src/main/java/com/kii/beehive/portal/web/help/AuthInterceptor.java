@@ -166,7 +166,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
 				list.set(1, authInfo.getUserID());
 
-				AuthInfoStore.setAuthInfo(authInfo.getUserID());
+				AuthInfoStore.setUserInfo(authInfo.getUserID(),authInfo.getUserIDInLong());
 				AuthInfoStore.setTeamID(authInfo.getTeamID());
 			}
 

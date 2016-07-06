@@ -2,7 +2,6 @@ package com.kii.beehive.portal.jdbc.dao;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Repository;
 
@@ -116,11 +115,9 @@ public class GroupUserRelationDao extends SpringBaseDao<GroupUserRelation> {
 		return 0;
 	}
 
-	public Optional<List<Long>> findUserGroupIds(Long userId) {
-		if (null == userId) {
-			return Optional.ofNullable(null);
-		}
-		return Optional.ofNullable(findSingleFieldBySingleField(GroupUserRelation.USER_GROUP_ID,
-				GroupUserRelation.USER_ID, userId, Long.class));
+	public List<Long> findUserGroupIds(Long userId) {
+
+		return findSingleFieldBySingleField(GroupUserRelation.USER_GROUP_ID,
+				GroupUserRelation.USER_ID, userId, Long.class);
 	}
 }

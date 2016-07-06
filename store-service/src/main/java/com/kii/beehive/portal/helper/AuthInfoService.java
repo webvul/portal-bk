@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.entitys.AuthInfo;
 import com.kii.beehive.portal.exception.TokenTimeoutException;
-import com.kii.beehive.portal.store.entity.BeehiveUser;
+import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.context.UserTokenBindTool;
 
@@ -45,9 +45,9 @@ public class AuthInfoService {
 
 
 
-	public void bindUser(BeehiveUser user){
+	public void bindUser(BeehiveJdbcUser user){
 
-		tokenBind.bindUserInfo(user.getId(),user.getUserPassword());
+		tokenBind.bindUserInfo(user.getUserID(),user.getUserPassword());
 
 	}
 

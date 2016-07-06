@@ -1,7 +1,6 @@
 package com.kii.beehive.portal.jdbc.dao;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Repository;
 
@@ -36,19 +35,6 @@ public class ThingUserRelationDao extends SpringBaseDao<ThingUserRelation> {
 		return KEY;
 	}
 
-	public Optional<List<Long>> findThingIds(Long userId) {
-		if (null == userId) {
-			return Optional.ofNullable(null);
-		}
-		return Optional.ofNullable(jdbcTemplate.queryForList(SQL_FIND_THINGIDS, new Object[]{userId}, Long.class));
-	}
-
-//	public List<String> findUserIds(Long thingId) {
-//		if (null == thingId) {
-//			return null;
-//		}
-//		return jdbcTemplate.queryForList(SQL_FIND_USERIDS, new Object[]{thingId}, String.class);
-//	}
 
 	public List<ThingUserRelation> findByThingId(Long thingId) {
 		if (null == thingId) {

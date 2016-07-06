@@ -19,10 +19,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagType;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
-import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
 import com.kii.extension.sdk.exception.ObjectNotFoundException;
@@ -109,7 +109,7 @@ public class TagController extends AbstractThingTagController {
 	@RequestMapping(value = "/search", method = {RequestMethod.GET}, consumes = {"*"})
 	public List<TagIndex> findTags(@RequestParam(value = "tagType", required = false) String tagType,
 								   @RequestParam(value = "displayName", required = false) String displayName) {
-		return thingTagManager.getAccessibleTagsByTagTypeAndName(AuthInfoStore.getUserID(),
+		return thingTagManager.getAccessibleTagsByTagTypeAndName(AuthInfoStore.getUserIDInLong(),
 				StringUtils.capitalize(tagType), displayName);
 	}
 
@@ -132,7 +132,7 @@ public class TagController extends AbstractThingTagController {
 	 */
 	@RequestMapping(value = "/locations/{parentLocation}", method = {RequestMethod.GET}, consumes = {"*"})
 	public List<String> findLocations(@PathVariable("parentLocation") String parentLocation) {
-		return thingTagManager.getAccessibleTagsByUserIdAndLocations(AuthInfoStore.getUserID(), parentLocation).stream().
+		return thingTagManager.getAccessibleTagsByUserIdAndLocations(AuthInfoStore.getUserIDInLong(), parentLocation).stream().
 				map(TagIndex::getDisplayName).collect(Collectors.toList());
 	}
 
@@ -201,7 +201,7 @@ public class TagController extends AbstractThingTagController {
 		}
 
 		List<Long> tagIds = getCreatedTagIds(fullNames);
-		List<Long> groupIds = getUserGroupIds(userGroupIDs);
+		Set<Long> groupIds = getUserGroupIds(userGroupIDs);
 		thingTagManager.bindTagsToUserGroups(tagIds, groupIds);
 	}
 
@@ -220,7 +220,9 @@ public class TagController extends AbstractThingTagController {
 					.BAD_REQUEST);
 		}
 		List<Long> tagIds = getCreatedTagIds(fullNames);
-		List<Long> groupIds = getUserGroupIds(userGroupIDs);
+
+
+		Set<Long> groupIds = super.getUserGroupIds(userGroupIDs);
 		thingTagManager.unbindTagsFromUserGroups(tagIds, groupIds);
 	}
 
@@ -231,7 +233,7 @@ public class TagController extends AbstractThingTagController {
 	 */
 	@RequestMapping(value = "/user", method = RequestMethod.GET, consumes = {"*"})
 	public List<TagIndex> getTagsByUser() {
-			return thingTagManager.getAccessibleTagsByUserId(AuthInfoStore.getUserID());
+			return thingTagManager.getAccessibleTagsByUserId(AuthInfoStore.getUserIDInLong());
 	}
 
 	/**
@@ -241,10 +243,8 @@ public class TagController extends AbstractThingTagController {
 	 * @return a list of users who can access the tags
 	 */
 	@RequestMapping(value = "/{fullTagName}/users", method = RequestMethod.GET, consumes = {"*"})
-	public List<BeehiveUser> getUsersByFullTagName(@PathVariable("fullTagName") String fullTagName) {
-		List<String> userId = thingTagManager.getUsersOfAccessibleTags(AuthInfoStore.getUserID(), fullTagName);
-		return thingTagManager.getUsers(userId);
-
+	public List<BeehiveJdbcUser> getUsersByFullTagName(@PathVariable("fullTagName") String fullTagName) {
+		return  thingTagManager.getUsersOfAccessibleTags(AuthInfoStore.getUserIDInLong(), fullTagName);
 	}
 
 	/**
@@ -266,7 +266,7 @@ public class TagController extends AbstractThingTagController {
 	 */
 	@RequestMapping(value = "/{fullTagName}/userGroups", method = RequestMethod.GET, consumes = {"*"})
 	public List<UserGroup> getUserGroupsByFullTagName(@PathVariable("fullTagName") String fullTagName) {
-		List<Long> userGroupIds = thingTagManager.getUserGroupsOfAccessibleTags(AuthInfoStore.getUserID(), fullTagName);
+		List<Long> userGroupIds = thingTagManager.getUserGroupsOfAccessibleTags(AuthInfoStore.getUserIDInLong(), fullTagName);
 		return thingTagManager.getUserGroupsByIds(userGroupIds);
 
 	}

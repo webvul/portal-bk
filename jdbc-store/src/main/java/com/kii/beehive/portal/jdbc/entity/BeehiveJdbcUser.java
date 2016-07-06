@@ -2,7 +2,6 @@ package com.kii.beehive.portal.jdbc.entity;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.BeanUtils;
-import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -39,14 +38,7 @@ public class BeehiveJdbcUser extends DBEntity{
 
 	private String userID;
 
-	private String getUserIDForHash(){
 
-		if(StringUtils.isEmpty(userID)){
-			return String.valueOf(super.getId());
-		}else {
-			return userID;
-		}
-	}
 
 	@JdbcField(column = "beehive_user_id")
 	@Override
@@ -132,12 +124,12 @@ public class BeehiveJdbcUser extends DBEntity{
 
 	@JsonIgnore
 	public String getDefaultPassword() {
-		return DigestUtils.sha1Hex(getUserName()+"_username_"+getUserIDForHash() + "_beehive");
+		return DigestUtils.sha1Hex(getUserName()+"_username_"+userID + "_beehive");
 	}
 
 	@JsonIgnore
 	public String getHashedPwd(String pwd){
-		return DigestUtils.sha1Hex(pwd+"_user_id"+getUserIDForHash()+"_beehive");
+		return DigestUtils.sha1Hex(pwd+"_user_id"+userID+"_beehive");
 
 	}
 
@@ -145,11 +137,11 @@ public class BeehiveJdbcUser extends DBEntity{
 	public BeehiveJdbcUser cloneView(){
 
 		BeehiveJdbcUser user=new BeehiveJdbcUser();
-		BeanUtils.copyProperties(this, user, "kiiUserID","activityToken","defaultPassword","userPassword");
+		BeanUtils.copyProperties(this, user, "kiiUserID","activityToken","defaultPassword","userPassword","id");
 
 		return user;
 
 	}
-
+	
 
 }
