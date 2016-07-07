@@ -16,6 +16,9 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -25,6 +28,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.StrTemplate;
+import com.kii.beehive.portal.jdbc.annotation.JdbcField;
 import com.kii.beehive.portal.jdbc.entity.DBEntity;
 import com.kii.beehive.portal.jdbc.helper.AnnationBeanSqlParameterSource;
 import com.kii.beehive.portal.jdbc.helper.BindClsFullUpdateTool;
@@ -34,12 +38,21 @@ public abstract class SpringBaseDao<T extends DBEntity> {
 
 
 	protected JdbcTemplate jdbcTemplate;
+
 	protected NamedParameterJdbcTemplate namedJdbcTemplate;
+
 	private Logger log = LoggerFactory.getLogger(BaseDao.class);
+
 	private SimpleJdbcInsert insertTool;
+
 	private RowMapper<T> rowMapper;
+
 	private BindClsFullUpdateTool<T> updateTool;
+
 	private Class<T> entityClass;
+
+	private  BeanWrapper beanWrapper;
+
 
 	protected abstract String getTableName();
 
@@ -59,6 +72,8 @@ public abstract class SpringBaseDao<T extends DBEntity> {
 		this.entityClass = (Class<T>) type.getActualTypeArguments()[0];
 		this.updateTool = BindClsFullUpdateTool.newInstance(dataSource, getTableName(), "id", entityClass, getKey());
 		this.rowMapper = new BindClsRowMapper<T>(entityClass);
+
+		this.beanWrapper= PropertyAccessorFactory.forBeanPropertyAccess(BeanUtils.instantiate(entityClass));
 	}
 
 
@@ -138,9 +153,12 @@ public abstract class SpringBaseDao<T extends DBEntity> {
 		for(Map.Entry<String,Object> entry:queryParam.entrySet()){
 
 			String field=entry.getKey();
+
+			JdbcField jdbc=beanWrapper.getPropertyDescriptor(field).getReadMethod().getAnnotation(JdbcField.class);
+
 			Object o=entry.getValue();
 
-			sql+=" and  t."+field+" = ? ";
+			sql+=" and  t."+jdbc.column()+" = ? ";
 			params.add(o);
 
 		}

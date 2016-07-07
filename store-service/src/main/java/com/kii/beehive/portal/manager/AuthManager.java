@@ -30,7 +30,6 @@ import com.kii.beehive.portal.jdbc.dao.TeamDao;
 import com.kii.beehive.portal.jdbc.dao.TeamUserRelationDao;
 import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 import com.kii.beehive.portal.jdbc.entity.Team;
-import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.entity.KiiUser;
 import com.kii.extension.sdk.exception.KiiCloudException;
 
@@ -50,9 +49,9 @@ public class AuthManager {
 
 	@Autowired
 	private AuthInfoService authService;
-
-	@Autowired
-	private AppBindToolResolver resolver;
+//
+//	@Autowired
+//	private AppBindToolResolver resolver;
 
 
 
@@ -83,7 +82,6 @@ public class AuthManager {
 
 		userDao.addUser(user);
 
-
 		String pwd=user.getHashedPwd(password);
 
 		String loginID=userService.addBeehiveUser(user,pwd);
@@ -101,7 +99,7 @@ public class AuthManager {
 		Map<String,String> result=new HashMap<>();
 
 		result.put("userID",user.getUserID());
-		result.put("token",beehiveToken);
+//		result.put("token",beehiveToken);
 
 		return result;
 
@@ -342,14 +340,12 @@ public class AuthManager {
 
 		try {
 
-			resolver.setToken(token);
+			KiiUser kiiUser = userService.getKiiUser(token);
 
-			KiiUser kiiUser = userService.getKiiUser();
+			String userID = kiiUser.getUserID();
 
-			String userID = kiiUser.getLoginName();
-
-			BeehiveJdbcUser beehiveUser = userDao.getUserByUserID(userID);
-			Team team = getTeamByID(Long.parseLong(userID));
+			BeehiveJdbcUser beehiveUser = userDao.getUserByKiiUserID(userID);
+			Team team = getTeamByID(beehiveUser.getId());
 
 			String beehiveToken=getBeehiveToken(token,token,false);
 

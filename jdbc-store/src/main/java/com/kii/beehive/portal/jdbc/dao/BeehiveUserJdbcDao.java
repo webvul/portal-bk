@@ -222,8 +222,8 @@ public class BeehiveUserJdbcDao extends SpringBaseDao<BeehiveJdbcUser>  {
 	public void setPassword(Long id, String pwd) {
 
 		Map<String,Object> params=new HashMap<>();
-		params.put("activity_token",null);
-		params.put("user_password",pwd);
+		params.put("activityToken",null);
+		params.put("userPassword",pwd);
 
 		super.updateEntityByID(params,id);
 	}
@@ -242,6 +242,10 @@ public class BeehiveUserJdbcDao extends SpringBaseDao<BeehiveJdbcUser>  {
 
 	public BeehiveJdbcUser addUser(BeehiveJdbcUser  user){
 
+
+		user.setUserPassword("");
+		user.setUserID("");
+
 		Long id=super.insert(user);
 
 		user.setId(id);
@@ -251,9 +255,18 @@ public class BeehiveUserJdbcDao extends SpringBaseDao<BeehiveJdbcUser>  {
 
 			user.setUserID(userID);
 		}
+
 		return user;
 
 	}
 	
 
+	public BeehiveJdbcUser getUserByKiiUserID(String userID) {
+
+		String sql="select * from ${0} where kii_user_id = ?";
+
+		String fullSql=StrTemplate.gener(sql,TABLE_NAME);
+
+		return  jdbcTemplate.queryForObject(fullSql,new Object[]{userID},getRowMapper());
+	}
 }

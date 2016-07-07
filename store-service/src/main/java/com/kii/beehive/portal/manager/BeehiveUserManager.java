@@ -127,7 +127,7 @@ public class BeehiveUserManager {
 			result.put("teamID",teamID);
 		}
 
-		result.put("userID",user.getId());
+		result.put("userID",user.getUserID());
 		result.put("activityToken",token);
 
 

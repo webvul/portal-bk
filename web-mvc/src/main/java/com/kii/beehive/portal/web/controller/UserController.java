@@ -34,7 +34,6 @@ import com.kii.beehive.portal.helper.BeehiveFacePlusPlusService;
 import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 import com.kii.beehive.portal.manager.AuthManager;
 import com.kii.beehive.portal.manager.BeehiveUserManager;
-import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.entity.UserRestBean;
 import com.kii.beehive.portal.web.exception.PortalException;
@@ -187,11 +186,11 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/users/me", method = {RequestMethod.PATCH})
-	public Map<String, String> updateUser( @RequestBody BeehiveUser user) {
+	public Map<String, String> updateUser( @RequestBody BeehiveJdbcUser user) {
 
 
 		BeehiveJdbcUser  updateUser=new BeehiveJdbcUser();
-		BeanUtils.copyProperties(user,updateUser,"kiiUserID","activityToken","userPassword","roleName","userName");
+		BeanUtils.copyProperties(user,updateUser,"kiiUserID","activityToken","userPassword","roleName","userName","userID");
 		userManager.updateUser(updateUser, AuthInfoStore.getUserID());
 
 
@@ -252,8 +251,7 @@ public class UserController {
 			@RequestParam(value = "clearOldPhoto", defaultValue = "false") Boolean clearOldPhoto,
 			@RequestParam(value = "photos") CommonsMultipartFile[] photos) throws IOException {
 
-		Map<String, Object> map = new HashMap<>();
-		map.put("userId", userId);
+
 
 		if ( photos.length == 0 ) {
 			throw new PortalException(ErrorCode.INVALID_INPUT, HttpStatus.BAD_REQUEST);

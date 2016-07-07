@@ -57,7 +57,7 @@ public class KiiUserService {
 
 		user.setDisplayName(beehiveUser.getDisplayName());
 
-		user.setLoginName(beehiveUser.getUserID());
+		user.setLoginName(beehiveUser.getUserName());
 
 		user.setPassword(pwd);
 
@@ -68,7 +68,7 @@ public class KiiUserService {
 
 	public String bindToUser(BeehiveJdbcUser user, String pwd){
 
-		LoginInfo loginInfo=userService.login(user.getUserID(),pwd);
+		LoginInfo loginInfo=userService.login(user.getUserName(),pwd);
 
 		tokenBind.bindToken(loginInfo.getToken());
 
@@ -95,6 +95,11 @@ public class KiiUserService {
 	public void enableUser(String kiiUserID) {
 
 		userService.enableUser(kiiUserID);
+	}
+
+	public KiiUser getKiiUser(String token) {
+		tokenBind.bindToken(token);
+		return userService.getUserDetail();
 	}
 
 
