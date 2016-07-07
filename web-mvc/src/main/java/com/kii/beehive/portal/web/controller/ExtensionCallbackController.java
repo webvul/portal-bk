@@ -1,5 +1,12 @@
 package com.kii.beehive.portal.web.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 import com.kii.beehive.business.event.BusinessEventBus;
 import com.kii.beehive.business.manager.ThingTagManager;
 import com.kii.beehive.business.ruleengine.ThingStatusChangeCallback;
@@ -7,9 +14,8 @@ import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.web.constant.CallbackNames;
 import com.kii.beehive.portal.web.entity.CreatedThing;
 import com.kii.beehive.portal.web.entity.StateUpload;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import com.kii.beehive.portal.web.help.STOMPMessageQueue;
+import com.kii.beehive.portal.web.help.ThingStatusInfo;
 
 @RestController
 @RequestMapping(value = CallbackNames.CALLBACK_URL, consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {
@@ -26,6 +32,9 @@ public class ExtensionCallbackController {
 	@Autowired
 	private BusinessEventBus eventBus;
 
+	@Autowired
+	private STOMPMessageQueue stompMessageQueue;
+
 
 	@RequestMapping(value = "/" + CallbackNames.STATE_CHANGED, method = {RequestMethod.POST})
 	public void onStateChangeFire(@RequestHeader("x-kii-appid") String appID,
@@ -39,6 +48,11 @@ public class ExtensionCallbackController {
 		statusChangeCallback.onEventFire(status.getState(), fullThingID, status.getTimestamp());
 
 		eventBus.onStatusUploadFire(fullThingID, status.getState(), status.getTimestamp());
+
+		ThingStatusInfo info = new ThingStatusInfo();
+		info.setAppId(appID);
+		info.setStatus(status);
+		stompMessageQueue.offerThingStatus(info);
 	}
 
 
