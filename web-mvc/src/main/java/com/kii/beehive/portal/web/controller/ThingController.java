@@ -37,6 +37,7 @@ import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.entity.ThingRestBean;
 import com.kii.beehive.portal.web.exception.PortalException;
 import com.kii.extension.sdk.entity.thingif.EndNodeOfGateway;
+import com.kii.extension.sdk.entity.thingif.GatewayOfKiiCloud;
 
 /**
  * Beehive API - Thing API
@@ -557,6 +558,15 @@ public class ThingController extends AbstractThingTagController {
 		// get thing info of endnodes
 		List<GlobalThingInfo> globalThingInfoList = thingTagManager.getThingsByVendorThingIds(vendorThingIDList);
 		List<ThingRestBean> resultList = this.toThingRestBean(globalThingInfoList);
+
+		return new ResponseEntity(resultList, HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/gateway", method = {RequestMethod.GET}, consumes = {"*"})
+	public ResponseEntity<List<GatewayOfKiiCloud>> getAllEGateway() {
+
+		List<GatewayOfKiiCloud> resultList = thingTagManager.getAllEGateway();
+
 
 		return new ResponseEntity(resultList, HttpStatus.OK);
 	}

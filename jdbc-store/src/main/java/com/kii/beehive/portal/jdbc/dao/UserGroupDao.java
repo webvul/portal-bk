@@ -93,38 +93,11 @@ public class UserGroupDao extends SpringBaseDao<UserGroup> {
 	}
 
 
-
-	public List<UserGroup> findUserGroup(Long permissionID, Long userGroupID) {
-		if (permissionID == null) {
-			return null;
-		}
-
-		String sql = "SELECT u.* "
-				+ "FROM " + this.getTableName() + " u "
-				+ "INNER JOIN rel_group_permission r ON u.user_group_id = r.user_group_id "
-				+ "WHERE r.permission_id = ? ";
-
-		List<Object> params = new ArrayList<Object>();
-		params.add(permissionID);
-
-		if (userGroupID != null) {
-			sql += " AND u.user_group_id = ? ";
-			params.add(userGroupID);
-		}
-
-		Object[] paramArr = new Object[params.size()];
-		paramArr = params.toArray(paramArr);
-
-		List<UserGroup> rows = jdbcTemplate.query(sql, paramArr, getRowMapper());
-		return rows;
-	}
-
-
 	public  List<UserGroup> getAllGroupByRelTagRelThing(Long thingID){
 
 		String sql="select g.* from ${0} g " +
 				" inner join ${1} rel_tag on rel_tag.user_group_id = g.user_group_id  "+
-				" inner join 4{3} rel_tag_th on rel_tag_th.thing_id = rel_tag.tag_id "+
+				" inner join ${3} rel_tag_th on rel_tag_th.thing_id = rel_tag.tag_id "+
 				" where rel_tag_th.thing_id = ?";
 
 		String fullSql= StrTemplate.gener(sql,TABLE_NAME, TagGroupRelationDao.TABLE_NAME,TagIndexDao.TABLE_NAME, TagThingRelationDao.TABLE_NAME);
