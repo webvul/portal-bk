@@ -58,8 +58,7 @@ CREATE TABLE `rel_group_user` (
   `user_group_id` int(11) NOT NULL,
   `beehive_user_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `fk_rel_group_user_user_group1_idx_new` (`user_group_id`),
-  CONSTRAINT `fk_rel_group_user_user_group1_new` FOREIGN KEY (`user_group_id`) REFERENCES `user_group` (`user_group_id`) ON DELETE CASCADE ON UPDATE CASCADE
+  KEY `fk_rel_group_user_user_group1_idx_new` (`user_group_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8;
 
 CREATE TABLE `rel_tag_group` (
@@ -69,9 +68,7 @@ CREATE TABLE `rel_tag_group` (
   `type` varchar(45) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_rel_tag_group_tag_id_idx_new` (`tag_id`),
-  KEY `fk_rel_tag_group_user_group_id_idx_new` (`user_group_id`),
-  CONSTRAINT `fk_rel_tag_group_tag_id_new` FOREIGN KEY (`tag_id`) REFERENCES `tag_index` (`tag_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `fk_rel_tag_group_user_group_id_new` FOREIGN KEY (`user_group_id`) REFERENCES `user_group` (`user_group_id`) ON DELETE CASCADE ON UPDATE CASCADE
+  KEY `fk_rel_tag_group_user_group_id_idx_new` (`user_group_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
 CREATE TABLE `rel_tag_user` (
@@ -81,8 +78,7 @@ CREATE TABLE `rel_tag_user` (
   `beehive_user_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_rel_tag_user_thing_id_idx_new` (`tag_id`),
-  KEY `fk_rel_tag_user_user_id_idx_new` (`user_id`),
-  CONSTRAINT `fk_rel_thing_user_tag_id_new` FOREIGN KEY (`tag_id`) REFERENCES `tag_index` (`tag_id`) ON DELETE CASCADE ON UPDATE CASCADE
+  KEY `fk_rel_tag_user_user_id_idx_new` (`user_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
 
 CREATE TABLE `rel_team_group` (
@@ -91,9 +87,7 @@ CREATE TABLE `rel_team_group` (
   `team_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_rel_team_group_user_group_idx_new` (`user_group_id`),
-  KEY `fk_rel_team_group_team_id_idx_new` (`team_id`),
-  CONSTRAINT `fk_rel_team_group_user_group_new` FOREIGN KEY (`user_group_id`) REFERENCES `user_group` (`user_group_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `fk_rel_team_group_team_id_new` FOREIGN KEY (`team_id`) REFERENCES `team` (`team_id`) ON DELETE CASCADE ON UPDATE CASCADE
+  KEY `fk_rel_team_group_team_id_idx_new` (`team_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `rel_team_tag` (
@@ -102,9 +96,7 @@ CREATE TABLE `rel_team_tag` (
   `tag_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_rel_team_tag_team_id_idx_new` (`team_id`),
-  KEY `fk_rel_team_tag_tag_id_idx_new` (`tag_id`),
-  CONSTRAINT `fk_rel_team_tag_team_id_new` FOREIGN KEY (`team_id`) REFERENCES `team` (`team_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `fk_rel_team_tag_thing_id_new` FOREIGN KEY (`tag_id`) REFERENCES `tag_index` (`tag_id`) ON DELETE CASCADE ON UPDATE CASCADE
+  KEY `fk_rel_team_tag_tag_id_idx_new` (`tag_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `rel_team_thing` (
@@ -113,9 +105,7 @@ CREATE TABLE `rel_team_thing` (
   `thing_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_rel_team_thing_team_id_idx_new` (`team_id`),
-  KEY `fk_rel_team_thing_thing_id_idx_new` (`thing_id`),
-  CONSTRAINT `fk_rel_team_thing_team_id_new` FOREIGN KEY (`team_id`) REFERENCES `team` (`team_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `fk_rel_team_thing_thing_id_new` FOREIGN KEY (`thing_id`) REFERENCES `global_thing` (`id_global_thing`) ON DELETE CASCADE ON UPDATE CASCADE
+  KEY `fk_rel_team_thing_thing_id_idx_new` (`thing_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `rel_team_user` (
@@ -125,8 +115,7 @@ CREATE TABLE `rel_team_user` (
   `vaild` int(11) NOT NULL,
   `beehive_user_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `fk_rel_team_user_team_id_idx_new` (`team_id`),
-  CONSTRAINT `fk_rel_team_user_team_id_new` FOREIGN KEY (`team_id`) REFERENCES `team` (`team_id`) ON DELETE CASCADE ON UPDATE CASCADE
+  KEY `fk_rel_team_user_team_id_idx_new` (`team_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `rel_thing_group` (
@@ -135,9 +124,7 @@ CREATE TABLE `rel_thing_group` (
   `user_group_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_rel_thing_group_thing_id_idx_new` (`thing_id`),
-  KEY `fk_rel_thing_group_user_group_id_idx_new` (`user_group_id`),
-  CONSTRAINT `fk_rel_thing_group_tag_id_new` FOREIGN KEY (`thing_id`) REFERENCES `global_thing` (`id_global_thing`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `fk_rel_thing_group_user_group_id_new` FOREIGN KEY (`user_group_id`) REFERENCES `user_group` (`user_group_id`) ON DELETE CASCADE ON UPDATE CASCADE
+  KEY `fk_rel_thing_group_user_group_id_idx_new` (`user_group_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
 
 CREATE TABLE `rel_thing_tag` (
@@ -146,9 +133,7 @@ CREATE TABLE `rel_thing_tag` (
   `tag_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `thing_id` (`thing_id`),
-  KEY `tag_id` (`tag_id`),
-  CONSTRAINT `rel_thing_tag_ibfk_1` FOREIGN KEY (`thing_id`) REFERENCES `global_thing` (`id_global_thing`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `rel_thing_tag_ibfk_2` FOREIGN KEY (`tag_id`) REFERENCES `tag_index` (`tag_id`) ON DELETE CASCADE ON UPDATE CASCADE
+  KEY `tag_id` (`tag_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=37 DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `rel_thing_user` (
@@ -158,8 +143,7 @@ CREATE TABLE `rel_thing_user` (
   `beehive_user_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_rel_thing_user_thing_id_idx_new` (`thing_id`),
-  KEY `fk_rel_thing_user_user_id_idx_new` (`user_id`),
-  CONSTRAINT `fk_rel_thing_user_thing_id_new` FOREIGN KEY (`thing_id`) REFERENCES `global_thing` (`id_global_thing`) ON DELETE CASCADE ON UPDATE CASCADE
+  KEY `fk_rel_thing_user_user_id_idx_new` (`user_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=70 DEFAULT CHARSET=utf8;
 
 CREATE TABLE `tag_index` (
