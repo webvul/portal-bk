@@ -1,8 +1,10 @@
 package com.kii.beehive.business.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -17,6 +19,7 @@ import com.kii.extension.sdk.annotation.AppBindParam;
 import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.entity.thingif.CommandDetail;
 import com.kii.extension.sdk.entity.thingif.EndNodeOfGateway;
+import com.kii.extension.sdk.entity.thingif.GatewayOfKiiCloud;
 import com.kii.extension.sdk.entity.thingif.OnBoardingParam;
 import com.kii.extension.sdk.entity.thingif.OnBoardingResult;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
@@ -74,6 +77,16 @@ public class ThingIFInAppService {
 		return result;
 	}
 
+	private <T>  T doExecWithRealThingID(String kiiAppID, Supplier<T> function){
+
+		resolver.pushAppNameDirectly(kiiAppID);
+
+		T result=function.get();
+
+		resolver.pop();
+
+		return result;
+	}
 	public void putStatus(String fullThingID,ThingStatus status){
 
 
@@ -148,6 +161,24 @@ public class ThingIFInAppService {
 	public List<EndNodeOfGateway> getAllEndNodesOfGateway(String fullThingID) {
 
 		return doExecWithRealThingID(fullThingID,(th)-> service.getAllEndNodesOfGateway(th));
+	}
+
+
+
+
+	public List<GatewayOfKiiCloud> getAllEGateway() {
+		List<GatewayOfKiiCloud> result = new ArrayList<>();
+		appInfoDao.getSlaveAppList().forEach(appInfo->{
+			List<GatewayOfKiiCloud> list = doExecWithRealThingID(appInfo.getAppID(),()-> service.getAllGateway());
+			list.forEach(gatewayOfKiiCloud -> {
+				gatewayOfKiiCloud.setKiiAppID(appInfo.getAppID());
+				gatewayOfKiiCloud.setFullKiiThingID(ThingIDTools.joinFullKiiThingID(appInfo.getAppID(), gatewayOfKiiCloud.getThingID()));
+			});
+			result.addAll(list);
+		});
+
+
+		return result;
 	}
 
 

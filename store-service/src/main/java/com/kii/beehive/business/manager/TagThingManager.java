@@ -54,6 +54,7 @@ import com.kii.beehive.portal.jdbc.entity.ThingUserRelation;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
 import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
+import com.kii.extension.sdk.entity.thingif.GatewayOfKiiCloud;
 import com.kii.extension.sdk.exception.ObjectNotFoundException;
 
 @Component
@@ -856,4 +857,43 @@ public class TagThingManager {
 		return !tagIndexDao.findTagIdsByTeamAndTagTypeAndName(teamId, type, displayName).
 				orElse(Collections.emptyList()).isEmpty();
 	}
+
+
+
+
+	/**
+	 * query all gateway from kii cloud and check owership
+	 * @return
+	 */
+	public List<GatewayOfKiiCloud> getAllEGateway() {
+		//query from kii cloud
+		List<GatewayOfKiiCloud> allGatewayList = thingIFInAppService.getAllEGateway();
+		Map<String, GatewayOfKiiCloud> allGatewayMap = new HashMap<>();
+		Set<String > fullThingIds = new HashSet<>();
+		allGatewayList.forEach(gatewayOfKiiCloud -> {
+			fullThingIds.add(gatewayOfKiiCloud.getFullKiiThingID());
+			allGatewayMap.put(gatewayOfKiiCloud.getFullKiiThingID(), gatewayOfKiiCloud);
+		});
+//		if(true)return allGatewayList;
+		//fullThingId -> globalThingId
+//		List<GlobalThingInfo> allEGateway2ThingList = globalThingDao.getThingByFullKiiThingIDs(fullThingIds);
+//		allEGateway2ThingList.forEach(globalThingInfo -> {
+//			allGatewayMap.get(globalThingInfo.getFullKiiThingID()).setGlobalThingID(globalThingInfo.getId());
+//		});
+		//get current user AccessibleThingIds
+		BeehiveJdbcUser beehiveJdbcUser = userDao.getUserByUserID(AuthInfoStore.getUserID());
+		Set<GlobalThingInfo> accessibleThings = getThingsByUserID(beehiveJdbcUser.getId());
+
+		List<GatewayOfKiiCloud> accessibleResultList = new ArrayList<>();
+		accessibleThings.forEach(GlobalThingInfo -> {
+			GatewayOfKiiCloud accessGatewayOfKiiCloud = allGatewayMap.get(GlobalThingInfo.getFullKiiThingID());
+			if(accessGatewayOfKiiCloud != null) {
+				accessGatewayOfKiiCloud.setGlobalThingID(GlobalThingInfo.getId());
+				accessibleResultList.add(accessGatewayOfKiiCloud);
+			}
+		});
+
+		return accessibleResultList;
+	}
+
 }
