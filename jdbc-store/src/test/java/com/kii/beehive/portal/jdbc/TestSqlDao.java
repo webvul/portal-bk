@@ -13,7 +13,7 @@ import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
 
-public class TestThingWithUserDao extends TestTemplate {
+public class TestSqlDao extends TestTemplate {
 
 
 	@Autowired
@@ -85,6 +85,7 @@ public class TestThingWithUserDao extends TestTemplate {
 		groupDao.getAllGroupByRelTagRelThing(10l);
 
 		groupDao.getAllGroupByRelThing(10l);
+
 
 	}
 

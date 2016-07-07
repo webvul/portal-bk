@@ -93,33 +93,6 @@ public class UserGroupDao extends SpringBaseDao<UserGroup> {
 	}
 
 
-
-	public List<UserGroup> findUserGroup(Long permissionID, Long userGroupID) {
-		if (permissionID == null) {
-			return null;
-		}
-
-		String sql = "SELECT u.* "
-				+ "FROM " + this.getTableName() + " u "
-				+ "INNER JOIN rel_group_permission r ON u.user_group_id = r.user_group_id "
-				+ "WHERE r.permission_id = ? ";
-
-		List<Object> params = new ArrayList<Object>();
-		params.add(permissionID);
-
-		if (userGroupID != null) {
-			sql += " AND u.user_group_id = ? ";
-			params.add(userGroupID);
-		}
-
-		Object[] paramArr = new Object[params.size()];
-		paramArr = params.toArray(paramArr);
-
-		List<UserGroup> rows = jdbcTemplate.query(sql, paramArr, getRowMapper());
-		return rows;
-	}
-
-
 	public  List<UserGroup> getAllGroupByRelTagRelThing(Long thingID){
 
 		String sql="select g.* from ${0} g " +
