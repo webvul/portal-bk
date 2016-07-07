@@ -29,7 +29,7 @@
 //
 //	@Before
 //	public void setUp() throws Exception {
-//		AuthInfoStore.setAuthInfo("TestOwner");
+//		AuthInfoStore.setAuthInfo(103l);
 //		TagUserRelation relation = new TagUserRelation();
 //		TagIndex tag = new TagIndex();
 //		for (int i = 1; i <= 3; ++i) {
@@ -40,12 +40,12 @@
 //			allTagIds.add(tagIndexDao.saveOrUpdate(tag));
 //		}
 //
-//		relation.setUserId("user1");
+//		relation.setBeehiveUserID(100l);
 //		relation.setTagId(this.allTagIds.get(0));
 //		tagUserRelationDao.saveOrUpdate(relation);
 //		relation.setTagId(this.allTagIds.get(1));
 //		tagUserRelationDao.saveOrUpdate(relation);
-//		relation.setUserId("user2");
+//		relation.setBeehiveUserID(101l);
 //		relation.setTagId(this.allTagIds.get(1));
 //		tagUserRelationDao.saveOrUpdate(relation);
 //		relation.setTagId(this.allTagIds.get(2));
@@ -85,27 +85,27 @@
 //		allTagIds.forEach(id -> {
 //			TagUserRelation relation = new TagUserRelation();
 //			relation.setTagId(id);
-//			relation.setUserId("TestOwner");
+//			relation.setBeehiveUserID(103l);
 //			tagUserRelationDao.saveOrUpdate(relation);
 //		});
-//		Set<Long> tagIds = tagUserRelationDao.findTagIds("TestOwner", TagType.Location.name(), null).
+//		Set<Long> tagIds = tagUserRelationDao.findTagIds(103l, TagType.Location.name(), null).
 //				orElse(Collections.emptyList()).stream().collect(Collectors.toSet());
 //		assertEquals("Should have 3 ids", 3, tagIds.size());
 //		assertTrue("Ids don't match", tagIds.containsAll(allTagIds.subList(3, 6)));
 //
-//		tagIds = tagUserRelationDao.findTagIds("TestOwner", null, "Location 1").
+//		tagIds = tagUserRelationDao.findTagIds(103l, null, "Location 1").
 //				orElse(Collections.emptyList()).stream().collect(Collectors.toSet());
 //		assertEquals("Should have 2 ids", 2, tagIds.size());
 //		assertTrue("Ids don't match", tagIds.contains(allTagIds.get(3)) && tagIds.contains(allTagIds.get(6)));
 //
-//		tagIds = tagUserRelationDao.findTagIds("TestOwner", TagType.Location.name(), "Location 1").
+//		tagIds = tagUserRelationDao.findTagIds(103l, TagType.Location.name(), "Location 1").
 //				orElse(Collections.emptyList()).stream().collect(Collectors.toSet());
 //		assertEquals("Should have 1 id", 1, tagIds.size());
 //		assertEquals("Id doesn't match", allTagIds.get(3), tagIds.iterator().next());
 //
 //		List<String> tagNameList = new ArrayList<String>();
 //		tagNameList.add(TagType.Location.getTagName("Location 1"));
-//		tagIds = tagUserRelationDao.findTagIds("TestOwner", tagNameList).
+//		tagIds = tagUserRelationDao.findTagIds(103l, tagNameList).
 //				orElse(Collections.emptyList()).stream().collect(Collectors.toSet());
 //		assertEquals("Should have 1 id", 1, tagIds.size());
 //		assertEquals("Id doesn't match", allTagIds.get(3), tagIds.iterator().next());

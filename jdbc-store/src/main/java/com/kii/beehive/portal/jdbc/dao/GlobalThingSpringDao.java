@@ -305,7 +305,7 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 
 
 	public List<GlobalThingInfo> findThingByUserID(Long userId) {
-		String sqlTmp="select th.* from  ${0} th  inner join  ${1} rel   on th.{2} = rel.{3}  where rel.${4}  = ? ";
+		String sqlTmp="select th.* from  ${0} th  inner join  ${1} rel   on th.${2} = rel.${3}  where rel.${4}  = ? ";
 		String sql= StrTemplate.gener(sqlTmp,TABLE_NAME,ThingUserRelationDao.TABLE_NAME,GlobalThingInfo.ID_GLOBAL_THING,ThingUserRelation.THING_ID,ThingUserRelation.USER_ID);
 
 		List<GlobalThingInfo> rows = jdbcTemplate.query(sql,new Object[]{userId},getRowMapper());
@@ -314,7 +314,7 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 
 
 	public GlobalThingInfo findThingByUserIDThingID(Long userId,Long thingId) {
-		String sqlTmp="select th.* from  ${0} th  inner join  ${1} rel   on th.{2} = rel.{3}  where rel.${4}  = ? and rel.${5} = ? ";
+		String sqlTmp="select th.* from  ${0} th  inner join  ${1} rel   on th.${2} = rel.${3}  where rel.${4}  = ? and rel.${5} = ? ";
 		String sql= StrTemplate.gener(sqlTmp,TABLE_NAME,ThingUserRelationDao.TABLE_NAME,GlobalThingInfo.ID_GLOBAL_THING,ThingUserRelation.THING_ID,ThingUserRelation.USER_ID,ThingUserRelation.THING_ID);
 
 		List<GlobalThingInfo> rows = jdbcTemplate.query(sql,new Object[]{userId,thingId},getRowMapper());
@@ -327,10 +327,10 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 
 	public GlobalThingInfo findThingByGroupIDRelUserIDWithThingID(Long userId,Long thingID) {
 		String sqlTmp="select th.* from  ${0} th " +
-				" inner join  ${1} rel   on th.thing_id = rel.thing_id" +
-				" inner join  ${2} rel_user on rel_user.beehive_user_id = rel.beehive_user_id " +
-				" where rel_user.beehive_user_id   = ? and th.thing_id = ?  ";
-		String sql= StrTemplate.gener(sqlTmp,TABLE_NAME,ThingUserGroupRelationDao.TABLE_NAME,UserGroupDao.TABLE_NAME);
+				" inner join  ${1} rel   on th.id_global_thing = rel.thing_id" +
+				" inner join  ${2} rel_user on rel_user.user_group_id = rel.user_group_id " +
+				" where rel_user.beehive_user_id   = ? and th.id_global_thing = ?  ";
+		String sql= StrTemplate.gener(sqlTmp,TABLE_NAME,ThingUserGroupRelationDao.TABLE_NAME,GroupUserRelationDao.TABLE_NAME);
 
 		List<GlobalThingInfo> rows = jdbcTemplate.query(sql,new Object[]{userId,thingID},getRowMapper());
 		if(rows.isEmpty()){
@@ -342,10 +342,10 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 
 	public List<GlobalThingInfo> findThingByGroupIDRelUserID(Long userId) {
 		String sqlTmp="select th.* from  ${0} th " +
-				" inner join  ${1} rel   on th.thing_id = rel.thing_id" +
-				" inner join  ${2} rel_user on rel_user.beehive_user_id = rel.beehive_user_id " +
+				" inner join  ${1} rel   on th.id_global_thing = rel.thing_id " +
+				" inner join  ${2} rel_user on rel_user.user_group_id  = rel.user_group_id " +
 				" where rel_user.beehive_user_id   = ? ";
-		String sql= StrTemplate.gener(sqlTmp,TABLE_NAME,ThingUserGroupRelationDao.TABLE_NAME,UserGroupDao.TABLE_NAME);
+		String sql= StrTemplate.gener(sqlTmp,TABLE_NAME,ThingUserGroupRelationDao.TABLE_NAME,GroupUserRelationDao.TABLE_NAME);
 
 		return  jdbcTemplate.query(sql,new Object[]{userId},getRowMapper());
 
@@ -353,8 +353,8 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 
 	public List<GlobalThingInfo> findThingByTagRelUserID(Long userId) {
 		String sqlTmp="select th.* from  ${0} th " +
-				" inner join  ${1} rel   on th.thing_id = rel.thing_id" +
-				" inner join  ${2} rel_user on rel_user.beehive_user_id = rel.beehive_user_id " +
+				" inner join  ${1} rel   on th.id_global_thing = rel.thing_id" +
+				" inner join  ${2} rel_user on rel_user.tag_id = rel.tag_id " +
 				" where rel_user.beehive_user_id   = ? ";
 		String sql= StrTemplate.gener(sqlTmp,TABLE_NAME,TagThingRelationDao.TABLE_NAME,TagUserRelationDao.TABLE_NAME);
 

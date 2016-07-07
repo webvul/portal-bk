@@ -124,7 +124,7 @@ public class UserGroupDao extends SpringBaseDao<UserGroup> {
 
 		String sql="select g.* from ${0} g " +
 				" inner join ${1} rel_tag on rel_tag.user_group_id = g.user_group_id  "+
-				" inner join 4{3} rel_tag_th on rel_tag_th.thing_id = rel_tag.tag_id "+
+				" inner join ${3} rel_tag_th on rel_tag_th.thing_id = rel_tag.tag_id "+
 				" where rel_tag_th.thing_id = ?";
 
 		String fullSql= StrTemplate.gener(sql,TABLE_NAME, TagGroupRelationDao.TABLE_NAME,TagIndexDao.TABLE_NAME, TagThingRelationDao.TABLE_NAME);
