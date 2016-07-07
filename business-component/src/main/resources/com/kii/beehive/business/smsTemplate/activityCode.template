@@ -1,0 +1,3 @@
+用户${userName}在beehive上的账户已经创建成功,
+请尽快访问 ${url} 激活账户并设置初始密码
+如上述链接无法打开,可访问 https://${host}/activity.html 并手工输入激活码${activityCode}

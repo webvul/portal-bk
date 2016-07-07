@@ -9,6 +9,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.junit.Test;
 
@@ -19,6 +21,31 @@ import com.kii.extension.tools.JsonToFlat;
 
 public class UtilTest {
 
+
+	private Pattern codeP=Pattern.compile("<code>([^<]+)",Pattern.MULTILINE);
+	private Pattern mobileP=Pattern.compile("\\<desmobile\\>([^<]+)",Pattern.MULTILINE);
+	private Pattern msgP=Pattern.compile("\\<msgid\\>([^<]+)",Pattern.MULTILINE);
+
+
+	@Test
+	public void testPattern(){
+
+		String xml="\t<?xml version=\"1.0\" encoding=\"gbk\"?>\n" +
+				"<response>\n" +
+				"<code>03</code>\n" +
+				"<message>\n" +
+				"\t<desmobile>13900000000</desmobile>\n" +
+				"\t<msgid>200811041234253654785</msgid>\n" +
+				"</message>\n" +
+				"</response>";
+
+		Matcher  match=codeP.matcher(xml);
+
+		assertEquals(true,match.find());
+
+		assertEquals("03",match.group(1));
+
+	}
 
 	@Test
 	public void testJsonFlat() throws IOException {

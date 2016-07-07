@@ -106,24 +106,38 @@ public class AuthManager {
 
 	}
 
+
+	public String activiteByID(String userID, String token) {
+
+		BeehiveJdbcUser user = userDao.getUserByUserID(userID);
+
+		return  doActivity(token, user);
+
+	}
+
 	public String activite(String userName, String token) {
 
 		BeehiveJdbcUser user = userDao.getUserByName(userName);
 
+		return doActivity(token, user);
+
+	}
+
+	private String doActivity(String token, BeehiveJdbcUser user) {
 		if(StringUtils.isEmpty(user.getActivityToken())){
 			throw new UnauthorizedException(UnauthorizedException.USER_ALREADY_ACTIVIED);
 		}
 
 		if(!user.getActivityToken().equals(user.getHashedPwd(token))){
 			throw new UnauthorizedException(UnauthorizedException.ACTIVITY_TOKEN_INVALID);
-		};
+		}
+		;
 
 		String oneTimeToken= StringRandomTools.getRandomStr(32);
 
 		oneTimeTokenMap.put(user.getUserName(),oneTimeToken);
 
 		return oneTimeToken;
-
 	}
 
 	public void initPassword(String token,String userName,String newPassword) {
@@ -360,6 +374,7 @@ public class AuthManager {
 			throw excep;
 		}
 	}
+	
 
 }
 

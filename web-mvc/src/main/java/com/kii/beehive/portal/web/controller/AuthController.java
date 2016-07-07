@@ -10,10 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.view.RedirectView;
 
 import com.kii.beehive.portal.common.utils.CollectUtils;
 import com.kii.beehive.portal.entitys.AuthRestBean;
@@ -42,7 +44,30 @@ public class AuthController {
 	@Autowired
 	private BeehiveUserManager userManager;
 
-    /**
+
+
+	@RequestMapping(path = "/doActivity/{userID}/code/{activityCode}.do", method = { RequestMethod.GET },consumes = {MediaType.ALL_VALUE})
+	public RedirectView doActivity(@PathVariable("userID") String userID, @PathVariable("activityCode") String code,HttpServletRequest request) {
+
+
+		if(CollectUtils.containsBlank(userID, code)) {
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus.BAD_REQUEST);
+		}
+
+		String result = authManager.activiteByID(userID, code);
+
+		String contextUrl=request.getContextPath();
+
+		String url=contextUrl+"/initPassword.html?token="+result;
+
+
+		RedirectView view=new RedirectView(url);
+
+		return view;
+
+	}
+
+	/**
      * 用户注册
      * POST /oauth2/register
      *
