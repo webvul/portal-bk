@@ -47,9 +47,9 @@ import com.kii.beehive.portal.jdbc.dao.TagThingRelationDao;
 import com.kii.beehive.portal.jdbc.dao.TagUserRelationDao;
 import com.kii.beehive.portal.jdbc.dao.TeamTagRelationDao;
 import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
+import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagType;
-import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.WebTestTemplate;
 import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.beehive.portal.web.exception.PortalException;
@@ -248,8 +248,8 @@ public class TestTagController extends WebTestTemplate {
 	@Test
 	public void testBindTagToUser() throws Exception {
 		doReturn(Arrays.asList(100L)).when(tagThingManager).getCreatedTagIdsByFullTagName(anyLong(), anyString());
-		BeehiveUser someone = new BeehiveUser();
-		someone.setId("Someone");
+		BeehiveJdbcUser someone = new BeehiveJdbcUser();
+		someone.setUserID("Someone");
 		doReturn(Arrays.asList(someone)).when(tagThingManager).getUsers(anyListOf(String.class));
 
 		List<String> userIds = new ArrayList();
@@ -268,8 +268,8 @@ public class TestTagController extends WebTestTemplate {
 	@Test
 	public void testUnbindTagFromUser() throws Exception {
 		doReturn(Arrays.asList(100L)).when(tagThingManager).getCreatedTagIdsByFullTagName(anyLong(), anyString());
-		BeehiveUser someone = new BeehiveUser();
-		someone.setId("Someone");
+		BeehiveJdbcUser someone = new BeehiveJdbcUser();
+		someone.setUserID("Someone");
 		doReturn(Arrays.asList(someone)).when(tagThingManager).getUsers(anyListOf(String.class));
 
 		List<String> userIds = new ArrayList();

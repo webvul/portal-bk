@@ -19,6 +19,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -27,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.junit.Before;
@@ -39,7 +41,9 @@ import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.kii.beehive.business.entity.ExecuteTarget;
 import com.kii.beehive.business.entity.TagSelector;
 import com.kii.beehive.business.entity.TargetAction;
@@ -52,10 +56,10 @@ import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.dao.TagThingRelationDao;
 import com.kii.beehive.portal.jdbc.dao.TeamThingRelationDao;
+import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagType;
-import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.beehive.portal.web.controller.ThingController;
 import com.kii.beehive.portal.web.controller.ThingIFController;
@@ -299,8 +303,8 @@ public class TestThingController extends WebTestTemplate {
 			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
 		}
 
-		BeehiveUser user = new BeehiveUser();
-		user.setId("Someone");
+		BeehiveJdbcUser user = new BeehiveJdbcUser();
+		user.setUserID("Someone");
 		doReturn(Arrays.asList(user)).when(thingTagManager).getUsers(anyListOf(String.class));
 		doNothing().when(thingTagManager).bindThingsToUsers(anyCollectionOf(Long.class), anyCollectionOf(String.class));
 
@@ -340,8 +344,8 @@ public class TestThingController extends WebTestTemplate {
 			assertEquals(HttpStatus.BAD_REQUEST, e.getStatus());
 		}
 
-		BeehiveUser user = new BeehiveUser();
-		user.setId("Someone");
+		BeehiveJdbcUser user = new BeehiveJdbcUser();
+		user.setUserID("Someone");
 		doReturn(Arrays.asList(user)).when(thingTagManager).getUsers(anyListOf(String.class));
 		doNothing().when(thingTagManager).bindThingsToUsers(anyCollectionOf(Long.class), anyCollectionOf(String.class));
 

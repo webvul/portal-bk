@@ -13,8 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
-import com.kii.beehive.portal.jdbc.dao.PermissionDao;
-import com.kii.beehive.portal.jdbc.dao.SourceDao;
 import com.kii.beehive.portal.jdbc.dao.TeamDao;
 import com.kii.beehive.portal.jdbc.dao.TeamGroupRelationDao;
 import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
@@ -30,14 +28,7 @@ public class TestUserGroupDao extends TestTemplate {
 	@Autowired
 	private GroupUserRelationDao groupUserRelationDao;
 	
-//	@Autowired
-//	private GroupPermissionRelationDao groupPermissionRelationDao;
 
-	@Autowired
-	private SourceDao sourceDao;
-
-	@Autowired
-	private PermissionDao permissionDao;
 	
 	@Autowired
 	private TeamDao teamDao;

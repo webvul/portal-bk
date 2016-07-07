@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.kii.beehive.business.service.KiiUserService;
 import com.kii.beehive.portal.entitys.AuthRestBean;
 import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
-import com.kii.beehive.portal.service.BeehiveUserDao;
 import com.kii.beehive.portal.service.UserRuleDao;
 import com.kii.beehive.portal.store.StoreServiceTestInit;
 import com.kii.extension.sdk.context.AppBindToolResolver;
@@ -29,8 +28,6 @@ public class TestUserManger  extends StoreServiceTestInit {
 	private KiiUserService kiiUserService;
 
 
-	@Autowired
-	private BeehiveUserDao  userDao;
 
 
 	@Autowired
