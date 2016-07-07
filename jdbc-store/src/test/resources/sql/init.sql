@@ -57,8 +57,7 @@ CREATE TABLE `rel_group_user` (
   `user_id` varchar(45) NOT NULL,
   `user_group_id` int(11) NOT NULL,
   `beehive_user_id` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `fk_rel_group_user_user_group1_idx_new` (`user_group_id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8;
 
 CREATE TABLE `rel_tag_group` (
@@ -66,9 +65,7 @@ CREATE TABLE `rel_tag_group` (
   `tag_id` int(11) NOT NULL,
   `user_group_id` int(11) NOT NULL,
   `type` varchar(45) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `fk_rel_tag_group_tag_id_idx_new` (`tag_id`),
-  KEY `fk_rel_tag_group_user_group_id_idx_new` (`user_group_id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
 CREATE TABLE `rel_tag_user` (
@@ -76,36 +73,28 @@ CREATE TABLE `rel_tag_user` (
   `tag_id` int(11) NOT NULL,
   `user_id` varchar(45) NOT NULL,
   `beehive_user_id` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `fk_rel_tag_user_thing_id_idx_new` (`tag_id`),
-  KEY `fk_rel_tag_user_user_id_idx_new` (`user_id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
 
 CREATE TABLE `rel_team_group` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_group_id` int(11) NOT NULL,
   `team_id` int(11) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `fk_rel_team_group_user_group_idx_new` (`user_group_id`),
-  KEY `fk_rel_team_group_team_id_idx_new` (`team_id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `rel_team_tag` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `team_id` int(11) NOT NULL,
   `tag_id` int(11) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `fk_rel_team_tag_team_id_idx_new` (`team_id`),
-  KEY `fk_rel_team_tag_tag_id_idx_new` (`tag_id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `rel_team_thing` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `team_id` int(11) NOT NULL,
   `thing_id` int(11) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `fk_rel_team_thing_team_id_idx_new` (`team_id`),
-  KEY `fk_rel_team_thing_thing_id_idx_new` (`thing_id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `rel_team_user` (
@@ -122,9 +111,7 @@ CREATE TABLE `rel_thing_group` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `thing_id` int(11) NOT NULL,
   `user_group_id` int(11) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `fk_rel_thing_group_thing_id_idx_new` (`thing_id`),
-  KEY `fk_rel_thing_group_user_group_id_idx_new` (`user_group_id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
 
 CREATE TABLE `rel_thing_tag` (
@@ -141,9 +128,7 @@ CREATE TABLE `rel_thing_user` (
   `thing_id` int(11) NOT NULL,
   `user_id` varchar(45) NOT NULL,
   `beehive_user_id` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `fk_rel_thing_user_thing_id_idx_new` (`thing_id`),
-  KEY `fk_rel_thing_user_user_id_idx_new` (`user_id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=70 DEFAULT CHARSET=utf8;
 
 CREATE TABLE `tag_index` (
