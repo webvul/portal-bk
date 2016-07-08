@@ -1,5 +1,7 @@
 package com.kii.beehive.portal.web.entity;
 
+import java.util.regex.Pattern;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 
@@ -57,10 +59,18 @@ public class UserRestBean {
 		this.beehiveUser = user.cloneView();
 	}
 
+	private static Pattern numPattern=Pattern.compile("^1[\\d]{10}$");
+
 	@JsonIgnore
 	public void verifyInput(){
 		if(StringUtils.isEmpty(beehiveUser.getUserName())&&StringUtils.isEmpty(beehiveUser.getMail())&&StringUtils.isEmpty(beehiveUser.getPhone())){
 			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus.BAD_REQUEST);
+		}
+
+		if(!StringUtils.isEmpty(beehiveUser.getPhone())&& !numPattern.matcher(beehiveUser.getPhone()).find()){
+
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus.BAD_REQUEST);
+
 		}
 
 	}

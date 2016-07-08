@@ -8,7 +8,9 @@ import java.net.URLDecoder;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.kii.beehive.business.manager.SimpleUserManager;
 import com.kii.beehive.business.service.SmsSendService;
+import com.kii.beehive.business.service.SmsSendTool;
 import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 
 public class TestSmsTool extends TestInit {
@@ -17,12 +19,23 @@ public class TestSmsTool extends TestInit {
 	private SmsSendService  service;
 
 
+	@Autowired
+	private SimpleUserManager userManager;
+
 	@Test
 	public void testSms(){
 
-		service.sendActivitySms(444l);
+		service.sendActivitySms(userManager.getUserByID(444l));
 
 	}
+
+	@Test
+	public void testResetPwd(){
+
+		service.sendResetPwdSms("0e14db00-18d4-11e6-9c6d-00163e007aba");
+
+	}
+
 
 	@Test
 	public void testResult(){
@@ -38,7 +51,7 @@ public class TestSmsTool extends TestInit {
 
 
 
-		SmsSendService.SMSResult result=service.getResult(xml);
+		SmsSendTool.SMSResult result=new SmsSendTool.SMSResult(xml);
 
 		assertEquals("03",result.code);
 		assertEquals("13900000000",result.mobile);
@@ -51,7 +64,7 @@ public class TestSmsTool extends TestInit {
 				"</response>";
 
 
-		result=service.getResult(xmlErr);
+		result=new SmsSendTool.SMSResult(xmlErr);
 
 		assertEquals("05",result.code);
 
@@ -72,7 +85,7 @@ public class TestSmsTool extends TestInit {
 		user.setUserName("张三");
 		user.setActivityToken("qwerty");
 
-		String fullCtx=service.getTemplateCtx(SmsSendService.SmsType.ActivityCode.name(),user);
+		String fullCtx=service.getTemplateCtx(SmsSendService.SmsType.activityCode.name(),user);
 
 		String decodeCtx= URLDecoder.decode(fullCtx,"GBK");
 

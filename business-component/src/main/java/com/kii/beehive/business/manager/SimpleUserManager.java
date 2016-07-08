@@ -20,4 +20,10 @@ public class SimpleUserManager {
 
 		return userDao.getUserByID(userID);
 	}
+
+
+	public BeehiveJdbcUser getUserByUserID(String  userID) {
+
+		return userDao.getUserByUserID(userID);
+	}
 }

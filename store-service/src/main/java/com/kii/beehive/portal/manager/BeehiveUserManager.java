@@ -1,13 +1,11 @@
 package com.kii.beehive.portal.manager;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import com.kii.beehive.business.service.KiiUserService;
 import com.kii.beehive.portal.auth.AuthInfoStore;
@@ -99,7 +97,7 @@ public class BeehiveUserManager {
 
 	}
 
-	public Map<String,Object>  addUser(BeehiveJdbcUser user,String teamName) {
+	public BeehiveJdbcUser addUser(BeehiveJdbcUser user,String teamName) {
 
 
 		BeehiveJdbcUser existsUser=userDao.getUserByLoginId(user);
@@ -119,19 +117,13 @@ public class BeehiveUserManager {
 		user.setActivityToken(user.getHashedPwd(token));
 
 		userDao.updateEntityAllByID(user);
+//
+//
+//		if(!StringUtils.isEmpty(teamName)){
+//			Long teamID=addTeam(teamName,user.getId());
+//		}
 
-		Map<String,Object> result=new HashMap<>();
-
-		if(!StringUtils.isEmpty(teamName)){
-			Long teamID=addTeam(teamName,user.getId());
-			result.put("teamID",teamID);
-		}
-
-		result.put("userID",user.getUserID());
-		result.put("activityToken",token);
-
-
-		return result;
+		return user;
 	}
 
 

@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
+import com.kii.beehive.business.service.SmsSendService;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.CollectUtils;
 import com.kii.beehive.portal.entitys.PermissionTree;
@@ -52,6 +53,9 @@ public class UserController {
 
 	@Autowired
 	private BeehiveFacePlusPlusService service;
+
+	@Autowired
+	private SmsSendService  smsService;
 
 
 	@Value("${face.photo.dir}")
@@ -91,8 +95,15 @@ public class UserController {
 			}
 		}
 
-		return  userManager.addUser(beehiveUser,user.getTeamName());
+		BeehiveJdbcUser newUser=  userManager.addUser(beehiveUser,user.getTeamName());
 
+		Map<String,Object> result=new HashMap<>();
+
+		result.put("userID",newUser.getUserID());
+//		result.put("activityToken",newUser.getActivityToken());
+
+		smsService.sendActivitySms(newUser);
+		return result;
 	}
 
 
@@ -105,7 +116,9 @@ public class UserController {
 		Map<String, Object> map = new HashMap<>();
 
 		map.put("userID", userID);
-		map.put("activityToken", token);
+//		map.put("activityToken", token);
+
+		smsService.sendResetPwdSms(userID);
 
 		return map;
 
