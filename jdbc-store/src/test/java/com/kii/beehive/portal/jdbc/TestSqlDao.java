@@ -59,6 +59,11 @@ public class TestSqlDao extends TestTemplate {
 
 		userDao.findUsersByGroups(ids);
 
+		userDao.findAll();
+		userDao.findByID(100l);
+		userDao.findByIDs(ids);
+		userDao.findBySingleField("user_id","b");
+
 
 	}
 

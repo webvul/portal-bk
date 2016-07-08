@@ -98,7 +98,7 @@ public abstract class SpringBaseDao<T extends BusinessEntity> {
 	}
 
 	private static Pattern wherePtn=Pattern.compile("\\swhere\\s",Pattern.CASE_INSENSITIVE);
-	private static Pattern fromPtn=Pattern.compile("select\\s+(\\w+\\.)\\*\\s+from",Pattern.CASE_INSENSITIVE);
+	private static Pattern fromPtn=Pattern.compile("select\\s+(\\w+\\.)(\\*|\\w+)\\s+from",Pattern.CASE_INSENSITIVE);
 
 	protected String addDelSignPrefix(String sql) {
 
@@ -174,7 +174,7 @@ public abstract class SpringBaseDao<T extends BusinessEntity> {
 	}
 
 	public T findByID(Serializable id) {
-		String sqlTmp = "SELECT t.* FROM ${0}  t WHERE t.${1} =?  and  ${2} = false";
+		String sqlTmp = "SELECT t.* FROM ${0}  t WHERE t.${1} =?  ";
 
 		String sql=StrTemplate.gener(sqlTmp,getTableName(),getKey(),BusinessEntity.IS_DELETED);
 
@@ -186,7 +186,7 @@ public abstract class SpringBaseDao<T extends BusinessEntity> {
 		}
 	}
 
-	protected final String SQL_FIND_BY_IDS_TMP = "SELECT t.${0} FROM ${1}  t WHERE t.${0}  IN (:list) and  ${2} = false";
+	protected final String SQL_FIND_BY_IDS_TMP = "SELECT t.${0} FROM ${1}  t WHERE t.${0}  IN (:list) ";
 
 	public Set<Long> checkIdList(Collection<Long> ids){
 
@@ -194,9 +194,9 @@ public abstract class SpringBaseDao<T extends BusinessEntity> {
 			return Collections.emptySet();
 		}
 
-		String sql= StrTemplate.gener(SQL_FIND_BY_IDS_TMP,this.getKey(),this.getTableName(),BusinessEntity.IS_DELETED);
+		String sql= StrTemplate.gener(SQL_FIND_BY_IDS_TMP,this.getKey(),this.getTableName());
 
-		Set<Long> set=new HashSet<>( namedJdbcTemplate.queryForList(sql,Collections.singletonMap("list",ids),Long.class) );
+		Set<Long> set=new HashSet<>( namedJdbcTemplate.queryForList(addDelSignPrefix(sql),Collections.singletonMap("list",ids),Long.class) );
 
 		Set<Long>  oldSet=new HashSet(ids);
 		oldSet.removeAll(set);
@@ -205,7 +205,7 @@ public abstract class SpringBaseDao<T extends BusinessEntity> {
 	}
 
 	protected final String SQL_FIND_BY_IDS = "SELECT t.* FROM " + this.getTableName() + " t WHERE t." +
-			this.getKey() + " IN (:list) and is_deleted = false ";
+			this.getKey() + " IN (:list) ";
 
 
 	public List<T> findByIDs(Collection<Long> ids) {
@@ -213,13 +213,14 @@ public abstract class SpringBaseDao<T extends BusinessEntity> {
 			return Collections.emptyList();
 		}
 		Map<String, Collection> param = Collections.singletonMap("list", ids);
-		return namedJdbcTemplate.query(SQL_FIND_BY_IDS, param, getRowMapper());
+
+		return namedJdbcTemplate.query(this.addDelSignPrefix(SQL_FIND_BY_IDS), param, getRowMapper());
 	}
 
 
 	public  List<T> findByFields(Map<String,Object> queryParam){
 
-		String sql = "SELECT t.* FROM " + this.getTableName() + " t WHERE is_deleted = false  ";
+		String sql = "SELECT t.* FROM " + this.getTableName() + " t WHERE t.is_deleted = false  ";
 
 
 		List<Object> params=new ArrayList<>();
@@ -312,7 +313,7 @@ public abstract class SpringBaseDao<T extends BusinessEntity> {
 
 		String newUpdates = " modify_by = ? , modify_date= ? , " + updates;
 
-		String newUpdateSql = header + newUpdates + tail;
+		String newUpdateSql = header + newUpdates + tail+ " and is_deleted = false";
 
 		Object[] newParams = new Object[params.length + 2];
 
@@ -360,12 +361,15 @@ public abstract class SpringBaseDao<T extends BusinessEntity> {
 
 	public List<T> queryWithPage(String sql, Object[] params, PagerTag pager) {
 
-		String fullSql = sql + "and is_deleted = false   limit ?,? ";
+		sql=this.addDelSignPrefix(sql);
+
+		String fullSql = sql + "  limit ?,? ";
 
 		Object[] newParams = new Object[params.length + 2];
 		System.arraycopy(params, 0, newParams, 0, params.length);
 		newParams[params.length] = pager.getStartRow();
 		newParams[params.length + 1] = pager.getPageSize();
+
 
 		List<T> list = jdbcTemplate.query(fullSql, newParams, getRowMapper());
 
@@ -381,11 +385,14 @@ public abstract class SpringBaseDao<T extends BusinessEntity> {
 
 	public List<T> queryWithPage(String sql, Map<String, Object> params, PagerTag pager) {
 
-		String fullSql = sql + "and is_deleted = false   limit :startRow,:pageSize ";
+		sql=this.addDelSignPrefix(sql);
+
+		String fullSql = sql + "  limit :startRow,:pageSize ";
 
 		params.put("startRow", pager.getStartRow());
 		params.put("pageSize", pager.getPageSize());
 
+		fullSql=this.addDelSignPrefix(fullSql);
 		List<T> list = namedJdbcTemplate.query(fullSql, params, getRowMapper());
 
 		pager.addStartRow(list.size());
