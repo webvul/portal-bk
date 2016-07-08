@@ -20,7 +20,7 @@ public class TestSmsTool extends TestInit {
 	@Test
 	public void testSms(){
 
-		service.sendSmsToUser(444l, SmsSendService.SmsType.ActivityCode,"www.beehive.com.cn/portal/");
+		service.sendActivitySms(444l);
 
 	}
 
@@ -56,6 +56,13 @@ public class TestSmsTool extends TestInit {
 		assertEquals("05",result.code);
 
 	}
+
+	@Test
+	public void testShortUrl(){
+
+
+
+	}
 	@Test
 	public void testTemplate() throws UnsupportedEncodingException {
 
@@ -65,7 +72,7 @@ public class TestSmsTool extends TestInit {
 		user.setUserName("张三");
 		user.setActivityToken("qwerty");
 
-		String fullCtx=service.getTemplateCtx(SmsSendService.SmsType.ActivityCode.name(),user,"localhost");
+		String fullCtx=service.getTemplateCtx(SmsSendService.SmsType.ActivityCode.name(),user);
 
 		String decodeCtx= URLDecoder.decode(fullCtx,"GBK");
 

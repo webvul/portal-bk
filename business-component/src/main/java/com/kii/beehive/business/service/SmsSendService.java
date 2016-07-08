@@ -52,9 +52,9 @@ public class SmsSendService {
 	@Autowired
 	private ShortUrlService  tinyUrlService;
 
-	private String urlTemplate="http://${0}/QxtSms/QxtFirewall?OperID=${1}&OperPass=${2}&SendTime=&ValidTime=&DesMobile=${3}&Content=${4}$ContentType=15";
+	private String urlTemplate="http://${0}/QxtSms/QxtFirewall?OperID=${1}&OperPass=${2}&SendTime=&ValidTime=&DesMobile=${3}&Content=${4}&ContentType=15";
 
-	private String beehiveUrlTemplate="https://${host}/api/oauth2/doActivity/${userID}/code/${activityCode}.do";
+	private String beehiveUrlTemplate="http://www.openibplatform.com/beehive-portal/api/oauth2/doActivity/${userID}/code/${activityCode}.do";
 
 	public enum SmsType{
 
@@ -62,12 +62,12 @@ public class SmsSendService {
 
 	}
 
-	public void sendSmsToUser(long userID,SmsType  type,String host){
+	public void sendActivitySms(long userID){
 
 
 		BeehiveJdbcUser user=userManager.getUserByID(userID);
 
-		String content=getTemplateCtx(type.name(),user,host);
+		String content=getTemplateCtx(SmsType.ActivityCode.name(),user);
 
 		String mobileNumber=user.getPhone();
 
@@ -160,14 +160,13 @@ http://221.179.180.158:9007/QxtSms/QxtFirewall?OperID=test&OperPass=test&SendTim
 	}
 
 
-	private String getTinyUrl(BeehiveJdbcUser  user,String host){
+	private String getTinyUrl(BeehiveJdbcUser  user){
 
 
 			Map<String,String> paramMap=new HashMap<>();
 			paramMap.put("userName",user.getUserName());
 			paramMap.put("activityCode",user.getActivityToken());
 			paramMap.put("userID",user.getUserID());
-			paramMap.put("host",host);
 
 			String fullUrl=StrTemplate.generByMap(beehiveUrlTemplate,paramMap);
 
@@ -179,19 +178,18 @@ http://221.179.180.158:9007/QxtSms/QxtFirewall?OperID=test&OperPass=test&SendTim
 			}
 
 	}
-	public  String getTemplateCtx(String name, BeehiveJdbcUser  user,String host){
+	public  String getTemplateCtx(String name, BeehiveJdbcUser  user){
 
 
 		try {
 			String template = StreamUtils.copyToString(loader.getResource("classpath:com/kii/beehive/business/smsTemplate/"+name+".template").getInputStream(), Charsets.UTF_8);
 
-			String tinyUrl=getTinyUrl(user,host);
+			String tinyUrl=getTinyUrl(user);
 			Map<String,String> paramMap=new HashMap<>();
 			paramMap.put("userName",user.getUserName());
 			paramMap.put("activityCode",user.getActivityToken());
 			paramMap.put("userID",user.getUserID());
 			paramMap.put("url",tinyUrl);
-			paramMap.put("host",host);
 
 			String smsText=PREFIX+StrTemplate.generByMap(template,paramMap);
 
