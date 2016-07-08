@@ -10,7 +10,7 @@ import com.kii.beehive.portal.jdbc.entity.ThingUserRelation;
  * Created by hdchen on 3/18/16.
  */
 @Repository
-public class ThingUserRelationDao extends SpringBaseDao<ThingUserRelation> {
+public class ThingUserRelationDao extends SpringSimpleBaseDao<ThingUserRelation> {
 	final public static String TABLE_NAME = "rel_thing_user";
 	final public static String KEY = "id";
 

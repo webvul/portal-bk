@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.kii.beehive.portal.jdbc.annotation.JdbcField;
 
-public class UserGroup extends DBEntity {
+public class UserGroup extends BusinessEntity {
 
 	private String name;
 	private String description;

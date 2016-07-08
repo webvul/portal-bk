@@ -58,6 +58,9 @@ public class UserGroupDao extends SpringBaseDao<UserGroup> {
 		}
 
 		sql.append(" WHERE ").append(where);
+
+		sql=super.addDelSignPrefix(sql);
+
 		List<UserGroup> rows = jdbcTemplate.query(sql.toString(), params.toArray(new Object[params.size()]), getRowMapper());
 		return rows;
 	}
@@ -88,6 +91,8 @@ public class UserGroupDao extends SpringBaseDao<UserGroup> {
 		}
 
 		sql.append(" WHERE ").append(where);
+		sql=super.addDelSignPrefix(sql);
+
 		List<UserGroup> rows = jdbcTemplate.query(sql.toString(), params.toArray(new Object[params.size()]), getRowMapper());
 		return rows;
 	}
@@ -102,6 +107,8 @@ public class UserGroupDao extends SpringBaseDao<UserGroup> {
 
 		String fullSql= StrTemplate.gener(sql,TABLE_NAME, TagGroupRelationDao.TABLE_NAME,TagIndexDao.TABLE_NAME, TagThingRelationDao.TABLE_NAME);
 
+		fullSql=super.addDelSignPrefix(fullSql);
+
 		return super.jdbcTemplate.query(fullSql,new Object[]{thingID},getRowMapper());
 
 	}
@@ -114,6 +121,7 @@ public class UserGroupDao extends SpringBaseDao<UserGroup> {
 				" where rel_th.thing_id = ?";
 
 		String fullSql= StrTemplate.gener(sql,TABLE_NAME, ThingUserGroupRelationDao.TABLE_NAME);
+		fullSql=super.addDelSignPrefix(fullSql);
 
 		return super.jdbcTemplate.query(fullSql,new Object[]{thingID},getRowMapper());
 

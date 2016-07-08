@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.kii.beehive.portal.jdbc.annotation.JdbcField;
 
-public class BeehiveJdbcUser extends DBEntity{
+public class BeehiveJdbcUser extends BusinessEntity{
 
 
 	private String kiiUserID;

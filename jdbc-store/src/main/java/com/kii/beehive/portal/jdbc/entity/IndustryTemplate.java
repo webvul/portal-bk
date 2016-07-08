@@ -2,7 +2,7 @@ package com.kii.beehive.portal.jdbc.entity;
 
 import com.kii.beehive.portal.jdbc.annotation.JdbcField;
 
-public class IndustryTemplate extends DBEntity {
+public class IndustryTemplate extends BusinessEntity {
 
 
 	private String name;

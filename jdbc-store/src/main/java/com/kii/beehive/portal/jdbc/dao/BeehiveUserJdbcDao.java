@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
@@ -46,7 +45,7 @@ public class BeehiveUserJdbcDao extends SpringBaseDao<BeehiveJdbcUser>  {
 
 		String sql=StrTemplate.gener(sqlTmp,TABLE_NAME,TagUserRelationDao.TABLE_NAME, TagThingRelationDao.TABLE_NAME);
 
-		List<BeehiveJdbcUser> rows = jdbcTemplate.query(sql,new Object[]{thingId},getRowMapper());
+		List<BeehiveJdbcUser> rows = query(sql,thingId);
 		return rows;
 
 
@@ -58,7 +57,7 @@ public class BeehiveUserJdbcDao extends SpringBaseDao<BeehiveJdbcUser>  {
 		String sqlTmp="select u.* from  ${0} rel inner join ${1} u on rel.beehive_user_id = u.beehive_user_id where rel.${2}  = ? ";
 		String sql=StrTemplate.gener(sqlTmp,ThingUserRelationDao.TABLE_NAME,TABLE_NAME,ThingUserRelation.THING_ID);
 
-		List<BeehiveJdbcUser> rows = jdbcTemplate.query(sql,new Object[]{thingId},getRowMapper());
+		List<BeehiveJdbcUser> rows = query(sql,thingId);
 		return rows;
 	}
 
@@ -75,7 +74,7 @@ public class BeehiveUserJdbcDao extends SpringBaseDao<BeehiveJdbcUser>  {
 				" where t.${3}  = ? ";
 		String sql=StrTemplate.gener(sqlTmp,TagUserRelationDao.TABLE_NAME,TABLE_NAME, TagIndexDao.TABLE_NAME,TagIndex.FULL_TAG_NAME);
 
-		List<BeehiveJdbcUser> rows = jdbcTemplate.query(sql,new Object[]{tagName},getRowMapper());
+		List<BeehiveJdbcUser> rows = query(sql,tagName);
 		return rows;
 	}
 
@@ -84,7 +83,7 @@ public class BeehiveUserJdbcDao extends SpringBaseDao<BeehiveJdbcUser>  {
 		String sqlTmp="select u.* from  ${0} rel inner join ${1} u on rel.beehive_user_id = u.beehive_user_id where rel.${2}  = ? ";
 		String sql=StrTemplate.gener(sqlTmp,TagUserRelationDao.TABLE_NAME,TABLE_NAME,TagUserRelation.TAG_ID);
 
-		List<BeehiveJdbcUser> rows = jdbcTemplate.query(sql,new Object[]{tagId},getRowMapper());
+		List<BeehiveJdbcUser> rows = query(sql,tagId);
 		return rows;
 	}
 
@@ -99,7 +98,7 @@ public class BeehiveUserJdbcDao extends SpringBaseDao<BeehiveJdbcUser>  {
 		Map<String, Object> params = new HashMap();
 		params.put("tagIds", tagIds);
 
-		return namedJdbcTemplate.query(sql,params,getRowMapper());
+		return queryByNamedParam(sql,params);
 	}
 
 	//from groupUserRelation
@@ -109,7 +108,7 @@ public class BeehiveUserJdbcDao extends SpringBaseDao<BeehiveJdbcUser>  {
 		String sqlTmp="select u.* from  ${0} rel inner join ${1} u on rel.beehive_user_id = u.beehive_user_id where rel.${2}  = ? ";
 		String sql=StrTemplate.gener(sqlTmp,GroupUserRelationDao.TABLE_NAME,TABLE_NAME,GroupUserRelation.USER_GROUP_ID);
 
-		List<BeehiveJdbcUser> rows = jdbcTemplate.query(sql,new Object[]{userGroupID},getRowMapper());
+		List<BeehiveJdbcUser> rows = query(sql,userGroupID);
 		return rows;
 	}
 
@@ -124,7 +123,7 @@ public class BeehiveUserJdbcDao extends SpringBaseDao<BeehiveJdbcUser>  {
 
 		Map<String, Object> params = new HashMap();
 		params.put("groupIds", userGroupIds);
-		return namedJdbcTemplate.query(sql, params, getRowMapper());
+		return queryByNamedParam(sql, params);
 	}
 
 
@@ -145,11 +144,9 @@ public class BeehiveUserJdbcDao extends SpringBaseDao<BeehiveJdbcUser>  {
 		String sqlTmp="select * from ${0} where user_id = ? ";
 
 		String fullSql= StrTemplate.gener(sqlTmp,TABLE_NAME);
-		try {
-			return jdbcTemplate.queryForObject(fullSql, new Object[]{userID}, getRowMapper());
-		}catch(EmptyResultDataAccessException e){
-			return null;
-		}
+
+		return queryForObject(fullSql, userID);
+
 
 	}
 
@@ -160,7 +157,7 @@ public class BeehiveUserJdbcDao extends SpringBaseDao<BeehiveJdbcUser>  {
 
 		String fullSql= StrTemplate.gener(sqlTmp,TABLE_NAME);
 
-		return super.namedJdbcTemplate.query(fullSql,Collections.singletonMap("list",userIDList), getRowMapper());
+		return queryByNamedParam(fullSql,Collections.singletonMap("list",userIDList));
 
 
 	}
@@ -170,11 +167,9 @@ public class BeehiveUserJdbcDao extends SpringBaseDao<BeehiveJdbcUser>  {
 		String sql="select * from ${0} where user_name = :name or  mobile = :name or user_mail = :name ";
 
 		String fullSql= StrTemplate.gener(sql,TABLE_NAME);
-		try {
-			return namedJdbcTemplate.queryForObject(fullSql, Collections.singletonMap("name", userName), super.getRowMapper());
-		}catch(EmptyResultDataAccessException e){
-			return null;
-		}
+
+		return queryForObjectByNamedParam(fullSql, Collections.singletonMap("name", userName));
+
 
 	}
 
@@ -203,12 +198,9 @@ public class BeehiveUserJdbcDao extends SpringBaseDao<BeehiveJdbcUser>  {
 
 		String fullSql= StrTemplate.gener(sql,TABLE_NAME);
 
-		try {
 
-			return jdbcTemplate.queryForObject(fullSql,params.toArray(), super.getRowMapper());
-		}catch(EmptyResultDataAccessException e){
-			return null;
-		}
+		return queryForObject(fullSql,params.toArray());
+
 
 	}
 
@@ -267,6 +259,6 @@ public class BeehiveUserJdbcDao extends SpringBaseDao<BeehiveJdbcUser>  {
 
 		String fullSql=StrTemplate.gener(sql,TABLE_NAME);
 
-		return  jdbcTemplate.queryForObject(fullSql,new Object[]{userID},getRowMapper());
+		return  queryForObject(fullSql,userID);
 	}
 }

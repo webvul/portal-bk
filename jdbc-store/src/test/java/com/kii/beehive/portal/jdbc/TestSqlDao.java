@@ -76,6 +76,23 @@ public class TestSqlDao extends TestTemplate {
 
 		tagDao.findUserTagByUserID(100l);
 
+		tagDao.findTag(10l,"abc","abc");
+
+		tagDao.findLocations("local");
+
+		tagDao.findTagByTagTypeAndName("a","b");
+
+		tagDao.findTagIdsByIDsAndFullname(this.ids,this.tags);
+
+		tagDao.findUserTagByTypeAndName(10l,"a","b");
+
+		tagDao.findTagsByTagIdsAndLocations(this.ids,"abc");
+
+
+		tagDao.findUserTagByUserID(100l);
+
+		tagDao.findTagIdsByCreatorAndFullTagNames(100l,this.tags);
+
 
 	}
 
@@ -86,12 +103,19 @@ public class TestSqlDao extends TestTemplate {
 
 		groupDao.getAllGroupByRelThing(10l);
 
+		groupDao.findUserGroup(100l,100l,"name");
+
+		groupDao.findUserGroupByName("name");
+
+		groupDao.checkIdList(ids);
+
+
 
 	}
 
 
 	@Test
-	public void testQueryThingByUser(){
+	public void testThingDao(){
 
 
 		thingDao.findThingByGroupIDRelUserID(100l);
@@ -112,6 +136,10 @@ public class TestSqlDao extends TestTemplate {
 
 		thingDao.findThingTypeByFullTagNames(tags);
 		thingDao.findThingTypeBytagIDs("a,b,c");
+
+		thingDao.findAllThingTypes();
+		thingDao.findAllThingTypesWithThingCount();
+
 
 	}
 

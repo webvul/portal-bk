@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import com.kii.beehive.portal.jdbc.entity.TeamThingRelation;
 
 @Repository
-public class TeamThingRelationDao extends SpringBaseDao<TeamThingRelation> {
+public class TeamThingRelationDao extends SpringSimpleBaseDao<TeamThingRelation> {
 
 	private Logger log= LoggerFactory.getLogger(TeamThingRelationDao.class);
 	

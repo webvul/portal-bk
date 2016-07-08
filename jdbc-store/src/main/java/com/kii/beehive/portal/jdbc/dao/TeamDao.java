@@ -33,6 +33,9 @@ public class TeamDao extends SpringBaseDao<Team> {
 					+ "INNER JOIN rel_team_user r ON t.team_id=r.team_id "
 					+ " WHERE r.beehive_user_id= ?";
 
+		sql=super.addDelSignPrefix(sql);
+
+
 		List<Team> rows = jdbcTemplate.query(sql, new Object[]{userID} ,getRowMapper() );
 	    return rows;
 	}

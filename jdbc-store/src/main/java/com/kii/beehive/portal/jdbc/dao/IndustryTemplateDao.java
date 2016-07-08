@@ -31,7 +31,9 @@ public class IndustryTemplateDao extends SpringBaseDao<IndustryTemplate> {
 		}
 
 		String sql = "SELECT * FROM " + TABLE_NAME + " WHERE 1=1" + where.toString();
-		List<IndustryTemplate> rows = jdbcTemplate.query(sql, values.toArray(), getRowMapper() );
+
+
+		List<IndustryTemplate> rows = query(sql, values.toArray() );
 		return rows;
 	}
 }

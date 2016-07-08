@@ -16,7 +16,7 @@ import com.kii.beehive.portal.jdbc.entity.TagGroupRelation;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 
 @Repository
-public class TagGroupRelationDao extends SpringBaseDao<TagGroupRelation> {
+public class TagGroupRelationDao extends SpringSimpleBaseDao<TagGroupRelation> {
 
 	public static final String TABLE_NAME = "rel_tag_group";
 	public static final String KEY = "id";

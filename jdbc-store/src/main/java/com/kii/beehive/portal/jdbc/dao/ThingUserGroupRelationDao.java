@@ -12,7 +12,7 @@ import java.util.Optional;
  * Created by hdchen on 3/18/16.
  */
 @Repository
-public class ThingUserGroupRelationDao extends SpringBaseDao<ThingUserGroupRelation> {
+public class ThingUserGroupRelationDao extends SpringSimpleBaseDao<ThingUserGroupRelation> {
 	final public static String TABLE_NAME = "rel_thing_group";
 	final public static String KEY = "id";
 

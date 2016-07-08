@@ -9,7 +9,7 @@ import java.util.*;
 
 
 @Repository
-public class TagThingRelationDao extends SpringBaseDao<TagThingRelation> {
+public class TagThingRelationDao extends SpringSimpleBaseDao<TagThingRelation> {
 
 	public static final String TABLE_NAME = "rel_thing_tag";
 	public static final String KEY = "id";

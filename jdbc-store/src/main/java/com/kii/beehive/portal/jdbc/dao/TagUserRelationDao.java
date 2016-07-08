@@ -19,7 +19,7 @@ import com.kii.beehive.portal.jdbc.entity.TagUserRelation;
  * Created by hdchen on 3/18/16.
  */
 @Repository
-public class TagUserRelationDao extends SpringBaseDao<TagUserRelation> {
+public class TagUserRelationDao extends SpringSimpleBaseDao<TagUserRelation> {
 	final public static String TABLE_NAME = "rel_tag_user";
 	final public static String KEY = "id";
 

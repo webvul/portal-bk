@@ -81,6 +81,9 @@ public class TagIndexDao extends SpringBaseDao<TagIndex> {
 		}
 
 		sql.append(where);
+
+		sql=super.addDelSignPrefix(sql);
+
 		List<TagIndex> rows = jdbcTemplate.query(sql.toString(), params.toArray(new Object[params.size()]), getRowMapper());
 		return rows;
 	}
@@ -91,6 +94,7 @@ public class TagIndexDao extends SpringBaseDao<TagIndex> {
 
 		String sqlTmp="select t.* from ${0} t inner join  ${1} rel on rel.${3} = t.${4} where  rel.${2}  = ? ";
 		String sql= StrTemplate.gener(sqlTmp,TABLE_NAME,TagGroupRelationDao.TABLE_NAME, TagGroupRelation.USER_GROUP_ID,TagIndex.TAG_ID,TagGroupRelation.TAG_ID);
+		sql=super.addDelSignPrefix(sql);
 
 		return jdbcTemplate.query(sql,new Object[]{userId}, getRowMapper());
 	}
@@ -100,6 +104,7 @@ public class TagIndexDao extends SpringBaseDao<TagIndex> {
 
 		String sqlTmp="select t.* from ${0} t inner join  ${1} rel on rel.tag_id = t.tag_id where  rel.beehive_user_id = ? ";
 		String sql= StrTemplate.gener(sqlTmp,TABLE_NAME,TagUserRelationDao.TABLE_NAME);
+		sql=super.addDelSignPrefix(sql);
 
 		return jdbcTemplate.query(sql,new Object[]{userId}, getRowMapper());
 	}
@@ -122,6 +127,8 @@ public class TagIndexDao extends SpringBaseDao<TagIndex> {
 			sb.append(" = ?");
 			params.add(displayName);
 		}
+		sb=super.addDelSignPrefix(sb);
+
 		return jdbcTemplate.query(sb.toString(), params.toArray(new Object[]{}), getRowMapper());
 	}
 
@@ -168,6 +175,8 @@ public class TagIndexDao extends SpringBaseDao<TagIndex> {
 		where.append("GROUP BY t.").append(TagIndex.TAG_ID);
 		sql.append(where);
 
+		sql=super.addDelSignPrefix(sql);
+
 		List<TagIndex> rows = jdbcTemplate.query(sql.toString(), params.toArray(new Object[params.size()]), getRowMapper());
 		return rows;
 	}
@@ -181,12 +190,14 @@ public class TagIndexDao extends SpringBaseDao<TagIndex> {
 			params.add(parentLocation + '%');
 		}
 		sb.append(" ORDER BY t.").append(TagIndex.DISPLAY_NAME);
+		sb=super.addDelSignPrefix(sb);
+
 		return jdbcTemplate.queryForList(sb.toString(), params.toArray(new Object[0]), String.class);
 	}
 
 	public List<String> findLocations(String parentLocation) {
 
-		StringBuffer sql = new StringBuffer();
+		StringBuilder sql = new StringBuilder();
 		sql.append("SELECT t.").append(TagIndex.DISPLAY_NAME).append(" FROM ").append(this.getTableName() + " t ");
 
 		StringBuffer where = new StringBuffer();
@@ -201,6 +212,8 @@ public class TagIndexDao extends SpringBaseDao<TagIndex> {
 
 		where.append(" ORDER BY t.").append(TagIndex.DISPLAY_NAME);
 		sql.append(where);
+
+		sql=super.addDelSignPrefix(sql);
 
 		Object[] params = new Object[]{TagType.Location.toString(), parentLocation + "%"};
 		List<String> rows = jdbcTemplate.queryForList(sql.toString(), params, String.class);
@@ -235,6 +248,7 @@ public class TagIndexDao extends SpringBaseDao<TagIndex> {
 
 		sql.append(where);
 
+		sql=super.addDelSignPrefix(sql);
 		List<TagIndex> rows = jdbcTemplate.query(sql.toString(), params.toArray(new Object[params.size()]), getRowMapper());
 		return rows;
 	}
@@ -247,14 +261,15 @@ public class TagIndexDao extends SpringBaseDao<TagIndex> {
 	 * @return
 	 */
 	public List<TagIndex> findTagByGlobalThingID(Long globalThingID) {
-		StringBuffer sql = new StringBuffer();
+		StringBuilder  sql = new StringBuilder();
 		sql.append("SELECT t.*")
 				.append(" FROM ")
 				.append(TagIndexDao.TABLE_NAME).append(" t, ")
 				.append(" ( SELECT ").append(TagThingRelation.TAG_ID)
 				.append("     FROM ").append(TagThingRelationDao.TABLE_NAME)
 				.append("    WHERE ").append(TagThingRelation.THING_ID).append("=? ) r ")
-				.append(" WHERE r.").append(TagThingRelation.TAG_ID).append("=t.").append(TagIndex.TAG_ID);
+				.append(" WHERE is_deleted = false and r.").append(TagThingRelation.TAG_ID).append("=t.").append(TagIndex.TAG_ID);
+
 
 		List<TagIndex> rows = jdbcTemplate.query(sql.toString(), new Object[]{globalThingID}, getRowMapper());
 		return rows;
@@ -343,6 +358,8 @@ public class TagIndexDao extends SpringBaseDao<TagIndex> {
 			params.put("name", parentLocation + "%");
 		}
 
+		sb=super.addDelSignPrefix(sb);
+
 		return Optional.ofNullable(namedJdbcTemplate.query(sb.toString(), params, getRowMapper()));
 	}
 
@@ -370,6 +387,8 @@ public class TagIndexDao extends SpringBaseDao<TagIndex> {
 					append(" = ?");
 			params.add(displayName);
 		}
+
+		sb=super.addDelSignPrefix(sb);
 
 		return Optional.ofNullable(jdbcTemplate.queryForList(sb.append(sbWhere).toString(),
 				params.toArray(new Object[]{}), Long.class));
