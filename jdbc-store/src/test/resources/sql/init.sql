@@ -14,6 +14,8 @@ CREATE TABLE `beehive_user` (
   `modify_by` varchar(45) DEFAULT NULL,
   `create_date` varchar(45) DEFAULT NULL,
   `modify_date` varchar(45) DEFAULT NULL,
+  `is_deleted` tinyint(4) DEFAULT '0',
+
   PRIMARY KEY (`beehive_user_id`),
   UNIQUE KEY `mobile_UNIQUE` (`mobile`),
   UNIQUE KEY `user_mail_UNIQUE` (`user_mail`),
@@ -35,6 +37,8 @@ CREATE TABLE `global_thing` (
   `modify_date` datetime DEFAULT NULL,
   `schema_name` varchar(45) DEFAULT NULL,
   `schema_version` varchar(45) DEFAULT NULL,
+    `is_deleted` tinyint(4) DEFAULT '0',
+
   PRIMARY KEY (`id_global_thing`,`vendor_thing_id`),
   UNIQUE KEY `vendor_thing_id_UNIQUE` (`vendor_thing_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1090 DEFAULT CHARSET=utf8mb4;
@@ -49,6 +53,8 @@ CREATE TABLE `industry_template` (
   `create_date` datetime DEFAULT NULL,
   `modify_by` varchar(45) DEFAULT NULL,
   `modify_date` datetime DEFAULT NULL,
+    `is_deleted` tinyint(4) DEFAULT '0',
+
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
@@ -141,6 +147,8 @@ CREATE TABLE `tag_index` (
   `create_date` datetime DEFAULT NULL,
   `modify_by` varchar(45) DEFAULT NULL,
   `modify_date` datetime DEFAULT NULL,
+    `is_deleted` tinyint(4) DEFAULT '0',
+
   PRIMARY KEY (`tag_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1009 DEFAULT CHARSET=utf8mb4;
 
@@ -151,6 +159,8 @@ CREATE TABLE `team` (
   `create_date` datetime DEFAULT NULL,
   `modify_by` varchar(45) DEFAULT NULL,
   `modify_date` datetime DEFAULT NULL,
+    `is_deleted` tinyint(4) DEFAULT '0',
+
   PRIMARY KEY (`team_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -162,5 +172,7 @@ CREATE TABLE `user_group` (
   `create_date` datetime DEFAULT NULL,
   `modify_by` varchar(45) DEFAULT NULL,
   `modify_date` datetime DEFAULT NULL,
+    `is_deleted` tinyint(4) DEFAULT '0',
+
   PRIMARY KEY (`user_group_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1006 DEFAULT CHARSET=utf8mb4;
