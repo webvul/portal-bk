@@ -27,6 +27,8 @@
         <context:exclude-filter type="regex" expression="com.kii.beehive.portal.web.config.*"></context:exclude-filter>
         <context:exclude-filter type="regex"
                                 expression="com.kii.beehive.portal.web.controller.*"></context:exclude-filter>
+        <context:exclude-filter type="regex"
+                                expression="com.kii.beehive.portal.web.stomp.*"></context:exclude-filter>
     </context:component-scan>
 
 

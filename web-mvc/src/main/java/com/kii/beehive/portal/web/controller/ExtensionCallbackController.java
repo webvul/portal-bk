@@ -14,15 +14,12 @@ import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.web.constant.CallbackNames;
 import com.kii.beehive.portal.web.entity.CreatedThing;
 import com.kii.beehive.portal.web.entity.StateUpload;
-import com.kii.beehive.portal.web.help.STOMPMessageQueue;
-import com.kii.beehive.portal.web.help.ThingStatusInfo;
+import com.kii.beehive.portal.web.help.InternalEventListenerRegistry;
 
-@RestController
+@RestController(value = "extensionCallbackController")
 @RequestMapping(value = CallbackNames.CALLBACK_URL, consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {
 		MediaType.APPLICATION_JSON_UTF8_VALUE})
 public class ExtensionCallbackController {
-
-
 	@Autowired
 	private ThingTagManager tagManager;
 
@@ -33,7 +30,7 @@ public class ExtensionCallbackController {
 	private BusinessEventBus eventBus;
 
 	@Autowired
-	private STOMPMessageQueue stompMessageQueue;
+	private InternalEventListenerRegistry internalEventListenerRegistry;
 
 
 	@RequestMapping(value = "/" + CallbackNames.STATE_CHANGED, method = {RequestMethod.POST})
@@ -49,10 +46,7 @@ public class ExtensionCallbackController {
 
 		eventBus.onStatusUploadFire(fullThingID, status.getState(), status.getTimestamp());
 
-		ThingStatusInfo info = new ThingStatusInfo();
-		info.setAppId(appID);
-		info.setStatus(status);
-		stompMessageQueue.offerThingStatus(info);
+		internalEventListenerRegistry.onStateChange(appID, status);
 	}
 
 
