@@ -15,6 +15,18 @@ public class CallHttpApi implements ExecuteTarget {
 
 	private String delay;
 
+
+	private String express;
+
+	public String getExpress(){
+		return express;
+	};
+
+	public void setExpress(String express){
+		this.express=express;
+	};
+
+
 	@Override
 	public String getDelay() {
 		return delay;

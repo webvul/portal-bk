@@ -17,6 +17,10 @@ public interface ExecuteTarget {
 
 	String  getType();
 
+	String getExpress();
+
+	void setExpress(String express);
+
 	String  getDelay();
 
 	void setDelay(String delay);
