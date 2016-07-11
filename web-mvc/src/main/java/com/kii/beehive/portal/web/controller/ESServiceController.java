@@ -1,18 +1,6 @@
 package com.kii.beehive.portal.web.controller;
 
-import java.util.List;
-
-import org.apache.logging.log4j.util.Strings;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.fasterxml.jackson.databind.JsonNode;
-
 import com.kii.beehive.business.elasticsearch.TaskManager;
 import com.kii.beehive.business.manager.TagThingManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
@@ -21,6 +9,14 @@ import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.beehive.portal.web.entity.SearchRestBean;
 import com.kii.beehive.portal.web.exception.PortalException;
+import org.apache.logging.log4j.util.Strings;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by hdchen on 6/30/16.
@@ -58,7 +54,7 @@ public class ESServiceController {
 	@RequestMapping(value = "/historical/aggregate", method = {RequestMethod.POST})
 	public String aggregate(@RequestBody SearchRestBean searchRestBean) {
 
-		if (Strings.isBlank(searchRestBean.getVendorThingID()) || Strings.isBlank(searchRestBean.getIntervalField())
+		if (searchRestBean.getVendorThingIDs().length == 0 || Strings.isBlank(searchRestBean.getIntervalField())
 				|| Strings.isBlank(searchRestBean.getOperatorField())
 				|| searchRestBean.getStartDate() == null || searchRestBean.getEndDate() == null
 				|| searchRestBean.getFields() == null || searchRestBean.getFields().length == 0
@@ -66,19 +62,29 @@ public class ESServiceController {
 			throw new PortalException("RequiredFieldsMissing", HttpStatus.BAD_REQUEST);
 		}
 
-		GlobalThingInfo thing = thingTagManager.getThingsByVendorThingId(searchRestBean.getVendorThingID());
+		List<GlobalThingInfo> things = thingTagManager.getThingsByVendorThingIds(Arrays.asList(searchRestBean.getVendorThingIDs()));
 
-		if (thing == null) {
-			throw EntryNotFoundException.thingNotFound(searchRestBean.getVendorThingID());
-		}
-		if (!Constants.ADMIN_ID.equals(AuthInfoStore.getUserID())) {//non-admin
-			thingTagManager.getAccessibleThingById(AuthInfoStore.getUserIDInLong(), thing.getId());
+		if (things.size() == 0) {
+			throw EntryNotFoundException.thingNotFound(Arrays.toString(searchRestBean.getVendorThingIDs()));
 		}
 
-		String kiiThingID = "thing:" + thing.getFullKiiThingID().substring(thing.getFullKiiThingID().indexOf("-") + 1);
+		List<String> kiiThingIDs = new ArrayList<String>();
 
-		String r = transportClientManager.queryBuilderForAggs(thing.getKiiAppID(), "spark",
-				kiiThingID,
+		things.forEach(thingInfo -> {
+			if (!Constants.ADMIN_ID.equals(AuthInfoStore.getUserID())) {//non-admin
+				thingTagManager.getAccessibleThingById(AuthInfoStore.getUserIDInLong(), thingInfo.getId());
+			}
+
+			kiiThingIDs.add("thing:" + thingInfo.getFullKiiThingID().substring(thingInfo.getFullKiiThingID().indexOf("-") + 1));
+		});
+
+		if (kiiThingIDs.size() == 0) {
+			throw EntryNotFoundException.thingNotFound(Arrays.toString(searchRestBean.getVendorThingIDs()));
+		}
+
+
+		String r = transportClientManager.queryBuilderForAggs(things.get(0).getKiiAppID(), "spark",
+				kiiThingIDs.toArray(new String[kiiThingIDs.size()]),
 				searchRestBean.getStartDate(), searchRestBean.getEndDate(), searchRestBean.getIntervalField(),
 				searchRestBean.getUnit(), searchRestBean.getOperatorField(), searchRestBean.getFields());
 

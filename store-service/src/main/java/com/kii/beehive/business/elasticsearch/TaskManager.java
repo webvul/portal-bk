@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kii.beehive.business.factory.ESTaskFactory;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
@@ -59,11 +60,16 @@ public class TaskManager {
 		indexThreadPoolTaskExecutor.submit(taskFactory.getBulkUploadTask(index, type, data));
 	}
 
-	public String queryBuilderForAggs(String index, String type, String kiiThingID, long startDate, long endDate, String
-			intervalField, int unit, String operatorField, String[] avgFields) {
-		QueryBuilder qb = QueryBuilders.boolQuery()
-				.should(QueryBuilders.termQuery(TERM_FIELD, kiiThingID))
-				.filter(QueryBuilders.rangeQuery(DATE_FIELD).from(startDate).to(endDate));
+	public String queryBuilderForAggs(String index, String type, String[] kiiThingIDs, long startDate, long endDate,
+									  String intervalField, int unit, String operatorField, String[] avgFields) {
+		BoolQueryBuilder qb = QueryBuilders.boolQuery();
+
+		for (String kiiThingID : kiiThingIDs) {
+			qb = qb.should(QueryBuilders.termQuery(TERM_FIELD, kiiThingID));
+		}
+
+		qb = qb.filter(QueryBuilders.rangeQuery(DATE_FIELD).from(startDate).to(endDate));
+
 
 		DateHistogramInterval di = null;
 
