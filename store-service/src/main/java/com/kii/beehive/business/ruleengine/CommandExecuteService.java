@@ -11,9 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import com.kii.beehive.business.common.manager.AppInfoManager;
-import com.kii.beehive.business.common.manager.ThingTagManager;
-import com.kii.beehive.business.common.service.ThingIFInAppService;
+import com.kii.beehive.business.manager.AppInfoManager;
+import com.kii.beehive.business.manager.ThingTagManager;
+import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.portal.common.utils.StrTemplate;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.service.AppInfoDao;

@@ -18,8 +18,8 @@ import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.kii.beehive.business.common.event.BusinessEventListenerService;
-import com.kii.beehive.business.common.manager.ThingTagManager;
+import com.kii.beehive.business.event.BusinessEventListenerService;
+import com.kii.beehive.business.manager.ThingTagManager;
 import com.kii.beehive.portal.event.EventListener;
 import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;

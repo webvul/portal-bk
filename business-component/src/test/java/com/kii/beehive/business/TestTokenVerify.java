@@ -5,7 +5,7 @@ import static junit.framework.TestCase.assertTrue;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.kii.beehive.business.common.manager.AppInfoManager;
+import com.kii.beehive.business.manager.AppInfoManager;
 import com.kii.extension.sdk.service.UserService;
 
 public class TestTokenVerify extends TestInit {

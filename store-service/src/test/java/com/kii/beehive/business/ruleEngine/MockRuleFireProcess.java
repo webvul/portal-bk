@@ -2,8 +2,8 @@ package com.kii.beehive.business.ruleEngine;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.kii.beehive.business.common.event.BusinessEventListenerService;
-import com.kii.beehive.business.common.event.impl.TriggerFireProcess;
+import com.kii.beehive.business.event.BusinessEventListenerService;
+import com.kii.beehive.business.event.impl.TriggerFireProcess;
 import com.kii.beehive.business.ruleengine.CommandExecuteService;
 import com.kii.beehive.portal.event.EventListener;
 import com.kii.extension.ruleengine.service.TriggerRecordDao;

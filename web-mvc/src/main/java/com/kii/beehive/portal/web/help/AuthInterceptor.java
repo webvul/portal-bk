@@ -18,8 +18,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-import com.kii.beehive.business.common.helper.OpLogTools;
-import com.kii.beehive.business.common.manager.AppInfoManager;
+import com.kii.beehive.business.helper.OpLogTools;
+import com.kii.beehive.business.manager.AppInfoManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.entitys.AuthInfo;
 import com.kii.beehive.portal.manager.AuthManager;

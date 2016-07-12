@@ -1,4 +1,4 @@
-package com.kii.beehive.business.common.manager;
+package com.kii.beehive.business.manager;
 
 import java.util.HashMap;
 import java.util.List;
@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.kii.beehive.business.common.helper.SyncMsgService;
+import com.kii.beehive.business.helper.SyncMsgService;
 import com.kii.beehive.portal.exception.UserNotExistException;
 import com.kii.beehive.portal.service.ArchiveBeehiveUserDao;
 import com.kii.beehive.portal.service.PortalSyncUserDao;

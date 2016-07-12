@@ -1,4 +1,4 @@
-package com.kii.beehive.business.common.helper;
+package com.kii.beehive.business.helper;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;

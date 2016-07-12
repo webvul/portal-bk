@@ -37,8 +37,8 @@ import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.kii.beehive.business.common.manager.PortalSyncUserManager;
-import com.kii.beehive.business.common.manager.TagThingManager;
+import com.kii.beehive.business.manager.PortalSyncUserManager;
+import com.kii.beehive.business.manager.TagThingManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.TagGroupRelationDao;

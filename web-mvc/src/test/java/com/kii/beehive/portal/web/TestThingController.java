@@ -44,12 +44,12 @@ import org.springframework.http.MediaType;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.kii.beehive.business.common.entity.ExecuteTarget;
-import com.kii.beehive.business.common.entity.TagSelector;
-import com.kii.beehive.business.common.entity.TargetAction;
-import com.kii.beehive.business.common.manager.TagThingManager;
-import com.kii.beehive.business.common.service.ThingIFCommandService;
-import com.kii.beehive.business.common.service.ThingIFInAppService;
+import com.kii.beehive.business.entity.ExecuteTarget;
+import com.kii.beehive.business.entity.TagSelector;
+import com.kii.beehive.business.entity.TargetAction;
+import com.kii.beehive.business.manager.TagThingManager;
+import com.kii.beehive.business.service.ThingIFCommandService;
+import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.exception.UnauthorizedException;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;

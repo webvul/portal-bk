@@ -1,4 +1,4 @@
-package com.kii.beehive.business.common.helper;
+package com.kii.beehive.business.helper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 

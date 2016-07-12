@@ -8,9 +8,9 @@ import java.net.URLDecoder;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.kii.beehive.business.common.manager.SimpleUserManager;
-import com.kii.beehive.business.common.service.SmsSendService;
-import com.kii.beehive.business.common.service.SmsSendTool;
+import com.kii.beehive.business.manager.SimpleUserManager;
+import com.kii.beehive.business.service.SmsSendService;
+import com.kii.beehive.business.service.SmsSendTool;
 import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 
 public class TestSmsTool extends TestInit {

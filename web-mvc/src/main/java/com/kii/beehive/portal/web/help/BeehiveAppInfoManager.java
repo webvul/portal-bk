@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import com.kii.beehive.business.common.event.ListenerEnvInitService;
-import com.kii.beehive.business.common.manager.AppInfoManager;
+import com.kii.beehive.business.event.ListenerEnvInitService;
+import com.kii.beehive.business.manager.AppInfoManager;
 import com.kii.beehive.portal.store.entity.CallbackUrlParameter;
 import com.kii.extension.sdk.entity.AppInfo;
 
