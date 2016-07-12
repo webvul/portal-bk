@@ -1,8 +1,9 @@
 package com.kii.beehive.business.elasticsearch;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kii.beehive.business.factory.ESTaskFactory;
+import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.Future;
+
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -16,9 +17,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.concurrent.Future;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import com.kii.beehive.business.elasticsearch.factory.ESTaskFactory;
 
 /**
  * Created by hdchen on 6/30/16.

@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import com.kii.beehive.portal.extend.FacePlusPlusService;
-import com.kii.beehive.portal.extend.entitys.FaceUser;
+import com.kii.beehive.portal.faceplusplus.FacePlusPlusService;
+import com.kii.beehive.portal.faceplusplus.entitys.FaceUser;
 import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 import com.kii.beehive.portal.manager.BeehiveUserManager;
 
