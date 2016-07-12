@@ -1,6 +1,6 @@
 package com.kii.beehive.portal.web.controller;
 
-import com.kii.beehive.business.manager.PortalSyncUserManager;
+import com.kii.beehive.business.common.manager.PortalSyncUserManager;
 import com.kii.beehive.portal.store.entity.PortalSyncUser;
 import com.kii.beehive.portal.web.entity.SyncUserRestBean;
 import org.springframework.beans.factory.annotation.Autowired;

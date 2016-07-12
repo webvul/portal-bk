@@ -24,8 +24,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.kii.beehive.business.manager.AppInfoManager;
-import com.kii.beehive.business.manager.TagThingManager;
+import com.kii.beehive.business.common.manager.AppInfoManager;
+import com.kii.beehive.business.common.manager.TagThingManager;
 import com.kii.beehive.portal.entitys.PermissionTree;
 import com.kii.beehive.portal.helper.PermissionTreeService;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;

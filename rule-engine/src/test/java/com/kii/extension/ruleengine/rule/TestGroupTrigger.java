@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.kii.beehive.business.manager.ThingTagManager;
+import com.kii.beehive.business.common.manager.ThingTagManager;
 import com.kii.extension.ruleengine.TriggerConditionBuilder;
 import com.kii.extension.ruleengine.store.trigger.CommandParam;
 import com.kii.extension.ruleengine.store.trigger.Condition;

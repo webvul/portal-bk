@@ -1,30 +1,13 @@
 package com.kii.beehive.portal.web.controller;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.logging.log4j.util.Strings;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kii.beehive.business.service.ThingIFInAppService;
-import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
-import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
-import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
-import com.kii.beehive.portal.jdbc.entity.TagIndex;
-import com.kii.beehive.portal.jdbc.entity.TagType;
+
 import com.kii.beehive.portal.web.WebTestTemplate;
 import com.kii.beehive.portal.web.constant.Constants;
-import com.kii.extension.sdk.entity.thingif.OnBoardingParam;
-import com.kii.extension.sdk.entity.thingif.OnBoardingResult;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;

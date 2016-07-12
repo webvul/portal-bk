@@ -3,9 +3,9 @@ package com.kii.beehive.business.ruleengine.process;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.kii.beehive.business.event.BusinessEventListenerService;
-import com.kii.beehive.business.event.impl.TagChangeProcess;
-import com.kii.beehive.business.manager.ThingTagManager;
+import com.kii.beehive.business.common.event.BusinessEventListenerService;
+import com.kii.beehive.business.common.event.impl.TagChangeProcess;
+import com.kii.beehive.business.common.manager.ThingTagManager;
 import com.kii.beehive.portal.event.EventListener;
 import com.kii.extension.ruleengine.EngineService;
 import com.kii.extension.ruleengine.service.TriggerRecordDao;

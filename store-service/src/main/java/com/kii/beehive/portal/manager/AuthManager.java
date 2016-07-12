@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import com.kii.beehive.business.service.KiiUserService;
+import com.kii.beehive.business.common.service.KiiUserService;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.StringRandomTools;
 import com.kii.beehive.portal.entitys.AuthInfo;

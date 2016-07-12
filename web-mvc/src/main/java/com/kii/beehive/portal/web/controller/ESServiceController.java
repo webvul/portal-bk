@@ -2,7 +2,7 @@ package com.kii.beehive.portal.web.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.kii.beehive.business.elasticsearch.TaskManager;
-import com.kii.beehive.business.manager.TagThingManager;
+import com.kii.beehive.business.common.manager.TagThingManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;

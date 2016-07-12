@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kii.beehive.business.manager.IndustryTemplateManager;
+import com.kii.beehive.business.common.manager.IndustryTemplateManager;
 import com.kii.beehive.portal.common.utils.CollectUtils;
 import com.kii.beehive.portal.jdbc.entity.IndustryTemplate;
 import com.kii.beehive.portal.web.constant.ErrorCode;

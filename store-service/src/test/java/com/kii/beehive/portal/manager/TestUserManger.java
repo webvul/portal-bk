@@ -6,7 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.kii.beehive.business.service.KiiUserService;
+import com.kii.beehive.business.common.service.KiiUserService;
 import com.kii.beehive.portal.entitys.AuthRestBean;
 import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 import com.kii.beehive.portal.service.UserRuleDao;

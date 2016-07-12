@@ -1,4 +1,4 @@
-package com.kii.beehive.business.helper;
+package com.kii.beehive.business.common.helper;
 
 import java.util.ArrayList;
 import java.util.List;

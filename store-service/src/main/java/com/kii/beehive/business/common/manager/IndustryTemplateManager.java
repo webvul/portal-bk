@@ -1,4 +1,4 @@
-package com.kii.beehive.business.manager;
+package com.kii.beehive.business.common.manager;
 
 import java.util.ArrayList;
 import java.util.List;

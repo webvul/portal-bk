@@ -4,7 +4,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-import com.kii.beehive.business.manager.AppInfoManager;
+import com.kii.beehive.business.common.manager.AppInfoManager;
 
 public class AppInitTest extends TestInit {
 

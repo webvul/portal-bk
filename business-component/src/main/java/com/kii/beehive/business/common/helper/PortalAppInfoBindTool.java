@@ -1,4 +1,4 @@
-package com.kii.beehive.business.helper;
+package com.kii.beehive.business.common.helper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

@@ -1,4 +1,4 @@
-package com.kii.beehive.business.manager;
+package com.kii.beehive.business.common.manager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.service.BeehiveParameterDao;
-import com.kii.beehive.business.service.KiiUserService;
+import com.kii.beehive.business.common.service.KiiUserService;
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
 import com.kii.extension.sdk.context.AppBindTool;
 import com.kii.extension.sdk.context.AppBindToolResolver;

@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import com.kii.beehive.business.helper.OpLogTools;
-import com.kii.beehive.business.manager.ThingTagManager;
+import com.kii.beehive.business.common.helper.OpLogTools;
+import com.kii.beehive.business.common.manager.ThingTagManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.extension.ruleengine.service.TriggerRecordDao;
