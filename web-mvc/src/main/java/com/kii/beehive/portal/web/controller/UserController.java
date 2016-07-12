@@ -100,7 +100,7 @@ public class UserController {
 		Map<String,Object> result=new HashMap<>();
 
 		result.put("userID",newUser.getUserID());
-//		result.put("activityToken",newUser.getActivityToken());
+		result.put("activityToken",newUser.getActivityToken());
 
 		smsService.sendActivitySms(newUser);
 		return result;
@@ -116,7 +116,7 @@ public class UserController {
 		Map<String, Object> map = new HashMap<>();
 
 		map.put("userID", userID);
-//		map.put("activityToken", token);
+		map.put("activityToken", token);
 
 		smsService.sendResetPwdSms(userID);
 

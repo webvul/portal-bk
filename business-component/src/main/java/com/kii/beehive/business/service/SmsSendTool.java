@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
+import org.springframework.util.StringUtils;
 
 import com.google.common.base.Charsets;
 
@@ -140,6 +141,9 @@ public class SmsSendTool {
 
 	private boolean verifyMobileNumber(String mobileNumber){
 
+		if(StringUtils.isEmpty(mobileNumber)){
+			return false;
+		}
 		return numPattern.matcher(mobileNumber).find();
 	}
 
