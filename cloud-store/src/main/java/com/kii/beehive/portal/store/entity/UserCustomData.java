@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class UserCustomData extends PortalEntity {
@@ -37,7 +38,7 @@ public class UserCustomData extends PortalEntity {
 		this.userID = userID;
 	}
 	
-	
+	@JsonAnySetter
 	public void addData(String type, CustomData data) {
 		dataMap.put(type,data);
 	}

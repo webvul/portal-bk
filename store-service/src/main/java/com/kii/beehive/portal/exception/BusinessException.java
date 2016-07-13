@@ -29,6 +29,7 @@ public class BusinessException extends RuntimeException {
 		paramMap.put(key,value);
 	}
 
+	@JsonIgnore
 	public Map<String,String> getParamMap(){
 		return paramMap;
 	}

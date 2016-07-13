@@ -70,7 +70,7 @@ public class BeehiveArchiveUser extends DBEntity {
 	}
 
 
-	@JdbcField(column = "beehive_user_id")
+	@JdbcField(column = "archive_user_id")
 	@Override
 	public Long getId(){
 

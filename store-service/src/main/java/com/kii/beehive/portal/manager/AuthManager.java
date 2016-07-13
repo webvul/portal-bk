@@ -79,7 +79,7 @@ public class AuthManager {
 			throw new IllegalArgumentException("the username had existed,please change a loginName or email or phone Number");
 		}
 
-
+		user.setEnable(true);
 		userDao.addUser(user);
 
 		String pwd=user.getHashedPwd(password);
@@ -124,7 +124,7 @@ public class AuthManager {
 	}
 
 	private String doActivity(String token, BeehiveJdbcUser user) {
-		if(StringUtils.isEmpty(user.getActivityToken())){
+		if(!user.isEnable()){
 			throw new UnauthorizedException(UnauthorizedException.USER_ALREADY_ACTIVIED);
 		}
 
@@ -180,8 +180,10 @@ public class AuthManager {
 		}
 
 
-		if(!StringUtils.isEmpty(user.getActivityToken())) {
-			throw new UnauthorizedException(UnauthorizedException.USER_BEEN_LOCKED);
+		if(!user.isEnable()) {
+			UnauthorizedException  excep= new UnauthorizedException(UnauthorizedException.USER_BEEN_LOCKED);
+			excep.addParam("userName",userName);
+			throw excep;
 		}
 
 		String pwd=user.getHashedPwd(password);
@@ -288,6 +290,7 @@ public class AuthManager {
 
 		user.setActivityToken(user.getHashedPwd(token));
 		user.setUserPassword(user.getDefaultPassword());
+		user.setEnable(false);
 
 		userDao.updateEntityAllByID(user);
 
@@ -313,7 +316,9 @@ public class AuthManager {
 
 		// if auth info not found in both cache and DB, throw Exception
 		if (authInfo == null) {
-			throw new UnauthorizedException(UnauthorizedException.LOGIN_TOKEN_INVALID);
+			UnauthorizedException excep= new UnauthorizedException(UnauthorizedException.LOGIN_TOKEN_INVALID);
+			excep.addParam("token",token);
+			throw excep;
 		}
 
 		PermissionTree permisssionTree=ruleService.getUserPermissionTree(authInfo.getUserID());
@@ -359,6 +364,13 @@ public class AuthManager {
 			String userID = kiiUser.getUserID();
 
 			BeehiveJdbcUser beehiveUser = userDao.getUserByKiiUserID(userID);
+
+			if(!beehiveUser.isEnable()){
+
+				UnauthorizedException  excep= new UnauthorizedException(UnauthorizedException.USER_BEEN_LOCKED);
+				excep.addParam("userName",beehiveUser.getUserName());
+				throw excep;
+			}
 			Team team = getTeamByID(beehiveUser.getId());
 
 			String beehiveToken=getBeehiveToken(token,token,false);

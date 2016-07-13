@@ -127,10 +127,6 @@ public class BeehiveUserJdbcDao extends SpringBaseDao<BeehiveJdbcUser>  {
 	}
 
 
-	public List<BeehiveJdbcUser> getUserByIDs(Collection<Long> userIDList) {
-
-		return super.findByIDs(userIDList);
-	}
 
 	public BeehiveJdbcUser getUserByID(Long userID) {
 
@@ -164,7 +160,7 @@ public class BeehiveUserJdbcDao extends SpringBaseDao<BeehiveJdbcUser>  {
 
 	public BeehiveJdbcUser getUserByName(String userName){
 
-		String sql="select * from ${0} where user_name = :name or  mobile = :name or user_mail = :name ";
+		String sql="select * from ${0} where user_name = :name or  mobile = :name or user_mail = :name  ";
 
 		String fullSql= StrTemplate.gener(sql,TABLE_NAME);
 
@@ -215,6 +211,7 @@ public class BeehiveUserJdbcDao extends SpringBaseDao<BeehiveJdbcUser>  {
 
 		Map<String,Object> params=new HashMap<>();
 		params.put("activityToken",null);
+		params.put("enable",true);
 		params.put("userPassword",pwd);
 
 		super.updateEntityByID(params,id);
@@ -231,20 +228,14 @@ public class BeehiveUserJdbcDao extends SpringBaseDao<BeehiveJdbcUser>  {
 		user.setUserID(userID);
 		user.setEnable(sign);
 
-		super.updateEntityByField(user,"user_id");
+		super.updateEntityByField(user,"userID");
 	}
 
-	public void deleteUserByUserID(String userID) {
-		BeehiveJdbcUser user=new BeehiveJdbcUser();
-		user.setUserID(userID);
-		user.setDeleted(true);
-
-		super.updateEntityByField(user,"user_id");
-
-	}
 
 	public List<BeehiveJdbcUser> getUsersBySimpleQuery(Map<String, Object> params) {
 
+
+		params.put("enable",false);
 
 		return super.findByFields(params);
 	}

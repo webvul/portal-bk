@@ -13,6 +13,7 @@ import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.StringRandomTools;
 import com.kii.beehive.portal.entitys.PermissionTree;
 import com.kii.beehive.portal.exception.UnauthorizedException;
+import com.kii.beehive.portal.helper.AuthInfoService;
 import com.kii.beehive.portal.helper.RuleSetService;
 import com.kii.beehive.portal.jdbc.dao.BeehiveArchiveUserDao;
 import com.kii.beehive.portal.jdbc.dao.BeehiveUserJdbcDao;
@@ -32,6 +33,8 @@ public class BeehiveUserManager {
 
 
 
+	@Autowired
+	private AuthInfoService authService;
 
 	@Autowired
 	protected TeamUserRelationDao teamUserRelationDao;
@@ -116,6 +119,7 @@ public class BeehiveUserManager {
 			user.setRoleName("commUser");
 		}
 
+		user.setEnable(false);
 		user=userDao.addUser(user);
 
 		String loginID=kiiUserService.addBeehiveUser(user,user.getDefaultPassword());
@@ -233,10 +237,19 @@ public class BeehiveUserManager {
 		userDao.updateEnableSign(userID,b);
 	}
 
-	public void deleteUser(String userID){
 
-		userDao.deleteUserByUserID(userID);
+	public void disableUser(String userID){
+
+		userDao.updateEnableSign(userID,false);
+
+		authService.removeTokenByUserID(userID);
+
 	}
+
+//	public void deleteUser(String userID){
+//
+//		userDao.deleteUserByUserID(userID);
+//	}
 
 
 	public void removeUser(String userID){

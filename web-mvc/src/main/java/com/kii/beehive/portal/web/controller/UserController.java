@@ -149,17 +149,8 @@ public class UserController {
 	}
 
 
-	@RequestMapping(value = "/usermanager/{userID}", method = {RequestMethod.DELETE})
-	public void deleteUser(@PathVariable("userID") String userID, @RequestBody BeehiveJdbcUser user) {
-
-		userManager.updateUser(user, userID);
-
-		return;
-	}
-
-
 	@RequestMapping(value = "/usermanager/{userID}/enable", method = {RequestMethod.PUT})
-	public Map<String,String> enableUser(@PathVariable("userID") String userID, @RequestBody BeehiveJdbcUser user) {
+	public Map<String,String> enableUser(@PathVariable("userID") String userID) {
 
 		userManager.updateUserSign(userID,true);
 
@@ -172,9 +163,9 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/usermanager/{userID}/disable", method = {RequestMethod.PUT})
-	public Map<String,String> disableUser(@PathVariable("userID") String userID, @RequestBody BeehiveJdbcUser user) {
+	public Map<String,String> disableUser(@PathVariable("userID") String userID) {
 
-		userManager.updateUserSign(userID,false);
+		userManager.disableUser(userID);
 
 
 		Map<String, String> map = new HashMap<>();
@@ -330,8 +321,15 @@ public class UserController {
 
 
 	@RequestMapping(path="/users/me/customData/{name}",method={RequestMethod.PUT})
-	public void setCustomData(@PathVariable(value="name") String name, @RequestBody CustomData  data){
+	public void setCustomData(@PathVariable(value="name") String name, @RequestBody(required = false) CustomData  data){
 
+		if(data==null){
+
+			PortalException  excep= new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus.BAD_REQUEST);
+			excep.addParam("field","custom data content ");
+			throw excep;
+
+		}
 		dataDao.setUserData(data,name,AuthInfoStore.getUserID());
 
 	}

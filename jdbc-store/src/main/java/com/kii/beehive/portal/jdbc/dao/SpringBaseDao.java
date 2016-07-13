@@ -264,7 +264,7 @@ public abstract class SpringBaseDao<T extends BusinessEntity> {
 
 	public int hardDeleteByID(Long id) {
 
-		String sql = "delete " + this.getTableName() + "  where " + getKey() + "=?";
+		String sql = "delete from " + this.getTableName() + "  where " + getKey() + " =? ";
 		return jdbcTemplate.update(sql, id);
 
 	}
