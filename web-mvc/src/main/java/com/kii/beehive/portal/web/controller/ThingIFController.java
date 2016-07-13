@@ -70,8 +70,11 @@ public class ThingIFController extends AbstractThingTagController {
 
 				}
 			} else {
-				throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus
+
+				PortalException excep= new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus
 						.BAD_REQUEST);
+				excep.addParam("field"," thingID list or tag list ");
+				throw excep;
 			}
 
 			targets.add(restBean);

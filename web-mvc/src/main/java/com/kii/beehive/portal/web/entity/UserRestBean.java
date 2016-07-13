@@ -64,13 +64,15 @@ public class UserRestBean {
 	@JsonIgnore
 	public void verifyInput(){
 		if(StringUtils.isEmpty(beehiveUser.getUserName())&&StringUtils.isEmpty(beehiveUser.getMail())&&StringUtils.isEmpty(beehiveUser.getPhone())){
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus.BAD_REQUEST);
-		}
+			PortalException excep= new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus.BAD_REQUEST);
+			excep.addParam("field","userName or mail or phone ");
+			throw excep;		}
 
 		if(!StringUtils.isEmpty(beehiveUser.getPhone())&& !numPattern.matcher(beehiveUser.getPhone()).find()){
 
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus.BAD_REQUEST);
-
+			PortalException excep= new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus.BAD_REQUEST);
+			excep.addParam("field","phone ");
+			throw excep;
 		}
 
 	}

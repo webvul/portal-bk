@@ -73,16 +73,21 @@ public class SyncUserRestBean extends PortalSyncUser {
 
 	@JsonIgnore
 	public void verifyInput(){
+		PortalException excep= new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,  HttpStatus.BAD_REQUEST);
+
 		if(StringUtils.isEmpty(this.getUserName())){
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus.BAD_REQUEST);
+				excep.addParam("field","userName");
+				throw excep;
 		}
 
 		if(StringUtils.isEmpty(this.getAliUserID())){
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus.BAD_REQUEST);
+			excep.addParam("field","aliUserID");
+			throw excep;
 		}
 
 		if(StringUtils.isEmpty(this.getRole())){
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus.BAD_REQUEST);
+			excep.addParam("field","role");
+			throw excep;
 		}
 
 	}

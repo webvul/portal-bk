@@ -29,12 +29,13 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import com.kii.beehive.business.service.SmsSendService;
 import com.kii.beehive.portal.auth.AuthInfoStore;
-import com.kii.beehive.portal.common.utils.CollectUtils;
 import com.kii.beehive.portal.entitys.PermissionTree;
 import com.kii.beehive.portal.helper.BeehiveFacePlusPlusService;
 import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 import com.kii.beehive.portal.manager.AuthManager;
 import com.kii.beehive.portal.manager.BeehiveUserManager;
+import com.kii.beehive.portal.service.UserCustomDataDao;
+import com.kii.beehive.portal.store.entity.CustomData;
 import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.entity.UserRestBean;
 import com.kii.beehive.portal.web.exception.PortalException;
@@ -56,6 +57,9 @@ public class UserController {
 
 	@Autowired
 	private SmsSendService  smsService;
+
+	@Autowired
+	private UserCustomDataDao  dataDao;
 
 
 	@Value("${face.photo.dir}")
@@ -144,6 +148,50 @@ public class UserController {
 		return map;
 	}
 
+
+	@RequestMapping(value = "/usermanager/{userID}", method = {RequestMethod.DELETE})
+	public void deleteUser(@PathVariable("userID") String userID, @RequestBody BeehiveJdbcUser user) {
+
+		userManager.updateUser(user, userID);
+
+		return;
+	}
+
+
+	@RequestMapping(value = "/usermanager/{userID}/enable", method = {RequestMethod.PUT})
+	public Map<String,String> enableUser(@PathVariable("userID") String userID, @RequestBody BeehiveJdbcUser user) {
+
+		userManager.updateUserSign(userID,true);
+
+
+		Map<String, String> map = new HashMap<>();
+		map.put("userID", userID);
+		map.put("enable",Boolean.toString(true));
+
+		return map;
+	}
+
+	@RequestMapping(value = "/usermanager/{userID}/disable", method = {RequestMethod.PUT})
+	public Map<String,String> disableUser(@PathVariable("userID") String userID, @RequestBody BeehiveJdbcUser user) {
+
+		userManager.updateUserSign(userID,false);
+
+
+		Map<String, String> map = new HashMap<>();
+		map.put("userID", userID);
+		map.put("enable",Boolean.toString(false));
+		return map;
+	}
+
+
+	@RequestMapping(path="/usermanager/{userId}",method={RequestMethod.DELETE},consumes = {MediaType.ALL_VALUE})
+	public void hardDeleteUser(@PathVariable("userID") String userID){
+
+
+		userManager.removeUser(userID);
+
+	}
+
 	/**
 	 * 通过userID查询用户
 	 * GET /users/{userID}
@@ -152,7 +200,7 @@ public class UserController {
 	 *
 	 * @param userID
 	 */
-	@RequestMapping(value = "/usermanager/{userID}", method = {RequestMethod.GET}, consumes = {"*"})
+	@RequestMapping(value = "/usermanager/{userID}", method = {RequestMethod.GET}, consumes = {MediaType.ALL_VALUE})
 	public UserRestBean getUser(@PathVariable("userID") String userID) {
 
 		UserRestBean bean = new UserRestBean();
@@ -173,13 +221,21 @@ public class UserController {
 	public void changePassword(@RequestBody Map<String, Object> request) {
 
 		String oldPassword = (String)request.get("oldPassword");
-		String newPassord = (String)request.get("newPassword");
+		String newPassword = (String)request.get("newPassword");
 
-		if(CollectUtils.containsBlank(oldPassword, newPassord)) {
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,  HttpStatus.BAD_REQUEST);
+		PortalException excep= new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,  HttpStatus.BAD_REQUEST);
+
+		if(StringUtils.isEmpty(oldPassword)) {
+			excep.addParam("field","oldPassword");
+			throw excep;
 		}
 
-		authManager.changePassword(oldPassword, newPassord);
+		if(StringUtils.isEmpty(newPassword)) {
+			excep.addParam("field","newPassword");
+			throw excep;
+		}
+
+		authManager.changePassword(oldPassword, newPassword);
 
 	}
 
@@ -188,7 +244,7 @@ public class UserController {
 
 
 
-	@RequestMapping(value = "/users/me", method = {RequestMethod.GET}, consumes = {"*"})
+	@RequestMapping(value = "/users/me", method = {RequestMethod.GET}, consumes = {MediaType.ALL_VALUE})
 	public UserRestBean getUser() {
 
 		String userID=AuthInfoStore.getUserID();
@@ -221,7 +277,7 @@ public class UserController {
 	 *
 	 * @param userID
 	 */
-	@RequestMapping(value = "/users/{userID}", method = {RequestMethod.GET}, consumes = {"*"})
+	@RequestMapping(value = "/users/{userID}", method = {RequestMethod.GET}, consumes = {MediaType.ALL_VALUE})
 	public UserRestBean getUserByID(@PathVariable("userID") String userID) {
 
 		UserRestBean bean = new UserRestBean();
@@ -231,7 +287,7 @@ public class UserController {
 	}
 
 
-	@RequestMapping(value = "/users/permissionTree", method = {RequestMethod.GET},consumes = {"*"})
+	@RequestMapping(value = "/users/permissionTree", method = {RequestMethod.GET},consumes = {MediaType.ALL_VALUE})
 	public PermissionTree getUserPermissTree(){
 
 		String userID=AuthInfoStore.getUserID();
@@ -256,6 +312,32 @@ public class UserController {
 				.collect(Collectors.toCollection(ArrayList::new));
 
 	}
+
+	@RequestMapping(path="/users/me",method={RequestMethod.DELETE},consumes = {MediaType.ALL_VALUE})
+	public void deleteUser(){
+
+
+		 userManager.removeUser(AuthInfoStore.getUserID());
+
+	}
+
+	@RequestMapping(path="/users/me/customData/{name}",method={RequestMethod.GET},consumes = {MediaType.ALL_VALUE})
+	public CustomData  getCustomData(@PathVariable(value = "name") String name){
+
+		return dataDao.getUserData(name,AuthInfoStore.getUserID());
+
+	}
+
+
+	@RequestMapping(path="/users/me/customData/{name}",method={RequestMethod.PUT})
+	public void setCustomData(@PathVariable(value="name") String name, @RequestBody CustomData  data){
+
+		dataDao.setUserData(data,name,AuthInfoStore.getUserID());
+
+	}
+
+
+
 
 
 	@RequestMapping(value="/user/photo", method=RequestMethod.POST , consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})

@@ -256,9 +256,17 @@ public abstract class SpringBaseDao<T extends BusinessEntity> {
 
 
 
-	public int deleteByID(Serializable id) {
+	public int deleteByID(Long id) {
 		String sql = "update " + this.getTableName() + " set  is_deleted = true where " + getKey() + "=?";
 		return jdbcTemplate.update(sql, id);
+	}
+
+
+	public int hardDeleteByID(Long id) {
+
+		String sql = "delete " + this.getTableName() + "  where " + getKey() + "=?";
+		return jdbcTemplate.update(sql, id);
+
 	}
 
 	public int updateEntityAllByID(T entity) {
@@ -404,4 +412,6 @@ public abstract class SpringBaseDao<T extends BusinessEntity> {
 
 		return list;
 	}
+	
+
 }

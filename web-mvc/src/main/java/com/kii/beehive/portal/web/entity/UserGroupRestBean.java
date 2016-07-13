@@ -59,8 +59,9 @@ public class UserGroupRestBean extends UserGroup {
     public void verifyInput(){
 
         if(Strings.isBlank(userGroupName)) {
-            throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus.BAD_REQUEST);
-        }
+			PortalException excep= new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus.BAD_REQUEST);
+			excep.addParam("field","userGroupName");
+			throw excep;        }
 
     }
 

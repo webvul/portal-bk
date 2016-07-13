@@ -32,6 +32,16 @@ public class BeehiveJdbcUser extends BusinessEntity{
 
 	private Integer  faceSubjectId; // face++
 
+	private boolean enable;
+
+	@JdbcField(column="enable")
+	public boolean isEnable() {
+		return enable;
+	}
+
+	public void setEnable(boolean enable) {
+		this.enable = enable;
+	}
 
 	@JdbcField(column="face_subject_id")
 	public Integer getFaceSubjectId() {

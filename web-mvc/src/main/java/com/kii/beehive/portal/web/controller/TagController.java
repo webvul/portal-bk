@@ -49,8 +49,9 @@ public class TagController extends AbstractThingTagController {
 	public Map<String, Object> createTag(@RequestBody TagIndex tag) {
 		String displayName = tag.getDisplayName();
 		if (Strings.isBlank(displayName)) {
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,
-					HttpStatus.BAD_REQUEST);
+			PortalException excep= new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,  HttpStatus.BAD_REQUEST);
+			excep.addParam("field","displayName");
+			throw excep;
 		}
 
 		if (null != tag.getId()) {
@@ -90,8 +91,9 @@ public class TagController extends AbstractThingTagController {
 	public void removeTag(@PathVariable("displayName") String displayName) {
 
 		if (Strings.isBlank(displayName)) {
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus.BAD_REQUEST);
-		}
+			PortalException excep= new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,  HttpStatus.BAD_REQUEST);
+			excep.addParam("field","displayName");
+			throw excep;		}
 
 		getCreatedTagIds(TagType.Custom, displayName).forEach(id -> thingTagManager.removeTag(id));
 	}
@@ -159,10 +161,10 @@ public class TagController extends AbstractThingTagController {
 	 */
 	@RequestMapping(value = "/{fullNames}/users/{userIDs}", method = {RequestMethod.POST})
 	public void bindTagToUser(@PathVariable("fullNames") String fullNames, @PathVariable("userIDs") String userIds) {
-		if (Strings.isBlank(fullNames) || Strings.isBlank(userIds)) {
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus
-					.BAD_REQUEST);
-		}
+//		if (Strings.isBlank(fullNames) || Strings.isBlank(userIds)) {
+//			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus
+//					.BAD_REQUEST);
+//		}
 		List<Long> tagIds = getCreatedTagIds(fullNames);
 		Set<String> userIdSet = getUserIds(userIds);
 		thingTagManager.bindTagsToUsers(tagIds, userIdSet);
@@ -177,10 +179,10 @@ public class TagController extends AbstractThingTagController {
 	 */
 	@RequestMapping(value = "/{fullNames}/users/{userIDs}", method = {RequestMethod.DELETE}, consumes = {"*"})
 	public void unbindTagFromUser(@PathVariable("fullNames") String fullNames, @PathVariable("userIDs") String userIds) {
-		if (Strings.isBlank(fullNames) || Strings.isBlank(userIds)) {
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus
-					.BAD_REQUEST);
-		}
+//		if (Strings.isBlank(fullNames) || Strings.isBlank(userIds)) {
+//			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus
+//					.BAD_REQUEST);
+//		}
 		List<Long> tagIds = getCreatedTagIds(fullNames);
 		Set<String> userIdSet = getUserIds(userIds);
 		thingTagManager.unbindTagsFromUsers(tagIds, userIdSet);
@@ -195,10 +197,10 @@ public class TagController extends AbstractThingTagController {
 	@RequestMapping(value = "/{fullNames}/userGroups/{userGroupIDs}", method = {RequestMethod.POST})
 	public void bindTagToUserGroup(@PathVariable("fullNames") String fullNames, @PathVariable("userGroupIDs") String
 			userGroupIDs) {
-		if (Strings.isBlank(fullNames) || Strings.isBlank(userGroupIDs)) {
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,  HttpStatus
-					.BAD_REQUEST);
-		}
+//		if (Strings.isBlank(fullNames) || Strings.isBlank(userGroupIDs)) {
+//			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,  HttpStatus
+//					.BAD_REQUEST);
+//		}
 
 		List<Long> tagIds = getCreatedTagIds(fullNames);
 		Set<Long> groupIds = getUserGroupIds(userGroupIDs);
@@ -215,10 +217,10 @@ public class TagController extends AbstractThingTagController {
 	 */
 	@RequestMapping(value = "/{fullNames}/userGroups/{userGroupIDs}", method = {RequestMethod.DELETE}, consumes = {"*"})
 	public void unbindTagsFromUserGroups(@PathVariable("fullNames") String fullNames, @PathVariable("userGroupIDs") String userGroupIDs) {
-		if (Strings.isBlank(fullNames) || Strings.isBlank(userGroupIDs)) {
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,  HttpStatus
-					.BAD_REQUEST);
-		}
+//		if (Strings.isBlank(fullNames) || Strings.isBlank(userGroupIDs)) {
+//			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,  HttpStatus
+//					.BAD_REQUEST);
+//		}
 		List<Long> tagIds = getCreatedTagIds(fullNames);
 
 

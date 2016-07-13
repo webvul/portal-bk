@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.kii.beehive.business.service.KiiUserService;
 import com.kii.beehive.portal.auth.AuthInfoStore;
@@ -13,12 +14,14 @@ import com.kii.beehive.portal.common.utils.StringRandomTools;
 import com.kii.beehive.portal.entitys.PermissionTree;
 import com.kii.beehive.portal.exception.UnauthorizedException;
 import com.kii.beehive.portal.helper.RuleSetService;
+import com.kii.beehive.portal.jdbc.dao.BeehiveArchiveUserDao;
 import com.kii.beehive.portal.jdbc.dao.BeehiveUserJdbcDao;
 import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
 import com.kii.beehive.portal.jdbc.dao.TeamDao;
 import com.kii.beehive.portal.jdbc.dao.TeamGroupRelationDao;
 import com.kii.beehive.portal.jdbc.dao.TeamUserRelationDao;
 import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
+import com.kii.beehive.portal.jdbc.entity.BeehiveArchiveUser;
 import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 import com.kii.beehive.portal.jdbc.entity.Team;
 import com.kii.beehive.portal.jdbc.entity.TeamUserRelation;
@@ -41,6 +44,9 @@ public class BeehiveUserManager {
 
 	@Autowired
 	private BeehiveUserJdbcDao userDao;
+
+	@Autowired
+	private BeehiveArchiveUserDao archiveUserDao;
 
 	@Autowired
 	private RuleSetService ruleService;
@@ -104,6 +110,10 @@ public class BeehiveUserManager {
 
 		if(existsUser!=null){
 			throw new IllegalArgumentException("the username had existed,please change a loginName or email or phone Number");
+		}
+
+		if(StringUtils.isEmpty(user.getRoleName())){
+			user.setRoleName("commUser");
 		}
 
 		user=userDao.addUser(user);
@@ -217,7 +227,30 @@ public class BeehiveUserManager {
 		}
 	}
 	
+	
+	public void updateUserSign(String userID, boolean b) {
+
+		userDao.updateEnableSign(userID,b);
+	}
+
+	public void deleteUser(String userID){
+
+		userDao.deleteUserByUserID(userID);
+	}
 
 
+	public void removeUser(String userID){
+		BeehiveJdbcUser  user=userDao.getUserByUserID(userID);
+
+
+		userDao.hardDeleteByID(user.getId());
+
+
+		BeehiveArchiveUser  archiveUser=new BeehiveArchiveUser(user);
+
+		archiveUserDao.insert(archiveUser);
+
+	}
+	
 
 }

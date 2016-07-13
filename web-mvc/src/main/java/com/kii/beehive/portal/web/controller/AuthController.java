@@ -50,9 +50,7 @@ public class AuthController {
 	public RedirectView doActivity(@PathVariable("userID") String userID, @PathVariable("activityCode") String code,HttpServletRequest request) {
 
 
-		if(CollectUtils.containsBlank(userID, code)) {
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus.BAD_REQUEST);
-		}
+
 
 		String result = authManager.activiteByID(userID, code);
 
@@ -81,9 +79,16 @@ public class AuthController {
         String userName = (String)request.get("userName");
         String password = (String)request.get("activityToken");
 
-        if(CollectUtils.containsBlank(userName, password)) {
-            throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus.BAD_REQUEST);
+		PortalException  excep= new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus.BAD_REQUEST);
+		if(StringUtils.isEmpty(userName)) {
+			excep.addParam("field","userName");
+			throw excep;
         }
+
+		if(StringUtils.isEmpty(password)) {
+			excep.addParam("field","password");
+			throw excep;
+		}
 
         String result = authManager.activite(userName, password);
 
@@ -123,6 +128,15 @@ public class AuthController {
 				beehiveUser.setUserName(beehiveUser.getPhone());
 			}
 		}
+
+		if(StringUtils.isEmpty(user.getPassword())){
+
+			PortalException  excep=  new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,  HttpStatus.BAD_REQUEST);
+
+			excep.addParam("field","password");
+
+			throw excep;
+		}
 		beehiveUser.setRoleName("commUser");
 
 		return  authManager.createUserDirectly(beehiveUser,user.getPassword());
@@ -147,8 +161,15 @@ public class AuthController {
 		}
 		String password = (String) request.get("password");
 
-		if (CollectUtils.containsBlank(userID, password)) {
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus.BAD_REQUEST);
+		if(CollectUtils.containsBlank(userID, password)) {
+			PortalException excep= new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus.BAD_REQUEST);
+
+			if(StringUtils.isEmpty(userID)){
+				excep.addParam("field","userName or userID");
+			}else{
+				excep.addParam("field","password");
+			}
+			throw excep;
 		}
 
 		return authManager.login(userID, password);
