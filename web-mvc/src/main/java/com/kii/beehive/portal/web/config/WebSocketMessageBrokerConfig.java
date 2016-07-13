@@ -1,6 +1,7 @@
 package com.kii.beehive.portal.web.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -19,21 +20,39 @@ public class WebSocketMessageBrokerConfig extends AbstractSecurityWebSocketMessa
 	@Autowired
 	private STOMPClientInboundChannelInterceptor stompClientInboundChannelInterceptor;
 
+	@Value("${beehive.websocket.stomp.broker}")
+	private String broker;
+
+	@Value("${beehive.websocket.stomp.destination.prefix}")
+	private String destinationPrefix;
+
+	@Value("${beehive.websocket.stomp.endpoint}")
+	private String enpointStomp;
+
+	@Value("${beehive.websocket.stomp.endpoint.sockJS}")
+	private String endporintStompSockJS;
+
+	@Value("${beehive.websocket.stomp.allowedOrigins}")
+	private String[] allowedOrigins;
+
+	@Value("${beehive.websocket.stomp.sameOriginDisabled}")
+	private boolean sameOriginDisabled;
+
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
-		registry.addEndpoint("/stompSockJS").setAllowedOrigins("*").withSockJS();
-		registry.addEndpoint("/stomp").setAllowedOrigins("*");
+		registry.addEndpoint(endporintStompSockJS).setAllowedOrigins(allowedOrigins).withSockJS();
+		registry.addEndpoint(enpointStomp).setAllowedOrigins(allowedOrigins);
 	}
 
 	@Override
 	public void configureMessageBroker(MessageBrokerRegistry config) {
-		config.enableSimpleBroker("/topic");
-		config.setApplicationDestinationPrefixes("/app");
+		config.enableSimpleBroker(broker);
+		config.setApplicationDestinationPrefixes(destinationPrefix);
 	}
 
 	@Override
 	protected boolean sameOriginDisabled() {
-		return true;
+		return sameOriginDisabled;
 	}
 
 	@Override
