@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.beehive.portal.faceplusplus.FacePlusPlusService;
 import com.kii.beehive.portal.faceplusplus.entitys.FaceUser;
 import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
@@ -31,7 +32,7 @@ public class BeehiveFacePlusPlusService {
 
 		BeehiveJdbcUser user = userManager.getUserByID(userId);
 		if(user == null) {
-			throw new RuntimeException("can not find user ! ");
+			throw  EntryNotFoundException.userIDNotFound(userId);
 		}
 
 		List<Integer> photoIds = new ArrayList<>();

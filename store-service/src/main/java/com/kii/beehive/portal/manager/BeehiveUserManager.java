@@ -66,23 +66,6 @@ public class BeehiveUserManager {
 	private TeamDao teamDao;
 
 
-//
-//	public String getFacePhotoDir() {
-//		return facePhotoDir;
-//	}
-//
-//	@PostConstruct
-//	public void init() throws JsonProcessingException {
-//		//init dir
-//		File facePhotoDirFile = new File(facePhotoDir);
-//		if (!facePhotoDirFile.exists()) {
-//			boolean isMkdirs = facePhotoDirFile.mkdirs();
-//			if (!isMkdirs) {
-//				throw new RuntimeException("create face++ upload photo dir error ! ");
-//			}
-//		}
-//	}
-
 	public PermissionTree getUsersPermissonTree(String userID){
 
 		return ruleService.getUserPermissionTree(userID);
@@ -132,11 +115,7 @@ public class BeehiveUserManager {
 		user.setActivityToken(user.getHashedPwd(token));
 
 		userDao.updateEntityAllByID(user);
-//
-//
-//		if(!StringUtils.isEmpty(teamName)){
-//			Long teamID=addTeam(teamName,user.getId());
-//		}
+
 
 		return user;
 	}
@@ -247,10 +226,6 @@ public class BeehiveUserManager {
 
 	}
 
-//	public void deleteUser(String userID){
-//
-//		userDao.deleteUserByUserID(userID);
-//	}
 
 
 	public void removeUser(String userID){
