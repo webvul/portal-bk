@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,8 +17,6 @@ import com.kii.beehive.business.helper.OpLogTools;
 import com.kii.beehive.business.ruleengine.TriggerLogTools;
 import com.kii.beehive.business.ruleengine.TriggerManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
-import com.kii.beehive.portal.web.constant.ErrorCode;
-import com.kii.beehive.portal.web.exception.PortalException;
 import com.kii.extension.ruleengine.TriggerValidate;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
@@ -84,9 +81,6 @@ public class CrossTriggerController {
 		Map<String, Object> result = new HashMap<>();
 		result.put("result", "success");
 		TriggerRecord record=mang.getTriggerByID(triggerID);
-		if(!TriggerRecord.StatusType.disable.equals(record.getRecordStatus())){
-			throw new PortalException(ErrorCode.METHOD_NOT_ALLOWED, HttpStatus.METHOD_NOT_ALLOWED);
-		}
 
 		mang.enableTrigger(triggerID);
 
@@ -101,9 +95,7 @@ public class CrossTriggerController {
 		Map<String, Object> result = new HashMap<>();
 		result.put("result", "success");
 		TriggerRecord record=mang.getTriggerByID(triggerID);
-		if(!TriggerRecord.StatusType.enable.equals(record.getRecordStatus())){
-			throw new PortalException(ErrorCode.METHOD_NOT_ALLOWED, HttpStatus.METHOD_NOT_ALLOWED);
-		}
+
 
 		mang.disableTrigger(triggerID);
 

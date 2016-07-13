@@ -228,8 +228,11 @@ public class ThingController extends AbstractThingTagController {
 		List<GlobalThingInfo> gList = thingTagManager.getThingsByVendorThingIds(Arrays.asList(thingInfo.getVendorThingID()));
 
 		if (!gList.isEmpty() && !gList.get(0).getId().equals(input.getId())) {
-			throw new PortalException(ErrorCode.DUPLICATE_OBJECT,
+			PortalException excep= new PortalException(ErrorCode.DUPLICATE_OBJECT,
 					HttpStatus.BAD_REQUEST);
+			excep.addParam("type","thing");
+			excep.addParam("objectID",String.valueOf(gList));
+			throw excep;
 		}
 
 		Long thingID = thingTagManager.createThing(thingInfo, input.getLocation(), input.getInputTags());
@@ -292,8 +295,11 @@ public class ThingController extends AbstractThingTagController {
 		List<GlobalThingInfo> gList = thingTagManager.getThingsByVendorThingIds(Arrays.asList(thingInfo.getVendorThingID()));
 
 		if (!gList.isEmpty() && !gList.get(0).getId().equals(input.getId())) {
-			throw new PortalException(ErrorCode.DUPLICATE_OBJECT,
+			PortalException excep= new PortalException(ErrorCode.DUPLICATE_OBJECT,
 					HttpStatus.BAD_REQUEST);
+			excep.addParam("type","thing");
+			excep.addParam("objectID",String.valueOf(gList));
+			throw excep;
 		}
 
 		Long thingID = thingTagManager.createThing(thingInfo, input.getLocation(), input.getInputTags());

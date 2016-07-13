@@ -96,10 +96,12 @@ public class AuthManager {
 
 		String beehiveToken=getBeehiveToken(token,user.getUserName(),false);
 
+		saveToken(user,beehiveToken,null,false);
+
 		Map<String,String> result=new HashMap<>();
 
 		result.put("userID",user.getUserID());
-//		result.put("token",beehiveToken);
+		result.put("token",beehiveToken);
 
 		return result;
 

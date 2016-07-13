@@ -193,7 +193,7 @@ public class AuthController {
 		if(!StringUtils.isEmpty(token)) {
 			authManager.logout(token);
 		}else{
-			throw new PortalException(ErrorCode.TOKEN_MISS,HttpStatus.UNAUTHORIZED);
+			throw new PortalException(ErrorCode.INVALID_TOKEN,HttpStatus.UNAUTHORIZED);
 		}
     }
 
@@ -213,7 +213,7 @@ public class AuthController {
 		String token = AuthUtils.getTokenFromHeader(request);
 
 		if(StringUtils.isEmpty(token)){
-			PortalException excep= new PortalException(ErrorCode.TOKEN_MISS,HttpStatus.UNAUTHORIZED);
+			PortalException excep= new PortalException(ErrorCode.INVALID_TOKEN,HttpStatus.UNAUTHORIZED);
 			throw excep;
 		}
 
