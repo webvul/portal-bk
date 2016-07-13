@@ -124,7 +124,7 @@ public class AuthManager {
 	}
 
 	private String doActivity(String token, BeehiveJdbcUser user) {
-		if(!user.isEnable()){
+		if(!user.isEnable()||StringUtils.isEmpty(user.getActivityToken())){
 			throw new UnauthorizedException(UnauthorizedException.USER_ALREADY_ACTIVIED);
 		}
 
@@ -180,7 +180,8 @@ public class AuthManager {
 		}
 
 
-		if(!user.isEnable()) {
+		if(!user.isEnable()||!StringUtils.isEmpty(user.getActivityToken())) {
+
 			UnauthorizedException  excep= new UnauthorizedException(UnauthorizedException.USER_BEEN_LOCKED);
 			excep.addParam("userName",userName);
 			throw excep;
