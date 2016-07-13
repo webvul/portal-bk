@@ -133,7 +133,10 @@ public class UtilToolsController {
 		List<GlobalThingInfo> thingInfos = tagThingManager.getThingsByVendorThingIds(Arrays.asList(vendorThingID));
 
 		if (thingInfos.isEmpty()) {
-			throw new PortalException(ErrorCode.NOT_FOUND, HttpStatus.NOT_FOUND);
+			PortalException excep= new PortalException(ErrorCode.NOT_FOUND, HttpStatus.BAD_REQUEST);
+			excep.addParam("type","global thing");
+			excep.addParam("objectID",vendorThingID);
+			throw excep;
 		}
 		GlobalThingInfo globalThingInfo = thingInfos.get(0);
 
