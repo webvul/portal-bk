@@ -6,10 +6,10 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,6 +44,22 @@ public class AuthController {
 	@Autowired
 	private BeehiveUserManager userManager;
 
+
+	public static void veifyPwd(String pwd){
+
+		PortalException  excep= new PortalException(ErrorCode.INVALID_PWD, HttpStatus.BAD_REQUEST);
+
+
+		if(StringUtils.isBlank(pwd)) {
+			throw excep;
+		}
+
+		if(pwd.length()<6 ){
+			throw excep;
+		}
+
+
+	}
 
 
 	@RequestMapping(path = "/doActivity/{userID}/code/{activityCode}.do", method = { RequestMethod.GET },consumes = {MediaType.ALL_VALUE})
@@ -108,6 +124,8 @@ public class AuthController {
 			throw new PortalException(ErrorCode.INVALID_TOKEN,HttpStatus.UNAUTHORIZED);
 		}
 		String password = (String) inputMap.get("newPassword");
+
+		veifyPwd(password);
 		String userID = (String) inputMap.get("userName");
 
 		authManager.initPassword(token, userID, password);
@@ -129,14 +147,8 @@ public class AuthController {
 			}
 		}
 
-		if(StringUtils.isEmpty(user.getPassword())){
+		veifyPwd(user.getPassword());
 
-			PortalException  excep=  new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,  HttpStatus.BAD_REQUEST);
-
-			excep.addParam("field","password");
-
-			throw excep;
-		}
 		beehiveUser.setRoleName("commUser");
 
 		return  authManager.createUserDirectly(beehiveUser,user.getPassword());

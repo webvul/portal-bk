@@ -5,6 +5,7 @@ public class ErrorCode {
 	public static final String NOT_FOUND = "the ${type}  ${objectID}  NOT_FOUND";
 	public static final String REQUIRED_FIELDS_MISSING = "REQUIRED_FIELDS_MISSING";
 	public static final String INVALID_INPUT = "INVALID_INPUT";
+	public static final String INVALID_PWD="INVALID_PWD";
 	public static final String DUPLICATE_OBJECT="DUPLICATE_OBJECT";
 	public static final String INVALID_TOKEN="INVALID_TOKEN";
 

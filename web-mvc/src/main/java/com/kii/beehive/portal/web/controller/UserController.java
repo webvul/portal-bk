@@ -221,10 +221,8 @@ public class UserController {
 			throw excep;
 		}
 
-		if(StringUtils.isEmpty(newPassword)) {
-			excep.addParam("field","newPassword");
-			throw excep;
-		}
+		AuthController.veifyPwd(newPassword);
+
 
 		authManager.changePassword(oldPassword, newPassword);
 
