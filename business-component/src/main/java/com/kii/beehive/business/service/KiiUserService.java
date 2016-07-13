@@ -1,5 +1,6 @@
 package com.kii.beehive.business.service;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -54,10 +55,24 @@ public class KiiUserService {
 	public String  addBeehiveUser(BeehiveJdbcUser beehiveUser, String pwd){
 
 		KiiUser user=new KiiUser();
+		String displayName=beehiveUser.getDisplayName();
+		if(StringUtils.isBlank(displayName)){
+			displayName=beehiveUser.getUserName();
+		}
+		if(displayName.length()>50){
+			displayName=displayName.substring(0,50);
+		}
 
-		user.setDisplayName(beehiveUser.getDisplayName());
+		String loginName=beehiveUser.getUserName();
+		if(!StringUtils.isAsciiPrintable(beehiveUser.getUserName())){
+			loginName="beehiveUser"+beehiveUser.getId();
+		}
+		if(loginName.length()>50){
+			loginName=loginName.substring(0,50);
+		}
 
-		user.setLoginName(beehiveUser.getUserName());
+		user.setDisplayName(displayName);
+		user.setLoginName(loginName);
 
 		user.setPassword(pwd);
 

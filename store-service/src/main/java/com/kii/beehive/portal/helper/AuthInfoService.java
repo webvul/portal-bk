@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.entitys.AuthInfo;
 import com.kii.beehive.portal.exception.TokenTimeoutException;
+import com.kii.beehive.portal.exception.UnauthorizedException;
 import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.context.UserTokenBindTool;
@@ -73,8 +74,13 @@ public class AuthInfoService {
 
 	public void removeToken(String token){
 
-		userTokenMap.remove(token);
+		AuthInfo  info=userTokenMap.remove(token);
 
+		if(info==null){
+			UnauthorizedException excep=  new UnauthorizedException(UnauthorizedException.LOGIN_TOKEN_INVALID);
+			excep.addParam("token",token);
+			throw excep;
+		}
 	}
 	
 	
