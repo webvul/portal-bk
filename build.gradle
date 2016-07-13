@@ -1,5 +1,6 @@
 ext {
-    springVersion = "4.2.3.RELEASE"
+    springVersion = "4.2.5.RELEASE"
+    springSecurityVersion = "4.0.4.RELEASE"
     aspectjVersion = "1.8.1"
     jacksonVersion = "2.6.1"
     elasticsearchVersion = "2.3.3"
