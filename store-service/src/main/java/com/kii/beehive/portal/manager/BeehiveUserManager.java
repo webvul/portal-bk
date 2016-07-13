@@ -3,10 +3,10 @@ package com.kii.beehive.portal.manager;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import com.kii.beehive.business.service.KiiUserService;
 import com.kii.beehive.portal.auth.AuthInfoStore;
@@ -99,7 +99,7 @@ public class BeehiveUserManager {
 			throw new UserExistException(user,existsUser);
 		}
 
-		if(StringUtils.isEmpty(user.getRoleName())){
+		if(StringUtils.isBlank(user.getRoleName())){
 			user.setRoleName("commUser");
 		}
 

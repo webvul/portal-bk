@@ -9,13 +9,13 @@ import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.kii.beehive.business.helper.OpLogTools;
@@ -113,7 +113,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
 		String token = AuthUtils.getTokenFromHeader(request);
 
-		if (StringUtils.isEmpty(token)) {
+		if (StringUtils.isBlank(token)) {
 			throw new PortalException(ErrorCode.INVALID_TOKEN, HttpStatus.UNAUTHORIZED);
 		}
 		list.set(1, token);

@@ -2,8 +2,8 @@ package com.kii.beehive.portal.web.entity;
 
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
-import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
@@ -63,12 +63,12 @@ public class UserRestBean {
 
 	@JsonIgnore
 	public void verifyInput(){
-		if(StringUtils.isEmpty(beehiveUser.getUserName())&&StringUtils.isEmpty(beehiveUser.getMail())&&StringUtils.isEmpty(beehiveUser.getPhone())){
+		if(StringUtils.isBlank(beehiveUser.getUserName())&&StringUtils.isBlank(beehiveUser.getMail())&&StringUtils.isBlank(beehiveUser.getPhone())){
 			PortalException excep= new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus.BAD_REQUEST);
 			excep.addParam("field","userName or mail or phone ");
 			throw excep;		}
 
-		if(!StringUtils.isEmpty(beehiveUser.getPhone())&& !numPattern.matcher(beehiveUser.getPhone()).find()){
+		if(!StringUtils.isBlank(beehiveUser.getPhone())&& !numPattern.matcher(beehiveUser.getPhone()).find()){
 
 			PortalException excep= new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus.BAD_REQUEST);
 			excep.addParam("field","phone ");

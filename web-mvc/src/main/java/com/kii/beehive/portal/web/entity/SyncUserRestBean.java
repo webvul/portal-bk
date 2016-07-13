@@ -3,9 +3,9 @@ package com.kii.beehive.portal.web.entity;
 
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
-import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -75,17 +75,17 @@ public class SyncUserRestBean extends PortalSyncUser {
 	public void verifyInput(){
 		PortalException excep= new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,  HttpStatus.BAD_REQUEST);
 
-		if(StringUtils.isEmpty(this.getUserName())){
+		if(StringUtils.isBlank(this.getUserName())){
 				excep.addParam("field","userName");
 				throw excep;
 		}
 
-		if(StringUtils.isEmpty(this.getAliUserID())){
+		if(StringUtils.isBlank(this.getAliUserID())){
 			excep.addParam("field","aliUserID");
 			throw excep;
 		}
 
-		if(StringUtils.isEmpty(this.getRole())){
+		if(StringUtils.isBlank(this.getRole())){
 			excep.addParam("field","role");
 			throw excep;
 		}

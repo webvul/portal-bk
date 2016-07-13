@@ -8,12 +8,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import com.kii.beehive.business.service.KiiUserService;
 import com.kii.beehive.portal.auth.AuthInfoStore;
@@ -145,7 +145,7 @@ public class AuthManager {
 
 	public void initPassword(String token,String userName,String newPassword) {
 
-		if(StringUtils.isEmpty(token)||!token.equals(oneTimeTokenMap.get(userName))){
+		if(StringUtils.isBlank(token)||!token.equals(oneTimeTokenMap.get(userName))){
 
 			throw new UnauthorizedException(UnauthorizedException.ACTIVITY_TOKEN_INVALID);
 
