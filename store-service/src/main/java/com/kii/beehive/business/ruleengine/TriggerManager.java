@@ -22,6 +22,7 @@ import com.kii.beehive.business.event.BusinessEventListenerService;
 import com.kii.beehive.business.manager.ThingTagManager;
 import com.kii.beehive.portal.event.EventListener;
 import com.kii.beehive.portal.exception.EntryNotFoundException;
+import com.kii.beehive.portal.exception.InvalidTriggerFormatException;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.service.EventListenerDao;
 import com.kii.extension.ruleengine.EngineService;
@@ -34,6 +35,7 @@ import com.kii.extension.ruleengine.store.trigger.SummarySource;
 import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerValidPeriod;
+import com.kii.extension.ruleengine.store.trigger.multiple.GroupSummarySource;
 import com.kii.extension.ruleengine.store.trigger.multiple.MultipleSrcTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.multiple.ThingSource;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
@@ -170,8 +172,20 @@ public class TriggerManager {
 					eventService.addSummaryTagChangeListener(v.getSource().getTagList(), triggerID, k);
 				});
 
-			} else {
-				throw new IllegalArgumentException("unsupport trigger type");
+			} else if (record instanceof MultipleSrcTriggerRecord){
+				MultipleSrcTriggerRecord multipleRecord=(MultipleSrcTriggerRecord)record;
+
+				addMulToEngine(multipleRecord);
+
+				multipleRecord.getSummarySource().forEach((k, v) -> {
+					if(v instanceof GroupSummarySource) {
+						eventService.addSummaryTagChangeListener(((GroupSummarySource)v).getSource().getTagList(), triggerID, k);
+					}
+				});
+
+			}else{
+				throw new InvalidTriggerFormatException("unsupport trigger type");
+
 			}
 
 			if(period!=null) {
@@ -184,7 +198,7 @@ public class TriggerManager {
 
 		} catch (SchedulerException e) {
 			e.printStackTrace();
-			throw new IllegalArgumentException("schedule init fail:triggerID "+triggerID);
+			throw new InvalidTriggerFormatException("schedule init fail");
 		}
 
 		return ;
@@ -327,13 +341,5 @@ public class TriggerManager {
 		}
 	}
 
-//	public void clearTrigger(String triggerID) {
-//		//删除triggerRecord
-//		triggerDao.clearTriggerRecord(triggerID);
-//		//删除eventListener(kii cloud只支持单个删除)
-//		List<EventListener> eventListenerList = eventListenerDao.getEventListenerByTargetKey(triggerID);
-//		for(EventListener eventListener: eventListenerList){
-//			eventListenerDao.removeEntity(eventListener.getId());
-//		}
-//	}
+
 }

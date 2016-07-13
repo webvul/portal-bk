@@ -13,6 +13,7 @@ import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.StringRandomTools;
 import com.kii.beehive.portal.entitys.PermissionTree;
 import com.kii.beehive.portal.exception.UnauthorizedException;
+import com.kii.beehive.portal.exception.UserExistException;
 import com.kii.beehive.portal.helper.AuthInfoService;
 import com.kii.beehive.portal.helper.RuleSetService;
 import com.kii.beehive.portal.jdbc.dao.BeehiveArchiveUserDao;
@@ -112,7 +113,7 @@ public class BeehiveUserManager {
 		BeehiveJdbcUser existsUser=userDao.getUserByLoginId(user);
 
 		if(existsUser!=null){
-			throw new IllegalArgumentException("the username had existed,please change a loginName or email or phone Number");
+			throw new UserExistException(user,existsUser);
 		}
 
 		if(StringUtils.isEmpty(user.getRoleName())){

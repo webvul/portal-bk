@@ -64,7 +64,7 @@ public class AnnationBeanSqlParameterSource extends AbstractSqlParameterSource {
 	}
 
 	@Override
-	public Object getValue(String paramName) throws IllegalArgumentException {
+	public Object getValue(String paramName)  {
 		try {
 			String fieldName=fieldMapper.get(paramName);
 

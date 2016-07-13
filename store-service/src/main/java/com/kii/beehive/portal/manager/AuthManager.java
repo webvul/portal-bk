@@ -22,6 +22,7 @@ import com.kii.beehive.portal.entitys.AuthInfo;
 import com.kii.beehive.portal.entitys.AuthRestBean;
 import com.kii.beehive.portal.entitys.PermissionTree;
 import com.kii.beehive.portal.exception.UnauthorizedException;
+import com.kii.beehive.portal.exception.UserExistException;
 import com.kii.beehive.portal.exception.UserNotExistException;
 import com.kii.beehive.portal.helper.AuthInfoService;
 import com.kii.beehive.portal.helper.RuleSetService;
@@ -76,7 +77,7 @@ public class AuthManager {
 		BeehiveJdbcUser existsUser=userDao.getUserByLoginId(user);
 
 		if(existsUser!=null){
-			throw new IllegalArgumentException("the username had existed,please change a loginName or email or phone Number");
+			throw new UserExistException(user,existsUser);
 		}
 
 		user.setEnable(true);
@@ -96,10 +97,12 @@ public class AuthManager {
 
 		String beehiveToken=getBeehiveToken(token,user.getUserName(),false);
 
+		this.saveToken(user,beehiveToken,null,false);
+
 		Map<String,String> result=new HashMap<>();
 
 		result.put("userID",user.getUserID());
-//		result.put("token",beehiveToken);
+		result.put("token",beehiveToken);
 
 		return result;
 
