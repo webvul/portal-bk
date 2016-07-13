@@ -12,7 +12,7 @@ public class UserExistException extends BusinessException {
 
 		super.setErrorCode("USER_EXIST");
 
-		super.setStatusCode(HttpStatus.SC_BAD_REQUEST);
+		super.setStatusCode(HttpStatus.SC_CONFLICT);
 
 		if(user.getUserName().equals(existUser.getUserName())){
 

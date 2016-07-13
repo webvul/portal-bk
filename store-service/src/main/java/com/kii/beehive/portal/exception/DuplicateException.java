@@ -10,7 +10,7 @@ public class DuplicateException extends BusinessException{
 
 		super.setErrorCode("DUPLICATE_OBJECT");
 
-		super.setStatusCode(HttpStatus.SC_BAD_REQUEST);
+		super.setStatusCode(HttpStatus.SC_CONFLICT);
 
 		super.addParam("objectName",name);
 		super.addParam("type",type);
