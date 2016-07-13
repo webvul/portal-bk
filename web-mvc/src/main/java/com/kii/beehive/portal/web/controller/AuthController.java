@@ -6,10 +6,10 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,11 +39,27 @@ import com.kii.beehive.portal.web.help.AuthUtils;
 public class AuthController {
 
 	@Autowired
-    private AuthManager authManager;
+	private AuthManager authManager;
 
 	@Autowired
 	private BeehiveUserManager userManager;
 
+
+	public static void veifyPwd(String pwd){
+
+		PortalException  excep= new PortalException(ErrorCode.INVALID_PWD, HttpStatus.BAD_REQUEST);
+
+
+		if(StringUtils.isBlank(pwd)) {
+			throw excep;
+		}
+
+		if(pwd.length()<6 ){
+			throw excep;
+		}
+
+
+	}
 
 
 	@RequestMapping(path = "/doActivity/{userID}/code/{activityCode}.do", method = { RequestMethod.GET },consumes = {MediaType.ALL_VALUE})
@@ -66,38 +82,38 @@ public class AuthController {
 	}
 
 	/**
-     * 用户注册
-     * POST /oauth2/register
-     *
-     * refer to doc "Beehive API - User API" for request/response details
-     *
-     * @return
-     */
-    @RequestMapping(path = "/activate", method = { RequestMethod.POST })
-    public Map<String,Object> activating(@RequestBody Map<String, Object> request) {
+	 * 用户注册
+	 * POST /oauth2/register
+	 *
+	 * refer to doc "Beehive API - User API" for request/response details
+	 *
+	 * @return
+	 */
+	@RequestMapping(path = "/activate", method = { RequestMethod.POST })
+	public Map<String,Object> activating(@RequestBody Map<String, Object> request) {
 
-        String userName = (String)request.get("userName");
-        String password = (String)request.get("activityToken");
+		String userName = (String)request.get("userName");
+		String password = (String)request.get("activityToken");
 
 		PortalException  excep= new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus.BAD_REQUEST);
 		if(StringUtils.isEmpty(userName)) {
 			excep.addParam("field","userName");
 			throw excep;
-        }
+		}
 
 		if(StringUtils.isEmpty(password)) {
 			excep.addParam("field","password");
 			throw excep;
 		}
 
-        String result = authManager.activite(userName, password);
+		String result = authManager.activite(userName, password);
 
 		Map<String,Object> values=new HashMap<>();
 		values.put("initPwdToken",result);
 
 		return values;
 
-    }
+	}
 
 	@RequestMapping(path = "/initpassword", method = { RequestMethod.POST })
 	public void initPassword(@RequestBody Map<String, Object> inputMap,HttpServletRequest request) {
@@ -108,6 +124,8 @@ public class AuthController {
 			throw new PortalException(ErrorCode.INVALID_TOKEN,HttpStatus.UNAUTHORIZED);
 		}
 		String password = (String) inputMap.get("newPassword");
+
+		veifyPwd(password);
 		String userID = (String) inputMap.get("userName");
 
 		authManager.initPassword(token, userID, password);
@@ -129,14 +147,8 @@ public class AuthController {
 			}
 		}
 
-		if(StringUtils.isEmpty(user.getPassword())){
+		veifyPwd(user.getPassword());
 
-			PortalException  excep=  new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,  HttpStatus.BAD_REQUEST);
-
-			excep.addParam("field","password");
-
-			throw excep;
-		}
 		beehiveUser.setRoleName("commUser");
 
 		return  authManager.createUserDirectly(beehiveUser,user.getPassword());
@@ -193,9 +205,9 @@ public class AuthController {
 		if(!StringUtils.isEmpty(token)) {
 			authManager.logout(token);
 		}else{
-			throw new PortalException(ErrorCode.TOKEN_MISS,HttpStatus.UNAUTHORIZED);
+			throw new PortalException(ErrorCode.INVALID_TOKEN,HttpStatus.UNAUTHORIZED);
 		}
-    }
+	}
 
 
 
@@ -213,12 +225,12 @@ public class AuthController {
 		String token = AuthUtils.getTokenFromHeader(request);
 
 		if(StringUtils.isEmpty(token)){
-			PortalException excep= new PortalException(ErrorCode.TOKEN_MISS,HttpStatus.UNAUTHORIZED);
+			PortalException excep= new PortalException(ErrorCode.INVALID_TOKEN,HttpStatus.UNAUTHORIZED);
 			throw excep;
 		}
 
-        return authManager.validateUserToken(token);
-    }
+		return authManager.validateUserToken(token);
+	}
 
 
 

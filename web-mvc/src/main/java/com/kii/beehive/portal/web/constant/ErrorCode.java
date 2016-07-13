@@ -9,6 +9,8 @@ public class ErrorCode {
 	public static final String METHOD_NOT_ALLOWED = "METHOD_NOT_ALLOWED";
 	public static final String INVALID_TOKEN="INVALID_TOKEN";
 	public static final String TOKEN_MISS="TOKEN_MISS";
+	public static final String INVALID_PWD="INVALID_PWD";
+
 	public static final String TAG_NO_PRIVATE="TAG_NO_PRIVATE";
 	public static final String THING_NO_PRIVATE="THING_NO_PRIVATE";
 	public static final String BAD_REQUEST="BAD_REQUEST";
