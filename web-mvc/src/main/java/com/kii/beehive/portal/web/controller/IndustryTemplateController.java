@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -14,10 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.kii.beehive.business.manager.IndustryTemplateManager;
 import com.kii.beehive.portal.common.utils.CollectUtils;
 import com.kii.beehive.portal.jdbc.entity.IndustryTemplate;
@@ -108,10 +105,7 @@ public class IndustryTemplateController {
 
         IndustryTemplate industryTemplate = CollectUtils.getFirst(list);
         if(industryTemplate != null) {
-			PortalException excep= new PortalException(ErrorCode.DUPLICATE_OBJECT, HttpStatus.BAD_REQUEST);
-			excep.addParam("type","industryTemplate");
-			excep.addParam("objectID",industryTemplate.getName());
-			throw excep;
+            throw new PortalException(ErrorCode.DUPLICATE_OBJECT, HttpStatus.BAD_REQUEST);
         }
         //
         String strContent = objectMapper.writeValueAsString(industryTemplateRestBean.getContent());
@@ -127,10 +121,7 @@ public class IndustryTemplateController {
         result.put("result", "success");
         IndustryTemplate oldIndustryTemplate = industryTemplateManager.findByID(id);
         if(id == null || oldIndustryTemplate == null) {
-			PortalException excep= new PortalException(ErrorCode.NOT_FOUND, HttpStatus.BAD_REQUEST);
-			excep.addParam("type","industryTemplate");
-			excep.addParam("objectID",String.valueOf(id));
-			throw excep;
+            throw new PortalException(ErrorCode.NOT_FOUND, HttpStatus.BAD_REQUEST);
         }
         industryTemplateRestBean.verifyInput();
         //

@@ -96,12 +96,10 @@ public class AuthManager {
 
 		String beehiveToken=getBeehiveToken(token,user.getUserName(),false);
 
-		saveToken(user,beehiveToken,null,false);
-
 		Map<String,String> result=new HashMap<>();
 
 		result.put("userID",user.getUserID());
-		result.put("token",beehiveToken);
+//		result.put("token",beehiveToken);
 
 		return result;
 
@@ -126,7 +124,7 @@ public class AuthManager {
 	}
 
 	private String doActivity(String token, BeehiveJdbcUser user) {
-		if(!user.isEnable()||StringUtils.isEmpty(user.getActivityToken())){
+		if(!user.isEnable()){
 			throw new UnauthorizedException(UnauthorizedException.USER_ALREADY_ACTIVIED);
 		}
 
@@ -182,8 +180,7 @@ public class AuthManager {
 		}
 
 
-		if(!user.isEnable()||!StringUtils.isEmpty(user.getActivityToken())) {
-
+		if(!user.isEnable()) {
 			UnauthorizedException  excep= new UnauthorizedException(UnauthorizedException.USER_BEEN_LOCKED);
 			excep.addParam("userName",userName);
 			throw excep;

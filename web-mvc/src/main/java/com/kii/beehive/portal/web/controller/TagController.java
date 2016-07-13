@@ -25,6 +25,7 @@ import com.kii.beehive.portal.jdbc.entity.TagType;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
 import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
+import com.kii.extension.sdk.exception.ObjectNotFoundException;
 
 /**
  * Beehive API - Thing API
@@ -54,20 +55,18 @@ public class TagController extends AbstractThingTagController {
 		}
 
 		if (null != tag.getId()) {
-
+			try {
 				TagIndex existedTag = thingTagManager.getTagIndexes(Arrays.asList(tag.getId().toString())).get(0);
 				if (!thingTagManager.isTagCreator(existedTag)) {
-					PortalException excep= new PortalException(ErrorCode.TAG_NO_PRIVATE,
-							HttpStatus.BAD_REQUEST);
-					excep.addParam("tagName",existedTag.getDisplayName());
-					throw excep;
+					throw new PortalException(ErrorCode.TAG_NO_PRIVATE,HttpStatus.UNAUTHORIZED);
 				}
-
+			} catch (ObjectNotFoundException e) {
+				throw new PortalException(ErrorCode.BAD_REQUEST,
+						HttpStatus.BAD_REQUEST);
+			}
 		} else if (thingTagManager.isTagDisplayNamePresent(AuthInfoStore.getTeamID(), TagType.Custom, displayName)) {
-			PortalException excep= new PortalException(ErrorCode.TAG_NO_PRIVATE,
+			throw new PortalException(ErrorCode.BAD_REQUEST,
 					HttpStatus.BAD_REQUEST);
-			excep.addParam("tagName",displayName);
-			throw excep;
 		}
 		tag.setTagType(TagType.Custom);
 		tag.setFullTagName(TagType.Custom.getTagName(displayName));

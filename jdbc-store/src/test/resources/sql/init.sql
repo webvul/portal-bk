@@ -15,8 +15,6 @@ CREATE TABLE `beehive_user` (
   `create_date` varchar(45) DEFAULT NULL,
   `modify_date` varchar(45) DEFAULT NULL,
   `is_deleted` tinyint(4) DEFAULT '0',
-  `enable` tinyint(4) DEFAULT '0',
-
 
   PRIMARY KEY (`beehive_user_id`),
   UNIQUE KEY `mobile_UNIQUE` (`mobile`),
@@ -178,19 +176,3 @@ CREATE TABLE `user_group` (
 
   PRIMARY KEY (`user_group_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1006 DEFAULT CHARSET=utf8mb4;
-
-
-CREATE TABLE `beehive_archive_user` (
-  `archive_user_id` int(11) NOT NULL AUTO_INCREMENT,
-  `beehive_user_id` int(11) NOT NULL,
-  `user_name` varchar(45) NOT NULL,
-  `user_id` varchar(45) DEFAULT NULL,
-  `mobile` varchar(45) DEFAULT NULL,
-  `user_mail` varchar(45) DEFAULT NULL,
-  `display_name` varchar(45) DEFAULT NULL,
-  `role_name` varchar(45) DEFAULT NULL,
-  `face_subject_id` int(11) DEFAULT NULL,
-  `create_date` datetime DEFAULT NULL,
-  PRIMARY KEY (`archive_user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
-

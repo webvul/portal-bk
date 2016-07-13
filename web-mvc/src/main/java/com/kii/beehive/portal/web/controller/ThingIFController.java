@@ -132,20 +132,14 @@ public class ThingIFController extends AbstractThingTagController {
 		Long endDateTime = this.safeToLong(search.get("end"));
 
 		if(globalThingID == null) {
-			PortalException excep= new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,
-					HttpStatus.BAD_REQUEST);
-			excep.addParam("field","thing id");
-			throw excep;
+			throw new PortalException(ErrorCode.BAD_REQUEST, HttpStatus.BAD_REQUEST);
 		}
 
 		// check permission
 		List<GlobalThingInfo> tempList = this.thingTagManager.getThingsByIds(Arrays.asList(globalThingID));
 		GlobalThingInfo thing = CollectUtils.getFirst(tempList);
 		if (!thingTagManager.isThingCreator(thing) && !thingTagManager.isThingOwner(thing)) {
-			PortalException excep= new PortalException(ErrorCode.THING_NO_PRIVATE,
-					HttpStatus.BAD_REQUEST);
-			excep.addParam("thingID",thing.getVendorThingID());
-			throw excep;
+			throw new PortalException(ErrorCode.THING_NO_PRIVATE,HttpStatus.UNAUTHORIZED);
 		}
 
 		// get command details
@@ -184,10 +178,7 @@ public class ThingIFController extends AbstractThingTagController {
 			String commandID = (String)search.get(COMMAND_ID);
 
 			if(globalThingID == null || Strings.isEmpty(commandID)) {
-				PortalException excep= new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,
-						HttpStatus.BAD_REQUEST);
-				excep.addParam("field","thing command");
-				throw excep;
+				throw new PortalException(ErrorCode.BAD_REQUEST,HttpStatus.BAD_REQUEST);
 			}
 
 			tempThingList.add(globalThingID);
@@ -223,10 +214,7 @@ public class ThingIFController extends AbstractThingTagController {
 
 		tags.forEach(t -> {
 			if (!thingTagManager.isTagCreator(t) && !thingTagManager.isTagOwner(t)) {
-				PortalException excep= new PortalException(ErrorCode.TAG_NO_PRIVATE,
-						HttpStatus.BAD_REQUEST);
-				excep.addParam("tagName",t.getDisplayName());
-				throw excep;
+				throw new PortalException(ErrorCode.TAG_NO_PRIVATE,HttpStatus.UNAUTHORIZED);
 			}
 		});
 
@@ -244,10 +232,7 @@ public class ThingIFController extends AbstractThingTagController {
 
 		things.forEach(t -> {
 			if (!thingTagManager.isThingCreator(t) && !thingTagManager.isThingOwner(t)) {
-				PortalException excep= new PortalException(ErrorCode.THING_NO_PRIVATE,
-						HttpStatus.BAD_REQUEST);
-				excep.addParam("thingID",t.getVendorThingID());
-				throw excep;
+				throw new PortalException(ErrorCode.THING_NO_PRIVATE,HttpStatus.UNAUTHORIZED);
 			}
 		});
 
@@ -266,10 +251,7 @@ public class ThingIFController extends AbstractThingTagController {
 			return Long.valueOf((String)value);
 		}
 
-		PortalException excep= new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,
-				HttpStatus.BAD_REQUEST);
-		excep.addParam("field","global thing id");
-		throw excep;
+		throw new PortalException(ErrorCode.BAD_REQUEST, HttpStatus.BAD_REQUEST);
 	}
 
 
