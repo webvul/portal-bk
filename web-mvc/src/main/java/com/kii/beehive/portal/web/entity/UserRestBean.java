@@ -66,8 +66,15 @@ public class UserRestBean {
 		if(StringUtils.isBlank(beehiveUser.getUserName())&&StringUtils.isBlank(beehiveUser.getMail())&&StringUtils.isBlank(beehiveUser.getPhone())){
 			PortalException excep= new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus.BAD_REQUEST);
 			excep.addParam("field","userName or mail or phone ");
-			throw excep;		}
+			throw excep;
+		}
 
+		if(!StringUtils.isAsciiPrintable(beehiveUser.getUserName())){
+			PortalException excep= new PortalException(ErrorCode.INVALID_INPUT, HttpStatus.BAD_REQUEST);
+			excep.addParam("field","userName");
+			excep.addParam("data",beehiveUser.getUserName());
+			throw excep;
+		}
 		if(!StringUtils.isBlank(beehiveUser.getPhone())&& !numPattern.matcher(beehiveUser.getPhone()).find()){
 
 			PortalException excep= new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus.BAD_REQUEST);

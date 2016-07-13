@@ -79,6 +79,7 @@ public class BeehiveUserManager {
 		admin.setUserName(adminName);
 		String hashedPwd=admin.getHashedPwd(password);
 		admin.setUserPassword(hashedPwd);
+		admin.setRoleName("admin");
 
 		userDao.insert(admin);
 
@@ -147,7 +148,7 @@ public class BeehiveUserManager {
 
 
 	public void deleteUser(Long userID) {
-		checkTeam(userID);
+//		checkTeam(userID);
 		BeehiveJdbcUser user = userDao.getUserByID(userID);
 
 		groupUserRelationDao.delete(userID, null);
@@ -234,6 +235,7 @@ public class BeehiveUserManager {
 
 		userDao.hardDeleteByID(user.getId());
 
+		authService.removeTokenByUserID(user.getUserID());
 
 		BeehiveArchiveUser  archiveUser=new BeehiveArchiveUser(user);
 

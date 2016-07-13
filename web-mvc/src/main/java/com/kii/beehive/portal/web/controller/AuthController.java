@@ -96,12 +96,12 @@ public class AuthController {
 		String password = (String)request.get("activityToken");
 
 		PortalException  excep= new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus.BAD_REQUEST);
-		if(StringUtils.isEmpty(userName)) {
+		if(StringUtils.isBlank(userName)) {
 			excep.addParam("field","userName");
 			throw excep;
 		}
 
-		if(StringUtils.isEmpty(password)) {
+		if(StringUtils.isBlank(password)) {
 			excep.addParam("field","password");
 			throw excep;
 		}
@@ -120,7 +120,7 @@ public class AuthController {
 
 		String token = AuthUtils.getTokenFromHeader(request);
 
-		if (StringUtils.isEmpty(token)) {
+		if (StringUtils.isBlank(token)) {
 			throw new PortalException(ErrorCode.INVALID_TOKEN,HttpStatus.UNAUTHORIZED);
 		}
 		String password = (String) inputMap.get("newPassword");
@@ -139,10 +139,10 @@ public class AuthController {
 		user.verifyInput();
 
 		BeehiveJdbcUser beehiveUser = user.getBeehiveUser();
-		if(StringUtils.isEmpty(beehiveUser.getUserName())){
-			if(!StringUtils.isEmpty(beehiveUser.getMail())){
+		if(StringUtils.isBlank(beehiveUser.getUserName())){
+			if(!StringUtils.isBlank(beehiveUser.getMail())){
 				beehiveUser.setUserName(beehiveUser.getMail());
-			}else if(!StringUtils.isEmpty(beehiveUser.getPhone())){
+			}else if(!StringUtils.isBlank(beehiveUser.getPhone())){
 				beehiveUser.setUserName(beehiveUser.getPhone());
 			}
 		}
@@ -168,7 +168,7 @@ public class AuthController {
 	public AuthRestBean login(@RequestBody Map<String, Object> request) {
 
 		String userID = (String) request.get("userName");
-		if(StringUtils.isEmpty(userID)){
+		if(StringUtils.isBlank(userID)){
 			userID=(String) request.get("userID");
 		}
 		String password = (String) request.get("password");
@@ -176,7 +176,7 @@ public class AuthController {
 		if(CollectUtils.containsBlank(userID, password)) {
 			PortalException excep= new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus.BAD_REQUEST);
 
-			if(StringUtils.isEmpty(userID)){
+			if(StringUtils.isBlank(userID)){
 				excep.addParam("field","userName or userID");
 			}else{
 				excep.addParam("field","password");
@@ -202,7 +202,7 @@ public class AuthController {
 	public void logout(HttpServletRequest request) {
 
 		String token = AuthUtils.getTokenFromHeader(request);
-		if(!StringUtils.isEmpty(token)) {
+		if(!StringUtils.isBlank(token)) {
 			authManager.logout(token);
 		}else{
 			throw new PortalException(ErrorCode.INVALID_TOKEN,HttpStatus.UNAUTHORIZED);
@@ -224,7 +224,7 @@ public class AuthController {
 
 		String token = AuthUtils.getTokenFromHeader(request);
 
-		if(StringUtils.isEmpty(token)){
+		if(StringUtils.isBlank(token)){
 			PortalException excep= new PortalException(ErrorCode.INVALID_TOKEN,HttpStatus.UNAUTHORIZED);
 			throw excep;
 		}
