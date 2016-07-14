@@ -468,10 +468,9 @@ public class TestThingIFController extends WebTestTemplate {
 		System.out.println("Response: " + result);
 		System.out.println("========================================================");
 
-		// 2. actually the command will be send to all things, as all of them are in thing type "type1"
+		// 2. actually the command will be send to all things, as thing type in the command will only work while specifying tagList rather than thingList
 		assertTrue(list.size() == 1);
 
-		// two things in type "type1"
 		List<Map<String, Object>> subList = list.get(0);
 		assertTrue(subList.size() == 5);
 
@@ -1050,6 +1049,142 @@ public class TestThingIFController extends WebTestTemplate {
 			assertTrue(CollectUtils.hasElement((List)commandDetail.get("actions")));
 			assertEquals(CommandStateType.SENDING.name(), commandDetail.get("commandState"));
 		}
+
+
+	}
+
+
+	/**
+	 * below scenario will be tested:
+	 * <p>
+	 * 1. try to send one command to below things, and specify the target thing type "type1" in the command
+	 * - vendor thing id "someVendorThingID1", thing type "type1"
+	 * - vendor thing id "someVendorThingID2", thing type "type1"
+	 * - vendor thing id "someVendorThingID3", thing type "type2"
+	 * - vendor thing id "someVendorThingID4", thing type "type2"
+	 * - vendor thing id "someVendorThingID5", thing type "type2"
+	 * <p>
+	 * 2. actually the command will be send to all things, as thing type in the command will only work while specifying tagList rather than thingList
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void testSendSingleCommandToThingList() throws Exception {
+
+		// 1. try to send one command to below things, and specify the target thing type "type1" in the command
+		//  - vendor thing id "someVendorThingID1", thing type "type1"
+		//  - vendor thing id "someVendorThingID2", thing type "type1"
+		//  - vendor thing id "someVendorThingID3", thing type "type2"
+		//  - vendor thing id "someVendorThingID4", thing type "type2"
+		//  - vendor thing id "someVendorThingID5", thing type "type2"
+		HashMap<String, Object> command = new HashMap<>();
+
+		command.put("thingList", globalThingIDListForTests);
+		command.put("type", "type1");
+		command.put("command", this.createCommand());
+
+
+		String ctx = mapper.writeValueAsString(command);
+
+		String result = this.mockMvc.perform(
+				post("/thing-if/command/single").content(ctx)
+						.contentType(MediaType.APPLICATION_JSON)
+						.characterEncoding("UTF-8")
+						.header(Constants.ACCESS_TOKEN, tokenForTest)
+		)
+				.andExpect(status().isOk())
+				.andReturn().getResponse().getContentAsString();
+
+		List<Map<String, Object>> list = mapper.readValue(result, List.class);
+
+		System.out.println("========================================================");
+		System.out.println("Response: " + result);
+		System.out.println("========================================================");
+
+		// 2. actually the command will be send to all things, as thing type in the command will only work while specifying tagList rather than thingList
+		assertTrue(list.size() == 5);
+
+		for (Map<String, Object> map : list) {
+			Long globalThingID = Long.valueOf((Integer) map.get("globalThingID"));
+			assertTrue(globalThingIDListForTests.contains(globalThingID));
+
+			assertTrue(!Strings.isBlank((String) map.get("commandID")));
+		}
+
+	}
+
+	/**
+	 * below scenario will be tested:
+	 * <p>
+	 * 1. construct below relations between tags and things
+	 * - tag "A"
+	 * - vendor thing id "someVendorThingID1", thing type "type1"
+	 * - vendor thing id "someVendorThingID2", thing type "type1"
+	 * - vendor thing id "someVendorThingID3", thing type "type2"
+	 * - tag "B"
+	 * - vendor thing id "someVendorThingID3", thing type "type2"
+	 * - vendor thing id "someVendorThingID4", thing type "type2"
+	 * - vendor thing id "someVendorThingID5", thing type "type2"
+	 * <p>
+	 * 2. send below command:
+	 * - target: existing in both tag "A" and "B", thing type: "type2"
+	 * <p>
+	 * 3. actually the commands will be send to below things:
+	 * - "someVendorThingID3"
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void testSendSingleCommandToTagList() throws Exception {
+
+		// 1. construct below relations between tags and things
+		//  - tag "A"
+		//      - vendor thing id "someVendorThingID1", thing type "type1"
+		//      - vendor thing id "someVendorThingID2", thing type "type1"
+		//      - vendor thing id "someVendorThingID3", thing type "type2"
+		//  - tag "B"
+		//      - vendor thing id "someVendorThingID3", thing type "type2"
+		//      - vendor thing id "someVendorThingID4", thing type "type2"
+		//      - vendor thing id "someVendorThingID5", thing type "type2"
+
+		// bind things to tags
+		this.bindThingsToTag(globalThingIDListForTests.subList(0, 3), displayNames[0]);
+		this.bindThingsToTag(globalThingIDListForTests.subList(2, 5), displayNames[1]);
+
+		// 2. send below command:
+		// - target: existing in both tag "A" and "B", thing type: "type2"
+		HashMap<String, Object> command = new HashMap<>();
+
+		command.put("tagList", new String[]{TagType.Custom + "-" + displayNames[0], TagType.Custom + "-" + displayNames[1]});
+		command.put("andExpress", true);
+		command.put("type", "type2");
+		command.put("command", this.createCommand());
+
+		String ctx = mapper.writeValueAsString(command);
+
+		String result = this.mockMvc.perform(
+				post("/thing-if/command/single").content(ctx)
+						.contentType(MediaType.APPLICATION_JSON)
+						.characterEncoding("UTF-8")
+						.header(Constants.ACCESS_TOKEN, tokenForTest)
+		)
+				.andExpect(status().isOk())
+				.andReturn().getResponse().getContentAsString();
+
+		List<Map<String, Object>> list = mapper.readValue(result, List.class);
+
+		System.out.println("========================================================");
+		System.out.println("Response: " + result);
+		System.out.println("========================================================");
+
+		// 3. actually the commands will be send to below things:
+		// - "someVendorThingID3"
+		assertTrue(list.size() == 1);
+
+		Map<String, Object> commandMap = list.get(0);
+		Long globalThingID = Long.valueOf((Integer) commandMap.get("globalThingID"));
+		assertEquals(globalThingIDListForTests.get(2), globalThingID);
+		assertTrue(!Strings.isBlank((String) commandMap.get("commandID")));
 
 
 	}

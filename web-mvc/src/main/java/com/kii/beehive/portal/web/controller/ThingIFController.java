@@ -42,6 +42,70 @@ public class ThingIFController extends AbstractThingTagController {
 	private ThingIFCommandService thingIFCommandService;
 
 	/**
+	 * 发送单条命令(命令目标可以为多个设备)
+	 * POST /thing-if/command/single
+	 * <p>
+	 * refer to doc "Beehive API - Thing-IF API" for request/response details
+	 *
+	 * @param restBean
+	 */
+	@RequestMapping(value = "/command/single", method = {RequestMethod.POST})
+	public List<Map<String, Object>> sendSingleCommand(@RequestBody ThingCommandRestBean restBean) {
+
+		// construct command request
+		List<ExecuteTarget> targets = new ArrayList<>();
+
+		TagSelector ts = restBean.getSelector();
+		if (ts != null && (!CollectionUtils.isEmpty(ts.getTagList()) || !CollectionUtils.isEmpty(ts.getThingList()))) {
+			if (!CollectionUtils.isEmpty(ts.getTagList())) {
+				List<TagIndex> tags = this.getTags(ts.getTagList());
+				this.checkPermissionOnTags(tags);
+			}
+
+			if (!CollectionUtils.isEmpty(ts.getThingList())) {
+				List<String> tempThingList = ts.getThingList().stream().map(String::valueOf).collect(Collectors
+						.toList());
+				List<GlobalThingInfo> things = this.getThings(tempThingList);
+				this.checkPermissionOnThings(things);
+
+			}
+		} else {
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus
+					.BAD_REQUEST);
+		}
+
+		targets.add(restBean);
+
+
+		String userID = AuthInfoStore.getUserID();
+
+		// send command request
+		List<Map<Long, String>> commandResultList = thingIFCommandService.doCommand(targets, userID);
+
+		// format command response
+		List<Map<String, Object>> responseList = new ArrayList<>();
+
+		// as targets only has one element, commandResultList is supposed to have only one element too
+		for (Map<Long, String> commandResult : commandResultList) {
+
+			List<Map<String, Object>> subResponseList = new ArrayList<>();
+
+			Set<Map.Entry<Long, String>> entrySet = commandResult.entrySet();
+			for (Map.Entry<Long, String> entry : entrySet) {
+				HashMap<String, Object> map = new HashMap<>();
+				map.put(GLOBAL_THING_ID, entry.getKey());
+				map.put(COMMAND_ID, entry.getValue());
+
+				subResponseList.add(map);
+			}
+
+			responseList.addAll(subResponseList);
+		}
+
+		return responseList;
+	}
+
+	/**
 	 * 发送命令
 	 * POST /thing-if/command
 	 * <p>
