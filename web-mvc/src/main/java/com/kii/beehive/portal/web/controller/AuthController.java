@@ -124,7 +124,7 @@ public class AuthController {
 		veifyPwd(password);
 		String userID = (String) inputMap.get("userName");
 
-		PortalException  excep= new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus.BAD_REQUEST);
+		PortalException  excep= new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING);
 		if(StringUtils.isBlank(userID)) {
 			excep.addParam("field","userName");
 			throw excep;
