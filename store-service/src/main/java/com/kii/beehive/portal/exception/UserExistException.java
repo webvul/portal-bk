@@ -15,19 +15,19 @@ public class UserExistException extends BusinessException {
 
 		super.setStatusCode(HttpStatus.SC_CONFLICT);
 
-		if(user.getUserName()!=null && StringUtils.equals(user.getUserName(), existUser.getUserName())){
+		if(StringUtils.isNoneBlank(user.getUserName()) && StringUtils.equals(user.getUserName(), existUser.getUserName())){
 
 			super.addParam("field","userName");
 			super.addParam("value",user.getUserName());
 		}
 
-		if(user.getMail()!=null && StringUtils.equals(user.getMail(), existUser.getMail())){
+		if(StringUtils.isNoneBlank(user.getMail())  && StringUtils.equals(user.getMail(), existUser.getMail())){
 
 			super.addParam("field","mail");
 			super.addParam("value",user.getMail());
 		}
 
-		if(user.getPhone()!=null && StringUtils.equals(user.getPhone(), existUser.getPhone())){
+		if(StringUtils.isNoneBlank(user.getPhone())  && StringUtils.equals(user.getPhone(), existUser.getPhone())){
 
 			super.addParam("field","phone");
 			super.addParam("value",user.getPhone());
