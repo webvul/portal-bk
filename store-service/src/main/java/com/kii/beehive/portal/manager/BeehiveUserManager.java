@@ -1,5 +1,6 @@
 package com.kii.beehive.portal.manager;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -91,7 +92,7 @@ public class BeehiveUserManager {
 
 	}
 
-	public BeehiveJdbcUser addUser(BeehiveJdbcUser user,String teamName) {
+	public Map<String,Object> addUser(BeehiveJdbcUser user,String teamName) {
 
 
 		BeehiveJdbcUser existsUser=userDao.getUserByLoginId(user);
@@ -117,8 +118,13 @@ public class BeehiveUserManager {
 
 		userDao.updateEntityAllByID(user);
 
+		Map<String,Object> result=new HashMap<>();
 
-		return user;
+		result.put("user",user);
+		result.put("activityToken",token);
+
+
+		return result;
 	}
 
 

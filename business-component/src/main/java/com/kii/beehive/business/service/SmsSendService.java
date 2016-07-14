@@ -44,11 +44,11 @@ public class SmsSendService {
 	}
 
 
-	public void sendResetPwdSms(String userID){
+	public void sendResetPwdSms(String userID,String token){
 
 		BeehiveJdbcUser  user=userManager.getUserByUserID(userID);
 
-		String content=getTemplateCtx(SmsType.resetPwd.name(),user);
+		String content=getTemplateCtx(SmsType.resetPwd.name(),user,token);
 
 		String mobileNumber=user.getPhone();
 
@@ -63,10 +63,10 @@ http://221.179.180.158:9007/QxtSms/QxtFirewall?OperID=test&OperPass=test&SendTim
 	}
 
 
-	public void sendActivitySms(BeehiveJdbcUser user){
+	public void sendActivitySms(BeehiveJdbcUser user,String token){
 
 
-		String content=getTemplateCtx(SmsType.activityCode.name(),user);
+		String content=getTemplateCtx(SmsType.activityCode.name(),user,token);
 
 		String mobileNumber=user.getPhone();
 
@@ -100,7 +100,7 @@ http://221.179.180.158:9007/QxtSms/QxtFirewall?OperID=test&OperPass=test&SendTim
 			}
 
 	}
-	public  String getTemplateCtx(String name, BeehiveJdbcUser  user){
+	public  String getTemplateCtx(String name, BeehiveJdbcUser  user,String token){
 
 
 		try {
@@ -109,7 +109,7 @@ http://221.179.180.158:9007/QxtSms/QxtFirewall?OperID=test&OperPass=test&SendTim
 			String tinyUrl=getTinyUrl(user);
 			Map<String,String> paramMap=new HashMap<>();
 			paramMap.put("userName",user.getUserName());
-			paramMap.put("activityCode",user.getActivityToken());
+			paramMap.put("activityCode",token);
 			paramMap.put("userID",user.getUserID());
 			paramMap.put("url",tinyUrl);
 

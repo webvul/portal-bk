@@ -129,7 +129,7 @@ public class AuthManager {
 	}
 
 	private String doActivity(String token, BeehiveJdbcUser user) {
-		if(!user.isEnable()){
+		if(user.isEnable()){
 			throw new UnauthorizedException(UnauthorizedException.USER_ALREADY_ACTIVIED);
 		}
 

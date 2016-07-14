@@ -25,14 +25,14 @@ public class TestSmsTool extends TestInit {
 	@Test
 	public void testSms(){
 
-		service.sendActivitySms(userManager.getUserByID(444l));
+		service.sendActivitySms(userManager.getUserByID(444l),"token");
 
 	}
 
 	@Test
 	public void testResetPwd(){
 
-		service.sendResetPwdSms("0e14db00-18d4-11e6-9c6d-00163e007aba");
+		service.sendResetPwdSms("0e14db00-18d4-11e6-9c6d-00163e007aba","token");
 
 	}
 
@@ -85,7 +85,7 @@ public class TestSmsTool extends TestInit {
 		user.setUserName("张三");
 		user.setActivityToken("qwerty");
 
-		String fullCtx=service.getTemplateCtx(SmsSendService.SmsType.activityCode.name(),user);
+		String fullCtx=service.getTemplateCtx(SmsSendService.SmsType.activityCode.name(),user,"token");
 
 		String decodeCtx= URLDecoder.decode(fullCtx,"GBK");
 

@@ -16,8 +16,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,8 +35,8 @@ import com.kii.beehive.portal.manager.AuthManager;
 import com.kii.beehive.portal.manager.BeehiveUserManager;
 import com.kii.beehive.portal.service.UserCustomDataDao;
 import com.kii.beehive.portal.store.entity.CustomData;
-import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.entity.UserRestBean;
+import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
 
 
@@ -100,14 +98,18 @@ public class UserController {
 			}
 		}
 
-		BeehiveJdbcUser newUser=  userManager.addUser(beehiveUser,user.getTeamName());
+		Map<String,Object>  newUser=  userManager.addUser(beehiveUser,user.getTeamName());
+
+		BeehiveJdbcUser userInfo= (BeehiveJdbcUser) newUser.get("user");
+
+		String token= (String) newUser.get("activityToken");
+
+		smsService.sendActivitySms(userInfo,token);
 
 		Map<String,Object> result=new HashMap<>();
+		result.put("activityToken",token);
+		result.put("userID",userInfo.getUserID());
 
-		result.put("userID",newUser.getUserID());
-		result.put("activityToken",newUser.getActivityToken());
-
-		smsService.sendActivitySms(newUser);
 		return result;
 	}
 
@@ -123,7 +125,7 @@ public class UserController {
 		map.put("userID", userID);
 		map.put("activityToken", token);
 
-		smsService.sendResetPwdSms(userID);
+		smsService.sendResetPwdSms(userID,token);
 
 		return map;
 

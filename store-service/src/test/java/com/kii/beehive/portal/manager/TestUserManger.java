@@ -3,6 +3,8 @@ package com.kii.beehive.portal.manager;
 import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.Map;
+
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -48,9 +50,11 @@ public class TestUserManger  extends StoreServiceTestInit {
 		user.setUserName(name);
 //		user.setCompany("kiicloud");
 
-		BeehiveJdbcUser newUser=userManager.addUser(user,"");
+		Map<String,Object> result=userManager.addUser(user,"");
 
-		String oneTimeToken=authManager.activite(name, (String) newUser.getActivityToken());
+		BeehiveJdbcUser  newUser= (BeehiveJdbcUser) result.get("user");
+
+		String oneTimeToken=authManager.activite(name, (String) result.get("activityToken"));
 
 		authManager.initPassword(oneTimeToken,user.getUserName(),"qwerty");
 
