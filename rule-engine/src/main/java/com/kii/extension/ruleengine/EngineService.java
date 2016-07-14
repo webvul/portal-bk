@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -52,6 +53,9 @@ public class EngineService {
 	private ObjectMapper mapper;
 
 
+	@Autowired
+	private RelationStore  relationStore;
+
 	private void fillDelayParam(TriggerRecord record){
 
 
@@ -79,6 +83,10 @@ public class EngineService {
 	public void createMultipleSourceTrigger(MultipleSrcTriggerRecord record,Map<String,Set<String> > thingMap){
 
 		fillDelayParam(record);
+
+		List<String> thingList=thingMap.values().stream().flatMap(th->th.stream()).collect(Collectors.toList());
+
+		relationStore.fillThingsTriggerIndex(thingList,record.getTriggerID());
 
 		Trigger trigger=new Trigger(record.getId());
 		trigger.setType(TriggerType.multiple);
@@ -304,6 +312,10 @@ public class EngineService {
 
 		fillDelayParam(record);
 
+
+		relationStore.fillThingTriggerIndex(thingID,record.getTriggerID());
+
+
 		String triggerID=record.getId();
 
 		Trigger trigger=new Trigger(triggerID);
@@ -335,12 +347,15 @@ public class EngineService {
 
 	public void changeThingsInTrigger(String triggerID,Set<String> newThings){
 
+		relationStore.maintainThingTriggerIndex(newThings,triggerID);
 		droolsTriggerService.updateThingsWithName(triggerID,"comm",newThings);
 
 	}
 
 
 	public void changeThingsInSummary(String triggerID,String summaryName,Set<String> newThings){
+
+		relationStore.maintainThingTriggerIndex(newThings,triggerID);
 
 		droolsTriggerService.updateThingsWithName(triggerID,summaryName,newThings);
 
