@@ -23,6 +23,14 @@ public class UnauthorizedException extends BusinessException {
 	}
 
 
+	public UnauthorizedException(String msg,String... params){
+		super(params);
+		super.setErrorCode(msg);
+	}
+
+
+
+
 	public int getStatusCode(){
 
 		return 401;

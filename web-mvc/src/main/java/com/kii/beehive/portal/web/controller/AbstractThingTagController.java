@@ -8,14 +8,13 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 
 import com.kii.beehive.business.manager.TagThingManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagType;
-import com.kii.beehive.portal.web.constant.ErrorCode;
+import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
 
 /**
@@ -42,7 +41,7 @@ public abstract class AbstractThingTagController extends AbstractController {
 				map(Long::valueOf).collect(Collectors.toList());
 		if (strThingIds.size() != thingIds.size()) {
 			thingIds.forEach(id -> strThingIds.remove(id.toString()));
-			throw new PortalException(ErrorCode.INVALID_INPUT, HttpStatus.BAD_REQUEST);
+			throw new PortalException(ErrorCode.INVALID_INPUT,"field","thing","data",String.valueOf(thingIds));
 		}
 		return thingTagManager.getCreatedThingIds(AuthInfoStore.getUserIDInLong(), thingIds);
 

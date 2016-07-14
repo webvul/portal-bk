@@ -125,10 +125,7 @@ public class UserManager {
 
 		UserGroup orgi = orgiList.get(0);
 		if (!orgi.getCreateBy().equals(loginUserID)) {
-			UnauthorizedException excep= new UnauthorizedException(UnauthorizedException.NOT_GROUP_CREATER);
-			excep.addParam("group",orgi.getName());
-			excep.addParam("currUser",String.valueOf(loginUserID));
-			throw excep;
+			throw new UnauthorizedException(UnauthorizedException.NOT_GROUP_CREATER,"group",orgi.getName(),"currUser",String.valueOf(loginUserID));
 		}
 		orgi.setName(userGroup.getName());
 		orgi.setDescription(userGroup.getDescription());
@@ -208,10 +205,8 @@ public class UserManager {
 		UserGroup ug = this.userGroupDao.findByID(userGroupID);
 
 		if (!ug.getCreateBy().equals(AuthInfoStore.getUserID())) {
-			UnauthorizedException  excep= new UnauthorizedException(UnauthorizedException.NOT_GROUP_CREATER);
-			excep.addParam("group",ug.getName());
-			excep.addParam("currUser",AuthInfoStore.getUserID());
-			throw excep;
+
+			throw  new UnauthorizedException(UnauthorizedException.NOT_GROUP_CREATER,"group",ug.getName(),"currUser",AuthInfoStore.getUserID());
 		}
 
 		List<BeehiveJdbcUser> userList = userDao.getUserByUserIDs(userIDList);

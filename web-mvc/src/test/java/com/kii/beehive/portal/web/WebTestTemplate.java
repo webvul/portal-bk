@@ -21,7 +21,8 @@ import com.kii.beehive.portal.web.constant.Constants;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
-@ContextConfiguration(classes= WebMvcConfig.class)
+//@ContextConfiguration(classes= WebMvcConfig.class)
+@ContextConfiguration(locations = {"file:./web-mvc/src/main/webapp/WEB-INF/portalWebContext.xml"})
 @Transactional
 @Rollback
 public class WebTestTemplate {

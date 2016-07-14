@@ -1,6 +1,19 @@
 package com.kii.beehive.portal.web.controller;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.apache.logging.log4j.util.Strings;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.fasterxml.jackson.databind.JsonNode;
+
 import com.kii.beehive.business.elasticsearch.TaskManager;
 import com.kii.beehive.business.manager.TagThingManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
@@ -8,15 +21,9 @@ import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.beehive.portal.web.entity.SearchRestBean;
+import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
-import org.apache.logging.log4j.util.Strings;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Created by hdchen on 6/30/16.
@@ -59,7 +66,7 @@ public class ESServiceController {
 				|| searchRestBean.getStartDate() == null || searchRestBean.getEndDate() == null
 				|| searchRestBean.getFields() == null || searchRestBean.getFields().length == 0
 				|| searchRestBean.getUnit() == 0) {
-			throw new PortalException("RequiredFieldsMissing", HttpStatus.BAD_REQUEST);
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","aggregate");
 		}
 
 		List<GlobalThingInfo> things = thingTagManager.getThingsByVendorThingIds(Arrays.asList(searchRestBean.getVendorThingIDs()));
@@ -102,7 +109,7 @@ public class ESServiceController {
 		if (Strings.isBlank(searchRestBean.getVendorThingID())
 				|| searchRestBean.getStartDate() == null || searchRestBean.getEndDate() == null
 				|| searchRestBean.getSize() == 0) {
-			throw new PortalException("RequiredFieldsMissing", HttpStatus.BAD_REQUEST);
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","historical");
 		}
 
 		if (searchRestBean.getSize() > 100) {

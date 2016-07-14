@@ -8,7 +8,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.util.Strings;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,7 +22,7 @@ import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagType;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
-import com.kii.beehive.portal.web.constant.ErrorCode;
+import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
 import com.kii.extension.sdk.exception.ObjectNotFoundException;
 
@@ -49,24 +48,20 @@ public class TagController extends AbstractThingTagController {
 	public Map<String, Object> createTag(@RequestBody TagIndex tag) {
 		String displayName = tag.getDisplayName();
 		if (Strings.isBlank(displayName)) {
-			PortalException excep= new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,  HttpStatus.BAD_REQUEST);
-			excep.addParam("field","displayName");
-			throw excep;
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","displayName");
 		}
 
 		if (null != tag.getId()) {
 			try {
 				TagIndex existedTag = thingTagManager.getTagIndexes(Arrays.asList(tag.getId().toString())).get(0);
 				if (!thingTagManager.isTagCreator(existedTag)) {
-					throw new PortalException(ErrorCode.TAG_NO_PRIVATE,HttpStatus.UNAUTHORIZED);
+					throw new PortalException(ErrorCode.TAG_NO_PRIVATE,"tagName",existedTag.getFullTagName());
 				}
 			} catch (ObjectNotFoundException e) {
-				throw new PortalException(ErrorCode.BAD_REQUEST,
-						HttpStatus.BAD_REQUEST);
+				throw new PortalException(ErrorCode.BAD_REQUEST);
 			}
 		} else if (thingTagManager.isTagDisplayNamePresent(AuthInfoStore.getTeamID(), TagType.Custom, displayName)) {
-			throw new PortalException(ErrorCode.BAD_REQUEST,
-					HttpStatus.BAD_REQUEST);
+			throw new PortalException(ErrorCode.BAD_REQUEST);
 		}
 		tag.setTagType(TagType.Custom);
 		tag.setFullTagName(TagType.Custom.getTagName(displayName));
@@ -91,10 +86,8 @@ public class TagController extends AbstractThingTagController {
 	public void removeTag(@PathVariable("displayName") String displayName) {
 
 		if (Strings.isBlank(displayName)) {
-			PortalException excep= new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,  HttpStatus.BAD_REQUEST);
-			excep.addParam("field","displayName");
-			throw excep;		}
-
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "field", "displayName");
+		}
 		getCreatedTagIds(TagType.Custom, displayName).forEach(id -> thingTagManager.removeTag(id));
 	}
 

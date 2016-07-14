@@ -8,14 +8,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.kii.beehive.business.entity.ExecuteTarget;
 import com.kii.beehive.business.entity.TagSelector;
 import com.kii.beehive.business.service.ThingIFCommandService;
@@ -23,9 +24,9 @@ import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.CollectUtils;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
-import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.entity.ThingCommandDetailRestBean;
 import com.kii.beehive.portal.web.entity.ThingCommandRestBean;
+import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
 import com.kii.extension.sdk.entity.thingif.CommandDetail;
 
@@ -71,8 +72,7 @@ public class ThingIFController extends AbstractThingTagController {
 				}
 			} else {
 
-				PortalException excep= new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus
-						.BAD_REQUEST);
+				PortalException excep= new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","thing command");
 				excep.addParam("field"," thingID list or tag list ");
 				throw excep;
 			}
@@ -132,14 +132,14 @@ public class ThingIFController extends AbstractThingTagController {
 		Long endDateTime = this.safeToLong(search.get("end"));
 
 		if(globalThingID == null) {
-			throw new PortalException(ErrorCode.BAD_REQUEST, HttpStatus.BAD_REQUEST);
+			throw new PortalException(ErrorCode.BAD_REQUEST);
 		}
 
 		// check permission
 		List<GlobalThingInfo> tempList = this.thingTagManager.getThingsByIds(Arrays.asList(globalThingID));
 		GlobalThingInfo thing = CollectUtils.getFirst(tempList);
 		if (!thingTagManager.isThingCreator(thing) && !thingTagManager.isThingOwner(thing)) {
-			throw new PortalException(ErrorCode.THING_NO_PRIVATE,HttpStatus.UNAUTHORIZED);
+			throw new PortalException(ErrorCode.THING_NO_PRIVATE,"thingID",thing.getVendorThingID());
 		}
 
 		// get command details
@@ -178,7 +178,7 @@ public class ThingIFController extends AbstractThingTagController {
 			String commandID = (String)search.get(COMMAND_ID);
 
 			if(globalThingID == null || Strings.isEmpty(commandID)) {
-				throw new PortalException(ErrorCode.BAD_REQUEST,HttpStatus.BAD_REQUEST);
+				throw new PortalException(ErrorCode.BAD_REQUEST);
 			}
 
 			tempThingList.add(globalThingID);
@@ -214,7 +214,7 @@ public class ThingIFController extends AbstractThingTagController {
 
 		tags.forEach(t -> {
 			if (!thingTagManager.isTagCreator(t) && !thingTagManager.isTagOwner(t)) {
-				throw new PortalException(ErrorCode.TAG_NO_PRIVATE,HttpStatus.UNAUTHORIZED);
+				throw new PortalException(ErrorCode.TAG_NO_PRIVATE,"tagName",t.getFullTagName());
 			}
 		});
 
@@ -232,7 +232,7 @@ public class ThingIFController extends AbstractThingTagController {
 
 		things.forEach(t -> {
 			if (!thingTagManager.isThingCreator(t) && !thingTagManager.isThingOwner(t)) {
-				throw new PortalException(ErrorCode.THING_NO_PRIVATE,HttpStatus.UNAUTHORIZED);
+				throw new PortalException(ErrorCode.THING_NO_PRIVATE,"thingID",t.getVendorThingID());
 			}
 		});
 
@@ -251,7 +251,7 @@ public class ThingIFController extends AbstractThingTagController {
 			return Long.valueOf((String)value);
 		}
 
-		throw new PortalException(ErrorCode.BAD_REQUEST, HttpStatus.BAD_REQUEST);
+		throw new PortalException(ErrorCode.BAD_REQUEST);
 	}
 
 

@@ -16,6 +16,21 @@ public class BusinessException extends RuntimeException {
 	private int statusCode;
 
 
+	public BusinessException(){
+
+	}
+
+	protected BusinessException(String...  params){
+
+		if(params.length<2){
+			return;
+		}
+		for(int i=0;i<params.length;i+=2){
+
+			addParam(params[i],params[i+1]);
+		}
+	}
+
 	public String getErrorCode() {
 
 		return errorCode;

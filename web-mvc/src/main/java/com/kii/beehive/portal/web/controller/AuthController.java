@@ -8,7 +8,6 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,8 +21,8 @@ import com.kii.beehive.portal.entitys.AuthRestBean;
 import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 import com.kii.beehive.portal.manager.AuthManager;
 import com.kii.beehive.portal.manager.BeehiveUserManager;
-import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.entity.UserRestBean;
+import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
 import com.kii.beehive.portal.web.help.AuthUtils;
 
@@ -47,7 +46,7 @@ public class AuthController {
 
 	public static void veifyPwd(String pwd){
 
-		PortalException  excep= new PortalException(ErrorCode.INVALID_PWD, HttpStatus.BAD_REQUEST);
+		PortalException  excep= new PortalException(ErrorCode.INVALID_PASSWORD);
 
 
 		if(StringUtils.isBlank(pwd)) {
@@ -95,15 +94,12 @@ public class AuthController {
 		String userName = (String)request.get("userName");
 		String password = (String)request.get("activityToken");
 
-		PortalException  excep= new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus.BAD_REQUEST);
 		if(StringUtils.isBlank(userName)) {
-			excep.addParam("field","userName");
-			throw excep;
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","userName");
 		}
 
 		if(StringUtils.isBlank(password)) {
-			excep.addParam("field","password");
-			throw excep;
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","password");
 		}
 
 		String result = authManager.activite(userName, password);
@@ -121,7 +117,7 @@ public class AuthController {
 		String token = AuthUtils.getTokenFromHeader(request);
 
 		if (StringUtils.isBlank(token)) {
-			throw new PortalException(ErrorCode.INVALID_TOKEN,HttpStatus.UNAUTHORIZED);
+			throw new PortalException(ErrorCode.INVALID_TOKEN);
 		}
 		String password = (String) inputMap.get("newPassword");
 
@@ -180,14 +176,12 @@ public class AuthController {
 		String password = (String) request.get("password");
 
 		if(CollectUtils.containsBlank(userID, password)) {
-			PortalException excep= new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus.BAD_REQUEST);
 
 			if(StringUtils.isBlank(userID)){
-				excep.addParam("field","userName or userID");
+				throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","userName or userID");
 			}else{
-				excep.addParam("field","password");
+				throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","password");
 			}
-			throw excep;
 		}
 
 		return authManager.login(userID, password);
@@ -211,7 +205,7 @@ public class AuthController {
 		if(!StringUtils.isBlank(token)) {
 			authManager.logout(token);
 		}else{
-			throw new PortalException(ErrorCode.INVALID_TOKEN,HttpStatus.UNAUTHORIZED);
+			throw new PortalException(ErrorCode.INVALID_TOKEN);
 		}
 	}
 
@@ -231,7 +225,7 @@ public class AuthController {
 		String token = AuthUtils.getTokenFromHeader(request);
 
 		if(StringUtils.isBlank(token)){
-			PortalException excep= new PortalException(ErrorCode.INVALID_TOKEN,HttpStatus.UNAUTHORIZED);
+			PortalException excep= new PortalException(ErrorCode.INVALID_TOKEN);
 			throw excep;
 		}
 

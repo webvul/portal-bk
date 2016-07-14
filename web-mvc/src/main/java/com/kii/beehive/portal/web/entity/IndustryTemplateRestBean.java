@@ -1,12 +1,14 @@
 package com.kii.beehive.portal.web.entity;
 
 import java.util.Map;
+
 import org.apache.logging.log4j.util.Strings;
-import org.springframework.http.HttpStatus;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
+
 import com.kii.beehive.portal.jdbc.entity.IndustryTemplate;
-import com.kii.beehive.portal.web.constant.ErrorCode;
+import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
 
 public class IndustryTemplateRestBean {
@@ -36,7 +38,7 @@ public class IndustryTemplateRestBean {
 	public void verifyInput(){
 		if(Strings.isBlank(industryTemplate.getThingType()) || Strings.isBlank(industryTemplate.getName()) || Strings.isBlank
 				(industryTemplate.getVersion()) || getContent() == null) {
-			throw new PortalException(ErrorCode.INVALID_INPUT, HttpStatus.BAD_REQUEST);
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","industryTemplate");
 		}
 
 	}

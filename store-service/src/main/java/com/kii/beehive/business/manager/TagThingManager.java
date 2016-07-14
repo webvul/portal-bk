@@ -26,6 +26,7 @@ import com.kii.beehive.portal.common.utils.CollectUtils;
 import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.beehive.portal.exception.UnauthorizedException;
 import com.kii.beehive.portal.jdbc.dao.BeehiveUserJdbcDao;
+
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
 import com.kii.beehive.portal.jdbc.dao.TagGroupRelationDao;
@@ -719,9 +720,9 @@ public class TagThingManager {
 				return thingInfo;
 			}
 		}
-		UnauthorizedException excep = new UnauthorizedException(UnauthorizedException.NOT_THING_CREATOR);
-		excep.addParam("user", String.valueOf(userId));
-		throw excep;
+
+		throw  new UnauthorizedException(UnauthorizedException.NOT_THING_CREATOR,"user",String.valueOf(userId));
+
 	}
 
 	public List<TagIndex> getAccessibleTagsByTagTypeAndName(Long userId, String tagType, String displayName) {

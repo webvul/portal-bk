@@ -5,14 +5,14 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
-import org.springframework.http.HttpStatus;
+
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.kii.beehive.portal.store.entity.CustomProperty;
 import com.kii.beehive.portal.store.entity.PortalSyncUser;
-import com.kii.beehive.portal.web.constant.ErrorCode;
+import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
 
 public class SyncUserRestBean extends PortalSyncUser {
@@ -73,21 +73,17 @@ public class SyncUserRestBean extends PortalSyncUser {
 
 	@JsonIgnore
 	public void verifyInput(){
-		PortalException excep= new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,  HttpStatus.BAD_REQUEST);
 
-		if(StringUtils.isBlank(this.getUserName())){
-				excep.addParam("field","userName");
-				throw excep;
+		if(StringUtils.isEmpty(this.getUserName())){
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","userName");
 		}
 
-		if(StringUtils.isBlank(this.getAliUserID())){
-			excep.addParam("field","aliUserID");
-			throw excep;
+		if(StringUtils.isEmpty(this.getAliUserID())){
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","aliUserID");
 		}
 
-		if(StringUtils.isBlank(this.getRole())){
-			excep.addParam("field","role");
-			throw excep;
+		if(StringUtils.isEmpty(this.getRole())){
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","role");
 		}
 
 	}

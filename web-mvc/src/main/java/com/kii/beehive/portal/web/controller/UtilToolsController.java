@@ -13,7 +13,6 @@ import java.util.jar.Manifest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,7 +32,7 @@ import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.store.entity.CallbackUrlParameter;
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
 import com.kii.beehive.portal.web.constant.CallbackNames;
-import com.kii.beehive.portal.web.constant.ErrorCode;
+import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
 import com.kii.beehive.portal.web.help.BeehiveAppInfoManager;
 import com.kii.extension.sdk.entity.FederatedAuthResult;
@@ -133,10 +132,8 @@ public class UtilToolsController {
 		List<GlobalThingInfo> thingInfos = tagThingManager.getThingsByVendorThingIds(Arrays.asList(vendorThingID));
 
 		if (thingInfos.isEmpty()) {
-			PortalException excep= new PortalException(ErrorCode.NOT_FOUND, HttpStatus.BAD_REQUEST);
-			excep.addParam("type","global thing");
-			excep.addParam("objectID",vendorThingID);
-			throw excep;
+
+			throw new PortalException(ErrorCode.NOT_FOUND,"type","global thing","objectID",vendorThingID);
 		}
 		GlobalThingInfo globalThingInfo = thingInfos.get(0);
 

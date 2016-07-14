@@ -17,6 +17,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,7 +37,7 @@ import com.kii.beehive.portal.manager.AuthManager;
 import com.kii.beehive.portal.manager.BeehiveUserManager;
 import com.kii.beehive.portal.service.UserCustomDataDao;
 import com.kii.beehive.portal.store.entity.CustomData;
-import com.kii.beehive.portal.web.constant.ErrorCode;
+import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.entity.UserRestBean;
 import com.kii.beehive.portal.web.exception.PortalException;
 
@@ -218,13 +219,6 @@ public class UserController {
 		String oldPassword = (String)request.get("oldPassword");
 		String newPassword = (String)request.get("newPassword");
 
-		PortalException excep= new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,  HttpStatus.BAD_REQUEST);
-
-		if(StringUtils.isBlank(oldPassword)) {
-			excep.addParam("field","oldPassword");
-			throw excep;
-		}
-
 		AuthController.veifyPwd(newPassword);
 
 
@@ -327,9 +321,7 @@ public class UserController {
 
 		if(data==null){
 
-			PortalException  excep= new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus.BAD_REQUEST);
-			excep.addParam("field","custom data content ");
-			throw excep;
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","custom data content");
 
 		}
 		dataDao.setUserData(data,name,AuthInfoStore.getUserID());
@@ -349,7 +341,7 @@ public class UserController {
 
 
 		if ( photos.length == 0 ) {
-			throw new PortalException(ErrorCode.INVALID_INPUT, HttpStatus.BAD_REQUEST);
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","phone");
 		}
 		List<File> photoFiles = new ArrayList<>();
 

@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,12 +13,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.kii.beehive.business.manager.IndustryTemplateManager;
 import com.kii.beehive.portal.common.utils.CollectUtils;
 import com.kii.beehive.portal.jdbc.entity.IndustryTemplate;
-import com.kii.beehive.portal.web.constant.ErrorCode;
+import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.entity.IndustryTemplateRestBean;
 import com.kii.beehive.portal.web.exception.PortalException;
 
@@ -105,7 +107,7 @@ public class IndustryTemplateController {
 
         IndustryTemplate industryTemplate = CollectUtils.getFirst(list);
         if(industryTemplate != null) {
-            throw new PortalException(ErrorCode.DUPLICATE_OBJECT, HttpStatus.BAD_REQUEST);
+            throw new PortalException(ErrorCode.DUPLICATE_OBJECT,"type","industryTemplate","objectID",industryTemplateRestBean.getIndustryTemplate().getName());
         }
         //
         String strContent = objectMapper.writeValueAsString(industryTemplateRestBean.getContent());
@@ -120,8 +122,8 @@ public class IndustryTemplateController {
         Map<String, Object> result = new HashMap<>();
         result.put("result", "success");
         IndustryTemplate oldIndustryTemplate = industryTemplateManager.findByID(id);
-        if(id == null || oldIndustryTemplate == null) {
-            throw new PortalException(ErrorCode.NOT_FOUND, HttpStatus.BAD_REQUEST);
+        if( oldIndustryTemplate == null) {
+            throw new PortalException(ErrorCode.NOT_FOUND,"type","industryTemplate","objectID",String.valueOf(id));
         }
         industryTemplateRestBean.verifyInput();
         //

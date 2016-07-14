@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kii.beehive.portal.common.utils.CollectUtils;
 import com.kii.beehive.portal.entitys.AuthRestBean;
 import com.kii.beehive.portal.manager.AuthManager;
-import com.kii.beehive.portal.web.constant.ErrorCode;
+import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
 
 @RestController
@@ -32,9 +32,8 @@ public class Party3thAuthController {
 		String userID = (String) request.get("userID");
 
 		if (CollectUtils.containsBlank(userID)) {
-			PortalException excep= new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,  HttpStatus.BAD_REQUEST);
-			excep.addParam("field","userID");
-			throw excep;
+
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","userID");
 		}
 
 		return authManager.getTokenByID(userID);

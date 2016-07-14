@@ -18,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
-import com.kii.beehive.portal.web.constant.ErrorCode;
+import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
 
 public class ThingRestBean extends GlobalThingInfo {
@@ -129,9 +129,8 @@ public class ThingRestBean extends GlobalThingInfo {
 		this.verifyVendorThingID();
 
 		if (Strings.isBlank(this.getKiiAppID())) {
-			PortalException excep= new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus.BAD_REQUEST);
-			excep.addParam("field","kiiAppID");
-			throw excep;
+
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","kiiAppID");
 		}
 	}
 
@@ -140,14 +139,14 @@ public class ThingRestBean extends GlobalThingInfo {
 		String vendorThingID = this.getVendorThingID();
 
 		if (Strings.isBlank(vendorThingID)) {
-			PortalException excep= new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus.BAD_REQUEST);
-			excep.addParam("field","vendorThingID");
-			throw excep;		}
+
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","vendorThingID");
+		}
 
 		Matcher matcher = validVendorThingIDPattern.matcher(vendorThingID);
 
 		if (!matcher.matches()) {
-			throw new PortalException(ErrorCode.INVALID_INPUT, HttpStatus.BAD_REQUEST);
+			throw new PortalException(ErrorCode.INVALID_INPUT,"field","vendorThingID","data",vendorThingID);
 		}
 
 	}

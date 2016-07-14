@@ -11,7 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.kii.beehive.portal.exception.UnauthorizedException;
-import com.kii.beehive.portal.web.constant.ErrorCode;
+import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.controller.ExceptionController;
 import com.kii.beehive.portal.web.exception.PortalException;
 
@@ -27,7 +27,7 @@ public class ExceptionInfoTest extends WebTestTemplate{
 
 		controller.setLocale(Locale.ENGLISH);
 
-		PortalException  excep=new PortalException(ErrorCode.INVALID_TOKEN, HttpStatus.UNAUTHORIZED);
+		PortalException  excep=new PortalException(ErrorCode.INVALID_TOKEN);
 
 		ResponseEntity<Object> resp=controller.handleStoreServiceException(excep);
 
@@ -49,9 +49,7 @@ public class ExceptionInfoTest extends WebTestTemplate{
 		controller.setLocale(Locale.ENGLISH);
 
 
-		UnauthorizedException  excep=new UnauthorizedException(UnauthorizedException.LOGIN_TOKEN_INVALID);
-
-		excep.addParam("token","token");
+		UnauthorizedException  excep=new UnauthorizedException(UnauthorizedException.LOGIN_TOKEN_INVALID,"token","abcdefg");
 
 
 		ResponseEntity<Object> resp=controller.handleStoreServiceException(excep);
@@ -74,9 +72,8 @@ public class ExceptionInfoTest extends WebTestTemplate{
 		controller.setLocale(Locale.SIMPLIFIED_CHINESE);
 
 
-		UnauthorizedException  excep=new UnauthorizedException(UnauthorizedException.LOGIN_TOKEN_INVALID);
+		UnauthorizedException  excep=new UnauthorizedException(UnauthorizedException.LOGIN_TOKEN_INVALID,"token","1234567");
 
-		excep.addParam("token","token");
 
 
 		ResponseEntity<Object> resp=controller.handleStoreServiceException(excep);

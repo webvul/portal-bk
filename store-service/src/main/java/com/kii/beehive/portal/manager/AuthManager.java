@@ -320,9 +320,7 @@ public class AuthManager {
 
 		// if auth info not found in both cache and DB, throw Exception
 		if (authInfo == null) {
-			UnauthorizedException excep= new UnauthorizedException(UnauthorizedException.LOGIN_TOKEN_INVALID);
-			excep.addParam("token",token);
-			throw excep;
+			throw new UnauthorizedException(UnauthorizedException.LOGIN_TOKEN_INVALID,"token",token);
 		}
 
 		PermissionTree permisssionTree=ruleService.getUserPermissionTree(authInfo.getUserID());

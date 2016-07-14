@@ -5,14 +5,14 @@ import java.util.List;
 
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.BeanUtils;
-import org.springframework.http.HttpStatus;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
-import com.kii.beehive.portal.web.constant.ErrorCode;
+import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
+
 
 public class UserGroupRestBean extends UserGroup {
 
@@ -59,9 +59,9 @@ public class UserGroupRestBean extends UserGroup {
     public void verifyInput(){
 
         if(Strings.isBlank(userGroupName)) {
-			PortalException excep= new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus.BAD_REQUEST);
-			excep.addParam("field","userGroupName");
-			throw excep;        }
+
+            throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","userGroupName");
+        }
 
     }
 

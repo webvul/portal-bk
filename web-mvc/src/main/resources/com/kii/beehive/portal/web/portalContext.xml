@@ -24,6 +24,8 @@
     </bean>
 
     <context:component-scan base-package="com.kii.beehive">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Repository" />
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Component" />
         <context:exclude-filter type="regex" expression="com.kii.beehive.portal.web.config.*"></context:exclude-filter>
         <context:exclude-filter type="regex"
                                 expression="com.kii.beehive.portal.web.controller.*"></context:exclude-filter>

@@ -33,8 +33,8 @@ import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagType;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
-import com.kii.beehive.portal.web.constant.ErrorCode;
 import com.kii.beehive.portal.web.entity.ThingRestBean;
+import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
 import com.kii.extension.sdk.entity.thingif.EndNodeOfGateway;
 import com.kii.extension.sdk.entity.thingif.GatewayOfKiiCloud;
@@ -228,8 +228,7 @@ public class ThingController extends AbstractThingTagController {
 		List<GlobalThingInfo> gList = thingTagManager.getThingsByVendorThingIds(Arrays.asList(thingInfo.getVendorThingID()));
 
 		if (!gList.isEmpty() && !gList.get(0).getId().equals(input.getId())) {
-			throw new PortalException(ErrorCode.DUPLICATE_OBJECT,
-					HttpStatus.BAD_REQUEST);
+			throw new PortalException(ErrorCode.DUPLICATE_OBJECT,"type","thing","objectID",String.valueOf(gList));
 		}
 
 		Long thingID = thingTagManager.createThing(thingInfo, input.getLocation(), input.getInputTags());
@@ -255,19 +254,14 @@ public class ThingController extends AbstractThingTagController {
 
 		if (Strings.isBlank(input.getSchemaName()) || Strings.isBlank(input.getSchemaVersion())
 				|| Strings.isBlank(input.getGatewayVendorThingID())) {
-			PortalException excep= new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,  HttpStatus.BAD_REQUEST);
-			excep.addParam("field","schemaName");
-			throw excep;
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","schemaName");
 		}
 		if (Strings.isBlank(input.getSchemaVersion())) {
-			PortalException excep= new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,  HttpStatus.BAD_REQUEST);
-			excep.addParam("field","schemaVersion");
-			throw excep;
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","schemaVersion");
+
 		}
 		if (Strings.isBlank(input.getGatewayVendorThingID())) {
-			PortalException excep= new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,  HttpStatus.BAD_REQUEST);
-			excep.addParam("field","gatewayVendorThingID");
-			throw excep;
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","gatewayVendorThingID");
 		}
 
 		GlobalThingInfo thingInfo = null;
@@ -292,8 +286,7 @@ public class ThingController extends AbstractThingTagController {
 		List<GlobalThingInfo> gList = thingTagManager.getThingsByVendorThingIds(Arrays.asList(thingInfo.getVendorThingID()));
 
 		if (!gList.isEmpty() && !gList.get(0).getId().equals(input.getId())) {
-			throw new PortalException(ErrorCode.DUPLICATE_OBJECT,
-					HttpStatus.BAD_REQUEST);
+			throw new PortalException(ErrorCode.DUPLICATE_OBJECT,"type","thing","objectID",String.valueOf(gList));
 		}
 
 		Long thingID = thingTagManager.createThing(thingInfo, input.getLocation(), input.getInputTags());
