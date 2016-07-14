@@ -15,6 +15,8 @@ CREATE TABLE `beehive_user` (
   `create_date` varchar(45) DEFAULT NULL,
   `modify_date` varchar(45) DEFAULT NULL,
   `is_deleted` tinyint(4) DEFAULT '0',
+  `enable` tinyint(4) DEFAULT '1',
+
 
   PRIMARY KEY (`beehive_user_id`),
   UNIQUE KEY `mobile_UNIQUE` (`mobile`),

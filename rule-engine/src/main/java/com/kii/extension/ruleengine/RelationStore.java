@@ -52,4 +52,10 @@ public class RelationStore {
 		});
 	}
 
+	public Set<String> getTriggerSetByThingID(String thingID){
+
+
+		return thingTriggerMap.get(thingID);
+	}
+
 }
