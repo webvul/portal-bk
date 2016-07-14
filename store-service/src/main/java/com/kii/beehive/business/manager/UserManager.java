@@ -157,16 +157,17 @@ public class UserManager {
 
 	public UserGroup  getUserGroupDetail(Long userGroupID){
 
-		isGroupOfUser(AuthInfoStore.getUserIDInLong(), userGroupID);
-
-
-		List<BeehiveJdbcUser>  userList=userDao.findUserIDByUserGroupID(userGroupID);
-
 		UserGroup ug = userGroupDao.findByID(userGroupID);
 
 		if(ug==null){
 			throw  EntryNotFoundException.userGroupNotFound(userGroupID);
 		}
+
+		isGroupOfUser(AuthInfoStore.getUserIDInLong(), userGroupID);
+
+
+		List<BeehiveJdbcUser>  userList=userDao.findUserIDByUserGroupID(userGroupID);
+
 		ug.setUserList(userList);
 
 		return ug;

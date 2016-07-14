@@ -121,7 +121,9 @@ public class AuthManager {
 	public String activite(String userName, String token) {
 
 		BeehiveJdbcUser user = userDao.getUserByName(userName);
-
+		if( user == null ) {
+			throw new UserNotExistException(userName);
+		}
 		return doActivity(token, user);
 
 	}
@@ -134,7 +136,6 @@ public class AuthManager {
 		if(!user.getActivityToken().equals(user.getHashedPwd(token))){
 			throw new UnauthorizedException(UnauthorizedException.ACTIVITY_TOKEN_INVALID);
 		}
-		;
 
 		String oneTimeToken= StringRandomTools.getRandomStr(32);
 
