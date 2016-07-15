@@ -2,8 +2,10 @@ package com.kii.extension.ruleengine.test;
 
 import static junit.framework.TestCase.assertEquals;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +21,10 @@ public class TestRelationStore extends InitTest {
 	public void testStore(){
 
 
-		List<String> thList1=new ArrayList<>();
-		List<String> thList2=new ArrayList<>();
-		List<String> thList3=new ArrayList<>();
-		List<String> thList4=new ArrayList<>();
+		Set<String> thList1=new HashSet<>();
+		Set<String> thList2=new HashSet<>();
+		Set<String> thList3=new HashSet<>();
+		Set<String> thList4=new HashSet<>();
 
 
 		for(int i=0;i<100;i++){
@@ -40,10 +42,21 @@ public class TestRelationStore extends InitTest {
 			thList4.add("th"+i);
 		}
 
-		store.fillThingsTriggerIndex(thList1,"trigger3");
-		store.fillThingsTriggerIndex(thList2,"trigger7");
-		store.fillThingsTriggerIndex(thList3,"trigger13");
-		store.fillThingsTriggerIndex(thList4,"triggerOther");
+
+		Map<String,Set<String>> thingMap1=new HashMap<>();
+		thingMap1.put("summary1",thList1);
+
+
+		Map<String,Set<String>> thingMap2=new HashMap<>();
+		thingMap2.put("summary1",thList2);
+		thingMap2.put("summary2",thList3);
+
+		Map<String,Set<String>> thingMap3=new HashMap<>();
+		thingMap3.put("summary3",thList4);
+
+		store.fillThingTriggerElemIndex(thingMap1,"trigger3");
+		store.fillThingTriggerElemIndex(thingMap2,"trigger7");
+		store.fillThingTriggerElemIndex(thingMap3,"triggerOther");
 
 
 		assertEquals(1,store.getTriggerSetByThingID("th1").size());
@@ -52,15 +65,21 @@ public class TestRelationStore extends InitTest {
 
 		assertEquals(2,store.getTriggerSetByThingID("th9").size());
 
-		List<String> thNew=new ArrayList<>();
+		assertEquals(1,store.getTriggerSetByThingID("th50").size());
+
+
+		Set<String> thNew=new HashSet<>();
 		for(int i=0;i<10;i++) {
 			thNew.add("th"+i);
 		}
-		store.maintainThingTriggerIndex(thNew,"triggerOther");
+		Map<String,Set<String>> newMap=new HashMap<>();
+
+		store.maintainThingTriggerIndex(thNew,"triggerOther","summary3");
 		assertEquals(2,store.getTriggerSetByThingID("th39").size());
 
 		assertEquals(2,store.getTriggerSetByThingID("th9").size());
 
+		assertEquals(0,store.getTriggerSetByThingID("th50").size());
 
 	}
 

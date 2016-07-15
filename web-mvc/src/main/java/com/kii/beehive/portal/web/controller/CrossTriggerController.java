@@ -84,7 +84,7 @@ public class CrossTriggerController {
 		result.put("result", "success");
 		TriggerRecord record=mang.getTriggerByID(triggerID);
 		if(!TriggerRecord.StatusType.disable.equals(record.getRecordStatus())){
-			throw new PortalException(ErrorCode.METHOD_NOT_ALLOWED);
+			throw new PortalException(ErrorCode.INVALID_INPUT);
 		}
 
 		mang.enableTrigger(triggerID);
@@ -101,7 +101,7 @@ public class CrossTriggerController {
 		result.put("result", "success");
 		TriggerRecord record=mang.getTriggerByID(triggerID);
 		if(!TriggerRecord.StatusType.enable.equals(record.getRecordStatus())){
-			throw new PortalException(ErrorCode.METHOD_NOT_ALLOWED);
+			throw new PortalException(ErrorCode.INVALID_INPUT);
 		}
 
 		mang.disableTrigger(triggerID);

@@ -58,10 +58,10 @@ public class TagController extends AbstractThingTagController {
 					throw new PortalException(ErrorCode.TAG_NO_PRIVATE,"tagName",existedTag.getFullTagName());
 				}
 			} catch (ObjectNotFoundException e) {
-				throw new PortalException(ErrorCode.BAD_REQUEST);
+				throw new PortalException(ErrorCode.NOT_FOUND);
 			}
 		} else if (thingTagManager.isTagDisplayNamePresent(AuthInfoStore.getTeamID(), TagType.Custom, displayName)) {
-			throw new PortalException(ErrorCode.BAD_REQUEST);
+			throw new PortalException(ErrorCode.TAG_NO_PRIVATE);
 		}
 		tag.setTagType(TagType.Custom);
 		tag.setFullTagName(TagType.Custom.getTagName(displayName));

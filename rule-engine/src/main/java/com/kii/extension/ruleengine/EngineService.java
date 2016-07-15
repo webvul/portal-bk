@@ -7,7 +7,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -84,9 +83,9 @@ public class EngineService {
 
 		fillDelayParam(record);
 
-		List<String> thingList=thingMap.values().stream().flatMap(th->th.stream()).collect(Collectors.toList());
+//		List<String> thingList=thingMap.values().stream().flatMap(th->th.stream()).collect(Collectors.toList());
 
-		relationStore.fillThingsTriggerIndex(thingList,record.getTriggerID());
+		relationStore.fillThingTriggerElemIndex(thingMap,record.getTriggerID());
 
 		Trigger trigger=new Trigger(record.getId());
 		trigger.setType(TriggerType.multiple);
@@ -355,7 +354,7 @@ public class EngineService {
 
 	public void changeThingsInSummary(String triggerID,String summaryName,Set<String> newThings){
 
-		relationStore.maintainThingTriggerIndex(newThings,triggerID);
+		relationStore.maintainThingTriggerIndex(newThings,triggerID,summaryName);
 
 		droolsTriggerService.updateThingsWithName(triggerID,summaryName,newThings);
 
@@ -399,6 +398,11 @@ public class EngineService {
 		droolsTriggerService.addExternalValue(val);
 		droolsTriggerService.fireCondition();
 
+	}
+
+	public Set<String> getRelationTriggersByThingID(String thingID){
+
+		return relationStore.getTriggerSetByThingID(thingID);
 	}
 
 	

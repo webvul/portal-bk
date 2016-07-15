@@ -132,7 +132,7 @@ public class ThingIFController extends AbstractThingTagController {
 		Long endDateTime = this.safeToLong(search.get("end"));
 
 		if(globalThingID == null) {
-			throw new PortalException(ErrorCode.BAD_REQUEST);
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING);
 		}
 
 		// check permission
@@ -178,7 +178,7 @@ public class ThingIFController extends AbstractThingTagController {
 			String commandID = (String)search.get(COMMAND_ID);
 
 			if(globalThingID == null || Strings.isEmpty(commandID)) {
-				throw new PortalException(ErrorCode.BAD_REQUEST);
+				throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING);
 			}
 
 			tempThingList.add(globalThingID);
@@ -251,7 +251,7 @@ public class ThingIFController extends AbstractThingTagController {
 			return Long.valueOf((String)value);
 		}
 
-		throw new PortalException(ErrorCode.BAD_REQUEST);
+		throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING);
 	}
 
 

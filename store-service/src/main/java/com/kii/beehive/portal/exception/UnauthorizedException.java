@@ -1,5 +1,7 @@
 package com.kii.beehive.portal.exception;
 
+import org.apache.http.HttpStatus;
+
 /**
  * Created by hdchen on 3/24/16.
  */
@@ -26,6 +28,7 @@ public class UnauthorizedException extends BusinessException {
 	public UnauthorizedException(String msg,String... params){
 		super(params);
 		super.setErrorCode(msg);
+		super.setStatusCode(HttpStatus.SC_FORBIDDEN);
 	}
 
 
