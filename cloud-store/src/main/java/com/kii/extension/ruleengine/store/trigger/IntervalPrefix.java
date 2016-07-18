@@ -6,6 +6,8 @@ public class IntervalPrefix implements SchedulePrefix {
 
 	private int interval;
 
+//	private int delay;
+
 	@Override
 	public String getType() {
 		return "Interval";
@@ -26,4 +28,12 @@ public class IntervalPrefix implements SchedulePrefix {
 	public void setInterval(int interval) {
 		this.interval = interval;
 	}
+
+//	public int getDelay() {
+//		return delay;
+//	}
+//
+//	public void setDelay(int delay) {
+//		this.delay = delay;
+//	}
 }

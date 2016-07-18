@@ -26,10 +26,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
-import com.kii.beehive.business.service.SmsSendService;
+import com.kii.beehive.business.service.sms.SmsSendService;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.entitys.PermissionTree;
-import com.kii.beehive.portal.helper.BeehiveFacePlusPlusService;
+import com.kii.beehive.portal.faceplusplus.BeehiveFacePlusPlusService;
 import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 import com.kii.beehive.portal.manager.AuthManager;
 import com.kii.beehive.portal.manager.BeehiveUserManager;

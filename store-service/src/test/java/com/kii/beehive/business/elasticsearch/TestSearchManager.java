@@ -1,19 +1,17 @@
 package com.kii.beehive.business.elasticsearch;
 
-import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
 import java.io.IOException;
+
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 
 /**
  * Created by user on 15/6/2016.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:com/kii/beehive/portal/store/testElasricsearchContext.xml"})
+//@RunWith(SpringJUnit4ClassRunner.class)
+//@ContextConfiguration(locations = {"classpath:com/kii/beehive/portal/store/testElasricsearchContext.xml"})
 public class TestSearchManager {
 
 	@Autowired

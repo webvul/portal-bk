@@ -1,4 +1,4 @@
-package com.kii.beehive.business.service;
+package com.kii.beehive.business.service.sms;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;

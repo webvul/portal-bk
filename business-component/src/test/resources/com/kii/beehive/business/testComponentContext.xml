@@ -19,7 +19,12 @@
 
     <bean:annotation-config />
 
-    <context:component-scan base-package="com.kii.beehive.business" />
+    <context:component-scan base-package="com.kii.beehive.business" >
+        <context:include-filter type="aspectj" expression="com.kii.beehive.business.event.*" />
+        <context:include-filter type="aspectj" expression="com.kii.beehive.business.helper.*" />
+        <context:include-filter type="aspectj" expression="com.kii.beehive.business.manager.*" />
+        <context:include-filter type="aspectj" expression="com.kii.beehive.business.service.*" />
+    </context:component-scan>
 
     <!-- <task:annotation-driven executor="myExecutor" scheduler="myScheduler"/>
     <task:executor id="myExecutor" pool-size="5"/>
