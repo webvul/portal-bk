@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -65,11 +65,17 @@ public class EngineService {
 
 			String delay=target.getDelay();
 
+			if(StringUtils.isBlank(delay)){
+				i++;
+				continue;
+			}
+
 			CommandParam  param=new CommandParam();
 			param.setName("delay_"+i);
 			param.setExpress(delay);
 
 			list.add(param);
+
 			i++;
 		}
 

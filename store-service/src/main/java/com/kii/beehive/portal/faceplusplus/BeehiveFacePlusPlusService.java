@@ -1,4 +1,4 @@
-package com.kii.beehive.portal.helper;
+package com.kii.beehive.portal.faceplusplus;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import com.kii.beehive.portal.exception.EntryNotFoundException;
-import com.kii.beehive.portal.faceplusplus.FacePlusPlusService;
 import com.kii.beehive.portal.faceplusplus.entitys.FaceUser;
 import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 import com.kii.beehive.portal.manager.BeehiveUserManager;

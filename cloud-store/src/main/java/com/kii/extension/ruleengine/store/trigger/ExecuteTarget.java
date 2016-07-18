@@ -17,9 +17,9 @@ public interface ExecuteTarget {
 
 	String  getType();
 
-	String getExpress();
+	boolean isDoubleCheck();
 
-	void setExpress(String express);
+	void setDoubleCheck(boolean sign);
 
 	String  getDelay();
 

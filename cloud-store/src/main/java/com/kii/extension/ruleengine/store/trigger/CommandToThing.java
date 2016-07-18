@@ -12,16 +12,15 @@ public class CommandToThing implements   ExecuteTarget {
 
 	private String delay;
 
-	private String express;
+	private boolean  check;
 
-	public String getExpress(){
-		return express;
+	public boolean isDoubleCheck(){
+		return check;
 	};
 
-	public void setExpress(String express){
-		this.express=express;
+	public void setDoubleCheck(boolean sign){
+		this.check=sign;
 	};
-
 
 	@Override
 	public String getDelay() {

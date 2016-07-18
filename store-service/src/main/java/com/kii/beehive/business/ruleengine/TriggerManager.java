@@ -56,10 +56,6 @@ public class TriggerManager {
 	@Autowired
 	private ThingTagManager thingTagService;
 
-
-	@Autowired
-	private TriggerFireCallback callback;
-
 	@Autowired
 	private ObjectMapper mapper;
 

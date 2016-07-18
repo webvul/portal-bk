@@ -10,9 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.kii.beehive.business.ruleengine.CommandExecuteService;
 import com.kii.beehive.portal.store.StoreServiceTestInit;
+import com.kii.extension.ruleengine.TriggerConditionBuilder;
 import com.kii.extension.ruleengine.store.trigger.CallHttpApi;
 import com.kii.extension.ruleengine.store.trigger.CommandToThing;
+import com.kii.extension.ruleengine.store.trigger.Condition;
 import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
+import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TagSelector;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
@@ -90,6 +93,66 @@ public class TestCommandService extends StoreServiceTestInit {
 		trigger.setTarget(targets);
 
 		cmdService.doCommand(trigger,new HashMap<>());
+
+	}
+
+	@Test
+	public void doDelay(){
+
+		SimpleTriggerRecord trigger=new SimpleTriggerRecord();
+		CommandToThing target=new CommandToThing();
+
+		TagSelector sele=new TagSelector();
+		List<Long> things=new ArrayList<>();
+		things.add(1018l);
+		sele.setThingList(things);
+
+		target.setDelay("1000");
+		target.setDoubleCheck(true);
+
+		target.setSelector(sele);
+
+		ThingCommand cmd=new ThingCommand();
+		Action power=new Action();
+		power.setField("foo","bar");
+
+		cmd.addAction("foo",power);
+		target.setCommand(cmd);
+
+		List<ExecuteTarget> targets=new ArrayList<>();
+		targets.add(target);
+
+		trigger.setTarget(targets);
+
+		CallHttpApi api=new CallHttpApi();
+
+		api.setUrl("http://114.215.196.178:8080/beehive-portal/api/echo");
+		api.setAuthorization("Bearer super_token");
+		api.setContentType("application/json;encode=UTF-8");
+		api.setMethod(CallHttpApi.HttpMethod.POST);
+
+		api.setContent("{\"foo\":\"bar\",\"name\":\"abc\",\"val\":123}");
+
+		cmd.addAction("foo",power);
+
+		trigger.addTarget(api);
+
+		SimpleTriggerRecord.ThingID thingID=new SimpleTriggerRecord.ThingID();
+		thingID.setThingID(1052);
+
+		trigger.setSource(thingID);
+
+
+		RuleEnginePredicate predicate=new RuleEnginePredicate();
+		Condition condition= TriggerConditionBuilder.andCondition().great("foo",0).less("bar",0).getConditionInstance();
+		predicate.setCondition(condition);
+
+		trigger.setPredicate(predicate);
+
+		Map map=new HashMap<>();
+		map.put("delay_0","1000");
+
+		cmdService.doCommand(trigger,map);
 
 	}
 

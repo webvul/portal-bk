@@ -4,6 +4,7 @@ import static junit.framework.TestCase.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -17,6 +18,7 @@ import org.junit.Test;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.beehive.portal.auth.UrlTemplateVerify;
+import com.kii.extension.tools.CronGeneral;
 import com.kii.extension.tools.JsonToFlat;
 
 public class UtilTest {
@@ -26,6 +28,18 @@ public class UtilTest {
 	private Pattern mobileP=Pattern.compile("\\<desmobile\\>([^<]+)",Pattern.MULTILINE);
 	private Pattern msgP=Pattern.compile("\\<msgid\\>([^<]+)",Pattern.MULTILINE);
 
+
+	@Test
+	public void testCron(){
+
+		Calendar cal=Calendar.getInstance();
+		cal.add(Calendar.MINUTE,60);
+
+		String cron= CronGeneral.getCurrentCron(cal);
+
+		System.out.println(cron);
+
+	}
 
 	@Test
 	public void testPattern(){
