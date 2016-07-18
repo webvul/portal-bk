@@ -3,12 +3,14 @@ package com.kii.beehive.portal.web.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.security.config.annotation.web.messaging.MessageSecurityMetadataSourceRegistry;
 import org.springframework.security.config.annotation.web.socket.AbstractSecurityWebSocketMessageBrokerConfigurer;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
+import com.kii.beehive.portal.web.security.Role;
 import com.kii.beehive.portal.web.security.STOMPClientInboundChannelInterceptor;
 
 /**
@@ -61,5 +63,9 @@ public class WebSocketMessageBrokerConfig extends AbstractSecurityWebSocketMessa
 	}
 
 	protected void configureInbound(MessageSecurityMetadataSourceRegistry messages) {
+		messages.simpTypeMatchers(SimpMessageType.CONNECT).permitAll()
+				.simpTypeMatchers(SimpMessageType.MESSAGE).hasAnyAuthority(
+				Role.administrator.name(), Role.userAdmin.name())
+				.anyMessage().authenticated();
 	}
 }

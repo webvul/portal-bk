@@ -11,6 +11,7 @@ dependencies {
     compile "org.springframework:spring-webmvc:${springVersion}"
     compile "org.springframework:spring-websocket:${springVersion}"
     compile "org.springframework:spring-messaging:${springVersion}"
+    compile "org.springframework:spring-aop:${springVersion}"
     compile "org.springframework.security:spring-security-config:${springSecurityVersion}"
     compile "org.springframework.security:spring-security-messaging:${springSecurityVersion}"
     compile "org.springframework.security:spring-security-web:${springSecurityVersion}"

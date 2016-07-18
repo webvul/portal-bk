@@ -20,6 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import com.kii.beehive.portal.manager.AuthManager;
 import com.kii.beehive.portal.web.constant.Constants;
+import com.kii.beehive.portal.web.socket.ConcurrentWebSocketSessionHolder;
 
 /**
  * Created by hdchen on 7/13/16.
@@ -28,6 +29,8 @@ import com.kii.beehive.portal.web.constant.Constants;
 public class STOMPClientInboundChannelInterceptor implements ChannelInterceptor {
 	@Autowired
 	private AuthManager authManager;
+
+	private ConcurrentWebSocketSessionHolder sessionHolder = ConcurrentWebSocketSessionHolder.getInstance();
 
 	@Override
 	public Message<?> preSend(Message<?> message, MessageChannel channel) {
@@ -71,9 +74,9 @@ public class STOMPClientInboundChannelInterceptor implements ChannelInterceptor 
 					} else {
 						throw new MessagingException("Can't authenticate the current user. Missing authorization header");
 					}
-
 					authentication.setAuthenticated(true);
 					SecurityContextHolder.getContext().setAuthentication(authentication);
+					sessionHolder.get(headerAccessor.getSessionId()).setPrincipal(authentication);
 					return message;
 				} catch (Exception e) {
 					throw new MessagingException("Can't authenticate the current user",

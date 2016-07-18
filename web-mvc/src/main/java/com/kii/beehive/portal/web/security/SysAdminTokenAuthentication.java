@@ -26,7 +26,7 @@ public class SysAdminTokenAuthentication implements Authentication {
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return null;
+		return authorityList;
 	}
 
 	@Override
