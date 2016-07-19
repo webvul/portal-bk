@@ -25,6 +25,7 @@ import com.kii.extension.ruleengine.store.trigger.CallHttpApi;
 import com.kii.extension.ruleengine.store.trigger.CommandToThing;
 import com.kii.extension.ruleengine.store.trigger.CronPrefix;
 import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
+import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.entity.thingif.Action;
@@ -165,10 +166,14 @@ public class CommandExecuteService {
 		if(target.isDoubleCheck()){
 			TriggerRecord newRec=BeanUtils.instantiate(record.getClass());
 
-			BeanUtils.copyProperties(record,newRec);
-
 			String newID=newRec.getTriggerID()+"_delay_"+idx;
 
+			newRec.setPreparedCondition(null);
+			newRec.setName(record.getName()+"_delay");
+			newRec.setRecordStatus(TriggerRecord.StatusType.enable);
+			newRec.setTargetParamList(record.getTargetParamList());
+			newRec.setType(record.getType());
+			newRec.setUserID(record.getUserID());
 
 			newRec.setId(newID);
 
@@ -181,7 +186,10 @@ public class CommandExecuteService {
 			String cron= CronGeneral.getCurrentCron(cal);
 
 			schedule.setCron(cron);
-			newRec.getPredicate().setSchedule(schedule);
+
+			RuleEnginePredicate predicate=record.getPredicate();
+			predicate.setSchedule(schedule);
+			newRec.setPredicate(predicate);
 
 			target.setDelay(null);
 			target.setDoubleCheck(false);
