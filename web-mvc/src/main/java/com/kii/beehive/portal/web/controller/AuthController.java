@@ -44,16 +44,16 @@ public class AuthController {
 	private BeehiveUserManager userManager;
 
 
-	public static void veifyPwd(String pwd){
+	public static void veifyPwd(String pwd) {
 
-		PortalException  excep= new PortalException(ErrorCode.INVALID_PASSWORD);
+		PortalException excep = new PortalException(ErrorCode.INVALID_PASSWORD);
 
 
-		if(StringUtils.isBlank(pwd)) {
+		if (StringUtils.isBlank(pwd)) {
 			throw excep;
 		}
 
-		if(pwd.length()<6 ){
+		if (pwd.length() < 6) {
 			throw excep;
 		}
 
@@ -61,20 +61,18 @@ public class AuthController {
 	}
 
 
-	@RequestMapping(path = "/doActivity/{userID}/code/{activityCode}.do", method = { RequestMethod.GET },consumes = {MediaType.ALL_VALUE})
-	public RedirectView doActivity(@PathVariable("userID") String userID, @PathVariable("activityCode") String code,HttpServletRequest request) {
-
-
+	@RequestMapping(path = "/doActivity/{userID}/code/{activityCode}.do", method = {RequestMethod.GET}, consumes = {MediaType.ALL_VALUE})
+	public RedirectView doActivity(@PathVariable("userID") String userID, @PathVariable("activityCode") String code, HttpServletRequest request) {
 
 
 		String result = authManager.activiteByID(userID, code);
 
-		String contextUrl=request.getContextPath();
+		String contextUrl = request.getContextPath();
 
-		String url=contextUrl+"/initPassword.html?token="+result;
+		String url = contextUrl + "/initPassword.html?token=" + result;
 
 
-		RedirectView view=new RedirectView(url);
+		RedirectView view = new RedirectView(url);
 
 		return view;
 
@@ -83,36 +81,36 @@ public class AuthController {
 	/**
 	 * 用户注册
 	 * POST /oauth2/register
-	 *
+	 * <p>
 	 * refer to doc "Beehive API - User API" for request/response details
 	 *
 	 * @return
 	 */
-	@RequestMapping(path = "/activate", method = { RequestMethod.POST })
-	public Map<String,Object> activating(@RequestBody Map<String, Object> request) {
+	@RequestMapping(path = "/activate", method = {RequestMethod.POST})
+	public Map<String, Object> activating(@RequestBody Map<String, Object> request) {
 
-		String userName = (String)request.get("userName");
-		String password = (String)request.get("activityToken");
+		String userName = (String) request.get("userName");
+		String password = (String) request.get("activityToken");
 
-		if(StringUtils.isBlank(userName)) {
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","userName");
+		if (StringUtils.isBlank(userName)) {
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "field", "userName");
 		}
 
-		if(StringUtils.isBlank(password)) {
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","password");
+		if (StringUtils.isBlank(password)) {
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "field", "password");
 		}
 
 		String result = authManager.activite(userName, password);
 
-		Map<String,Object> values=new HashMap<>();
-		values.put("initPwdToken",result);
+		Map<String, Object> values = new HashMap<>();
+		values.put("initPwdToken", result);
 
 		return values;
 
 	}
 
-	@RequestMapping(path = "/initpassword", method = { RequestMethod.POST })
-	public void initPassword(@RequestBody Map<String, Object> inputMap,HttpServletRequest request) {
+	@RequestMapping(path = "/initpassword", method = {RequestMethod.POST})
+	public void initPassword(@RequestBody Map<String, Object> inputMap, HttpServletRequest request) {
 
 		String token = AuthUtils.getTokenFromHeader(request);
 
@@ -124,9 +122,9 @@ public class AuthController {
 		veifyPwd(password);
 		String userID = (String) inputMap.get("userName");
 
-		PortalException  excep= new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING);
-		if(StringUtils.isBlank(userID)) {
-			excep.addParam("field","userName");
+		PortalException excep = new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING);
+		if (StringUtils.isBlank(userID)) {
+			excep.addParam("field", "userName");
 			throw excep;
 		}
 
@@ -134,17 +132,16 @@ public class AuthController {
 	}
 
 
-
-	@RequestMapping(value="/registUser",method={RequestMethod.POST})
-	public Map<String,String> createUser(@RequestBody UserRestBean user) {
+	@RequestMapping(value = "/registUser", method = {RequestMethod.POST})
+	public Map<String, String> createUser(@RequestBody UserRestBean user) {
 
 		user.verifyInput();
 
 		BeehiveJdbcUser beehiveUser = user.getBeehiveUser();
-		if(StringUtils.isBlank(beehiveUser.getUserName())){
-			if(!StringUtils.isBlank(beehiveUser.getMail())){
+		if (StringUtils.isBlank(beehiveUser.getUserName())) {
+			if (!StringUtils.isBlank(beehiveUser.getMail())) {
 				beehiveUser.setUserName(beehiveUser.getMail());
-			}else if(!StringUtils.isBlank(beehiveUser.getPhone())){
+			} else if (!StringUtils.isBlank(beehiveUser.getPhone())) {
 				beehiveUser.setUserName(beehiveUser.getPhone());
 			}
 		}
@@ -153,7 +150,7 @@ public class AuthController {
 
 		beehiveUser.setRoleName("commUser");
 
-		return  authManager.createUserDirectly(beehiveUser,user.getPassword());
+		return authManager.createUserDirectly(beehiveUser, user.getPassword());
 
 	}
 
@@ -170,17 +167,17 @@ public class AuthController {
 	public AuthRestBean login(@RequestBody Map<String, Object> request) {
 
 		String userID = (String) request.get("userName");
-		if(StringUtils.isBlank(userID)){
-			userID=(String) request.get("userID");
+		if (StringUtils.isBlank(userID)) {
+			userID = (String) request.get("userID");
 		}
 		String password = (String) request.get("password");
 
-		if(CollectUtils.containsBlank(userID, password)) {
+		if (CollectUtils.containsBlank(userID, password)) {
 
-			if(StringUtils.isBlank(userID)){
-				throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","userName or userID");
-			}else{
-				throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","password");
+			if (StringUtils.isBlank(userID)) {
+				throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "field", "userName or userID");
+			} else {
+				throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "field", "password");
 			}
 		}
 
@@ -188,6 +185,10 @@ public class AuthController {
 
 	}
 
+	@RequestMapping(value = "/validateLoginAccessToken", method = {RequestMethod.POST})
+	public AuthRestBean validateLoginAccessToken(@RequestBody String token) {
+		return authManager.validateLoginAccessToken(token);
+	}
 
 
 	/**
@@ -202,13 +203,12 @@ public class AuthController {
 	public void logout(HttpServletRequest request) {
 
 		String token = AuthUtils.getTokenFromHeader(request);
-		if(!StringUtils.isBlank(token)) {
+		if (!StringUtils.isBlank(token)) {
 			authManager.logout(token);
-		}else{
+		} else {
 			throw new PortalException(ErrorCode.INVALID_TOKEN);
 		}
 	}
-
 
 
 	/**
@@ -219,21 +219,18 @@ public class AuthController {
 	 *
 	 * @return
 	 */
-	@RequestMapping(value = "/validatetoken", method = {RequestMethod.POST, RequestMethod.GET},consumes = {MediaType.ALL_VALUE})
+	@RequestMapping(value = "/validatetoken", method = {RequestMethod.POST, RequestMethod.GET}, consumes = {MediaType.ALL_VALUE})
 	public AuthRestBean validateUserToken(HttpServletRequest request) {
 
 		String token = AuthUtils.getTokenFromHeader(request);
 
-		if(StringUtils.isBlank(token)){
-			PortalException excep= new PortalException(ErrorCode.INVALID_TOKEN);
+		if (StringUtils.isBlank(token)) {
+			PortalException excep = new PortalException(ErrorCode.INVALID_TOKEN);
 			throw excep;
 		}
 
 		return authManager.validateUserToken(token);
 	}
-
-
-
 
 
 }
