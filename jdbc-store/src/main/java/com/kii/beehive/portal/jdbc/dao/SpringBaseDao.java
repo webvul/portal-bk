@@ -91,6 +91,12 @@ public abstract class SpringBaseDao<T extends BusinessEntity> {
 
 	}
 
+	protected <E>  List<E>  queryForList(String sql,Class<E> cls,Object...  queryParams){
+
+		sql = addDelSignPrefix(sql);
+		return jdbcTemplate.queryForList(sql,queryParams,cls);
+
+	}
 
 	protected StringBuilder addDelSignPrefix(StringBuilder sb){
 
@@ -132,6 +138,12 @@ public abstract class SpringBaseDao<T extends BusinessEntity> {
 	protected  List<T>  queryByNamedParam(String sql,Map<String,Object>  queryParams){
 		sql = addDelSignPrefix(sql);
 		return namedJdbcTemplate.query(sql,queryParams,getRowMapper());
+
+	};
+
+	protected <E>  List<E>  queryForListByNamedParam(String sql,Class<E>  clsType,Map<String,Object>  queryParams){
+		sql = addDelSignPrefix(sql);
+		return namedJdbcTemplate.queryForList(sql,queryParams,clsType);
 
 	};
 
