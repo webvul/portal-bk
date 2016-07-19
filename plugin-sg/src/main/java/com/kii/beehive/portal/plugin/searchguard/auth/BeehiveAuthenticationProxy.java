@@ -42,7 +42,7 @@ public class BeehiveAuthenticationProxy implements AuthenticationBackend, Config
 
 	private final String API_ROOT;
 
-	private final String VALIDATE_TOKEN = "/oauth2/validatetoken";
+	private final String VALIDATE_TOKEN = "/oauth2/validateLoginAccessToken";
 
 	private final String LOGIN = "/oauth2/login";
 
@@ -77,6 +77,7 @@ public class BeehiveAuthenticationProxy implements AuthenticationBackend, Config
 				}
 				request = new HttpPost(API_ROOT + VALIDATE_TOKEN);
 				request.setHeader("Authorization", "Bearer " + credentials.getNativeCredentials().toString());
+				request.setEntity(new StringEntity(credentials.getNativeCredentials().toString()));
 			} else {
 				request = new HttpPost(API_ROOT + LOGIN);
 				BeehiveAuthCredential authInfo = new BeehiveAuthCredential();
@@ -125,6 +126,7 @@ public class BeehiveAuthenticationProxy implements AuthenticationBackend, Config
 							}
 						}
 				);
+				System.out.println("User: " + auth.getUser().getUserName() + ", Role: " + auth.getUser().getRoleName());
 				return new User(auth.getUser().getUserName(), Arrays.asList(auth.getUser().getRoleName()));
 			} else {
 				throw new ElasticsearchSecurityException(response.getStatusLine().getStatusCode() + ", " + response
