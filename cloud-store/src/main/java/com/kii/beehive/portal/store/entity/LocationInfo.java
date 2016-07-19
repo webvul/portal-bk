@@ -75,10 +75,6 @@ public class LocationInfo extends KiiEntity {
 		this.subLocations = subLocations;
 	}
 
-	public static enum LocationType {
-		building,floor,partition,area;
-	}
-
 	public static enum AreaType{
 
 		W,M,F,C;

@@ -1,15 +1,18 @@
 package com.kii.beehive.portal.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.store.entity.LocationInfo;
+import com.kii.beehive.portal.store.entity.LocationType;
 import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.entity.BucketInfo;
 import com.kii.extension.sdk.query.ConditionBuilder;
@@ -34,7 +37,11 @@ public class LocationDao extends AbstractDataAccess<LocationInfo> {
 	}
 
 
+
+
 	public void generTopLocation(SubLocInfo  locInfo){
+
+		deleteByUpperLevel(".");
 
 		getSeq(locInfo).forEach(loc->{
 
@@ -43,7 +50,7 @@ public class LocationDao extends AbstractDataAccess<LocationInfo> {
 
 			info.setParent(".");
 
-			info.setLevel(LocationInfo.LocationType.building);
+			info.setLevel(LocationType.building);
 
 			info.setDisplayName(loc);
 
@@ -54,23 +61,31 @@ public class LocationDao extends AbstractDataAccess<LocationInfo> {
 	}
 
 
-	public void generSubLevelInUpper(String upper,SubLocInfo  subLoc,LocationInfo.LocationType type){
+	public void generSubLevelInUpper(String upper,SubLocInfo  subLoc){
 
 		deleteByUpperLevel(upper);
 
 		Map<String,String> subLevel=new HashMap<>();
 
-		getSeq(subLoc).forEach(loc->{
+		LocationType type= LocationType.getTypeByLocation(upper);
 
+
+		getSeq(subLoc,upper).forEach(loc->{
 
 			LocationInfo info=new LocationInfo();
 			info.setLocation(loc);
 
 			info.setParent(upper);
 
-			info.setLevel(type);
+			info.setLevel(LocationType.getNextLevel(type));
 
 			info.setDisplayName(loc);
+
+			if(info.getLevel()==LocationType.area){
+				String area=LocationType.area.getLevelSeq(loc);
+				String areaType=StringUtils.substring(area,0,1);
+				info.setAreaType(LocationInfo.AreaType.valueOf(areaType));
+			}
 
 			subLevel.put(loc,loc);
 
@@ -107,14 +122,27 @@ public class LocationDao extends AbstractDataAccess<LocationInfo> {
 			super.removeEntity(rec.getId());
 		});
 	}
+	public  List<String> getSeq(SubLocInfo seqInfo){
+		return getSeq(seqInfo,null);
+	}
 
 
-	private List<String> getSeq(SubLocInfo seqInfo){
+
+	public  List<String> getSeq(SubLocInfo seqInfo,String levelPrefix){
+
+		if(StringUtils.isEmpty(levelPrefix)){
+			levelPrefix="";
+		}else if(LocationType.getTypeByLocation(levelPrefix)==LocationType.partition){
+			levelPrefix+="-";
+		}
+
+		final String globalPrefix=levelPrefix;
 
 		List<String> result=new ArrayList<>();
 
 		if(!seqInfo.array.isEmpty()){
-			return seqInfo.array;
+
+			return seqInfo.array.stream().map((s)->globalPrefix+s).collect(Collectors.toList());
 		}
 
 
@@ -125,6 +153,13 @@ public class LocationDao extends AbstractDataAccess<LocationInfo> {
 
 		Object from=seqInfo.from;
 
+
+		String prefix=seqInfo.prefix;
+		if(StringUtils.isBlank(prefix)){
+			prefix="";
+		}
+
+		String fillZero=StringUtils.repeat('0',2);
 
 
 		if(from instanceof  String ){
@@ -138,7 +173,7 @@ public class LocationDao extends AbstractDataAccess<LocationInfo> {
 			char end=toStr.charAt(0);
 
 			for(int i=(int)start;i<=(int)end;i++){
-				result.add(String.valueOf((char)i));
+				result.add(levelPrefix+prefix+String.valueOf((char)i));
 			}
 
 			return result;
@@ -150,7 +185,11 @@ public class LocationDao extends AbstractDataAccess<LocationInfo> {
 
 
 			for(int i=(int)fromInt;i<=(int)toInt;i++){
-				result.add(String.valueOf((char)i));
+				String sub=String.valueOf(i);
+
+				String completeSub=StringUtils.substring(fillZero+sub,-2);
+
+				result.add(levelPrefix+prefix+completeSub);
 			}
 
 			return result;
@@ -164,13 +203,13 @@ public class LocationDao extends AbstractDataAccess<LocationInfo> {
 
 		private String prefix;
 
-		private String suffix;
 
 		private Object from ;
 
 		private Object  to;
 
 		private List<String> array=new ArrayList<>();
+
 
 		public Object getFrom() {
 			return from;
@@ -194,6 +233,10 @@ public class LocationDao extends AbstractDataAccess<LocationInfo> {
 
 		public void setArray(List<String> array) {
 			this.array = array;
+		}
+
+		public void setArrayInfo(String... infos){
+			this.array= Arrays.asList(infos);
 		}
 
 		public String getPrefix() {
