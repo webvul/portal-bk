@@ -176,6 +176,7 @@ public class CommandExecuteService {
 			newRec.setUserID(record.getUserID());
 
 			newRec.setId(newID);
+			newRec.setPreparedCondition(null);
 
 			CronPrefix schedule=new CronPrefix();
 

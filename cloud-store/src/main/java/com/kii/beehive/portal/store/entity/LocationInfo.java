@@ -35,19 +35,19 @@ public class LocationInfo extends KiiEntity {
 		this.location = location;
 	}
 
-	public String getParentLoc() {
+	public String getParent() {
 		return parentLoc;
 	}
 
-	public void setParentLoc(String parentLoc) {
+	public void setParent(String parentLoc) {
 		this.parentLoc = parentLoc;
 	}
 
-	public LocationType getLocationLevel() {
+	public LocationType getLevel() {
 		return locationLevel;
 	}
 
-	public void setLocationLevel(LocationType locationLevel) {
+	public void setLevel(LocationType locationLevel) {
 		this.locationLevel = locationLevel;
 	}
 
