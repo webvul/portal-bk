@@ -1,6 +1,8 @@
 dependencies {
+    compile project(":kii-sdk")
     compile project(":cloud-store")
     compile project(":store-service")
+    compile project(":jdbc-store")
     compile "com.floragunn:search-guard-2:${searchGuardVersion}"
     compile "org.elasticsearch:elasticsearch:${elasticsearchVersion}"
     compile "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
@@ -20,6 +22,7 @@ task buildPluginZip(type: Zip, dependsOn: [":plugin-sg:jar"]) {
     from parent.project(":kii-sdk").getBuildDir().absolutePath + '/libs'
     from parent.project(":cloud-store").getBuildDir().absolutePath + '/libs'
     from parent.project(":store-service").getBuildDir().absolutePath + '/libs'
+    from parent.project(":jdbc-store").getBuildDir().absolutePath + '/libs'
 
     //from configurations.compile.collect { it }
     from configurations.compile.find { it.name.startsWith("spring-beans") }

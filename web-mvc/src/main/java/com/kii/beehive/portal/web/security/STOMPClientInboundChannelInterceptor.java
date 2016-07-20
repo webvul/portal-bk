@@ -49,7 +49,7 @@ public class STOMPClientInboundChannelInterceptor implements ChannelInterceptor 
 							authentication = new SysAdminTokenAuthentication(token);
 						} else {
 							authentication =
-									new AuthTokenAuthentication(authManager.validateUserToken(token));
+									new AuthTokenAuthentication(authManager.validateLoginAccessToken(token));
 						}
 					} else if (token.trim().toLowerCase().startsWith("basic ")) {
 						final String decodedBasicHeader = new String(DatatypeConverter.parseBase64Binary(
