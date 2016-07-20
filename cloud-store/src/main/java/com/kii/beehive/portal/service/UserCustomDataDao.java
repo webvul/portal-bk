@@ -9,6 +9,7 @@ import com.kii.beehive.portal.store.entity.CustomData;
 import com.kii.beehive.portal.store.entity.UserCustomData;
 import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.entity.BucketInfo;
+import com.kii.extension.sdk.exception.ObjectNotFoundException;
 import com.kii.extension.sdk.service.AbstractDataAccess;
 
 @BindAppByName(appName="portal",appBindSource="propAppBindTool")
@@ -48,10 +49,15 @@ public class UserCustomDataDao extends AbstractDataAccess<UserCustomData> {
 	public CustomData getUserData( String type,String userID){
 
 
-		UserCustomData  userData=super.getObjectByID(userID);
+		try {
 
+			UserCustomData userData = super.getObjectByID(userID);
 
-		return userData.getDataMap().get(type);
+			return userData.getDataMap().get(type);
+
+		}catch(ObjectNotFoundException e){
+			return new CustomData();
+		}
 	}
 
 
