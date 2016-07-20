@@ -28,6 +28,8 @@ public class ThingLocationDao extends SpringBaseDao<GlobalThingInfo> {
 		return GlobalThingInfo.ID_GLOBAL_THING;
 	}
 
+
+
 	/*
 	Select  th.*
 from globaThingInfo th  inner join thingLocationRel loc
@@ -51,6 +53,8 @@ Where    loc.location like “locationPrefix%” [and th.type = ?]
 
 		return query(fullSql,paramList.toArray(new Object[0]));
 	}
+
+
 
 /*
 Select * from globalThingInfo
@@ -90,6 +94,7 @@ Where thing_id  in
 		return super.query(fullSql,paramList.toArray(new Object[0]));
 
 	}
+
 
 
 	/*
@@ -177,8 +182,9 @@ Group by   thing.type, substring(loc.location ,？,？ )
 		return result;
 
 	}
+	
 
-
+	
 	public static class  ThingIDs{
 
 		private List<String> thingIDs=new ArrayList<>();

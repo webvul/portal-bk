@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.ThingLocationRelation;
 
@@ -14,14 +16,6 @@ public class ThingLocQuery {
 	private String location;
 
 	private boolean includeSub;
-
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
 
 
 	public String fillSubQuery(List<Object> paramList){
@@ -45,6 +39,7 @@ public class ThingLocQuery {
 		return StringUtils.isNoneBlank(location);
 	}
 
+
 	private String getLocationParam() {
 
 		if(includeSub) {
@@ -62,15 +57,32 @@ public class ThingLocQuery {
 		}
 	}
 
+	@JsonProperty("locationPrefix")
+	public String getLocation() {
+		return location;
+	}
+
+	@JsonProperty("includeSubLevel")
+	public boolean isIncludeSub() {
+		return includeSub;
+	}
+
 	public void setLocation(String location) {
 		this.location = location;
 	}
 
-//	public boolean isIncludeSub() {
-//		return includeSub;
-//	}
-
 	public void setIncludeSub(boolean includeSub) {
 		this.includeSub = includeSub;
 	}
+
+
+	@JsonProperty("type")
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
 }
