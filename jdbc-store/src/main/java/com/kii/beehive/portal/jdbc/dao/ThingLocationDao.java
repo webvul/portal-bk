@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Repository;
 
 import com.kii.beehive.portal.common.utils.StrTemplate;
@@ -35,29 +36,17 @@ Where    loc.location like “locationPrefix%” [and th.type = ?]
 	 */
 
 	private static final String sqlTmpQueryThing="select th.* from ${1} th " +
-			" inner join ${2} rel on th.${0} = rel.${3} where rel.${4}${5} ";
+			" inner join ${2} loc on th.${0} = loc.${3} where 1=1  ${4} ";
 
-	public List<GlobalThingInfo> getThingIDsByLocation(String location,boolean includeSubLevel,String type){
+	public List<GlobalThingInfo> getThingIDsByLocation(ThingLocQuery query){
 
 		List<Object> paramList=new ArrayList<>();
 
+		String subQuery=query.fillSubQuery(paramList);
 
-		String sqlTmp=sqlTmpQueryThing;
-		String subQuery=" like  ? ";
-		if(includeSubLevel){
-			paramList.add(location+"%");
-		}else{
-			subQuery= " =  ? ";
-			paramList.add(location);
-		}
-
-		if(StringUtils.isNoneBlank(type)){
-			sqlTmp+=" and th.{6} = ? ";
-			paramList.add(type);
-		}
-
-		String fullSql= StrTemplate.gener(sqlTmp,GlobalThingInfo.ID_GLOBAL_THING,GlobalThingSpringDao.TABLE_NAME,ThingLocationRelDao.TABLE_NAME,
-				ThingLocationRelation.THING_ID,ThingLocationRelation.LOCATION,subQuery,GlobalThingInfo.THING_TYPE);
+		String fullSql= StrTemplate.gener(sqlTmpQueryThing,
+				GlobalThingInfo.ID_GLOBAL_THING,GlobalThingSpringDao.TABLE_NAME,ThingLocationRelDao.TABLE_NAME,
+				ThingLocationRelation.THING_ID,subQuery);
 
 
 		return query(fullSql,paramList.toArray(new Object[0]));
@@ -72,63 +61,31 @@ Where thing_id  in
   Where  loc.thing_id =  ?  )  [ and type = ?   ][and loation like ‘locationPrefix%’ ]
  */
 
+
 	private static final String sqlTmpRelThing="select  th.* from ${0} th where th.${1} in " +
-			"(select locRel.${2} from ${3} loc  inner join  ${3}  locRel on  locRel.${4} = loc.${4} " +
-			" where loc.${2} =  ? )  ";
+			"(select loc.${2} from ${3} locSrc  inner join  ${3}  loc on  locSrc.${4} = loc.${4} " +
+			" where locSrc.${2} =  ?  ${5} )  ${6}  ";
 
-	public List<GlobalThingInfo> getRelationThingsByThingLocatoin(long thingID,String type){
-
-
-		List<Object> paramList=new ArrayList<>();
-
-		paramList.add(thingID);
-
-		String sqlTmp=sqlTmpRelThing;
-		if(StringUtils.isNoneBlank(type)){
-			sqlTmp+=" and th.${6} =  ? ";
-			paramList.add(type);
-		}
-
-
-		String fullSql=StrTemplate.gener(sqlTmp,GlobalThingSpringDao.TABLE_NAME,GlobalThingInfo.ID_GLOBAL_THING,ThingLocationRelation.THING_ID,ThingLocationRelDao.TABLE_NAME,
-				ThingLocationRelation.LOCATION,GlobalThingInfo.THING_TYPE);
-
-		return super.query(fullSql,paramList.toArray(new Object[0]));
-
-	}
-
-
-	private static final String sqlTmpRelThingWithLoc="select  th.* from ${0} th where th.${1} in " +
-			"(select locRel.${2} from ${3} loc  inner join  ${3}  locRel on  locRel.${4} = loc.${4} " +
-			" where loc.${2} =  ? and locRel.${4}${5} )  ";
-
-	public List<GlobalThingInfo> getRelationThingsByThingLocatoin(long thingID,String type,String location,boolean includeSubLevel ){
-
-		if(StringUtils.isBlank(location)){
-			throw new IllegalArgumentException("location cannot null in this function");
-		}
+	public List<GlobalThingInfo> getRelationThingsByThingLocatoin(long thingID,ThingLocQuery query ){
 
 		List<Object> paramList=new ArrayList<>();
-
 		paramList.add(thingID);
 
-		String sqlTmp=sqlTmpRelThing;
+		ThingLocQuery locQuery=new ThingLocQuery();
+		BeanUtils.copyProperties(query,locQuery);
+		locQuery.setType(null);
 
-		String subQuery=" =  ?  ";
-		if(includeSubLevel) {
-			subQuery = " like   ? ";
-			paramList.add(location+"%");
-		}else{
-			paramList.add(location);
-		}
+		String subQuery1=locQuery.fillSubQuery(paramList);
 
-		if(StringUtils.isNoneBlank(type)){
-			sqlTmp+=" and th.${6} =  ? ";
-			paramList.add(type);
-		}
+		ThingLocQuery typeQuery=new ThingLocQuery();
+		typeQuery.setType(query.getType());
 
-		String fullSql=StrTemplate.gener(sqlTmp,GlobalThingSpringDao.TABLE_NAME,GlobalThingInfo.ID_GLOBAL_THING,ThingLocationRelation.THING_ID,ThingLocationRelDao.TABLE_NAME,
-				ThingLocationRelation.LOCATION,subQuery,GlobalThingInfo.THING_TYPE);
+		String subQuery2=typeQuery.fillSubQuery(paramList);
+
+		String fullSql=StrTemplate.gener(sqlTmpRelThing,
+				GlobalThingSpringDao.TABLE_NAME,GlobalThingInfo.ID_GLOBAL_THING,ThingLocationRelation.THING_ID,
+				ThingLocationRelDao.TABLE_NAME, ThingLocationRelation.LOCATION,subQuery1,
+				subQuery2);
 
 		return super.query(fullSql,paramList.toArray(new Object[0]));
 
@@ -145,22 +102,24 @@ Group by   thing.type, substring(loc.location ,？,？ )
 
 
 	private static final String sqlTmpWithGroup="select group_concat(th.${0}) as thingids, ${1} as name from " +
-			" ${1} th inner join  ${2} loc on th.${3} = loc.${4} " +
-			" where th.is_deleted = false  ${5} " +
+			" ${2} th inner join  ${3} loc on th.${4} = loc.${5} " +
+			" where th.is_deleted = false  ${6} " +
 			" group by ${1}  ";
 	public Map<String,ThingIDs> getIDsByTypeGroup(ThingLocQuery query,boolean groupByType){
 
 
 		List<Object> paramList=new ArrayList<>();
-		String subQuery=fillParamList(paramList,query);
+		String subQuery=query.fillSubQuery(paramList);
 
 		String subGroup="loc."+ThingLocationRelation.LOCATION;
 		if(groupByType){
 			subGroup="th."+GlobalThingInfo.THING_TYPE;
 		}
 
-		String fullSql=StrTemplate.gener(sqlTmpWithGroup,GlobalThingInfo.VANDOR_THING_ID,subGroup,GlobalThingSpringDao.TABLE_NAME,ThingLocationRelDao.TABLE_NAME,
-				GlobalThingInfo.ID_GLOBAL_THING,ThingLocationRelation.LOCATION,subQuery);
+		String fullSql=StrTemplate.gener(sqlTmpWithGroup,
+				GlobalThingInfo.VANDOR_THING_ID,subGroup,GlobalThingSpringDao.TABLE_NAME,
+				ThingLocationRelDao.TABLE_NAME, GlobalThingInfo.ID_GLOBAL_THING,ThingLocationRelation.THING_ID,
+				subQuery);
 
 		List<Map<String,Object>>  list=jdbcTemplate.queryForList(fullSql,paramList.toArray(new Object[0]));
 
@@ -181,16 +140,16 @@ Group by   thing.type, substring(loc.location ,？,？ )
 	}
 
 
-	private static final String SqlTmpWithTwoGroup="select group_concat(th.${0} as thingids, th.${1} as type,loc.${2} as location  from " +
+	private static final String SqlTmpWithTwoGroup="select group_concat(th.${0}) as thingids, th.${1} as type,loc.${2} as location  from " +
 			" ${3} th inner join  ${4} loc on th.${5} = loc.${6} " +
 			" where th.is_deleted = false  ${7} " +
 			" group by th.${1},loc.${2}   ";
 	public Map<String,Map<String,ThingIDs>> getIDsByLocationAndTypeGroup(ThingLocQuery query){
 
 		List<Object> paramList=new ArrayList<>();
-		String subQuery=fillParamList(paramList,query);
+		String subQuery=query.fillSubQuery(paramList);
 
-		String fullSql=StrTemplate.gener(sqlTmpWithGroup,
+		String fullSql=StrTemplate.gener(SqlTmpWithTwoGroup,
 				GlobalThingInfo.VANDOR_THING_ID,GlobalThingInfo.THING_TYPE,ThingLocationRelation.LOCATION,
 				GlobalThingSpringDao.TABLE_NAME,ThingLocationRelDao.TABLE_NAME,GlobalThingInfo.ID_GLOBAL_THING,
 				ThingLocationRelation.THING_ID,subQuery);
@@ -220,36 +179,6 @@ Group by   thing.type, substring(loc.location ,？,？ )
 	}
 
 
-
-	private String fillParamList(List<Object> paramList,ThingLocQuery  query){
-
-		StringBuilder sb=new StringBuilder(" and 1=1 ");
-
-		if(StringUtils.isNoneBlank(query.type)){
-			sb.append("and th.${0} =  ? ");
-			paramList.add(query.type);
-		}
-		if(StringUtils.isNoneBlank(query.location)){
-
-			if(query.includeSub){
-
-				sb.append(" and loc.${1}  like  ? ");
-				paramList.add(query.location+"%");
-			}else{
-
-				sb.append(" and loc.${1}  =  ? ");
-				paramList.add(query.location);
-
-			}
-		}
-
-		String tmp= sb.toString();
-
-		return StrTemplate.gener(tmp,GlobalThingInfo.THING_TYPE,ThingLocationRelation.LOCATION);
-
-	}
-
-
 	public static class  ThingIDs{
 
 		private List<String> thingIDs=new ArrayList<>();
@@ -262,14 +191,4 @@ Group by   thing.type, substring(loc.location ,？,？ )
 		}
 	}
 
-	public static class  ThingLocQuery{
-
-		private String type;
-
-		private String location;
-
-		private boolean includeSub;
-
-
-	}
 }

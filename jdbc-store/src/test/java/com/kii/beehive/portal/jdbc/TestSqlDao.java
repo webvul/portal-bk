@@ -11,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.kii.beehive.portal.jdbc.dao.BeehiveUserJdbcDao;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
+import com.kii.beehive.portal.jdbc.dao.ThingLocQuery;
+import com.kii.beehive.portal.jdbc.dao.ThingLocationDao;
+import com.kii.beehive.portal.jdbc.dao.ThingLocationRelDao;
 import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
 
 public class TestSqlDao extends TestTemplate {
@@ -24,6 +27,16 @@ public class TestSqlDao extends TestTemplate {
 
 	@Autowired
 	private TagIndexDao tagDao;
+
+	@Autowired
+	private ThingLocationDao  thingLocDao;
+
+	@Autowired
+	private ThingLocationRelDao thingLocRelDao;
+
+
+	@Autowired
+	private BeehiveUserJdbcDao  userDao;
 
 	List<Long> ids=new ArrayList<>();
 
@@ -40,8 +53,68 @@ public class TestSqlDao extends TestTemplate {
 	}
 
 
-	@Autowired
-	private BeehiveUserJdbcDao  userDao;
+
+
+
+	@Test
+	public void testThingLocal(){
+		
+		ThingLocQuery query=new ThingLocQuery();
+		query.setType("type");
+		query.setLocation("loc");
+
+		query.setIncludeSub(true);
+
+
+		ThingLocQuery queryFalse=new ThingLocQuery();
+		queryFalse.setType("type");
+		queryFalse.setLocation("loc");
+
+		queryFalse.setIncludeSub(false);
+
+
+		ThingLocQuery queryType=new ThingLocQuery();
+		queryType.setType("type");
+
+
+		ThingLocQuery queryLoc=new ThingLocQuery();
+		queryLoc.setLocation("loc");
+		queryLoc.setIncludeSub(false);
+
+
+		ThingLocQuery[]  array=new ThingLocQuery[]{query,queryFalse,queryType,queryLoc};
+
+		for(ThingLocQuery q:array){
+
+			thingLocDao.getIDsByLocationAndTypeGroup(q);
+
+			thingLocDao.getIDsByTypeGroup(q,true);
+
+			thingLocDao.getIDsByTypeGroup(q,false);
+
+			thingLocDao.getThingIDsByLocation(q);
+
+			thingLocDao.getRelationThingsByThingLocatoin(100l,q);
+
+		}
+
+	}
+
+
+	@Test
+	public void testThingLocRel(){
+
+		thingLocRelDao.addRelation(100l,tags);
+
+		thingLocRelDao.removeRelation(100l,tags);
+
+		thingLocRelDao.clearAllRelation(100l);
+
+		thingLocRelDao.getRelation(100l);
+
+	}
+
+
 	@Test
 	public void testUserDao(){
 
