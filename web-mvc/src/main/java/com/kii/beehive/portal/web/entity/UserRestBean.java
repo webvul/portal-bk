@@ -59,6 +59,7 @@ public class UserRestBean {
 	}
 
 	private static Pattern numPattern=Pattern.compile("^1[\\d]{10}$");
+	private static Pattern mailPattern=Pattern.compile("^[\\w\\.]+@[\\w\\.]+$");
 
 	@JsonIgnore
 	public void verifyInput(){
@@ -67,12 +68,16 @@ public class UserRestBean {
 
 		}
 
-		if(!StringUtils.isAsciiPrintable(beehiveUser.getUserName())){
+		if(StringUtils.isNoneBlank(beehiveUser.getUserName())&&!StringUtils.isAsciiPrintable(beehiveUser.getUserName())){
 			throw new  PortalException(ErrorCode.INVALID_INPUT, "field","userName","data",beehiveUser.getUserName());
 		}
 		if(!StringUtils.isBlank(beehiveUser.getPhone())&& !numPattern.matcher(beehiveUser.getPhone()).find()){
 
 			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","phone");
+		}
+		if(StringUtils.isNoneBlank(beehiveUser.getMail())&& !mailPattern.matcher(beehiveUser.getMail()).find()){
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","mail");
+
 		}
 
 	}

@@ -97,7 +97,7 @@ public class AuthController {
 		}
 
 		if (StringUtils.isBlank(password)) {
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "field", "password");
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "field", "activityToken");
 		}
 
 		String result = authManager.activite(userName, password);

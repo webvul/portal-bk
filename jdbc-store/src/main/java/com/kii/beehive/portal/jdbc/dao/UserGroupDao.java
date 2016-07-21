@@ -37,7 +37,7 @@ public class UserGroupDao extends SpringBaseDao<UserGroup> {
 
 		if (userID!=null) {
 			if (where.length() > 0) where.append(" AND ");
-			where.append(" r.user_id = ? ");
+			where.append(" r.beehive_user_id = ? ");
 			params.add(userID);
 		}
 

@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,6 +30,14 @@ public class UtilTest {
 	private Pattern msgP=Pattern.compile("\\<msgid\\>([^<]+)",Pattern.MULTILINE);
 
 
+	@Test
+	public void testReplace(){
+
+		String a="abc@agc#code";
+
+		assertEquals("abc.agc.code", StringUtils.replacePattern(a,"\\W","."));
+
+	}
 	@Test
 	public void testCron(){
 
