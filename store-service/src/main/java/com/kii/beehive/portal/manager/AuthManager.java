@@ -296,6 +296,10 @@ public class AuthManager {
 
 		BeehiveJdbcUser user = userDao.getUserByUserID(userID);
 
+		if(user==null){
+			throw new UserNotExistException(userID);
+		}
+
 		userService.bindToUser(user, user.getUserPassword());
 
 		userService.changePassword(user.getUserPassword(), user.getDefaultPassword());

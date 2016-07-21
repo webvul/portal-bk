@@ -98,7 +98,7 @@ public class UserController {
 			}
 		}
 
-		Map<String,Object>  newUser=  userManager.addUser(beehiveUser,user.getTeamName());
+		Map<String,Object>  newUser=  userManager.addUser(beehiveUser);
 
 		BeehiveJdbcUser userInfo= (BeehiveJdbcUser) newUser.get("user");
 
@@ -270,7 +270,7 @@ public class UserController {
 	public UserRestBean getUserByID(@PathVariable("userID") String userID) {
 
 		UserRestBean bean = new UserRestBean();
-		bean.setBeehiveUser(userManager.getUserByID(userID));
+		bean.setBeehiveUser(userManager.getUserByIDDirectly(userID));
 
 		return bean;
 	}

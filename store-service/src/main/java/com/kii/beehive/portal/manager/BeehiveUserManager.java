@@ -15,18 +15,17 @@ import com.kii.beehive.portal.common.utils.StringRandomTools;
 import com.kii.beehive.portal.entitys.PermissionTree;
 import com.kii.beehive.portal.exception.UnauthorizedException;
 import com.kii.beehive.portal.exception.UserExistException;
+import com.kii.beehive.portal.exception.UserNotExistException;
 import com.kii.beehive.portal.helper.AuthInfoService;
 import com.kii.beehive.portal.helper.RuleSetService;
 import com.kii.beehive.portal.jdbc.dao.BeehiveArchiveUserDao;
 import com.kii.beehive.portal.jdbc.dao.BeehiveUserJdbcDao;
 import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
-import com.kii.beehive.portal.jdbc.dao.TeamDao;
 import com.kii.beehive.portal.jdbc.dao.TeamGroupRelationDao;
 import com.kii.beehive.portal.jdbc.dao.TeamUserRelationDao;
 import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
 import com.kii.beehive.portal.jdbc.entity.BeehiveArchiveUser;
 import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
-import com.kii.beehive.portal.jdbc.entity.Team;
 import com.kii.beehive.portal.jdbc.entity.TeamUserRelation;
 
 @Component
@@ -63,8 +62,8 @@ public class BeehiveUserManager {
 	private GroupUserRelationDao groupUserRelationDao;
 
 
-	@Autowired
-	private TeamDao teamDao;
+//	@Autowired
+//	private TeamDao teamDao;
 
 
 	public PermissionTree getUsersPermissonTree(String userID){
@@ -92,7 +91,7 @@ public class BeehiveUserManager {
 
 	}
 
-	public Map<String,Object> addUser(BeehiveJdbcUser user,String teamName) {
+	public Map<String,Object> addUser(BeehiveJdbcUser user) {
 
 
 		BeehiveJdbcUser existsUser=userDao.getUserByLoginId(user);
@@ -128,28 +127,28 @@ public class BeehiveUserManager {
 	}
 
 
-	private Long addTeam(String teamName,Long userID){
-
-			List<Team> teamList = teamDao.findTeamByTeamName(teamName);
-
-			Long teamID=null;
-			if(teamList.isEmpty()){
-				Team t = new Team();
-				t.setName(teamName);
-				teamID = teamDao.saveOrUpdate(t);
-				TeamUserRelation tur = new TeamUserRelation(teamID, userID, 1);
-				teamUserRelationDao.saveOrUpdate(tur);
-
-			}else if(teamList.size()==1){// user add to team
-				teamID = teamList.get(0).getId();
-				TeamUserRelation tur = new TeamUserRelation(teamID, userID, 0);
-				teamUserRelationDao.saveOrUpdate(tur);
-			}else{
-				throw new IllegalArgumentException();
-			}
-			return teamID;
-
-	}
+//	private Long addTeam(String teamName,Long userID){
+//
+//			List<Team> teamList = teamDao.findTeamByTeamName(teamName);
+//
+//			Long teamID=null;
+//			if(teamList.isEmpty()){
+//				Team t = new Team();
+//				t.setName(teamName);
+//				teamID = teamDao.saveOrUpdate(t);
+//				TeamUserRelation tur = new TeamUserRelation(teamID, userID, 1);
+//				teamUserRelationDao.saveOrUpdate(tur);
+//
+//			}else if(teamList.size()==1){// user add to team
+//				teamID = teamList.get(0).getId();
+//				TeamUserRelation tur = new TeamUserRelation(teamID, userID, 0);
+//				teamUserRelationDao.saveOrUpdate(tur);
+//			}else{
+//				throw new IllegalArgumentException();
+//			}
+//			return teamID;
+//
+//	}
 
 
 
@@ -167,17 +166,23 @@ public class BeehiveUserManager {
 	}
 
 	public BeehiveJdbcUser getUserByIDDirectly(String userID){
-		return userDao.getUserByUserID(userID);
+
+		BeehiveJdbcUser user= userDao.getUserByUserID(userID);
+		if(user==null){
+			throw new UserNotExistException(userID);
+		}
+		return user;
 	}
 
 
 
-	public BeehiveJdbcUser getUserByID(String userID) {
-
-
-//		checkTeam(userID);
-		return userDao.getUserByUserID(userID);
-	}
+//	public BeehiveJdbcUser getUserByID(String userID) {
+//
+//
+////		checkTeam(userID);
+//
+//
+//	}
 
 
 	public void updateUser(BeehiveJdbcUser user,String userID){
@@ -186,6 +191,9 @@ public class BeehiveUserManager {
 
 		BeehiveJdbcUser oldUser=userDao.getUserByUserID(userID);
 
+		if(oldUser==null){
+			throw new UserNotExistException(userID);
+		}
 
 		userDao.updateEntityByID(user,oldUser.getId());
 
@@ -221,14 +229,20 @@ public class BeehiveUserManager {
 	
 	public void updateUserSign(String userID, boolean b) {
 
-		userDao.updateEnableSign(userID,b);
+
+		int i=userDao.updateEnableSign(userID,b);
+		if(i==0){
+			throw new UserNotExistException(userID);
+		}
 	}
 
 
 	public void disableUser(String userID){
 
-		userDao.updateEnableSign(userID,false);
-
+		int i=userDao.updateEnableSign(userID,false);
+		if(i==0){
+			throw new UserNotExistException(userID);
+		}
 		authService.removeTokenByUserID(userID);
 
 	}
@@ -237,7 +251,9 @@ public class BeehiveUserManager {
 
 	public void removeUser(String userID){
 		BeehiveJdbcUser  user=userDao.getUserByUserID(userID);
-
+		if(user==null){
+			throw new UserNotExistException(userID);
+		}
 
 		userDao.hardDeleteByID(user.getId());
 

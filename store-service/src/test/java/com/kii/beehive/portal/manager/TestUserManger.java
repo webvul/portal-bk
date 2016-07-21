@@ -50,7 +50,7 @@ public class TestUserManger  extends StoreServiceTestInit {
 		user.setUserName(name);
 //		user.setCompany("kiicloud");
 
-		Map<String,Object> result=userManager.addUser(user,"");
+		Map<String,Object> result=userManager.addUser(user);
 
 		BeehiveJdbcUser  newUser= (BeehiveJdbcUser) result.get("user");
 
@@ -104,7 +104,7 @@ public class TestUserManger  extends StoreServiceTestInit {
 	public void login(){
 
 
-		BeehiveJdbcUser user=userManager.getUserByID("Alfred");
+		BeehiveJdbcUser user=userManager.getUserByIDDirectly("Alfred");
 
 		String pwd=user.getUserPassword();
 

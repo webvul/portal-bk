@@ -134,6 +134,8 @@ public class BeehiveUserJdbcDao extends SpringBaseDao<BeehiveJdbcUser>  {
 
 	}
 
+
+
 	public BeehiveJdbcUser getUserByUserID(String  userID) {
 
 
@@ -142,6 +144,7 @@ public class BeehiveUserJdbcDao extends SpringBaseDao<BeehiveJdbcUser>  {
 		String fullSql= StrTemplate.gener(sqlTmp,TABLE_NAME);
 
 		return queryForObject(fullSql, userID);
+
 
 
 	}
@@ -222,13 +225,13 @@ public class BeehiveUserJdbcDao extends SpringBaseDao<BeehiveJdbcUser>  {
 		return super.findAll();
 	}
 
-	public void updateEnableSign(String userID,boolean sign){
+	public int updateEnableSign(String userID,boolean sign){
 
 		BeehiveJdbcUser user=new BeehiveJdbcUser();
 		user.setUserID(userID);
 		user.setEnable(sign);
 
-		super.updateEntityByField(user,"userID");
+		return super.updateEntityByField(user,"userID");
 	}
 
 

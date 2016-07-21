@@ -1,6 +1,7 @@
 package com.kii.beehive.portal.jdbc.entity;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -99,6 +100,15 @@ public class BeehiveJdbcUser extends BusinessEntity{
 	@JdbcField(column="user_name")
 	public String getUserName() {
 		return userName;
+	}
+
+
+	@JsonIgnore
+	public  String getKiiCloudLoginName(){
+
+
+		return StringUtils.replacePattern(userName,"\\W",".");
+
 	}
 
 	public void setUserName(String userName) {

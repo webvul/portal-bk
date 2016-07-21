@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 
@@ -17,12 +18,18 @@ public class StrTemplate {
 
 			String token = "\\$\\(" + key + "\\)";
 
-			String  value= Matcher.quoteReplacement(entry.getValue());
-
-			result = result.replaceAll(token, value);
+			result = result.replaceAll(token, getSafeVal(entry.getValue()));
 		}
 
 		return result;
+	}
+
+	private static String getSafeVal(String value){
+		String val=value;
+		if(StringUtils.isBlank(val)){
+			val="";
+		}
+		return  Matcher.quoteReplacement(val);
 	}
 
 	public static final String generUrl(String template, String... params) {
@@ -34,7 +41,7 @@ public class StrTemplate {
 		for (int i = 0; i < params.length; i++) {
 			String token = "\\$\\(" + i + "\\)";
 
-			result = result.replaceAll(token, params[i]);
+			result = result.replaceAll(token, getSafeVal(params[i]));
 		}
 
 		return result;
@@ -48,9 +55,8 @@ public class StrTemplate {
 
 			String token = "\\$\\{" + key + "\\}";
 
-			String  value= Matcher.quoteReplacement(entry.getValue());
 
-			result = result.replaceAll(token, value);
+			result = result.replaceAll(token,  getSafeVal(entry.getValue()));
 		}
 
 		return result;
@@ -66,9 +72,8 @@ public class StrTemplate {
 		for (int i = 0; i < params.length; i++) {
 			String token = "\\$\\{" + i + "\\}";
 
-			String  value= Matcher.quoteReplacement(params[i]);
 
-			result = result.replaceAll(token,value);
+			result = result.replaceAll(token, getSafeVal(params[i]));
 		}
 
 		return result;

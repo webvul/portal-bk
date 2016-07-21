@@ -29,7 +29,7 @@ public class BeehiveFacePlusPlusService {
 	public BeehiveJdbcUser updateUserWithFace(String userId, Boolean clearOldPhoto, List<File> photoFiles ){
 
 
-		BeehiveJdbcUser user = userManager.getUserByID(userId);
+		BeehiveJdbcUser user = userManager.getUserByIDDirectly(userId);
 		if(user == null) {
 			throw  EntryNotFoundException.userIDNotFound(userId);
 		}
