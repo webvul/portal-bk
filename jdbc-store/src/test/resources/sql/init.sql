@@ -92,6 +92,14 @@ CREATE TABLE `industry_template` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
+CREATE TABLE `rel_thing_location` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `thing_id` int(11) NOT NULL,
+  `location` varchar(45) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8;
+
+
 CREATE TABLE `rel_group_user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` varchar(45) NOT NULL,
@@ -210,3 +218,5 @@ CREATE TABLE `user_group` (
 
   PRIMARY KEY (`user_group_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1006 DEFAULT CHARSET=utf8mb4;
+
+

@@ -80,6 +80,23 @@ public class TestLocDao extends TestTemplate {
 
 		assertEquals(LocationType.floor,LocationType.getNextLevel(LocationType.building));
 
+
+		List<String> locList=LocationType.getLevelInList("02");
+
+		assertEquals(locList.size(),1);
+
+		locList=LocationType.getLevelInList("0204");
+		assertEquals(locList.size(),2);
+
+
+		locList=LocationType.getLevelInList("0204a");
+		assertEquals(locList.size(),3);
+
+
+		locList=LocationType.getLevelInList("0103w-M01");
+		assertEquals(locList.size(),4);
+
+
 	}
 
 	@Test
@@ -134,7 +151,7 @@ public class TestLocDao extends TestTemplate {
 
 		SubLocInfo subloc=mapper.readValue(json1, SubLocInfo.class);
 
-		List<String> list=locDao.getSeq(subloc);
+		List<String> list=subloc.getSeq("test0");
 
 		assertEquals(list.size(),11);
 		assertEquals(list.get(0),"test0000");
@@ -149,7 +166,7 @@ public class TestLocDao extends TestTemplate {
 
 		SubLocInfo subloc=mapper.readValue(json2, SubLocInfo.class);
 
-		List<String> list=locDao.getSeq(subloc);
+		List<String> list=subloc.getSeq("test");
 
 		assertEquals(list.size(),26);
 		assertEquals(list.get(0),"testCha");
@@ -165,7 +182,7 @@ public class TestLocDao extends TestTemplate {
 
 		SubLocInfo subloc=mapper.readValue(json3, SubLocInfo.class);
 
-		List<String> list=locDao.getSeq(subloc);
+		List<String> list=subloc.getSeq(null);
 
 		assertEquals(list.size(),6);
 		assertEquals(list.get(0),"a1");
@@ -180,7 +197,7 @@ public class TestLocDao extends TestTemplate {
 
 		SubLocInfo subloc=mapper.readValue(json4, SubLocInfo.class);
 
-		List<String> list=locDao.getSeq(subloc);
+		List<String> list=subloc.getSeq(null);
 
 		assertEquals(list.size(),11);
 		assertEquals(list.get(0),"0");

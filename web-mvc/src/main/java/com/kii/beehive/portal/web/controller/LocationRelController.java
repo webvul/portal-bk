@@ -27,14 +27,14 @@ public class LocationRelController {
 	private LocationManager manager;
 
 
-	@RequestMapping(value="/thing/{thingID}/location/{location}",method = RequestMethod.PUT)
+	@RequestMapping(value="/things/{thingID}/location/{location}",method = RequestMethod.PUT)
 	public void addLocationInThing(@PathVariable("thingID") long thingID,@PathVariable("location") String location){
 
 		manager.updateRelation(thingID, Collections.singletonList(location));
 
 	}
 
-	@RequestMapping(value="/thing/{thingID}/location/{location}",method = RequestMethod.DELETE,consumes = {MediaType.ALL_VALUE})
+	@RequestMapping(value="/things/{thingID}/location/{location}",method = RequestMethod.DELETE,consumes = {MediaType.ALL_VALUE})
 	public void removeLocationFromThing(@PathVariable("thingID") long thingID,@PathVariable("location") String location){
 
 		manager.removeRelation(thingID, Collections.singletonList(location));
@@ -42,14 +42,14 @@ public class LocationRelController {
 	}
 
 
-	@RequestMapping(value="/thing/{thingID}/location",method = RequestMethod.PATCH)
+	@RequestMapping(value="/things/{thingID}/location",method = RequestMethod.PATCH)
 	public void addLocListToThing(@PathVariable("thingID") long thingID, @RequestBody List<String> locList){
 
 		manager.addRelation(thingID,locList);
 
 	}
 
-	@RequestMapping(value="/thing/{thingID}/location",method = RequestMethod.GET,consumes = {MediaType.ALL_VALUE})
+	@RequestMapping(value="/things/{thingID}/location",method = RequestMethod.GET,consumes = {MediaType.ALL_VALUE})
 	public List<LocationInfo> getLocListFromThing(@PathVariable("thingID") long thingID){
 
 		return manager.getThingRelLocations(thingID);
@@ -57,7 +57,7 @@ public class LocationRelController {
 	}
 
 
-	@RequestMapping(value="/thing/{thingID}/removeLoc",method = RequestMethod.POST)
+	@RequestMapping(value="/things/{thingID}/removeLoc",method = RequestMethod.POST)
 	public void removeLocListFromThing(@PathVariable("thingID") long thingID, @RequestBody List<String> locList){
 
 		manager.removeRelation(thingID, locList);
@@ -65,7 +65,7 @@ public class LocationRelController {
 	}
 
 
-	@RequestMapping(value="/thing/{thingID}/location",method = RequestMethod.PUT)
+	@RequestMapping(value="/things/{thingID}/location",method = RequestMethod.PUT)
 	public void updateLocListToThing(@PathVariable("thingID") long thingID, @RequestBody List<String> locList){
 
 
@@ -75,19 +75,19 @@ public class LocationRelController {
 
 	//======================
 
-	@RequestMapping(value="/location/{location}/subLevel",method = RequestMethod.GET,consumes = {MediaType.ALL_VALUE})
+	@RequestMapping(value="/locations/{location}/subLevel",method = RequestMethod.GET,consumes = {MediaType.ALL_VALUE})
 	public List<LocationInfo> getLowLevelLocations(@PathVariable("location") String location){
 		return manager.getLowLocation(location);
 
 	}
 
-	@RequestMapping(value="/location/{location}/parent",method = RequestMethod.GET,consumes = {MediaType.ALL_VALUE})
+	@RequestMapping(value="/locations/{location}/parent",method = RequestMethod.GET,consumes = {MediaType.ALL_VALUE})
 	public List<LocationInfo> getUpperLevelLocation(@PathVariable("location") String location){
 		return manager.getUpperLocation(location);
 
 	}
 
-	@RequestMapping(value="/location/{location}/allSubLocation",method = RequestMethod.GET,consumes = {MediaType.ALL_VALUE})
+	@RequestMapping(value="/locations/{location}/allSubLocation",method = RequestMethod.GET,consumes = {MediaType.ALL_VALUE})
 	public List<LocationInfo> getAllLowLevelLocations(@PathVariable("location") String location){
 
 		return manager.getAllLowLocation(location);
@@ -97,7 +97,7 @@ public class LocationRelController {
 
 	//====================
 
-	@RequestMapping(value="/location/generBuilder",method = RequestMethod.POST)
+	@RequestMapping(value="/locations/generBuilder",method = RequestMethod.POST)
 	public void generalRootLocation(@RequestBody SubLocInfo builders){
 
 		manager.generalRoot(builders);
@@ -105,7 +105,7 @@ public class LocationRelController {
 
 	}
 
-	@RequestMapping(value="/location/gener/{upperLevel}",method = RequestMethod.POST)
+	@RequestMapping(value="/locations/gener/{upperLevel}",method = RequestMethod.POST)
 	public void generalLowerLevelLocation(@PathVariable("upperLevel")String upperLevel,@RequestBody SubLocInfo builders){
 
 

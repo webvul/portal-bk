@@ -29,6 +29,11 @@
         <level value="debug" />
     </logger>
 
+
+    <logger name="org.springframework.jdbc.core" >
+        <level value="debug" />
+    </logger>
+
     <logger name="com.kii" >
         <level value="debug" />
     </logger>

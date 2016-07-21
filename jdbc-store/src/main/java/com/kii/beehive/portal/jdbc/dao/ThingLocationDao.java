@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Repository;
 
 import com.kii.beehive.portal.common.utils.StrTemplate;
@@ -38,17 +37,21 @@ Where    loc.location like “locationPrefix%” [and th.type = ?]
 	 */
 
 	private static final String sqlTmpQueryThing="select th.* from ${1} th " +
-			" inner join ${2} loc on th.${0} = loc.${3} where 1=1  ${4} ";
+			" where th.${0} in " +
+			" (select loc.${3} from  ${2} loc where th.${0} = loc.${3} ${4} ) " +
+			"  ${5}  ";
 
-	public List<GlobalThingInfo> getThingIDsByLocation(ThingLocQuery query){
+	public List<GlobalThingInfo> getThingsByLocation(ThingLocQuery query){
 
 		List<Object> paramList=new ArrayList<>();
 
-		String subQuery=query.fillSubQuery(paramList);
+		String subLocQuery=query.fillLocQuery(paramList);
+
+		String subQuery=query.fillTypeQuery(paramList);
 
 		String fullSql= StrTemplate.gener(sqlTmpQueryThing,
 				GlobalThingInfo.ID_GLOBAL_THING,GlobalThingSpringDao.TABLE_NAME,ThingLocationRelDao.TABLE_NAME,
-				ThingLocationRelation.THING_ID,subQuery);
+				ThingLocationRelation.THING_ID,subLocQuery,subQuery);
 
 
 		return query(fullSql,paramList.toArray(new Object[0]));
@@ -75,16 +78,11 @@ Where thing_id  in
 		List<Object> paramList=new ArrayList<>();
 		paramList.add(thingID);
 
-		ThingLocQuery locQuery=new ThingLocQuery();
-		BeanUtils.copyProperties(query,locQuery);
-		locQuery.setType(null);
 
-		String subQuery1=locQuery.fillSubQuery(paramList);
+		String subQuery1=query.fillLocQuery(paramList);
 
-		ThingLocQuery typeQuery=new ThingLocQuery();
-		typeQuery.setType(query.getType());
 
-		String subQuery2=typeQuery.fillSubQuery(paramList);
+		String subQuery2=query.fillTypeQuery(paramList);
 
 		String fullSql=StrTemplate.gener(sqlTmpRelThing,
 				GlobalThingSpringDao.TABLE_NAME,GlobalThingInfo.ID_GLOBAL_THING,ThingLocationRelation.THING_ID,
@@ -194,6 +192,18 @@ Group by   thing.type, substring(loc.location ,？,？ )
 			String[] array=StringUtils.split(ids);
 
 			thingIDs.addAll(Arrays.asList(array));
+		}
+
+		public ThingIDs(){
+
+		}
+
+		public List<String> getThingIDs() {
+			return thingIDs;
+		}
+
+		public void setThingIDs(List<String> thingIDs) {
+			this.thingIDs = thingIDs;
 		}
 	}
 

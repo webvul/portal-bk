@@ -1,7 +1,7 @@
 package com.kii.beehive.portal.service;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,13 +42,22 @@ public class LocationDao extends AbstractDataAccess<LocationInfo> {
 		return super.fullQuery(query);
 	}
 
+	Comparator<LocationInfo> locationInfoComparator = (o1, o2) -> {
+		if(o1.getLevel() == o2.getLevel()) {
+			return o1.getId().compareTo(o2.getId());
+		}else{
+			return o1.getLevel().compareTo(o2.getLevel());
+		}
+	};
+
+
 	public List<LocationInfo> getAllLowLocation(String location){
 		QueryParam query=ConditionBuilder.newCondition().prefixLike("parent",location).getFinalQueryParam();
 
 		List<LocationInfo> list= super.fullQuery(query);
 
 
-		Collections.sort(list, (o1, o2) -> o1.getId().compareTo(o2.getId()));
+		Collections.sort(list, locationInfoComparator);
 
 		return list;
 
@@ -56,18 +65,12 @@ public class LocationDao extends AbstractDataAccess<LocationInfo> {
 
 	public List<LocationInfo> getPathToLoc(String location){
 
-		List<String> inParam=new ArrayList<>();
 
-		inParam.add(LocationType.building.getLevelSeq(location));
-		inParam.add(LocationType.floor.getLevelSeq(location));
-		inParam.add(LocationType.partition.getLevelSeq(location));
-		inParam.add(LocationType.area.getLevelSeq(location));
-
-		QueryParam query=ConditionBuilder.newCondition().In("_id",inParam).getFinalQueryParam();
+		QueryParam query=ConditionBuilder.newCondition().In("_id",LocationType.getLevelInList(location)).getFinalQueryParam();
 
 		List<LocationInfo> list= super.fullQuery(query);
 
-		Collections.sort(list, (o1, o2) -> o1.getId().compareTo(o2.getId()));
+		Collections.sort(list, locationInfoComparator);
 
 		return list;
 

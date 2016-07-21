@@ -75,7 +75,10 @@ public class LocationInfo extends KiiEntity {
 		this.subLocations = subLocations;
 	}
 
-	public static enum AreaType{
+
+
+
+	public  enum AreaType{
 
 		W,M,F,C;
 	}
@@ -92,4 +95,6 @@ public class LocationInfo extends KiiEntity {
 	public int hashCode() {
 		return Objects.hash(location);
 	}
+
+
 }

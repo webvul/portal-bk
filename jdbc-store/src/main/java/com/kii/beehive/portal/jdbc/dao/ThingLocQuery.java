@@ -35,6 +35,31 @@ public class ThingLocQuery {
 		return sqlTmp;
 	}
 
+
+	public String fillLocQuery(List<Object> paramList){
+
+		String sqlTmp="";
+
+		if(includeLocation()){
+			sqlTmp+="and loc."+ ThingLocationRelation.LOCATION+getLocationQuery();
+			paramList.add(getLocationParam());
+		}
+
+		return sqlTmp;
+	}
+
+	public String fillTypeQuery(List<Object> paramList){
+
+		String sqlTmp="";
+
+		if(StringUtils.isNoneBlank(getType())){
+			sqlTmp+=" and th."+ GlobalThingInfo.THING_TYPE+" =  ? ";
+			paramList.add(getType());
+		}
+
+		return sqlTmp;
+	}
+
 	private boolean includeLocation(){
 		return StringUtils.isNoneBlank(location);
 	}

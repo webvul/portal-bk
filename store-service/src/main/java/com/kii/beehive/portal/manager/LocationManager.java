@@ -1,6 +1,7 @@
 package com.kii.beehive.portal.manager;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +59,10 @@ public class LocationManager {
 	public List<LocationInfo> getThingRelLocations(Long thingID){
 
 		List<String>  locations=relDao.getRelation(thingID);
+
+		if(locations.isEmpty()){
+			return new ArrayList<>();
+		}
 
 		return locDao.getEntitys(locations.toArray(new String[0]));
 	}

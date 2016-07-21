@@ -54,7 +54,7 @@ public class ThingLocationRelDao extends SpringSimpleBaseDao<ThingLocationRelati
 	private String SqlQueryTmp="select th.${1} from ${0} th where th.${2} = ? ";
 	public List<String> getRelation(Long thingID){
 
-		String fullSql=StrTemplate.gener(SqlQueryTmp,TABLE_NAME,ThingLocationRelation.THING_ID,ThingLocationRelation.LOCATION);
+		String fullSql=StrTemplate.gener(SqlQueryTmp,TABLE_NAME,ThingLocationRelation.LOCATION,ThingLocationRelation.THING_ID);
 
 
 		return super.jdbcTemplate.queryForList(fullSql,new Object[]{thingID},String.class);

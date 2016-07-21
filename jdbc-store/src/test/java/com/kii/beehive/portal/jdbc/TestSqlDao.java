@@ -92,7 +92,7 @@ public class TestSqlDao extends TestTemplate {
 
 			thingLocDao.getIDsByTypeGroup(q,false);
 
-			thingLocDao.getThingIDsByLocation(q);
+			thingLocDao.getThingsByLocation(q);
 
 			thingLocDao.getRelationThingsByThingLocatoin(100l,q);
 
