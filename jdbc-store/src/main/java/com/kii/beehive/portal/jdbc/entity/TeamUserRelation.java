@@ -8,25 +8,38 @@ public class TeamUserRelation extends DBEntity{
 	
 	private String userID;
 
+	private Long  beehiveUserID;
+
+
 	private Long teamID;
 	
 	private int vaild;
 	
 	public final static String ID = "id";
-	public final static String USER_ID = "user_id";
+	public final static String USER_ID = "beehive_user_id";
+//	public final static String OLD_USER_ID = "user_id";
+
 	public final static String TEAM_ID = "team_id";
 	public final static String VAILD = "vaild";
 	
 	public TeamUserRelation() {}
 	
 
-	public TeamUserRelation( Long teamID,String userID, int vaild) {
+	public TeamUserRelation( Long teamID,Long userID, int vaild) {
 		super();
-		this.userID = userID;
+		this.beehiveUserID = userID;
 		this.teamID = teamID;
 		this.vaild = vaild;
 	}
 
+	@JdbcField(column=USER_ID)
+	public Long getBeehiveUserID() {
+		return beehiveUserID;
+	}
+
+	public void setBeehiveUserID(Long beehiveUserID) {
+		this.beehiveUserID = beehiveUserID;
+	}
 
 	@JdbcField(column=ID)
 	public Long getId() {
@@ -48,15 +61,15 @@ public class TeamUserRelation extends DBEntity{
 	}
 
 
-	@JdbcField(column=USER_ID)
-	public String getUserID() {
-		return userID;
-	}
-
-
-	public void setUserID(String userID) {
-		this.userID = userID;
-	}
+//	@JdbcField(column=OLD_USER_ID)
+//	public String getUserID() {
+//		return userID;
+//	}
+//
+//
+//	public void setUserID(String userID) {
+//		this.userID = userID;
+//	}
 
 	@JdbcField(column=VAILD)
 	public int getVaild() {

@@ -17,6 +17,10 @@ public interface ExecuteTarget {
 
 	String  getType();
 
+	boolean isDoubleCheck();
+
+	void setDoubleCheck(boolean sign);
+
 	String  getDelay();
 
 	void setDelay(String delay);

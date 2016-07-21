@@ -1,17 +1,20 @@
 package com.kii.beehive.portal.web.entity;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.util.StringUtils;
+import java.util.regex.Pattern;
+
+import org.apache.commons.lang3.StringUtils;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
-import com.kii.beehive.portal.store.entity.BeehiveUser;
-import com.kii.beehive.portal.web.constant.ErrorCode;
+
+import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
+import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
 
 public class UserRestBean {
 
 
-	private BeehiveUser  beehiveUser;
+	private BeehiveJdbcUser beehiveUser;
 
 
 	private String password;
@@ -23,7 +26,7 @@ public class UserRestBean {
 	}
 
 
-	public UserRestBean(BeehiveUser user){
+	public UserRestBean(BeehiveJdbcUser user){
 		this.beehiveUser = user;
 	}
 
@@ -47,18 +50,29 @@ public class UserRestBean {
 
 
 	@JsonUnwrapped
-	public BeehiveUser getBeehiveUser() {
+	public BeehiveJdbcUser getBeehiveUser() {
 		return beehiveUser;
 	}
 
-	public void setBeehiveUser(BeehiveUser user) {
+	public void setBeehiveUser(BeehiveJdbcUser user) {
 		this.beehiveUser = user.cloneView();
 	}
 
+	private static Pattern numPattern=Pattern.compile("^1[\\d]{10}$");
+
 	@JsonIgnore
 	public void verifyInput(){
-		if(StringUtils.isEmpty(beehiveUser.getUserName())&&StringUtils.isEmpty(beehiveUser.getMail())&&StringUtils.isEmpty(beehiveUser.getPhone())){
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus.BAD_REQUEST);
+		if(StringUtils.isBlank(beehiveUser.getUserName())&&StringUtils.isBlank(beehiveUser.getMail())&&StringUtils.isBlank(beehiveUser.getPhone())){
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "field","userName or mail or phone ");
+
+		}
+
+		if(!StringUtils.isAsciiPrintable(beehiveUser.getUserName())){
+			throw new  PortalException(ErrorCode.INVALID_INPUT, "field","userName","data",beehiveUser.getUserName());
+		}
+		if(!StringUtils.isBlank(beehiveUser.getPhone())&& !numPattern.matcher(beehiveUser.getPhone()).find()){
+
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","phone");
 		}
 
 	}

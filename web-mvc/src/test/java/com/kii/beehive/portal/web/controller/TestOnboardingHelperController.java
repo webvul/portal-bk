@@ -29,7 +29,7 @@ public class TestOnboardingHelperController extends WebTestTemplate {
 
     private String vendorThingIDForTest;
 
-    private String globalThingIDForTest;
+    private Long globalThingIDForTest;
 
     private final static String KII_APP_ID = "0af7a7e7";
 
@@ -41,7 +41,7 @@ public class TestOnboardingHelperController extends WebTestTemplate {
         after();
 
         vendorThingIDForTest = "vendor_id_for_test";
-        globalThingIDForTest = "global_id_for_test";
+        globalThingIDForTest = 100l;
 
     }
 

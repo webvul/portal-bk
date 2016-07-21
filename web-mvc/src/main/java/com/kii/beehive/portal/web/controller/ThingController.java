@@ -1,16 +1,16 @@
 package com.kii.beehive.portal.web.controller;
 
-import com.kii.beehive.business.service.ThingIFInAppService;
-import com.kii.beehive.portal.auth.AuthInfoStore;
-import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
-import com.kii.beehive.portal.jdbc.entity.TagIndex;
-import com.kii.beehive.portal.jdbc.entity.TagType;
-import com.kii.beehive.portal.jdbc.entity.UserGroup;
-import com.kii.beehive.portal.store.entity.BeehiveUser;
-import com.kii.beehive.portal.web.constant.ErrorCode;
-import com.kii.beehive.portal.web.entity.ThingRestBean;
-import com.kii.beehive.portal.web.exception.PortalException;
-import com.kii.extension.sdk.entity.thingif.EndNodeOfGateway;
+import static java.util.Arrays.asList;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +18,26 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static java.util.Arrays.asList;
+import com.kii.beehive.business.manager.TagThingManager;
+import com.kii.beehive.business.service.ThingIFInAppService;
+import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
+import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
+import com.kii.beehive.portal.jdbc.entity.TagIndex;
+import com.kii.beehive.portal.jdbc.entity.TagType;
+import com.kii.beehive.portal.jdbc.entity.UserGroup;
+import com.kii.beehive.portal.web.entity.ThingRestBean;
+import com.kii.beehive.portal.web.exception.ErrorCode;
+import com.kii.beehive.portal.web.exception.PortalException;
+import com.kii.extension.sdk.entity.thingif.EndNodeOfGateway;
+import com.kii.extension.sdk.entity.thingif.GatewayOfKiiCloud;
 
 /**
  * Beehive API - Thing API
@@ -44,8 +58,8 @@ public class ThingController extends AbstractThingTagController {
 	 * @return a list of user ids who can access the device.
 	 */
 	@RequestMapping(value = "/{globalThingID}/users", method = RequestMethod.GET, consumes = {"*"})
-	public List<BeehiveUser> getUsersByThing(@PathVariable("globalThingID") Long globalThingID) {
-		return thingTagManager.getUsersOfAccessibleThing(AuthInfoStore.getUserID(), globalThingID);
+	public List<BeehiveJdbcUser> getUsersByThing(@PathVariable("globalThingID") Long globalThingID) {
+		return thingTagManager.getUsersOfAccessibleThing(AuthInfoStore.getUserIDInLong(), globalThingID);
 
 	}
 
@@ -56,7 +70,7 @@ public class ThingController extends AbstractThingTagController {
 	 */
 	@RequestMapping(value = "/user", method = RequestMethod.GET, consumes = {"*"})
 	public List<ThingRestBean> getThingsByUser() {
-		return toThingRestBean(thingTagManager.getAccessibleThingsByUserId(AuthInfoStore.getUserID()));
+		return toThingRestBean(thingTagManager.getAccessibleThingsByUserId(AuthInfoStore.getUserIDInLong()));
 	}
 
 	/**
@@ -67,7 +81,7 @@ public class ThingController extends AbstractThingTagController {
 	 */
 	@RequestMapping(value = "/{globalThingID}/userGroups", method = RequestMethod.GET, consumes = {"*"})
 	public List<UserGroup> getUserGroupIdsByThing(@PathVariable("globalThingID") Long globalThingID) {
-		return thingTagManager.getUserGroupsOfAccessibleThing(AuthInfoStore.getUserID(), globalThingID);
+		return thingTagManager.getUserGroupsOfAccessibleThing(AuthInfoStore.getUserIDInLong(), globalThingID);
 
 	}
 
@@ -94,7 +108,7 @@ public class ThingController extends AbstractThingTagController {
 
 	@RequestMapping(value = "/types/{type}", method = {RequestMethod.GET}, consumes = {"*"})
 	public List<ThingRestBean> getThingsByType(@PathVariable("type") String type) {
-		List<GlobalThingInfo> thingList = thingTagManager.getAccessibleThingsByType(type, AuthInfoStore.getUserID());
+		List<GlobalThingInfo> thingList = thingTagManager.getAccessibleThingsByType(type, AuthInfoStore.getUserIDInLong());
 		List<ThingRestBean> resultList = this.toThingRestBean(thingList);
 		return resultList;
 	}
@@ -108,8 +122,9 @@ public class ThingController extends AbstractThingTagController {
 	 * @return
 	 */
 	@RequestMapping(value = "/types", method = {RequestMethod.GET}, consumes = {"*"})
-	public List<Map<String, Object>> getAllType() {
-		return thingTagManager.getTypesOfAccessibleThingsWithCount(AuthInfoStore.getUserID());
+	public List<TagThingManager.ThingTypeWithCount> getAllType() {
+
+		return thingTagManager.getTypesOfAccessibleThingsWithCount(AuthInfoStore.getUserIDInLong());
 	}
 
 
@@ -122,7 +137,7 @@ public class ThingController extends AbstractThingTagController {
 	@RequestMapping(value = "/types/tagID/{tagIDs}", method = {RequestMethod.GET}, consumes = {"*"})
 	public List<String> getThingTypeByTagIDs(@PathVariable("tagIDs") String tagIDs) {
 		List<String> result;
-		result = thingTagManager.getThingTypesOfAccessibleThingsByTagIds(AuthInfoStore.getUserID(),
+		result = thingTagManager.getThingTypesOfAccessibleThingsByTagIds(AuthInfoStore.getUserIDInLong(),
 				asList(tagIDs.split(",")));
 
 		return result;
@@ -138,7 +153,7 @@ public class ThingController extends AbstractThingTagController {
 	 */
 	@RequestMapping(value = "/types/fulltagname/{fullTagNames}", method = {RequestMethod.GET}, consumes = {"*"})
 	public List<String> getThingTypeByTagFullName(@PathVariable("fullTagNames") String fullTagNames) {
-		return thingTagManager.getTypesOfAccessibleThingsByTagFullName(AuthInfoStore.getUserID(),
+		return thingTagManager.getTypesOfAccessibleThingsByTagFullName(AuthInfoStore.getUserIDInLong(),
 				asList(fullTagNames.split(",")).stream().collect(Collectors.toSet()));
 
 	}
@@ -155,7 +170,7 @@ public class ThingController extends AbstractThingTagController {
 	@RequestMapping(value = "/{globalThingID}", method = {RequestMethod.GET}, consumes = {"*"})
 	public ThingRestBean getThingByGlobalID(@PathVariable("globalThingID") Long globalThingID) {
 		GlobalThingInfo thingInfo;
-		thingInfo = thingTagManager.getAccessibleThingById(AuthInfoStore.getUserID(), globalThingID);
+		thingInfo = thingTagManager.getAccessibleThingById(AuthInfoStore.getUserIDInLong(), globalThingID);
 
 
 		// set thing into output
@@ -200,7 +215,7 @@ public class ThingController extends AbstractThingTagController {
 			thingInfo = new GlobalThingInfo();
 		} else {
 //			thingInfo = thingTagManager.getAccessibleThingById(AuthInfoStore.getUserID(), input.getId());
-			thingInfo = thingTagManager.getCanUpdateThingById(AuthInfoStore.getUserID(), input.getId());
+			thingInfo = thingTagManager.getCanUpdateThingById(AuthInfoStore.getUserIDInLong(), input.getId());
 		}
 
 		thingInfo.setVendorThingID(input.getVendorThingID());
@@ -213,8 +228,7 @@ public class ThingController extends AbstractThingTagController {
 		List<GlobalThingInfo> gList = thingTagManager.getThingsByVendorThingIds(Arrays.asList(thingInfo.getVendorThingID()));
 
 		if (!gList.isEmpty() && !gList.get(0).getId().equals(input.getId())) {
-			throw new PortalException(ErrorCode.DUPLICATE_OBJECT,
-					HttpStatus.BAD_REQUEST);
+			throw new PortalException(ErrorCode.DUPLICATE_OBJECT,"type","thing","objectID",String.valueOf(gList));
 		}
 
 		Long thingID = thingTagManager.createThing(thingInfo, input.getLocation(), input.getInputTags());
@@ -240,7 +254,14 @@ public class ThingController extends AbstractThingTagController {
 
 		if (Strings.isBlank(input.getSchemaName()) || Strings.isBlank(input.getSchemaVersion())
 				|| Strings.isBlank(input.getGatewayVendorThingID())) {
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus.BAD_REQUEST);
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","schemaName");
+		}
+		if (Strings.isBlank(input.getSchemaVersion())) {
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","schemaVersion");
+
+		}
+		if (Strings.isBlank(input.getGatewayVendorThingID())) {
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","gatewayVendorThingID");
 		}
 
 		GlobalThingInfo thingInfo = null;
@@ -248,7 +269,7 @@ public class ThingController extends AbstractThingTagController {
 		if (input.getId() == null) {
 			thingInfo = new GlobalThingInfo();
 		} else {
-			thingInfo = thingTagManager.getCanUpdateThingById(AuthInfoStore.getUserID(), input.getId());
+			thingInfo = thingTagManager.getCanUpdateThingById(AuthInfoStore.getUserIDInLong(), input.getId());
 		}
 
 		GlobalThingInfo gateway = thingTagManager.getThingsByVendorThingId(input.getGatewayVendorThingID());
@@ -265,8 +286,7 @@ public class ThingController extends AbstractThingTagController {
 		List<GlobalThingInfo> gList = thingTagManager.getThingsByVendorThingIds(Arrays.asList(thingInfo.getVendorThingID()));
 
 		if (!gList.isEmpty() && !gList.get(0).getId().equals(input.getId())) {
-			throw new PortalException(ErrorCode.DUPLICATE_OBJECT,
-					HttpStatus.BAD_REQUEST);
+			throw new PortalException(ErrorCode.DUPLICATE_OBJECT,"type","thing","objectID",String.valueOf(gList));
 		}
 
 		Long thingID = thingTagManager.createThing(thingInfo, input.getLocation(), input.getInputTags());
@@ -303,10 +323,10 @@ public class ThingController extends AbstractThingTagController {
 	@RequestMapping(value = "/{globalThingIDs}/tags/{fullNames}", method = {RequestMethod.POST})
 	public void bindThingsToTags(@PathVariable("globalThingIDs") String globalThingIDs,
 								 @PathVariable("fullNames") String fullTagNames) {
-		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(fullTagNames)) {
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus
-					.BAD_REQUEST);
-		}
+//		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(fullTagNames)) {
+//			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus
+//					.BAD_REQUEST);
+//		}
 		List<Long> thingIds = getCreatedThingIds(globalThingIDs);
 		List<Long> tagIds = getCreatedTagIds(fullTagNames);
 		thingTagManager.bindTagsToThings(tagIds, thingIds);
@@ -325,10 +345,10 @@ public class ThingController extends AbstractThingTagController {
 	@RequestMapping(value = "/{globalThingIDs}/tags/{fullNames}", method = {RequestMethod.DELETE}, consumes = {"*"})
 	public void unbindThingsFromTags(@PathVariable("globalThingIDs") String globalThingIDs,
 									 @PathVariable("fullNames") String fullTagNames) {
-		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(fullTagNames)) {
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus
-					.BAD_REQUEST);
-		}
+//		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(fullTagNames)) {
+//			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus
+//					.BAD_REQUEST);
+//		}
 		List<Long> thingIds = getCreatedThingIds(globalThingIDs);
 		List<Long> tagIds = getCreatedTagIds(fullTagNames);
 		thingTagManager.unbindTagsFromThings(tagIds, thingIds);
@@ -346,12 +366,12 @@ public class ThingController extends AbstractThingTagController {
 	public void bindThingsToUserGroups(@PathVariable("globalThingIDs") String globalThingIDs, @PathVariable
 			("userGroupIDs")
 			String userGroupIDs) {
-		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(userGroupIDs)) {
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus
-					.BAD_REQUEST);
-		}
+//		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(userGroupIDs)) {
+//			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus
+//					.BAD_REQUEST);
+//		}
 		List<Long> thingIds = getCreatedThingIds(globalThingIDs);
-		List<Long> userGroupIds = getUserGroupIds(userGroupIDs);
+		Set<Long> userGroupIds = getUserGroupIds(userGroupIDs);
 		thingTagManager.bindThingsToUserGroups(thingIds, userGroupIds);
 	}
 
@@ -366,12 +386,12 @@ public class ThingController extends AbstractThingTagController {
 	public void unbindThingsFromUserGroups(@PathVariable("globalThingIDs") String globalThingIDs, @PathVariable
 			("userGroupIDs")
 			String userGroupIDs) {
-		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(userGroupIDs)) {
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus
-					.BAD_REQUEST);
-		}
+//		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(userGroupIDs)) {
+//			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus
+//					.BAD_REQUEST);
+//		}
 		List<Long> thingIds = getCreatedThingIds(globalThingIDs);
-		List<Long> userGroupIds = getUserGroupIds(userGroupIDs);
+		Set<Long> userGroupIds = getUserGroupIds(userGroupIDs);
 		thingTagManager.unbindThingsFromUserGroups(thingIds, userGroupIds);
 	}
 
@@ -385,10 +405,10 @@ public class ThingController extends AbstractThingTagController {
 	@RequestMapping(value = "/{globalThingIDs}/users/{userIDs}", method = {RequestMethod.POST})
 	public void bindThingsToUsers(@PathVariable("globalThingIDs") String globalThingIDs, @PathVariable("userIDs")
 			String userIDs) {
-		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(userIDs)) {
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus
-					.BAD_REQUEST);
-		}
+//		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(userIDs)) {
+//			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus
+//					.BAD_REQUEST);
+//		}
 		List<Long> thingIds = getCreatedThingIds(globalThingIDs);
 		Set<String> userIds = getUserIds(userIDs);
 		thingTagManager.bindThingsToUsers(thingIds, userIds);
@@ -404,10 +424,10 @@ public class ThingController extends AbstractThingTagController {
 	@RequestMapping(value = "/{globalThingIDs}/users/{userIDs}", method = {RequestMethod.DELETE}, consumes = {"*"})
 	public void unbindThingsFromUsers(@PathVariable("globalThingIDs") String globalThingIDs, @PathVariable("userIDs")
 			String userIDs) {
-		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(userIDs)) {
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus
-					.BAD_REQUEST);
-		}
+//		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(userIDs)) {
+//			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus
+//					.BAD_REQUEST);
+//		}
 		List<Long> thingIds = getCreatedThingIds(globalThingIDs);
 		Set<String> userIds = getUserIds(userIDs);
 		thingTagManager.unbindThingsFromUsers(thingIds, userIds);
@@ -425,10 +445,10 @@ public class ThingController extends AbstractThingTagController {
 	@RequestMapping(value = "/{globalThingIDs}/tags/custom/{displayNames}", method = {RequestMethod.POST})
 	public void bindThingsToCustomTags(@PathVariable("globalThingIDs") String globalThingIDs,
 									   @PathVariable("displayNames") String displayNames) {
-		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(displayNames)) {
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus
-					.BAD_REQUEST);
-		}
+//		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(displayNames)) {
+//			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus
+//					.BAD_REQUEST);
+//		}
 		List<Long> thingIds = getCreatedThingIds(globalThingIDs);
 		List<Long> tagIds = getCreatedTagIds(TagType.Custom, displayNames);
 		thingTagManager.bindTagsToThings(tagIds, thingIds);
@@ -447,10 +467,10 @@ public class ThingController extends AbstractThingTagController {
 	@RequestMapping(value = "/{globalThingIDs}/tags/custom/{displayNames}", method = {RequestMethod.DELETE}, consumes = {"*"})
 	public void unbindThingsFromCustomTags(@PathVariable("globalThingIDs") String globalThingIDs,
 										   @PathVariable("displayNames") String displayNames) {
-		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(displayNames)) {
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus
-					.BAD_REQUEST);
-		}
+//		if (Strings.isBlank(globalThingIDs) || Strings.isBlank(displayNames)) {
+//			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus
+//					.BAD_REQUEST);
+//		}
 		List<Long> thingIds = getCreatedThingIds(globalThingIDs);
 		List<Long> tagIds = getCreatedTagIds(TagType.Custom, displayNames);
 		thingTagManager.unbindTagsFromThings(tagIds, thingIds);
@@ -500,7 +520,7 @@ public class ThingController extends AbstractThingTagController {
 	@RequestMapping(value = "/search", method = {RequestMethod.GET}, consumes = {"*"})
 	public List<ThingRestBean> getThingsByTagExpress(@RequestParam(value = "tagType") String tagType,
 													 @RequestParam(value = "displayName") String displayName) {
-		List<TagIndex> tagIndexes = thingTagManager.getAccessibleTagsByTagTypeAndName(AuthInfoStore.getUserID(),
+		List<TagIndex> tagIndexes = thingTagManager.getAccessibleTagsByTagTypeAndName(AuthInfoStore.getUserIDInLong(),
 				StringUtils.capitalize(tagType), displayName);
 
 		List<GlobalThingInfo> thingInfos = thingTagManager.getThingsByTagIds(tagIndexes.stream().map(TagIndex::getId).
@@ -543,6 +563,15 @@ public class ThingController extends AbstractThingTagController {
 		// get thing info of endnodes
 		List<GlobalThingInfo> globalThingInfoList = thingTagManager.getThingsByVendorThingIds(vendorThingIDList);
 		List<ThingRestBean> resultList = this.toThingRestBean(globalThingInfoList);
+
+		return new ResponseEntity(resultList, HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/gateway", method = {RequestMethod.GET}, consumes = {"*"})
+	public ResponseEntity<List<GatewayOfKiiCloud>> getAllEGateway() {
+
+		List<GatewayOfKiiCloud> resultList = thingTagManager.getAllEGateway();
+
 
 		return new ResponseEntity(resultList, HttpStatus.OK);
 	}

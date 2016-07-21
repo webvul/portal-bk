@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:cache="http://www.springframework.org/schema/cache"
+       xmlns:bean="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+
+		http://www.springframework.org/schema/cache  http://www.springframework.org/schema/cache/spring-cache.xsd"
+>
+
+    <bean:annotation-config />
+
+    <bean   class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="properties">
+            <value>
+                beehive.portal.oplog.file=./build/op.log
+                com.kii.beehive.portal.permission.config.file=demoPermissionConfig
+                beehive.sms.account.name=kiisms2
+                beehive.sms.account.password=sZd_B_wp
+                beehive.sms.gateway.address=221.179.180.158:9007
+            </value>
+        </property>
+    </bean>
+
+
+    <context:component-scan base-package="com.kii.beehive.business" >
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Component" />
+        <context:exclude-filter type="aspectj" expression="com.kii.beehive.business.elasticsearch.*" />
+    </context:component-scan>
+
+    <bean id="contextAspect" class="com.kii.beehive.portal.aop.ContextAspect" />
+
+
+    <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+
+    <import resource="classpath:com/kii/beehive/business/testComponentContext.xml" />
+
+    <import resource="classpath:com/kii/beehive/portal/jdbc/portaljdbcContext.xml" />
+
+    <bean class="com.kii.extension.ruleengine.RuleEngineConfig" />
+
+
+
+</beans>

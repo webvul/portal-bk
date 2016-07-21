@@ -9,13 +9,12 @@ import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.kii.beehive.business.helper.OpLogTools;
@@ -27,7 +26,7 @@ import com.kii.beehive.portal.service.DeviceSupplierDao;
 import com.kii.beehive.portal.store.entity.DeviceSupplier;
 import com.kii.beehive.portal.web.constant.CallbackNames;
 import com.kii.beehive.portal.web.constant.Constants;
-import com.kii.beehive.portal.web.constant.ErrorCode;
+import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
 import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.exception.ObjectNotFoundException;
@@ -113,8 +112,8 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
 		String token = AuthUtils.getTokenFromHeader(request);
 
-		if (StringUtils.isEmpty(token)) {
-			throw new PortalException(ErrorCode.INVALID_TOKEN, HttpStatus.UNAUTHORIZED);
+		if (StringUtils.isBlank(token)) {
+			throw new PortalException(ErrorCode.INVALID_TOKEN);
 		}
 		list.set(1, token);
 
@@ -140,7 +139,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 					supplier = supplierDao.getSupplierByID(token);
 				} catch (ObjectNotFoundException e) {
 					log.debug(e.getMessage(), e);
-					throw new PortalException(ErrorCode.INVALID_TOKEN, HttpStatus.UNAUTHORIZED);
+					throw new PortalException(ErrorCode.INVALID_TOKEN,"token",token);
 				}
 
 				AuthInfoStore.setAuthInfo(supplier.getId());
@@ -150,7 +149,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 				String appID = request.getHeader(Constants.HEADER_KII);
 
 				if (!appInfoManager.verifyAppToken(appID, token)) {
-					throw new PortalException(ErrorCode.INVALID_INPUT, HttpStatus.UNAUTHORIZED);
+					throw new PortalException(ErrorCode.INVALID_INPUT,"field","appInfo","data",appID);
 				}
 				AuthInfoStore.setAuthInfo(appID);
 
@@ -166,7 +165,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
 				list.set(1, authInfo.getUserID());
 
-				AuthInfoStore.setAuthInfo(authInfo.getUserID());
+				AuthInfoStore.setUserInfo(authInfo.getUserID(),authInfo.getUserIDInLong());
 				AuthInfoStore.setTeamID(authInfo.getTeamID());
 			}
 

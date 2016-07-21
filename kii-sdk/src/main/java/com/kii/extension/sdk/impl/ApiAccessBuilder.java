@@ -35,6 +35,7 @@ import com.kii.extension.sdk.entity.thingif.ThingStatus;
 import com.kii.extension.sdk.entity.thingif.ThingTrigger;
 import com.kii.extension.sdk.exception.KiiCloudException;
 import com.kii.extension.sdk.query.QueryParam;
+import com.kii.extension.sdk.query.ThingQueryParam;
 
 
 public class ApiAccessBuilder {
@@ -605,6 +606,19 @@ public class ApiAccessBuilder {
 	public ApiAccessBuilder getHookConfig(String version){
 
 		request =new HttpGet(appInfo.getAppSubUrl()+"/hooks/versions/"+version);
+
+		return this;
+	}
+	//================================
+	//query thing
+	//================================
+
+	public ApiAccessBuilder getThings(ThingQueryParam query) {
+
+		String subUrl=appInfo.getAppSubUrl()+"/things/query";
+		request = new HttpPost(subUrl);
+		this.ctxObj = query;
+		this.setContentType("application/vnd.kii.thingqueryrequest+json");
 
 		return this;
 	}

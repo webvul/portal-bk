@@ -47,8 +47,8 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 			Method method = descriptor.getReadMethod();
 			if(method.isAnnotationPresent(JdbcField.class)){
 				JdbcField fieldDesc=method.getDeclaredAnnotation(JdbcField.class);
-				searchMap.put(fieldDesc.column(),descriptor.getDisplayName());//create_by, createBy
-				typeMap.put(fieldDesc.column(),fieldDesc.type());//create_by, Auto
+				searchMap.put(fieldDesc.column(),descriptor.getDisplayName());
+				typeMap.put(fieldDesc.column(),fieldDesc.type());
 			}else if(method.isAnnotationPresent(DisplayField.class)){
 				DisplayField fieldDesc=method.getDeclaredAnnotation(DisplayField.class);
 				searchMap.put(fieldDesc.column(),descriptor.getDisplayName());

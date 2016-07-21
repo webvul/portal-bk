@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -127,9 +128,16 @@ public class ExceptionFactory {
 
 			if(cls!=null){
 				try {
-					KiiCloudException e = mapper.readValue(body, cls);
+					if(StringUtils.isEmpty(body)){
 
-					throw e;
+						KiiCloudException e =BeanUtils.instantiate(cls);
+						throw e;
+
+					}else {
+						KiiCloudException e = mapper.readValue(body, cls);
+
+						throw e;
+					}
 				}catch(IOException ex){
 					throw new IllegalArgumentException(ex);
 				}

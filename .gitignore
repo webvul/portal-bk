@@ -1,4 +1,6 @@
 !.gitignore
+
+
 .svn
 .classpath
 .project
@@ -16,7 +18,8 @@ tmp/
 .idea/
 *.iml
 env.properties
-local.properties
+*.local.properties
+*.local.xml
 git.*.properties
 *.swp
 *.log

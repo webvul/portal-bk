@@ -13,6 +13,7 @@ import com.kii.beehive.business.ruleengine.ThingStatusChangeCallback;
 import com.kii.beehive.business.ruleengine.TriggerManager;
 import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.exception.EntryNotFoundException;
+import com.kii.beehive.portal.store.StoreServiceTestInit;
 import com.kii.extension.ruleengine.TriggerConditionBuilder;
 import com.kii.extension.ruleengine.store.trigger.CommandToThing;
 import com.kii.extension.ruleengine.store.trigger.Condition;
@@ -25,7 +26,7 @@ import com.kii.extension.sdk.entity.thingif.Action;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
-public class TestTrigger extends com.kii.beehive.portal.store.TestInit {
+public class TestTrigger extends StoreServiceTestInit {
 
 
 	@Autowired

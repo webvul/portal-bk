@@ -5,7 +5,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
-import com.kii.beehive.portal.store.entity.BeehiveUser;
+import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 
 public class AuthRestBean  {
 
@@ -13,7 +13,7 @@ public class AuthRestBean  {
 
     }
 
-	private BeehiveUser user;
+	private BeehiveJdbcUser user;
 
     private String accessToken;
     
@@ -58,11 +58,11 @@ public class AuthRestBean  {
 
 
 	@JsonUnwrapped
-	public BeehiveUser getUser() {
+	public BeehiveJdbcUser getUser() {
 		return user;
 	}
 
-	public void setUser(BeehiveUser user) {
+	public void setUser(BeehiveJdbcUser user) {
 
 		this.user=user.cloneView();
 	}

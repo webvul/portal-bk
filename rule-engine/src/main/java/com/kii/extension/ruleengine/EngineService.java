@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -52,6 +52,9 @@ public class EngineService {
 	private ObjectMapper mapper;
 
 
+	@Autowired
+	private RelationStore  relationStore;
+
 	private void fillDelayParam(TriggerRecord record){
 
 
@@ -62,11 +65,17 @@ public class EngineService {
 
 			String delay=target.getDelay();
 
+			if(StringUtils.isBlank(delay)){
+				i++;
+				continue;
+			}
+
 			CommandParam  param=new CommandParam();
 			param.setName("delay_"+i);
 			param.setExpress(delay);
 
 			list.add(param);
+
 			i++;
 		}
 
@@ -79,6 +88,10 @@ public class EngineService {
 	public void createMultipleSourceTrigger(MultipleSrcTriggerRecord record,Map<String,Set<String> > thingMap){
 
 		fillDelayParam(record);
+
+//		List<String> thingList=thingMap.values().stream().flatMap(th->th.stream()).collect(Collectors.toList());
+
+		relationStore.fillThingTriggerElemIndex(thingMap,record.getTriggerID());
 
 		Trigger trigger=new Trigger(record.getId());
 		trigger.setType(TriggerType.multiple);
@@ -304,6 +317,10 @@ public class EngineService {
 
 		fillDelayParam(record);
 
+
+		relationStore.fillThingTriggerIndex(thingID,record.getTriggerID());
+
+
 		String triggerID=record.getId();
 
 		Trigger trigger=new Trigger(triggerID);
@@ -335,12 +352,15 @@ public class EngineService {
 
 	public void changeThingsInTrigger(String triggerID,Set<String> newThings){
 
+		relationStore.maintainThingTriggerIndex(newThings,triggerID);
 		droolsTriggerService.updateThingsWithName(triggerID,"comm",newThings);
 
 	}
 
 
 	public void changeThingsInSummary(String triggerID,String summaryName,Set<String> newThings){
+
+		relationStore.maintainThingTriggerIndex(newThings,triggerID,summaryName);
 
 		droolsTriggerService.updateThingsWithName(triggerID,summaryName,newThings);
 
@@ -384,6 +404,11 @@ public class EngineService {
 		droolsTriggerService.addExternalValue(val);
 		droolsTriggerService.fireCondition();
 
+	}
+
+	public Set<String> getRelationTriggersByThingID(String thingID){
+
+		return relationStore.getTriggerSetByThingID(thingID);
 	}
 
 	

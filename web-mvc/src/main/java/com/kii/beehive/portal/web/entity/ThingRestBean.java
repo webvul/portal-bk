@@ -1,23 +1,25 @@
 package com.kii.beehive.portal.web.entity;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
-import com.kii.beehive.portal.web.constant.ErrorCode;
-import com.kii.beehive.portal.web.exception.PortalException;
-import org.apache.logging.log4j.util.Strings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.logging.log4j.util.Strings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
+import com.kii.beehive.portal.web.exception.ErrorCode;
+import com.kii.beehive.portal.web.exception.PortalException;
 
 public class ThingRestBean extends GlobalThingInfo {
 
@@ -127,7 +129,8 @@ public class ThingRestBean extends GlobalThingInfo {
 		this.verifyVendorThingID();
 
 		if (Strings.isBlank(this.getKiiAppID())) {
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus.BAD_REQUEST);
+
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","kiiAppID");
 		}
 	}
 
@@ -136,13 +139,14 @@ public class ThingRestBean extends GlobalThingInfo {
 		String vendorThingID = this.getVendorThingID();
 
 		if (Strings.isBlank(vendorThingID)) {
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus.BAD_REQUEST);
+
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","vendorThingID");
 		}
 
 		Matcher matcher = validVendorThingIDPattern.matcher(vendorThingID);
 
 		if (!matcher.matches()) {
-			throw new PortalException(ErrorCode.INVALID_INPUT, HttpStatus.BAD_REQUEST);
+			throw new PortalException(ErrorCode.INVALID_INPUT,"field","vendorThingID","data",vendorThingID);
 		}
 
 	}

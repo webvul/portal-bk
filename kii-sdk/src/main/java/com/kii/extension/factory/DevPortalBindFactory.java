@@ -37,7 +37,7 @@ public class DevPortalBindFactory {
 		return service;
 	}
 
-	@Bean
+//	@Bean
 	public DevPortalBindTool getDevPortalBindTool(){
 
 		DevPortalBindTool bindTool= new DevPortalBindTool();

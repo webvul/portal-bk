@@ -11,7 +11,7 @@ public class TomcatEnvLoader {
 	public static void main( String[] args ) throws Exception
 	{
 
-		System.setProperty("spring.profile","test");
+		System.setProperty("spring.profile","local");
 
 		System.setProperty("log4j.configurationFile","log4j2.xml");
 		String webappDirLocation = "./web-mvc/src/main/webapp/";

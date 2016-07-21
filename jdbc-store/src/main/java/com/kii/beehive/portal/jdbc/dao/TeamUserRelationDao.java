@@ -1,27 +1,24 @@
 package com.kii.beehive.portal.jdbc.dao;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
-import com.kii.beehive.portal.jdbc.entity.Team;
 import com.kii.beehive.portal.jdbc.entity.TeamUserRelation;
 
 @Repository
-public class TeamUserRelationDao extends SpringBaseDao<TeamUserRelation> {
+public class TeamUserRelationDao extends SpringSimpleBaseDao<TeamUserRelation> {
 
 	private Logger log= LoggerFactory.getLogger(TeamUserRelationDao.class);
 	
 	public static final String TABLE_NAME = "rel_team_user";
 	public static final String KEY = "id";
 	
-	public void delete(Long teamID, String userID){
-		if(teamID != null || !Strings.isBlank(userID)){
+	public void delete(Long teamID, Long userID){
+		if(teamID != null || userID!=null){
 			String sql = "DELETE FROM " + this.getTableName() + " WHERE ";
 			
 			StringBuilder where = new StringBuilder();
@@ -31,7 +28,7 @@ public class TeamUserRelationDao extends SpringBaseDao<TeamUserRelation> {
 				params.add(teamID);
 			}
 			
-			if(!Strings.isBlank(userID)){
+			if(userID!=null){
 				if(where.length() > 0){
 					where.append(" AND ");
 				}
@@ -64,8 +61,8 @@ public class TeamUserRelationDao extends SpringBaseDao<TeamUserRelation> {
     	return count;
 	}
 	
-	public TeamUserRelation findByTeamIDAndUserID(Long teamID, String userID) {
-		if(teamID!=null && !Strings.isBlank(userID)){
+	public TeamUserRelation findByTeamIDAndUserID(Long teamID, Long userID) {
+		if(teamID!=null && userID!=null){
 			String sql = "SELECT * FROM " + this.getTableName() + " WHERE "+ TeamUserRelation.TEAM_ID +"=? AND "+ TeamUserRelation.USER_ID + "=?";
 			List<TeamUserRelation> list= jdbcTemplate.query(sql,new Object[]{teamID,userID},getRowMapper());
 	        if(list.size() > 0){

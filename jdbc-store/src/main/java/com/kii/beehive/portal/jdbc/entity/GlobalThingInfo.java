@@ -4,7 +4,7 @@ import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.jdbc.annotation.JdbcField;
 import com.kii.beehive.portal.jdbc.annotation.JdbcFieldType;
 
-public class GlobalThingInfo extends DBEntity {
+public class GlobalThingInfo extends BusinessEntity {
 
 	private String vendorThingID;
 

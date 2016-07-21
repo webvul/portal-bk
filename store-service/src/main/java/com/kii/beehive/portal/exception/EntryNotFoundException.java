@@ -3,6 +3,7 @@ package com.kii.beehive.portal.exception;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.http.HttpStatus;
 
@@ -32,7 +33,7 @@ public class EntryNotFoundException extends BusinessException{
 
 		EntryNotFoundException excep=new EntryNotFoundException(String.valueOf(tagIDs),"beehive tag");
 
-		excep.setErrorCode("TAG_NOT_EXIST");
+//		excep.setErrorCode("TAG_NOT_EXIST");
 		return excep;
 	}
 
@@ -41,7 +42,7 @@ public class EntryNotFoundException extends BusinessException{
 
 		EntryNotFoundException excep=new EntryNotFoundException(String.valueOf(tagName),"beehive tag");
 
-		excep.setErrorCode("TAG_NAME_NOT_EXIST");
+//		excep.setErrorCode("TAG_NOT_EXIST");
 		return excep;
 	}
 
@@ -65,13 +66,19 @@ public class EntryNotFoundException extends BusinessException{
 		return excep;
 
 	}
-	public static EntryNotFoundException userGroupNotFound(List<Long> userName){
+	public static EntryNotFoundException userGroupNotFound(Set<Long> userName){
 		EntryNotFoundException excep=new EntryNotFoundException(String.valueOf(userName),"userGroup");
 
 		return excep;
 
 	}
 
+	public static EntryNotFoundException userGroupNotFound(Long userName){
+		EntryNotFoundException excep=new EntryNotFoundException(String.valueOf(userName),"userGroup");
+
+		return excep;
+
+	}
 
 	public EntryNotFoundException(String objectID,String objectType){
 

@@ -171,48 +171,6 @@ end
 		return fullDrl;
 	}
 
-//
-//	public String generGroupDrlConfig(String triggerID, TriggerGroupPolicyType policy, RuleEnginePredicate predicate){
-//
-//
-//		Map<String,String> params=new HashMap<>();
-//
-//		String template=null;
-//		if(predicate.getSchedule()!=null){
-//
-//			template = loadTemplate(TriggerType.group.name() + "Schedule");
-//			params.put("timer",generTimer(predicate.getSchedule()));
-//
-//			String policyExp=null;
-//			switch(policy){
-//				case Any:
-//					policyExp=" >0 ";
-//					break;
-//				case All:
-//					policyExp=" == $things.size() ";
-//					break;
-//				case Some:
-//					policyExp=" >=$trigger.getNumber() ";
-//					break;
-//				case Percent:
-//					policyExp=">=$trigger.getNumber()*$things.size()/100";
-//					break;
-//				default:
-//					throw new IllegalArgumentException("invalid group policy");
-//			}
-//			params.put("groupPolicy",policyExp);
-//		}else {
-//			template=loadTemplate(TriggerType.group.name());
-//		}
-//
-//		params.put("triggerID",triggerID);
-//		params.put("express",generExpress(predicate));
-//
-//		String fullDrl=StrTemplate.generByMap(template,params);
-//
-//		log.info(triggerID+"\n"+fullDrl);
-//		return fullDrl;
-//	}
 
 
 

@@ -10,14 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.kii.beehive.business.service.KiiUserService;
 import com.kii.beehive.portal.entitys.AuthRestBean;
-import com.kii.beehive.portal.service.BeehiveUserDao;
+import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 import com.kii.beehive.portal.service.UserRuleDao;
-import com.kii.beehive.portal.store.TestInit;
-import com.kii.beehive.portal.store.entity.BeehiveUser;
+import com.kii.beehive.portal.store.StoreServiceTestInit;
 import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.service.UserService;
 
-public class TestUserManger  extends TestInit {
+public class TestUserManger  extends StoreServiceTestInit {
 
 	@Autowired
 	private BeehiveUserManager  userManager;
@@ -29,8 +28,6 @@ public class TestUserManger  extends TestInit {
 	private KiiUserService kiiUserService;
 
 
-	@Autowired
-	private BeehiveUserDao  userDao;
 
 
 	@Autowired
@@ -47,15 +44,17 @@ public class TestUserManger  extends TestInit {
 	@Test
 	public void createUser(){
 
-		BeehiveUser user=new BeehiveUser();
+		BeehiveJdbcUser user=new BeehiveJdbcUser();
 
 		String name="testForUserManger";
 		user.setUserName(name);
 //		user.setCompany("kiicloud");
 
-		Map<String,Object> maps=userManager.addUser(user,null);
+		Map<String,Object> result=userManager.addUser(user,"");
 
-		String oneTimeToken=authManager.activite(name, (String) maps.get("activityToken"));
+		BeehiveJdbcUser  newUser= (BeehiveJdbcUser) result.get("user");
+
+		String oneTimeToken=authManager.activite(name, (String) result.get("activityToken"));
 
 		authManager.initPassword(oneTimeToken,user.getUserName(),"qwerty");
 
@@ -83,7 +82,7 @@ public class TestUserManger  extends TestInit {
 
 		AuthRestBean  rest=authManager.login(name,"qwerty");
 
-		String userID=rest.getUser().getId();
+		String userID=rest.getUser().getUserID();
 
 		String token=authManager.resetPwd(userID);
 
@@ -105,7 +104,7 @@ public class TestUserManger  extends TestInit {
 	public void login(){
 
 
-		BeehiveUser  user=userManager.getUserByID("Alfred");
+		BeehiveJdbcUser user=userManager.getUserByID("Alfred");
 
 		String pwd=user.getUserPassword();
 

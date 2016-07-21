@@ -13,7 +13,6 @@ import java.util.jar.Manifest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,7 +32,7 @@ import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.store.entity.CallbackUrlParameter;
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
 import com.kii.beehive.portal.web.constant.CallbackNames;
-import com.kii.beehive.portal.web.constant.ErrorCode;
+import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
 import com.kii.beehive.portal.web.help.BeehiveAppInfoManager;
 import com.kii.extension.sdk.entity.FederatedAuthResult;
@@ -46,6 +45,7 @@ import com.kii.extension.sdk.entity.FederatedAuthResult;
 @RestController
 public class UtilToolsController {
 
+	private static final String SYS_APPINIT = "/sys/appinit";
 	@Autowired
 	private TagThingManager tagThingManager;
 
@@ -80,7 +80,7 @@ public class UtilToolsController {
 	 *
 	 * @param paramMap
 	 */
-	@RequestMapping(value = "/sys/appinit", method = {RequestMethod.POST}, consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+	@RequestMapping(value = SYS_APPINIT, method = {RequestMethod.POST}, consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
 	public void initAppContext(@RequestBody Map<String, Object> paramMap, HttpServletRequest request) {
 
 		String userName = (String) paramMap.getOrDefault("portal.username", portalUserName);
@@ -94,7 +94,7 @@ public class UtilToolsController {
 		param.setThingCreated(CallbackNames.THING_CREATED);
 
 		String url = request.getRequestURL().toString();
-		String subUrl = url.substring(0, url.indexOf("/appinit")) + CallbackNames.CALLBACK_URL;
+		String subUrl = url.substring(0, url.indexOf(SYS_APPINIT)) + CallbackNames.CALLBACK_URL;
 		param.setBaseUrl(subUrl);
 
 		appInfoManager.initAllAppInfo(userName, pwd, masterID, param);
@@ -132,7 +132,8 @@ public class UtilToolsController {
 		List<GlobalThingInfo> thingInfos = tagThingManager.getThingsByVendorThingIds(Arrays.asList(vendorThingID));
 
 		if (thingInfos.isEmpty()) {
-			throw new PortalException(ErrorCode.NOT_FOUND, HttpStatus.NOT_FOUND);
+
+			throw new PortalException(ErrorCode.NOT_FOUND,"type","global thing","objectID",vendorThingID);
 		}
 		GlobalThingInfo globalThingInfo = thingInfos.get(0);
 

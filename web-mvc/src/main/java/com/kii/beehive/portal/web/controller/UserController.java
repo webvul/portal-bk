@@ -1,5 +1,7 @@
 package com.kii.beehive.portal.web.controller;
 
+import javax.annotation.PostConstruct;
+
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -8,13 +10,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,14 +25,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
+
+import com.kii.beehive.business.service.sms.SmsSendService;
 import com.kii.beehive.portal.auth.AuthInfoStore;
-import com.kii.beehive.portal.common.utils.CollectUtils;
 import com.kii.beehive.portal.entitys.PermissionTree;
+import com.kii.beehive.portal.faceplusplus.BeehiveFacePlusPlusService;
+import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 import com.kii.beehive.portal.manager.AuthManager;
 import com.kii.beehive.portal.manager.BeehiveUserManager;
-import com.kii.beehive.portal.store.entity.BeehiveUser;
-import com.kii.beehive.portal.web.constant.ErrorCode;
+import com.kii.beehive.portal.service.UserCustomDataDao;
+import com.kii.beehive.portal.store.entity.CustomData;
 import com.kii.beehive.portal.web.entity.UserRestBean;
+import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
 
 
@@ -45,6 +51,30 @@ public class UserController {
 	@Autowired
 	private AuthManager authManager;
 
+	@Autowired
+	private BeehiveFacePlusPlusService service;
+
+	@Autowired
+	private SmsSendService  smsService;
+
+	@Autowired
+	private UserCustomDataDao  dataDao;
+
+
+	@Value("${face.photo.dir}")
+	private String facePhotoDir;
+
+	private File photoDir;
+
+	@PostConstruct
+	public void init(){
+
+		photoDir=new File(facePhotoDir);
+		if(!photoDir.exists()){
+
+			photoDir.mkdirs();
+		}
+	}
 
 	/**
 	 * 创建用户
@@ -59,17 +89,28 @@ public class UserController {
 
 		user.verifyInput();
 
-		BeehiveUser beehiveUser = user.getBeehiveUser();
-		if(StringUtils.isEmpty(beehiveUser.getUserName())){
-			if(!StringUtils.isEmpty(beehiveUser.getMail())){
+		BeehiveJdbcUser beehiveUser = user.getBeehiveUser();
+		if(StringUtils.isBlank(beehiveUser.getUserName())){
+			if(!StringUtils.isBlank(beehiveUser.getMail())){
 				beehiveUser.setUserName(beehiveUser.getMail());
-			}else if(!StringUtils.isEmpty(beehiveUser.getPhone())){
+			}else if(!StringUtils.isBlank(beehiveUser.getPhone())){
 				beehiveUser.setUserName(beehiveUser.getPhone());
 			}
 		}
 
-		return  userManager.addUser(beehiveUser,user.getTeamName());
+		Map<String,Object>  newUser=  userManager.addUser(beehiveUser,user.getTeamName());
 
+		BeehiveJdbcUser userInfo= (BeehiveJdbcUser) newUser.get("user");
+
+		String token= (String) newUser.get("activityToken");
+
+		smsService.sendActivitySms(userInfo,token);
+
+		Map<String,Object> result=new HashMap<>();
+		result.put("activityToken",token);
+		result.put("userID",userInfo.getUserID());
+
+		return result;
 	}
 
 
@@ -83,6 +124,8 @@ public class UserController {
 
 		map.put("userID", userID);
 		map.put("activityToken", token);
+
+		smsService.sendResetPwdSms(userID,token);
 
 		return map;
 
@@ -98,14 +141,53 @@ public class UserController {
 	 * @param user
 	 */
 	@RequestMapping(value = "/usermanager/{userID}", method = {RequestMethod.PATCH})
-	public Map<String, String> updateUser(@PathVariable("userID") String userID, @RequestBody BeehiveUser user) {
+	public Map<String, String> updateUser(@PathVariable("userID") String userID, @RequestBody BeehiveJdbcUser user) {
 
-		userManager.updateUser(user, userID);
+
+		BeehiveJdbcUser  updateUser=new BeehiveJdbcUser();
+		BeanUtils.copyProperties(user,updateUser,"kiiUserID","activityToken","userPassword","roleName","userID");
+
+		userManager.updateUser(updateUser, userID);
 
 
 		Map<String, String> map = new HashMap<>();
 		map.put("userID", userID);
 		return map;
+	}
+
+
+	@RequestMapping(value = "/usermanager/{userID}/enable", method = {RequestMethod.PUT})
+	public Map<String,String> enableUser(@PathVariable("userID") String userID) {
+
+		userManager.updateUserSign(userID,true);
+
+
+		Map<String, String> map = new HashMap<>();
+		map.put("userID", userID);
+		map.put("enable",Boolean.toString(true));
+
+		return map;
+	}
+
+	@RequestMapping(value = "/usermanager/{userID}/disable", method = {RequestMethod.PUT})
+	public Map<String,String> disableUser(@PathVariable("userID") String userID) {
+
+		userManager.disableUser(userID);
+
+
+		Map<String, String> map = new HashMap<>();
+		map.put("userID", userID);
+		map.put("enable",Boolean.toString(false));
+		return map;
+	}
+
+
+	@RequestMapping(path="/usermanager/{userId}",method={RequestMethod.DELETE},consumes = {MediaType.ALL_VALUE})
+	public void hardDeleteUser(@PathVariable("userID") String userID){
+
+
+		userManager.removeUser(userID);
+
 	}
 
 	/**
@@ -116,7 +198,7 @@ public class UserController {
 	 *
 	 * @param userID
 	 */
-	@RequestMapping(value = "/usermanager/{userID}", method = {RequestMethod.GET}, consumes = {"*"})
+	@RequestMapping(value = "/usermanager/{userID}", method = {RequestMethod.GET}, consumes = {MediaType.ALL_VALUE})
 	public UserRestBean getUser(@PathVariable("userID") String userID) {
 
 		UserRestBean bean = new UserRestBean();
@@ -137,13 +219,12 @@ public class UserController {
 	public void changePassword(@RequestBody Map<String, Object> request) {
 
 		String oldPassword = (String)request.get("oldPassword");
-		String newPassord = (String)request.get("newPassword");
+		String newPassword = (String)request.get("newPassword");
 
-		if(CollectUtils.containsBlank(oldPassword, newPassord)) {
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,  HttpStatus.BAD_REQUEST);
-		}
+		AuthController.veifyPwd(newPassword);
 
-		authManager.changePassword(oldPassword, newPassord);
+
+		authManager.changePassword(oldPassword, newPassword);
 
 	}
 
@@ -152,7 +233,7 @@ public class UserController {
 
 
 
-	@RequestMapping(value = "/users/me", method = {RequestMethod.GET}, consumes = {"*"})
+	@RequestMapping(value = "/users/me", method = {RequestMethod.GET}, consumes = {MediaType.ALL_VALUE})
 	public UserRestBean getUser() {
 
 		String userID=AuthInfoStore.getUserID();
@@ -163,11 +244,11 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/users/me", method = {RequestMethod.PATCH})
-	public Map<String, String> updateUser( @RequestBody BeehiveUser user) {
+	public Map<String, String> updateUser( @RequestBody BeehiveJdbcUser user) {
 
 
-		BeehiveUser  updateUser=new BeehiveUser();
-		BeanUtils.copyProperties(user,updateUser,"kiiUserID","activityToken","userPassword","roleName","userName");
+		BeehiveJdbcUser  updateUser=new BeehiveJdbcUser();
+		BeanUtils.copyProperties(user,updateUser,"kiiUserID","activityToken","userPassword","roleName","userID");
 		userManager.updateUser(updateUser, AuthInfoStore.getUserID());
 
 
@@ -185,7 +266,7 @@ public class UserController {
 	 *
 	 * @param userID
 	 */
-	@RequestMapping(value = "/users/{userID}", method = {RequestMethod.GET}, consumes = {"*"})
+	@RequestMapping(value = "/users/{userID}", method = {RequestMethod.GET}, consumes = {MediaType.ALL_VALUE})
 	public UserRestBean getUserByID(@PathVariable("userID") String userID) {
 
 		UserRestBean bean = new UserRestBean();
@@ -195,7 +276,7 @@ public class UserController {
 	}
 
 
-	@RequestMapping(value = "/users/permissionTree", method = {RequestMethod.GET},consumes = {"*"})
+	@RequestMapping(value = "/users/permissionTree", method = {RequestMethod.GET},consumes = {MediaType.ALL_VALUE})
 	public PermissionTree getUserPermissTree(){
 
 		String userID=AuthInfoStore.getUserID();
@@ -221,22 +302,54 @@ public class UserController {
 
 	}
 
+	@RequestMapping(path="/users/me",method={RequestMethod.DELETE},consumes = {MediaType.ALL_VALUE})
+	public void deleteUser(){
+
+
+		userManager.removeUser(AuthInfoStore.getUserID());
+
+	}
+
+	@RequestMapping(path="/users/me/customData/{name}",method={RequestMethod.GET},consumes = {MediaType.ALL_VALUE})
+	public CustomData  getCustomData(@PathVariable(value = "name") String name){
+
+		return dataDao.getUserData(name,AuthInfoStore.getUserID());
+
+	}
+
+
+	@RequestMapping(path="/users/me/customData/{name}",method={RequestMethod.PUT})
+	public void setCustomData(@PathVariable(value="name") String name, @RequestBody(required = false) CustomData  data){
+
+		if(data==null){
+
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","custom data content");
+
+		}
+		dataDao.setUserData(data,name,AuthInfoStore.getUserID());
+
+	}
+
+
+
+
 
 	@RequestMapping(value="/user/photo", method=RequestMethod.POST , consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-	public @ResponseBody BeehiveUser uploadFacePhoto(
+	public @ResponseBody BeehiveJdbcUser uploadFacePhoto(
 			@RequestParam(value = "userId") String userId,
 			@RequestParam(value = "clearOldPhoto", defaultValue = "false") Boolean clearOldPhoto,
 			@RequestParam(value = "photos") CommonsMultipartFile[] photos) throws IOException {
 
-		Map<String, Object> map = new HashMap<>();
-		map.put("userId", userId);
+
 
 		if ( photos.length == 0 ) {
-			throw new PortalException(ErrorCode.INVALID_INPUT, HttpStatus.BAD_REQUEST);
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","phone");
 		}
 		List<File> photoFiles = new ArrayList<>();
+
 		for (CommonsMultipartFile photo : photos) {
-			File photoFile = new File(userManager.getFacePhotoDir() + userId + "-" + UUID.randomUUID() + "-" + photo.getOriginalFilename());
+
+			File photoFile = File.createTempFile("photo-"+userId+"-",photo.getOriginalFilename(),photoDir);
 			byte[] bytes = photo.getBytes();
 			BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(photoFile));
 			stream.write(bytes);
@@ -244,7 +357,7 @@ public class UserController {
 			photoFiles.add(photoFile);
 		}
 
-		BeehiveUser user = userManager.updateUserWithFace(userId, clearOldPhoto, photoFiles);
+		BeehiveJdbcUser user = service.updateUserWithFace(userId, clearOldPhoto, photoFiles);
 
 		return user;
 	}

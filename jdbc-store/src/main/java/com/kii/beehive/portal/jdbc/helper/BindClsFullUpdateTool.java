@@ -24,15 +24,16 @@ import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.StrTemplate;
 import com.kii.beehive.portal.jdbc.annotation.JdbcField;
 import com.kii.beehive.portal.jdbc.annotation.JdbcFieldType;
+import com.kii.beehive.portal.jdbc.entity.BusinessEntity;
 import com.kii.beehive.portal.jdbc.entity.DBEntity;
 
 
-public  class BindClsFullUpdateTool<T extends DBEntity> extends SqlUpdate {
+public  class BindClsFullUpdateTool extends SqlUpdate {
 
 
 	private Logger log= LoggerFactory.getLogger(BindClsFullUpdateTool.class);
 
-	private static final String updateSqlTemplate="update ${0} set  ${1} where ${2}  =  :${3} ";
+	private static final String updateSqlTemplate="update ${0} set  ${1} where ${2}  =  :${3} and is_deleted =  false ";
 
 	private final String tableName;
 
@@ -54,19 +55,19 @@ public  class BindClsFullUpdateTool<T extends DBEntity> extends SqlUpdate {
 
 	}
 
-	private BindClsFullUpdateTool(DataSource ds,String tableName,Class<T> cls,String pkName){
+	private <T extends DBEntity> BindClsFullUpdateTool(DataSource ds,String tableName,Class<T> cls,String pkName){
 		this(ds,tableName,PropertyAccessorFactory.forBeanPropertyAccess(BeanUtils.instantiate(cls)),pkName);
 	}
 
-	public static <E extends DBEntity> BindClsFullUpdateTool<E>  newInstance(DataSource ds,String tableName,String key,Class<E> cls,String pkName) {
-		BindClsFullUpdateTool<E>  inst=new BindClsFullUpdateTool<>(ds,tableName,cls,pkName);
+	public static <E extends DBEntity> BindClsFullUpdateTool  newInstance(DataSource ds,String tableName,String key,Class<E> cls,String pkName) {
+		BindClsFullUpdateTool  inst=new BindClsFullUpdateTool(ds,tableName,cls,pkName);
 		inst.compileWithClass(key);
 		return inst;
 	}
 
-	public BindClsFullUpdateTool cloneInstance(DBEntity entity,String key,boolean ignoreNull){
+	public BindClsFullUpdateTool cloneInstance(BusinessEntity entity,String key,boolean ignoreNull){
 
-		BindClsFullUpdateTool<T>  inst=new BindClsFullUpdateTool<>(super.getJdbcTemplate().getDataSource(),tableName,wrapper,pkFieldName);
+		BindClsFullUpdateTool inst=new BindClsFullUpdateTool(super.getJdbcTemplate().getDataSource(),tableName,wrapper,pkFieldName);
 
 		inst.compileWithEntity(entity,key,ignoreNull);
 		return inst;
@@ -75,7 +76,7 @@ public  class BindClsFullUpdateTool<T extends DBEntity> extends SqlUpdate {
 
 	public BindClsFullUpdateTool cloneInstance(Map<String,Object> paramMap,String key){
 
-		BindClsFullUpdateTool<T>  inst=new BindClsFullUpdateTool<>(super.getJdbcTemplate().getDataSource(),tableName,wrapper,pkFieldName);
+		BindClsFullUpdateTool  inst=new BindClsFullUpdateTool(super.getJdbcTemplate().getDataSource(),tableName,wrapper,pkFieldName);
 
 		inst.compileWithFieldSet(new HashSet<>(paramMap.keySet()),key);
 		return inst;
@@ -110,7 +111,7 @@ public  class BindClsFullUpdateTool<T extends DBEntity> extends SqlUpdate {
 				continue;
 			}
 
-			if(column.equals(DBEntity.CREATE_DATE)||column.equals(DBEntity.CREATE_BY)||column.equals(pkFieldName)){
+			if(column.equals(BusinessEntity.CREATE_DATE)||column.equals(BusinessEntity.CREATE_BY)||column.equals(pkFieldName)){
 				//these field never appear in  update field list
 				continue;
 			}
@@ -141,7 +142,7 @@ public  class BindClsFullUpdateTool<T extends DBEntity> extends SqlUpdate {
 
 	}
 
-	private void compileWithEntity(DBEntity entity,String key,boolean ignoreNull){
+	private void compileWithEntity(BusinessEntity entity, String key, boolean ignoreNull){
 
 			List<SqlParameter> paramList=new ArrayList<>();
 
@@ -170,7 +171,7 @@ public  class BindClsFullUpdateTool<T extends DBEntity> extends SqlUpdate {
 				}
 
 				String column=fieldDesc.column();
-				if(column.equals(DBEntity.CREATE_DATE)||column.equals(DBEntity.CREATE_BY)||column.equals(pkFieldName)){
+				if(column.equals(BusinessEntity.CREATE_DATE)||column.equals(BusinessEntity.CREATE_BY)||column.equals(pkFieldName)){
 					//these field never appear in  update field list
 					continue;
 				}
@@ -221,7 +222,10 @@ public  class BindClsFullUpdateTool<T extends DBEntity> extends SqlUpdate {
 			}
 
 			String column=fieldDesc.column();
-			if(column.equals(DBEntity.CREATE_DATE)||column.equals(DBEntity.CREATE_BY)||column.equals(pkFieldName)){
+			if(column.equals(BusinessEntity.CREATE_DATE)||
+					column.equals(BusinessEntity.CREATE_BY)||
+					column.equals(pkFieldName)||
+					column.equals(BusinessEntity.IS_DELETED)){
 				//these field never appear in  update field list
 				return;
 			}
@@ -247,14 +251,14 @@ public  class BindClsFullUpdateTool<T extends DBEntity> extends SqlUpdate {
 		return paramList;
 	}
 
-	public <T extends DBEntity> int execute(Map<String,Object>  paramMap) {
+	public <T extends BusinessEntity> int execute(Map<String,Object>  paramMap) {
 
 		fillParamMap(paramMap);
 
 		return updateByNamedParam(paramMap);
 	}
 
-	public <T extends DBEntity> int execute(T  entity) {
+	public <T extends BusinessEntity> int execute(T  entity) {
 
 			BeanWrapper localWrapper= PropertyAccessorFactory.forBeanPropertyAccess(entity);
 
@@ -279,8 +283,31 @@ public  class BindClsFullUpdateTool<T extends DBEntity> extends SqlUpdate {
 			return updateByNamedParam(paramMap);
 	}
 
+	public <T extends DBEntity> int executeSimple(T  entity) {
+
+		BeanWrapper localWrapper= PropertyAccessorFactory.forBeanPropertyAccess(entity);
+
+		Map<String,Object> paramMap=new HashMap<>();
+
+		for(PropertyDescriptor descriptor: wrapper.getPropertyDescriptors()){
+
+			JdbcField fieldDesc=descriptor.getReadMethod().getDeclaredAnnotation(JdbcField.class);
+
+			if(fieldDesc==null){
+				continue;
+			}
+			Object val=localWrapper.getPropertyValue(descriptor.getName());
+
+			paramMap.put(descriptor.getName(),val);
+
+			log.debug(" fill update param "+fieldDesc.column()+ " with "+val);
+		}
+
+		return updateByNamedParam(paramMap);
+	}
+
 	private void fillParamMap(Map<String,Object> paramMap){
-		paramMap.put("modifyBy", AuthInfoStore.getUserID());
+		paramMap.put("modifyBy", String.valueOf(AuthInfoStore.getUserIDInLong()));
 		paramMap.put("modifyDate",new Date());
 	}
 

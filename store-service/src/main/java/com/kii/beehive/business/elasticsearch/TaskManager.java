@@ -1,10 +1,12 @@
 package com.kii.beehive.business.elasticsearch;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kii.beehive.business.factory.ESTaskFactory;
+import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.Future;
+
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
@@ -15,9 +17,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.concurrent.Future;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import com.kii.beehive.business.elasticsearch.factory.ESTaskFactory;
 
 /**
  * Created by hdchen on 6/30/16.
@@ -59,11 +62,16 @@ public class TaskManager {
 		indexThreadPoolTaskExecutor.submit(taskFactory.getBulkUploadTask(index, type, data));
 	}
 
-	public String queryBuilderForAggs(String index, String type, String kiiThingID, long startDate, long endDate, String
-			intervalField, int unit, String operatorField, String[] avgFields) {
-		QueryBuilder qb = QueryBuilders.boolQuery()
-				.should(QueryBuilders.termQuery(TERM_FIELD, kiiThingID))
-				.filter(QueryBuilders.rangeQuery(DATE_FIELD).from(startDate).to(endDate));
+	public String queryBuilderForAggs(String index, String type, String[] kiiThingIDs, long startDate, long endDate,
+									  String intervalField, int unit, String operatorField, String[] avgFields) {
+		BoolQueryBuilder qb = QueryBuilders.boolQuery();
+
+		for (String kiiThingID : kiiThingIDs) {
+			qb = qb.should(QueryBuilders.termQuery(TERM_FIELD, kiiThingID));
+		}
+
+		qb = qb.filter(QueryBuilders.rangeQuery(DATE_FIELD).from(startDate).to(endDate));
+
 
 		DateHistogramInterval di = null;
 

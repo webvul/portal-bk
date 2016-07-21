@@ -1,5 +1,7 @@
 package com.kii.extension.factory;
 
+import javax.annotation.PostConstruct;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -31,7 +33,7 @@ public class DevPortalBindTool implements AppBindTool {
 	private Map<String,AppInfo> appInfoMap=new ConcurrentHashMap<>();
 
 
-//	@PostConstruct
+	@PostConstruct
 	public void init(){
 
 		portalService.login(userName,password);

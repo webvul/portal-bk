@@ -5,13 +5,14 @@ import java.util.List;
 
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.BeanUtils;
-import org.springframework.http.HttpStatus;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
-import com.kii.beehive.portal.store.entity.BeehiveUser;
-import com.kii.beehive.portal.web.constant.ErrorCode;
+import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
+
 
 public class UserGroupRestBean extends UserGroup {
 
@@ -23,7 +24,7 @@ public class UserGroupRestBean extends UserGroup {
 
     private String userGroupName;
     
-    private List<BeehiveUser> users;
+    private List<BeehiveJdbcUser> users;
 
     public UserGroupRestBean(UserGroup userGroup){
         BeanUtils.copyProperties(userGroup, this, "id", "name");
@@ -34,6 +35,8 @@ public class UserGroupRestBean extends UserGroup {
         }
 
         userGroupName = userGroup.getName();
+
+		users=userGroup.getUserList();
 
     }
 
@@ -56,7 +59,8 @@ public class UserGroupRestBean extends UserGroup {
     public void verifyInput(){
 
         if(Strings.isBlank(userGroupName)) {
-            throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus.BAD_REQUEST);
+
+            throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","userGroupName");
         }
 
     }
@@ -77,11 +81,11 @@ public class UserGroupRestBean extends UserGroup {
         this.userGroupName = userGroupName;
     }
 
-	public List<BeehiveUser> getUsers() {
+	public List<BeehiveJdbcUser> getUsers() {
 		return users;
 	}
 
-	public void setUsers(List<BeehiveUser> users) {
+	public void setUsers(List<BeehiveJdbcUser> users) {
 		this.users = users;
 	}
     

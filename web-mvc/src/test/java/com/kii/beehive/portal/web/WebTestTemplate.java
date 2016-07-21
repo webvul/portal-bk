@@ -16,11 +16,13 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.kii.beehive.portal.web.config.WebMvcConfig;
 import com.kii.beehive.portal.web.constant.Constants;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
-@ContextConfiguration("file:src/main/webapp/WEB-INF/portalWebContext.xml")
+//@ContextConfiguration(classes= WebMvcConfig.class)
+@ContextConfiguration(locations = {"file:./web-mvc/src/main/webapp/WEB-INF/portalWebContext.xml"})
 @Transactional
 @Rollback
 public class WebTestTemplate {

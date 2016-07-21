@@ -43,7 +43,6 @@ public class OpLogTools {
 	@PostConstruct
 	public void init() {
 
-
 		int idx = fullPath.lastIndexOf("/");
 
 		path = fullPath.substring(0, idx);

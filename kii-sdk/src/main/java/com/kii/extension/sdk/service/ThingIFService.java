@@ -1,24 +1,33 @@
 package com.kii.extension.sdk.service;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.entity.AppInfo;
-import com.kii.extension.sdk.entity.thingif.*;
+import com.kii.extension.sdk.entity.thingif.ActionResult;
+import com.kii.extension.sdk.entity.thingif.CommandDetail;
+import com.kii.extension.sdk.entity.thingif.CommandQuery;
+import com.kii.extension.sdk.entity.thingif.EndNodeOfGateway;
+import com.kii.extension.sdk.entity.thingif.GatewayOfKiiCloud;
+import com.kii.extension.sdk.entity.thingif.LayoutPosition;
+import com.kii.extension.sdk.entity.thingif.OnBoardingParam;
+import com.kii.extension.sdk.entity.thingif.OnBoardingResult;
+import com.kii.extension.sdk.entity.thingif.ThingCommand;
+import com.kii.extension.sdk.entity.thingif.ThingStatus;
 import com.kii.extension.sdk.impl.ApiAccessBuilder;
 import com.kii.extension.sdk.impl.KiiCloudClient;
 import com.kii.extension.sdk.query.ConditionBuilder;
 import com.kii.extension.sdk.query.QueryParam;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import com.kii.extension.sdk.query.ThingQueryParam;
 
 @Component
 public class ThingIFService {
@@ -191,6 +200,59 @@ public class ThingIFService {
 			JsonParser jsonParser = node.get("results").traverse();
 			CollectionType collectionType = mapper.getTypeFactory().constructCollectionType(List.class, EndNodeOfGateway.class);
 			List<EndNodeOfGateway> list=mapper.readValue(jsonParser, collectionType);
+
+			return list;
+
+		}catch(IOException e){
+			throw new IllegalArgumentException(e);
+		}
+
+
+	}
+
+
+
+
+
+	/**
+	 * query all gateway things
+	 * @return
+	 */
+	public List<GatewayOfKiiCloud> getAllGateway() {
+		return queryThingByLayoutPosition(LayoutPosition.GATEWAY.name());
+	}
+	public List<GatewayOfKiiCloud> queryThingByLayoutPosition(String layoutPosition) {
+		List<GatewayOfKiiCloud>  result=new ArrayList<>();
+		QueryParam param = ConditionBuilder.newCondition().equal("_layoutPosition", layoutPosition).getFinalQueryParam();
+		ThingQueryParam thingQueryParam = new ThingQueryParam(param.getBestEffortLimit(), param.getPaginationKey(), param.getBucketQuery());
+		do {
+			List<GatewayOfKiiCloud> list= this.queryThing(thingQueryParam);
+			result.addAll(list);
+		}while(param.getPaginationKey()!=null);
+
+		return result;
+	}
+
+	private List<GatewayOfKiiCloud> queryThing(ThingQueryParam query) {
+
+
+		HttpUriRequest request=	getBuilder().getThings(query).generRequest(mapper);
+
+		String result=client.executeRequest(request);
+
+		try{
+			JsonNode node=mapper.readValue(result,JsonNode.class);
+
+			JsonNode pageKey=node.get("nextPaginationKey");
+			if (pageKey != null) {
+				query.setPaginationKey(pageKey.asText());
+			}else{
+				query.setPaginationKey(null);
+			}
+
+			JsonParser jsonParser = node.get("results").traverse();
+			CollectionType collectionType = mapper.getTypeFactory().constructCollectionType(List.class, GatewayOfKiiCloud.class);
+			List<GatewayOfKiiCloud> list=mapper.readValue(jsonParser, collectionType);
 
 			return list;
 

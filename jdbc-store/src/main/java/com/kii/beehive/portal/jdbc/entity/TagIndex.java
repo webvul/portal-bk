@@ -8,7 +8,7 @@ import com.kii.beehive.portal.jdbc.annotation.DisplayField;
 import com.kii.beehive.portal.jdbc.annotation.JdbcField;
 import com.kii.beehive.portal.jdbc.annotation.JdbcFieldType;
 
-public class TagIndex extends DBEntity {
+public class TagIndex extends BusinessEntity {
 
 
 	private TagType tagType;

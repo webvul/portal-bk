@@ -5,7 +5,6 @@ import static junit.framework.TestCase.assertTrue;
 import static junit.framework.TestCase.fail;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,10 +16,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import com.kii.beehive.business.service.KiiUserService;
+import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 import com.kii.beehive.portal.service.ArchiveBeehiveUserDao;
 import com.kii.beehive.portal.service.PortalSyncUserDao;
-import com.kii.beehive.business.service.KiiUserService;
-import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.store.entity.PortalSyncUser;
 import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.beehive.portal.web.controller.UserSyncController;
@@ -179,9 +179,9 @@ public class TestUserController extends WebTestTemplate{
 		assertEquals(map.get("userName"),"张三");
 
 		// check whether Kii user is created in master app
-		BeehiveUser user = new BeehiveUser();
+		BeehiveJdbcUser user = new BeehiveJdbcUser();
 		user.setUserName(userIDForTest);
-		user.setId("threaddemo");
+		user.setId(101l);
 		try {
 			kiiUserService.addBeehiveUser(user,user.getDefaultPassword());
 			fail();

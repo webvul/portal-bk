@@ -1,16 +1,16 @@
 package com.kii.beehive.portal.jdbc.dao;
 
-import com.kii.beehive.portal.auth.AuthInfoStore;
-import com.kii.beehive.portal.jdbc.entity.UserGroup;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.common.utils.StrTemplate;
+import com.kii.beehive.portal.jdbc.entity.UserGroup;
 
 @Repository
 public class UserGroupDao extends SpringBaseDao<UserGroup> {
@@ -19,7 +19,7 @@ public class UserGroupDao extends SpringBaseDao<UserGroup> {
 	public static final String KEY = "user_group_id";
 	private Logger log = LoggerFactory.getLogger(UserGroupDao.class);
 
-	public List<UserGroup> findUserGroup(String userID, Long userGroupID, String name) {
+	public List<UserGroup> findUserGroup(Long userID, Long userGroupID, String name) {
 
 		List<Object> params = new ArrayList<Object>();
 
@@ -35,7 +35,7 @@ public class UserGroupDao extends SpringBaseDao<UserGroup> {
 
 		sql.append(" INNER JOIN rel_group_user r ON u.user_group_id = r.user_group_id ");
 
-		if (!Strings.isBlank(userID)) {
+		if (userID!=null) {
 			if (where.length() > 0) where.append(" AND ");
 			where.append(" r.user_id = ? ");
 			params.add(userID);
@@ -58,6 +58,9 @@ public class UserGroupDao extends SpringBaseDao<UserGroup> {
 		}
 
 		sql.append(" WHERE ").append(where);
+
+		sql=super.addDelSignPrefix(sql);
+
 		List<UserGroup> rows = jdbcTemplate.query(sql.toString(), params.toArray(new Object[params.size()]), getRowMapper());
 		return rows;
 	}
@@ -88,35 +91,41 @@ public class UserGroupDao extends SpringBaseDao<UserGroup> {
 		}
 
 		sql.append(" WHERE ").append(where);
+		sql=super.addDelSignPrefix(sql);
+
 		List<UserGroup> rows = jdbcTemplate.query(sql.toString(), params.toArray(new Object[params.size()]), getRowMapper());
 		return rows;
 	}
 
-	public List<UserGroup> findUserGroup(Long permissionID, Long userGroupID) {
-		if (permissionID == null) {
-			return null;
-		}
 
-		String sql = "SELECT u.* "
-				+ "FROM " + this.getTableName() + " u "
-				+ "INNER JOIN rel_group_permission r ON u.user_group_id = r.user_group_id "
-				+ "WHERE r.permission_id = ? ";
+	public  List<UserGroup> getAllGroupByRelTagRelThing(Long thingID){
 
-		List<Object> params = new ArrayList<Object>();
-		params.add(permissionID);
+		String sql="select g.* from ${0} g " +
+				" inner join ${1} rel_tag on rel_tag.user_group_id = g.user_group_id  "+
+				" inner join ${3} rel_tag_th on rel_tag_th.thing_id = rel_tag.tag_id "+
+				" where rel_tag_th.thing_id = ?";
 
-		if (userGroupID != null) {
-			sql += " AND u.user_group_id = ? ";
-			params.add(userGroupID);
-		}
+		String fullSql= StrTemplate.gener(sql,TABLE_NAME, TagGroupRelationDao.TABLE_NAME,TagIndexDao.TABLE_NAME, TagThingRelationDao.TABLE_NAME);
 
-		Object[] paramArr = new Object[params.size()];
-		paramArr = params.toArray(paramArr);
+		fullSql=super.addDelSignPrefix(fullSql);
 
-		List<UserGroup> rows = jdbcTemplate.query(sql, paramArr, getRowMapper());
-		return rows;
+		return super.jdbcTemplate.query(fullSql,new Object[]{thingID},getRowMapper());
+
 	}
 
+
+	public  List<UserGroup> getAllGroupByRelThing(Long thingID){
+
+		String sql="select g.* from ${0} g " +
+				" inner join ${1} rel_th on rel_th.user_group_id = g.user_group_id  "+
+				" where rel_th.thing_id = ?";
+
+		String fullSql= StrTemplate.gener(sql,TABLE_NAME, ThingUserGroupRelationDao.TABLE_NAME);
+		fullSql=super.addDelSignPrefix(fullSql);
+
+		return super.jdbcTemplate.query(fullSql,new Object[]{thingID},getRowMapper());
+
+	}
 
 	@Override
 	public String getTableName() {
@@ -129,11 +138,11 @@ public class UserGroupDao extends SpringBaseDao<UserGroup> {
 		return KEY;
 	}
 
-	public Optional<List<Long>> findUserGroupIds(Set<Long> groupIdSet) {
-		if (null == groupIdSet || groupIdSet.isEmpty()) {
-			return Optional.ofNullable(null);
-		}
-		return Optional.ofNullable(findSingleFieldBySingleField(UserGroup.USER_GROUP_ID, UserGroup.USER_GROUP_ID,
-				groupIdSet, Long.class));
-	}
+//	public Optional<List<Long>> findUserGroupIds(Set<Long> groupIdSet) {
+//		if (null == groupIdSet || groupIdSet.isEmpty()) {
+//			return Optional.ofNullable(null);
+//		}
+//		return Optional.ofNullable(findSingleFieldBySingleField(UserGroup.USER_GROUP_ID, UserGroup.USER_GROUP_ID,
+//				groupIdSet, Long.class));
+//	}
 }

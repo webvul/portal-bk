@@ -9,20 +9,32 @@ public class GroupUserRelation extends DBEntity{
 	private String userID;
 
 	private Long userGroupID;
+
+	private Long beehiveUserID;
+
 	
 	public final static String ID = "id";
-	public final static String USER_ID = "user_id";
+	public final static String USER_ID = "beehive_user_id";
 	public final static String USER_GROUP_ID = "user_group_id";
+//	final public static String OLD_USER_ID = "user_id";
+
 	
 	public GroupUserRelation() {}
 	
-	public GroupUserRelation(String userID, Long userGroupID) {
+	public GroupUserRelation(Long userID, Long userGroupID) {
 		super();
-		this.userID = userID;
+		this.beehiveUserID = userID;
 		this.userGroupID = userGroupID;
 	}
 
+	@JdbcField(column=USER_ID)
+	public Long getBeehiveUserID() {
+		return beehiveUserID;
+	}
 
+	public void setBeehiveUserID(Long beehiveUserID) {
+		this.beehiveUserID = beehiveUserID;
+	}
 
 	@JdbcField(column=ID)
 	public Long getId() {
@@ -42,13 +54,13 @@ public class GroupUserRelation extends DBEntity{
 		this.userGroupID = userGroupID;
 	}
 
-	@JdbcField(column=USER_ID)
-	public String getUserID() {
-		return userID;
-	}
-
-
-	public void setUserID(String userID) {
-		this.userID = userID;
-	}
+//	@JdbcField(column=USER_ID)
+//	public String getUserID() {
+//		return userID;
+//	}
+//
+//
+//	public void setUserID(String userID) {
+//		this.userID = userID;
+//	}
 }

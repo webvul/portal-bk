@@ -1,19 +1,39 @@
 package com.kii.beehive.portal.jdbc;
 
-import com.kii.beehive.portal.auth.AuthInfoStore;
-import com.kii.beehive.portal.jdbc.dao.*;
-import com.kii.beehive.portal.jdbc.entity.*;
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static junit.framework.TestCase.assertEquals;
-import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
+import com.kii.beehive.portal.jdbc.dao.TagGroupRelationDao;
+import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
+import com.kii.beehive.portal.jdbc.dao.TagThingRelationDao;
+import com.kii.beehive.portal.jdbc.dao.TagUserRelationDao;
+import com.kii.beehive.portal.jdbc.dao.TeamDao;
+import com.kii.beehive.portal.jdbc.dao.TeamTagRelationDao;
+import com.kii.beehive.portal.jdbc.dao.TeamUserRelationDao;
+import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
+import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
+import com.kii.beehive.portal.jdbc.entity.TagGroupRelation;
+import com.kii.beehive.portal.jdbc.entity.TagIndex;
+import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
+import com.kii.beehive.portal.jdbc.entity.TagType;
+import com.kii.beehive.portal.jdbc.entity.TagUserRelation;
+import com.kii.beehive.portal.jdbc.entity.Team;
+import com.kii.beehive.portal.jdbc.entity.TeamTagRelation;
+import com.kii.beehive.portal.jdbc.entity.TeamUserRelation;
+import com.kii.beehive.portal.jdbc.entity.UserGroup;
 
 public class TestTagIndexDao extends TestTemplate {
 
@@ -59,34 +79,34 @@ public class TestTagIndexDao extends TestTemplate {
 
 	@Test
 	public void testFindTagIdsByCreatorAndFullTagNames() throws Exception {
-		List<Long> tagIds = tagIndexDao.findTagIdsByCreatorAndFullTagNames(AuthInfoStore.getUserID(), null).
+		List<Long> tagIds = tagIndexDao.findTagIdsByCreatorAndFullTagNames(AuthInfoStore.getUserIDInLong(), null).
 				orElse(Collections.emptyList());
 		assertEquals(1, tagIds.size());
 		assertEquals(tag.getId(), tagIds.get(0));
 
-		tagIds = tagIndexDao.findTagIdsByCreatorAndFullTagNames(AuthInfoStore.getUserID(),
+		tagIds = tagIndexDao.findTagIdsByCreatorAndFullTagNames(AuthInfoStore.getUserIDInLong(),
 				Arrays.asList("test", tag.getFullTagName())).orElse(Collections.emptyList());
 		assertEquals(1, tagIds.size());
 		assertEquals(tag.getId(), tagIds.get(0));
 
-		tagIds = tagIndexDao.findTagIdsByCreatorAndFullTagNames(AuthInfoStore.getUserID(),
+		tagIds = tagIndexDao.findTagIdsByCreatorAndFullTagNames(AuthInfoStore.getUserIDInLong(),
 				Arrays.asList("test")).orElse(Collections.emptyList());
 		assertEquals(0, tagIds.size());
 	}
 
 	@Test
 	public void testGetCreatedTagIdsByTypeAndDisplayNames() throws Exception {
-		List<Long> tagIds = tagIndexDao.getCreatedTagIdsByTypeAndDisplayNames(AuthInfoStore.getUserID(),
+		List<Long> tagIds = tagIndexDao.getCreatedTagIdsByTypeAndDisplayNames(AuthInfoStore.getUserIDInLong(),
 				tag.getTagType(), null).orElse(Collections.emptyList());
 		assertEquals(1, tagIds.size());
 		assertEquals(tag.getId(), tagIds.get(0));
 
-		tagIds = tagIndexDao.getCreatedTagIdsByTypeAndDisplayNames(AuthInfoStore.getUserID(),
+		tagIds = tagIndexDao.getCreatedTagIdsByTypeAndDisplayNames(AuthInfoStore.getUserIDInLong(),
 				tag.getTagType(), Arrays.asList("123123", tag.getDisplayName())).orElse(Collections.emptyList());
 		assertEquals(1, tagIds.size());
 		assertEquals(tag.getId(), tagIds.get(0));
 
-		tagIds = tagIndexDao.getCreatedTagIdsByTypeAndDisplayNames(AuthInfoStore.getUserID(),
+		tagIds = tagIndexDao.getCreatedTagIdsByTypeAndDisplayNames(AuthInfoStore.getUserIDInLong(),
 				tag.getTagType(), Arrays.asList("123123")).orElse(Collections.emptyList());
 		assertEquals(0, tagIds.size());
 	}
@@ -136,7 +156,7 @@ public class TestTagIndexDao extends TestTemplate {
 		Long tagId = tagIndexDao.saveOrUpdate(tagIndex);
 
 		TagUserRelation tagUserRelation = new TagUserRelation();
-		tagUserRelation.setUserId("Someone");
+		tagUserRelation.setBeehiveUserID(100l);
 		tagUserRelation.setTagId(tagId);
 		tagUserRelationDao.saveOrUpdate(tagUserRelation);
 
@@ -160,14 +180,14 @@ public class TestTagIndexDao extends TestTemplate {
 		tagThingRelation.setThingID(thingId);
 		tagThingRelationDao.saveOrUpdate(tagThingRelation);
 
-		assertNotNull(tagUserRelationDao.find(tagId, "Someone"));
+		assertNotNull(tagUserRelationDao.find(tagId, 100l));
 		assertNotNull(tagGroupRelationDao.findByTagIDAndUserGroupID(tagId, userGroupId));
 		assertNotNull(tagThingRelationDao.findByThingIDAndTagID(thingId, tagId));
 
 		tagIndexDao.deleteByID(tagId);
 
 		assertNull(tagIndexDao.findByID(tagId));
-		assertNull(tagUserRelationDao.find(tagId, "Someone"));
+		assertNull(tagUserRelationDao.find(tagId,100l));
 		assertNull(tagGroupRelationDao.findByTagIDAndUserGroupID(tagId, userGroupId));
 		assertNull(tagThingRelationDao.findByThingIDAndTagID(thingId, tagId));
 	}
@@ -338,7 +358,7 @@ public class TestTagIndexDao extends TestTemplate {
 
 		TeamUserRelation relation = new TeamUserRelation();
 		relation.setTeamID(AuthInfoStore.getTeamID());
-		relation.setUserID("TeamLead");
+		relation.setBeehiveUserID(100l);
 		teamUserRelationDao.saveOrUpdate(relation);
 
 		List<Long> ids = tagIndexDao.findTagIdsByTeamAndTagTypeAndName(null, null, null).

@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.kii.beehive.portal.service.DemoCrossAppDao;
 
 @Ignore("just ")
-public class TestAppInfo extends TestInit {
+public class TestAppInfo extends StoreServiceTestInit {
 
 
 

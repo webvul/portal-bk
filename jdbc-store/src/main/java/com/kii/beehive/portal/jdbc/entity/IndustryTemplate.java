@@ -1,8 +1,9 @@
 package com.kii.beehive.portal.jdbc.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kii.beehive.portal.jdbc.annotation.JdbcField;
 
-public class IndustryTemplate extends DBEntity {
+public class IndustryTemplate extends BusinessEntity {
 
 
 	private String name;
@@ -51,6 +52,8 @@ public class IndustryTemplate extends DBEntity {
 	public void setVersion(String version) {
 		this.version = version;
 	}
+
+	@JsonIgnore
 	@JdbcField(column=CONTENT)
 	public String getContent() {
 		return content;

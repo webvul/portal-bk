@@ -12,6 +12,16 @@ public class CommandToThing implements   ExecuteTarget {
 
 	private String delay;
 
+	private boolean  check;
+
+	public boolean isDoubleCheck(){
+		return check;
+	};
+
+	public void setDoubleCheck(boolean sign){
+		this.check=sign;
+	};
+
 	@Override
 	public String getDelay() {
 		return delay;

@@ -3,6 +3,7 @@ package com.kii.beehive.portal.web.entity;
 public class SearchRestBean {
 
 	private String vendorThingID;
+	private String[] vendorThingIDs;
 	private Long startDate;
 	private Long endDate;
 	private String intervalField;
@@ -82,5 +83,13 @@ public class SearchRestBean {
 
 	public void setUnit(int unit) {
 		this.unit = unit;
+	}
+
+	public String[] getVendorThingIDs() {
+		return vendorThingIDs;
+	}
+
+	public void setVendorThingIDs(String[] vendorThingIDs) {
+		this.vendorThingIDs = vendorThingIDs;
 	}
 }

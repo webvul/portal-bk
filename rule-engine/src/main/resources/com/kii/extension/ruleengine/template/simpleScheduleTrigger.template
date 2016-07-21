@@ -12,7 +12,7 @@ rule "${triggerID} user group segment:schedule"
 when
     $ext:ExternalCollect()
     Trigger( $triggerID:triggerID =="${triggerID}" && enable == true  )
-    SingleThing(thingID:thingID,triggerID==$triggerID)
+    SingleThing($thingID:thingID,triggerID==$triggerID)
     $status:ThingStatusInRule( thingID == $thingID,${express}  )
     $result:ResultParam(triggerID==$triggerID)
 then

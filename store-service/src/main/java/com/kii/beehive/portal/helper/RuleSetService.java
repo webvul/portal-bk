@@ -4,16 +4,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.entitys.PermissionTree;
-import com.kii.beehive.portal.service.BeehiveUserDao;
+import com.kii.beehive.portal.jdbc.dao.BeehiveUserJdbcDao;
+import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 import com.kii.beehive.portal.service.UserRuleDao;
-import com.kii.beehive.portal.store.entity.BeehiveUser;
 import com.kii.beehive.portal.store.entity.UserRuleSet;
 
 @Component
 public class RuleSetService {
 
 	@Autowired
-	private BeehiveUserDao userDao;
+	private BeehiveUserJdbcDao userDao;
 
 	@Autowired
 	private PermissionTreeService  permissionTreeService;
@@ -23,7 +23,7 @@ public class RuleSetService {
 
 	public PermissionTree getUserPermissionTree(String userID) {
 
-		BeehiveUser user = userDao.getUserByID(userID);
+		BeehiveJdbcUser user = userDao.getUserByUserID(userID);
 
 		UserRuleSet ruleSet = ruleDao.getRuleSetByName(user.getRoleName());
 

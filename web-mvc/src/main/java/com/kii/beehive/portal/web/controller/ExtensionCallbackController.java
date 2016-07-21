@@ -1,5 +1,12 @@
 package com.kii.beehive.portal.web.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 import com.kii.beehive.business.event.BusinessEventBus;
 import com.kii.beehive.business.manager.ThingTagManager;
 import com.kii.beehive.business.ruleengine.ThingStatusChangeCallback;
@@ -7,16 +14,12 @@ import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.web.constant.CallbackNames;
 import com.kii.beehive.portal.web.entity.CreatedThing;
 import com.kii.beehive.portal.web.entity.StateUpload;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import com.kii.beehive.portal.web.help.InternalEventListenerRegistry;
 
-@RestController
+@RestController(value = "extensionCallbackController")
 @RequestMapping(value = CallbackNames.CALLBACK_URL, consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {
 		MediaType.APPLICATION_JSON_UTF8_VALUE})
 public class ExtensionCallbackController {
-
-
 	@Autowired
 	private ThingTagManager tagManager;
 
@@ -25,6 +28,9 @@ public class ExtensionCallbackController {
 
 	@Autowired
 	private BusinessEventBus eventBus;
+
+	@Autowired
+	private InternalEventListenerRegistry internalEventListenerRegistry;
 
 
 	@RequestMapping(value = "/" + CallbackNames.STATE_CHANGED, method = {RequestMethod.POST})
@@ -39,6 +45,8 @@ public class ExtensionCallbackController {
 		statusChangeCallback.onEventFire(status.getState(), fullThingID, status.getTimestamp());
 
 		eventBus.onStatusUploadFire(fullThingID, status.getState(), status.getTimestamp());
+
+		internalEventListenerRegistry.onStateChange(appID, status);
 	}
 
 

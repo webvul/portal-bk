@@ -1,16 +1,16 @@
 package com.kii.beehive.portal.jdbc.dao;
 
-import com.kii.beehive.portal.jdbc.entity.ThingUserRelation;
+import java.util.List;
+
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Optional;
+import com.kii.beehive.portal.jdbc.entity.ThingUserRelation;
 
 /**
  * Created by hdchen on 3/18/16.
  */
 @Repository
-public class ThingUserRelationDao extends SpringBaseDao<ThingUserRelation> {
+public class ThingUserRelationDao extends SpringSimpleBaseDao<ThingUserRelation> {
 	final public static String TABLE_NAME = "rel_thing_user";
 	final public static String KEY = "id";
 
@@ -35,19 +35,6 @@ public class ThingUserRelationDao extends SpringBaseDao<ThingUserRelation> {
 		return KEY;
 	}
 
-	public Optional<List<Long>> findThingIds(String userId) {
-		if (null == userId) {
-			return Optional.ofNullable(null);
-		}
-		return Optional.ofNullable(jdbcTemplate.queryForList(SQL_FIND_THINGIDS, new Object[]{userId}, Long.class));
-	}
-
-	public List<String> findUserIds(Long thingId) {
-		if (null == thingId) {
-			return null;
-		}
-		return jdbcTemplate.queryForList(SQL_FIND_USERIDS, new Object[]{thingId}, String.class);
-	}
 
 	public List<ThingUserRelation> findByThingId(Long thingId) {
 		if (null == thingId) {
@@ -56,14 +43,14 @@ public class ThingUserRelationDao extends SpringBaseDao<ThingUserRelation> {
 		return findBySingleField(ThingUserRelation.THING_ID, thingId);
 	}
 
-	public List<ThingUserRelation> findByUserId(String userId) {
+	public List<ThingUserRelation> findByUserId(Long userId) {
 		if (null == userId) {
 			return null;
 		}
 		return findBySingleField(ThingUserRelation.USER_ID, userId);
 	}
 
-	public ThingUserRelation find(Long thingId, String userId) {
+	public ThingUserRelation find(Long thingId, Long userId) {
 		if (null == userId || null == thingId) {
 			return null;
 		}
@@ -75,7 +62,7 @@ public class ThingUserRelationDao extends SpringBaseDao<ThingUserRelation> {
 		return null;
 	}
 
-	public void deleteByThingIdAndUserId(Long thingId, String userId) {
+	public void deleteByThingIdAndUserId(Long thingId, Long userId) {
 		if (null == thingId || null == userId) {
 			return;
 		}

@@ -8,10 +8,17 @@ public class PortalException extends BusinessException {
 
 	private static final long serialVersionUID = -2799530582371715829L;
 
-	public PortalException(String errorCode,HttpStatus status){
-		this.setErrorCode(errorCode);
-		super.setStatusCode(status.value());
+	public PortalException(ErrorCode errorCode){
+		this.setErrorCode(errorCode.getName());
+		super.setStatusCode(errorCode.getStatus());
 	}
+
+	public PortalException(ErrorCode errorCode,String... params){
+		super(params);
+		this.setErrorCode(errorCode.getName());
+		super.setStatusCode(errorCode.getStatus());
+	}
+
 
 	public HttpStatus getStatus(){
 

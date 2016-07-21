@@ -2,6 +2,10 @@ package com.kii.beehive.portal.common.utils;
 
 import java.util.Map;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.PropertyAccessorFactory;
 
 public class StrTemplate {
 
@@ -69,31 +73,38 @@ public class StrTemplate {
 
 		return result;
 	}
+	
 
-//	public static String generByObj(String template, Object entity) {
-//		Pattern exp=Pattern.compile("\\$\\{([^}]+)\\}");
-//
-//		StringBuffer buf=new StringBuffer();
-//		Matcher match=exp.matcher(template);
-//
-//		int start=0;
-//		while(match.find()){
-//			String field=match.group(1);
-//
-//			int begin=match.start();
-//			buf.append(template.subSequence(start,begin));
-//			try {
-//				buf.append(BeanUtils.getProperty(entity, field));
-//			} catch (Exception e) {
-//				e.printStackTrace();
-//				buf.append(field);
-//			}
-//			start=match.end();
-//		}
-//
-//		buf.append(template.substring(start));
-//
-//		return buf.toString();
-//	}
+
+	public static String generByEntity(String template, Object entity) {
+		Pattern exp=Pattern.compile("\\$\\{([^}]+)\\}");
+
+		StringBuffer buf=new StringBuffer();
+		Matcher match=exp.matcher(template);
+
+		int start=0;
+
+		BeanWrapper  wrapper= PropertyAccessorFactory.forBeanPropertyAccess(entity);
+
+		while(match.find()){
+			String field=match.group(1);
+
+			int begin=match.start();
+			buf.append(template.subSequence(start,begin));
+			try {
+
+				buf.append(wrapper.getPropertyValue(field));
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				buf.append(field);
+			}
+			start=match.end();
+		}
+
+		buf.append(template.substring(start));
+
+		return buf.toString();
+	}
 
 }

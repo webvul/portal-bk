@@ -1,5 +1,21 @@
 package com.kii.beehive.portal.jdbc;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
@@ -9,14 +25,6 @@ import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
 import com.kii.beehive.portal.jdbc.entity.ThingUserGroupRelation;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static org.junit.Assert.*;
 
 /**
  * Created by hdchen on 3/18/16.
@@ -199,7 +207,7 @@ public class TestThingUserGroupRelationDao extends TestTemplate {
 
 		GroupUserRelation groupUserRelation = new GroupUserRelation();
 		groupUserRelation.setUserGroupID(userGroupIds.get(1));
-		groupUserRelation.setUserID("Someone");
+		groupUserRelation.setBeehiveUserID(101l);
 		groupUserRelationDao.saveOrUpdate(groupUserRelation);
 
 		List<ThingUserGroupRelation> result = thingUserGroupRelationDao.findByThingIdAndUserId(thingId, "Someone");

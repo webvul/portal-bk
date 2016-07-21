@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.kii.beehive.business.helper.OpLogTools;
 import com.kii.beehive.portal.store.*;
 
-public class TestOpLog extends com.kii.beehive.portal.store.TestInit {
+public class TestOpLog extends StoreServiceTestInit {
 
 	@Autowired
 	private OpLogTools  opLogTools;

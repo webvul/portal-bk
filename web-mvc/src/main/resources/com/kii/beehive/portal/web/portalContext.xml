@@ -24,9 +24,13 @@
     </bean>
 
     <context:component-scan base-package="com.kii.beehive">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Repository" />
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Component" />
         <context:exclude-filter type="regex" expression="com.kii.beehive.portal.web.config.*"></context:exclude-filter>
         <context:exclude-filter type="regex"
                                 expression="com.kii.beehive.portal.web.controller.*"></context:exclude-filter>
+        <context:exclude-filter type="regex"
+                                expression="com.kii.beehive.portal.web.stomp.*"></context:exclude-filter>
     </context:component-scan>
 
 
@@ -63,10 +67,12 @@
         <property name="devPortalUrl" value="${beehive.kiicloud.dev-portal.url}"/>
     </bean>
 
+
     <bean name="propAppBindTool" class="com.kii.extension.factory.LocalPropertyBindTool">
         <property name="propFileName"
                   value="classpath:com/kii/beehive/portal/web/beehive.portal.store.${spring.profile}.properties"/>
     </bean>
+
 
     <bean class="com.kii.extension.ruleengine.RuleEngineConfig"/>
 

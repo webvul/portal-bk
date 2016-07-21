@@ -1,8 +1,12 @@
 package com.kii.beehive.portal.jdbc.entity;
 
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import com.kii.beehive.portal.jdbc.annotation.JdbcField;
 
-public class UserGroup extends DBEntity {
+public class UserGroup extends BusinessEntity {
 
 	private String name;
 	private String description;
@@ -33,5 +37,17 @@ public class UserGroup extends DBEntity {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+
+	private List<BeehiveJdbcUser> userList;
+
+	@JsonIgnore
+	public List<BeehiveJdbcUser> getUserList() {
+		return userList;
+	}
+
+	public void setUserList(List<BeehiveJdbcUser> userList) {
+		this.userList = userList;
 	}
 }
