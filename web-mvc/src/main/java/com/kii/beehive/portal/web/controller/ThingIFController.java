@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.kii.beehive.business.entity.ExecuteTarget;
 import com.kii.beehive.business.entity.TagSelector;
 import com.kii.beehive.business.service.ThingIFCommandService;
@@ -71,8 +69,9 @@ public class ThingIFController extends AbstractThingTagController {
 
 			}
 		} else {
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, HttpStatus
-					.BAD_REQUEST);
+			PortalException excep= new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","thing command");
+			excep.addParam("field"," thingID list or tag list ");
+			throw excep;
 		}
 
 		targets.add(restBean);
