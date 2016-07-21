@@ -75,6 +75,12 @@ public class ThingLocationQueryController {
 	public List<GlobalThingInfo> getRelThingsByLocation(@PathVariable("location") String location){
 
 
+		ThingLocQuery  query=new ThingLocQuery();
+		query.setIncludeSub(false);
+		query.setLocation(location);
+		query.setType(null);
+
+		return locationQueryManager.getThingsByLocation(query);
 
 	}
 
@@ -85,12 +91,25 @@ public class ThingLocationQueryController {
 	public List<GlobalThingInfo> getRelThingsInChildByLocation(@PathVariable("location") String location){
 
 
+		ThingLocQuery  query=new ThingLocQuery();
+		query.setIncludeSub(true);
+		query.setLocation(location);
+		query.setType(null);
+
+		return locationQueryManager.getThingsByLocation(query);
 	}
 
 
 	@RequestMapping(value="/locations/{location}/things/{type}",method = RequestMethod.GET,consumes = {MediaType.ALL_VALUE})
 	public List<GlobalThingInfo> getRelThingsByLocationAndType(@PathVariable("location") String location,@PathVariable("type") String type){
 
+
+		ThingLocQuery  query=new ThingLocQuery();
+		query.setIncludeSub(false);
+		query.setLocation(location);
+		query.setType(type);
+
+		return locationQueryManager.getThingsByLocation(query);
 
 	}
 
@@ -100,6 +119,13 @@ public class ThingLocationQueryController {
 	@RequestMapping(value="/locations/{location}/thingsInLoc/{type}",method = RequestMethod.GET,consumes = {MediaType.ALL_VALUE})
 	public List<GlobalThingInfo> getRelThingsInChildByLocationAndType(@PathVariable("location") String location,@PathVariable("type") String type){
 
+
+		ThingLocQuery  query=new ThingLocQuery();
+		query.setIncludeSub(true);
+		query.setLocation(location);
+		query.setType(type);
+
+		return locationQueryManager.getThingsByLocation(query);
 
 	}
 

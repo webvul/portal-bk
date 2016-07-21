@@ -1,17 +1,19 @@
 package com.kii.beehive.portal.web.controller;
 
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kii.beehive.portal.manager.LocationQueryManager;
+import com.kii.beehive.portal.manager.LocationManager;
 import com.kii.beehive.portal.store.entity.LocationInfo;
 
 @RestController
@@ -22,38 +24,35 @@ public class LocationRelController {
 
 
 	@Autowired
-	private LocationQueryManager manager;
+	private LocationManager manager;
 
 
 	@RequestMapping(value="/thing/{thingID}/location/{location}",method = RequestMethod.PUT)
-	public void addLocationInThing(){
+	public void addLocationInThing(@PathVariable("thingID") long thingID,@PathVariable("location") String location){
 
-
-	}
-
-	@RequestMapping(value="/thing/{thingID}/location/{location}",method = RequestMethod.GET,consumes = {MediaType.ALL_VALUE})
-	public LocationInfo  getLocationInThing(){
-
+		manager.updateRelation(thingID, Collections.singletonList(location));
 
 	}
-
 
 	@RequestMapping(value="/thing/{thingID}/location/{location}",method = RequestMethod.DELETE,consumes = {MediaType.ALL_VALUE})
-	public void removeLocationFromThing(){
+	public void removeLocationFromThing(@PathVariable("thingID") long thingID,@PathVariable("location") String location){
 
-
+		manager.removeRelation(thingID, Collections.singletonList(location));
 
 	}
 
 
 	@RequestMapping(value="/thing/{thingID}/location",method = RequestMethod.PATCH)
-	public void addLocListToThing(@RequestBody List<String> locList){
+	public void addLocListToThing(@PathVariable("thingID") long thingID, @RequestBody List<String> locList){
 
+		manager.addRelation(thingID,locList);
 
 	}
 
 	@RequestMapping(value="/thing/{thingID}/location",method = RequestMethod.GET,consumes = {MediaType.ALL_VALUE})
-	public List<LocationInfo> getLocListFromThing(){
+	public List<LocationInfo> getLocListFromThing(@PathVariable("thingID") long thingID){
+
+		manager
 
 
 	}
