@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.beehive.portal.service.LocationDao;
+import com.kii.beehive.portal.service.SubLocInfo;
 import com.kii.beehive.portal.store.entity.LocationInfo;
 import com.kii.beehive.portal.store.entity.LocationType;
 
@@ -85,7 +86,7 @@ public class TestLocDao extends TestTemplate {
 	public void fillRootLoc() {
 
 
-		LocationDao.SubLocInfo  locInfo=new LocationDao.SubLocInfo();
+		SubLocInfo locInfo=new SubLocInfo();
 		locInfo.setFrom(1);
 		locInfo.setTo(3);
 
@@ -96,7 +97,7 @@ public class TestLocDao extends TestTemplate {
 	@Test
 	public void fillSubLoc(){
 
-		LocationDao.SubLocInfo  locInfo=new LocationDao.SubLocInfo();
+		SubLocInfo locInfo=new SubLocInfo();
 		locInfo.setFrom(1);
 		locInfo.setTo(4);
 
@@ -109,7 +110,7 @@ public class TestLocDao extends TestTemplate {
 
 			locDao.generSubLevelInUpper("010"+i,locInfo);
 
-			LocationDao.SubLocInfo  areaInfo=new LocationDao.SubLocInfo();
+			SubLocInfo areaInfo=new SubLocInfo();
 			areaInfo.setPrefix(LocationInfo.AreaType.values()[(i*i)%4].name());
 			areaInfo.setFrom(0);
 			areaInfo.setTo(11);
@@ -131,7 +132,7 @@ public class TestLocDao extends TestTemplate {
 	public void initNumSeq() throws IOException {
 
 
-		LocationDao.SubLocInfo subloc=mapper.readValue(json1, LocationDao.SubLocInfo.class);
+		SubLocInfo subloc=mapper.readValue(json1, SubLocInfo.class);
 
 		List<String> list=locDao.getSeq(subloc);
 
@@ -146,7 +147,7 @@ public class TestLocDao extends TestTemplate {
 	public void initCharSeq() throws IOException {
 
 
-		LocationDao.SubLocInfo subloc=mapper.readValue(json2, LocationDao.SubLocInfo.class);
+		SubLocInfo subloc=mapper.readValue(json2, SubLocInfo.class);
 
 		List<String> list=locDao.getSeq(subloc);
 
@@ -162,7 +163,7 @@ public class TestLocDao extends TestTemplate {
 	public void initArraySeq() throws IOException {
 
 
-		LocationDao.SubLocInfo subloc=mapper.readValue(json3, LocationDao.SubLocInfo.class);
+		SubLocInfo subloc=mapper.readValue(json3, SubLocInfo.class);
 
 		List<String> list=locDao.getSeq(subloc);
 
@@ -177,7 +178,7 @@ public class TestLocDao extends TestTemplate {
 	public void initSimpleNumSeq() throws IOException {
 
 
-		LocationDao.SubLocInfo subloc=mapper.readValue(json4, LocationDao.SubLocInfo.class);
+		SubLocInfo subloc=mapper.readValue(json4, SubLocInfo.class);
 
 		List<String> list=locDao.getSeq(subloc);
 

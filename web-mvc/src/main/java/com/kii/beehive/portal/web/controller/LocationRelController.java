@@ -3,7 +3,6 @@ package com.kii.beehive.portal.web.controller;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -14,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.portal.manager.LocationManager;
+import com.kii.beehive.portal.service.SubLocInfo;
 import com.kii.beehive.portal.store.entity.LocationInfo;
 
 @RestController
@@ -52,40 +52,68 @@ public class LocationRelController {
 	@RequestMapping(value="/thing/{thingID}/location",method = RequestMethod.GET,consumes = {MediaType.ALL_VALUE})
 	public List<LocationInfo> getLocListFromThing(@PathVariable("thingID") long thingID){
 
-		manager
-
+		return manager.getThingRelLocations(thingID);
 
 	}
 
 
 	@RequestMapping(value="/thing/{thingID}/removeLoc",method = RequestMethod.POST)
-	public void removeLocListFromThing(@RequestBody List<String> locList){
+	public void removeLocListFromThing(@PathVariable("thingID") long thingID, @RequestBody List<String> locList){
 
+		manager.removeRelation(thingID, locList);
 
 	}
 
 
 	@RequestMapping(value="/thing/{thingID}/location",method = RequestMethod.PUT)
-	public void updateLocListToThing(@RequestBody List<String> locList){
+	public void updateLocListToThing(@PathVariable("thingID") long thingID, @RequestBody List<String> locList){
 
+
+		manager.updateRelation(thingID, locList);
 
 	}
 
+	//======================
 
 	@RequestMapping(value="/location/{location}/subLevel",method = RequestMethod.GET,consumes = {MediaType.ALL_VALUE})
-	public List<LocationInfo> getLowLevelLocations(){
+	public List<LocationInfo> getLowLevelLocations(@PathVariable("location") String location){
+		return manager.getLowLocation(location);
 
 	}
 
 	@RequestMapping(value="/location/{location}/parent",method = RequestMethod.GET,consumes = {MediaType.ALL_VALUE})
-	public LocationInfo getUpperLevelLocations(){
+	public List<LocationInfo> getUpperLevelLocation(@PathVariable("location") String location){
+		return manager.getUpperLocation(location);
 
 	}
 
-	@RequestMapping(value="/location/{location}/subTree",method = RequestMethod.GET,consumes = {MediaType.ALL_VALUE})
-	public Map<String,LocationInfo> getLowLevelLocations(){
+	@RequestMapping(value="/location/{location}/allSubLocation",method = RequestMethod.GET,consumes = {MediaType.ALL_VALUE})
+	public List<LocationInfo> getAllLowLevelLocations(@PathVariable("location") String location){
+
+		return manager.getAllLowLocation(location);
 
 	}
+
+
+	//====================
+
+	@RequestMapping(value="/location/generBuilder",method = RequestMethod.POST)
+	public void generalRootLocation(@RequestBody SubLocInfo builders){
+
+		manager.generalRoot(builders);
+
+
+	}
+
+	@RequestMapping(value="/location/gener/{upperLevel}",method = RequestMethod.POST)
+	public void generalLowerLevelLocation(@PathVariable("upperLevel")String upperLevel,@RequestBody SubLocInfo builders){
+
+
+		manager.generalSubBranch(upperLevel,builders);
+
+	}
+
+
 
 
 

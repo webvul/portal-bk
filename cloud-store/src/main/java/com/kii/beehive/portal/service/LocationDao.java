@@ -1,12 +1,10 @@
 package com.kii.beehive.portal.service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -37,13 +35,50 @@ public class LocationDao extends AbstractDataAccess<LocationInfo> {
 	}
 
 
+	public List<LocationInfo>  getLowLocation(String location){
+
+		QueryParam query=ConditionBuilder.newCondition().equal("parent",location).getFinalQueryParam();
+
+		return super.fullQuery(query);
+	}
+
+	public List<LocationInfo> getAllLowLocation(String location){
+		QueryParam query=ConditionBuilder.newCondition().prefixLike("parent",location).getFinalQueryParam();
+
+		List<LocationInfo> list= super.fullQuery(query);
+
+
+		Collections.sort(list, (o1, o2) -> o1.getId().compareTo(o2.getId()));
+
+		return list;
+
+	}
+
+	public List<LocationInfo> getPathToLoc(String location){
+
+		List<String> inParam=new ArrayList<>();
+
+		inParam.add(LocationType.building.getLevelSeq(location));
+		inParam.add(LocationType.floor.getLevelSeq(location));
+		inParam.add(LocationType.partition.getLevelSeq(location));
+		inParam.add(LocationType.area.getLevelSeq(location));
+
+		QueryParam query=ConditionBuilder.newCondition().In("_id",inParam).getFinalQueryParam();
+
+		List<LocationInfo> list= super.fullQuery(query);
+
+		Collections.sort(list, (o1, o2) -> o1.getId().compareTo(o2.getId()));
+
+		return list;
+
+	}
 
 
 	public void generTopLocation(SubLocInfo  locInfo){
 
 		deleteByUpperLevel(".");
 
-		getSeq(locInfo).forEach(loc->{
+		locInfo.getSeq(null).forEach(loc->{
 
 			LocationInfo info=new LocationInfo();
 			info.setLocation(loc);
@@ -70,7 +105,7 @@ public class LocationDao extends AbstractDataAccess<LocationInfo> {
 		LocationType type= LocationType.getTypeByLocation(upper);
 
 
-		getSeq(subLoc,upper).forEach(loc->{
+		subLoc.getSeq(upper).forEach(loc->{
 
 			LocationInfo info=new LocationInfo();
 			info.setLocation(loc);
@@ -122,130 +157,8 @@ public class LocationDao extends AbstractDataAccess<LocationInfo> {
 			super.removeEntity(rec.getId());
 		});
 	}
-	public  List<String> getSeq(SubLocInfo seqInfo){
-		return getSeq(seqInfo,null);
-	}
 
 
 
-	public  List<String> getSeq(SubLocInfo seqInfo,String levelPrefix){
 
-		if(StringUtils.isEmpty(levelPrefix)){
-			levelPrefix="";
-		}else if(LocationType.getTypeByLocation(levelPrefix)==LocationType.partition){
-			levelPrefix+="-";
-		}
-
-		final String globalPrefix=levelPrefix;
-
-		List<String> result=new ArrayList<>();
-
-		if(!seqInfo.array.isEmpty()){
-
-			return seqInfo.array.stream().map((s)->globalPrefix+s).collect(Collectors.toList());
-		}
-
-
-		if( (seqInfo.from==null) || (seqInfo.to == null)){
-
-			return result;
-		}
-
-		Object from=seqInfo.from;
-
-
-		String prefix=seqInfo.prefix;
-		if(StringUtils.isBlank(prefix)){
-			prefix="";
-		}
-
-		String fillZero=StringUtils.repeat('0',2);
-
-
-		if(from instanceof  String ){
-			String fromStr=(String)from;
-			String toStr=(String)seqInfo.to;
-			if(StringUtils.isBlank(fromStr)||StringUtils.isBlank(toStr)){
-				return result;
-			}
-
-			char  start=fromStr.charAt(0);
-			char end=toStr.charAt(0);
-
-			for(int i=(int)start;i<=(int)end;i++){
-				result.add(levelPrefix+prefix+String.valueOf((char)i));
-			}
-
-			return result;
-		}else if(from instanceof Integer){
-
-			int fromInt= (Integer)seqInfo.from;
-			int toInt=(Integer)seqInfo.to;
-
-
-
-			for(int i=(int)fromInt;i<=(int)toInt;i++){
-				String sub=String.valueOf(i);
-
-				String completeSub=StringUtils.substring(fillZero+sub,-2);
-
-				result.add(levelPrefix+prefix+completeSub);
-			}
-
-			return result;
-		}else{
-			return result;
-		}
-
-	}
-
-	public static class SubLocInfo{
-
-		private String prefix;
-
-
-		private Object from ;
-
-		private Object  to;
-
-		private List<String> array=new ArrayList<>();
-
-
-		public Object getFrom() {
-			return from;
-		}
-
-		public void setFrom(Object from) {
-			this.from = from;
-		}
-
-		public Object getTo() {
-			return to;
-		}
-
-		public void setTo(Object to) {
-			this.to = to;
-		}
-
-		public List<String> getArray() {
-			return array;
-		}
-
-		public void setArray(List<String> array) {
-			this.array = array;
-		}
-
-		public void setArrayInfo(String... infos){
-			this.array= Arrays.asList(infos);
-		}
-
-		public String getPrefix() {
-			return prefix;
-		}
-
-		public void setPrefix(String prefix) {
-			this.prefix = prefix;
-		}
-
-	}
 }
