@@ -20,7 +20,9 @@ import org.elasticsearch.common.logging.Loggers;
 import org.elasticsearch.common.settings.Settings;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.floragunn.searchguard.action.configupdate.TransportConfigUpdateAction;
 import com.floragunn.searchguard.auth.AuthenticationBackend;
+import com.floragunn.searchguard.auth.internal.InternalAuthenticationBackend;
 import com.floragunn.searchguard.configuration.ConfigChangeListener;
 import com.floragunn.searchguard.user.AuthCredentials;
 import com.floragunn.searchguard.user.User;
@@ -52,11 +54,14 @@ public class BeehiveAuthenticationProxy implements AuthenticationBackend, Config
 
 	private static final String ADMIN = "admin";
 
-	public BeehiveAuthenticationProxy(final Settings settings) {
+	private InternalAuthenticationBackend internalAuthenticationBackend;
+
+	public BeehiveAuthenticationProxy(final Settings settings, final TransportConfigUpdateAction tcua) {
 		super();
 		API_ROOT = settings.get(PROP_API_ROOT);
 		ADMIN_TOKEN = settings.get(PROP_ADMIN_TOKEN);
 		mapper = new ObjectMapper();
+		internalAuthenticationBackend = new InternalAuthenticationBackend(settings, tcua);
 	}
 
 	@Override
@@ -102,6 +107,11 @@ public class BeehiveAuthenticationProxy implements AuthenticationBackend, Config
 				authInfo.setUserID(username);
 				authInfo.setPassword(password);
 				log.debug("Basic auth: user {}, password {}", authInfo.getUserID(), authInfo.getPassword());
+
+				User user = authenticateInternalUser(authInfo.getUserID(), authInfo.getPassword());
+				if (null != user) {
+					return user;
+				}
 				request.setEntity(AccessController.doPrivileged(new PrivilegedAction<StringEntity>() {
 					@Override
 					public StringEntity run() {
@@ -158,11 +168,23 @@ public class BeehiveAuthenticationProxy implements AuthenticationBackend, Config
 		}
 	}
 
+	private User authenticateInternalUser(String user, String password) {
+		try {
+			return internalAuthenticationBackend.authenticate(new AuthCredentials(user, password.getBytes()));
+		} catch (ElasticsearchSecurityException e) {
+			return null;
+		}
+	}
+
 	@Override
 	public boolean exists(User user) {
 		if (!isInitialized()) {
 			throw new ElasticsearchSecurityException(
 					"Internal authentication backend not configured. May be Search Guard is not initialized.");
+		}
+
+		if (internalAuthenticationBackend.exists(user)) {
+			return true;
 		}
 
 		try (CloseableHttpClient client = HttpClientBuilder.create().build()) {
@@ -182,6 +204,7 @@ public class BeehiveAuthenticationProxy implements AuthenticationBackend, Config
 
 	@Override
 	public void onChange(String event, Settings settings) {
+		internalAuthenticationBackend.onChange(event, settings);
 	}
 
 	@Override
