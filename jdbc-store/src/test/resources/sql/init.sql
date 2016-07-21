@@ -25,6 +25,38 @@ CREATE TABLE `beehive_user` (
   KEY `user_name_UNIQUE` (`user_name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=574 DEFAULT CHARSET=utf8;
 
+
+CREATE TABLE `beehive_archive_user` (
+  `archive_user_id` int(11) NOT NULL AUTO_INCREMENT,
+  `beehive_user_id` int(11) NOT NULL,
+  `user_name` varchar(45) NOT NULL,
+  `user_id` varchar(45) DEFAULT NULL,
+  `mobile` varchar(45) DEFAULT NULL,
+  `user_mail` varchar(45) DEFAULT NULL,
+  `display_name` varchar(45) DEFAULT NULL,
+  `role_name` varchar(45) DEFAULT NULL,
+  `face_subject_id` int(11) DEFAULT NULL,
+  `create_date` datetime DEFAULT NULL,
+  PRIMARY KEY (`archive_user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+
+
+
+CREATE TABLE `beehive_archive_user` (
+  `archive_user_id` int(11) NOT NULL AUTO_INCREMENT,
+  `beehive_user_id` int(11) NOT NULL,
+  `user_name` varchar(45) NOT NULL,
+  `user_id` varchar(45) DEFAULT NULL,
+  `mobile` varchar(45) DEFAULT NULL,
+  `user_mail` varchar(45) DEFAULT NULL,
+  `display_name` varchar(45) DEFAULT NULL,
+  `role_name` varchar(45) DEFAULT NULL,
+  `face_subject_id` int(11) DEFAULT NULL,
+  `create_date` datetime DEFAULT NULL,
+  PRIMARY KEY (`archive_user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+
+
 CREATE TABLE `global_thing` (
   `id_global_thing` int(11) NOT NULL AUTO_INCREMENT,
   `vendor_thing_id` varchar(45) NOT NULL,
