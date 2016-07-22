@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -89,16 +88,7 @@ public class UserController {
 
 		user.verifyInput();
 
-		BeehiveJdbcUser beehiveUser = user.getBeehiveUser();
-		if(StringUtils.isBlank(beehiveUser.getUserName())){
-			if(!StringUtils.isBlank(beehiveUser.getMail())){
-				beehiveUser.setUserName(beehiveUser.getMail());
-			}else if(!StringUtils.isBlank(beehiveUser.getPhone())){
-				beehiveUser.setUserName(beehiveUser.getPhone());
-			}
-		}
-
-		Map<String,Object>  newUser=  userManager.addUser(beehiveUser);
+		Map<String,Object>  newUser=  userManager.addUser(user.getBeehiveUser());
 
 		BeehiveJdbcUser userInfo= (BeehiveJdbcUser) newUser.get("user");
 

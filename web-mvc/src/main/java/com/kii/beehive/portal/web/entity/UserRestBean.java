@@ -65,19 +65,32 @@ public class UserRestBean {
 	public void verifyInput(){
 		if(StringUtils.isBlank(beehiveUser.getUserName())&&StringUtils.isBlank(beehiveUser.getMail())&&StringUtils.isBlank(beehiveUser.getPhone())){
 			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "field","userName or mail or phone ");
-
 		}
 
 		if(StringUtils.isNoneBlank(beehiveUser.getUserName())&&!StringUtils.isAsciiPrintable(beehiveUser.getUserName())){
 			throw new  PortalException(ErrorCode.INVALID_INPUT, "field","userName","data",beehiveUser.getUserName());
 		}
-		if(!StringUtils.isBlank(beehiveUser.getPhone())&& !numPattern.matcher(beehiveUser.getPhone()).find()){
 
+		if(StringUtils.isBlank(beehiveUser.getPhone())){
+			beehiveUser.setPhone(null);
+		}else if(!numPattern.matcher(beehiveUser.getPhone()).find()){
 			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","phone");
 		}
-		if(StringUtils.isNoneBlank(beehiveUser.getMail())&& !mailPattern.matcher(beehiveUser.getMail()).find()){
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","mail");
 
+
+		if(StringUtils.isBlank(beehiveUser.getMail())){
+			beehiveUser.setMail(null);
+		}else if(!mailPattern.matcher(beehiveUser.getMail()).find()){
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","mail");
+		}
+
+
+		if (StringUtils.isBlank(beehiveUser.getUserName())) {
+			if (!StringUtils.isBlank(beehiveUser.getMail())) {
+				beehiveUser.setUserName(beehiveUser.getMail());
+			} else if (!StringUtils.isBlank(beehiveUser.getPhone())) {
+				beehiveUser.setUserName(beehiveUser.getPhone());
+			}
 		}
 
 	}

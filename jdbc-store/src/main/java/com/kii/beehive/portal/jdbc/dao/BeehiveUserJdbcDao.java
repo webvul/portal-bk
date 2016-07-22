@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.StringUtils;
 
 import com.kii.beehive.portal.common.utils.StrTemplate;
 import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
@@ -186,11 +186,11 @@ public class BeehiveUserJdbcDao extends SpringBaseDao<BeehiveJdbcUser>  {
 
 		params.add(user.getUserName());
 
-		if(StringUtils.hasText(user.getPhone())){
+		if(user.getPhone()!=null){
 			sql+="  or mobile =  ? ";
 			params.add(user.getPhone());
 		}
-		if(StringUtils.hasText(user.getMail())){
+		if(user.getMail()!=null){
 			sql+= " or user_mail = ? ";
 			params.add(user.getMail());
 		}
