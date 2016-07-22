@@ -182,7 +182,7 @@ public class UserController {
 	}
 
 
-	@RequestMapping(path="/usermanager/{userId}",method={RequestMethod.DELETE},consumes = {MediaType.ALL_VALUE})
+	@RequestMapping(path="/usermanager/{userID}",method={RequestMethod.DELETE},consumes = {MediaType.ALL_VALUE})
 	public void hardDeleteUser(@PathVariable("userID") String userID){
 
 

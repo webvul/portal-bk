@@ -15,6 +15,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.beehive.portal.common.utils.ThingIDTools;
+import com.kii.beehive.portal.exception.InvalidTriggerFormatException;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.PagerTag;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
@@ -72,9 +73,7 @@ public class ThingTagManager {
 
 		if(!source.getThingList().isEmpty()) {
 			things.addAll(globalThingDao.findByIDs(source.getThingList()));
-			//carlos
-			//可以同时 包括 thing list 和 tag list
-//			return things;
+			return things;
 		}
 
 		if(!source.getTagList().isEmpty()) {
@@ -93,7 +92,12 @@ public class ThingTagManager {
 					things.addAll(globalThingDao.queryThingByUnionTags(source.getTagList(),source.getType()));
 				}
 			}
+		}else{
+
+			throw new InvalidTriggerFormatException(" tag or thing List is null ");
+
 		}
+
 		return things;
 	}
 

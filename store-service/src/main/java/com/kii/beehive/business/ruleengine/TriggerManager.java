@@ -207,8 +207,12 @@ public class TriggerManager {
 			GlobalThingInfo thingInfo = thingTagService.getThingByID(record.getSource().getThingID());
 			if (thingInfo != null) {
 				thingID = thingInfo.getFullKiiThingID();
+			}else{
+
+				throw EntryNotFoundException.thingNotFound(record.getSource().getThingID());
 			}
 		}
+
 		service.createSimpleTrigger(thingID,record);
 
 	}
@@ -217,6 +221,7 @@ public class TriggerManager {
 	private void addGroupToEngine(GroupTriggerRecord record) {
 
 		Set<String> thingIDs = thingTagService.getKiiThingIDs(record.getSource());
+
 		service.createGroupTrigger(record,thingIDs);
 	}
 

@@ -1,6 +1,8 @@
 package com.kii.beehive.portal.web.config;
 
 
+import javax.annotation.PostConstruct;
+
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -17,7 +19,12 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+
 import com.kii.beehive.portal.web.controller.STOMPMessageController;
 import com.kii.beehive.portal.web.help.AuthInterceptor;
 
@@ -28,11 +35,27 @@ import com.kii.beehive.portal.web.help.AuthInterceptor;
 		@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = STOMPMessageController.class)})
 public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
-	@Autowired
+//	@Autowired
 	private ObjectMapper mapper;
 
 	@Autowired
 	private AuthInterceptor authInterceptor;
+
+	@PostConstruct
+	public void init(){
+
+		mapper=new ObjectMapper();
+		mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+		mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
+
+		mapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT,true);
+		mapper.configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES,true);
+		mapper.configure(DeserializationFeature.FAIL_ON_READING_DUP_TREE_KEY,true);
+		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,true);
+
+
+
+	}
 
 	@Override
 	public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
