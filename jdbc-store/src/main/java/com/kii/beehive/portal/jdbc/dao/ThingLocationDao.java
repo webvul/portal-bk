@@ -198,6 +198,7 @@ Group by   thing.type, substring(loc.location ,？,？ )
 
 		}
 
+
 		public List<String> getThingIDs() {
 			return thingIDs;
 		}

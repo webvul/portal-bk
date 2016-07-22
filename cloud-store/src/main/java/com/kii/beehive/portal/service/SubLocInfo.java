@@ -104,7 +104,10 @@ public class SubLocInfo {
 			char end=toStr.charAt(0);
 
 			for(int i=(int)start;i<=(int)end;i++){
-				result.add(levelPrefix+prefix+String.valueOf((char)i));
+				String val=String.valueOf((char)i);
+//				String completeSub=StringUtils.substring(fillZero+val,-2);
+
+				result.add(levelPrefix+prefix+val);
 			}
 
 			return result;

@@ -1,5 +1,6 @@
 package com.kii.beehive.portal.web.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +16,8 @@ import com.kii.beehive.portal.jdbc.dao.ThingLocQuery;
 import com.kii.beehive.portal.jdbc.dao.ThingLocationDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.manager.LocationQueryManager;
+import com.kii.beehive.portal.web.entity.ThingIDsForReportWithDoubleGroup;
+import com.kii.beehive.portal.web.entity.ThingIDsForReportWithGroup;
 
 @RestController
 @RequestMapping( consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {
@@ -27,18 +30,44 @@ public class ThingLocationQueryController {
 	private LocationQueryManager locationQueryManager;
 
 	@RequestMapping(value="/reports/thingQuery/groupByType",method = RequestMethod.POST)
-	public Map<String,ThingLocationDao.ThingIDs> queryByThingLocationWithType(@RequestBody ThingLocQuery query){
+	public List<ThingIDsForReportWithGroup>   queryByThingLocationWithType(@RequestBody ThingLocQuery query){
 
-			return locationQueryManager.doQueryWithGroup(query,true);
 
+		Map<String,ThingLocationDao.ThingIDs>  map= locationQueryManager.doQueryWithGroup(query,true);
+
+		List<ThingIDsForReportWithGroup>  idList=new ArrayList<>();
+
+		map.forEach((k,v)->{
+
+			ThingIDsForReportWithGroup group=new ThingIDsForReportWithGroup();
+			group.setGroupName(k);
+			group.setThingIDArray(v);
+
+			idList.add(group);
+		});
+
+		return idList;
 
 	}
 
 	@RequestMapping(value="/reports/thingQuery/groupByLocation",method = RequestMethod.POST)
-	public Map<String,ThingLocationDao.ThingIDs> queryByThingLocationWithLocation(@RequestBody ThingLocQuery query){
+	public List<ThingIDsForReportWithGroup> queryByThingLocationWithLocation(@RequestBody ThingLocQuery query){
 
-		return locationQueryManager.doQueryWithGroup(query,false);
 
+		Map<String,ThingLocationDao.ThingIDs>  map= locationQueryManager.doQueryWithGroup(query,false);
+
+		List<ThingIDsForReportWithGroup>  idList=new ArrayList<>();
+
+		map.forEach((k,v)->{
+
+			ThingIDsForReportWithGroup group=new ThingIDsForReportWithGroup();
+			group.setGroupName(k);
+			group.setThingIDArray(v);
+
+			idList.add(group);
+		});
+
+		return idList;
 
 
 	}
@@ -49,8 +78,30 @@ public class ThingLocationQueryController {
 	}
 
 	@RequestMapping(value="/reports/thingQuery/groupByAll",method = RequestMethod.POST)
-	public  Map<String,Map<String,ThingLocationDao.ThingIDs>> queryByThingLocationWithGroup(@RequestBody ThingLocQuery query){
-		return locationQueryManager.doQueryForReportWithAllGroup(query);
+	public  List<ThingIDsForReportWithDoubleGroup> queryByThingLocationWithGroup(@RequestBody ThingLocQuery query){
+		Map<String,Map<String,ThingLocationDao.ThingIDs>>  map= locationQueryManager.doQueryForReportWithAllGroup(query);
+
+		List<ThingIDsForReportWithDoubleGroup>  idList=new ArrayList<>();
+
+		map.forEach((k,v)->{
+
+			List<ThingIDsForReportWithGroup>  list=new ArrayList<>();
+			v.forEach((kk,vv)->{
+				ThingIDsForReportWithGroup group=new ThingIDsForReportWithGroup();
+				group.setGroupName(kk);
+				group.setThingIDArray(vv);
+
+				list.add(group);
+			});
+
+			ThingIDsForReportWithDoubleGroup topGroup=new ThingIDsForReportWithDoubleGroup();
+			topGroup.setGroupName(k);
+			topGroup.setSubGroupArray(list);
+
+			idList.add(topGroup);
+		});
+
+		return idList;
 	}
 
 

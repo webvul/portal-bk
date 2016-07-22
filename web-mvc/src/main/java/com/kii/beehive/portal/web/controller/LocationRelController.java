@@ -27,7 +27,7 @@ public class LocationRelController {
 	private LocationManager manager;
 
 
-	@RequestMapping(value="/things/{thingID}/location/{location}",method = RequestMethod.PUT)
+	@RequestMapping(value="/things/{thingID}/location/{location}",method = RequestMethod.PUT,consumes = {MediaType.ALL_VALUE})
 	public void addLocationInThing(@PathVariable("thingID") long thingID,@PathVariable("location") String location){
 
 		manager.updateRelation(thingID, Collections.singletonList(location));
