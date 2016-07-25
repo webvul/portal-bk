@@ -3,7 +3,6 @@ package com.kii.beehive.portal.web.controller;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,9 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.fasterxml.jackson.databind.JsonNode;
-
 import com.kii.beehive.business.elasticsearch.TaskManager;
 import com.kii.beehive.business.manager.TagThingManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
@@ -52,6 +49,22 @@ public class ESServiceController {
 		transportClientManager.bulkUpload(appId, vendorThingId, documents);
 	}
 
+	/**
+	 * @param startTime
+	 * @param endTime
+	 * @return
+	 */
+	@RequestMapping(value = "/avgParkingLeavingTime/{startTime}/{endTime}", method = {RequestMethod.POST})
+	public double getAverageParkingLeavingTime(@PathVariable("startTime") long startTime,
+											   @PathVariable("endTime") long endTime) {
+		try {
+			return transportClientManager.getAverageParkingLeavingTime(startTime, endTime);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return -1;
+		}
+	}
+
 
 	/**
 	 * POST /es/historical/aggregate
@@ -66,7 +79,7 @@ public class ESServiceController {
 				|| searchRestBean.getStartDate() == null || searchRestBean.getEndDate() == null
 				|| searchRestBean.getFields() == null || searchRestBean.getFields().length == 0
 				|| searchRestBean.getUnit() == 0) {
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","aggregate");
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "field", "aggregate");
 		}
 
 		List<GlobalThingInfo> things = thingTagManager.getThingsByVendorThingIds(Arrays.asList(searchRestBean.getVendorThingIDs()));
@@ -109,7 +122,7 @@ public class ESServiceController {
 		if (Strings.isBlank(searchRestBean.getVendorThingID())
 				|| searchRestBean.getStartDate() == null || searchRestBean.getEndDate() == null
 				|| searchRestBean.getSize() == 0) {
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","historical");
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "field", "historical");
 		}
 
 		if (searchRestBean.getSize() > 100) {

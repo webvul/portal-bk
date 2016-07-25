@@ -2,8 +2,8 @@ package com.kii.beehive.business.elasticsearch;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -16,11 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.kii.beehive.business.elasticsearch.factory.ESTaskFactory;
+import com.kii.beehive.business.elasticsearch.task.AvgTimeParkingSpaceToGatewayTask;
 
 /**
  * Created by hdchen on 6/30/16.
@@ -60,6 +59,13 @@ public class TaskManager {
 
 	public void bulkUpload(String index, String type, List<JsonNode> data) {
 		indexThreadPoolTaskExecutor.submit(taskFactory.getBulkUploadTask(index, type, data));
+	}
+
+	public double getAverageParkingLeavingTime(long startTime, long endTime) throws ExecutionException,
+			InterruptedException {
+		AvgTimeParkingSpaceToGatewayTask task = taskFactory.getAvgTimeParkingSpaceToGatewayTask(startTime, endTime);
+		searchThreadPoolTaskExecutor.submit(task).get();
+		return task.getAverageTime();
 	}
 
 	public String queryBuilderForAggs(String index, String type, String[] kiiThingIDs, long startDate, long endDate,

@@ -14,19 +14,21 @@ import org.slf4j.LoggerFactory;
  */
 public class SearchTask extends Task<SearchResponse> {
 	private Logger log = LoggerFactory.getLogger(SearchTask.class);
-	private String index_name;
-	private String type_name;
-	private SearchType searchType;
+	private String[] index_name;
+	private String[] type_name;
+	private SearchType searchType = SearchType.DFS_QUERY_THEN_FETCH;
 	private QueryBuilder queryBuilder;
 	private AggregationBuilder aggregationBuilder;
 	private int size;
 	private int from;
+	private int to;
+	private QueryBuilder postFilter;
 
-	public void setIndex_name(String index_name) {
+	public void setIndex_name(String... index_name) {
 		this.index_name = index_name;
 	}
 
-	public void setType_name(String type_name) {
+	public void setType_name(String... type_name) {
 		this.type_name = type_name;
 	}
 
@@ -54,26 +56,19 @@ public class SearchTask extends Task<SearchResponse> {
 	@Override
 	protected SearchResponse processRequest(Client client) {
 
-		SearchRequestBuilder searchResponse = client.prepareSearch(index_name).setTypes(type_name);
-				/*.setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-				.setQuery(QueryBuilders.boolQuery()
-						.filter(QueryBuilders.termQuery("target", "thing:th.aba700e36100-37c9-6e11-ecd3-04401dbe"))
-						.filter(QueryBuilders.rangeQuery("state.taiwanNo1").from(1467271440000L).to(1467273440000L))
-				)
-				.setSize(0)
-				.addAggregation(AggregationBuilders.dateHistogram("agg").field("state.taiwanNo1").interval
-						(DateHistogramInterval.minutes(1))
-						.subAggregation(AggregationBuilders.avg("state.humidiy").field("state.humidiy"))
-						.subAggregation(AggregationBuilders.avg("state.temprature").field("state.temprature")));*/
-		searchResponse.setSearchType(searchType);
-		searchResponse.setQuery(queryBuilder);
-		if (aggregationBuilder != null) {
-			searchResponse.addAggregation(aggregationBuilder);
+		SearchRequestBuilder searchRequestBuilder = client.prepareSearch(index_name).setTypes(type_name);
+		searchRequestBuilder.setSearchType(searchType);
+		searchRequestBuilder.setQuery(queryBuilder);
+		if (null != postFilter) {
+			searchRequestBuilder.setPostFilter(postFilter);
 		}
-		searchResponse.setSize(size);
-		searchResponse.setFrom(from);
+		if (null != aggregationBuilder) {
+			searchRequestBuilder.addAggregation(aggregationBuilder);
+		}
+		searchRequestBuilder.setSize(size);
+		searchRequestBuilder.setFrom(from);
 
-		SearchResponse response = searchResponse.execute().actionGet();
+		SearchResponse response = searchRequestBuilder.execute().actionGet();
 
 		return response;
 	}
@@ -81,5 +76,9 @@ public class SearchTask extends Task<SearchResponse> {
 	@Override
 	protected void handleFailure() {
 		log.info("Search failed.");
+	}
+
+	public void setPostFilter(QueryBuilder postFilter) {
+		this.postFilter = postFilter;
 	}
 }
