@@ -50,7 +50,8 @@ public class AuthController {
 
 
 		if (StringUtils.isBlank(pwd)) {
-			throw excep;
+			throw  new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","newPassword");
+
 		}
 
 		if (pwd.length() < 6) {
