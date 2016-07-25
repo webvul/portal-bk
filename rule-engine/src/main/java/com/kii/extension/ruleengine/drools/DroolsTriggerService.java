@@ -184,7 +184,7 @@ public class DroolsTriggerService {
 		cloudService.setInitSign(sign);
 		streamService.setInitSign(sign);
 
-//		fireCondition();
+		fireCondition();
 	}
 
 	public void initThingStatus(ThingStatusInRule newStatus){

@@ -98,9 +98,12 @@ public class EngineService {
 		trigger.setStream(false);
 		trigger.setWhen(record.getPredicate().getTriggersWhen());
 
-		String drl=ruleGeneral.generMultipleDrlConfig(record,thingMap);
+		boolean withSchedule=record.getPredicate().getSchedule()!=null;
 
-		droolsTriggerService.addMultipleTrigger(trigger,drl,record.getPredicate().getSchedule()!=null);
+
+		String drl=ruleGeneral.generMultipleDrlConfig(record,withSchedule);
+
+		droolsTriggerService.addMultipleTrigger(trigger,drl,withSchedule);
 
 		record.getSummarySource().forEach((name,src)->{
 
@@ -162,7 +165,7 @@ public class EngineService {
 //		trigger.setStream(true);
 //		trigger.setEnable(record.getRecordStatus()== TriggerRecord.StatusType.enable);
 //
-//		String 	rule = ruleGeneral.generDrlConfig(record.getId(), TriggerType.summary, record.getPredicate(),record.getTargetParamList());
+//		String 	rule = ruleGeneral.getSimpleTriggerDrl(record.getId(), TriggerType.summary, record.getPredicate(),record.getTargetParamList());
 //
 //		droolsTriggerService.addSummaryTrigger(trigger,rule);
 //
@@ -332,7 +335,7 @@ public class EngineService {
 
 		trigger.setEnable(TriggerRecord.StatusType.enable == record.getRecordStatus());
 
-		String rule=ruleGeneral.generDrlConfig(triggerID,TriggerType.simple,record.getPredicate(),record.getTargetParamList());
+		String rule=ruleGeneral.getSimpleTriggerDrl(triggerID,record.getPredicate(),record.getTargetParamList());
 
 		droolsTriggerService.addTrigger(trigger,rule,record.getPredicate().getSchedule()!=null);
 

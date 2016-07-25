@@ -17,7 +17,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kii.extension.ruleengine.TriggerConditionBuilder;
 import com.kii.extension.ruleengine.drools.RuleGeneral;
 import com.kii.extension.ruleengine.drools.entity.ExternalValues;
-import com.kii.extension.ruleengine.drools.entity.TriggerType;
 import com.kii.extension.ruleengine.store.trigger.CommandParam;
 import com.kii.extension.ruleengine.store.trigger.Condition;
 import com.kii.extension.ruleengine.store.trigger.CronPrefix;
@@ -86,16 +85,16 @@ public class TestTemplateGeneral {
 		param3.setName("p_abc");
 		paramList.add(param3);
 
-		log.info(general.generDrlConfig("abcSchedule", TriggerType.simple,predicate,paramList));
+		log.info(general.getSimpleTriggerDrl("abcSchedule",predicate,paramList));
 
 		predicate.setSchedule(null);
 
-		log.info(general.generDrlConfig("abc", TriggerType.simple,predicate,paramList));
+		log.info(general.getSimpleTriggerDrl("abc",predicate,paramList));
 
-//		log.info(general.generDrlConfig("abc", TriggerType.summary,predicate,paramList));
+//		log.info(general.getSimpleTriggerDrl("abc", TriggerType.summary,predicate,paramList));
 
 		predicate.setSchedule(prefix);
-//		log.info(general.generDrlConfig("abcSchedule", TriggerType.summary,predicate,paramList));
+//		log.info(general.getSimpleTriggerDrl("abcSchedule", TriggerType.summary,predicate,paramList));
 
 
 //		log.info(general.generGroupDrlConfig("abcGroup", TriggerGroupPolicyType.Any,predicate));
@@ -109,7 +108,7 @@ public class TestTemplateGeneral {
 
 		predicate.setCondition(null);
 
-		log.info(general.generDrlConfig("schedule", TriggerType.simple,predicate,new ArrayList<>()));
+		log.info(general.getSimpleTriggerDrl("schedule",predicate,new ArrayList<>()));
 
 
 

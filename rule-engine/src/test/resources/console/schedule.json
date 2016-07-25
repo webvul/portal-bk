@@ -1,0 +1,32 @@
+{
+  "predicate" : {
+    "schedule" : {
+      "type" : "Cron",
+      "cron" : "  0 18 12 25 7  ? "
+    },
+    "express" :"$p{power}!=0",
+    "triggersWhen":"CONDITION_TRUE"
+  },
+  "targets" : [ {
+    "command" : {
+      "actions" : [ {
+        "ON" : {
+          "power" : true
+        }
+      } ],
+      "schemaVersion" : 0,
+      "metadata" : { }
+    }
+  } ],
+  "targetParamList" : [ {
+    "name" : "foo_a",
+    "express" : "$p{foo}"
+  }, {
+    "name" : "ext_b",
+    "express" : "$e{demo.two}"
+  } ],
+  "type" : "Simple",
+  "source" : {
+    "thingID" : 3
+  }
+}

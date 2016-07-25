@@ -15,10 +15,9 @@ when
     CurrThing(init == false)
     $ext:ExternalCollect()
     Trigger( $triggerID:triggerID, ( triggerID=="${triggerID}" &&  enable == true && type ==TriggerType.multiple) )
-    $muiMap:MultipleValueMap( triggerID==$triggerID, ${express}  )
+    $muiMap:MultiplesValueMap( triggerID==$triggerID, ${express}  )
     $result:ResultParam(triggerID==$triggerID)
 then
-	ResultParam result=$result;
 
 	${fillParam}
 
