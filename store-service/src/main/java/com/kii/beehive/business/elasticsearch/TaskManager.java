@@ -61,7 +61,7 @@ public class TaskManager {
 		indexThreadPoolTaskExecutor.submit(taskFactory.getBulkUploadTask(index, type, data));
 	}
 
-	public double getAverageParkingLeavingTime(long startTime, long endTime) throws ExecutionException,
+	public double getAvgTimeParkingSpaceToGateway(long startTime, long endTime) throws ExecutionException,
 			InterruptedException {
 		AvgTimeParkingSpaceToGatewayTask task = taskFactory.getAvgTimeParkingSpaceToGatewayTask(startTime, endTime);
 		searchThreadPoolTaskExecutor.submit(task).get();

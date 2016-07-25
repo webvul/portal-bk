@@ -54,11 +54,11 @@ public class ESServiceController {
 	 * @param endTime
 	 * @return
 	 */
-	@RequestMapping(value = "/avgParkingLeavingTime/{startTime}/{endTime}", method = {RequestMethod.POST})
-	public double getAverageParkingLeavingTime(@PathVariable("startTime") long startTime,
-											   @PathVariable("endTime") long endTime) {
+	@RequestMapping(value = "/avgTimeParkingSpaceToGateway/{startTime}/{endTime}", method = {RequestMethod.POST})
+	public double getAvgTimeParkingSpaceToGateway(@PathVariable("startTime") long startTime,
+												  @PathVariable("endTime") long endTime) {
 		try {
-			return transportClientManager.getAverageParkingLeavingTime(startTime, endTime);
+			return transportClientManager.getAvgTimeParkingSpaceToGateway(startTime, endTime);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return -1;
