@@ -168,7 +168,7 @@ public abstract class SpringBaseDao<T extends BusinessEntity> {
 	public <T extends BusinessEntity> long insert(T entity) {
 
 		if (entity.getCreateBy() == null)
-			entity.setCreateBy(AuthInfoStore.getUserID());
+			entity.setCreateBy(String.valueOf(AuthInfoStore.getUserIDInLong()));
 		entity.setCreateDate(new Date());
 		entity.setModifyBy(String.valueOf(AuthInfoStore.getUserIDInLong()));
 		entity.setModifyDate(new Date());
