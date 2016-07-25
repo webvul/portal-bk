@@ -378,7 +378,7 @@ public class EngineService {
 
 		thingInfos.forEach(th->droolsTriggerService.initThingStatus(th));
 
-//		droolsTriggerService.fireCondition();
+		droolsTriggerService.fireCondition();
 		droolsTriggerService.setInitSign(false);
 	}
 

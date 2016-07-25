@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -154,14 +155,21 @@ public class ExceptionController {
 	}
 
 
-	@ExceptionHandler(JsonMappingException.class)
-	public ResponseEntity<Object>  HandleJsonFormatException(JsonMappingException ex){
+	@ExceptionHandler(HttpMessageNotReadableException.class)
+	public ResponseEntity<Object>  HandleJsonFormatException(HttpMessageNotReadableException ex){
 
-		log.error("json mapping exception ", ex);
+		log.error("http message readable exception ", ex);
 
-		Map<String,Object> error=new HashMap<>();
-		error.put("errorCode","INPUT_PARAM_JSON_FORMAT_ERROR");
-		error.put("errorMessage",ex.getMessage());
+		Throwable excep=ex.getCause();
+
+		Map<String, Object> error = new HashMap<>();
+		if(excep instanceof JsonMappingException) {
+			error.put("errorCode", "INPUT_PARAM_JSON_FORMAT_ERROR");
+			error.put("errorMessage",((JsonMappingException) excep).getMessage());
+		}else{
+			error.put("errorCode", "INPUT_REQUEST_ERROR");
+			error.put("errorMessage", ex.getMessage());
+		}
 		ResponseEntity<Object> resp = new ResponseEntity(error,headers, HttpStatus.BAD_REQUEST);
 		return resp;
 	}
