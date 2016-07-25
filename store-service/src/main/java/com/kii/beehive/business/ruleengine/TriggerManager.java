@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -30,6 +32,7 @@ import com.kii.extension.sdk.entity.thingif.ThingStatus;
 @Component
 public class TriggerManager {
 
+	private static final Logger log= LoggerFactory.getLogger(TriggerManager.class);
 
 	@Autowired
 	private TriggerRecordDao triggerDao;
@@ -88,7 +91,7 @@ public class TriggerManager {
 			try {
 				status=mapper.readValue(s.getStatus(), ThingStatus.class);
 			} catch (IOException e) {
-				e.printStackTrace();
+				log.error("invalid thing "+s.getId()+" status ",e);
 				return;
 			}
 			ThingStatusInRule info=new ThingStatusInRule(s.getFullKiiThingID());
