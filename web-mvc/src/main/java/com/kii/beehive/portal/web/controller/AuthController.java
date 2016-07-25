@@ -50,7 +50,8 @@ public class AuthController {
 
 
 		if (StringUtils.isBlank(pwd)) {
-			throw excep;
+			throw  new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","newPassword");
+
 		}
 
 		if (pwd.length() < 6) {
@@ -138,13 +139,6 @@ public class AuthController {
 		user.verifyInput();
 
 		BeehiveJdbcUser beehiveUser = user.getBeehiveUser();
-		if (StringUtils.isBlank(beehiveUser.getUserName())) {
-			if (!StringUtils.isBlank(beehiveUser.getMail())) {
-				beehiveUser.setUserName(beehiveUser.getMail());
-			} else if (!StringUtils.isBlank(beehiveUser.getPhone())) {
-				beehiveUser.setUserName(beehiveUser.getPhone());
-			}
-		}
 
 		veifyPwd(user.getPassword());
 

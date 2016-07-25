@@ -5,15 +5,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
-import org.springframework.util.StringUtils;
 
 import com.kii.beehive.portal.common.utils.StrTemplate;
 import com.kii.extension.ruleengine.drools.entity.TriggerType;
@@ -25,6 +24,7 @@ import com.kii.extension.ruleengine.store.trigger.IntervalPrefix;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.SchedulePrefix;
 import com.kii.extension.ruleengine.store.trigger.SummaryExpress;
+import com.kii.extension.ruleengine.store.trigger.TimerUnitType;
 import com.kii.extension.ruleengine.store.trigger.condition.AndLogic;
 import com.kii.extension.ruleengine.store.trigger.condition.Equal;
 import com.kii.extension.ruleengine.store.trigger.condition.ExpressCondition;
@@ -77,18 +77,25 @@ public class RuleGeneral {
 
 
 
-	public String generMultipleDrlConfig(MultipleSrcTriggerRecord  record,Map<String,Set<String>>  thingMap) {
+	public String generMultipleDrlConfig(MultipleSrcTriggerRecord  record,boolean withSchedule) {
 
 
 		StringBuilder sb=new StringBuilder();
 
-		String fullTemplate = loadTemplate("multiple");
-
+		String fullTemplate = loadTemplate(TriggerType.multiple.name());
 		Map<String, String> params = new HashMap<>();
+
+		if(withSchedule) {
+			fullTemplate=loadTemplate(TriggerType.multiple.name()+"Schedule");
+			params.put("timer",generTimer(record.getPredicate().getSchedule()));
+
+		}
 		params.put("triggerID", record.getId());
 		params.put("express",generExpress(record.getPredicate()));
 
-		params.put("fillParam",getParamMappingList(record.getTargetParamList(),false));
+
+
+		params.put("fillParam",getParamMappingList(record.getTargetParamList(),false,withSchedule));
 
 		String multipleDrl=StrTemplate.generByMap(fullTemplate,params);
 
@@ -174,27 +181,29 @@ end
 
 
 
-	public String generDrlConfig(String triggerID, TriggerType type, RuleEnginePredicate predicate, List<CommandParam> paramList){
+	public String getSimpleTriggerDrl(String triggerID, RuleEnginePredicate predicate, List<CommandParam> paramList){
 
 
 		Map<String,String> params=new HashMap<>();
 
 		String template=null;
+		boolean isResultParam=false;
 		if(predicate.getSchedule()!=null){
 
-			if(predicate.getCondition()==null){
+			if(predicate.getCondition()==null&& StringUtils.isBlank(predicate.getExpress())){
 
 				template=loadTemplate("schedule");
 			}else {
-				template = loadTemplate(type.name() + "Schedule");
+				template = loadTemplate("simpleSchedule");
+				isResultParam=true;
 			}
 			params.put("timer",generTimer(predicate.getSchedule()));
 
 		}else {
-			template=loadTemplate(type.name());
+			template=loadTemplate(TriggerType.simple.name());
 		}
 
-		params.put("fillParam",getParamMappingList(paramList,type==TriggerType.simple));
+		params.put("fillParam",getParamMappingList(paramList,true,isResultParam));
 
 		params.put("triggerID",triggerID);
 		params.put("express",generExpress(predicate));
@@ -205,9 +214,9 @@ end
 		return fullDrl;
 	}
 
-	private static String ParamBindTemplate="result.setParam(\"${0}\",${1}); \n";
+	private static String ParamBindTemplate="${2}result.setParam(\"${0}\",${1}); \n";
 
-	private String getParamMappingList(List<CommandParam>  paramList,boolean isSimpleTrigger){
+	private String getParamMappingList(List<CommandParam>  paramList,boolean isSimpleTrigger,boolean isResultParam){
 
 
 		/*
@@ -220,7 +229,7 @@ end
 
 		paramList.forEach((param)->{
 
-			String result=StrTemplate.gener(ParamBindTemplate,param.getName(),convert.convertRightExpress(param.getExpress(),isSimpleTrigger));
+			String result=StrTemplate.gener(ParamBindTemplate,param.getName(),convert.convertRightExpress(param.getExpress(),isSimpleTrigger),isResultParam?"$":"");
 
 			sb.append(result);
 		});
@@ -241,7 +250,11 @@ end
 		switch(prefix.getType()){
 			case "Interval":
 				IntervalPrefix interval=(IntervalPrefix)prefix;
-				sb.append(" int: 0s ").append(interval.getTimeUnit().getFullDescrtion(interval.getInterval()));
+				TimerUnitType timeUnit=interval.getTimeUnit();
+				if(timeUnit==null){
+					timeUnit= TimerUnitType.Minute;
+				}
+				sb.append(" int: 0s ").append(timeUnit.getFullDescrtion(interval.getInterval()));
 				break;
 			case "Cron":
 

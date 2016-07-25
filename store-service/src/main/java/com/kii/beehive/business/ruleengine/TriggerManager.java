@@ -4,14 +4,11 @@ import javax.annotation.PostConstruct;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.quartz.SchedulerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -19,30 +16,23 @@ import org.springframework.util.StringUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.beehive.business.event.BusinessEventListenerService;
+import com.kii.beehive.business.helper.TriggerCreator;
 import com.kii.beehive.business.manager.ThingTagManager;
 import com.kii.beehive.portal.event.EventListener;
 import com.kii.beehive.portal.exception.EntryNotFoundException;
-import com.kii.beehive.portal.exception.InvalidTriggerFormatException;
-import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.service.EventListenerDao;
 import com.kii.extension.ruleengine.EngineService;
 import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
 import com.kii.extension.ruleengine.schedule.ScheduleService;
 import com.kii.extension.ruleengine.service.TriggerRecordDao;
-import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.SummarySource;
-import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.TriggerValidPeriod;
-import com.kii.extension.ruleengine.store.trigger.multiple.GroupSummarySource;
-import com.kii.extension.ruleengine.store.trigger.multiple.MultipleSrcTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.multiple.ThingSource;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
 @Component
 public class TriggerManager {
 
+	private static final Logger log= LoggerFactory.getLogger(TriggerManager.class);
 
 	@Autowired
 	private TriggerRecordDao triggerDao;
@@ -65,6 +55,9 @@ public class TriggerManager {
 	@Autowired
 	private ScheduleService scheduleService;
 
+	@Autowired
+	private TriggerCreator  creator;
+
 
 	public void reinit(){
 
@@ -81,7 +74,7 @@ public class TriggerManager {
 		recordList.forEach(record -> {
 
 			try {
-				addTriggerToEngine(record);
+				creator.addTriggerToEngine(record);
 			}catch(Exception e){
 				e.printStackTrace();
 			}
@@ -98,13 +91,12 @@ public class TriggerManager {
 			try {
 				status=mapper.readValue(s.getStatus(), ThingStatus.class);
 			} catch (IOException e) {
-				e.printStackTrace();
+				log.error("invalid thing "+s.getId()+" status ",e);
 				return;
 			}
 			ThingStatusInRule info=new ThingStatusInRule(s.getFullKiiThingID());
 			info.setCreateAt(s.getModifyDate());
 			info.setValues(status.getFields());
-//			info.setThingID(s.getFullKiiThingID());
 
 			initThings.add(info);
 
@@ -115,6 +107,16 @@ public class TriggerManager {
 
 	}
 
+
+	public String createTrigger(TriggerRecord record) {
+
+		triggerDao.addKiiEntity(record);
+
+		creator.addTriggerToEngine(record);
+
+		return record.getId();
+
+	}
 
 
 	public Map<String,Object> getRuleEngingDump() {
@@ -128,151 +130,6 @@ public class TriggerManager {
 	}
 
 
-	public String createTrigger(TriggerRecord record) {
-
-		record.setRecordStatus(TriggerRecord.StatusType.disable);
-
-		triggerDao.addKiiEntity(record);
-
-		addTriggerToEngine(record);
-
-		return record.getId();
-
-	}
-
-	private void addTriggerToEngine(TriggerRecord record) {
-
-		String triggerID=record.getId();
-
-		TriggerValidPeriod period=record.getPreparedCondition();
-		if(period!=null){
-			//ctrl enable sign by schedule.
-			record.setRecordStatus(TriggerRecord.StatusType.disable);
-		}
-
-		try {
-			if (record instanceof SimpleTriggerRecord) {
-				addSimpleToEngine((SimpleTriggerRecord) record);
-			} else if (record instanceof GroupTriggerRecord) {
-				GroupTriggerRecord groupRecord = ((GroupTriggerRecord) record);
-				addGroupToEngine(groupRecord);
-				if (!groupRecord.getSource().getTagList().isEmpty()) {
-					eventService.addGroupTagChangeListener(groupRecord.getSource().getTagList(), triggerID);
-				}
-
-			} else if (record instanceof SummaryTriggerRecord) {
-				SummaryTriggerRecord summaryRecord = (SummaryTriggerRecord) record;
-
-				addSummaryToEngine(summaryRecord);
-				summaryRecord.getSummarySource().forEach((k, v) -> {
-					eventService.addSummaryTagChangeListener(v.getSource().getTagList(), triggerID, k);
-				});
-
-			} else if (record instanceof MultipleSrcTriggerRecord){
-				MultipleSrcTriggerRecord multipleRecord=(MultipleSrcTriggerRecord)record;
-
-				addMulToEngine(multipleRecord);
-
-				multipleRecord.getSummarySource().forEach((k, v) -> {
-					if(v instanceof GroupSummarySource) {
-						eventService.addSummaryTagChangeListener(((GroupSummarySource)v).getSource().getTagList(), triggerID, k);
-					}
-				});
-
-			}else{
-				throw new InvalidTriggerFormatException("unsupport trigger type");
-
-			}
-
-			if(period!=null) {
-				scheduleService.addManagerTask(triggerID, period);
-			}
-		} catch (RuntimeException e) {
-
-			triggerDao.deleteTriggerRecord(triggerID);
-			throw e;
-
-		} catch (SchedulerException e) {
-			e.printStackTrace();
-			throw new InvalidTriggerFormatException("schedule init fail");
-		}
-
-		return ;
-	}
-
-
-	private void addSimpleToEngine(SimpleTriggerRecord record) {
-		String thingID = null;
-		if (record.getSource() != null) {
-			GlobalThingInfo thingInfo = thingTagService.getThingByID(record.getSource().getThingID());
-			if (thingInfo != null) {
-				thingID = thingInfo.getFullKiiThingID();
-			}else{
-
-				throw EntryNotFoundException.thingNotFound(record.getSource().getThingID());
-			}
-		}
-
-		service.createSimpleTrigger(thingID,record);
-
-	}
-
-
-	private void addGroupToEngine(GroupTriggerRecord record) {
-
-		Set<String> thingIDs = thingTagService.getKiiThingIDs(record.getSource());
-
-		service.createGroupTrigger(record,thingIDs);
-	}
-
-	private void addSummaryToEngine(SummaryTriggerRecord record) {
-		Map<String, Set<String>> thingMap = new HashMap<>();
-
-		final AtomicBoolean isStream = new AtomicBoolean(false);
-
-		record.getSummarySource().forEach((k, v) -> {
-
-			if (v.getExpressList().stream().filter((exp) -> exp.getSlideFuntion() != null).findAny().isPresent() && !isStream.get()) {
-				isStream.set(true);
-			}
-			;
-
-			thingMap.put(k, thingTagService.getKiiThingIDs(v.getSource()));
-		});
-
-		if(isStream.get()) {
-//			service.createStreamSummaryTrigger(record, thingMap);
-		}else{
-			service.createSummaryTrigger(record,thingMap);
-		}
-	}
-
-
-
-	private void addMulToEngine(MultipleSrcTriggerRecord record) {
-		Map<String, Set<String>> thingMap = new HashMap<>();
-
-		final AtomicBoolean isStream = new AtomicBoolean(false);
-
-		record.getSummarySource().forEach((k, v) -> {
-
-			switch(v.getType()){
-				case thing:
-					ThingSource  thing=(ThingSource)v;
-					thingMap.put(k, Collections.singleton(thingTagService.getThingByID(Integer.parseInt(thing.getThingID())).getFullKiiThingID()));
-				case summary:
-					SummarySource summary=(SummarySource)v;
-					thingMap.put(k, thingTagService.getKiiThingIDs(summary.getSource()));
-					break;
-			}
-		});
-
-		if(isStream.get()) {
-//			service.createStreamSummaryTrigger(record, thingMap);
-		}else{
-			service.createMultipleSourceTrigger(record,thingMap);
-		}
-	}
 	public void disableTrigger(String triggerID) {
 		triggerDao.disableTrigger(triggerID);
 

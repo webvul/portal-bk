@@ -12,15 +12,17 @@ import com.kii.extension.ruleengine.drools.CommandExec;
 rule "${triggerID} user custom segment:multiple "
    ${timer}
 when
-    $ext:ExternalCollect()
     CurrThing(init == false)
+    $ext:ExternalCollect()
     Trigger( $triggerID:triggerID, ( triggerID=="${triggerID}" &&  enable == true && type ==TriggerType.multiple) )
-    $muiMap:MultipleValueMap( triggerID==$triggerID, ${express}  )
+    $muiMap:MultiplesValueMap( triggerID==$triggerID, ${express}  )
     $result:ResultParam(triggerID==$triggerID)
 then
+
 	${fillParam}
 
 	CommandExec exec=(CommandExec)kcontext.getKieRuntime().getEnvironment().get("exec");
     exec.doExecute($triggerID,$result);
+    $result.clearAll();
 end
 

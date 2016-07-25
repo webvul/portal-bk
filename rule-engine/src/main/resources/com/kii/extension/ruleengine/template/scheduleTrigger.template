@@ -7,9 +7,10 @@ import com.kii.extension.ruleengine.drools.CommandExec;
 //schedule trigger custom segment
 /////////////////////////////////////
 
-rule "${triggerID} user custom segment:schedule"
+rule "${triggerID} user custom segment:pure schedule"
    ${timer}
 when
+    CurrThing(init == false)
     $ext:ExternalCollect()
     Trigger( $triggerID:triggerID,  triggerID=="${triggerID}" && enable == true )
 then

@@ -7,6 +7,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import com.kii.extension.ruleengine.EventCallback;
@@ -19,8 +20,12 @@ public class CommandExec {
 
 	private Logger log= LoggerFactory.getLogger(CommandExec.class);
 
+//	@Autowired
+//	private EventCallback callback;
+
+
 	@Autowired
-	private EventCallback callback;
+	private ApplicationContext applicationCtx;
 
 
 
@@ -32,6 +37,12 @@ public class CommandExec {
 		int oldValue=map.computeIfAbsent(triggerID,(id)->new AtomicInteger(0)).incrementAndGet();
 		log.info("execute trigger  " + triggerID+" been fire "+oldValue+" with params:"+result.getParams());
 
+		EventCallback  callback=applicationCtx.getBean(EventCallback.class);
+		if(callback==null){
+			log.error("not found valid callback instance ");
+			return;
+		}
+
 		callback.onTriggerFire(triggerID,result.getParams());
 
 	}
@@ -42,6 +53,12 @@ public class CommandExec {
 
 		int oldValue=map.computeIfAbsent(triggerID,(id)->new AtomicInteger(0)).incrementAndGet();
 		log.info("execute trigger  " + triggerID+" been fire "+oldValue+" with params:"+result.getParams());
+
+		EventCallback  callback=applicationCtx.getBean(EventCallback.class);
+		if(callback==null){
+			log.error("not found valid callback instance ");
+			return;
+		}
 
 		callback.onTriggerFire(triggerID,result.getParams());
 	}

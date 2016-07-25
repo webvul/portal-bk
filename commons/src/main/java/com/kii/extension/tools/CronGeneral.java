@@ -6,7 +6,7 @@ public class CronGeneral {
 
 	public static  String getCurrentCron(Calendar  cal){
 
-		StringBuilder sb=new StringBuilder(" * ");
+		StringBuilder sb=new StringBuilder(" 0 ");
 
 		sb.append(cal.get(Calendar.MINUTE)).append(" ");
 		sb.append(cal.get(Calendar.HOUR_OF_DAY)).append(" ");

@@ -18,8 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kii.beehive.business.manager.UserManager;
-import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.business.manager.UserGroupManager;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
 import com.kii.beehive.portal.web.entity.UserGroupRestBean;
@@ -33,27 +32,10 @@ import com.kii.beehive.portal.web.entity.UserGroupRestBean;
 @RequestMapping(value = "/usergroup")
 public class UserGroupController {
 
-//	@Autowired
-//	private BeehiveUserDao beehiveUserDao;
-
-//	@Autowired
-//	private BeehiveUserJdbcDao beehiveUserDao;
-//
-//	@Autowired
-//	private TagGroupRelationDao tagGroupRelationDao;
-//
-//	@Autowired
-//	private TagIndexDao tagIndexDao;
-
 	@Autowired
-	protected UserManager userManager;
+	protected UserGroupManager userManager;
 
-//	@Autowired
-//	protected UserGroupDao userGroupDao;
-//
-//
-//	@Autowired
-//	protected GroupUserRelationDao groupUserRelationDao;
+
 
 	/**
 	 * 创建用户群组
@@ -65,21 +47,17 @@ public class UserGroupController {
 	 * @param userGroupRestBean
 	 */
 	@RequestMapping(value = "", method = {RequestMethod.POST})
-	public ResponseEntity createUserGroup(@RequestBody UserGroupRestBean userGroupRestBean, HttpServletRequest httpRequest) {
+	public Map<String, Object> createUserGroup(@RequestBody UserGroupRestBean userGroupRestBean, HttpServletRequest httpRequest) {
 
 		userGroupRestBean.verifyInput();
 
 		UserGroup userGroup = userGroupRestBean.getUserGroup();
-		Long userGroupID = null;
-		if (userGroup.getId() == null) {//create
-			userGroupID = userManager.createUserGroup(userGroup, AuthInfoStore.getUserIDInLong());
-		} else {//update
-			userGroupID = userManager.updateUserGroup(userGroup, AuthInfoStore.getUserIDInLong());
-		}
+		Long userGroupID = userManager.addUserGroup(userGroup);
+
 
 		Map<String, Object> resultMap = new HashMap<>();
 		resultMap.put("userGroupID", String.valueOf(userGroupID));
-		return new ResponseEntity<>(resultMap, HttpStatus.OK);
+		return resultMap;
 	}
 
 	/**
