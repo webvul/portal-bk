@@ -42,21 +42,6 @@ CREATE TABLE `beehive_archive_user` (
 
 
 
-CREATE TABLE `beehive_archive_user` (
-  `archive_user_id` int(11) NOT NULL AUTO_INCREMENT,
-  `beehive_user_id` int(11) NOT NULL,
-  `user_name` varchar(45) NOT NULL,
-  `user_id` varchar(45) DEFAULT NULL,
-  `mobile` varchar(45) DEFAULT NULL,
-  `user_mail` varchar(45) DEFAULT NULL,
-  `display_name` varchar(45) DEFAULT NULL,
-  `role_name` varchar(45) DEFAULT NULL,
-  `face_subject_id` int(11) DEFAULT NULL,
-  `create_date` datetime DEFAULT NULL,
-  PRIMARY KEY (`archive_user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
-
-
 CREATE TABLE `global_thing` (
   `id_global_thing` int(11) NOT NULL AUTO_INCREMENT,
   `vendor_thing_id` varchar(45) NOT NULL,
@@ -102,7 +87,6 @@ CREATE TABLE `rel_thing_location` (
 
 CREATE TABLE `rel_group_user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` varchar(45) NOT NULL,
   `user_group_id` int(11) NOT NULL,
   `beehive_user_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
@@ -119,7 +103,6 @@ CREATE TABLE `rel_tag_group` (
 CREATE TABLE `rel_tag_user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `tag_id` int(11) NOT NULL,
-  `user_id` varchar(45) NOT NULL,
   `beehive_user_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
@@ -174,7 +157,6 @@ CREATE TABLE `rel_thing_tag` (
 CREATE TABLE `rel_thing_user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `thing_id` int(11) NOT NULL,
-  `user_id` varchar(45) NOT NULL,
   `beehive_user_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=70 DEFAULT CHARSET=utf8;

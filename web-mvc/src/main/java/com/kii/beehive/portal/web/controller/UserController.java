@@ -135,7 +135,7 @@ public class UserController {
 
 
 		BeehiveJdbcUser  updateUser=new BeehiveJdbcUser();
-		BeanUtils.copyProperties(user,updateUser,"kiiUserID","activityToken","userPassword","roleName","userID");
+		BeanUtils.copyProperties(user,updateUser,"kiiUserID","activityToken","userPassword","roleName","userID","enable");
 
 		userManager.updateUser(updateUser, userID);
 
@@ -238,7 +238,7 @@ public class UserController {
 
 
 		BeehiveJdbcUser  updateUser=new BeehiveJdbcUser();
-		BeanUtils.copyProperties(user,updateUser,"kiiUserID","activityToken","userPassword","roleName","userID");
+		BeanUtils.copyProperties(user,updateUser,"kiiUserID","activityToken","userPassword","roleName","userID","enable");
 		userManager.updateUser(updateUser, AuthInfoStore.getUserID());
 
 

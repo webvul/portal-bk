@@ -37,10 +37,10 @@ import com.kii.beehive.portal.jdbc.entity.UserGroup;
 
 @Component
 @Transactional
-public class UserManager {
+public class UserGroupManager {
 
 
-	private Logger logger = LoggerFactory.getLogger(UserManager.class);
+	private Logger logger = LoggerFactory.getLogger(UserGroupManager.class);
 
 	@Autowired
 	private UserGroupDao userGroupDao;
@@ -91,7 +91,18 @@ public class UserManager {
 
 	}
 
-	public Long createUserGroup(UserGroup userGroup, Long loginUserID) {
+
+	public Long addUserGroup(UserGroup userGroup){
+
+		if (userGroup.getId() == null) {//create
+			return  createUserGroup(userGroup, AuthInfoStore.getUserIDInLong());
+		} else {//update
+			return   updateUserGroup(userGroup, AuthInfoStore.getUserIDInLong());
+		}
+
+	}
+
+	private  Long createUserGroup(UserGroup userGroup, Long loginUserID) {
 		// create user group
 
 		List<UserGroup> userGroupList = userGroupDao.findUserGroupByName(userGroup.getName());
