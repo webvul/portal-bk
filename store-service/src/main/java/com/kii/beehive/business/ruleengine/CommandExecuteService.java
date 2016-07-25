@@ -12,8 +12,10 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import com.kii.beehive.business.helper.TriggerCreator;
 import com.kii.beehive.business.manager.AppInfoManager;
 import com.kii.beehive.business.manager.ThingTagManager;
 import com.kii.beehive.business.service.ThingIFInAppService;
@@ -66,8 +68,9 @@ public class CommandExecuteService {
 	@Autowired
 	private AppBindToolResolver resolver;
 
+	@Lazy
 	@Autowired
-	private TriggerManager triggerManager;
+	private TriggerCreator creator;
 
 
 
@@ -165,18 +168,15 @@ public class CommandExecuteService {
 
 		if(target.isDoubleCheck()){
 			TriggerRecord newRec=BeanUtils.instantiate(record.getClass());
+			BeanUtils.copyProperties(record,newRec);
 
-			String newID=newRec.getTriggerID()+"_delay_"+idx;
+			String newID=record.getTriggerID()+"_delay_"+idx;
 
 			newRec.setPreparedCondition(null);
 			newRec.setName(record.getName()+"_delay");
 			newRec.setRecordStatus(TriggerRecord.StatusType.enable);
-			newRec.setTargetParamList(record.getTargetParamList());
-			newRec.setType(record.getType());
-			newRec.setUserID(record.getUserID());
 
 			newRec.setId(newID);
-			newRec.setPreparedCondition(null);
 
 			CronPrefix schedule=new CronPrefix();
 
@@ -196,7 +196,7 @@ public class CommandExecuteService {
 			target.setDoubleCheck(false);
 			newRec.setTarget(Collections.singletonList(target));
 
-			triggerManager.createTrigger(newRec);
+			creator.createTrigger(newRec);
 		}
 	}
 

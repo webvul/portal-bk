@@ -4,6 +4,7 @@ import org.quartz.JobDataMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import com.kii.extension.ruleengine.drools.DroolsTriggerService;
@@ -13,6 +14,7 @@ public class StopTriggerJob implements JobInSpring {
 
 	private Logger log= LoggerFactory.getLogger(StopTriggerJob.class);
 
+	@Lazy
 	@Autowired
 	private DroolsTriggerService bean;
 

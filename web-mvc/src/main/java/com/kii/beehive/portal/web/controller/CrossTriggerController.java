@@ -54,6 +54,8 @@ public class CrossTriggerController {
 
 		String triggerID = null;
 
+		record.setRecordStatus(TriggerRecord.StatusType.disable);
+
 		triggerID=mang.createTrigger(record);
 
 		Map<String, Object> result = new HashMap<>();
