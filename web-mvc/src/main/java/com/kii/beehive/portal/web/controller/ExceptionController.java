@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 import com.kii.beehive.portal.common.utils.CollectUtils;
 import com.kii.beehive.portal.common.utils.StrTemplate;
@@ -149,6 +150,19 @@ public class ExceptionController {
 		HttpStatus status = HttpStatus.valueOf(ex.getStatusCode());
 
 		ResponseEntity<Object> resp = new ResponseEntity(error,headers, status);
+		return resp;
+	}
+
+
+	@ExceptionHandler(JsonMappingException.class)
+	public ResponseEntity<Object>  HandleJsonFormatException(JsonMappingException ex){
+
+		log.error("json mapping exception ", ex);
+
+		Map<String,Object> error=new HashMap<>();
+		error.put("errorCode","INPUT_PARAM_JSON_FORMAT_ERROR");
+		error.put("errorMessage",ex.getMessage());
+		ResponseEntity<Object> resp = new ResponseEntity(error,headers, HttpStatus.BAD_REQUEST);
 		return resp;
 	}
 }
