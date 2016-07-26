@@ -16,7 +16,7 @@ public class BusinessEntity extends DBEntity{
 
 	private String modifyBy;
 
-	private boolean isDeleted;
+	private Boolean isDeleted;
 
 	public final static String CREATE_DATE = "create_date";
 	public final static String CREATE_BY = "create_by";
@@ -27,11 +27,11 @@ public class BusinessEntity extends DBEntity{
 
 	@JsonIgnore
 	@JdbcField(column  = IS_DELETED)
-	public boolean isDeleted() {
+	public Boolean getDeleted() {
 		return isDeleted;
 	}
 
-	public void setDeleted(boolean deleted) {
+	public void setDeleted(Boolean deleted) {
 		isDeleted = deleted;
 	}
 

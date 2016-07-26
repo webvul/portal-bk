@@ -127,8 +127,12 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 				
 					result=rs.getString(key);
 				
+			}else if(target.equals(Boolean.class)){
+				result=rs.getBoolean(key);
 			}else if( Number.class.isAssignableFrom(target)){
 				result=rs.getObject(key);
+			}else{
+				result=rs.getObject(key,target);
 			}
 		} catch (SQLException sqlex){
 			result = null;

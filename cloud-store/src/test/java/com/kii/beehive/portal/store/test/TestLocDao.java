@@ -112,9 +112,15 @@ public class TestLocDao extends TestTemplate {
 	}
 
 	@Test
-	public void fillSubLoc(){
+	public void fillFullLocation(){
 
 		SubLocInfo locInfo=new SubLocInfo();
+		locInfo.setFrom(1);
+		locInfo.setTo(3);
+
+		locDao.generTopLocation(locInfo);
+
+		locInfo=new SubLocInfo();
 		locInfo.setFrom(1);
 		locInfo.setTo(4);
 

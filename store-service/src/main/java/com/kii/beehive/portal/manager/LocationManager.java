@@ -54,6 +54,10 @@ public class LocationManager {
 	}
 
 
+	public List<LocationInfo> getTopLevel() {
+
+		return locDao.getTopLocation();
+	}
 	//=========================
 
 	public List<LocationInfo> getThingRelLocations(Long thingID){
@@ -98,6 +102,6 @@ public class LocationManager {
 		relDao.clearAllRelation(thingID);
 
 	}
-
+	
 
 }

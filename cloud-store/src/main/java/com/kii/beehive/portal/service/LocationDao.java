@@ -77,9 +77,20 @@ public class LocationDao extends AbstractDataAccess<LocationInfo> {
 	}
 
 
+	public List<LocationInfo> getTopLocation() {
+
+		QueryParam query= ConditionBuilder.newCondition().prefixLike("parent",".").getFinalQueryParam();
+
+		List<LocationInfo> list= super.fullQuery(query);
+
+		Collections.sort(list, locationInfoComparator);
+
+		return list;
+	}
+
+
 	public void generTopLocation(SubLocInfo  locInfo){
 
-		deleteByUpperLevel(".");
 
 		locInfo.getSeq(null).forEach(loc->{
 
@@ -160,8 +171,6 @@ public class LocationDao extends AbstractDataAccess<LocationInfo> {
 			super.removeEntity(rec.getId());
 		});
 	}
-
-
-
+	
 
 }
