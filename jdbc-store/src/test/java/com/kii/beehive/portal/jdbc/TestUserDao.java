@@ -30,7 +30,7 @@ public class TestUserDao extends TestTemplate {
 
 		BeehiveJdbcUser user=userDao.getUserByUserID(userID);
 
-		assertFalse(user.isEnable());
+		assertFalse(user.getEnable());
 
 		BeehiveArchiveUser archiveUser=new BeehiveArchiveUser(user);
 

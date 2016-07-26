@@ -194,7 +194,6 @@ public class BeehiveUserManager {
 		if(oldUser==null){
 			throw new UserNotExistException(userID);
 		}
-
 		userDao.updateEntityByID(user,oldUser.getId());
 
 
