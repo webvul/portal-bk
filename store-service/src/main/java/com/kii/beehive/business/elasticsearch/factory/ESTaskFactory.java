@@ -111,7 +111,9 @@ public class ESTaskFactory {
 		task.setQueryBuilder(boolQueryBuilder);
 		task.setAggregationBuilder(agg);
 		task.setParkingSpaceIndex(bizDataParkingSpaceIndex);
+		task.setParkingSpaceType(bizDataParkingSpaceIndexTypeLeave);
 		task.setGatewayIndex(bizDataGatewayIndex);
+		task.setGatewayType(bizDataGatewayIndexTypeLeave);
 		task.setCarIdField(bizDataCommonCarId);
 		task.setEventTimeField(bizDataCommonEventTime);
 		return task;
