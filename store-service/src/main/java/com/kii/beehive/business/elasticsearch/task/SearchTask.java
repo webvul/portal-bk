@@ -18,9 +18,9 @@ public class SearchTask extends Task<SearchResponse> {
 	private String[] type_name;
 	private SearchType searchType = SearchType.DFS_QUERY_THEN_FETCH;
 	private QueryBuilder queryBuilder;
-	private AggregationBuilder aggregationBuilder;
-	private int size;
-	private int from;
+	private AggregationBuilder[] aggregationBuilder;
+	private Integer size;
+	private Integer from;
 	private int to;
 	private QueryBuilder postFilter;
 
@@ -41,15 +41,15 @@ public class SearchTask extends Task<SearchResponse> {
 		this.queryBuilder = queryBuilder;
 	}
 
-	public void setAggregationBuilder(AggregationBuilder aggregationBuilder) {
+	public void setAggregationBuilder(AggregationBuilder... aggregationBuilder) {
 		this.aggregationBuilder = aggregationBuilder;
 	}
 
-	public void setSize(int size) {
+	public void setSize(Integer size) {
 		this.size = size;
 	}
 
-	public void setFrom(int from) {
+	public void setFrom(Integer from) {
 		this.from = from;
 	}
 
@@ -59,15 +59,18 @@ public class SearchTask extends Task<SearchResponse> {
 		SearchRequestBuilder searchRequestBuilder = client.prepareSearch(index_name).setTypes(type_name);
 		searchRequestBuilder.setSearchType(searchType);
 		searchRequestBuilder.setQuery(queryBuilder);
-		if (null != postFilter) {
-			searchRequestBuilder.setPostFilter(postFilter);
-		}
+		searchRequestBuilder.setPostFilter(postFilter);
 		if (null != aggregationBuilder) {
-			searchRequestBuilder.addAggregation(aggregationBuilder);
+			for (AggregationBuilder agg : aggregationBuilder) {
+				searchRequestBuilder.addAggregation(agg);
+			}
 		}
-		searchRequestBuilder.setSize(size);
-		searchRequestBuilder.setFrom(from);
-
+		if (null != size) {
+			searchRequestBuilder.setSize(size);
+		}
+		if (null != from) {
+			searchRequestBuilder.setFrom(from);
+		}
 		SearchResponse response = searchRequestBuilder.execute().actionGet();
 
 		return response;

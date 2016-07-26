@@ -11,13 +11,13 @@ import org.elasticsearch.search.aggregations.metrics.tophits.InternalTopHits;
  * Created by hdchen on 7/25/16.
  */
 public class AvgTimeParkingSpaceToGatewayTask extends SearchTask {
-	private String parkingSpaceType;
+	private String parkingSpaceIndex;
 
-	private String gatewayType;
+	private String gatewayIndex;
 
 	private String carIdField;
 
-	private String timestampField;
+	private String eventTimeField;
 
 	private double averageTime;
 
@@ -25,20 +25,20 @@ public class AvgTimeParkingSpaceToGatewayTask extends SearchTask {
 		return averageTime;
 	}
 
-	public void setParkingSpaceType(String parkingSpaceType) {
-		this.parkingSpaceType = parkingSpaceType;
+	public void setParkingSpaceIndex(String parkingSpaceIndex) {
+		this.parkingSpaceIndex = parkingSpaceIndex;
 	}
 
-	public void setGatewayType(String gatewayType) {
-		this.gatewayType = gatewayType;
+	public void setGatewayIndex(String gatewayIndex) {
+		this.gatewayIndex = gatewayIndex;
 	}
 
 	public void setCarIdField(String carIdField) {
 		this.carIdField = carIdField;
 	}
 
-	public void setTimestampField(String timestampField) {
-		this.timestampField = timestampField;
+	public void setEventTimeField(String timestampField) {
+		this.eventTimeField = timestampField;
 	}
 
 	@Override
@@ -47,7 +47,7 @@ public class AvgTimeParkingSpaceToGatewayTask extends SearchTask {
 
 		StringTerms result = response.getAggregations().get(carIdField);
 		int count = 0;
-		int total = 0;
+		long total = 0;
 		for (Terms.Bucket bucket : result.getBuckets()) {
 			SearchHit[] topHits = ((InternalTopHits) bucket.getAggregations().asList().get(0)).getHits().getHits();
 			int i = 0;
@@ -55,16 +55,16 @@ public class AvgTimeParkingSpaceToGatewayTask extends SearchTask {
 				long start = -1;
 				long end = -1;
 				while (i < topHits.length - 1) {
-					if (topHits[i].getType().equals(gatewayType)
-							&& topHits[i + 1].getType().equals(parkingSpaceType)) {
-						start = (long) topHits[i].getSortValues()[0];
+					if (topHits[i].getIndex().equals(gatewayIndex)
+							&& topHits[i + 1].getIndex().equals(parkingSpaceIndex)) {
+						start = Long.valueOf(topHits[i].getSortValues()[0].toString());
 						break;
 					}
 					i++;
 				}
 				while (++i < topHits.length) {
-					if (topHits[i].getType().equals(parkingSpaceType)) {
-						end = (long) topHits[i].getSortValues()[0];
+					if (topHits[i].getIndex().equals(parkingSpaceIndex)) {
+						end = Long.valueOf(topHits[i].getSortValues()[0].toString());
 						break;
 					}
 				}
