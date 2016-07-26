@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.kii.beehive.portal.jdbc.annotation.JdbcField;
 
-public class BeehiveJdbcUser extends BusinessEntity{
+public class BeehiveJdbcUser extends BusinessEntity {
 
 
 	private String kiiUserID;
@@ -21,7 +21,7 @@ public class BeehiveJdbcUser extends BusinessEntity{
 
 	private String displayName;
 
-	private String  roleName;
+	private String roleName;
 
 
 	private String activityToken;
@@ -31,11 +31,11 @@ public class BeehiveJdbcUser extends BusinessEntity{
 	private String userID;
 
 
-	private Integer  faceSubjectId; // face++
+	private Integer faceSubjectId; // face++
 
 	private Boolean enable;
 
-	@JdbcField(column="enable")
+	@JdbcField(column = "enable")
 	public Boolean getEnable() {
 		return enable;
 	}
@@ -53,7 +53,7 @@ public class BeehiveJdbcUser extends BusinessEntity{
 //		this.enable = enable;
 //	}
 
-	@JdbcField(column="face_subject_id")
+	@JdbcField(column = "face_subject_id")
 	public Integer getFaceSubjectId() {
 		return faceSubjectId;
 	}
@@ -65,12 +65,12 @@ public class BeehiveJdbcUser extends BusinessEntity{
 
 	@JdbcField(column = "beehive_user_id")
 	@Override
-	public Long getId(){
+	public Long getId() {
 
 		return super.getId();
 	}
 
-	@JdbcField(column="user_id")
+	@JdbcField(column = "user_id")
 	public String getUserID() {
 		return userID;
 	}
@@ -79,7 +79,7 @@ public class BeehiveJdbcUser extends BusinessEntity{
 		this.userID = userID;
 	}
 
-	@JdbcField(column="user_password")
+	@JdbcField(column = "user_password")
 	public String getUserPassword() {
 		return userPassword;
 	}
@@ -88,7 +88,7 @@ public class BeehiveJdbcUser extends BusinessEntity{
 		this.userPassword = userPassword;
 	}
 
-	@JdbcField(column="activity_token")
+	@JdbcField(column = "activity_token")
 	public String getActivityToken() {
 		return activityToken;
 	}
@@ -97,7 +97,7 @@ public class BeehiveJdbcUser extends BusinessEntity{
 		this.activityToken = activityToken;
 	}
 
-	@JdbcField(column="kii_user_id")
+	@JdbcField(column = "kii_user_id")
 	public String getKiiUserID() {
 		return kiiUserID;
 	}
@@ -106,17 +106,17 @@ public class BeehiveJdbcUser extends BusinessEntity{
 		this.kiiUserID = kiiUserID;
 	}
 
-	@JdbcField(column="user_name")
+	@JdbcField(column = "user_name")
 	public String getUserName() {
 		return userName;
 	}
 
 
 	@JsonIgnore
-	public  String getKiiCloudLoginName(){
+	public String getKiiCloudLoginName() {
 
 
-		return StringUtils.replacePattern(userName,"\\W",".");
+		return StringUtils.replacePattern(userName, "\\W", ".");
 
 	}
 
@@ -124,7 +124,7 @@ public class BeehiveJdbcUser extends BusinessEntity{
 		this.userName = userName;
 	}
 
-	@JdbcField(column="mobile")
+	@JdbcField(column = "mobile")
 	public String getPhone() {
 		return phone;
 	}
@@ -163,24 +163,23 @@ public class BeehiveJdbcUser extends BusinessEntity{
 
 	@JsonIgnore
 	public String getDefaultPassword() {
-		return DigestUtils.sha1Hex(getUserName()+"_username_"+userID + "_beehive");
+		return DigestUtils.sha1Hex(getUserName() + "_username_" + userID + "_beehive");
 	}
 
 	@JsonIgnore
-	public String getHashedPwd(String pwd){
-		return DigestUtils.sha1Hex(pwd+"_user_id"+userID+"_beehive");
+	public String getHashedPwd(String pwd) {
+		return DigestUtils.sha1Hex(pwd + "_user_id" + userID + "_beehive");
 
 	}
 
 
-	public BeehiveJdbcUser cloneView(){
+	public BeehiveJdbcUser cloneView() {
 
-		BeehiveJdbcUser user=new BeehiveJdbcUser();
-		BeanUtils.copyProperties(this, user, "kiiUserID","activityToken","defaultPassword","userPassword","id");
-
+		BeehiveJdbcUser user = new BeehiveJdbcUser();
+		BeanUtils.copyProperties(this, user, "kiiUserID", "activityToken", "defaultPassword", "userPassword");
 		return user;
 
 	}
-	
+
 
 }
