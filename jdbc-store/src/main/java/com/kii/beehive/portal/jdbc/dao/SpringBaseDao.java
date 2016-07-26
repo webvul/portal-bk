@@ -171,6 +171,7 @@ public abstract class SpringBaseDao<T extends BusinessEntity> {
 		entity.setCreateDate(new Date());
 		entity.setModifyBy(String.valueOf(AuthInfoStore.getUserID()));
 		entity.setModifyDate(new Date());
+		entity.setDeleted(false);
 		SqlParameterSource parameters = new AnnationBeanSqlParameterSource(entity);
 		Number id = insertTool.executeAndReturnKey(parameters);
 		return id.longValue();

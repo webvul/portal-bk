@@ -1,28 +1,6 @@
 package com.kii.beehive.portal.web.controller;
 
-import javax.servlet.http.HttpServletRequest;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.jar.Attributes;
-import java.util.jar.Manifest;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.kii.beehive.business.manager.AppInfoManager;
 import com.kii.beehive.business.manager.TagThingManager;
 import com.kii.beehive.portal.entitys.PermissionTree;
@@ -36,6 +14,21 @@ import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
 import com.kii.beehive.portal.web.help.BeehiveAppInfoManager;
 import com.kii.extension.sdk.entity.FederatedAuthResult;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 
 /**
  * Beehive API - Thing API
@@ -71,7 +64,7 @@ public class UtilToolsController {
 	private ObjectMapper mapper;
 
 	@Autowired
-	private PermissionTreeService  permissionTreeService;
+	private PermissionTreeService permissionTreeService;
 
 
 	/**
@@ -133,7 +126,7 @@ public class UtilToolsController {
 
 		if (thingInfos.isEmpty()) {
 
-			throw new PortalException(ErrorCode.NOT_FOUND,"type","global thing","objectID",vendorThingID);
+			throw new PortalException(ErrorCode.NOT_FOUND, "type", "global thing", "objectID", vendorThingID);
 		}
 		GlobalThingInfo globalThingInfo = thingInfos.get(0);
 
@@ -163,13 +156,13 @@ public class UtilToolsController {
 	}
 
 
-	@RequestMapping(value = "/sys/permissionTree", method = {RequestMethod.GET},consumes = {"*"})
-	public PermissionTree getFullPermissTree(){
+	@RequestMapping(value = "/sys/permissionTree", method = {RequestMethod.GET}, consumes = {"*"})
+	public PermissionTree getFullPermissTree() {
 
 		return permissionTreeService.getFullPermissionTree();
 	}
 
-	@RequestMapping(value = "/info", method = {RequestMethod.GET},consumes = {"*"})
+	@RequestMapping(value = "/info", method = {RequestMethod.GET}, consumes = {"*"})
 	public Map<String, String> info(HttpServletRequest httpRequest) {
 		Map<String, String> map = new HashMap<>();
 		InputStream manifestStream = httpRequest.getServletContext().getResourceAsStream("/META-INF/MANIFEST.MF");

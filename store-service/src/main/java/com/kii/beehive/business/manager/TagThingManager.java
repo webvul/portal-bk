@@ -111,7 +111,7 @@ public class TagThingManager {
 			//this.saveOrUpdateThingLocation(thingID, location);
 
 			ThingUserRelation relation = new ThingUserRelation();
-			relation.setBeehiveUserID(AuthInfoStore.getUserID());
+			relation.setBeehiveUserID(Long.valueOf(thingInfo.getCreateBy()));
 			relation.setThingId(thingID);
 			thingUserRelationDao.saveOrUpdate(relation);
 		}

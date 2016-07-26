@@ -1,21 +1,6 @@
 package com.kii.beehive.portal.web.controller;
 
 
-import javax.servlet.http.HttpServletRequest;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.view.RedirectView;
-
 import com.kii.beehive.portal.common.utils.CollectUtils;
 import com.kii.beehive.portal.entitys.AuthRestBean;
 import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
@@ -25,6 +10,15 @@ import com.kii.beehive.portal.web.entity.UserRestBean;
 import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
 import com.kii.beehive.portal.web.help.AuthUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -50,7 +44,7 @@ public class AuthController {
 
 
 		if (StringUtils.isBlank(pwd)) {
-			throw  new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","newPassword");
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "field", "newPassword");
 
 		}
 
