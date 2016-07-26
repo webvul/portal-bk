@@ -21,7 +21,6 @@ import com.kii.extension.ruleengine.schedule.ScheduleService;
 import com.kii.extension.ruleengine.service.TriggerRecordDao;
 import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.SummarySource;
 import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerValidPeriod;
@@ -186,7 +185,7 @@ public class TriggerCreator {
 					ThingSource thing=(ThingSource)v;
 					thingMap.put(k, Collections.singleton(thingTagService.getThingByID(Integer.parseInt(thing.getThingID())).getFullKiiThingID()));
 				case summary:
-					SummarySource summary=(SummarySource)v;
+					GroupSummarySource summary=(GroupSummarySource)v;
 					thingMap.put(k, thingTagService.getKiiThingIDs(summary.getSource()));
 					break;
 			}
