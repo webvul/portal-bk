@@ -52,8 +52,8 @@ public class TagIndexDao extends SpringBaseDao<TagIndex> {
 
 		StringBuilder where = new StringBuilder();
 		where.append(" WHERE (rg.user_id = ? OR t.create_by=?)");
-		params.add(AuthInfoStore.getUserIDInLong());
-		params.add(AuthInfoStore.getUserIDInLong());
+		params.add(AuthInfoStore.getUserID());
+		params.add(AuthInfoStore.getUserID());
 
 		if (tagID != null) {
 			where.append(" AND t.").append(TagIndex.TAG_ID).append(" = ? ");

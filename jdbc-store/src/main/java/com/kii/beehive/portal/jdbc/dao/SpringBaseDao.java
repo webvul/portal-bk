@@ -1,20 +1,12 @@
 package com.kii.beehive.portal.jdbc.dao;
 
-import javax.sql.DataSource;
-
-import java.io.Serializable;
-import java.lang.reflect.ParameterizedType;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.common.utils.StrTemplate;
+import com.kii.beehive.portal.jdbc.annotation.JdbcField;
+import com.kii.beehive.portal.jdbc.entity.BusinessEntity;
+import com.kii.beehive.portal.jdbc.helper.AnnationBeanSqlParameterSource;
+import com.kii.beehive.portal.jdbc.helper.BindClsFullUpdateTool;
+import com.kii.beehive.portal.jdbc.helper.BindClsRowMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -28,13 +20,12 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 
-import com.kii.beehive.portal.auth.AuthInfoStore;
-import com.kii.beehive.portal.common.utils.StrTemplate;
-import com.kii.beehive.portal.jdbc.annotation.JdbcField;
-import com.kii.beehive.portal.jdbc.entity.BusinessEntity;
-import com.kii.beehive.portal.jdbc.helper.AnnationBeanSqlParameterSource;
-import com.kii.beehive.portal.jdbc.helper.BindClsFullUpdateTool;
-import com.kii.beehive.portal.jdbc.helper.BindClsRowMapper;
+import javax.sql.DataSource;
+import java.io.Serializable;
+import java.lang.reflect.ParameterizedType;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public abstract class SpringBaseDao<T extends BusinessEntity> {
 
@@ -53,7 +44,7 @@ public abstract class SpringBaseDao<T extends BusinessEntity> {
 
 	private Class<T> entityClass;
 
-	private  BeanWrapper beanWrapper;
+	private BeanWrapper beanWrapper;
 
 
 	protected abstract String getTableName();
@@ -75,7 +66,7 @@ public abstract class SpringBaseDao<T extends BusinessEntity> {
 		this.updateTool = BindClsFullUpdateTool.newInstance(dataSource, getTableName(), "id", entityClass, getKey());
 		this.rowMapper = new BindClsRowMapper<T>(entityClass);
 
-		this.beanWrapper= PropertyAccessorFactory.forBeanPropertyAccess(BeanUtils.instantiate(entityClass));
+		this.beanWrapper = PropertyAccessorFactory.forBeanPropertyAccess(BeanUtils.instantiate(entityClass));
 	}
 
 
@@ -84,49 +75,49 @@ public abstract class SpringBaseDao<T extends BusinessEntity> {
 	}
 
 
-	protected  List<T>  query(String sql,Object...  queryParams){
+	protected List<T> query(String sql, Object... queryParams) {
 
 		sql = addDelSignPrefix(sql);
-		return jdbcTemplate.query(sql,queryParams,getRowMapper());
+		return jdbcTemplate.query(sql, queryParams, getRowMapper());
 
 	}
 
-	protected <E>  List<E>  queryForList(String sql,Class<E> cls,Object...  queryParams){
+	protected <E> List<E> queryForList(String sql, Class<E> cls, Object... queryParams) {
 
 		sql = addDelSignPrefix(sql);
-		return jdbcTemplate.queryForList(sql,queryParams,cls);
+		return jdbcTemplate.queryForList(sql, queryParams, cls);
 
 	}
 
-	protected StringBuilder addDelSignPrefix(StringBuilder sb){
+	protected StringBuilder addDelSignPrefix(StringBuilder sb) {
 
 		return new StringBuilder(addDelSignPrefix(sb.toString()));
 	}
 
-	private static Pattern wherePtn=Pattern.compile("\\swhere\\s",Pattern.CASE_INSENSITIVE);
-	private static Pattern fromPtn=Pattern.compile("select\\s+(\\w+\\.)(\\*|\\w+)\\s+from",Pattern.CASE_INSENSITIVE);
+	private static Pattern wherePtn = Pattern.compile("\\swhere\\s", Pattern.CASE_INSENSITIVE);
+	private static Pattern fromPtn = Pattern.compile("select\\s+(\\w+\\.)(\\*|\\w+)\\s+from", Pattern.CASE_INSENSITIVE);
 
 	protected String addDelSignPrefix(String sql) {
 
-		Matcher seleMatcher=fromPtn.matcher(sql);
-		String selPrefix="";
-		if(seleMatcher.find()){
-			selPrefix=seleMatcher.group(1);
+		Matcher seleMatcher = fromPtn.matcher(sql);
+		String selPrefix = "";
+		if (seleMatcher.find()) {
+			selPrefix = seleMatcher.group(1);
 		}
 
-		String subSeq=selPrefix+"is_deleted = false ";
+		String subSeq = selPrefix + "is_deleted = false ";
 
-		Matcher matcher=wherePtn.matcher(sql);
-		if(!matcher.find()){
-			sql+=" where "+subSeq;
+		Matcher matcher = wherePtn.matcher(sql);
+		if (!matcher.find()) {
+			sql += " where " + subSeq;
 
-		}else{
-			int idx=matcher.end();
+		} else {
+			int idx = matcher.end();
 
-			String prefix=sql.substring(0,idx);
-			String subfix=sql.substring(idx,sql.length());
+			String prefix = sql.substring(0, idx);
+			String subfix = sql.substring(idx, sql.length());
 
-			sql=prefix+subSeq+" and "+subfix;
+			sql = prefix + subSeq + " and " + subfix;
 
 		}
 		return sql;
@@ -135,42 +126,50 @@ public abstract class SpringBaseDao<T extends BusinessEntity> {
 	;
 
 
-	protected  List<T>  queryByNamedParam(String sql,Map<String,Object>  queryParams){
+	protected List<T> queryByNamedParam(String sql, Map<String, Object> queryParams) {
 		sql = addDelSignPrefix(sql);
-		return namedJdbcTemplate.query(sql,queryParams,getRowMapper());
+		return namedJdbcTemplate.query(sql, queryParams, getRowMapper());
 
-	};
+	}
 
-	protected <E>  List<E>  queryForListByNamedParam(String sql,Class<E>  clsType,Map<String,Object>  queryParams){
+	;
+
+	protected <E> List<E> queryForListByNamedParam(String sql, Class<E> clsType, Map<String, Object> queryParams) {
 		sql = addDelSignPrefix(sql);
-		return namedJdbcTemplate.queryForList(sql,queryParams,clsType);
+		return namedJdbcTemplate.queryForList(sql, queryParams, clsType);
 
-	};
+	}
 
-	protected  T  queryForObject(String sql,Object...  queryParams){
+	;
+
+	protected T queryForObject(String sql, Object... queryParams) {
 		sql = addDelSignPrefix(sql);
-		try{
-			return jdbcTemplate.queryForObject(sql,queryParams,getRowMapper());
-		}catch(EmptyResultDataAccessException e){
+		try {
+			return jdbcTemplate.queryForObject(sql, queryParams, getRowMapper());
+		} catch (EmptyResultDataAccessException e) {
 			return null;
 		}
-	};
+	}
 
-	protected  T  queryForObjectByNamedParam(String sql,Map<String,Object>  queryParams){
+	;
+
+	protected T queryForObjectByNamedParam(String sql, Map<String, Object> queryParams) {
 		sql = addDelSignPrefix(sql);
-		try{
-			return namedJdbcTemplate.queryForObject(sql,queryParams,getRowMapper());
-		}catch(EmptyResultDataAccessException e){
+		try {
+			return namedJdbcTemplate.queryForObject(sql, queryParams, getRowMapper());
+		} catch (EmptyResultDataAccessException e) {
 			return null;
 		}
-	};
+	}
+
+	;
 
 	public <T extends BusinessEntity> long insert(T entity) {
 
 		if (entity.getCreateBy() == null)
-			entity.setCreateBy(String.valueOf(AuthInfoStore.getUserIDInLong()));
+			entity.setCreateBy(String.valueOf(AuthInfoStore.getUserID()));
 		entity.setCreateDate(new Date());
-		entity.setModifyBy(String.valueOf(AuthInfoStore.getUserIDInLong()));
+		entity.setModifyBy(String.valueOf(AuthInfoStore.getUserID()));
 		entity.setModifyDate(new Date());
 		SqlParameterSource parameters = new AnnationBeanSqlParameterSource(entity);
 		Number id = insertTool.executeAndReturnKey(parameters);
@@ -180,7 +179,7 @@ public abstract class SpringBaseDao<T extends BusinessEntity> {
 	public List<T> findAll() {
 		String sqlTmp = "SELECT * FROM ${0} where ${1} = false ";
 
-		String sql=StrTemplate.gener(sqlTmp,getTableName(),BusinessEntity.IS_DELETED);
+		String sql = StrTemplate.gener(sqlTmp, getTableName(), BusinessEntity.IS_DELETED);
 
 		return (List<T>) jdbcTemplate.query(sql, getRowMapper());
 	}
@@ -188,7 +187,7 @@ public abstract class SpringBaseDao<T extends BusinessEntity> {
 	public T findByID(Serializable id) {
 		String sqlTmp = "SELECT t.* FROM ${0}  t WHERE t.${1} =?  ";
 
-		String sql=StrTemplate.gener(sqlTmp,getTableName(),getKey(),BusinessEntity.IS_DELETED);
+		String sql = StrTemplate.gener(sqlTmp, getTableName(), getKey(), BusinessEntity.IS_DELETED);
 
 		List<T> rows = jdbcTemplate.query(sql, new Object[]{id}, getRowMapper());
 		if (rows.size() > 0) {
@@ -200,17 +199,17 @@ public abstract class SpringBaseDao<T extends BusinessEntity> {
 
 	protected final String SQL_FIND_BY_IDS_TMP = "SELECT t.${0} FROM ${1}  t WHERE t.${0}  IN (:list) ";
 
-	public Set<Long> checkIdList(Collection<Long> ids){
+	public Set<Long> checkIdList(Collection<Long> ids) {
 
 		if (null == ids || ids.isEmpty()) {
 			return Collections.emptySet();
 		}
 
-		String sql= StrTemplate.gener(SQL_FIND_BY_IDS_TMP,this.getKey(),this.getTableName());
+		String sql = StrTemplate.gener(SQL_FIND_BY_IDS_TMP, this.getKey(), this.getTableName());
 
-		Set<Long> set=new HashSet<>( namedJdbcTemplate.queryForList(addDelSignPrefix(sql),Collections.singletonMap("list",ids),Long.class) );
+		Set<Long> set = new HashSet<>(namedJdbcTemplate.queryForList(addDelSignPrefix(sql), Collections.singletonMap("list", ids), Long.class));
 
-		Set<Long>  oldSet=new HashSet(ids);
+		Set<Long> oldSet = new HashSet(ids);
 		oldSet.removeAll(set);
 
 		return oldSet;
@@ -230,27 +229,27 @@ public abstract class SpringBaseDao<T extends BusinessEntity> {
 	}
 
 
-	public  List<T> findByFields(Map<String,Object> queryParam){
+	public List<T> findByFields(Map<String, Object> queryParam) {
 
 		String sql = "SELECT t.* FROM " + this.getTableName() + " t WHERE t.is_deleted = false  ";
 
 
-		List<Object> params=new ArrayList<>();
+		List<Object> params = new ArrayList<>();
 
-		for(Map.Entry<String,Object> entry:queryParam.entrySet()){
+		for (Map.Entry<String, Object> entry : queryParam.entrySet()) {
 
-			String field=entry.getKey();
+			String field = entry.getKey();
 
-			JdbcField jdbc=beanWrapper.getPropertyDescriptor(field).getReadMethod().getAnnotation(JdbcField.class);
+			JdbcField jdbc = beanWrapper.getPropertyDescriptor(field).getReadMethod().getAnnotation(JdbcField.class);
 
-			Object o=entry.getValue();
+			Object o = entry.getValue();
 
-			sql+=" and  t."+jdbc.column()+" = ? ";
+			sql += " and  t." + jdbc.column() + " = ? ";
 			params.add(o);
 
 		}
 
-		return jdbcTemplate.query(sql,params.toArray(new Object[0]),getRowMapper());
+		return jdbcTemplate.query(sql, params.toArray(new Object[0]), getRowMapper());
 
 	}
 
@@ -265,7 +264,6 @@ public abstract class SpringBaseDao<T extends BusinessEntity> {
 				" = ? and is_deleted = false  ";
 		return jdbcTemplate.queryForList(sql, new Object[]{value}, elementType);
 	}
-
 
 
 	public int deleteByID(Long id) {
@@ -333,11 +331,11 @@ public abstract class SpringBaseDao<T extends BusinessEntity> {
 
 		String newUpdates = " modify_by = ? , modify_date= ? , " + updates;
 
-		String newUpdateSql = header + newUpdates + tail+ " and is_deleted = false";
+		String newUpdateSql = header + newUpdates + tail + " and is_deleted = false";
 
 		Object[] newParams = new Object[params.length + 2];
 
-		newParams[0] = String.valueOf(AuthInfoStore.getUserIDInLong());
+		newParams[0] = String.valueOf(AuthInfoStore.getUserID());
 		newParams[1] = new Date();
 		System.arraycopy(params, 0, newParams, 2, params.length);
 
@@ -381,7 +379,7 @@ public abstract class SpringBaseDao<T extends BusinessEntity> {
 
 	public List<T> queryWithPage(String sql, Object[] params, PagerTag pager) {
 
-		sql=this.addDelSignPrefix(sql);
+		sql = this.addDelSignPrefix(sql);
 
 		String fullSql = sql + "  limit ?,? ";
 
@@ -405,14 +403,14 @@ public abstract class SpringBaseDao<T extends BusinessEntity> {
 
 	public List<T> queryWithPage(String sql, Map<String, Object> params, PagerTag pager) {
 
-		sql=this.addDelSignPrefix(sql);
+		sql = this.addDelSignPrefix(sql);
 
 		String fullSql = sql + "  limit :startRow,:pageSize ";
 
 		params.put("startRow", pager.getStartRow());
 		params.put("pageSize", pager.getPageSize());
 
-		fullSql=this.addDelSignPrefix(fullSql);
+		fullSql = this.addDelSignPrefix(fullSql);
 		List<T> list = namedJdbcTemplate.query(fullSql, params, getRowMapper());
 
 		pager.addStartRow(list.size());
@@ -424,6 +422,6 @@ public abstract class SpringBaseDao<T extends BusinessEntity> {
 
 		return list;
 	}
-	
+
 
 }
