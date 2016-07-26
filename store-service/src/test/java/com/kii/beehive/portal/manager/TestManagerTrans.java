@@ -13,19 +13,19 @@ public class TestManagerTrans extends StoreServiceTestInit {
 
 
 	@Autowired
-	private UserGroupManager  manager;
+	private UserGroupManager manager;
 
 
 	@Rollback(false)
 	@Test
-	public void testUserGroup(){
+	public void testUserGroup() {
 
 
-		UserGroup group=new UserGroup();
+		UserGroup group = new UserGroup();
 		group.setName("test001");
 		group.setDescription("desc");
 
-		AuthInfoStore.setUserInfo("userID",100l);
+		AuthInfoStore.setUserInfo(100L);
 
 		manager.addUserGroup(group);
 

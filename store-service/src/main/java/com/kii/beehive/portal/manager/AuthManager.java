@@ -125,7 +125,7 @@ public class AuthManager {
 	}
 
 	private String doActivity(String token, BeehiveJdbcUser user) {
-		if (user.isEnable()) {
+		if (user.getEnable()) {
 			throw new UnauthorizedException(UnauthorizedException.USER_ALREADY_ACTIVIED);
 		}
 
@@ -179,7 +179,7 @@ public class AuthManager {
 		}
 
 
-		if (!user.isEnable()) {
+		if (!user.getEnable()) {
 			UnauthorizedException excep = new UnauthorizedException(UnauthorizedException.USER_BEEN_LOCKED);
 			excep.addParam("userName", userName);
 			throw excep;
@@ -207,7 +207,7 @@ public class AuthManager {
 			throw new UnauthorizedException(UnauthorizedException.LOGIN_TOKEN_INVALID, "token", token);
 		}
 
-		BeehiveJdbcUser user = userDao.getUserByUserID(authInfo.getUserID());
+		BeehiveJdbcUser user = userDao.getUserByID(authInfo.getUserID());
 		Team team = this.getTeamByID(user.getId());
 		AuthRestBean authRestBean = generAuthBean(user, token, team);
 		return authRestBean;
@@ -248,8 +248,7 @@ public class AuthManager {
 
 	private AuthInfo saveToken(BeehiveJdbcUser user, String token, Team team, boolean is3rdParty) {
 		AuthInfo entity = new AuthInfo();
-		entity.setUserID(user.getUserID());
-		entity.setUserIDInLong(user.getId());
+		entity.setUserID(user.getId());
 		if (team != null) {
 			entity.setTeamID(team.getId());
 		}
@@ -370,7 +369,7 @@ public class AuthManager {
 
 			BeehiveJdbcUser beehiveUser = userDao.getUserByKiiUserID(userID);
 
-			if (!beehiveUser.isEnable()) {
+			if (!beehiveUser.getEnable()) {
 
 				UnauthorizedException excep = new UnauthorizedException(UnauthorizedException.USER_BEEN_LOCKED);
 				excep.addParam("userName", beehiveUser.getUserName());

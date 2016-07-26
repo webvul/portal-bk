@@ -1,22 +1,6 @@
 package com.kii.beehive.portal.web.help;
 
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import java.io.IOException;
-import java.util.Enumeration;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
-
 import com.kii.beehive.business.helper.OpLogTools;
 import com.kii.beehive.business.manager.AppInfoManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
@@ -30,6 +14,20 @@ import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
 import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.exception.ObjectNotFoundException;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Enumeration;
+import java.util.LinkedList;
+import java.util.List;
 
 @Component
 public class AuthInterceptor extends HandlerInterceptorAdapter {
@@ -125,7 +123,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
 				AuthInfoStore.setAuthInfo(Constants.ADMIN_ID);
 				AuthInfoStore.setTeamID(null);
-				list.set(1, Constants.ADMIN_ID);
+				list.set(1, String.valueOf(Constants.ADMIN_ID));
 				logTool.write(list);
 
 				return super.preHandle(request, response, handler);
@@ -139,33 +137,33 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 					supplier = supplierDao.getSupplierByID(token);
 				} catch (ObjectNotFoundException e) {
 					log.debug(e.getMessage(), e);
-					throw new PortalException(ErrorCode.INVALID_TOKEN,"token",token);
+					throw new PortalException(ErrorCode.INVALID_TOKEN, "token", token);
 				}
 
-				AuthInfoStore.setAuthInfo(supplier.getId());
+				AuthInfoStore.setAuthInfo(1L);
 			} else if (subUrl.startsWith(CallbackNames.CALLBACK_URL)) {
 				//trigger app callvback
 
 				String appID = request.getHeader(Constants.HEADER_KII);
 
 				if (!appInfoManager.verifyAppToken(appID, token)) {
-					throw new PortalException(ErrorCode.INVALID_INPUT,"field","appInfo","data",appID);
+					throw new PortalException(ErrorCode.INVALID_INPUT, "field", "appInfo", "data", appID);
 				}
-				AuthInfoStore.setAuthInfo(appID);
+				AuthInfoStore.setAuthInfo(2L);
 
 			} else if (subUrl.startsWith("/party3rd")) {
 
 
 				//TODO:add verify to 3rdparty token.
-				AuthInfoStore.setAuthInfo("party3rd");
+				AuthInfoStore.setAuthInfo(3L);
 			} else {
 
 
 				AuthInfo authInfo = authManager.validateAndBindUserToken(token, request.getMethod(), subUrl);
 
-				list.set(1, authInfo.getUserID());
+				list.set(1, String.valueOf(authInfo.getUserID()));
 
-				AuthInfoStore.setUserInfo(authInfo.getUserID(),authInfo.getUserIDInLong());
+				AuthInfoStore.setUserInfo(authInfo.getUserID());
 				AuthInfoStore.setTeamID(authInfo.getTeamID());
 			}
 
@@ -175,7 +173,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 			logTool.write(list);
 			throw e;
 		}
-		list.set(1, AuthInfoStore.getUserID());
+		list.set(1, String.valueOf(AuthInfoStore.getUserID()));
 		logTool.write(list);
 
 		return super.preHandle(request, response, handler);

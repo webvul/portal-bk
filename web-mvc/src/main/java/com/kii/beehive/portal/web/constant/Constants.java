@@ -16,5 +16,5 @@ public class Constants {
 
 
 	public static final String HTTP_METHOD_OPTIONS = "OPTIONS";
-	public static final String ADMIN_ID = "211102";
+	public static final Long ADMIN_ID = 0L;
 }

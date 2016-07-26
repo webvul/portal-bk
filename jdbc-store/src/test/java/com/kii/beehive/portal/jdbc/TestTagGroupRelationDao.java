@@ -1,31 +1,22 @@
 package com.kii.beehive.portal.jdbc;
 
-import static junit.framework.TestCase.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
 import com.kii.beehive.portal.jdbc.dao.TagGroupRelationDao;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
-import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
-import com.kii.beehive.portal.jdbc.entity.TagGroupRelation;
-import com.kii.beehive.portal.jdbc.entity.TagIndex;
-import com.kii.beehive.portal.jdbc.entity.TagType;
-import com.kii.beehive.portal.jdbc.entity.UserGroup;
+import com.kii.beehive.portal.jdbc.entity.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class TestTagGroupRelationDao extends TestTemplate {
 
@@ -118,7 +109,7 @@ public class TestTagGroupRelationDao extends TestTemplate {
 	@Test
 	public void testFindTagIdsFilterBy() throws Exception {
 		List<Long> allTagIds = new ArrayList();
-		AuthInfoStore.setAuthInfo("TestOwner");
+		AuthInfoStore.setAuthInfo(123456L);
 
 		TagIndex tag = new TagIndex();
 		for (int i = 1; i <= 3; ++i) {

@@ -1,29 +1,16 @@
 package com.kii.beehive.portal.web.controller;
 
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertNotNull;
-import static junit.framework.TestCase.fail;
-import static org.mockito.Matchers.anyListOf;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyCollectionOf;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.internal.verification.VerificationModeFactory.times;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kii.beehive.business.manager.PortalSyncUserManager;
+import com.kii.beehive.business.manager.TagThingManager;
+import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.jdbc.dao.*;
+import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
+import com.kii.beehive.portal.jdbc.entity.TagIndex;
+import com.kii.beehive.portal.jdbc.entity.TagType;
+import com.kii.beehive.portal.web.WebTestTemplate;
+import com.kii.beehive.portal.web.constant.Constants;
+import com.kii.beehive.portal.web.exception.PortalException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -35,24 +22,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.*;
 
-import com.kii.beehive.business.manager.PortalSyncUserManager;
-import com.kii.beehive.business.manager.TagThingManager;
-import com.kii.beehive.portal.auth.AuthInfoStore;
-import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
-import com.kii.beehive.portal.jdbc.dao.TagGroupRelationDao;
-import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
-import com.kii.beehive.portal.jdbc.dao.TagThingRelationDao;
-import com.kii.beehive.portal.jdbc.dao.TagUserRelationDao;
-import com.kii.beehive.portal.jdbc.dao.TeamTagRelationDao;
-import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
-import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
-import com.kii.beehive.portal.jdbc.entity.TagIndex;
-import com.kii.beehive.portal.jdbc.entity.TagType;
-import com.kii.beehive.portal.web.WebTestTemplate;
-import com.kii.beehive.portal.web.constant.Constants;
-import com.kii.beehive.portal.web.exception.PortalException;
+import static junit.framework.TestCase.*;
+import static org.mockito.Matchers.anyListOf;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyCollectionOf;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.eq;
+import static org.mockito.internal.verification.VerificationModeFactory.times;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Created by USER on 12/1/15.
@@ -178,7 +159,7 @@ public class TestTagController extends WebTestTemplate {
 		tagIndex.setDescription("Tag");
 		tagIndex.setTagType(TagType.Custom);
 
-		AuthInfoStore.setAuthInfo("user1");
+		AuthInfoStore.setAuthInfo(123L);
 
 		Map<String, Object> result = tagController.createTag(tagIndex);
 		assertNotNull("Result of createTag should not be null", result);
@@ -198,7 +179,7 @@ public class TestTagController extends WebTestTemplate {
 
 	@Test
 	public void testUpdateTag() throws Exception {
-		AuthInfoStore.setAuthInfo("Someone");
+		AuthInfoStore.setAuthInfo(123L);
 
 		String keyId = "id";
 		String keyName = "tagName";

@@ -1,13 +1,12 @@
 package com.kii.beehive.business.manager;
 
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
+import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.exception.DuplicateException;
+import com.kii.beehive.portal.exception.EntryNotFoundException;
+import com.kii.beehive.portal.exception.UnauthorizedException;
+import com.kii.beehive.portal.jdbc.dao.*;
+import com.kii.beehive.portal.jdbc.entity.*;
 import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,24 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kii.beehive.portal.auth.AuthInfoStore;
-import com.kii.beehive.portal.exception.DuplicateException;
-import com.kii.beehive.portal.exception.EntryNotFoundException;
-import com.kii.beehive.portal.exception.UnauthorizedException;
-import com.kii.beehive.portal.jdbc.dao.BeehiveUserJdbcDao;
-import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
-import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
-import com.kii.beehive.portal.jdbc.dao.TeamDao;
-import com.kii.beehive.portal.jdbc.dao.TeamGroupRelationDao;
-import com.kii.beehive.portal.jdbc.dao.TeamUserRelationDao;
-import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
-import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
-import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
-import com.kii.beehive.portal.jdbc.entity.TagIndex;
-import com.kii.beehive.portal.jdbc.entity.Team;
-import com.kii.beehive.portal.jdbc.entity.TeamGroupRelation;
-import com.kii.beehive.portal.jdbc.entity.TeamUserRelation;
-import com.kii.beehive.portal.jdbc.entity.UserGroup;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Component
@@ -52,11 +35,10 @@ public class UserGroupManager {
 	private GroupUserRelationDao groupUserRelationDao;
 
 	@Autowired
-	private TagIndexDao  tagDao;
+	private TagIndexDao tagDao;
 
 	@Autowired
 	private BeehiveUserJdbcDao userDao;
-
 
 
 	@Autowired
@@ -66,22 +48,20 @@ public class UserGroupManager {
 	protected TeamUserRelationDao teamUserRelationDao;
 
 
-
-
-	private void addTeamInfo(String teamName,Long userID){
+	private void addTeamInfo(String teamName, Long userID) {
 
 		//create team
-		if(!Strings.isBlank(teamName)){
+		if (!Strings.isBlank(teamName)) {
 			List<Team> teamList = teamDao.findTeamByTeamName(teamName);
 			Long teamID = null;
-			if(teamList.size() == 0){//create team and user add to team
+			if (teamList.size() == 0) {//create team and user add to team
 				Team t = new Team();
 				t.setName(teamName);
 				teamID = teamDao.saveOrUpdate(t);
 				TeamUserRelation tur = new TeamUserRelation(teamID, userID, 1);
 				teamUserRelationDao.saveOrUpdate(tur);
 
-			}else{// user add to team
+			} else {// user add to team
 				teamID = teamList.get(0).getId();
 				TeamUserRelation tur = new TeamUserRelation(teamID, userID, 0);
 				teamUserRelationDao.saveOrUpdate(tur);
@@ -92,23 +72,23 @@ public class UserGroupManager {
 	}
 
 
-	public Long addUserGroup(UserGroup userGroup){
+	public Long addUserGroup(UserGroup userGroup) {
 
 		if (userGroup.getId() == null) {//create
-			return  createUserGroup(userGroup, AuthInfoStore.getUserIDInLong());
+			return createUserGroup(userGroup, AuthInfoStore.getUserID());
 		} else {//update
-			return   updateUserGroup(userGroup, AuthInfoStore.getUserIDInLong());
+			return updateUserGroup(userGroup, AuthInfoStore.getUserID());
 		}
 
 	}
 
-	private  Long createUserGroup(UserGroup userGroup, Long loginUserID) {
+	private Long createUserGroup(UserGroup userGroup, Long loginUserID) {
 		// create user group
 
 		List<UserGroup> userGroupList = userGroupDao.findUserGroupByName(userGroup.getName());
 
 		if (userGroupList.size() > 0) {
-			throw new DuplicateException(userGroup.getName(),"UserGroup");
+			throw new DuplicateException(userGroup.getName(), "UserGroup");
 		}
 
 		Long userGroupID = userGroupDao.saveOrUpdate(userGroup);
@@ -126,17 +106,17 @@ public class UserGroupManager {
 	public Long updateUserGroup(UserGroup userGroup, Long loginUserID) {
 		List<UserGroup> orgiList = userGroupDao.findUserGroup(loginUserID, userGroup.getId(), null);
 		if (orgiList.size() == 0) {
-			throw new EntryNotFoundException(userGroup.getId().toString(),"UserGroup");
+			throw new EntryNotFoundException(userGroup.getId().toString(), "UserGroup");
 		}
 
 		List<UserGroup> userGroupList = userGroupDao.findUserGroupByName(userGroup.getName());
 		if (userGroupList.size() > 0 && userGroupList.get(0).getId() != userGroup.getId()) {
-			throw new DuplicateException(userGroup.getName(),"UserGroup");
+			throw new DuplicateException(userGroup.getName(), "UserGroup");
 		}
 
 		UserGroup orgi = orgiList.get(0);
 		if (!orgi.getCreateBy().equals(loginUserID)) {
-			throw new UnauthorizedException(UnauthorizedException.NOT_GROUP_CREATER,"group",orgi.getName(),"currUser",String.valueOf(loginUserID));
+			throw new UnauthorizedException(UnauthorizedException.NOT_GROUP_CREATER, "group", orgi.getName(), "currUser", String.valueOf(loginUserID));
 		}
 		orgi.setName(userGroup.getName());
 		orgi.setDescription(userGroup.getDescription());
@@ -152,10 +132,10 @@ public class UserGroupManager {
 		UserGroup orig = userGroupDao.findByID(userGroupID);
 
 		if (orig == null) {
-			throw  EntryNotFoundException.userGroupNotFound(userGroupID);
+			throw EntryNotFoundException.userGroupNotFound(userGroupID);
 		}
 
-		if (!orig.getCreateBy().equals(String.valueOf(AuthInfoStore.getUserIDInLong()))) {
+		if (!orig.getCreateBy().equals(String.valueOf(AuthInfoStore.getUserID()))) {
 			throw new UnauthorizedException(UnauthorizedException.USERGROUP_NO_PRIVATE);
 		}
 		groupUserRelationDao.delete(null, userGroupID);
@@ -163,27 +143,27 @@ public class UserGroupManager {
 	}
 
 
-	public UserGroup  getUserGroupDetail(Long userGroupID){
+	public UserGroup getUserGroupDetail(Long userGroupID) {
 
 		UserGroup ug = userGroupDao.findByID(userGroupID);
 
-		if(ug==null){
-			throw  EntryNotFoundException.userGroupNotFound(userGroupID);
+		if (ug == null) {
+			throw EntryNotFoundException.userGroupNotFound(userGroupID);
 		}
 
-		isGroupOfUser(AuthInfoStore.getUserIDInLong(), userGroupID);
+		isGroupOfUser(AuthInfoStore.getUserID(), userGroupID);
 
 
-		List<BeehiveJdbcUser>  userList=userDao.findUserIDByUserGroupID(userGroupID);
+		List<BeehiveJdbcUser> userList = userDao.findUserIDByUserGroupID(userGroupID);
 
 		ug.setUserList(userList);
 
 		return ug;
 	}
 
-	public List<TagIndex> getTagIndexList(Long userGroupID){
+	public List<TagIndex> getTagIndexList(Long userGroupID) {
 
-		isGroupOfUser(AuthInfoStore.getUserIDInLong(), userGroupID);
+		isGroupOfUser(AuthInfoStore.getUserID(), userGroupID);
 
 
 		return tagDao.getTagListByGroupID(userGroupID);
@@ -204,6 +184,7 @@ public class UserGroupManager {
 //		}
 
 	}
+
 	/**
 	 * add users to user group
 	 *
@@ -217,7 +198,8 @@ public class UserGroupManager {
 
 		if (!ug.getCreateBy().equals(AuthInfoStore.getUserID())) {
 
-			throw  new UnauthorizedException(UnauthorizedException.NOT_GROUP_CREATER,"group",ug.getName(),"currUser",AuthInfoStore.getUserID());
+			throw new UnauthorizedException(UnauthorizedException.NOT_GROUP_CREATER, "group", ug.getName(),
+					"currUser", String.valueOf(AuthInfoStore.getUserID()));
 		}
 
 		List<BeehiveJdbcUser> userList = userDao.getUserByUserIDs(userIDList);
@@ -226,7 +208,7 @@ public class UserGroupManager {
 
 		List<GroupUserRelation> relationList = new ArrayList<>();
 
-		userList.stream().filter(u->!existingSet.contains(u.getId())).forEach((u)->{
+		userList.stream().filter(u -> !existingSet.contains(u.getId())).forEach((u) -> {
 
 			relationList.add(new GroupUserRelation(u.getId(), userGroupID));
 
@@ -236,9 +218,7 @@ public class UserGroupManager {
 	}
 
 
-
-
-	private  void isGroupOfUser(Long loginUserID, Long userGroupID) {
+	private void isGroupOfUser(Long loginUserID, Long userGroupID) {
 
 		List<UserGroup> checkAuth = userGroupDao.findUserGroup(loginUserID, userGroupID, null);
 
@@ -248,21 +228,21 @@ public class UserGroupManager {
 		}
 	}
 
-	public void removeUserFromGroup(Long userGroupID,List<String> userIDs){
+	public void removeUserFromGroup(Long userGroupID, List<String> userIDs) {
 		UserGroup ug = this.userGroupDao.findByID(userGroupID);
 		if (ug == null) {
 			throw new UnauthorizedException(UnauthorizedException.USERGROUP_NO_PRIVATE);
 
-		} else if (!ug.getCreateBy().equals(String.valueOf(AuthInfoStore.getUserIDInLong()))) {
+		} else if (!ug.getCreateBy().equals(String.valueOf(AuthInfoStore.getUserID()))) {
 
 			throw new UnauthorizedException(UnauthorizedException.NOT_GROUP_CREATER);
 
 		} else {
 
 			if (userIDs.contains(AuthInfoStore.getUserID())) {
-					throw new UnauthorizedException(UnauthorizedException.USERGROUP_NO_PRIVATE);
+				throw new UnauthorizedException(UnauthorizedException.USERGROUP_NO_PRIVATE);
 			}
-			List<Long> ids=userDao.getUserByUserIDs(userIDs).stream().mapToLong(BeehiveJdbcUser::getId).boxed().collect(Collectors.toList());
+			List<Long> ids = userDao.getUserByUserIDs(userIDs).stream().mapToLong(BeehiveJdbcUser::getId).boxed().collect(Collectors.toList());
 
 			groupUserRelationDao.deleteUsers(ids, userGroupID);
 
@@ -270,21 +250,19 @@ public class UserGroupManager {
 	}
 
 
-	public List<UserGroup>  findUserGroup(){
+	public List<UserGroup> findUserGroup() {
 
-		return userGroupDao.findUserGroup(AuthInfoStore.getUserIDInLong(), null, null);
+		return userGroupDao.findUserGroup(AuthInfoStore.getUserID(), null, null);
 
 	}
 
-	public List<UserGroup>  findAll(){
+	public List<UserGroup> findAll() {
 
 		return userGroupDao.findAll();
 
 	}
-	
 
-	
-	
+
 	/**
 	 * return the non existing userIDs
 	 *
@@ -334,7 +312,6 @@ public class UserGroupManager {
 //			throw new UserNotExistException(buffer.toString());
 //		}
 //	}
-
 
 
 }
