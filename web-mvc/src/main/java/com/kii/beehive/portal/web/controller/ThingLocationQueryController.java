@@ -22,7 +22,6 @@ import com.kii.beehive.portal.web.entity.ThingIDsForReportWithGroup;
 @RestController
 @RequestMapping( consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {
 		MediaType.APPLICATION_JSON_UTF8_VALUE})
-
 public class ThingLocationQueryController {
 
 
@@ -50,7 +49,7 @@ public class ThingLocationQueryController {
 
 	}
 
-	@RequestMapping(value="/reports/thingQuery/groupByLocation",method = RequestMethod.POST)
+	@RequestMapping(value="/reports/thingQuery/groupByLocationTag",method = RequestMethod.POST)
 	public List<ThingIDsForReportWithGroup> queryByThingLocationWithLocation(@RequestBody ThingLocQuery query){
 
 
@@ -107,7 +106,7 @@ public class ThingLocationQueryController {
 
 	//query thing by rel thing
 
-	@RequestMapping(value="/things/{thingID}/relThingsInLoc",method = RequestMethod.GET,consumes = {MediaType.ALL_VALUE})
+	@RequestMapping(value="/things/{thingID}/relThingsInLocTag",method = RequestMethod.GET,consumes = {MediaType.ALL_VALUE})
 	public List<GlobalThingInfo> getRelLocThings(@PathVariable("thingID") Long thingID){
 
 		return locationQueryManager.getRelThing(thingID,new ThingLocQuery());
@@ -115,7 +114,7 @@ public class ThingLocationQueryController {
 
 
 
-	@RequestMapping(value="/things/{thingID}/relThingsInLoc/type/{type}/location/{location}",method = RequestMethod.GET,consumes = {MediaType.ALL_VALUE})
+	@RequestMapping(value="/things/{thingID}/relThingsInLocTag/type/{type}/locationTag/{location}",method = RequestMethod.GET,consumes = {MediaType.ALL_VALUE})
 	public List<GlobalThingInfo> getRelLocThingsByTypeLocations(@PathVariable("thingID") Long thingID,@PathVariable("type") String type,@PathVariable("location") String location){
 
 		ThingLocQuery query=new ThingLocQuery();
@@ -132,65 +131,6 @@ public class ThingLocationQueryController {
 
 
 
-	//==============query thing by loc
-
-	@RequestMapping(value="/locations/{location}/things",method = RequestMethod.GET,consumes = {MediaType.ALL_VALUE})
-	public List<GlobalThingInfo> getRelThingsByLocation(@PathVariable("location") String location){
-
-
-		ThingLocQuery  query=new ThingLocQuery();
-		query.setIncludeSub(false);
-		query.setLocation(location);
-		query.setType(null);
-
-		return locationQueryManager.getThingsByLocation(query);
-
-	}
-
-
-
-
-	@RequestMapping(value="/locations/{location}/allThings",method = RequestMethod.GET,consumes = {MediaType.ALL_VALUE})
-	public List<GlobalThingInfo> getRelThingsInChildByLocation(@PathVariable("location") String location){
-
-
-		ThingLocQuery  query=new ThingLocQuery();
-		query.setIncludeSub(true);
-		query.setLocation(location);
-		query.setType(null);
-
-		return locationQueryManager.getThingsByLocation(query);
-	}
-
-
-	@RequestMapping(value="/locations/{location}/things/{type}",method = RequestMethod.GET,consumes = {MediaType.ALL_VALUE})
-	public List<GlobalThingInfo> getRelThingsByLocationAndType(@PathVariable("location") String location,@PathVariable("type") String type){
-
-
-		ThingLocQuery  query=new ThingLocQuery();
-		query.setIncludeSub(false);
-		query.setLocation(location);
-		query.setType(type);
-
-		return locationQueryManager.getThingsByLocation(query);
-
-	}
-
-
-
-
-	@RequestMapping(value="/locations/{location}/allThings/{type}",method = RequestMethod.GET,consumes = {MediaType.ALL_VALUE})
-	public List<GlobalThingInfo> getRelThingsInChildByLocationAndType(@PathVariable("location") String location,@PathVariable("type") String type){
-
-
-		ThingLocQuery  query=new ThingLocQuery();
-		query.setIncludeSub(true);
-		query.setLocation(location);
-		query.setType(type);
-
-		return locationQueryManager.getThingsByLocation(query);
-
-	}
 
 
 }
