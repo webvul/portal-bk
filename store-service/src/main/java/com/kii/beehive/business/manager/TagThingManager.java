@@ -1,18 +1,16 @@
 package com.kii.beehive.business.manager;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
+import com.kii.beehive.business.service.ThingIFInAppService;
+import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.common.utils.CollectUtils;
+import com.kii.beehive.portal.exception.EntryNotFoundException;
+import com.kii.beehive.portal.exception.UnauthorizedException;
+import com.kii.beehive.portal.jdbc.dao.*;
+import com.kii.beehive.portal.jdbc.entity.*;
+import com.kii.beehive.portal.service.AppInfoDao;
+import com.kii.beehive.portal.store.entity.KiiAppInfo;
+import com.kii.extension.sdk.entity.thingif.GatewayOfKiiCloud;
+import com.kii.extension.sdk.exception.ObjectNotFoundException;
 import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,43 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kii.beehive.business.service.ThingIFInAppService;
-import com.kii.beehive.portal.auth.AuthInfoStore;
-import com.kii.beehive.portal.common.utils.CollectUtils;
-import com.kii.beehive.portal.exception.EntryNotFoundException;
-import com.kii.beehive.portal.exception.UnauthorizedException;
-import com.kii.beehive.portal.jdbc.dao.BeehiveUserJdbcDao;
-
-import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
-import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
-import com.kii.beehive.portal.jdbc.dao.TagGroupRelationDao;
-import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
-import com.kii.beehive.portal.jdbc.dao.TagThingRelationDao;
-import com.kii.beehive.portal.jdbc.dao.TagUserRelationDao;
-import com.kii.beehive.portal.jdbc.dao.TeamDao;
-import com.kii.beehive.portal.jdbc.dao.TeamTagRelationDao;
-import com.kii.beehive.portal.jdbc.dao.TeamThingRelationDao;
-import com.kii.beehive.portal.jdbc.dao.ThingUserGroupRelationDao;
-import com.kii.beehive.portal.jdbc.dao.ThingUserRelationDao;
-import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
-import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
-import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
-import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
-import com.kii.beehive.portal.jdbc.entity.TagGroupRelation;
-import com.kii.beehive.portal.jdbc.entity.TagIndex;
-import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
-import com.kii.beehive.portal.jdbc.entity.TagType;
-import com.kii.beehive.portal.jdbc.entity.TagUserRelation;
-import com.kii.beehive.portal.jdbc.entity.Team;
-import com.kii.beehive.portal.jdbc.entity.TeamTagRelation;
-import com.kii.beehive.portal.jdbc.entity.TeamThingRelation;
-import com.kii.beehive.portal.jdbc.entity.ThingUserGroupRelation;
-import com.kii.beehive.portal.jdbc.entity.ThingUserRelation;
-import com.kii.beehive.portal.jdbc.entity.UserGroup;
-import com.kii.beehive.portal.service.AppInfoDao;
-import com.kii.beehive.portal.store.entity.KiiAppInfo;
-import com.kii.extension.sdk.entity.thingif.GatewayOfKiiCloud;
-import com.kii.extension.sdk.exception.ObjectNotFoundException;
+import java.util.*;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Component
 @Transactional
@@ -147,7 +111,7 @@ public class TagThingManager {
 			//this.saveOrUpdateThingLocation(thingID, location);
 
 			ThingUserRelation relation = new ThingUserRelation();
-			relation.setBeehiveUserID(Long.parseLong(thingInfo.getCreateBy()));
+			relation.setBeehiveUserID(AuthInfoStore.getUserID());
 			relation.setThingId(thingID);
 			thingUserRelationDao.saveOrUpdate(relation);
 		}
@@ -310,7 +274,7 @@ public class TagThingManager {
 			teamTagRelationDao.saveOrUpdate(new TeamTagRelation(AuthInfoStore.getTeamID(), tagID));
 		}
 
-		tagUserRelationDao.saveOrUpdate(new TagUserRelation(tagID, AuthInfoStore.getUserIDInLong()));
+		tagUserRelationDao.saveOrUpdate(new TagUserRelation(tagID, AuthInfoStore.getUserID()));
 
 		return tagID;
 	}
@@ -359,11 +323,11 @@ public class TagThingManager {
 	}
 
 	public boolean isTagOwner(TagIndex tag) {
-		TagUserRelation tur = tagUserRelationDao.find(tag.getId(), AuthInfoStore.getUserIDInLong());
+		TagUserRelation tur = tagUserRelationDao.find(tag.getId(), AuthInfoStore.getUserID());
 		if (tur != null) {
 			return true;
 		} else {
-			List<UserGroup> userGroupList = userGroupDao.findUserGroup(AuthInfoStore.getUserIDInLong(), null, null);
+			List<UserGroup> userGroupList = userGroupDao.findUserGroup(AuthInfoStore.getUserID(), null, null);
 			for (UserGroup ug : userGroupList) {
 				TagGroupRelation tgr = tagGroupRelationDao.findByTagIDAndUserGroupID(tag.getId(), ug.getId());
 				if (tgr != null) return true;
@@ -406,11 +370,11 @@ public class TagThingManager {
 	}
 
 	public boolean isThingOwner(GlobalThingInfo thing) {
-		ThingUserRelation tur = thingUserRelationDao.find(thing.getId(), AuthInfoStore.getUserIDInLong());
+		ThingUserRelation tur = thingUserRelationDao.find(thing.getId(), AuthInfoStore.getUserID());
 		if (tur != null) {
 			return true;
 		} else {
-			List<UserGroup> userGroupList = userGroupDao.findUserGroup(AuthInfoStore.getUserIDInLong(), null, null);
+			List<UserGroup> userGroupList = userGroupDao.findUserGroup(AuthInfoStore.getUserID(), null, null);
 			for (UserGroup ug : userGroupList) {
 				ThingUserGroupRelation tgr = thingUserGroupRelationDao.find(thing.getId(), ug.getId());
 				if (tgr != null) return true;
@@ -442,29 +406,29 @@ public class TagThingManager {
 
 	public void bindTagsToUsers(Collection<Long> tagIds, Collection<String> userIds) {
 
-		List<BeehiveJdbcUser> userList=userDao.getUserByUserIDs(userIds);
+		List<BeehiveJdbcUser> userList = userDao.getUserByUserIDs(userIds);
 
 
-		List<TagUserRelation> relList=tagUserRelationDao.findByTagIds(tagIds);
+		List<TagUserRelation> relList = tagUserRelationDao.findByTagIds(tagIds);
 
-		Map<Long,Map<Long,TagUserRelation>>  relMap=new HashMap<>();
-		relList.forEach(rel->{
+		Map<Long, Map<Long, TagUserRelation>> relMap = new HashMap<>();
+		relList.forEach(rel -> {
 
-			relMap.computeIfAbsent(rel.getTagId(),(key)->{
+			relMap.computeIfAbsent(rel.getTagId(), (key) -> {
 
-				Map<Long,TagUserRelation>  map=new HashMap<>();
+				Map<Long, TagUserRelation> map = new HashMap<>();
 
 				return map;
-			}).put(rel.getBeehiveUserID(),rel);
+			}).put(rel.getBeehiveUserID(), rel);
 		});
 
-		for(Long tagId:tagIds){
+		for (Long tagId : tagIds) {
 
-			for(BeehiveJdbcUser user:userList){
+			for (BeehiveJdbcUser user : userList) {
 
-				if(!relMap.containsKey(tagId)|| !relMap.get(tagId).containsKey(user.getId())){
+				if (!relMap.containsKey(tagId) || !relMap.get(tagId).containsKey(user.getId())) {
 
-					TagUserRelation relation = new TagUserRelation(tagId,user.getId());
+					TagUserRelation relation = new TagUserRelation(tagId, user.getId());
 
 					tagUserRelationDao.insert(relation);
 
@@ -476,15 +440,15 @@ public class TagThingManager {
 	}
 
 	public void unbindTagsFromUsers(Collection<Long> tagIds, Collection<String> userIds) {
-		List<BeehiveJdbcUser> userList=userDao.getUserByUserIDs(userIds);
+		List<BeehiveJdbcUser> userList = userDao.getUserByUserIDs(userIds);
 
-		userList.forEach(user-> tagIds.forEach(tagId -> tagUserRelationDao.deleteByTagIdAndUserId(tagId, user.getId())));
+		userList.forEach(user -> tagIds.forEach(tagId -> tagUserRelationDao.deleteByTagIdAndUserId(tagId, user.getId())));
 	}
 
 	public void bindThingsToUsers(Collection<Long> thingIds, Collection<String> userIds) {
 
 
-		List<BeehiveJdbcUser> userList=userDao.getUserByUserIDs(userIds);
+		List<BeehiveJdbcUser> userList = userDao.getUserByUserIDs(userIds);
 
 		thingIds.forEach(thingId -> userList.forEach(user -> {
 			ThingUserRelation relation = thingUserRelationDao.find(thingId, user.getId());
@@ -500,7 +464,7 @@ public class TagThingManager {
 
 	public void unbindThingsFromUsers(Collection<Long> thingIds, Collection<String> userIds) {
 
-		List<BeehiveJdbcUser> userList=userDao.getUserByUserIDs(userIds);
+		List<BeehiveJdbcUser> userList = userDao.getUserByUserIDs(userIds);
 
 		thingIds.forEach(thingId -> userList.forEach(user ->
 				thingUserRelationDao.deleteByThingIdAndUserId(thingId, user.getId())));
@@ -606,34 +570,34 @@ public class TagThingManager {
 		Set<Long> userGroupIds = userGroupDao.checkIdList(userGroupIDList);
 
 
-		if(!userGroupIds.isEmpty()){
+		if (!userGroupIds.isEmpty()) {
 
-			throw  EntryNotFoundException.userGroupNotFound(userGroupIds);
+			throw EntryNotFoundException.userGroupNotFound(userGroupIds);
 		}
 
-		return ;
+		return;
 	}
 
 	public List<GlobalThingInfo> getAccessibleThingsByType(String thingType, Long user) {
 
-		Set<GlobalThingInfo> thingSet=getThingsByUserID(user);
+		Set<GlobalThingInfo> thingSet = getThingsByUserID(user);
 
-		return thingSet.stream().filter((th)->th.getType().equals(thingType)).collect(Collectors.toList());
+		return thingSet.stream().filter((th) -> th.getType().equals(thingType)).collect(Collectors.toList());
 	}
 
-	public static class ThingTypeWithCount{
+	public static class ThingTypeWithCount {
 
 		private String type;
 
 		private int count;
 
-		public ThingTypeWithCount(){
+		public ThingTypeWithCount() {
 
 		}
 
 		public ThingTypeWithCount(String k, Integer v) {
-			type=k;
-			count=v;
+			type = k;
+			count = v;
 		}
 
 		public String getType() {
@@ -655,20 +619,20 @@ public class TagThingManager {
 
 	public List<ThingTypeWithCount> getTypesOfAccessibleThingsWithCount(Long user) {
 
-		Set<GlobalThingInfo> thingSet=getThingsByUserID(user);
+		Set<GlobalThingInfo> thingSet = getThingsByUserID(user);
 
 
-		Map<String,Integer>  typeMap=new HashMap<>();
+		Map<String, Integer> typeMap = new HashMap<>();
 
 
-		for(GlobalThingInfo th:thingSet){
+		for (GlobalThingInfo th : thingSet) {
 
-			typeMap.merge(th.getType(),1,(k,oldV)-> oldV+1);
+			typeMap.merge(th.getType(), 1, (k, oldV) -> oldV + 1);
 		}
 
-		List<ThingTypeWithCount>  list=new ArrayList<>();
-		typeMap.forEach((k,v)->{
-			list.add(new ThingTypeWithCount(k,v));
+		List<ThingTypeWithCount> list = new ArrayList<>();
+		typeMap.forEach((k, v) -> {
+			list.add(new ThingTypeWithCount(k, v));
 		});
 
 		return list;
@@ -683,12 +647,12 @@ public class TagThingManager {
 		return globalThingDao.findByIDs(tagThingRelationDao.findThingIds(tagIds).orElse(Collections.emptyList())).
 				stream().map(GlobalThingInfo::getType).collect(Collectors.toList());
 	}
-//
+
+	//
 	private Set<GlobalThingInfo> getThingsByUserID(Long userId) {
 
 
-
-		Set<GlobalThingInfo> thingList=new HashSet<>(globalThingDao.findThingByUserID(userId));
+		Set<GlobalThingInfo> thingList = new HashSet<>(globalThingDao.findThingByUserID(userId));
 
 		thingList.addAll(globalThingDao.findThingByGroupIDRelUserID(userId));
 
@@ -700,13 +664,13 @@ public class TagThingManager {
 
 	public GlobalThingInfo getAccessibleThingById(Long userId, Long thingId) throws ObjectNotFoundException {
 
-		GlobalThingInfo thing=globalThingDao.findThingByUserIDThingID(userId,thingId);
+		GlobalThingInfo thing = globalThingDao.findThingByUserIDThingID(userId, thingId);
 
-		if(thing==null){
-			thing=globalThingDao.findThingByGroupIDRelUserIDWithThingID(userId,thingId);
+		if (thing == null) {
+			thing = globalThingDao.findThingByGroupIDRelUserIDWithThingID(userId, thingId);
 		}
 
-		if(thing==null) {
+		if (thing == null) {
 
 			throw EntryNotFoundException.thingNotFound(thingId);
 		}
@@ -721,7 +685,7 @@ public class TagThingManager {
 			}
 		}
 
-		throw  new UnauthorizedException(UnauthorizedException.NOT_THING_CREATOR,"user",String.valueOf(userId));
+		throw new UnauthorizedException(UnauthorizedException.NOT_THING_CREATOR, "user", String.valueOf(userId));
 
 	}
 
@@ -788,12 +752,12 @@ public class TagThingManager {
 	public List<BeehiveJdbcUser> getUsersOfAccessibleThing(Long userId, Long thingId) throws ObjectNotFoundException {
 		getAccessibleThingById(userId, thingId);
 
-		List<UserGroup> groupList=userGroupDao.getAllGroupByRelTagRelThing(thingId);
+		List<UserGroup> groupList = userGroupDao.getAllGroupByRelTagRelThing(thingId);
 		groupList.addAll(userGroupDao.getAllGroupByRelThing(thingId));
 
-		List<Long> groupIDList=groupList.stream().mapToLong(UserGroup::getId).boxed().collect(Collectors.toList());
+		List<Long> groupIDList = groupList.stream().mapToLong(UserGroup::getId).boxed().collect(Collectors.toList());
 
-		List<BeehiveJdbcUser> userList=userDao.findUserByThingID(thingId);
+		List<BeehiveJdbcUser> userList = userDao.findUserByThingID(thingId);
 
 		userList.addAll(userDao.findUserByTagRelThing(thingId));
 
@@ -829,7 +793,7 @@ public class TagThingManager {
 	}
 
 	public List<GlobalThingInfo> getAccessibleThingsByUserGroupId(Long userGroupId) {
-		GroupUserRelation gur = groupUserRelationDao.findByUserIDAndUserGroupID(AuthInfoStore.getUserIDInLong(), userGroupId);
+		GroupUserRelation gur = groupUserRelationDao.findByUserIDAndUserGroupID(AuthInfoStore.getUserID(), userGroupId);
 		if (gur == null) {
 			return null;
 		}
@@ -846,7 +810,7 @@ public class TagThingManager {
 	}
 
 	public List<TagIndex> getAccessibleTagsByUserGroupId(Long userGroupId) {
-		GroupUserRelation gur = groupUserRelationDao.findByUserIDAndUserGroupID(AuthInfoStore.getUserIDInLong(), userGroupId);
+		GroupUserRelation gur = groupUserRelationDao.findByUserIDAndUserGroupID(AuthInfoStore.getUserID(), userGroupId);
 		if (gur == null) {
 			return null;
 		}
@@ -860,17 +824,16 @@ public class TagThingManager {
 	}
 
 
-
-
 	/**
 	 * query all gateway from kii cloud and check owership
+	 *
 	 * @return
 	 */
 	public List<GatewayOfKiiCloud> getAllEGateway() {
 		//query from kii cloud
 		List<GatewayOfKiiCloud> allGatewayList = thingIFInAppService.getAllEGateway();
 		Map<String, GatewayOfKiiCloud> allGatewayMap = new HashMap<>();
-		Set<String > fullThingIds = new HashSet<>();
+		Set<String> fullThingIds = new HashSet<>();
 		allGatewayList.forEach(gatewayOfKiiCloud -> {
 			fullThingIds.add(gatewayOfKiiCloud.getFullKiiThingID());
 			allGatewayMap.put(gatewayOfKiiCloud.getFullKiiThingID(), gatewayOfKiiCloud);
@@ -882,13 +845,13 @@ public class TagThingManager {
 //			allGatewayMap.get(globalThingInfo.getFullKiiThingID()).setGlobalThingID(globalThingInfo.getId());
 //		});
 		//get current user AccessibleThingIds
-		BeehiveJdbcUser beehiveJdbcUser = userDao.getUserByUserID(AuthInfoStore.getUserID());
+		BeehiveJdbcUser beehiveJdbcUser = userDao.getUserByID(AuthInfoStore.getUserID());
 		Set<GlobalThingInfo> accessibleThings = getThingsByUserID(beehiveJdbcUser.getId());
 
 		List<GatewayOfKiiCloud> accessibleResultList = new ArrayList<>();
 		accessibleThings.forEach(GlobalThingInfo -> {
 			GatewayOfKiiCloud accessGatewayOfKiiCloud = allGatewayMap.get(GlobalThingInfo.getFullKiiThingID());
-			if(accessGatewayOfKiiCloud != null) {
+			if (accessGatewayOfKiiCloud != null) {
 				accessGatewayOfKiiCloud.setGlobalThingID(GlobalThingInfo.getId());
 				accessibleResultList.add(accessGatewayOfKiiCloud);
 			}

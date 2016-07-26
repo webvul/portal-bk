@@ -1,22 +1,12 @@
 package com.kii.beehive.portal.jdbc.dao;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
+import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.common.utils.StrTemplate;
+import com.kii.beehive.portal.jdbc.entity.*;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Repository;
 
-import com.kii.beehive.portal.auth.AuthInfoStore;
-import com.kii.beehive.portal.common.utils.StrTemplate;
-import com.kii.beehive.portal.jdbc.entity.TagGroupRelation;
-import com.kii.beehive.portal.jdbc.entity.TagIndex;
-import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
-import com.kii.beehive.portal.jdbc.entity.TagType;
-import com.kii.beehive.portal.jdbc.entity.TeamUserRelation;
+import java.util.*;
 
 @Repository
 public class TagIndexDao extends SpringBaseDao<TagIndex> {
@@ -62,8 +52,8 @@ public class TagIndexDao extends SpringBaseDao<TagIndex> {
 
 		StringBuilder where = new StringBuilder();
 		where.append(" WHERE (rg.user_id = ? OR t.create_by=?)");
-		params.add(AuthInfoStore.getUserID());
-		params.add(AuthInfoStore.getUserID());
+		params.add(AuthInfoStore.getUserIDInLong());
+		params.add(AuthInfoStore.getUserIDInLong());
 
 		if (tagID != null) {
 			where.append(" AND t.").append(TagIndex.TAG_ID).append(" = ? ");
@@ -82,7 +72,7 @@ public class TagIndexDao extends SpringBaseDao<TagIndex> {
 
 		sql.append(where);
 
-		sql=super.addDelSignPrefix(sql);
+		sql = super.addDelSignPrefix(sql);
 
 		List<TagIndex> rows = jdbcTemplate.query(sql.toString(), params.toArray(new Object[params.size()]), getRowMapper());
 		return rows;
@@ -92,23 +82,22 @@ public class TagIndexDao extends SpringBaseDao<TagIndex> {
 	public List<TagIndex> getTagListByGroupID(Long userId) {
 
 
-		String sqlTmp="select t.* from ${0} t inner join  ${1} rel on rel.${3} = t.${4} where  rel.${2}  = ? ";
-		String sql= StrTemplate.gener(sqlTmp,TABLE_NAME,TagGroupRelationDao.TABLE_NAME, TagGroupRelation.USER_GROUP_ID,TagIndex.TAG_ID,TagGroupRelation.TAG_ID);
-		sql=super.addDelSignPrefix(sql);
+		String sqlTmp = "select t.* from ${0} t inner join  ${1} rel on rel.${3} = t.${4} where  rel.${2}  = ? ";
+		String sql = StrTemplate.gener(sqlTmp, TABLE_NAME, TagGroupRelationDao.TABLE_NAME, TagGroupRelation.USER_GROUP_ID, TagIndex.TAG_ID, TagGroupRelation.TAG_ID);
+		sql = super.addDelSignPrefix(sql);
 
-		return jdbcTemplate.query(sql,new Object[]{userId}, getRowMapper());
+		return jdbcTemplate.query(sql, new Object[]{userId}, getRowMapper());
 	}
 
 	public List<TagIndex> findUserTagByUserID(Long userId) {
 
 
-		String sqlTmp="select t.* from ${0} t inner join  ${1} rel on rel.tag_id = t.tag_id where  rel.beehive_user_id = ? ";
-		String sql= StrTemplate.gener(sqlTmp,TABLE_NAME,TagUserRelationDao.TABLE_NAME);
-		sql=super.addDelSignPrefix(sql);
+		String sqlTmp = "select t.* from ${0} t inner join  ${1} rel on rel.tag_id = t.tag_id where  rel.beehive_user_id = ? ";
+		String sql = StrTemplate.gener(sqlTmp, TABLE_NAME, TagUserRelationDao.TABLE_NAME);
+		sql = super.addDelSignPrefix(sql);
 
-		return jdbcTemplate.query(sql,new Object[]{userId}, getRowMapper());
+		return jdbcTemplate.query(sql, new Object[]{userId}, getRowMapper());
 	}
-
 
 
 	public List<TagIndex> findUserTagByTypeAndName(Long userId, String tagType, String displayName) {
@@ -127,7 +116,7 @@ public class TagIndexDao extends SpringBaseDao<TagIndex> {
 			sb.append(" = ?");
 			params.add(displayName);
 		}
-		sb=super.addDelSignPrefix(sb);
+		sb = super.addDelSignPrefix(sb);
 
 		return jdbcTemplate.query(sb.toString(), params.toArray(new Object[]{}), getRowMapper());
 	}
@@ -175,7 +164,7 @@ public class TagIndexDao extends SpringBaseDao<TagIndex> {
 		where.append("GROUP BY t.").append(TagIndex.TAG_ID);
 		sql.append(where);
 
-		sql=super.addDelSignPrefix(sql);
+		sql = super.addDelSignPrefix(sql);
 
 		List<TagIndex> rows = jdbcTemplate.query(sql.toString(), params.toArray(new Object[params.size()]), getRowMapper());
 		return rows;
@@ -190,7 +179,7 @@ public class TagIndexDao extends SpringBaseDao<TagIndex> {
 			params.add(parentLocation + '%');
 		}
 		sb.append(" ORDER BY t.").append(TagIndex.DISPLAY_NAME);
-		sb=super.addDelSignPrefix(sb);
+		sb = super.addDelSignPrefix(sb);
 
 		return jdbcTemplate.queryForList(sb.toString(), params.toArray(new Object[0]), String.class);
 	}
@@ -213,7 +202,7 @@ public class TagIndexDao extends SpringBaseDao<TagIndex> {
 		where.append(" ORDER BY t.").append(TagIndex.DISPLAY_NAME);
 		sql.append(where);
 
-		sql=super.addDelSignPrefix(sql);
+		sql = super.addDelSignPrefix(sql);
 
 		Object[] params = new Object[]{TagType.Location.toString(), parentLocation + "%"};
 		List<String> rows = jdbcTemplate.queryForList(sql.toString(), params, String.class);
@@ -248,7 +237,7 @@ public class TagIndexDao extends SpringBaseDao<TagIndex> {
 
 		sql.append(where);
 
-		sql=super.addDelSignPrefix(sql);
+		sql = super.addDelSignPrefix(sql);
 		List<TagIndex> rows = jdbcTemplate.query(sql.toString(), params.toArray(new Object[params.size()]), getRowMapper());
 		return rows;
 	}
@@ -261,7 +250,7 @@ public class TagIndexDao extends SpringBaseDao<TagIndex> {
 	 * @return
 	 */
 	public List<TagIndex> findTagByGlobalThingID(Long globalThingID) {
-		StringBuilder  sql = new StringBuilder();
+		StringBuilder sql = new StringBuilder();
 		sql.append("SELECT t.*")
 				.append(" FROM ")
 				.append(TagIndexDao.TABLE_NAME).append(" t, ")
@@ -358,7 +347,7 @@ public class TagIndexDao extends SpringBaseDao<TagIndex> {
 			params.put("name", parentLocation + "%");
 		}
 
-		sb=super.addDelSignPrefix(sb);
+		sb = super.addDelSignPrefix(sb);
 
 		return Optional.ofNullable(namedJdbcTemplate.query(sb.toString(), params, getRowMapper()));
 	}
@@ -388,7 +377,7 @@ public class TagIndexDao extends SpringBaseDao<TagIndex> {
 			params.add(displayName);
 		}
 
-		sb=super.addDelSignPrefix(sb);
+		sb = super.addDelSignPrefix(sb);
 
 		return Optional.ofNullable(jdbcTemplate.queryForList(sb.append(sbWhere).toString(),
 				params.toArray(new Object[]{}), Long.class));

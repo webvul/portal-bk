@@ -1,20 +1,6 @@
 package com.kii.beehive.business.ruleengine;
 
-import javax.annotation.PostConstruct;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.kii.beehive.business.event.BusinessEventListenerService;
 import com.kii.beehive.business.helper.TriggerCreator;
 import com.kii.beehive.business.manager.ThingTagManager;
@@ -28,11 +14,22 @@ import com.kii.extension.ruleengine.service.TriggerRecordDao;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import javax.annotation.PostConstruct;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @Component
 public class TriggerManager {
 
-	private static final Logger log= LoggerFactory.getLogger(TriggerManager.class);
+	private static final Logger log = LoggerFactory.getLogger(TriggerManager.class);
 
 	@Autowired
 	private TriggerRecordDao triggerDao;
@@ -56,10 +53,10 @@ public class TriggerManager {
 	private ScheduleService scheduleService;
 
 	@Autowired
-	private TriggerCreator  creator;
+	private TriggerCreator creator;
 
 
-	public void reinit(){
+	public void reinit() {
 
 		service.clear();
 		scheduleService.clearTrigger();
@@ -68,33 +65,33 @@ public class TriggerManager {
 	}
 
 	@PostConstruct
-	public void init(){
+	public void init() {
 		List<TriggerRecord> recordList = triggerDao.getAllTrigger();
 
 		recordList.forEach(record -> {
 
 			try {
 				creator.addTriggerToEngine(record);
-			}catch(Exception e){
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		});
 		scheduleService.startSchedule();
 
-		List<ThingStatusInRule>  initThings=new ArrayList<>();
+		List<ThingStatusInRule> initThings = new ArrayList<>();
 
 		thingTagService.iteratorAllThingsStatus(s -> {
 			if (StringUtils.isEmpty(s.getStatus())) {
 				return;
 			}
-			ThingStatus status=null;
+			ThingStatus status = null;
 			try {
-				status=mapper.readValue(s.getStatus(), ThingStatus.class);
+				status = mapper.readValue(s.getStatus(), ThingStatus.class);
 			} catch (IOException e) {
-				log.error("invalid thing "+s.getId()+" status ",e);
+				log.error("invalid thing " + s.getId() + " status ", e);
 				return;
 			}
-			ThingStatusInRule info=new ThingStatusInRule(s.getFullKiiThingID());
+			ThingStatusInRule info = new ThingStatusInRule(s.getFullKiiThingID());
 			info.setCreateAt(s.getModifyDate());
 			info.setValues(status.getFields());
 
@@ -119,14 +116,14 @@ public class TriggerManager {
 	}
 
 
-	public Map<String,Object> getRuleEngingDump() {
+	public Map<String, Object> getRuleEngingDump() {
 
-			Map<String, Object> map = service.dumpEngineRuntime();
+		Map<String, Object> map = service.dumpEngineRuntime();
 
 
-			map.put("schedule", scheduleService.dump());
+		map.put("schedule", scheduleService.dump());
 
-			return map;
+		return map;
 	}
 
 
@@ -144,19 +141,19 @@ public class TriggerManager {
 		service.enableTrigger(triggerID);
 	}
 
-	public List<TriggerRecord> getTriggerListByUserId(String userId) {
+	public List<TriggerRecord> getTriggerListByUserId(Long userId) {
 		List<TriggerRecord> triggerList = triggerDao.getTriggerListByUserId(userId);
 
 		return triggerList;
 	}
 
-	public List<TriggerRecord> getDeleteTriggerListByUserId(String userId) {
+	public List<TriggerRecord> getDeleteTriggerListByUserId(Long userId) {
 		List<TriggerRecord> triggerList = triggerDao.getDeleteTriggerListByUserId(userId);
 
 		return triggerList;
 	}
 
-	public List<SimpleTriggerRecord> getTriggerListByUserIdAndThingId(String userId, String thingId) {
+	public List<SimpleTriggerRecord> getTriggerListByUserIdAndThingId(Long userId, String thingId) {
 		List<SimpleTriggerRecord> resultTriggerList = new ArrayList<SimpleTriggerRecord>();
 		List<TriggerRecord> triggerList = triggerDao.getTriggerListByUserId(userId);
 		for (TriggerRecord trigger : triggerList) {
@@ -180,7 +177,7 @@ public class TriggerManager {
 
 		TriggerRecord record = triggerDao.getTriggerRecord(triggerID);
 		if (record == null) {
-			throw  EntryNotFoundException.tagNameNotFound(triggerID);
+			throw EntryNotFoundException.tagNameNotFound(triggerID);
 		}
 		return record;
 	}

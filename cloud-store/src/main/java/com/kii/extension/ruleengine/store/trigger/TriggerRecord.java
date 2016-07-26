@@ -1,47 +1,48 @@
 package com.kii.extension.ruleengine.store.trigger;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-
 import com.kii.extension.ruleengine.store.trigger.multiple.MultipleSrcTriggerRecord;
 import com.kii.extension.sdk.entity.KiiEntity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME,
 		include = JsonTypeInfo.As.EXISTING_PROPERTY,
 		property = "type")
 @JsonSubTypes({
-		@JsonSubTypes.Type(value = SimpleTriggerRecord.class,name="Simple"),
-		@JsonSubTypes.Type(value = GroupTriggerRecord.class,name="Group"),
-		@JsonSubTypes.Type(value = SummaryTriggerRecord.class,name="Summary"),
-		@JsonSubTypes.Type(value=MultipleSrcTriggerRecord.class,name="Multiple")
+		@JsonSubTypes.Type(value = SimpleTriggerRecord.class, name = "Simple"),
+		@JsonSubTypes.Type(value = GroupTriggerRecord.class, name = "Group"),
+		@JsonSubTypes.Type(value = SummaryTriggerRecord.class, name = "Summary"),
+		@JsonSubTypes.Type(value = MultipleSrcTriggerRecord.class, name = "Multiple")
 })
-public abstract  class TriggerRecord extends KiiEntity {
+public abstract class TriggerRecord extends KiiEntity {
 
 
-	private String userID;
+	private Long userID;
 
 	private TriggerValidPeriod period;
 
 	private RuleEnginePredicate predicate;
 
-	private List<ExecuteTarget>  targets=new ArrayList<>();
+	private List<ExecuteTarget> targets = new ArrayList<>();
 
-	private List<CommandParam> targetParamList=new ArrayList<>();
+	private List<CommandParam> targetParamList = new ArrayList<>();
 
 	private StatusType recordStatus;
 
-	private String  name;
+	private String name;
 
 	private String description;
 
 
-	public String getTriggerID() {return super.getId();}
+	public String getTriggerID() {
+		return super.getId();
+	}
 
 	@JsonProperty("prepareCondition")
 	public TriggerValidPeriod getPreparedCondition() {
@@ -68,11 +69,11 @@ public abstract  class TriggerRecord extends KiiEntity {
 		this.name = name;
 	}
 
-	public String getUserID() {
+	public Long getUserID() {
 		return userID;
 	}
 
-	public void setUserID(String userID) {
+	public void setUserID(Long userID) {
 		this.userID = userID;
 	}
 
@@ -101,7 +102,7 @@ public abstract  class TriggerRecord extends KiiEntity {
 	}
 
 	@JsonIgnore
-	public void addTarget(ExecuteTarget target){
+	public void addTarget(ExecuteTarget target) {
 		this.targets.add(target);
 	}
 
@@ -111,20 +112,21 @@ public abstract  class TriggerRecord extends KiiEntity {
 		this.type = type;
 	}
 
-	public abstract  BeehiveTriggerType getType();
+	public abstract BeehiveTriggerType getType();
 
-	public enum StatusType{
-		enable,disable,deleted;
+	public enum StatusType {
+		enable, disable, deleted;
 	}
 
-	public void addTargetParam(String name,String param){
-		CommandParam cmdParam=new CommandParam();
+	public void addTargetParam(String name, String param) {
+		CommandParam cmdParam = new CommandParam();
 		cmdParam.setExpress(param);
 		cmdParam.setName(name);
 
 		targetParamList.add(cmdParam);
 
 	}
+
 	public List<CommandParam> getTargetParamList() {
 		return targetParamList;
 	}
@@ -132,7 +134,6 @@ public abstract  class TriggerRecord extends KiiEntity {
 	public void setTargetParamList(List<CommandParam> targetParamList) {
 		this.targetParamList = targetParamList;
 	}
-
 
 
 }

@@ -1,22 +1,5 @@
 package com.kii.beehive.portal.web.controller;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.apache.logging.log4j.util.Strings;
-import org.springframework.http.MediaType;
-import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
@@ -25,6 +8,13 @@ import com.kii.beehive.portal.jdbc.entity.UserGroup;
 import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
 import com.kii.extension.sdk.exception.ObjectNotFoundException;
+import org.apache.logging.log4j.util.Strings;
+import org.springframework.http.MediaType;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Beehive API - Thing API
@@ -48,14 +38,14 @@ public class TagController extends AbstractThingTagController {
 	public Map<String, Object> createTag(@RequestBody TagIndex tag) {
 		String displayName = tag.getDisplayName();
 		if (Strings.isBlank(displayName)) {
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","displayName");
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "field", "displayName");
 		}
 
 		if (null != tag.getId()) {
 			try {
 				TagIndex existedTag = thingTagManager.getTagIndexes(Arrays.asList(tag.getId().toString())).get(0);
 				if (!thingTagManager.isTagCreator(existedTag)) {
-					throw new PortalException(ErrorCode.TAG_NO_PRIVATE,"tagName",existedTag.getFullTagName());
+					throw new PortalException(ErrorCode.TAG_NO_PRIVATE, "tagName", existedTag.getFullTagName());
 				}
 			} catch (ObjectNotFoundException e) {
 				throw new PortalException(ErrorCode.NOT_FOUND);
@@ -104,7 +94,7 @@ public class TagController extends AbstractThingTagController {
 	@RequestMapping(value = "/search", method = {RequestMethod.GET}, consumes = {"*"})
 	public List<TagIndex> findTags(@RequestParam(value = "tagType", required = false) String tagType,
 								   @RequestParam(value = "displayName", required = false) String displayName) {
-		return thingTagManager.getAccessibleTagsByTagTypeAndName(AuthInfoStore.getUserIDInLong(),
+		return thingTagManager.getAccessibleTagsByTagTypeAndName(AuthInfoStore.getUserID(),
 				StringUtils.capitalize(tagType), displayName);
 	}
 
@@ -127,7 +117,7 @@ public class TagController extends AbstractThingTagController {
 	 */
 	@RequestMapping(value = "/locations/{parentLocation}", method = {RequestMethod.GET}, consumes = {"*"})
 	public List<String> findLocations(@PathVariable("parentLocation") String parentLocation) {
-		return thingTagManager.getAccessibleTagsByUserIdAndLocations(AuthInfoStore.getUserIDInLong(), parentLocation).stream().
+		return thingTagManager.getAccessibleTagsByUserIdAndLocations(AuthInfoStore.getUserID(), parentLocation).stream().
 				map(TagIndex::getDisplayName).collect(Collectors.toList());
 	}
 
@@ -228,7 +218,7 @@ public class TagController extends AbstractThingTagController {
 	 */
 	@RequestMapping(value = "/user", method = RequestMethod.GET, consumes = {"*"})
 	public List<TagIndex> getTagsByUser() {
-			return thingTagManager.getAccessibleTagsByUserId(AuthInfoStore.getUserIDInLong());
+		return thingTagManager.getAccessibleTagsByUserId(AuthInfoStore.getUserID());
 	}
 
 	/**
@@ -239,7 +229,7 @@ public class TagController extends AbstractThingTagController {
 	 */
 	@RequestMapping(value = "/{fullTagName}/users", method = RequestMethod.GET, consumes = {"*"})
 	public List<BeehiveJdbcUser> getUsersByFullTagName(@PathVariable("fullTagName") String fullTagName) {
-		return  thingTagManager.getUsersOfAccessibleTags(AuthInfoStore.getUserIDInLong(), fullTagName);
+		return thingTagManager.getUsersOfAccessibleTags(AuthInfoStore.getUserID(), fullTagName);
 	}
 
 	/**
@@ -261,7 +251,7 @@ public class TagController extends AbstractThingTagController {
 	 */
 	@RequestMapping(value = "/{fullTagName}/userGroups", method = RequestMethod.GET, consumes = {"*"})
 	public List<UserGroup> getUserGroupsByFullTagName(@PathVariable("fullTagName") String fullTagName) {
-		List<Long> userGroupIds = thingTagManager.getUserGroupsOfAccessibleTags(AuthInfoStore.getUserIDInLong(), fullTagName);
+		List<Long> userGroupIds = thingTagManager.getUserGroupsOfAccessibleTags(AuthInfoStore.getUserID(), fullTagName);
 		return thingTagManager.getUserGroupsByIds(userGroupIds);
 
 	}

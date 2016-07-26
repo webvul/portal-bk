@@ -16,22 +16,22 @@ public class RuleSetService {
 	private BeehiveUserJdbcDao userDao;
 
 	@Autowired
-	private PermissionTreeService  permissionTreeService;
+	private PermissionTreeService permissionTreeService;
 
 	@Autowired
 	private UserRuleDao ruleDao;
 
-	public PermissionTree getUserPermissionTree(String userID) {
+	public PermissionTree getUserPermissionTree(Long userID) {
 
-		BeehiveJdbcUser user = userDao.getUserByUserID(userID);
+		BeehiveJdbcUser user = userDao.getUserByID(userID);
 
 		UserRuleSet ruleSet = ruleDao.getRuleSetByName(user.getRoleName());
 
-		if(!ruleSet.getAcceptRuleSet().isEmpty()) {
-			return  permissionTreeService.getAcceptRulePermissionTree(ruleSet.getAcceptRuleSet());
-		}else if(!ruleSet.getDenyRuleSet().isEmpty()){
-			return  permissionTreeService.getDenyRulePermissionTree(ruleSet.getDenyRuleSet());
-		}else{
+		if (!ruleSet.getAcceptRuleSet().isEmpty()) {
+			return permissionTreeService.getAcceptRulePermissionTree(ruleSet.getAcceptRuleSet());
+		} else if (!ruleSet.getDenyRuleSet().isEmpty()) {
+			return permissionTreeService.getDenyRulePermissionTree(ruleSet.getDenyRuleSet());
+		} else {
 			throw new NullPointerException();
 		}
 	}

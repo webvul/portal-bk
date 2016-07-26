@@ -1,20 +1,6 @@
 package com.kii.beehive.portal.web.controller;
 
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-import org.apache.logging.log4j.util.Strings;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
 import com.kii.beehive.business.entity.ExecuteTarget;
 import com.kii.beehive.business.entity.TagSelector;
 import com.kii.beehive.business.service.ThingIFCommandService;
@@ -27,6 +13,16 @@ import com.kii.beehive.portal.web.entity.ThingCommandRestBean;
 import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
 import com.kii.extension.sdk.entity.thingif.CommandDetail;
+import org.apache.logging.log4j.util.Strings;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -69,15 +65,15 @@ public class ThingIFController extends AbstractThingTagController {
 
 			}
 		} else {
-			PortalException excep= new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","thing command");
-			excep.addParam("field"," thingID list or tag list ");
+			PortalException excep = new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "field", "thing command");
+			excep.addParam("field", " thingID list or tag list ");
 			throw excep;
 		}
 
 		targets.add(restBean);
 
 
-		String userID = AuthInfoStore.getUserID();
+		String userID = String.valueOf(AuthInfoStore.getUserID()); //no use
 
 		// send command request
 		List<Map<Long, String>> commandResultList = thingIFCommandService.doCommand(targets, userID);
@@ -135,15 +131,15 @@ public class ThingIFController extends AbstractThingTagController {
 				}
 			} else {
 
-				PortalException excep= new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","thing command");
-				excep.addParam("field"," thingID list or tag list ");
+				PortalException excep = new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "field", "thing command");
+				excep.addParam("field", " thingID list or tag list ");
 				throw excep;
 			}
 
 			targets.add(restBean);
 		}
 
-		String userID = AuthInfoStore.getUserID();
+		String userID = String.valueOf(AuthInfoStore.getUserID()); //no use
 
 		// send command request
 		List<Map<Long, String>> commandResultList = thingIFCommandService.doCommand(targets, userID);
@@ -180,12 +176,12 @@ public class ThingIFController extends AbstractThingTagController {
 	 */
 	@RequestMapping(value = "/command/list", method = {RequestMethod.POST})
 	public List<ThingCommandDetailRestBean> getCommandDetailsOfSingleThing(@RequestBody Map<String, Object>
-																				 search) {
+																				   search) {
 
 		List<ThingCommandDetailRestBean> responseList = new ArrayList<>();
 
 		// if no search body, return empty result
-		if(search == null || search.isEmpty()){
+		if (search == null || search.isEmpty()) {
 			return responseList;
 		}
 
@@ -194,7 +190,7 @@ public class ThingIFController extends AbstractThingTagController {
 		Long startDateTime = this.safeToLong(search.get("start"));
 		Long endDateTime = this.safeToLong(search.get("end"));
 
-		if(globalThingID == null) {
+		if (globalThingID == null) {
 			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING);
 		}
 
@@ -202,12 +198,12 @@ public class ThingIFController extends AbstractThingTagController {
 		List<GlobalThingInfo> tempList = this.thingTagManager.getThingsByIds(Arrays.asList(globalThingID));
 		GlobalThingInfo thing = CollectUtils.getFirst(tempList);
 		if (!thingTagManager.isThingCreator(thing) && !thingTagManager.isThingOwner(thing)) {
-			throw new PortalException(ErrorCode.THING_NO_PRIVATE,"thingID",thing.getVendorThingID());
+			throw new PortalException(ErrorCode.THING_NO_PRIVATE, "thingID", thing.getVendorThingID());
 		}
 
 		// get command details
 		List<CommandDetail> commandDetailList = thingIFCommandService.queryCommand(thing, startDateTime, endDateTime);
-		for(CommandDetail commandDetail : commandDetailList) {
+		for (CommandDetail commandDetail : commandDetailList) {
 			ThingCommandDetailRestBean restBean = new ThingCommandDetailRestBean(thing, commandDetail);
 			responseList.add(restBean);
 		}
@@ -230,7 +226,7 @@ public class ThingIFController extends AbstractThingTagController {
 		List<ThingCommandDetailRestBean> responseList = new ArrayList<>();
 
 		// if no search list, return empty result
-		if(!CollectUtils.hasElement(searchList)){
+		if (!CollectUtils.hasElement(searchList)) {
 			return responseList;
 		}
 
@@ -238,9 +234,9 @@ public class ThingIFController extends AbstractThingTagController {
 		List<Long> tempThingList = new ArrayList<>();
 		for (Map<String, Object> search : searchList) {
 			Long globalThingID = this.safeToLong(search.get(GLOBAL_THING_ID));
-			String commandID = (String)search.get(COMMAND_ID);
+			String commandID = (String) search.get(COMMAND_ID);
 
-			if(globalThingID == null || Strings.isEmpty(commandID)) {
+			if (globalThingID == null || Strings.isEmpty(commandID)) {
 				throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING);
 			}
 
@@ -254,7 +250,7 @@ public class ThingIFController extends AbstractThingTagController {
 		// get command details of each pair of global thing id and command id
 		for (GlobalThingInfo thing : things) {
 			long globalThingID = thing.getId();
-			String commandID = (String)searchList.stream().filter((search) -> this.safeToLong(search.get
+			String commandID = (String) searchList.stream().filter((search) -> this.safeToLong(search.get
 					(GLOBAL_THING_ID)).longValue() == globalThingID).findFirst().get().get(COMMAND_ID);
 
 			CommandDetail commandDetail = thingIFCommandService.readCommand(thing, commandID);
@@ -267,17 +263,18 @@ public class ThingIFController extends AbstractThingTagController {
 
 	/**
 	 * throw UNAUTHORIZED exception if neither creator nor owner of any tag
+	 *
 	 * @param tags
 	 */
 	private void checkPermissionOnTags(List<TagIndex> tags) {
 
-		if(!CollectUtils.hasElement(tags)){
+		if (!CollectUtils.hasElement(tags)) {
 			return;
 		}
 
 		tags.forEach(t -> {
 			if (!thingTagManager.isTagCreator(t) && !thingTagManager.isTagOwner(t)) {
-				throw new PortalException(ErrorCode.TAG_NO_PRIVATE,"tagName",t.getFullTagName());
+				throw new PortalException(ErrorCode.TAG_NO_PRIVATE, "tagName", t.getFullTagName());
 			}
 		});
 
@@ -285,33 +282,34 @@ public class ThingIFController extends AbstractThingTagController {
 
 	/**
 	 * throw UNAUTHORIZED exception if neither creator nor owner of any thing
+	 *
 	 * @param things
 	 */
 	private void checkPermissionOnThings(List<GlobalThingInfo> things) {
 
-		if(!CollectUtils.hasElement(things)){
+		if (!CollectUtils.hasElement(things)) {
 			return;
 		}
 
 		things.forEach(t -> {
 			if (!thingTagManager.isThingCreator(t) && !thingTagManager.isThingOwner(t)) {
-				throw new PortalException(ErrorCode.THING_NO_PRIVATE,"thingID",t.getVendorThingID());
+				throw new PortalException(ErrorCode.THING_NO_PRIVATE, "thingID", t.getVendorThingID());
 			}
 		});
 
 	}
 
 	private Long safeToLong(Object value) {
-		if(value == null) {
+		if (value == null) {
 			return null;
 		}
 
-		if(value instanceof Integer) {
+		if (value instanceof Integer) {
 			return ((Integer) value).longValue();
-		} else if(value instanceof Long) {
+		} else if (value instanceof Long) {
 			return (Long) value;
-		} else if(value instanceof String) {
-			return Long.valueOf((String)value);
+		} else if (value instanceof String) {
+			return Long.valueOf((String) value);
 		}
 
 		throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING);

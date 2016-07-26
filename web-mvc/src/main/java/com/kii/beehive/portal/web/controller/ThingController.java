@@ -1,16 +1,14 @@
 package com.kii.beehive.portal.web.controller;
 
-import static java.util.Arrays.asList;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
+import com.kii.beehive.business.manager.TagThingManager;
+import com.kii.beehive.business.service.ThingIFInAppService;
+import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.jdbc.entity.*;
+import com.kii.beehive.portal.web.entity.ThingRestBean;
+import com.kii.beehive.portal.web.exception.ErrorCode;
+import com.kii.beehive.portal.web.exception.PortalException;
+import com.kii.extension.sdk.entity.thingif.EndNodeOfGateway;
+import com.kii.extension.sdk.entity.thingif.GatewayOfKiiCloud;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,26 +16,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.kii.beehive.business.manager.TagThingManager;
-import com.kii.beehive.business.service.ThingIFInAppService;
-import com.kii.beehive.portal.auth.AuthInfoStore;
-import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
-import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
-import com.kii.beehive.portal.jdbc.entity.TagIndex;
-import com.kii.beehive.portal.jdbc.entity.TagType;
-import com.kii.beehive.portal.jdbc.entity.UserGroup;
-import com.kii.beehive.portal.web.entity.ThingRestBean;
-import com.kii.beehive.portal.web.exception.ErrorCode;
-import com.kii.beehive.portal.web.exception.PortalException;
-import com.kii.extension.sdk.entity.thingif.EndNodeOfGateway;
-import com.kii.extension.sdk.entity.thingif.GatewayOfKiiCloud;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static java.util.Arrays.asList;
 
 /**
  * Beehive API - Thing API
@@ -59,7 +43,7 @@ public class ThingController extends AbstractThingTagController {
 	 */
 	@RequestMapping(value = "/{globalThingID}/users", method = RequestMethod.GET, consumes = {"*"})
 	public List<BeehiveJdbcUser> getUsersByThing(@PathVariable("globalThingID") Long globalThingID) {
-		return thingTagManager.getUsersOfAccessibleThing(AuthInfoStore.getUserIDInLong(), globalThingID);
+		return thingTagManager.getUsersOfAccessibleThing(AuthInfoStore.getUserID(), globalThingID);
 
 	}
 
@@ -70,7 +54,7 @@ public class ThingController extends AbstractThingTagController {
 	 */
 	@RequestMapping(value = "/user", method = RequestMethod.GET, consumes = {"*"})
 	public List<ThingRestBean> getThingsByUser() {
-		return toThingRestBean(thingTagManager.getAccessibleThingsByUserId(AuthInfoStore.getUserIDInLong()));
+		return toThingRestBean(thingTagManager.getAccessibleThingsByUserId(AuthInfoStore.getUserID()));
 	}
 
 	/**
@@ -81,7 +65,7 @@ public class ThingController extends AbstractThingTagController {
 	 */
 	@RequestMapping(value = "/{globalThingID}/userGroups", method = RequestMethod.GET, consumes = {"*"})
 	public List<UserGroup> getUserGroupIdsByThing(@PathVariable("globalThingID") Long globalThingID) {
-		return thingTagManager.getUserGroupsOfAccessibleThing(AuthInfoStore.getUserIDInLong(), globalThingID);
+		return thingTagManager.getUserGroupsOfAccessibleThing(AuthInfoStore.getUserID(), globalThingID);
 
 	}
 
@@ -108,7 +92,7 @@ public class ThingController extends AbstractThingTagController {
 
 	@RequestMapping(value = "/types/{type}", method = {RequestMethod.GET}, consumes = {"*"})
 	public List<ThingRestBean> getThingsByType(@PathVariable("type") String type) {
-		List<GlobalThingInfo> thingList = thingTagManager.getAccessibleThingsByType(type, AuthInfoStore.getUserIDInLong());
+		List<GlobalThingInfo> thingList = thingTagManager.getAccessibleThingsByType(type, AuthInfoStore.getUserID());
 		List<ThingRestBean> resultList = this.toThingRestBean(thingList);
 		return resultList;
 	}
@@ -124,7 +108,7 @@ public class ThingController extends AbstractThingTagController {
 	@RequestMapping(value = "/types", method = {RequestMethod.GET}, consumes = {"*"})
 	public List<TagThingManager.ThingTypeWithCount> getAllType() {
 
-		return thingTagManager.getTypesOfAccessibleThingsWithCount(AuthInfoStore.getUserIDInLong());
+		return thingTagManager.getTypesOfAccessibleThingsWithCount(AuthInfoStore.getUserID());
 	}
 
 
@@ -137,7 +121,7 @@ public class ThingController extends AbstractThingTagController {
 	@RequestMapping(value = "/types/tagID/{tagIDs}", method = {RequestMethod.GET}, consumes = {"*"})
 	public List<String> getThingTypeByTagIDs(@PathVariable("tagIDs") String tagIDs) {
 		List<String> result;
-		result = thingTagManager.getThingTypesOfAccessibleThingsByTagIds(AuthInfoStore.getUserIDInLong(),
+		result = thingTagManager.getThingTypesOfAccessibleThingsByTagIds(AuthInfoStore.getUserID(),
 				asList(tagIDs.split(",")));
 
 		return result;
@@ -153,7 +137,7 @@ public class ThingController extends AbstractThingTagController {
 	 */
 	@RequestMapping(value = "/types/fulltagname/{fullTagNames}", method = {RequestMethod.GET}, consumes = {"*"})
 	public List<String> getThingTypeByTagFullName(@PathVariable("fullTagNames") String fullTagNames) {
-		return thingTagManager.getTypesOfAccessibleThingsByTagFullName(AuthInfoStore.getUserIDInLong(),
+		return thingTagManager.getTypesOfAccessibleThingsByTagFullName(AuthInfoStore.getUserID(),
 				asList(fullTagNames.split(",")).stream().collect(Collectors.toSet()));
 
 	}
@@ -170,7 +154,7 @@ public class ThingController extends AbstractThingTagController {
 	@RequestMapping(value = "/{globalThingID}", method = {RequestMethod.GET}, consumes = {"*"})
 	public ThingRestBean getThingByGlobalID(@PathVariable("globalThingID") Long globalThingID) {
 		GlobalThingInfo thingInfo;
-		thingInfo = thingTagManager.getAccessibleThingById(AuthInfoStore.getUserIDInLong(), globalThingID);
+		thingInfo = thingTagManager.getAccessibleThingById(AuthInfoStore.getUserID(), globalThingID);
 
 
 		// set thing into output
@@ -215,7 +199,7 @@ public class ThingController extends AbstractThingTagController {
 			thingInfo = new GlobalThingInfo();
 		} else {
 //			thingInfo = thingTagManager.getAccessibleThingById(AuthInfoStore.getUserID(), input.getId());
-			thingInfo = thingTagManager.getCanUpdateThingById(AuthInfoStore.getUserIDInLong(), input.getId());
+			thingInfo = thingTagManager.getCanUpdateThingById(AuthInfoStore.getUserID(), input.getId());
 		}
 
 		thingInfo.setVendorThingID(input.getVendorThingID());
@@ -228,7 +212,7 @@ public class ThingController extends AbstractThingTagController {
 		List<GlobalThingInfo> gList = thingTagManager.getThingsByVendorThingIds(Arrays.asList(thingInfo.getVendorThingID()));
 
 		if (!gList.isEmpty() && !gList.get(0).getId().equals(input.getId())) {
-			throw new PortalException(ErrorCode.DUPLICATE_OBJECT,"type","thing","objectID",String.valueOf(gList));
+			throw new PortalException(ErrorCode.DUPLICATE_OBJECT, "type", "thing", "objectID", String.valueOf(gList));
 		}
 
 		Long thingID = thingTagManager.createThing(thingInfo, input.getLocation(), input.getInputTags());
@@ -254,14 +238,14 @@ public class ThingController extends AbstractThingTagController {
 
 		if (Strings.isBlank(input.getSchemaName()) || Strings.isBlank(input.getSchemaVersion())
 				|| Strings.isBlank(input.getGatewayVendorThingID())) {
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","schemaName");
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "field", "schemaName");
 		}
 		if (Strings.isBlank(input.getSchemaVersion())) {
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","schemaVersion");
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "field", "schemaVersion");
 
 		}
 		if (Strings.isBlank(input.getGatewayVendorThingID())) {
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","gatewayVendorThingID");
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "field", "gatewayVendorThingID");
 		}
 
 		GlobalThingInfo thingInfo = null;
@@ -269,7 +253,7 @@ public class ThingController extends AbstractThingTagController {
 		if (input.getId() == null) {
 			thingInfo = new GlobalThingInfo();
 		} else {
-			thingInfo = thingTagManager.getCanUpdateThingById(AuthInfoStore.getUserIDInLong(), input.getId());
+			thingInfo = thingTagManager.getCanUpdateThingById(AuthInfoStore.getUserID(), input.getId());
 		}
 
 		GlobalThingInfo gateway = thingTagManager.getThingsByVendorThingId(input.getGatewayVendorThingID());
@@ -286,7 +270,7 @@ public class ThingController extends AbstractThingTagController {
 		List<GlobalThingInfo> gList = thingTagManager.getThingsByVendorThingIds(Arrays.asList(thingInfo.getVendorThingID()));
 
 		if (!gList.isEmpty() && !gList.get(0).getId().equals(input.getId())) {
-			throw new PortalException(ErrorCode.DUPLICATE_OBJECT,"type","thing","objectID",String.valueOf(gList));
+			throw new PortalException(ErrorCode.DUPLICATE_OBJECT, "type", "thing", "objectID", String.valueOf(gList));
 		}
 
 		Long thingID = thingTagManager.createThing(thingInfo, input.getLocation(), input.getInputTags());
@@ -520,7 +504,7 @@ public class ThingController extends AbstractThingTagController {
 	@RequestMapping(value = "/search", method = {RequestMethod.GET}, consumes = {"*"})
 	public List<ThingRestBean> getThingsByTagExpress(@RequestParam(value = "tagType") String tagType,
 													 @RequestParam(value = "displayName") String displayName) {
-		List<TagIndex> tagIndexes = thingTagManager.getAccessibleTagsByTagTypeAndName(AuthInfoStore.getUserIDInLong(),
+		List<TagIndex> tagIndexes = thingTagManager.getAccessibleTagsByTagTypeAndName(AuthInfoStore.getUserID(),
 				StringUtils.capitalize(tagType), displayName);
 
 		List<GlobalThingInfo> thingInfos = thingTagManager.getThingsByTagIds(tagIndexes.stream().map(TagIndex::getId).

@@ -1,20 +1,6 @@
 package com.kii.beehive.portal.manager;
 
 
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.kii.beehive.business.service.KiiUserService;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.StringRandomTools;
@@ -33,6 +19,19 @@ import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 import com.kii.beehive.portal.jdbc.entity.Team;
 import com.kii.extension.sdk.entity.KiiUser;
 import com.kii.extension.sdk.exception.KiiCloudException;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 @Transactional
@@ -250,7 +249,7 @@ public class AuthManager {
 	private AuthInfo saveToken(BeehiveJdbcUser user, String token, Team team, boolean is3rdParty) {
 		AuthInfo entity = new AuthInfo();
 		entity.setUserID(user.getUserID());
-
+		entity.setUserIDInLong(user.getId());
 		if (team != null) {
 			entity.setTeamID(team.getId());
 		}
@@ -277,7 +276,7 @@ public class AuthManager {
 	 */
 	public void changePassword(String oldPassword, String newPassword) {
 
-		BeehiveJdbcUser user = userDao.getUserByUserID(AuthInfoStore.getUserID());
+		BeehiveJdbcUser user = userDao.getUserByID(AuthInfoStore.getUserID());
 
 		String pwd = user.getHashedPwd(oldPassword);
 		String newPwd = user.getHashedPwd(newPassword);
@@ -296,7 +295,7 @@ public class AuthManager {
 
 		BeehiveJdbcUser user = userDao.getUserByUserID(userID);
 
-		if(user==null){
+		if (user == null) {
 			throw new UserNotExistException(userID);
 		}
 
@@ -330,7 +329,7 @@ public class AuthManager {
 		AuthRestBean authRestBean = validateLoginAccessToken(token);
 		BeehiveJdbcUser user = authRestBean.getUser();
 
-		PermissionTree permisssionTree = ruleService.getUserPermissionTree(user.getUserID());
+		PermissionTree permisssionTree = ruleService.getUserPermissionTree(user.getId());
 		boolean sign = permisssionTree.doVerify(method, url);
 
 		if (!sign) {

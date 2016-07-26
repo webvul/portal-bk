@@ -1,15 +1,5 @@
 package com.kii.beehive.portal.web.controller;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import org.apache.logging.log4j.util.Strings;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.kii.beehive.business.elasticsearch.TaskManager;
 import com.kii.beehive.business.manager.TagThingManager;
@@ -20,6 +10,13 @@ import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.beehive.portal.web.entity.SearchRestBean;
 import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
+import org.apache.logging.log4j.util.Strings;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 
 /**
@@ -92,7 +89,7 @@ public class ESServiceController {
 
 		things.forEach(thingInfo -> {
 			if (!Constants.ADMIN_ID.equals(AuthInfoStore.getUserID())) {//non-admin
-				thingTagManager.getAccessibleThingById(AuthInfoStore.getUserIDInLong(), thingInfo.getId());
+				thingTagManager.getAccessibleThingById(AuthInfoStore.getUserID(), thingInfo.getId());
 			}
 
 			kiiThingIDs.add("thing:" + thingInfo.getFullKiiThingID().substring(thingInfo.getFullKiiThingID().indexOf("-") + 1));
@@ -135,7 +132,7 @@ public class ESServiceController {
 			throw EntryNotFoundException.thingNotFound(searchRestBean.getVendorThingID());
 		}
 		if (!Constants.ADMIN_ID.equals(AuthInfoStore.getUserID())) {//non-admin
-			thingTagManager.getAccessibleThingById(AuthInfoStore.getUserIDInLong(), thing.getId());
+			thingTagManager.getAccessibleThingById(AuthInfoStore.getUserID(), thing.getId());
 		}
 
 		String kiiThingID = "thing:" + thing.getFullKiiThingID().substring(thing.getFullKiiThingID().indexOf("-") + 1);

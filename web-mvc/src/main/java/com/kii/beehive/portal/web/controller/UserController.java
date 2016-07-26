@@ -168,14 +168,14 @@ public class UserController {
 	@RequestMapping(path = "/usermanager/{userID}", method = {RequestMethod.DELETE}, consumes = {MediaType.ALL_VALUE})
 	public void hardDeleteUser(@PathVariable("userID") String userID) {
 
-
-		userManager.removeUser(userID);
+		BeehiveJdbcUser beehiveJdbcUser = userManager.getUserByUserID(userID);
+		userManager.removeUser(beehiveJdbcUser.getId());
 
 	}
 
 	/**
 	 * 通过userID查询用户
-	 * GET /users/{userID}
+	 * GET /usermanager/{userID}
 	 * <p>
 	 * refer to doc "Beehive API - User API" for request/response details
 	 *
@@ -185,7 +185,7 @@ public class UserController {
 	public UserRestBean getUser(@PathVariable("userID") String userID) {
 
 		UserRestBean bean = new UserRestBean();
-		bean.setBeehiveUser(userManager.getUserByIDDirectly(userID));
+		bean.setBeehiveUser(userManager.getUserByUserID(userID));
 
 		return bean;
 	}
@@ -219,7 +219,7 @@ public class UserController {
 	@RequestMapping(value = "/users/me", method = {RequestMethod.GET}, consumes = {MediaType.ALL_VALUE})
 	public UserRestBean getUser() {
 
-		String userID = AuthInfoStore.getUserID();
+		Long userID = AuthInfoStore.getUserID();
 		UserRestBean bean = new UserRestBean();
 		bean.setBeehiveUser(userManager.getUserByIDDirectly(userID));
 
@@ -232,11 +232,13 @@ public class UserController {
 
 		BeehiveJdbcUser updateUser = new BeehiveJdbcUser();
 		BeanUtils.copyProperties(user, updateUser, "kiiUserID", "activityToken", "userPassword", "roleName", "userID", "enable");
-		userManager.updateUser(updateUser, AuthInfoStore.getUserID());
+
+		BeehiveJdbcUser beehiveJdbcUser = userManager.getUserByIDDirectly(AuthInfoStore.getUserID());
+		userManager.updateUser(updateUser, beehiveJdbcUser.getUserID());
 
 
 		Map<String, String> map = new HashMap<>();
-		map.put("userID", AuthInfoStore.getUserID());
+		map.put("userID", beehiveJdbcUser.getUserID());
 		return map;
 	}
 
@@ -253,7 +255,7 @@ public class UserController {
 	public UserRestBean getUserByID(@PathVariable("userID") String userID) {
 
 		UserRestBean bean = new UserRestBean();
-		bean.setBeehiveUser(userManager.getUserByIDDirectly(userID));
+		bean.setBeehiveUser(userManager.getUserByUserID(userID));
 
 		return bean;
 	}
@@ -262,9 +264,8 @@ public class UserController {
 	@RequestMapping(value = "/users/permissionTree", method = {RequestMethod.GET}, consumes = {MediaType.ALL_VALUE})
 	public PermissionTree getUserPermissTree() {
 
-		String userID = AuthInfoStore.getUserID();
 
-		return userManager.getUsersPermissonTree(userID);
+		return userManager.getUsersPermissonTree(AuthInfoStore.getUserID());
 	}
 
 
@@ -295,8 +296,8 @@ public class UserController {
 
 	@RequestMapping(path = "/users/me/customData/{name}", method = {RequestMethod.GET}, consumes = {MediaType.ALL_VALUE})
 	public CustomData getCustomData(@PathVariable(value = "name") String name) {
-
-		return dataDao.getUserData(name, AuthInfoStore.getUserID());
+		BeehiveJdbcUser user = userManager.getUserByIDDirectly(AuthInfoStore.getUserID());
+		return dataDao.getUserData(name, user.getUserID());
 
 	}
 
@@ -305,11 +306,10 @@ public class UserController {
 	public void setCustomData(@PathVariable(value = "name") String name, @RequestBody(required = false) CustomData data) {
 
 		if (data == null) {
-
 			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "field", "custom data content");
-
 		}
-		dataDao.setUserData(data, name, AuthInfoStore.getUserID());
+		BeehiveJdbcUser user = userManager.getUserByIDDirectly(AuthInfoStore.getUserID());
+		dataDao.setUserData(data, name, user.getUserID());
 
 	}
 

@@ -24,8 +24,8 @@ import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 
 @RestController
-@RequestMapping(path = "/triggers", consumes = { MediaType.APPLICATION_JSON_UTF8_VALUE }, produces = {
-		MediaType.APPLICATION_JSON_UTF8_VALUE })
+@RequestMapping(path = "/triggers", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {
+		MediaType.APPLICATION_JSON_UTF8_VALUE})
 public class CrossTriggerController {
 
 	@Autowired
@@ -45,8 +45,8 @@ public class CrossTriggerController {
 	 *
 	 * @param record
 	 */
-	@RequestMapping(path="/createTrigger",method = { RequestMethod.POST })
-	public Map<String, Object> createTrigger(@RequestBody TriggerRecord record){
+	@RequestMapping(path = "/createTrigger", method = {RequestMethod.POST})
+	public Map<String, Object> createTrigger(@RequestBody TriggerRecord record) {
 
 		record.setUserID(AuthInfoStore.getUserID());
 
@@ -56,18 +56,18 @@ public class CrossTriggerController {
 
 		record.setRecordStatus(TriggerRecord.StatusType.disable);
 
-		triggerID=mang.createTrigger(record);
+		triggerID = mang.createTrigger(record);
 
 		Map<String, Object> result = new HashMap<>();
 		result.put("triggerID", triggerID);
 
-		triggerLogTools.outputCreateLog(record,triggerID);
+		triggerLogTools.outputCreateLog(record, triggerID);
 
 		return result;
 	}
 
-	@RequestMapping(path="/{triggerID}",method = { RequestMethod.DELETE },consumes = {"*"})
-	public Map<String, Object> deleteTrigger(@PathVariable("triggerID") String triggerID){
+	@RequestMapping(path = "/{triggerID}", method = {RequestMethod.DELETE}, consumes = {"*"})
+	public Map<String, Object> deleteTrigger(@PathVariable("triggerID") String triggerID) {
 		Map<String, Object> result = new HashMap<>();
 		result.put("result", "success");
 
@@ -79,13 +79,12 @@ public class CrossTriggerController {
 	}
 
 
-
-	@RequestMapping(path="/{triggerID}/enable",method = { RequestMethod.PUT })
-	public Map<String, Object> enableTrigger(@PathVariable("triggerID") String triggerID){
+	@RequestMapping(path = "/{triggerID}/enable", method = {RequestMethod.PUT})
+	public Map<String, Object> enableTrigger(@PathVariable("triggerID") String triggerID) {
 		Map<String, Object> result = new HashMap<>();
 		result.put("result", "success");
-		TriggerRecord record=mang.getTriggerByID(triggerID);
-		if(!TriggerRecord.StatusType.disable.equals(record.getRecordStatus())){
+		TriggerRecord record = mang.getTriggerByID(triggerID);
+		if (!TriggerRecord.StatusType.disable.equals(record.getRecordStatus())) {
 			throw new PortalException(ErrorCode.INVALID_INPUT);
 		}
 
@@ -97,12 +96,12 @@ public class CrossTriggerController {
 	}
 
 
-	@RequestMapping(path="/{triggerID}/disable",method = { RequestMethod.PUT })
-	public Map<String, Object> disableTrigger(@PathVariable("triggerID") String triggerID){
+	@RequestMapping(path = "/{triggerID}/disable", method = {RequestMethod.PUT})
+	public Map<String, Object> disableTrigger(@PathVariable("triggerID") String triggerID) {
 		Map<String, Object> result = new HashMap<>();
 		result.put("result", "success");
-		TriggerRecord record=mang.getTriggerByID(triggerID);
-		if(!TriggerRecord.StatusType.enable.equals(record.getRecordStatus())){
+		TriggerRecord record = mang.getTriggerByID(triggerID);
+		if (!TriggerRecord.StatusType.enable.equals(record.getRecordStatus())) {
 			throw new PortalException(ErrorCode.INVALID_INPUT);
 		}
 
@@ -113,48 +112,49 @@ public class CrossTriggerController {
 		return result;
 	}
 
-	@RequestMapping(path="/{triggerID}",method={RequestMethod.GET},consumes = {"*"})
-	public TriggerRecord getTriggerById(@PathVariable("triggerID") String triggerID){
+	@RequestMapping(path = "/{triggerID}", method = {RequestMethod.GET}, consumes = {"*"})
+	public TriggerRecord getTriggerById(@PathVariable("triggerID") String triggerID) {
 
 		return mang.getTriggerByID(triggerID);
 
 	}
-	@RequestMapping(path="/all",method={RequestMethod.GET},consumes = {"*"})
-	public List<TriggerRecord> getTriggerListByCurrentUser(){
 
-		String currentUserId = AuthInfoStore.getUserID();
+	@RequestMapping(path = "/all", method = {RequestMethod.GET}, consumes = {"*"})
+	public List<TriggerRecord> getTriggerListByCurrentUser() {
+
+		Long currentUserId = AuthInfoStore.getUserID();
 
 		return mang.getTriggerListByUserId(currentUserId);
 //		return null;
 
 	}
 
-	@RequestMapping(path="/deleteTrigger",method={RequestMethod.GET},consumes = {"*"})
-	public List<TriggerRecord> getDeleteTriggerListByCurrentUser(){
+	@RequestMapping(path = "/deleteTrigger", method = {RequestMethod.GET}, consumes = {"*"})
+	public List<TriggerRecord> getDeleteTriggerListByCurrentUser() {
 
-		String currentUserId = AuthInfoStore.getUserID();
+		Long currentUserId = AuthInfoStore.getUserID();
 
 		return mang.getDeleteTriggerListByUserId(currentUserId);
 //		return null;
 
 	}
 
-	@RequestMapping(path="/things/{thingId}",method={RequestMethod.GET},consumes = {"*"})
-	public List<SimpleTriggerRecord> getTriggerListByThingIdAndUserId(@PathVariable("thingId") String thingId){
-		String currentUserId = AuthInfoStore.getUserID();
-		return mang.getTriggerListByUserIdAndThingId(currentUserId,thingId);
+	@RequestMapping(path = "/things/{thingId}", method = {RequestMethod.GET}, consumes = {"*"})
+	public List<SimpleTriggerRecord> getTriggerListByThingIdAndUserId(@PathVariable("thingId") String thingId) {
+		Long currentUserId = AuthInfoStore.getUserID();
+		return mang.getTriggerListByUserIdAndThingId(currentUserId, thingId);
 	}
 
 
-	@RequestMapping(path="/debug/dump",method={RequestMethod.GET},consumes = {"*"})
-	public Map<String,Object> getRuleEngineDump(){
+	@RequestMapping(path = "/debug/dump", method = {RequestMethod.GET}, consumes = {"*"})
+	public Map<String, Object> getRuleEngineDump() {
 
 		return mang.getRuleEngingDump();
 	}
 
-	@RequestMapping(path="/debug/reinit",method={RequestMethod.POST},consumes = {"*"})
-	public void reInit(){
+	@RequestMapping(path = "/debug/reinit", method = {RequestMethod.POST}, consumes = {"*"})
+	public void reInit() {
 
-		 mang.reinit();
+		mang.reinit();
 	}
 }
