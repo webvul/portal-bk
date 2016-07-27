@@ -66,6 +66,7 @@ public class WebSocketMessageBrokerConfig extends AbstractSecurityWebSocketMessa
 		messages.simpTypeMatchers(SimpMessageType.CONNECT).permitAll()
 				.simpTypeMatchers(SimpMessageType.MESSAGE).hasAnyAuthority(
 				Role.administrator.name(), Role.userAdmin.name())
+				.simpTypeMatchers(SimpMessageType.DISCONNECT).permitAll()
 				.anyMessage().authenticated();
 	}
 }
