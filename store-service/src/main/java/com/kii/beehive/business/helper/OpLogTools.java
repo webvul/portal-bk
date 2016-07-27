@@ -37,7 +37,7 @@ public class OpLogTools {
 	private AtomicReference<BufferedWriter>  writerRef=new AtomicReference<>();
 
 
-	@Value("${beehive.portal.oplog.file}")
+	@Value("${beehive.portal.oplog.file:${user.home}/.beehive/data/log/beehive/op-log.csv}")
 	private String fullPath;
 
 	@PostConstruct
