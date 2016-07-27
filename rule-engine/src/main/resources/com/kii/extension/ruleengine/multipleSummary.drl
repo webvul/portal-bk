@@ -21,7 +21,6 @@ end
 
 rule "in unit,compute the  summary of  fieldName value: funName"
 when
-    CurrThing(init == false)
 	$trigger:Trigger(type==TriggerType.multiple,$triggerID:triggerID)
 	$summary:Summary(triggerID==$triggerID, funName=="sum" ,$name:name,$things:things)
 	accumulate( $status : MemberMatchResult(thingID memberOf $things);
@@ -35,7 +34,6 @@ end
 
 rule "in unit,compute the  count of  fieldName value: funName"
 when
-    CurrThing(init == false)
 	$trigger:Trigger(type==TriggerType.multiple,$triggerID:triggerID)
 	$summary:Summary(triggerID==$triggerID, funName=="count" ,$name:name,$things:things)
 	accumulate( $status : MemberMatchResult(thingID memberOf $things);
@@ -48,7 +46,6 @@ end
 
 rule "in unit,compute the  max of  fieldName value: funName"
 when
-    CurrThing(init == false)
 	$trigger:Trigger(type==TriggerType.multiple,$triggerID:triggerID)
 	$summary:Summary(triggerID==$triggerID, funName=="max" ,$name:name,$things:things)
 	accumulate( $status : MemberMatchResult(thingID memberOf $things);
@@ -61,7 +58,6 @@ end
 
 rule "in unit,compute the  min of  fieldName value: funName"
 when
-    CurrThing(init == false)
 	$trigger:Trigger(type==TriggerType.multiple,$triggerID:triggerID)
 	$summary:Summary(triggerID==$triggerID, funName=="min" ,$name:name,$things:things)
 	accumulate( $status : MemberMatchResult(thingID memberOf $things);
@@ -75,7 +71,6 @@ end
 
 rule "in unit,compute the  avg of  fieldName value: funName"
 when
-    CurrThing(init == false)
 	$trigger:Trigger(type==TriggerType.multiple,$triggerID:triggerID)
 	$summary:Summary(triggerID==$triggerID, funName=="average" ,$name:name,$things:things)
 	accumulate( $status : MemberMatchResult(thingID memberOf $things);

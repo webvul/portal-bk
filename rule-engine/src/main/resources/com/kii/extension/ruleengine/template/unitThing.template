@@ -5,6 +5,7 @@ when
     $ext:ExternalCollect()
     Trigger( $triggerID:triggerID,triggerID=="${triggerID}" && enable == true )
     $thing:SingleThing( triggerID==$triggerID &&  name== "${name}" )
+    CurrThing( valid($thing.thingID) )
     $status:ThingStatusInRule(thingID==$thing.thingID && ${express} )
 then
 	System.out.println("compute  thing ${name}  status summary ");

@@ -197,7 +197,11 @@ public class DroolsTriggerService {
 	public void addThingStatus(ThingStatusInRule newStatus){
 
 		cloudService.addOrUpdateData(newStatus);
+		cloudService.setCurrThingID(newStatus.getThingID());
+
 		streamService.addOrUpdateData(newStatus);
+		streamService.setCurrThingID(newStatus.getThingID());
+
 
 		fireCondition();
 	}

@@ -81,7 +81,17 @@ public class RuleEngineConsole {
 
 		engine.updateExternalValue("demo","two",222);
 
+		List<ThingStatusInRule> statusList=new ArrayList<>();
+		statusList.add(getStatusInRule("a","foo=100,bar=-10"));
+		statusList.add(getStatusInRule("b","foo=10,bar=-100"));
+		statusList.add(getStatusInRule("c","foo=-10,bar=10"));
+		statusList.add(getStatusInRule("d","foo=-100,bar=100"));
 
+		engine.initThingStatus(statusList);
+
+	}
+
+	public void loadAll(){
 
 		File triggerPath=new File("./rule-engine/src/test/resources/console");
 
@@ -100,15 +110,6 @@ public class RuleEngineConsole {
 			}
 
 		};
-
-		List<ThingStatusInRule> statusList=new ArrayList<>();
-		statusList.add(getStatusInRule("a","foo=100,bar=-10"));
-		statusList.add(getStatusInRule("b","foo=10,bar=-100"));
-		statusList.add(getStatusInRule("c","foo=-10,bar=10"));
-		statusList.add(getStatusInRule("d","foo=-100,bar=100"));
-
-		engine.initThingStatus(statusList);
-
 	}
 
 
@@ -118,6 +119,9 @@ public class RuleEngineConsole {
 
 		switch(cmd) {
 
+			case "loadAll":
+				loadAll();
+				break;
 
 			case "exit":
 				System.exit(0);
@@ -165,7 +169,7 @@ public class RuleEngineConsole {
 			case "listTrigger":
 				triggerSet.forEach((s) -> System.out.println("s"));
 				break;
-			case "setExternalParam":
+			case "setExt":
 				String name = arrays[1];
 				String value = arrays[2];
 

@@ -266,6 +266,8 @@ public class DroolsRuleService {
 
 	public void addOrUpdateExternal(ExternalValues entity){
 
+		currThing.withExtValue();
+
 		external.putEntity(entity.getName(),entity);
 
 		getSession().update(externalHandler,external);
@@ -285,6 +287,13 @@ public class DroolsRuleService {
 				}
 			}
 		);
+
+	}
+
+	public void setCurrThingID(String thingID){
+		this.currThing.setCurrThing(thingID);
+
+		kieSession.update(currThingHandler,currThing);
 
 	}
 
