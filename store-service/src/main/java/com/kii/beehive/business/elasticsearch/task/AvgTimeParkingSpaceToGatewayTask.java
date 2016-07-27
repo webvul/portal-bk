@@ -17,11 +17,7 @@ public class AvgTimeParkingSpaceToGatewayTask extends SearchTask {
 
 	private String carIdField;
 
-	private String eventTimeField;
-
 	private double averageTime;
-	private String parkingSpaceType;
-	private String gatewayType;
 
 	public double getAverageTime() {
 		return averageTime;
@@ -39,10 +35,6 @@ public class AvgTimeParkingSpaceToGatewayTask extends SearchTask {
 		this.carIdField = carIdField;
 	}
 
-	public void setEventTimeField(String timestampField) {
-		this.eventTimeField = timestampField;
-	}
-
 	@Override
 	protected SearchResponse processRequest(Client client) {
 		SearchResponse response = super.processRequest(client);
@@ -58,17 +50,14 @@ public class AvgTimeParkingSpaceToGatewayTask extends SearchTask {
 				long end = -1;
 				while (i < topHits.length - 1) {
 					if (topHits[i].getIndex().equals(gatewayIndex)
-							&& topHits[i].getType().equals(gatewayType)
-							&& topHits[i + 1].getIndex().equals(parkingSpaceIndex)
-							&& topHits[i + 1].getType().equals(parkingSpaceType)) {
+							&& topHits[i + 1].getIndex().equals(parkingSpaceIndex)) {
 						start = Long.valueOf(topHits[i].getSortValues()[0].toString());
 						break;
 					}
 					i++;
 				}
 				while (++i < topHits.length) {
-					if (topHits[i].getIndex().equals(parkingSpaceIndex)
-							&& topHits[i].getType().equals(parkingSpaceType)) {
+					if (topHits[i].getIndex().equals(parkingSpaceIndex)) {
 						end = Long.valueOf(topHits[i].getSortValues()[0].toString());
 						break;
 					}
@@ -84,13 +73,5 @@ public class AvgTimeParkingSpaceToGatewayTask extends SearchTask {
 			averageTime = (double) total / count;
 		}
 		return response;
-	}
-
-	public void setParkingSpaceType(String parkingSpaceType) {
-		this.parkingSpaceType = parkingSpaceType;
-	}
-
-	public void setGatewayType(String gatewayType) {
-		this.gatewayType = gatewayType;
 	}
 }

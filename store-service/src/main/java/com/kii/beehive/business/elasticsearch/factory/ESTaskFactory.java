@@ -17,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.kii.beehive.business.data.Action;
+import com.kii.beehive.business.data.Field;
 import com.kii.beehive.business.elasticsearch.task.AvgTimeParkingSpaceToGatewayTask;
 import com.kii.beehive.business.elasticsearch.task.BulkUploadTask;
 import com.kii.beehive.business.elasticsearch.task.SearchTask;
@@ -29,23 +31,11 @@ public class ESTaskFactory {
 	@Autowired
 	private Client indexOpClient;
 
-	@Value("${elasticsearch.business.common.field.carId}")
-	private String bizDataCommonCarId;
-
-	@Value("${elasticsearch.business.common.field.eventTime}")
-	private String bizDataCommonEventTime;
-
 	@Value("${elasticsearch.business.parkingspace.index}")
 	private String bizDataParkingSpaceIndex;
 
-	@Value("${elasticsearch.business.parkingspace.indexType.leave}")
-	private String bizDataParkingSpaceIndexTypeLeave;
-
 	@Value("${elasticsearch.business.gateway.index}")
 	private String bizDataGatewayIndex;
-
-	@Value("${elasticsearch.business.gateway.indexType.leave}")
-	private String bizDataGatewayIndexTypeLeave;
 
 	@PreDestroy
 	public void cleanUp() throws Exception {
@@ -88,34 +78,25 @@ public class ESTaskFactory {
 
 	public AvgTimeParkingSpaceToGatewayTask getAvgTimeParkingSpaceToGatewayTask(long startTime, long endTime) {
 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery()
-				.must(QueryBuilders.existsQuery(bizDataCommonCarId))
-				.must(QueryBuilders.existsQuery(bizDataCommonEventTime))
-				.must(QueryBuilders.rangeQuery(bizDataCommonEventTime).from(startTime).to(endTime)
-						.includeLower(true).includeUpper(true))
-				.must(QueryBuilders.boolQuery()
-						.should(QueryBuilders.boolQuery().must(
-								QueryBuilders.indicesQuery(QueryBuilders.matchAllQuery(), bizDataGatewayIndex))
-								.must(QueryBuilders.typeQuery(bizDataGatewayIndexTypeLeave))))
-				.should(QueryBuilders.boolQuery().must(
-						QueryBuilders.indicesQuery(QueryBuilders.matchAllQuery(), bizDataParkingSpaceIndex))
-						.must(QueryBuilders.typeQuery(bizDataParkingSpaceIndexTypeLeave)));
-		TermsBuilder agg = AggregationBuilders.terms(bizDataCommonCarId)
-				.script(new Script("_source." + bizDataCommonCarId))
+				.must(QueryBuilders.typeQuery(Action.CarOut.name()))
+				.must(QueryBuilders.existsQuery(Field.SOURCE))
+				.must(QueryBuilders.existsQuery(Field.EVENT_TIME))
+				.must(QueryBuilders.rangeQuery(Field.EVENT_TIME).from(startTime).to(endTime)
+						.includeLower(true).includeUpper(true));
+		TermsBuilder agg = AggregationBuilders.terms(Field.SOURCE)
+				.script(new Script("_source." + Field.SOURCE))
 				.subAggregation(AggregationBuilders.topHits("top").setSize(10000)
-						.addSort(SortBuilders.fieldSort(bizDataCommonEventTime).order(SortOrder.DESC)));
+						.addSort(SortBuilders.fieldSort(Field.EVENT_TIME).order(SortOrder.DESC)));
 		AvgTimeParkingSpaceToGatewayTask task = new AvgTimeParkingSpaceToGatewayTask();
 		task.setClient(indexOpClient);
 		task.setIndex_name(bizDataParkingSpaceIndex, bizDataGatewayIndex);
-		task.setType_name(bizDataParkingSpaceIndexTypeLeave, bizDataGatewayIndexTypeLeave);
+		task.setType_name(Action.CarOut.name());
 		task.setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
 		task.setQueryBuilder(boolQueryBuilder);
 		task.setAggregationBuilder(agg);
 		task.setParkingSpaceIndex(bizDataParkingSpaceIndex);
-		task.setParkingSpaceType(bizDataParkingSpaceIndexTypeLeave);
 		task.setGatewayIndex(bizDataGatewayIndex);
-		task.setGatewayType(bizDataGatewayIndexTypeLeave);
-		task.setCarIdField(bizDataCommonCarId);
-		task.setEventTimeField(bizDataCommonEventTime);
+		task.setCarIdField(Field.SOURCE);
 		return task;
 	}
 }
