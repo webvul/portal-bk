@@ -40,7 +40,7 @@ public class PermissionTreeService {
 
 //	private TreeMap<String,PermissionTree> indexMap=new TreeMap<>();
 
-	@Value("${com.kii.beehive.portal.permission.config.file}")
+	@Value("${com.kii.beehive.portal.permission.config.file:BeehivePermissionList}")
 	private String configName;
 
 	@PostConstruct
