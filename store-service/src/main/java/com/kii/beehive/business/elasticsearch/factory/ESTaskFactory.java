@@ -1,7 +1,9 @@
 package com.kii.beehive.business.elasticsearch.factory;
 
 import javax.annotation.PreDestroy;
+
 import java.util.List;
+
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -14,28 +16,27 @@ import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
 import com.fasterxml.jackson.databind.JsonNode;
-import com.kii.beehive.business.data.Action;
-import com.kii.beehive.business.data.Field;
+
 import com.kii.beehive.business.elasticsearch.task.AvgTimeParkingSpaceToGatewayTask;
 import com.kii.beehive.business.elasticsearch.task.BulkUploadTask;
 import com.kii.beehive.business.elasticsearch.task.SearchTask;
+import com.kii.beehive.portal.service.BeehiveConfigDao;
+import com.kii.beehive.portal.store.entity.es.EsDataSourceCfgEntry;
 
 /**
  * Created by hdchen on 7/1/16.
  */
 @Component
 public class ESTaskFactory {
+
 	@Autowired
 	private Client indexOpClient;
 
-	@Value("${elasticsearch.business.parkingspace.index}")
-	private String bizDataParkingSpaceIndex;
-
-	@Value("${elasticsearch.business.gateway.index}")
-	private String bizDataGatewayIndex;
+	@Autowired
+	private BeehiveConfigDao cfgDao;
 
 	@PreDestroy
 	public void cleanUp() throws Exception {
@@ -77,26 +78,50 @@ public class ESTaskFactory {
 	}
 
 	public AvgTimeParkingSpaceToGatewayTask getAvgTimeParkingSpaceToGatewayTask(long startTime, long endTime) {
+
+		EsDataSourceCfgEntry cfg=cfgDao.getEsConfig();
+
+
 		BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery()
-				.must(QueryBuilders.typeQuery(Action.CarOut.name()))
-				.must(QueryBuilders.existsQuery(Field.SOURCE))
-				.must(QueryBuilders.existsQuery(Field.EVENT_TIME))
-				.must(QueryBuilders.rangeQuery(Field.EVENT_TIME).from(startTime).to(endTime)
-						.includeLower(true).includeUpper(true));
-		TermsBuilder agg = AggregationBuilders.terms(Field.SOURCE)
-				.script(new Script("_source." + Field.SOURCE))
+
+				.must(QueryBuilders.existsQuery(cfg.getBizDataCommonCarId()))
+				.must(QueryBuilders.existsQuery(cfg.getBizDataCommonEventTime()))
+				.must(QueryBuilders.rangeQuery(cfg.getBizDataCommonEventTime()).from(startTime).to(endTime)
+						.includeLower(true).includeUpper(true))
+				.must(QueryBuilders.boolQuery()
+						.should(QueryBuilders.boolQuery().must(
+								QueryBuilders.indicesQuery(QueryBuilders.matchAllQuery(), cfg.getBizDataGatewayIndex()))
+								.must(QueryBuilders.typeQuery(cfg.getBizDataGatewayIndexTypeLeave()))))
+				.should(QueryBuilders.boolQuery().must(
+						QueryBuilders.indicesQuery(QueryBuilders.matchAllQuery(), cfg.getBizDataParkingSpaceIndex()))
+						.must(QueryBuilders.typeQuery(cfg.getBizDataParkingSpaceIndexTypeLeave())));
+		TermsBuilder agg = AggregationBuilders.terms(cfg.getBizDataCommonCarId())
+				.script(new Script("_source." + cfg.getBizDataCommonCarId()))
 				.subAggregation(AggregationBuilders.topHits("top").setSize(10000)
-						.addSort(SortBuilders.fieldSort(Field.EVENT_TIME).order(SortOrder.DESC)));
+						.addSort(SortBuilders.fieldSort(cfg.getBizDataCommonEventTime()).order(SortOrder.DESC)));
 		AvgTimeParkingSpaceToGatewayTask task = new AvgTimeParkingSpaceToGatewayTask();
+
 		task.setClient(indexOpClient);
-		task.setIndex_name(bizDataParkingSpaceIndex, bizDataGatewayIndex);
-		task.setType_name(Action.CarOut.name());
+//<<<<<<< 4c492e46768c21e225bcbcae0fd6179dfe4168ab
+//		task.setIndex_name(bizDataParkingSpaceIndex, bizDataGatewayIndex);
+//		task.setType_name(Action.CarOut.name());
+//		task.setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
+//		task.setQueryBuilder(boolQueryBuilder);
+//		task.setAggregationBuilder(agg);
+//		task.setParkingSpaceIndex(bizDataParkingSpaceIndex);
+//		task.setGatewayIndex(bizDataGatewayIndex);
+//		task.setCarIdField(Field.SOURCE);
+//=======
+
+		task.setIndex_name(cfg.getBizDataParkingSpaceIndex(), cfg.getBizDataGatewayIndex());
+		task.setType_name(cfg.getBizDataGatewayIndexTypeLeave());
 		task.setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
 		task.setQueryBuilder(boolQueryBuilder);
 		task.setAggregationBuilder(agg);
-		task.setParkingSpaceIndex(bizDataParkingSpaceIndex);
-		task.setGatewayIndex(bizDataGatewayIndex);
-		task.setCarIdField(Field.SOURCE);
+		task.setParkingSpaceIndex(cfg.getBizDataParkingSpaceIndex());
+		task.setGatewayIndex(cfg.getBizDataGatewayIndex());
+		task.setCarIdField(cfg.getBizDataCommonCarId());
+
 		return task;
 	}
 }

@@ -22,9 +22,10 @@
         - log4j.xxx.xml
     -->
 
-    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" >
         <property name="locations" value="classpath:com/kii/beehive/portal/web/config.${spring.profile}.properties"/>
         <property name="fileEncoding" value="UTF8"/>
+        <property name="ignoreUnresolvablePlaceholders" value="true" />
     </bean>
 
     <context:component-scan base-package="com.kii.beehive">

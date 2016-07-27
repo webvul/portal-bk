@@ -22,22 +22,22 @@ public class WebSocketMessageBrokerConfig extends AbstractSecurityWebSocketMessa
 	@Autowired
 	private STOMPClientInboundChannelInterceptor stompClientInboundChannelInterceptor;
 
-	@Value("${beehive.websocket.stomp.broker}")
+	@Value("${beehive.websocket.stomp.broker:/topic}")
 	private String broker;
 
-	@Value("${beehive.websocket.stomp.destination.prefix}")
+	@Value("${beehive.websocket.stomp.destination.prefix:/app}")
 	private String destinationPrefix;
 
-	@Value("${beehive.websocket.stomp.endpoint}")
+	@Value("${beehive.websocket.stomp.endpoint:/stomp}")
 	private String enpointStomp;
 
-	@Value("${beehive.websocket.stomp.endpoint.sockJS}")
+	@Value("${beehive.websocket.stomp.endpoint.sockJS:/stompSockJS}")
 	private String endporintStompSockJS;
 
-	@Value("${beehive.websocket.stomp.allowedOrigins}")
+	@Value("${beehive.websocket.stomp.allowedOrigins:*}")
 	private String[] allowedOrigins;
 
-	@Value("${beehive.websocket.stomp.sameOriginDisabled}")
+	@Value("${beehive.websocket.stomp.sameOriginDisabled:true}")
 	private boolean sameOriginDisabled;
 
 	@Override

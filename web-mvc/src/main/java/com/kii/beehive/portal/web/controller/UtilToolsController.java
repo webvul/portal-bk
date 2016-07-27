@@ -1,26 +1,7 @@
 package com.kii.beehive.portal.web.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kii.beehive.business.manager.AppInfoManager;
-import com.kii.beehive.business.manager.TagThingManager;
-import com.kii.beehive.portal.entitys.PermissionTree;
-import com.kii.beehive.portal.helper.PermissionTreeService;
-import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
-import com.kii.beehive.portal.service.AppInfoDao;
-import com.kii.beehive.portal.store.entity.CallbackUrlParameter;
-import com.kii.beehive.portal.store.entity.KiiAppInfo;
-import com.kii.beehive.portal.web.constant.CallbackNames;
-import com.kii.beehive.portal.web.exception.ErrorCode;
-import com.kii.beehive.portal.web.exception.PortalException;
-import com.kii.beehive.portal.web.help.BeehiveAppInfoManager;
-import com.kii.extension.sdk.entity.FederatedAuthResult;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
-
 import javax.servlet.http.HttpServletRequest;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -29,6 +10,34 @@ import java.util.List;
 import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import com.kii.beehive.business.manager.AppInfoManager;
+import com.kii.beehive.business.manager.TagThingManager;
+import com.kii.beehive.portal.entitys.PermissionTree;
+import com.kii.beehive.portal.helper.PermissionTreeService;
+import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
+import com.kii.beehive.portal.service.AppInfoDao;
+import com.kii.beehive.portal.service.BeehiveConfigDao;
+import com.kii.beehive.portal.store.entity.CallbackUrlParameter;
+import com.kii.beehive.portal.store.entity.KiiAppInfo;
+import com.kii.beehive.portal.store.entity.es.EsDataSourceCfgEntry;
+import com.kii.beehive.portal.web.constant.CallbackNames;
+import com.kii.beehive.portal.web.exception.ErrorCode;
+import com.kii.beehive.portal.web.exception.PortalException;
+import com.kii.beehive.portal.web.help.BeehiveAppInfoManager;
+import com.kii.extension.sdk.entity.FederatedAuthResult;
 
 /**
  * Beehive API - Thing API
@@ -66,6 +75,9 @@ public class UtilToolsController {
 	@Autowired
 	private PermissionTreeService permissionTreeService;
 
+
+	@Autowired
+	private BeehiveConfigDao  configDao;
 
 	/**
 	 * important:
@@ -108,6 +120,26 @@ public class UtilToolsController {
 
 		appInfoManager.addAppInfo(appID, param);
 		return;
+	}
+
+
+	@RequestMapping(value = "/sys/initEnv", method = {RequestMethod.POST}, consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+	public void envInit(){
+
+
+
+		EsDataSourceCfgEntry entry=new EsDataSourceCfgEntry();
+
+		entry.setBizDataCommonCarId("source");
+		entry.setBizDataGatewayIndex("4e47ffb1-0be8-4792-91f2-673be1626b57");
+		entry.setBizDataGatewayIndexTypeLeave("CarOut");
+		entry.setBizDataParkingSpaceIndex("74e58d2e-cb1f-4ada-b15e-49aea780f664");
+		entry.setBizDataParkingSpaceIndexTypeLeave("CarOut");
+		entry.setBizDataCommonEventTime("object.eventTime");
+
+		configDao.saveConfigEntry(entry);
+
+
 	}
 
 

@@ -37,11 +37,11 @@ public class TaskManager {
 	private final String TERM_FIELD = "target";
 
 	@Autowired
-	public TaskManager(@Value("${elasticsearch.indexTask.corePoolSize}") int indexTaskPoolSize,
-					   @Value("${elasticsearch.indexTask.maxPoolSize}") int indexTaskMaxSize,
-					   @Value("${elasticsearch.searchTask.corePoolSize}") int searchTaskPoolSize,
-					   @Value("${elasticsearch.searchTask.maxPoolSize}") int searchTaskMaxSize,
-					   @Value("${elasticsearch.taskManager.waitForTasksToCompleteOnShutdown}")
+	public TaskManager(@Value("${elasticsearch.indexTask.corePoolSize:2}") int indexTaskPoolSize,
+					   @Value("${elasticsearch.indexTask.maxPoolSize:5}") int indexTaskMaxSize,
+					   @Value("${elasticsearch.searchTask.corePoolSize:3}") int searchTaskPoolSize,
+					   @Value("${elasticsearch.searchTask.maxPoolSize:10}") int searchTaskMaxSize,
+					   @Value("${elasticsearch.taskManager.waitForTasksToCompleteOnShutdown:true}")
 							   boolean waitForTasksToCompleteOnShutdown,
 					   ESTaskFactory esTaskFactory) throws IOException {
 		taskFactory = esTaskFactory;
