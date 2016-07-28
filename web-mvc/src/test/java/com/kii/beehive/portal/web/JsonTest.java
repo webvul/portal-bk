@@ -11,11 +11,24 @@ import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.kii.beehive.portal.store.entity.CustomData;
 import com.kii.beehive.portal.store.entity.PortalSyncUser;
 import com.kii.beehive.portal.web.entity.SyncUserRestBean;
 
 public class JsonTest {
 
+
+	@Test
+	public void testCustomData() throws IOException {
+
+
+		String json="{\"data\":[\"abcd\",\"abc\"]}";
+
+
+		CustomData data=mapper.readValue(json,CustomData.class);
+
+		System.out.println(data);
+	}
 
 	private ObjectMapper mapper=new ObjectMapper();
 

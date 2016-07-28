@@ -25,6 +25,7 @@ public class UserCustomData extends PortalEntity {
 		return dataMap;
 	}
 
+	@JsonIgnore
 	public void setDataMap(Map<String, CustomData> dataMap) {
 		this.dataMap = dataMap;
 	}
@@ -37,7 +38,7 @@ public class UserCustomData extends PortalEntity {
 	public void setUserID(String userID) {
 		this.userID = userID;
 	}
-	
+
 	@JsonAnySetter
 	public void addData(String type, CustomData data) {
 		dataMap.put(type,data);
