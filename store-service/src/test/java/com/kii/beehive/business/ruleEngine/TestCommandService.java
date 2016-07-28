@@ -1,5 +1,8 @@
 package com.kii.beehive.business.ruleEngine;
 
+import static junit.framework.TestCase.assertEquals;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,6 +10,9 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.beehive.business.ruleengine.CommandExecuteService;
 import com.kii.beehive.portal.store.StoreServiceTestInit;
@@ -19,6 +25,7 @@ import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TagSelector;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.result.ExceptionResponse;
 import com.kii.extension.sdk.entity.thingif.Action;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
 
@@ -27,6 +34,9 @@ public class TestCommandService extends StoreServiceTestInit {
 	@Autowired
 	private CommandExecuteService cmdService;
 
+
+	@Autowired
+	private ObjectMapper mapper;
 
 	@Test
 	public void doHttpCall(){
@@ -94,6 +104,55 @@ public class TestCommandService extends StoreServiceTestInit {
 
 		cmdService.doCommand(trigger,new HashMap<>());
 
+	}
+
+
+	@Test
+	public void testJson() throws JsonProcessingException {
+
+		try {
+			try {
+				int i = 10 / 0;
+
+			} catch (Exception e) {
+				throw new IllegalArgumentException(e);
+			}
+		}catch (Exception ex){
+
+			ExceptionResponse resp=new ExceptionResponse(ex);
+
+
+			System.out.println(mapper.writeValueAsString(resp));
+
+		}
+
+
+	}
+
+	@Test
+	public  void testHttpCall() throws IOException {
+
+		String json="{\n" +
+				"\"url\":\"http://114.215.196.178:8080/beehive-portal/api/oauth2/registUser\",\n" +
+				"\"contentType\":\"application/json\",\n" +
+				"\"content\":\"{\\\"userName\\\":\\\"vivi2\\\",\\\"password\\\":\\\"1qaz2wsx\\\",\\\"displayNamel\\\":\\\"vivi\\\"}\",\n" +
+				"\"method\":\"POST\",\n" +
+				"\"type\":\"HttpApiCall\"\n" +
+				"}";
+
+		CallHttpApi  api=mapper.readValue(json,CallHttpApi.class);
+
+
+		assertEquals(api.getContentType(),"application/json");
+
+		assertEquals(api.getAuthorization(),null);
+
+		SimpleTriggerRecord trigger=new SimpleTriggerRecord();
+		trigger.addTarget(api);
+
+		cmdService.doCommand(trigger,new HashMap<>());
+
+		System.in.read();
 	}
 
 	@Test

@@ -22,6 +22,7 @@ import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.portal.common.utils.StrTemplate;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.service.AppInfoDao;
+import com.kii.extension.ruleengine.service.ExecuteResultDao;
 import com.kii.extension.ruleengine.service.TriggerRecordDao;
 import com.kii.extension.ruleengine.store.trigger.CallHttpApi;
 import com.kii.extension.ruleengine.store.trigger.CommandToThing;
@@ -29,6 +30,7 @@ import com.kii.extension.ruleengine.store.trigger.CronPrefix;
 import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.result.CommandResponse;
 import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.entity.thingif.Action;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
@@ -72,6 +74,8 @@ public class CommandExecuteService {
 	@Autowired
 	private TriggerCreator creator;
 
+	@Autowired
+	private ExecuteResultDao resultDao;
 
 
 	private ScheduledExecutorService executeService=new ScheduledThreadPoolExecutor(10);
@@ -109,7 +113,7 @@ public class CommandExecuteService {
 										});
 									});
 								}
-								sendCmd(command.getCommand(), thing);
+								sendCmd(command.getCommand(), thing,record.getTriggerID());
 
 							});
 							logTool.outputCommandLog(thingList,record);
@@ -119,7 +123,7 @@ public class CommandExecuteService {
 
 							call.fillParam(params);
 
-							httpCallService.doHttpApiCall(call);
+							httpCallService.doHttpApiCall(call,record.getTriggerID());
 
 							break;
 					}
@@ -148,7 +152,7 @@ public class CommandExecuteService {
 	}
 
 
-	private void sendCmd(ThingCommand command, GlobalThingInfo thingInfo) {
+	private void sendCmd(ThingCommand command, GlobalThingInfo thingInfo,String triggerID) {
 		String appID=thingInfo.getKiiAppID();
 
 
@@ -156,7 +160,11 @@ public class CommandExecuteService {
 		command.setSchema(SCHEMA);
 		command.setSchemaVersion(SCHEMA_VERSION);
 
-		thingIFService.sendCommand(command,thingInfo.getFullKiiThingID());
+		String cmdResult=thingIFService.sendCommand(command,thingInfo.getFullKiiThingID());
+		CommandResponse resp=new CommandResponse(cmdResult);
+		resp.setTriggerID(triggerID);
+		resultDao.addCommandResult(resp);
+
 	}
 
 
