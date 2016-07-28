@@ -236,8 +236,7 @@ public class ThingController extends AbstractThingTagController {
 
 		input.verifyInput();
 
-		if (Strings.isBlank(input.getSchemaName()) || Strings.isBlank(input.getSchemaVersion())
-				|| Strings.isBlank(input.getGatewayVendorThingID())) {
+		if (Strings.isBlank(input.getSchemaName())) {
 			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "field", "schemaName");
 		}
 		if (Strings.isBlank(input.getSchemaVersion())) {
