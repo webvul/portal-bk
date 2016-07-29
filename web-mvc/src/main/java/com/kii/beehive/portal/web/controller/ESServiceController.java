@@ -54,7 +54,7 @@ public class ESServiceController {
 	 * @param endTime
 	 * @return
 	 */
-	@RequestMapping(value = "/avgTimeParkingSpaceToGateway/{startTime}/{endTime}", method = {RequestMethod.POST})
+	@RequestMapping(value = "/avgTimeParkingSpaceToGateway/{startTime}/{endTime}", method = {RequestMethod.GET})
 	public double getAvgTimeParkingSpaceToGateway(@PathVariable("startTime") long startTime,
 												  @PathVariable("endTime") long endTime) {
 		try {
