@@ -37,8 +37,8 @@ public class ContextAspect {
 
 			if (obj instanceof PortalEntity) {
 
-				((PortalEntity) obj).setCreateBy(String.valueOf(AuthInfoStore.getUserID()));
-				((PortalEntity) obj).setModifyBy(String.valueOf(AuthInfoStore.getUserID()));
+				((PortalEntity) obj).setCreateBy(AuthInfoStore.getUserIDStr());
+				((PortalEntity) obj).setModifyBy(AuthInfoStore.getUserIDStr());
 				break;
 			}
 		}
@@ -52,7 +52,7 @@ public class ContextAspect {
 		for (Object obj : joinPoint.getArgs()) {
 
 			if (obj instanceof PortalEntity) {
-				((PortalEntity) obj).setModifyBy(String.valueOf(AuthInfoStore.getUserID()));
+				((PortalEntity) obj).setModifyBy(AuthInfoStore.getUserIDStr());
 				break;
 			} else if (obj instanceof Map) {
 				Map map = new HashMap();
