@@ -62,7 +62,7 @@ public class SyncMsgService {
 		SupplierPushMsgTask entity = new SupplierPushMsgTask();
 
 		entity.setMsgContent(msg);
-		entity.setSourceSupplier(String.valueOf(AuthInfoStore.getUserID()));
+		entity.setSourceSupplier(AuthInfoStore.getUserIDStr());
 
 		msgDao.addUserSyncMsg(entity);
 

@@ -26,9 +26,11 @@ public class AuthInfoStore {
 
 
 	public static Long getUserID() {
-
 		return user.get();
+	}
 
+	public static String getUserIDStr() {
+		return String.valueOf(user.get());
 	}
 
 	public static void setUserInfo(Long beehiveUserID) {

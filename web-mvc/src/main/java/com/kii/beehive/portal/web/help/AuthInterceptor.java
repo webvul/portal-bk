@@ -173,7 +173,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 			logTool.write(list);
 			throw e;
 		}
-		list.set(1, String.valueOf(AuthInfoStore.getUserID()));
+		list.set(1, AuthInfoStore.getUserIDStr());
 		logTool.write(list);
 
 		return super.preHandle(request, response, handler);

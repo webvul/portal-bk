@@ -41,7 +41,7 @@ public class TriggerLogTools {
 
 			//日期时间+当前用户ID+"trigger”+trigger type(simple/group/summary)+”fire"+当前triggerID+触发源
 			List<String> list = new LinkedList<>();
-			list.add(String.valueOf(AuthInfoStore.getUserID()));
+			list.add(AuthInfoStore.getUserIDStr());
 			list.add("trigger");
 			list.add(record.getType().name());
 			list.add("exec");
@@ -58,7 +58,7 @@ public class TriggerLogTools {
 	public void outputCreateLog(TriggerRecord record, String triggerID) {
 		//日期时间+当前用户ID+"trigger”+trigger type(simple/group/summary)+”create"+当前triggerID
 		List<String> list = new LinkedList<>();
-		list.add(String.valueOf(AuthInfoStore.getUserID()));
+		list.add(AuthInfoStore.getUserIDStr());
 		list.add("trigger");
 		list.add(record.getType().name());
 		list.add("create");
@@ -70,7 +70,7 @@ public class TriggerLogTools {
 	public void outputDeleteLog(String triggerID) {
 		//日期时间+当前用户ID+"trigger”+trigger type(simple/group/summary)+”delete"+当前triggerID
 		List<String> list = new LinkedList<>();
-		list.add(String.valueOf(AuthInfoStore.getUserID()));
+		list.add(AuthInfoStore.getUserIDStr());
 		list.add("trigger");
 		list.add(" ");
 		list.add("delete");
@@ -82,7 +82,7 @@ public class TriggerLogTools {
 	public void outputEnableLog(TriggerRecord record) {
 		//日期时间+当前用户ID+"trigger”+trigger type(simple/group/summary)+”enable"+当前triggerID
 		List<String> list = new LinkedList<>();
-		list.add(String.valueOf(AuthInfoStore.getUserID()));
+		list.add(AuthInfoStore.getUserIDStr());
 		list.add("trigger");
 		list.add(record.getType().name());
 		list.add("enable");
@@ -94,7 +94,7 @@ public class TriggerLogTools {
 	public void outputDisableLog(TriggerRecord record) {
 		//日期时间+当前用户ID+"trigger”+trigger type(simple/group/summary)+”disable"+当前triggerID
 		List<String> list = new LinkedList<>();
-		list.add(String.valueOf(AuthInfoStore.getUserID()));
+		list.add(AuthInfoStore.getUserIDStr());
 		list.add("trigger");
 		list.add(record.getType().name());
 		list.add("disable");
@@ -140,7 +140,7 @@ public class TriggerLogTools {
 
 		//日期时间+当前用户ID+"trigger”+trigger type(simple/group/summary)+”fire"+当前triggerID+触发源
 		List<String> list = new LinkedList<>();
-		list.add(String.valueOf(AuthInfoStore.getUserID()));
+		list.add(AuthInfoStore.getUserIDStr());
 		list.add("trigger");
 		list.add(triggerType);
 		list.add("fire");

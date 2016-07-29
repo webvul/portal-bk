@@ -73,7 +73,7 @@ public class ThingIFController extends AbstractThingTagController {
 		targets.add(restBean);
 
 
-		String userID = String.valueOf(AuthInfoStore.getUserID()); //no use
+		String userID = AuthInfoStore.getUserIDStr(); //no use
 
 		// send command request
 		List<Map<Long, String>> commandResultList = thingIFCommandService.doCommand(targets, userID);
@@ -139,7 +139,7 @@ public class ThingIFController extends AbstractThingTagController {
 			targets.add(restBean);
 		}
 
-		String userID = String.valueOf(AuthInfoStore.getUserID()); //no use
+		String userID = AuthInfoStore.getUserIDStr(); //no use
 
 		// send command request
 		List<Map<Long, String>> commandResultList = thingIFCommandService.doCommand(targets, userID);

@@ -135,7 +135,7 @@ public class UserGroupManager {
 			throw EntryNotFoundException.userGroupNotFound(userGroupID);
 		}
 
-		if (!orig.getCreateBy().equals(String.valueOf(AuthInfoStore.getUserID()))) {
+		if (!orig.getCreateBy().equals(AuthInfoStore.getUserIDStr())) {
 			throw new UnauthorizedException(UnauthorizedException.USERGROUP_NO_PRIVATE);
 		}
 		groupUserRelationDao.delete(null, userGroupID);
@@ -195,11 +195,11 @@ public class UserGroupManager {
 
 
 		UserGroup ug = this.userGroupDao.findByID(userGroupID);
-
-		if (!ug.getCreateBy().equals(AuthInfoStore.getUserID())) {
+		System.out.println(AuthInfoStore.getUserID());
+		if (!ug.getCreateBy().equals(AuthInfoStore.getUserIDStr())) {
 
 			throw new UnauthorizedException(UnauthorizedException.NOT_GROUP_CREATER, "group", ug.getName(),
-					"currUser", String.valueOf(AuthInfoStore.getUserID()));
+					"currUser", AuthInfoStore.getUserIDStr());
 		}
 
 		List<BeehiveJdbcUser> userList = userDao.getUserByUserIDs(userIDList);
@@ -233,13 +233,13 @@ public class UserGroupManager {
 		if (ug == null) {
 			throw new UnauthorizedException(UnauthorizedException.USERGROUP_NO_PRIVATE);
 
-		} else if (!ug.getCreateBy().equals(String.valueOf(AuthInfoStore.getUserID()))) {
+		} else if (!ug.getCreateBy().equals(AuthInfoStore.getUserIDStr())) {
 
 			throw new UnauthorizedException(UnauthorizedException.NOT_GROUP_CREATER);
 
 		} else {
 
-			if (userIDs.contains(AuthInfoStore.getUserID())) {
+			if (userIDs.contains(AuthInfoStore.getUserIDStr())) {
 				throw new UnauthorizedException(UnauthorizedException.USERGROUP_NO_PRIVATE);
 			}
 			List<Long> ids = userDao.getUserByUserIDs(userIDs).stream().mapToLong(BeehiveJdbcUser::getId).boxed().collect(Collectors.toList());

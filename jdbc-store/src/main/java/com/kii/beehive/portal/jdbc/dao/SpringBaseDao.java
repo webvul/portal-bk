@@ -167,9 +167,9 @@ public abstract class SpringBaseDao<T extends BusinessEntity> {
 	public <T extends BusinessEntity> long insert(T entity) {
 
 		if (entity.getCreateBy() == null)
-			entity.setCreateBy(String.valueOf(AuthInfoStore.getUserID()));
+			entity.setCreateBy(AuthInfoStore.getUserIDStr());
 		entity.setCreateDate(new Date());
-		entity.setModifyBy(String.valueOf(AuthInfoStore.getUserID()));
+		entity.setModifyBy(AuthInfoStore.getUserIDStr());
 		entity.setModifyDate(new Date());
 		entity.setDeleted(false);
 		SqlParameterSource parameters = new AnnationBeanSqlParameterSource(entity);
@@ -336,7 +336,7 @@ public abstract class SpringBaseDao<T extends BusinessEntity> {
 
 		Object[] newParams = new Object[params.length + 2];
 
-		newParams[0] = String.valueOf(AuthInfoStore.getUserID());
+		newParams[0] = AuthInfoStore.getUserIDStr();
 		newParams[1] = new Date();
 		System.arraycopy(params, 0, newParams, 2, params.length);
 
