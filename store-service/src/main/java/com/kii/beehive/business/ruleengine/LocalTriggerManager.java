@@ -255,7 +255,7 @@ public class LocalTriggerManager {
 		return triggerList;
 	}
 
-	public List<TriggerRecord> getDeleteTriggerListByUserId(String userId) {
+	public List<TriggerRecord> getDeleteTriggerListByUserId(Long userId) {
 		List<TriggerRecord> triggerList = localTriggerRecordDao.getDeleteTriggerListByUserId(userId);
 
 		return triggerList;

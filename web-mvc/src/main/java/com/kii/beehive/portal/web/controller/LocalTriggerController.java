@@ -136,7 +136,7 @@ public class LocalTriggerController {
 	@RequestMapping(path="/deleteTrigger",method={RequestMethod.GET},consumes = {"*"})
 	public List<TriggerRecord> getDeleteTriggerListByCurrentUser(){
 
-		String currentUserId = AuthInfoStore.getUserID();
+		Long currentUserId = AuthInfoStore.getUserID();
 
 		return localTriggerManager.getDeleteTriggerListByUserId(currentUserId);
 
