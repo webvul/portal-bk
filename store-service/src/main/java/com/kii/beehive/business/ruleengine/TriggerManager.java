@@ -1,18 +1,35 @@
 package com.kii.beehive.business.ruleengine;
 
+import javax.annotation.PostConstruct;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kii.beehive.business.event.BusinessEventListenerService;
 import com.kii.beehive.business.helper.TriggerCreator;
+import com.kii.beehive.business.manager.AppInfoManager;
 import com.kii.beehive.business.manager.ThingTagManager;
+import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.portal.event.EventListener;
 import com.kii.beehive.portal.exception.EntryNotFoundException;
+import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.service.EventListenerDao;
+import com.kii.beehive.portal.service.LocalTriggerRecordDao;
 import com.kii.extension.ruleengine.EngineService;
 import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
 import com.kii.extension.ruleengine.schedule.ScheduleService;
 import com.kii.extension.ruleengine.service.TriggerRecordDao;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
+import com.kii.extension.sdk.entity.thingif.Action;
+import com.kii.extension.sdk.entity.thingif.ThingOfKiiCloud;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +49,22 @@ public class TriggerManager {
 	private static final Logger log = LoggerFactory.getLogger(TriggerManager.class);
 
 	@Autowired
+	private ThingIFInAppService thingIFService;
+
+	@Autowired
+	private AppInfoManager appInfoManager;
+
+	@Autowired
+	private LocalTriggerManager localTriggerManager;
+
+	@Autowired
 	private TriggerRecordDao triggerDao;
+
+	@Autowired
+	private LocalTriggerRecordDao localTriggerRecordDao;
+
+	@Autowired
+	private GlobalThingSpringDao globalThingDao;
 
 	@Autowired
 	private BusinessEventListenerService eventService;
@@ -107,9 +139,23 @@ public class TriggerManager {
 
 	public String createTrigger(TriggerRecord record) {
 
-		triggerDao.addKiiEntity(record);
+		ThingOfKiiCloud gatewayOfKiiCloud = localTriggerManager.checkLocalRule(record);
 
-		creator.addTriggerToEngine(record);
+		if( ! StringUtils.isEmpty(record.getId()) ){// saved local rule
+			//action
+			Map<String, Action> actions = new HashMap<>();
+			Action action = new Action();
+			actions.put("createTrigger", action);
+			action.setField("triggerJson", record);
+
+			localTriggerManager.sendGatewayCommand(gatewayOfKiiCloud.getFullKiiThingID(), actions);
+
+		}else {
+
+			triggerDao.addKiiEntity(record);
+
+			creator.addTriggerToEngine(record);
+		}
 
 		return record.getId();
 

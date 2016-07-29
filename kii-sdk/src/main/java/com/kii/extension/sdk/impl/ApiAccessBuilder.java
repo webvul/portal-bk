@@ -479,6 +479,13 @@ public class ApiAccessBuilder {
 
 		return this;
 	}
+	public ApiAccessBuilder getThingGateway(String thingID){
+//		> GET /thing-if/apps/{appID}/things/thingID/gateway
+
+		request=new HttpGet(appInfo.getAppSubUrl()+"/things/"+thingID+"/gateway");
+
+		return this;
+	}
 
 	public ApiAccessBuilder  setThingStatus(String thingID,ThingStatus status){
 

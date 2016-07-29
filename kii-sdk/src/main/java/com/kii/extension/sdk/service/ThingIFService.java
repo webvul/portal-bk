@@ -22,6 +22,7 @@ import com.kii.extension.sdk.entity.thingif.LayoutPosition;
 import com.kii.extension.sdk.entity.thingif.OnBoardingParam;
 import com.kii.extension.sdk.entity.thingif.OnBoardingResult;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
+import com.kii.extension.sdk.entity.thingif.ThingOfKiiCloud;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 import com.kii.extension.sdk.impl.ApiAccessBuilder;
 import com.kii.extension.sdk.impl.KiiCloudClient;
@@ -107,6 +108,19 @@ public class ThingIFService {
 
 		return result;
 	}
+
+
+	public ThingOfKiiCloud getThingGateway(String thingID){
+
+
+		HttpUriRequest request=	getBuilder().getThingGateway(thingID).generRequest(mapper);
+
+		ThingOfKiiCloud result=client.executeRequestWithCls(request,ThingOfKiiCloud.class);
+
+		return result;
+	}
+
+
 
 	public OnBoardingResult onBoarding(OnBoardingParam param){
 

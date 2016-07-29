@@ -23,6 +23,7 @@ import com.kii.extension.sdk.entity.thingif.GatewayOfKiiCloud;
 import com.kii.extension.sdk.entity.thingif.OnBoardingParam;
 import com.kii.extension.sdk.entity.thingif.OnBoardingResult;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
+import com.kii.extension.sdk.entity.thingif.ThingOfKiiCloud;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 import com.kii.extension.sdk.entity.thingif.ThingTrigger;
 import com.kii.extension.sdk.service.ThingIFService;
@@ -101,6 +102,12 @@ public class ThingIFInAppService {
 
 
 		return doExecWithRealThingID(fullThingID,(th)-> service.getStatus(th));
+
+	}
+	public ThingOfKiiCloud getThingGateway(String fullThingID){
+
+
+		return doExecWithRealThingID(fullThingID,(th)-> service.getThingGateway(th));
 
 	}
 

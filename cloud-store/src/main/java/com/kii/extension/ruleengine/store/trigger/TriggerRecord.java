@@ -1,5 +1,8 @@
 package com.kii.extension.ruleengine.store.trigger;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -36,8 +39,13 @@ public abstract class TriggerRecord extends KiiEntity {
 	private StatusType recordStatus;
 
 	private String name;
+	private TriggerPosition triggerPosition = TriggerPosition.cloud;
+
 
 	private String description;
+
+	private String gatewayVendorThingID;//for local
+	private String gatewayFullKiiThingID;//for local
 
 
 	public String getTriggerID() {
@@ -117,6 +125,9 @@ public abstract class TriggerRecord extends KiiEntity {
 	public enum StatusType {
 		enable, disable, deleted;
 	}
+	public enum TriggerPosition{
+		cloud, local;
+	}
 
 	public void addTargetParam(String name, String param) {
 		CommandParam cmdParam = new CommandParam();
@@ -135,5 +146,27 @@ public abstract class TriggerRecord extends KiiEntity {
 		this.targetParamList = targetParamList;
 	}
 
+	public TriggerPosition getTriggerPosition() {
+		return triggerPosition;
+	}
 
+	public void setTriggerPosition(TriggerPosition triggerPosition) {
+		this.triggerPosition = triggerPosition;
+	}
+
+	public String getGatewayVendorThingID() {
+		return gatewayVendorThingID;
+	}
+
+	public void setGatewayVendorThingID(String gatewayVendorThingID) {
+		this.gatewayVendorThingID = gatewayVendorThingID;
+	}
+
+	public String getGatewayFullKiiThingID() {
+		return gatewayFullKiiThingID;
+	}
+
+	public void setGatewayFullKiiThingID(String gatewayFullKiiThingID) {
+		this.gatewayFullKiiThingID = gatewayFullKiiThingID;
+	}
 }

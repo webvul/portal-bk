@@ -60,6 +60,7 @@ public class CrossTriggerController {
 
 		Map<String, Object> result = new HashMap<>();
 		result.put("triggerID", triggerID);
+		result.put("triggerPosition", record.getTriggerPosition());
 
 		triggerLogTools.outputCreateLog(record, triggerID);
 
