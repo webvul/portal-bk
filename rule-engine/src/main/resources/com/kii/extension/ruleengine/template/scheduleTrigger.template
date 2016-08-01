@@ -14,7 +14,7 @@ when
     $ext:ExternalCollect()
     Trigger( $triggerID:triggerID,  triggerID=="${triggerID}" && enable == true )
 then
-	ResultParam  result=new ResultParam($triggerID);
+    ResultParam result=new ResultParam($triggerID);
 
 	${fillParam}
 

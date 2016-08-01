@@ -15,11 +15,11 @@ when
     Trigger( $triggerID:triggerID =="${triggerID}" && enable == true  )
     SingleThing($thingID:thingID,triggerID==$triggerID)
     $status:ThingStatusInRule( thingID == $thingID,${express}  )
-    $result:ResultParam(triggerID==$triggerID)
 then
+    ResultParam result=new ResultParam($triggerID);
+
 	${fillParam}
 
 	CommandExec exec=(CommandExec)kcontext.getKieRuntime().getEnvironment().get("exec");
-    exec.doExecute($triggerID,$result);
-    $result.clearAll();
+    exec.doExecute($triggerID,result);
 end

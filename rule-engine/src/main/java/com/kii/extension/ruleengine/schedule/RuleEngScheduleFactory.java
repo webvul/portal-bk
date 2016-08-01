@@ -3,6 +3,7 @@ package com.kii.extension.ruleengine.schedule;
 import org.quartz.JobBuilder;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
+import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SchedulerFactory;
@@ -11,11 +12,18 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.kii.extension.ruleengine.RuleEngineConfig;
-
 @Configuration
 public class RuleEngScheduleFactory {
 
+	private static final String START = "start";
+	private static final String STOP = "stop";
+	private static final String EXECUTE_JOB = "ruleEngineTrigger";
+
+	public static final JobKey START_JOB= JobKey.jobKey(START,EXECUTE_JOB);
+	public static final JobKey STOP_JOB= JobKey.jobKey(STOP,EXECUTE_JOB);
+
+	public static final String APPLICATION_CTX = "applicationCtx";
+	public static final String BEAN_CLASS = "beanClass";
 
 
 	@Autowired
@@ -47,8 +55,8 @@ public class RuleEngScheduleFactory {
 	private JobBuilder getJobBuilder(Class cls){
 
 		JobDataMap dataMap=new JobDataMap();
-		dataMap.put(RuleEngineConfig.APPLICATION_CTX,applicationCtx);
-		dataMap.put(RuleEngineConfig.BEAN_CLASS,cls);
+		dataMap.put(APPLICATION_CTX,applicationCtx);
+		dataMap.put(BEAN_CLASS,cls);
 
 		return JobBuilder.newJob()
 				.setJobData(dataMap)
@@ -62,14 +70,14 @@ public class RuleEngScheduleFactory {
 	private JobDetail getStartJob(){
 
 		return getJobBuilder(startJob.getClass())
-				.withIdentity(RuleEngineConfig.START_JOB)
+				.withIdentity(START_JOB)
 				.build();
 	}
 
 	private JobDetail  getStopJob(){
 
 		return getJobBuilder(stopJob.getClass())
-				.withIdentity(RuleEngineConfig.STOP_JOB)
+				.withIdentity(STOP_JOB)
 				.build();
 	}
 

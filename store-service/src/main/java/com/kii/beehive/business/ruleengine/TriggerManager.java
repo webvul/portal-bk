@@ -1,17 +1,21 @@
 package com.kii.beehive.business.ruleengine;
 
 import javax.annotation.PostConstruct;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.kii.beehive.business.event.BusinessEventListenerService;
 import com.kii.beehive.business.helper.TriggerCreator;
 import com.kii.beehive.business.manager.AppInfoManager;
@@ -31,17 +35,6 @@ import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.sdk.entity.thingif.Action;
 import com.kii.extension.sdk.entity.thingif.ThingOfKiiCloud;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-
-import javax.annotation.PostConstruct;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 @Component
 public class TriggerManager {
@@ -99,6 +92,7 @@ public class TriggerManager {
 	@PostConstruct
 	public void init() {
 		List<TriggerRecord> recordList = triggerDao.getAllTrigger();
+		scheduleService.startSchedule();
 
 		recordList.forEach(record -> {
 
@@ -108,7 +102,6 @@ public class TriggerManager {
 				e.printStackTrace();
 			}
 		});
-		scheduleService.startSchedule();
 
 		List<ThingStatusInRule> initThings = new ArrayList<>();
 

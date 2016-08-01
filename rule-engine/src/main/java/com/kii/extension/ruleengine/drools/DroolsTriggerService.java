@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 import com.kii.extension.ruleengine.drools.entity.ExternalValues;
 import com.kii.extension.ruleengine.drools.entity.MatchResult;
 import com.kii.extension.ruleengine.drools.entity.MultiplesValueMap;
-import com.kii.extension.ruleengine.drools.entity.ResultParam;
 import com.kii.extension.ruleengine.drools.entity.Summary;
 import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
 import com.kii.extension.ruleengine.drools.entity.Trigger;
@@ -75,11 +74,11 @@ public class DroolsTriggerService {
 		Trigger trigger=new Trigger(triggerInput);
 		triggerMap.put(trigger.getTriggerID(),trigger);
 
-		if(withSchedule){
-			ResultParam param=new ResultParam(trigger.getTriggerID());
-
-			getService(trigger).addOrUpdateData(param);
-		}
+//		if(withSchedule){
+//			ResultParam param=new ResultParam(trigger.getTriggerID());
+//
+//			getService(trigger).addOrUpdateData(param);
+//		}
 
 
 		getService(trigger).addCondition("rule"+trigger.getTriggerID(),ruleContent);
@@ -97,10 +96,10 @@ public class DroolsTriggerService {
 		getService(trigger).addOrUpdateData(trigger);
 
 
-		if(withSchedule){
-			ResultParam param=new ResultParam(trigger.getTriggerID());
-			getService(trigger).addOrUpdateData(param);
-		}
+//		if(withSchedule){
+//			ResultParam param=new ResultParam(trigger.getTriggerID());
+//			getService(trigger).addOrUpdateData(param);
+//		}
 
 		MultiplesValueMap map=new MultiplesValueMap();
 		map.setTriggerID(trigger.getTriggerID());

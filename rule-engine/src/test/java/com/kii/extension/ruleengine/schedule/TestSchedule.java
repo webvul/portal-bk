@@ -20,15 +20,28 @@ public class TestSchedule {
 	@Autowired
 	private ScheduleService  scheduleService;
 
+	@Test
+	public void testTriggerTask() throws SchedulerException, IOException {
+
+		SchedulePeriod period=new SchedulePeriod();
+		period.setEndCron("0/10  *  *  *  *  ?");
+		period.setStartCron("0/50  * *  *  *  ?");
+
+
+		scheduleService.addManagerTaskForSchedule("aaa",period);
+
+		System.in.read();
+
+	}
+
 
 	@Test
 	public void testStart() throws SchedulerException, IOException {
 		
 		
 		SchedulePeriod period=new SchedulePeriod();
-		period.setEndCron("0  0/1 *  *  *  ?");
+		period.setEndCron("0/10  *  *  *  *  ?");
 		period.setStartCron("0  5/1 *  *  *  ?");
-
 
 
 		scheduleService.addManagerTaskForSchedule("aaa",period);

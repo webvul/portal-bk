@@ -19,7 +19,6 @@ import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.kii.extension.ruleengine.RuleEngineConfig;
 import com.kii.extension.ruleengine.store.trigger.SchedulePeriod;
 import com.kii.extension.ruleengine.store.trigger.SimplePeriod;
 import com.kii.extension.ruleengine.store.trigger.TriggerValidPeriod;
@@ -136,7 +135,7 @@ public class ScheduleService {
 		Trigger triggerStart= TriggerBuilder.newTrigger()
 				.withIdentity(TriggerKey.triggerKey(triggerID,START_PRE))
 				.usingJobData(TRIGGER_ID,triggerID)
-				.forJob(RuleEngineConfig.START_JOB)
+				.forJob(RuleEngScheduleFactory.START_JOB)
 				.withSchedule(cronSchedule(period.getStartCron()))
 				.build();
 
@@ -147,7 +146,7 @@ public class ScheduleService {
 		Trigger triggerEnd= TriggerBuilder.newTrigger()
 				.withIdentity(TriggerKey.triggerKey(triggerID,STOP_PRE))
 				.usingJobData(TRIGGER_ID,triggerID)
-				.forJob(RuleEngineConfig.STOP_JOB)
+				.forJob(RuleEngScheduleFactory.STOP_JOB)
 				.withSchedule(cronSchedule(period.getEndCron()))
 				.build();
 
@@ -159,14 +158,14 @@ public class ScheduleService {
 
 		//fire miss trigger by hand
 		if(nextStart.getTime()>=nextStop.getTime()){
-			JobDataMap  dataMap=scheduler.getJobDetail(RuleEngineConfig.START_JOB).getJobDataMap();
+			JobDataMap  dataMap=scheduler.getJobDetail(RuleEngScheduleFactory.START_JOB).getJobDataMap();
 			dataMap.put(TRIGGER_ID, triggerID);
-			scheduler.triggerJob(RuleEngineConfig.START_JOB,dataMap);
+			scheduler.triggerJob(RuleEngScheduleFactory.START_JOB,dataMap);
 		}else{
-			JobDataMap  dataMap=scheduler.getJobDetail(RuleEngineConfig.STOP_JOB).getJobDataMap();
+			JobDataMap  dataMap=scheduler.getJobDetail(RuleEngScheduleFactory.STOP_JOB).getJobDataMap();
 			dataMap.put(TRIGGER_ID, triggerID);
 
-			scheduler.triggerJob(RuleEngineConfig.STOP_JOB,dataMap);
+			scheduler.triggerJob(RuleEngScheduleFactory.STOP_JOB,dataMap);
 		}
 	}
 
@@ -183,7 +182,7 @@ public class ScheduleService {
 			Trigger triggerStart = TriggerBuilder.newTrigger()
 					.withIdentity(TriggerKey.triggerKey(triggerID,START_PRE))
 					.usingJobData(TRIGGER_ID, triggerID)
-					.forJob(RuleEngineConfig.START_JOB)
+					.forJob(RuleEngScheduleFactory.START_JOB)
 					.startAt(new Date(period.getStartTime()))
 					.build();
 
@@ -191,16 +190,16 @@ public class ScheduleService {
 			scheduler.scheduleJob(triggerStart);
 		}else if(period.getEndTime()>=now){
 			//fire miss start job by hand
-			JobDataMap  dataMap=scheduler.getJobDetail(RuleEngineConfig.START_JOB).getJobDataMap();
+			JobDataMap  dataMap=scheduler.getJobDetail(RuleEngScheduleFactory.START_JOB).getJobDataMap();
 			dataMap.put(TRIGGER_ID, triggerID);
-			scheduler.triggerJob(RuleEngineConfig.START_JOB,dataMap);
+			scheduler.triggerJob(RuleEngScheduleFactory.START_JOB,dataMap);
 		}
 
 
 		Trigger triggerEnd = TriggerBuilder.newTrigger()
 					.withIdentity(TriggerKey.triggerKey(triggerID,STOP_PRE))
 					.usingJobData(TRIGGER_ID, triggerID)
-					.forJob(RuleEngineConfig.STOP_JOB)
+					.forJob(RuleEngScheduleFactory.STOP_JOB)
 					.startAt(new Date(period.getEndTime()))
 					.build();
 

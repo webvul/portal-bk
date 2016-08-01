@@ -95,7 +95,7 @@ public class RuleGeneral {
 
 
 
-		params.put("fillParam",getParamMappingList(record.getTargetParamList(),false,withSchedule));
+		params.put("fillParam",getParamMappingList(record.getTargetParamList(),false));
 
 		String multipleDrl=StrTemplate.generByMap(fullTemplate,params);
 
@@ -187,7 +187,6 @@ end
 		Map<String,String> params=new HashMap<>();
 
 		String template=null;
-		boolean isResultParam=false;
 		if(predicate.getSchedule()!=null){
 
 			if(predicate.getCondition()==null&& StringUtils.isBlank(predicate.getExpress())){
@@ -195,7 +194,6 @@ end
 				template=loadTemplate("schedule");
 			}else {
 				template = loadTemplate("simpleSchedule");
-				isResultParam=true;
 			}
 			params.put("timer",generTimer(predicate.getSchedule()));
 
@@ -203,7 +201,7 @@ end
 			template=loadTemplate(TriggerType.simple.name());
 		}
 
-		params.put("fillParam",getParamMappingList(paramList,true,isResultParam));
+		params.put("fillParam",getParamMappingList(paramList,true));
 
 		params.put("triggerID",triggerID);
 		params.put("express",generExpress(predicate));
@@ -214,9 +212,9 @@ end
 		return fullDrl;
 	}
 
-	private static String ParamBindTemplate="${2}result.setParam(\"${0}\",${1}); \n";
+	private static String ParamBindTemplate="result.setParam(\"${0}\",${1}); \n";
 
-	private String getParamMappingList(List<CommandParam>  paramList,boolean isSimpleTrigger,boolean isResultParam){
+	private String getParamMappingList(List<CommandParam>  paramList,boolean isSimpleTrigger){
 
 
 		/*
@@ -229,7 +227,7 @@ end
 
 		paramList.forEach((param)->{
 
-			String result=StrTemplate.gener(ParamBindTemplate,param.getName(),convert.convertRightExpress(param.getExpress(),isSimpleTrigger),isResultParam?"$":"");
+			String result=StrTemplate.gener(ParamBindTemplate,param.getName(),convert.convertRightExpress(param.getExpress(),isSimpleTrigger));
 
 			sb.append(result);
 		});

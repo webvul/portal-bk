@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.quartz.SchedulerException;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
@@ -22,10 +23,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.extension.ruleengine.EngineService;
 import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
+import com.kii.extension.ruleengine.schedule.ScheduleService;
 import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.TriggerValidPeriod;
 import com.kii.extension.ruleengine.store.trigger.multiple.MultipleSrcTriggerRecord;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
@@ -35,6 +38,8 @@ public class RuleEngineConsole {
 
 
 	private EngineService  engine;
+
+	private ScheduleService  schedule;
 
 	private ObjectMapper  mapper;
 
@@ -51,6 +56,7 @@ public class RuleEngineConsole {
 		 mapper=context.getBean(ObjectMapper.class);
 
 
+		schedule=context.getBean(ScheduleService.class);
 
 
 		Set<String> ths=new HashSet<>();
@@ -89,6 +95,8 @@ public class RuleEngineConsole {
 
 		engine.initThingStatus(statusList);
 
+		schedule.startSchedule();
+
 	}
 
 	public void loadAll(){
@@ -105,7 +113,7 @@ public class RuleEngineConsole {
 				String json=FileCopyUtils.copyToString(new FileReader(file));
 
 				addTrigger(json);
-			} catch (IOException e) {
+			} catch (IOException|SchedulerException e) {
 				e.printStackTrace();
 			}
 
@@ -158,7 +166,7 @@ public class RuleEngineConsole {
 					String jsonTrigger = getFileContext(arrays[1]);
 
 					addTrigger(jsonTrigger);
-				} catch (IOException e) {
+				} catch (IOException|SchedulerException e) {
 					e.printStackTrace();
 				}
 				break;
@@ -178,6 +186,8 @@ public class RuleEngineConsole {
 			case "dump":
 
 				Map<String, Object> result = engine.dumpEngineRuntime();
+
+				result.put("schedule",schedule.dump());
 
 				try {
 					String json = mapper.writeValueAsString(result);
@@ -224,8 +234,11 @@ public class RuleEngineConsole {
 
 				console.doMsgCycle(cmd,arrays);
 
-			}catch(Exception e){
+			}catch(IOException e){
 				e.printStackTrace();
+				break;
+			}catch(Exception ex){
+				ex.printStackTrace();
 			}
 
 		}
@@ -234,7 +247,7 @@ public class RuleEngineConsole {
 	}
 
 
-	private  void addTrigger(String json) throws IOException {
+	private  void addTrigger(String json) throws IOException, SchedulerException {
 
 
 		TriggerRecord record=mapper.readValue(json,TriggerRecord.class);
@@ -242,7 +255,15 @@ public class RuleEngineConsole {
 		String id=String.valueOf(System.currentTimeMillis());
 
 		record.setId(id);
+
+		triggerID=id;
 		record.setRecordStatus(TriggerRecord.StatusType.enable);
+
+		TriggerValidPeriod period=record.getPreparedCondition();
+		if(period!=null){
+			//ctrl enable sign by schedule.
+			record.setRecordStatus(TriggerRecord.StatusType.disable);
+		}
 
 		switch(record.getType()) {
 			case Simple:
@@ -270,6 +291,11 @@ public class RuleEngineConsole {
 
 				break;
 		}
+
+		if(period!=null) {
+			schedule.addManagerTask(triggerID, period);
+		}
+
 		triggerID=id;
 
 		System.out.println("create trigger "+triggerID);

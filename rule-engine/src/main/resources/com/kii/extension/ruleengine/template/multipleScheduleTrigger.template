@@ -16,13 +16,12 @@ when
     $ext:ExternalCollect()
     Trigger( $triggerID:triggerID, ( triggerID=="${triggerID}" &&  enable == true && type ==TriggerType.multiple) )
     $muiMap:MultiplesValueMap( triggerID==$triggerID, ${express}  )
-    $result:ResultParam(triggerID==$triggerID)
 then
+    ResultParam result=new ResultParam($triggerID);
 
 	${fillParam}
 
 	CommandExec exec=(CommandExec)kcontext.getKieRuntime().getEnvironment().get("exec");
-    exec.doExecute($triggerID,$result);
-    $result.clearAll();
+    exec.doExecute($triggerID,result);
 end
 
