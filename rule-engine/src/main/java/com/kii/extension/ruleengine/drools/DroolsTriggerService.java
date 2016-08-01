@@ -14,6 +14,7 @@ import com.kii.extension.ruleengine.drools.entity.ExternalValues;
 import com.kii.extension.ruleengine.drools.entity.MatchResult;
 import com.kii.extension.ruleengine.drools.entity.MultiplesValueMap;
 import com.kii.extension.ruleengine.drools.entity.Summary;
+import com.kii.extension.ruleengine.drools.entity.ThingResult;
 import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
 import com.kii.extension.ruleengine.drools.entity.Trigger;
 import com.kii.extension.ruleengine.drools.entity.TriggerData;
@@ -104,6 +105,9 @@ public class DroolsTriggerService {
 		MultiplesValueMap map=new MultiplesValueMap();
 		map.setTriggerID(trigger.getTriggerID());
 		getService(trigger).addOrUpdateData(map);
+
+		ThingResult  result=new ThingResult(trigger.getTriggerID());
+		getService(trigger).addOrUpdateData(result);
 
 	}
 

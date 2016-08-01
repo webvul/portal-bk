@@ -27,9 +27,12 @@ import com.kii.extension.ruleengine.schedule.ScheduleService;
 import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.TagSelector;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerValidPeriod;
+import com.kii.extension.ruleengine.store.trigger.multiple.GroupSummarySource;
 import com.kii.extension.ruleengine.store.trigger.multiple.MultipleSrcTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.multiple.ThingSource;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
 
@@ -47,7 +50,7 @@ public class RuleEngineConsole {
 
 	private Set<String> triggerSet=new HashSet<>();
 
-	Map<String,Set<String>>  tagMap=new HashMap<>();
+	private Map<String,Set<String>> tagMap=new HashMap<>();
 
 
 	public RuleEngineConsole(ClassPathXmlApplicationContext context){
@@ -275,19 +278,19 @@ public class RuleEngineConsole {
 				break;
 			case Multiple:
 
-				engine.createMultipleSourceTrigger((MultipleSrcTriggerRecord) record, tagMap);
+				engine.createMultipleSourceTrigger((MultipleSrcTriggerRecord) record, getThingMap((MultipleSrcTriggerRecord)record));
 				break;
 			case Group:
 				GroupTriggerRecord recGroup=(GroupTriggerRecord)record;
 
-				engine.createGroupTrigger(recGroup, tagMap.get(recGroup.getSource().getTagList().iterator().next()));
+				engine.createGroupTrigger(recGroup,getThingMap(recGroup) );
 
 				break;
 			case Summary:
 
 				SummaryTriggerRecord recSummary=(SummaryTriggerRecord)record;
 
-				engine.createSummaryTrigger(recSummary, tagMap);
+				engine.createSummaryTrigger(recSummary, getThingMap(recSummary));
 
 				break;
 		}
@@ -301,6 +304,90 @@ public class RuleEngineConsole {
 		System.out.println("create trigger "+triggerID);
 
 		triggerSet.add(id);
+	}
+
+
+	private Map<String,Set<String>> getThingMap(SummaryTriggerRecord  record ){
+
+
+		Map<String,Set<String>>  thingMap=new HashMap<>();
+
+		record.getSummarySource().forEach( (k,v)->{
+
+			Set<String> thSet=new HashSet<>();
+			if(v.getSource().getThingList().isEmpty()){
+				v.getSource().getTagList().forEach(tag->{
+					thSet.addAll(tagMap.get(tag));
+				});
+			}else{
+
+				v.getSource().getThingList().forEach((l)->{
+						String th= String.copyValueOf(new char[]{(char) ('a'+l)});
+						thSet.add(th);
+					}
+				);
+			}
+			thingMap.put(k,thSet);
+
+		});
+		return thingMap;
+	}
+
+
+	private Set<String> getThingMap(GroupTriggerRecord  record ){
+
+		TagSelector sele=record.getSource();
+
+		Set<String> thSet=new HashSet<>();
+			if(sele.getThingList().isEmpty()){
+				sele.getTagList().forEach(tag->{
+					thSet.addAll(tagMap.get(tag));
+				});
+			}else{
+
+				sele.getThingList().forEach((l)->{
+							String th= String.copyValueOf(new char[]{(char) ('a'+l)});
+							thSet.add(th);
+						}
+				);
+			}
+
+		return thSet;
+	}
+
+	private Map<String,Set<String>> getThingMap(MultipleSrcTriggerRecord  record ){
+
+
+		Map<String,Set<String>>  thingMap=new HashMap<>();
+
+		record.getSummarySource().forEach( (k,v)->{
+			Set<String> thSet=new HashSet<>();
+
+			if( v instanceof GroupSummarySource){
+				TagSelector  g=((GroupSummarySource)v).getSource();
+
+				if(g.getThingList().isEmpty()){
+					g.getTagList().forEach(tag->{
+						thSet.addAll(tagMap.get(tag));
+					});
+				}else{
+
+					g.getThingList().forEach((l)->{
+								String th= String.copyValueOf(new char[]{(char) ('a'+l)});
+								thSet.add(th);
+							}
+					);
+				}
+			}else{
+
+				String th=((ThingSource)v).getThingID();
+				thSet.add(th);
+
+			}
+			thingMap.put(k,thSet);
+
+		});
+		return thingMap;
 	}
 
 	private  String getFileContext(String name) throws IOException {

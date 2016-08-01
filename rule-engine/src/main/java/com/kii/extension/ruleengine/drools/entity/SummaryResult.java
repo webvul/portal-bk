@@ -41,5 +41,18 @@ public class SummaryResult {
 				'}';
 	}
 
-
+//
+//	@Override
+//	public boolean equals(Object o) {
+//		if (this == o) return true;
+//		if (o == null || getClass() != o.getClass()) return false;
+//		SummaryResult that = (SummaryResult) o;
+//		return Objects.equals(triggerID, that.triggerID) &&
+//				Objects.equals(name, that.name);
+//	}
+//
+//	@Override
+//	public int hashCode() {
+//		return Objects.hash(triggerID, name);
+//	}
 }

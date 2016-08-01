@@ -1,5 +1,8 @@
 package com.kii.extension.ruleengine.drools.entity;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.springframework.beans.BeanUtils;
 
 import com.kii.extension.ruleengine.store.trigger.WhenType;
@@ -16,6 +19,15 @@ public class Trigger {
 
 	private boolean isStream=false;
 
+	private Set<String> thingSet=new HashSet<>();
+
+	public Set<String> getThingSet() {
+		return thingSet;
+	}
+
+	public void setThingSet(Set<String> thingSet) {
+		this.thingSet = thingSet;
+	}
 
 	public Trigger(String triggerID){
 

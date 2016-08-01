@@ -103,6 +103,10 @@ public class EngineService {
 
 		String drl=ruleGeneral.generMultipleDrlConfig(record,withSchedule);
 
+		Set<String> thingSet=new HashSet<>();
+		thingMap.values().forEach( v->thingSet.addAll(v));
+		trigger.setThingSet(thingSet);
+
 		droolsTriggerService.addMultipleTrigger(trigger,drl,withSchedule);
 
 		record.getSummarySource().forEach((name,src)->{

@@ -1,0 +1,140 @@
+{
+  "predicate": {
+    "condition": {
+      "type":"or",
+      "clauses":[
+        {"field": "a.sum_a",
+          "type": "eq",
+          "value": 100},
+
+        {"field": "b.count_b",
+          "type": "eq",
+          "value": 2}
+      ]
+
+    },
+    "triggersWhen": "CONDITION_TRUE_TO_FALSE"
+  },
+  "type": "Summary",
+  "summarySource": {
+    "a": {
+      "expressList": [
+        {
+          "stateName": "brightness",
+          "function": "sum",
+          "summaryAlias": "sum_a"
+        }
+      ],
+      "source": {
+        "thingList": [
+          0,
+          1
+        ],
+        "andExpress": false
+      }
+    },
+    "b": {
+      "expressList": [
+        {
+          "stateName": "brightness",
+          "function": "count",
+          "summaryAlias": "count_b"
+        }
+      ],
+      "source": {
+        "thingList": [
+          0,
+          1
+        ],
+        "andExpress": false
+      }
+    },
+    "c": {
+      "expressList": [
+        {
+          "stateName": "brightness",
+          "function": "max",
+          "summaryAlias": "max_c"
+        }
+      ],
+      "source": {
+        "thingList": [
+          0,
+          1
+        ],
+        "andExpress": false
+      }
+    },
+    "d": {
+      "expressList": [
+        {
+          "stateName": "brightness",
+          "function": "min",
+          "summaryAlias": "min_d"
+        }
+      ],
+      "source": {
+        "thingList": [
+          0,
+          1
+        ],
+        "andExpress": false
+      }
+    },
+    "e": {
+      "expressList": [
+        {
+          "stateName": "brightness",
+          "function": "average",
+          "summaryAlias": "average_e"
+        }
+      ],
+      "source": {
+        "thingList": [
+          0,
+          1
+        ],
+        "andExpress": false
+      }
+    },
+    "f": {
+      "expressList": [
+        {
+          "stateName": "brightness",
+          "function": "sum",
+          "summaryAlias": "sum_f"
+        }
+      ],
+      "source": {
+        "thingList": [
+         0,
+          1
+        ],
+        "andExpress": false
+      }
+    }
+  },
+
+  "targets": [{
+    "tagList": [],
+    "thingList": [1002],
+    "andExpress":"false",
+
+    "command":{
+      "description":"httpcall-summary-joling",
+      "title":"httpcall-summary-joling",
+      "actions":[
+        {"setPower":
+        {"power":"false"}
+        }]
+    },
+    "type":"thingCommand"
+  },
+    {
+      "url":"http://114.215.196.178:8080/beehive-portal/api/oauth2/registUser",
+      "contentType":"application/json",
+      "content":"{\"userName\":\"bbaa\",\"password\":\"1qaz2wsx\",\"displayNamel\":\"bbaa\"}",
+      "method":"POST",
+      "type":"HttpApiCall"
+    }]
+}

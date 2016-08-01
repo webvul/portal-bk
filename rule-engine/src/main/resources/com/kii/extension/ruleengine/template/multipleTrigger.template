@@ -11,9 +11,10 @@ import com.kii.extension.ruleengine.drools.entity.*;
 rule "${triggerID} user custom segment:multiple "
 
 when
-    CurrThing(init == false)
+
 	$ext:ExternalCollect()
-    Trigger( $triggerID:triggerID, ( triggerID=="${triggerID}" &&  enable == true && type ==TriggerType.multiple) )
+    Trigger( $triggerID:triggerID,$thingSet:thingSet, ( triggerID=="${triggerID}" &&  enable == true && type ==TriggerType.multiple) )
+    CurrThing(valid($thingSet))
     $muiMap:MultiplesValueMap( triggerID==$triggerID, ${express}  )
 then
 	MatchResult result=new MatchResult($triggerID);

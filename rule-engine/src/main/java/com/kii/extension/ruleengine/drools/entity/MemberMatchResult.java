@@ -85,4 +85,19 @@ public class MemberMatchResult {
 				", triggerID=" + triggerID +
 				'}';
 	}
+
+//	@Override
+//	public boolean equals(Object o) {
+//		if (this == o) return true;
+//		if (o == null || getClass() != o.getClass()) return false;
+//		MemberMatchResult that = (MemberMatchResult) o;
+//		return Objects.equals(thingID, that.thingID) &&
+//				Objects.equals(triggerID, that.triggerID) &&
+//				Objects.equals(name, that.name);
+//	}
+//
+//	@Override
+//	public int hashCode() {
+//		return Objects.hash(thingID, triggerID, name);
+//	}
 }

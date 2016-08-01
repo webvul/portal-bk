@@ -21,6 +21,10 @@ public class MultiplesValueMap {
 
 		String name=result.getName();
 
+		if(name.equals("NONE")){
+			return;
+		}
+
 		Map<String,Object> map=result.getValue();
 		map.forEach((k,v)->{
 			valueMap.put(name+"."+k,v);
