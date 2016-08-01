@@ -1,11 +1,10 @@
 package com.kii.beehive.portal.jdbc.dao;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
 import org.springframework.stereotype.Repository;
 
-import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
+import java.util.ArrayList;
+import java.util.List;
 
 @Repository
 public class GroupUserRelationDao extends SpringSimpleBaseDao<GroupUserRelation> {
@@ -16,12 +15,12 @@ public class GroupUserRelationDao extends SpringSimpleBaseDao<GroupUserRelation>
 
 
 	public void delete(Long userID, Long userGroupID) {
-		if (userID!=null || userGroupID != null) {
+		if (userID != null || userGroupID != null) {
 			String sql = "DELETE FROM " + this.getTableName() + " WHERE ";
 
 			StringBuilder where = new StringBuilder();
 			List<Object> params = new ArrayList<Object>();
-			if (userID!=null) {
+			if (userID != null) {
 				where.append(GroupUserRelation.USER_ID + " = ? ");
 				params.add(userID);
 			}
@@ -52,14 +51,12 @@ public class GroupUserRelationDao extends SpringSimpleBaseDao<GroupUserRelation>
 	}
 
 
-
-
 	public List<GroupUserRelation> findByUserID(Long userID) {
 		return super.findBySingleField(GroupUserRelation.USER_ID, userID);
 	}
 
 	public GroupUserRelation findByUserIDAndUserGroupID(Long userID, Long userGroupID) {
-		if (userID!=null && userGroupID != null) {
+		if (userID != null && userGroupID != null) {
 			String sql = "SELECT * FROM " + this.getTableName() + " WHERE " + GroupUserRelation.USER_ID + "=? AND " + GroupUserRelation.USER_GROUP_ID + "=?";
 			List<GroupUserRelation> list = jdbcTemplate.query(sql, new Object[]{userID, userGroupID}, getRowMapper());
 			if (list.size() > 0) {
@@ -115,9 +112,9 @@ public class GroupUserRelationDao extends SpringSimpleBaseDao<GroupUserRelation>
 		return 0;
 	}
 
-	public List<Long> findUserGroupIds(Long userId) {
+	public List<Long> findUserGroupIds(Long userGroupID) {
 
-		return findSingleFieldBySingleField(GroupUserRelation.USER_GROUP_ID,
-				GroupUserRelation.USER_ID, userId, Long.class);
+		return findSingleFieldBySingleField(GroupUserRelation.USER_ID,
+				GroupUserRelation.USER_GROUP_ID, userGroupID, Long.class);
 	}
 }
