@@ -1,29 +1,19 @@
 package com.kii.beehive.portal.jdbc.dao;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.kii.beehive.portal.common.utils.StrTemplate;
+import com.kii.beehive.portal.jdbc.entity.*;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 
-import com.kii.beehive.portal.common.utils.StrTemplate;
-import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
-import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
-import com.kii.beehive.portal.jdbc.entity.TagIndex;
-import com.kii.beehive.portal.jdbc.entity.TagUserRelation;
-import com.kii.beehive.portal.jdbc.entity.ThingUserRelation;
+import java.util.*;
 
 
 @Repository
-public class BeehiveUserJdbcDao extends SpringBaseDao<BeehiveJdbcUser>  {
-	
-	
-	public  static final String TABLE_NAME = "beehive_user";
+public class BeehiveUserJdbcDao extends SpringBaseDao<BeehiveJdbcUser> {
+
+
+	public static final String TABLE_NAME = "beehive_user";
 
 	@Override
 	protected String getTableName() {
@@ -36,54 +26,50 @@ public class BeehiveUserJdbcDao extends SpringBaseDao<BeehiveJdbcUser>  {
 	}
 
 
-
 	public Collection<? extends BeehiveJdbcUser> findUserByTagRelThing(Long thingId) {
-		String sqlTmp="select u.* from  ${0} u" +
+		String sqlTmp = "select u.* from  ${0} u" +
 				" inner join ${1} rel on rel.beehive_user_id = u.beehive_user_id " +
-				" inner join ${2} t_rel on rel.tag_id = t_rel.tag_id "+
+				" inner join ${2} t_rel on rel.tag_id = t_rel.tag_id " +
 				" where t_rel.thing_id  = ? ";
 
-		String sql=StrTemplate.gener(sqlTmp,TABLE_NAME,TagUserRelationDao.TABLE_NAME, TagThingRelationDao.TABLE_NAME);
+		String sql = StrTemplate.gener(sqlTmp, TABLE_NAME, TagUserRelationDao.TABLE_NAME, TagThingRelationDao.TABLE_NAME);
 
-		List<BeehiveJdbcUser> rows = query(sql,thingId);
+		List<BeehiveJdbcUser> rows = query(sql, thingId);
 		return rows;
 
 
 	}
-
 
 
 	public List<BeehiveJdbcUser> findUserByThingID(Long thingId) {
-		String sqlTmp="select u.* from  ${0} rel inner join ${1} u on rel.beehive_user_id = u.beehive_user_id where rel.${2}  = ? ";
-		String sql=StrTemplate.gener(sqlTmp,ThingUserRelationDao.TABLE_NAME,TABLE_NAME,ThingUserRelation.THING_ID);
+		String sqlTmp = "select u.* from  ${0} rel inner join ${1} u on rel.beehive_user_id = u.beehive_user_id where rel.${2}  = ? ";
+		String sql = StrTemplate.gener(sqlTmp, ThingUserRelationDao.TABLE_NAME, TABLE_NAME, ThingUserRelation.THING_ID);
 
-		List<BeehiveJdbcUser> rows = query(sql,thingId);
+		List<BeehiveJdbcUser> rows = query(sql, thingId);
 		return rows;
 	}
-
-
 
 
 	//from tagUserRelation
 
 
-	public List<BeehiveJdbcUser> findUserByTagName(String  tagName) {
-		String sqlTmp="select u.* from  ${0} rel" +
+	public List<BeehiveJdbcUser> findUserByTagName(String tagName) {
+		String sqlTmp = "select u.* from  ${0} rel" +
 				" inner join ${1} u on rel.beehive_user_id = u.beehive_user_id " +
-				" inner join ${2} t on rel.tag_id = t.tag_id "+
+				" inner join ${2} t on rel.tag_id = t.tag_id " +
 				" where t.${3}  = ? ";
-		String sql=StrTemplate.gener(sqlTmp,TagUserRelationDao.TABLE_NAME,TABLE_NAME, TagIndexDao.TABLE_NAME,TagIndex.FULL_TAG_NAME);
+		String sql = StrTemplate.gener(sqlTmp, TagUserRelationDao.TABLE_NAME, TABLE_NAME, TagIndexDao.TABLE_NAME, TagIndex.FULL_TAG_NAME);
 
-		List<BeehiveJdbcUser> rows = query(sql,tagName);
+		List<BeehiveJdbcUser> rows = query(sql, tagName);
 		return rows;
 	}
 
 
 	public List<BeehiveJdbcUser> findUserByTagID(Long tagId) {
-		String sqlTmp="select u.* from  ${0} rel inner join ${1} u on rel.beehive_user_id = u.beehive_user_id where rel.${2}  = ? ";
-		String sql=StrTemplate.gener(sqlTmp,TagUserRelationDao.TABLE_NAME,TABLE_NAME,TagUserRelation.TAG_ID);
+		String sqlTmp = "select u.* from  ${0} rel inner join ${1} u on rel.beehive_user_id = u.beehive_user_id where rel.${2}  = ? ";
+		String sql = StrTemplate.gener(sqlTmp, TagUserRelationDao.TABLE_NAME, TABLE_NAME, TagUserRelation.TAG_ID);
 
-		List<BeehiveJdbcUser> rows = query(sql,tagId);
+		List<BeehiveJdbcUser> rows = query(sql, tagId);
 		return rows;
 	}
 
@@ -92,23 +78,23 @@ public class BeehiveUserJdbcDao extends SpringBaseDao<BeehiveJdbcUser>  {
 		if (null == tagIds || tagIds.isEmpty()) {
 			return new ArrayList<>();
 		}
-		String sqlTmp="select u.* from  ${0} rel inner join ${1} u on rel.beehive_user_id = u.beehive_user_id where rel.${2}  in  (:tagIds) ";
-		String sql=StrTemplate.gener(sqlTmp,TagUserRelationDao.TABLE_NAME,TABLE_NAME, TagUserRelation.TAG_ID);
+		String sqlTmp = "select u.* from  ${0} rel inner join ${1} u on rel.beehive_user_id = u.beehive_user_id where rel.${2}  in  (:tagIds) ";
+		String sql = StrTemplate.gener(sqlTmp, TagUserRelationDao.TABLE_NAME, TABLE_NAME, TagUserRelation.TAG_ID);
 
 		Map<String, Object> params = new HashMap();
 		params.put("tagIds", tagIds);
 
-		return queryByNamedParam(sql,params);
+		return queryByNamedParam(sql, params);
 	}
 
 	//from groupUserRelation
 
 	public List<BeehiveJdbcUser> findUserIDByUserGroupID(Long userGroupID) {
 
-		String sqlTmp="select u.* from  ${0} rel inner join ${1} u on rel.beehive_user_id = u.beehive_user_id where rel.${2}  = ? ";
-		String sql=StrTemplate.gener(sqlTmp,GroupUserRelationDao.TABLE_NAME,TABLE_NAME,GroupUserRelation.USER_GROUP_ID);
+		String sqlTmp = "select u.* from  ${0} rel inner join ${1} u on rel.beehive_user_id = u.beehive_user_id where rel.${2}  = ? ";
+		String sql = StrTemplate.gener(sqlTmp, GroupUserRelationDao.TABLE_NAME, TABLE_NAME, GroupUserRelation.USER_GROUP_ID);
 
-		List<BeehiveJdbcUser> rows = query(sql,userGroupID);
+		List<BeehiveJdbcUser> rows = query(sql, userGroupID);
 		return rows;
 	}
 
@@ -118,14 +104,13 @@ public class BeehiveUserJdbcDao extends SpringBaseDao<BeehiveJdbcUser>  {
 			return new ArrayList<>();
 		}
 
-		String sqlTmp="select u.* from  ${0} rel inner join ${1} u on rel.beehive_user_id = u.beehive_user_id where rel.${2}  in  (:groupIds) ";
-		String sql=StrTemplate.gener(sqlTmp,GroupUserRelationDao.TABLE_NAME,TABLE_NAME,GroupUserRelation.USER_GROUP_ID);
+		String sqlTmp = "select u.* from  ${0} rel inner join ${1} u on rel.beehive_user_id = u.beehive_user_id where rel.${2}  in  (:groupIds) ";
+		String sql = StrTemplate.gener(sqlTmp, GroupUserRelationDao.TABLE_NAME, TABLE_NAME, GroupUserRelation.USER_GROUP_ID);
 
 		Map<String, Object> params = new HashMap();
 		params.put("groupIds", userGroupIds);
 		return queryByNamedParam(sql, params);
 	}
-
 
 
 	public BeehiveJdbcUser getUserByID(Long userID) {
@@ -135,37 +120,35 @@ public class BeehiveUserJdbcDao extends SpringBaseDao<BeehiveJdbcUser>  {
 	}
 
 
+	public BeehiveJdbcUser getUserByUserID(String userID) {
 
-	public BeehiveJdbcUser getUserByUserID(String  userID) {
 
+		String sqlTmp = "select * from ${0} where user_id = ? ";
 
-		String sqlTmp="select * from ${0} where user_id = ? ";
-
-		String fullSql= StrTemplate.gener(sqlTmp,TABLE_NAME);
+		String fullSql = StrTemplate.gener(sqlTmp, TABLE_NAME);
 
 		return queryForObject(fullSql, userID);
 
 
+	}
+
+	public List<BeehiveJdbcUser> getUserByUserIDs(Collection<String> userIDList) {
+
+
+		String sqlTmp = "select * from ${0} where user_id in (:list)  ";
+
+		String fullSql = StrTemplate.gener(sqlTmp, TABLE_NAME);
+
+		return queryByNamedParam(fullSql, Collections.singletonMap("list", userIDList));
+
 
 	}
 
-	public List<BeehiveJdbcUser> getUserByUserIDs(Collection<String>  userIDList) {
+	public BeehiveJdbcUser getUserByName(String userName) {
 
+		String sql = "select * from ${0} where user_name = :name or  mobile = :name or user_mail = :name  ";
 
-		String sqlTmp="select * from ${0} where user_id in (:list)  ";
-
-		String fullSql= StrTemplate.gener(sqlTmp,TABLE_NAME);
-
-		return queryByNamedParam(fullSql,Collections.singletonMap("list",userIDList));
-
-
-	}
-
-	public BeehiveJdbcUser getUserByName(String userName){
-
-		String sql="select * from ${0} where user_name = :name or  mobile = :name or user_mail = :name  ";
-
-		String fullSql= StrTemplate.gener(sql,TABLE_NAME);
+		String fullSql = StrTemplate.gener(sql, TABLE_NAME);
 
 		return queryForObjectByNamedParam(fullSql, Collections.singletonMap("name", userName));
 
@@ -175,35 +158,36 @@ public class BeehiveUserJdbcDao extends SpringBaseDao<BeehiveJdbcUser>  {
 	/**
 	 * 查询用户是否注册过
 	 * userName、phone、mail 任意一个都可以作为登录名，所以不能重复
+	 *
 	 * @param user
 	 * @return
 	 */
-	public BeehiveJdbcUser getUserByLoginId(BeehiveJdbcUser user){
+	public BeehiveJdbcUser getUserByLoginId(BeehiveJdbcUser user) {
 
 
-		String sql="select * from ${0} where user_name =  ? ";
-		List<Object> params=new ArrayList<>();
+		String sql = "select * from ${0} where user_name =  ? ";
+		List<Object> params = new ArrayList<>();
 
 		params.add(user.getUserName());
 
-		if(user.getPhone()!=null){
-			sql+="  or mobile =  ? ";
+		if (user.getPhone() != null) {
+			sql += "  or mobile =  ? ";
 			params.add(user.getPhone());
 		}
-		if(user.getMail()!=null){
-			sql+= " or user_mail = ? ";
+		if (user.getMail() != null) {
+			sql += " or user_mail = ? ";
 			params.add(user.getMail());
 		}
 
-		String fullSql= StrTemplate.gener(sql,TABLE_NAME);
+		String fullSql = StrTemplate.gener(sql, TABLE_NAME);
 
 
-		return queryForObject(fullSql,params.toArray());
+		return queryForObject(fullSql, params.toArray());
 
 
 	}
 
-	public void deleteUser(Long  userID) {
+	public void deleteUser(Long userID) {
 
 		super.deleteByID(userID);
 
@@ -212,12 +196,12 @@ public class BeehiveUserJdbcDao extends SpringBaseDao<BeehiveJdbcUser>  {
 
 	public void setPassword(Long id, String pwd) {
 
-		Map<String,Object> params=new HashMap<>();
-		params.put("activityToken",null);
-		params.put("enable",true);
-		params.put("userPassword",pwd);
+		Map<String, Object> params = new HashMap<>();
+		params.put("activityToken", null);
+		params.put("enable", true);
+		params.put("userPassword", pwd);
 
-		super.updateEntityByID(params,id);
+		super.updateEntityByID(params, id);
 	}
 
 	public List<BeehiveJdbcUser> getAllUsers() {
@@ -225,37 +209,37 @@ public class BeehiveUserJdbcDao extends SpringBaseDao<BeehiveJdbcUser>  {
 		return super.findAll();
 	}
 
-	public int updateEnableSign(String userID,boolean sign){
+	public int updateEnableSign(String userID, boolean sign) {
 
-		BeehiveJdbcUser user=new BeehiveJdbcUser();
+		BeehiveJdbcUser user = new BeehiveJdbcUser();
 		user.setUserID(userID);
 		user.setEnable(sign);
 
-		return super.updateEntityByField(user,"userID");
+		return super.updateEntityByField(user, "userID");
 	}
 
 
 	public List<BeehiveJdbcUser> getUsersBySimpleQuery(Map<String, Object> params) {
 
 
-		params.put("enable",false);
+		params.put("enable", true);
 
 		return super.findByFields(params);
 	}
 
 
-	public BeehiveJdbcUser addUser(BeehiveJdbcUser  user){
+	public BeehiveJdbcUser addUser(BeehiveJdbcUser user) {
 
 
 		user.setUserPassword("");
 		user.setUserID("");
 
-		Long id=super.insert(user);
+		Long id = super.insert(user);
 
 		user.setId(id);
 
-		if(StringUtils.isEmpty(user.getUserID())) {
-			String userID = DigestUtils.sha1Hex(String.valueOf(id)+"_beehive_hash_"+user.getUserName()+"_name");
+		if (StringUtils.isEmpty(user.getUserID())) {
+			String userID = DigestUtils.sha1Hex(String.valueOf(id) + "_beehive_hash_" + user.getUserName() + "_name");
 
 			user.setUserID(userID);
 		}
@@ -263,16 +247,16 @@ public class BeehiveUserJdbcDao extends SpringBaseDao<BeehiveJdbcUser>  {
 		return user;
 
 	}
-	
+
 
 	public BeehiveJdbcUser getUserByKiiUserID(String userID) {
 
-		String sql="select * from ${0} where kii_user_id = ?";
+		String sql = "select * from ${0} where kii_user_id = ?";
 
-		String fullSql=StrTemplate.gener(sql,TABLE_NAME);
+		String fullSql = StrTemplate.gener(sql, TABLE_NAME);
 
-		return  queryForObject(fullSql,userID);
+		return queryForObject(fullSql, userID);
 	}
-	
+
 
 }
