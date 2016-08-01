@@ -20,9 +20,10 @@ public class AuthRestBean  {
 		this.user=user.getUser().cloneView();
 
 		this.accessToken=user.getToken();
-		this.teamID=user.getTeam().getId();
-		this.teamName=user.getTeam().getName();
-
+		if(user.getTeam()!=null) {
+			this.teamID = user.getTeam().getId();
+			this.teamName = user.getTeam().getName();
+		}
 	}
 
 	private BeehiveJdbcUser user;
@@ -43,13 +44,6 @@ public class AuthRestBean  {
         this.accessToken = accessToken;
     }
 
-	public Set<String> getPermissions() {
-		return permissions;
-	}
-
-	public void setPermissions(Set<String> permissions) {
-		this.permissions = permissions;
-	}
 
 	public Long getTeamID() {
 		return teamID;

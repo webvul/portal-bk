@@ -2,10 +2,7 @@ package com.kii.beehive.portal.web.security;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -31,10 +28,10 @@ public class AuthTokenAuthentication implements Authentication {
 		principal = authRestBean.getUser().getUserName();
 		userDetail = authRestBean;
 		authToken = authRestBean.getToken();
-		Set<String> perms = Optional.ofNullable(authRestBean.getPermissionSet()).orElse(new HashSet());
-		for (String perm : perms) {
-			authorityList.add(new SimpleGrantedAuthority(perm));
-		}
+//		Set<String> perms = Optional.ofNullable(authRestBean.getPermissionSet()).orElse(new HashSet());
+//		for (String perm : perms) {
+//			authorityList.add(new SimpleGrantedAuthority(perm));
+//		}
 		if (null != userDetail.getUser().getRoleName() && !userDetail.getUser().getRoleName().isEmpty()) {
 			authorityList.add(new SimpleGrantedAuthority(userDetail.getUser().getRoleName()));
 		}

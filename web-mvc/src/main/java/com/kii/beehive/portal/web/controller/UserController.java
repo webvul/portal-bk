@@ -302,7 +302,8 @@ public class UserController {
 
 	}
 
-	@RequestMapping(path = "/users/me/customData/{name}", method = {RequestMethod.GET}, consumes = {MediaType.ALL_VALUE})
+	@RequestMapping(path = "/users/me/customData/{name}", method = {RequestMethod.GET},
+			consumes = {MediaType.ALL_VALUE},produces = {MediaType.ALL_VALUE})
 	public CustomData getCustomData(@PathVariable(value = "name") String name) {
 		BeehiveJdbcUser user = userManager.getUserByIDDirectly(AuthInfoStore.getUserID());
 		return dataDao.getUserData(name, user.getUserID());
