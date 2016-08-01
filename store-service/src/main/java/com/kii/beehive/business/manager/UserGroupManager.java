@@ -195,7 +195,6 @@ public class UserGroupManager {
 
 
 		UserGroup ug = this.userGroupDao.findByID(userGroupID);
-		System.out.println(AuthInfoStore.getUserID());
 		if (!ug.getCreateBy().equals(AuthInfoStore.getUserIDStr())) {
 
 			throw new UnauthorizedException(UnauthorizedException.NOT_GROUP_CREATER, "group", ug.getName(),
