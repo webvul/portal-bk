@@ -1,0 +1,25 @@
+[
+{
+  "denyRuleSet": [
+    "usermanager",
+    "system",
+    "industrytemplate"
+  ],
+  "ruleName": "commUser",
+  "acceptRuleSet": []
+},
+ {
+    "denyRuleSet": [],
+    "ruleName": "userAdmin",
+    "acceptRuleSet": [
+      "root"
+    ]
+  },
+  {
+    "denyRuleSet": [],
+    "ruleName": "administrator",
+    "acceptRuleSet": [
+      "root"
+    ]
+  }
+]

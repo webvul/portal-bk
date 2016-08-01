@@ -3,6 +3,7 @@ package com.kii.beehive.portal.web.socket;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.Message;
@@ -18,8 +19,9 @@ import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.messaging.StompSubProtocolHandler;
 import org.springframework.web.socket.messaging.SubProtocolHandler;
+
 import com.kii.beehive.portal.auth.AuthInfoStore;
-import com.kii.beehive.portal.entitys.AuthRestBean;
+import com.kii.beehive.portal.entitys.AuthUser;
 import com.kii.beehive.portal.web.security.AuthTokenAuthentication;
 import com.kii.beehive.portal.web.stomp.StompDecoderDecorator;
 
@@ -107,9 +109,9 @@ public class SubProtocolWebSocketHandler extends org.springframework.web.socket.
 			context.setAuthentication((Authentication) wrapped.getPrincipal());
 			SecurityContextHolder.setContext(context);
 			if (wrapped.getPrincipal() instanceof AuthTokenAuthentication) {
-				AuthRestBean auth = ((AuthTokenAuthentication) wrapped.getPrincipal()).getDetails();
+				AuthUser auth = ((AuthTokenAuthentication) wrapped.getPrincipal()).getDetails();
 				AuthInfoStore.setAuthInfo(auth.getUser().getId());
-				AuthInfoStore.setTeamID(auth.getTeamID());
+				AuthInfoStore.setTeamID(auth.getTeam().getId());
 			}
 			super.handleMessage(wrapped, message);
 		} finally {

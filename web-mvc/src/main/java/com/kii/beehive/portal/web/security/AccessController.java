@@ -1,9 +1,10 @@
 package com.kii.beehive.portal.web.security;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+
 import com.kii.beehive.business.manager.TagThingManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.ThingIDTools;
@@ -53,8 +55,7 @@ public class AccessController {
 	}
 
 	private Set<? extends GrantedAuthority> getAuthorities() {
-		return Optional.ofNullable(SecurityContextHolder.getContext()
-				.getAuthentication().getAuthorities()).orElse(Collections.emptyList())
-				.stream().collect(Collectors.toSet());
+		return new HashSet(Optional.ofNullable(SecurityContextHolder.getContext()
+				.getAuthentication().getAuthorities()).orElse(Collections.emptyList()));
 	}
 }
