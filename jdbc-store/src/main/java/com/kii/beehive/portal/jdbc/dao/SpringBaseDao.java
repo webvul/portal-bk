@@ -1,12 +1,18 @@
 package com.kii.beehive.portal.jdbc.dao;
 
-import com.kii.beehive.portal.auth.AuthInfoStore;
-import com.kii.beehive.portal.common.utils.StrTemplate;
-import com.kii.beehive.portal.jdbc.annotation.JdbcField;
-import com.kii.beehive.portal.jdbc.entity.BusinessEntity;
-import com.kii.beehive.portal.jdbc.helper.AnnationBeanSqlParameterSource;
-import com.kii.beehive.portal.jdbc.helper.BindClsFullUpdateTool;
-import com.kii.beehive.portal.jdbc.helper.BindClsRowMapper;
+import javax.sql.DataSource;
+import java.io.Serializable;
+import java.lang.reflect.ParameterizedType;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -19,13 +25,13 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-
-import javax.sql.DataSource;
-import java.io.Serializable;
-import java.lang.reflect.ParameterizedType;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.common.utils.StrTemplate;
+import com.kii.beehive.portal.jdbc.annotation.JdbcField;
+import com.kii.beehive.portal.jdbc.entity.BusinessEntity;
+import com.kii.beehive.portal.jdbc.helper.AnnationBeanSqlParameterSource;
+import com.kii.beehive.portal.jdbc.helper.BindClsFullUpdateTool;
+import com.kii.beehive.portal.jdbc.helper.BindClsRowMapper;
 
 public abstract class SpringBaseDao<T extends BusinessEntity> {
 
@@ -255,7 +261,8 @@ public abstract class SpringBaseDao<T extends BusinessEntity> {
 	}
 
 	public List<T> findBySingleField(String fieldName, Object value) {
-		String sql = "SELECT * FROM " + this.getTableName() + " WHERE " + fieldName + "=? and is_deleted = false  ";
+		String sql = "SELECT DISTINCT * FROM " + this.getTableName() + " WHERE " + fieldName + "=? and is_deleted = " +
+				"false  ";
 		return jdbcTemplate.query(sql, new Object[]{value}, getRowMapper());
 	}
 

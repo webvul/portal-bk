@@ -1,26 +1,59 @@
 package com.kii.beehive.business.manager;
 
-import com.kii.beehive.business.service.ThingIFInAppService;
-import com.kii.beehive.portal.auth.AuthInfoStore;
-import com.kii.beehive.portal.common.utils.CollectUtils;
-import com.kii.beehive.portal.exception.EntryNotFoundException;
-import com.kii.beehive.portal.exception.UnauthorizedException;
-import com.kii.beehive.portal.jdbc.dao.*;
-import com.kii.beehive.portal.jdbc.entity.*;
-import com.kii.beehive.portal.service.AppInfoDao;
-import com.kii.beehive.portal.store.entity.KiiAppInfo;
-import com.kii.extension.sdk.entity.thingif.GatewayOfKiiCloud;
-import com.kii.extension.sdk.exception.ObjectNotFoundException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.*;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
+import com.kii.beehive.business.service.ThingIFInAppService;
+import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.common.utils.CollectUtils;
+import com.kii.beehive.portal.exception.EntryNotFoundException;
+import com.kii.beehive.portal.exception.UnauthorizedException;
+import com.kii.beehive.portal.jdbc.dao.BeehiveUserJdbcDao;
+import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
+import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
+import com.kii.beehive.portal.jdbc.dao.TagGroupRelationDao;
+import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
+import com.kii.beehive.portal.jdbc.dao.TagThingRelationDao;
+import com.kii.beehive.portal.jdbc.dao.TagUserRelationDao;
+import com.kii.beehive.portal.jdbc.dao.TeamDao;
+import com.kii.beehive.portal.jdbc.dao.TeamTagRelationDao;
+import com.kii.beehive.portal.jdbc.dao.TeamThingRelationDao;
+import com.kii.beehive.portal.jdbc.dao.ThingUserGroupRelationDao;
+import com.kii.beehive.portal.jdbc.dao.ThingUserRelationDao;
+import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
+import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
+import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
+import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
+import com.kii.beehive.portal.jdbc.entity.TagGroupRelation;
+import com.kii.beehive.portal.jdbc.entity.TagIndex;
+import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
+import com.kii.beehive.portal.jdbc.entity.TagType;
+import com.kii.beehive.portal.jdbc.entity.TagUserRelation;
+import com.kii.beehive.portal.jdbc.entity.Team;
+import com.kii.beehive.portal.jdbc.entity.TeamTagRelation;
+import com.kii.beehive.portal.jdbc.entity.TeamThingRelation;
+import com.kii.beehive.portal.jdbc.entity.ThingUserGroupRelation;
+import com.kii.beehive.portal.jdbc.entity.ThingUserRelation;
+import com.kii.beehive.portal.jdbc.entity.UserGroup;
+import com.kii.beehive.portal.service.AppInfoDao;
+import com.kii.beehive.portal.store.entity.KiiAppInfo;
+import com.kii.extension.sdk.entity.thingif.GatewayOfKiiCloud;
+import com.kii.extension.sdk.exception.ObjectNotFoundException;
 
 @Component
 @Transactional
@@ -363,6 +396,21 @@ public class TagThingManager {
 	public boolean isThingCreator(Collection<GlobalThingInfo> things) {
 		for (GlobalThingInfo thing : things) {
 			if (!isThingCreator(thing)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public boolean isKiiThingOwner(String fullKiiThingId) {
+		List<GlobalThingInfo> things = globalThingDao.findByKiiThingId(fullKiiThingId);
+		for (GlobalThingInfo thing : things) {
+			if (!isThingOwner(thing)) {
+				log.info(new StringBuilder("Current user: ")
+						.append(AuthInfoStore.getUserID())
+						.append(" is not the owner of thing: ")
+						.append(thing.toString())
+						.toString());
 				return false;
 			}
 		}

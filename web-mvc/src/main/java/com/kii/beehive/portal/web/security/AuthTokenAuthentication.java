@@ -10,7 +10,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import com.kii.beehive.portal.entitys.AuthRestBean;
-import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 
 /**
  * Created by hdchen on 7/13/16.
@@ -18,7 +17,7 @@ import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 public class AuthTokenAuthentication implements Authentication {
 	private final String principal;
 
-	private final BeehiveJdbcUser userDetail;
+	private final AuthRestBean userDetail;
 
 	private List<GrantedAuthority> authorityList = new ArrayList();
 
@@ -28,14 +27,14 @@ public class AuthTokenAuthentication implements Authentication {
 
 	public AuthTokenAuthentication(AuthRestBean authRestBean) {
 		principal = authRestBean.getUser().getUserName();
-		userDetail = authRestBean.getUser();
+		userDetail = authRestBean;
 		authToken = authRestBean.getAccessToken();
 		Set<String> perms = Optional.ofNullable(authRestBean.getPermissions()).orElse(new HashSet());
 		for (String perm : perms) {
 			authorityList.add(new SimpleGrantedAuthority(perm));
 		}
-		if (null != userDetail.getRoleName() && !userDetail.getRoleName().isEmpty()) {
-			authorityList.add(new SimpleGrantedAuthority(userDetail.getRoleName()));
+		if (null != userDetail.getUser().getRoleName() && !userDetail.getUser().getRoleName().isEmpty()) {
+			authorityList.add(new SimpleGrantedAuthority(userDetail.getUser().getRoleName()));
 		}
 	}
 
@@ -50,7 +49,7 @@ public class AuthTokenAuthentication implements Authentication {
 	}
 
 	@Override
-	public BeehiveJdbcUser getDetails() {
+	public AuthRestBean getDetails() {
 		return userDetail;
 	}
 

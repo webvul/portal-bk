@@ -18,6 +18,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.entitys.AuthRestBean;
 import com.kii.beehive.portal.manager.AuthManager;
 import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.beehive.portal.web.socket.ConcurrentWebSocketSessionHolder;
@@ -77,6 +79,11 @@ public class STOMPClientInboundChannelInterceptor implements ChannelInterceptor 
 					authentication.setAuthenticated(true);
 					SecurityContextHolder.getContext().setAuthentication(authentication);
 					sessionHolder.get(headerAccessor.getSessionId()).setPrincipal(authentication);
+					if (authentication instanceof AuthTokenAuthentication) {
+						AuthRestBean auth = (AuthRestBean) authentication.getDetails();
+						AuthInfoStore.setAuthInfo(auth.getUser().getId());
+						AuthInfoStore.setTeamID(auth.getTeamID());
+					}
 					return message;
 				} catch (Exception e) {
 					throw new MessagingException("Can't authenticate the current user",
