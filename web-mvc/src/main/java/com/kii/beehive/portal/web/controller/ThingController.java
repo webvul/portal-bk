@@ -58,6 +58,16 @@ public class ThingController extends AbstractThingTagController {
 	}
 
 	/**
+	 * GET /things/user/{userID}
+	 *
+	 * @return a list of devices which the user can access
+	 */
+	@RequestMapping(value = "/user", method = RequestMethod.GET, consumes = {"*"})
+	public List<ThingRestBean> getThingsByUserID(@PathVariable("userID") String userID) {
+		return toThingRestBean(thingTagManager.getAccessibleThingsByUserId(userID));
+	}
+
+	/**
 	 * GET /things/{globalThingID}/userGroups
 	 *
 	 * @param globalThingID
