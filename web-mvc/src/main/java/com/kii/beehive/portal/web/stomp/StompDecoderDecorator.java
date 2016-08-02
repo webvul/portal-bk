@@ -14,6 +14,7 @@ import org.springframework.messaging.simp.stomp.StompDecoder;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.messaging.support.MessageHeaderAccessor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
 import com.kii.beehive.portal.web.security.AccessController;
@@ -66,7 +67,7 @@ public class StompDecoderDecorator extends StompDecoder {
 				String[] thingIds = partitions[1].split(",");
 				for (String thingId : thingIds) {
 					if (!accessController.canSubscribeThingStatus(partitions[0], thingId)) {
-						continue;
+						throw new AccessDeniedException("Can't subscribe " + headerAccessor.getDestination());
 					}
 
 					HashMap header = new HashMap(message.getHeaders());
