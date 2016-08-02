@@ -111,7 +111,9 @@ public class SubProtocolWebSocketHandler extends org.springframework.web.socket.
 			if (wrapped.getPrincipal() instanceof AuthTokenAuthentication) {
 				AuthUser auth = ((AuthTokenAuthentication) wrapped.getPrincipal()).getDetails();
 				AuthInfoStore.setAuthInfo(auth.getUser().getId());
-				AuthInfoStore.setTeamID(auth.getTeam().getId());
+				if (null != auth.getTeam()) {
+					AuthInfoStore.setTeamID(auth.getTeam().getId());
+				}
 			}
 			super.handleMessage(wrapped, message);
 		} finally {

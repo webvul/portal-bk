@@ -1,12 +1,10 @@
 package com.kii.beehive.portal.web.security;
 
 import javax.xml.bind.DatatypeConverter;
-
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.messaging.Message;
@@ -20,7 +18,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.entitys.AuthUser;
 import com.kii.beehive.portal.manager.AuthManager;
@@ -85,7 +82,9 @@ public class STOMPClientInboundChannelInterceptor implements ChannelInterceptor 
 					if (authentication instanceof AuthTokenAuthentication) {
 						AuthUser auth = (AuthUser) authentication.getDetails();
 						AuthInfoStore.setAuthInfo(auth.getUser().getId());
-						AuthInfoStore.setTeamID(auth.getTeam().getId());
+						if (null != auth.getTeam()) {
+							AuthInfoStore.setTeamID(auth.getTeam().getId());
+						}
 					}
 					return message;
 				} catch (Exception e) {
