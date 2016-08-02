@@ -1,19 +1,20 @@
 package com.kii.beehive.portal.manager;
 
+import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.util.Map;
+
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.kii.beehive.business.service.KiiUserService;
-import com.kii.beehive.portal.entitys.AuthRestBean;
+import com.kii.beehive.portal.entitys.AuthUser;
 import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 import com.kii.beehive.portal.service.UserRuleDao;
 import com.kii.beehive.portal.store.StoreServiceTestInit;
 import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.service.UserService;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.Map;
-
-import static junit.framework.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 public class TestUserManger extends StoreServiceTestInit {
 
@@ -55,11 +56,11 @@ public class TestUserManger extends StoreServiceTestInit {
 
 		authManager.initPassword(oneTimeToken, user.getUserName(), "qwerty");
 
-		AuthRestBean bean = authManager.login(name, "qwerty");
+		AuthUser bean = authManager.login(name, "qwerty");
 
-		String newToken = bean.getAccessToken();
+		String newToken = bean.getToken();
 
-		AuthRestBean newBean = authManager.validateUserToken(newToken);
+		AuthUser newBean = authManager.validateUserToken(newToken);
 
 		assertEquals(newBean.getUser().getId(), bean.getUser().getId());
 
@@ -77,7 +78,7 @@ public class TestUserManger extends StoreServiceTestInit {
 //		user.setCompany("kiicloud");
 
 
-		AuthRestBean rest = authManager.login(name, "qwerty");
+		AuthUser rest = authManager.login(name, "qwerty");
 
 		String userID = rest.getUser().getUserID();
 
@@ -87,11 +88,11 @@ public class TestUserManger extends StoreServiceTestInit {
 
 		authManager.initPassword(oneTimeToken, name, "qwerty");
 
-		AuthRestBean bean = authManager.login(name, "qwerty");
+		AuthUser bean = authManager.login(name, "qwerty");
 
-		String newToken = bean.getAccessToken();
+		String newToken = bean.getToken();
 
-		AuthRestBean newBean = authManager.validateUserToken(newToken);
+		AuthUser newBean = authManager.validateUserToken(newToken);
 
 		assertEquals(newBean.getUser().getId(), bean.getUser().getId());
 

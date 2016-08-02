@@ -1,28 +1,36 @@
 package com.kii.beehive.portal.web.controller;
 
-import com.kii.beehive.portal.web.entity.HelloEntry;
+import java.util.Map;
+
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.kii.beehive.portal.store.entity.CustomData;
+import com.kii.beehive.portal.web.entity.HelloEntry;
 
 @RestController
 @RequestMapping(value = "/", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
 public class DemoController {
 
 
-	@ResponseBody
+//	@ResponseBody
 	@RequestMapping(value = "/hello", method = {RequestMethod.GET}, consumes = {"*"})
-	public ModelAndView hello() {
+	public Map<String,Object> hello() {
 
 		HelloEntry entry = new HelloEntry();
 		entry.setName("hello");
 		entry.setValue("world");
 
-		ModelAndView model = new ModelAndView();
-		model.addObject(entry);
-		model.setViewName("jsonView");
+//		ModelAndView model = new ModelAndView();
+//		model.addObject(entry);
+//		model.setViewName("jsonView");
 
-		return model;
+		CustomData data=new CustomData();
+
+		return data.getData();
 
 	}
 

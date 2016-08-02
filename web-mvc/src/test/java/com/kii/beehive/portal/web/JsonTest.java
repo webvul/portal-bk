@@ -2,6 +2,7 @@ package com.kii.beehive.portal.web;
 
 
 import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertTrue;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -18,16 +19,22 @@ import com.kii.beehive.portal.web.entity.SyncUserRestBean;
 public class JsonTest {
 
 
+//	private ObjectMapper mapper=new ObjectMapper();
+
 	@Test
 	public void testCustomData() throws IOException {
 
 
 		String json="{\"data\":[\"abcd\",\"abc\"]}";
 
+		assertTrue(mapper.canSerialize(CustomData.class));
+
 
 		CustomData data=mapper.readValue(json,CustomData.class);
 
 		System.out.println(data);
+
+
 	}
 
 	private ObjectMapper mapper=new ObjectMapper();

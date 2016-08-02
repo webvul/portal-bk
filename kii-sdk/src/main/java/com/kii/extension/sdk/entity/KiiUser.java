@@ -121,7 +121,7 @@ public class KiiUser {
 	}
 
 	@JsonAnySetter
-	public void setCustomProp(String propName,Object val){
+	public void addCustomProp(String propName,Object val){
 		additionProps.put(propName, val);
 	}
 }

@@ -302,10 +302,11 @@ public class UserController {
 
 	}
 
-	@RequestMapping(path = "/users/me/customData/{name}", method = {RequestMethod.GET}, consumes = {MediaType.ALL_VALUE})
-	public CustomData getCustomData(@PathVariable(value = "name") String name) {
+	@RequestMapping(path = "/users/me/customData/{name}", method = {RequestMethod.GET},
+			consumes = {MediaType.ALL_VALUE})
+	public Map<String,Object> getCustomData(@PathVariable(value = "name") String name) {
 		BeehiveJdbcUser user = userManager.getUserByIDDirectly(AuthInfoStore.getUserID());
-		return dataDao.getUserData(name, user.getUserID());
+		return dataDao.getUserData(name, user.getUserID()).getData();
 
 	}
 

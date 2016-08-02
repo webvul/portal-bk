@@ -27,6 +27,7 @@ import com.kii.beehive.business.manager.AppInfoManager;
 import com.kii.beehive.business.manager.TagThingManager;
 import com.kii.beehive.portal.entitys.PermissionTree;
 import com.kii.beehive.portal.helper.PermissionTreeService;
+import com.kii.beehive.portal.helper.RuleSetService;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.service.BeehiveConfigDao;
@@ -79,6 +80,11 @@ public class UtilToolsController {
 	@Autowired
 	private BeehiveConfigDao  configDao;
 
+
+	@Autowired
+	private RuleSetService    ruleSetService;
+
+
 	/**
 	 * important:
 	 * this API is supposed to be called only when initialize the environment
@@ -106,6 +112,9 @@ public class UtilToolsController {
 
 		return;
 	}
+
+
+
 
 	@RequestMapping(value = "/sys/appRegist/{appID}", method = {RequestMethod.POST}, consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
 	public void initAppContext(@PathVariable("appID") String appID, HttpServletRequest request) {
@@ -138,6 +147,9 @@ public class UtilToolsController {
 		entry.setBizDataCommonEventTime("object.eventTime");
 
 		configDao.saveConfigEntry(entry);
+
+
+		ruleSetService.initRuleList();
 
 
 	}

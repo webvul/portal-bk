@@ -1,10 +1,11 @@
-package com.kii.beehive.portal.entitys;
+package com.kii.beehive.portal.web.entity;
 
 
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
+import com.kii.beehive.portal.entitys.AuthUser;
 import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 
 public class AuthRestBean  {
@@ -12,6 +13,18 @@ public class AuthRestBean  {
     public AuthRestBean() {
 
     }
+
+
+	public AuthRestBean(AuthUser user) {
+
+		this.user=user.getUser().cloneView();
+
+		this.accessToken=user.getToken();
+		if(user.getTeam()!=null) {
+			this.teamID = user.getTeam().getId();
+			this.teamName = user.getTeam().getName();
+		}
+	}
 
 	private BeehiveJdbcUser user;
 
@@ -31,13 +44,6 @@ public class AuthRestBean  {
         this.accessToken = accessToken;
     }
 
-	public Set<String> getPermissions() {
-		return permissions;
-	}
-
-	public void setPermissions(Set<String> permissions) {
-		this.permissions = permissions;
-	}
 
 	public Long getTeamID() {
 		return teamID;
@@ -62,8 +68,6 @@ public class AuthRestBean  {
 		return user;
 	}
 
-	public void setUser(BeehiveJdbcUser user) {
 
-		this.user=user.cloneView();
-	}
+
 }

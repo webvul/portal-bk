@@ -3,7 +3,6 @@ package com.kii.beehive.portal.web.controller;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,8 +10,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.portal.common.utils.CollectUtils;
-import com.kii.beehive.portal.entitys.AuthRestBean;
+import com.kii.beehive.portal.entitys.AuthUser;
 import com.kii.beehive.portal.manager.AuthManager;
+import com.kii.beehive.portal.web.entity.AuthRestBean;
 import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
 
@@ -36,7 +36,8 @@ public class Party3thAuthController {
 			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","userID");
 		}
 
-		return authManager.getTokenByID(userID);
+		AuthUser user= authManager.getTokenByID(userID);
 
+		return new AuthRestBean(user);
 	}
 }

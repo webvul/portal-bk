@@ -1,11 +1,25 @@
 package com.kii.beehive.portal.manager;
 
 
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.kii.beehive.business.service.KiiUserService;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.StringRandomTools;
 import com.kii.beehive.portal.entitys.AuthInfo;
-import com.kii.beehive.portal.entitys.AuthRestBean;
+import com.kii.beehive.portal.entitys.AuthUser;
 import com.kii.beehive.portal.entitys.PermissionTree;
 import com.kii.beehive.portal.exception.UnauthorizedException;
 import com.kii.beehive.portal.exception.UserExistException;
@@ -19,19 +33,6 @@ import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 import com.kii.beehive.portal.jdbc.entity.Team;
 import com.kii.extension.sdk.entity.KiiUser;
 import com.kii.extension.sdk.exception.KiiCloudException;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 @Transactional
@@ -170,7 +171,7 @@ public class AuthManager {
 	 * @param password
 	 * @return
 	 */
-	public AuthRestBean login(String userName, String password) {
+	public AuthUser login(String userName, String password) {
 
 		BeehiveJdbcUser user = userDao.getUserByName(userName);
 
@@ -195,11 +196,11 @@ public class AuthManager {
 		Team team = this.getTeamByID(user.getId());
 		saveToken(user, beehiveToken, team, false);
 
-		AuthRestBean authRestBean = generAuthBean(user, beehiveToken, team);
+		AuthUser authRestBean = generAuthBean(user, beehiveToken, team);
 		return authRestBean;
 	}
 
-	public AuthRestBean validateLoginAccessToken(String token) {
+	public AuthUser validateLoginAccessToken(String token) {
 		AuthInfo authInfo = authService.getAuthInfoByToken(token);
 
 		// if auth info not found in both cache and DB, throw Exception
@@ -209,7 +210,8 @@ public class AuthManager {
 
 		BeehiveJdbcUser user = userDao.getUserByID(authInfo.getUserID());
 		Team team = this.getTeamByID(user.getId());
-		AuthRestBean authRestBean = generAuthBean(user, token, team);
+		AuthUser authRestBean = generAuthBean(user, token, team);
+
 		return authRestBean;
 	}
 
@@ -219,7 +221,7 @@ public class AuthManager {
 	}
 
 
-	public AuthRestBean getTokenByID(String userID) {
+	public AuthUser getTokenByID(String userID) {
 
 		BeehiveJdbcUser user = userDao.getUserByUserID(userID);
 
@@ -229,20 +231,19 @@ public class AuthManager {
 
 		saveToken(user, beehiveToken, team, true);
 
-		AuthRestBean authRestBean = generAuthBean(user, beehiveToken, team);
+		AuthUser authRestBean = generAuthBean(user, beehiveToken, team);
 		return authRestBean;
 	}
 
-	private AuthRestBean generAuthBean(BeehiveJdbcUser user, String token, Team team) {
-		AuthRestBean authRestBean = new AuthRestBean();
+	private AuthUser generAuthBean(BeehiveJdbcUser user, String token, Team team) {
+		AuthUser authRestBean = new AuthUser();
 		authRestBean.setUser(user);
 
 		if (team != null) {
-			authRestBean.setTeamID(team.getId());
-			authRestBean.setTeamName(team.getName());
+			authRestBean.setTeam(team);
 		}
 
-		authRestBean.setAccessToken(token);
+		authRestBean.setToken(token);
 		return authRestBean;
 	}
 
@@ -325,7 +326,7 @@ public class AuthManager {
 	 * @return
 	 */
 	public AuthInfo validateAndBindUserToken(String token, String method, String url) {
-		AuthRestBean authRestBean = validateLoginAccessToken(token);
+		AuthUser authRestBean = validateLoginAccessToken(token);
 		BeehiveJdbcUser user = authRestBean.getUser();
 
 		PermissionTree permisssionTree = ruleService.getUserPermissionTree(user.getId());
@@ -359,7 +360,7 @@ public class AuthManager {
 		}
 	}
 
-	public AuthRestBean validateUserToken(String token) {
+	public AuthUser validateUserToken(String token) {
 
 		try {
 
@@ -381,7 +382,7 @@ public class AuthManager {
 
 			saveToken(beehiveUser, beehiveToken, team, false);
 
-			AuthRestBean authRestBean = generAuthBean(beehiveUser, beehiveToken, team);
+			AuthUser authRestBean = generAuthBean(beehiveUser, beehiveToken, team);
 
 			return authRestBean;
 		} catch (KiiCloudException ex) {

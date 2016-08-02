@@ -2,14 +2,13 @@ package com.kii.beehive.portal.web.security;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import com.kii.beehive.portal.entitys.AuthRestBean;
+
+import com.kii.beehive.portal.entitys.AuthUser;
 
 /**
  * Created by hdchen on 7/13/16.
@@ -17,7 +16,7 @@ import com.kii.beehive.portal.entitys.AuthRestBean;
 public class AuthTokenAuthentication implements Authentication {
 	private final String principal;
 
-	private final AuthRestBean userDetail;
+	private final AuthUser userDetail;
 
 	private List<GrantedAuthority> authorityList = new ArrayList();
 
@@ -25,14 +24,14 @@ public class AuthTokenAuthentication implements Authentication {
 
 	private boolean authenticated;
 
-	public AuthTokenAuthentication(AuthRestBean authRestBean) {
+	public AuthTokenAuthentication(AuthUser authRestBean) {
 		principal = authRestBean.getUser().getUserName();
 		userDetail = authRestBean;
-		authToken = authRestBean.getAccessToken();
-		Set<String> perms = Optional.ofNullable(authRestBean.getPermissions()).orElse(new HashSet());
-		for (String perm : perms) {
-			authorityList.add(new SimpleGrantedAuthority(perm));
-		}
+		authToken = authRestBean.getToken();
+//		Set<String> perms = Optional.ofNullable(authRestBean.getPermissionSet()).orElse(new HashSet());
+//		for (String perm : perms) {
+//			authorityList.add(new SimpleGrantedAuthority(perm));
+//		}
 		if (null != userDetail.getUser().getRoleName() && !userDetail.getUser().getRoleName().isEmpty()) {
 			authorityList.add(new SimpleGrantedAuthority(userDetail.getUser().getRoleName()));
 		}
@@ -49,7 +48,7 @@ public class AuthTokenAuthentication implements Authentication {
 	}
 
 	@Override
-	public AuthRestBean getDetails() {
+	public AuthUser getDetails() {
 		return userDetail;
 	}
 
