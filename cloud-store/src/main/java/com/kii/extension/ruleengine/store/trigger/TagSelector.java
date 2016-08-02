@@ -15,6 +15,17 @@ public class TagSelector {
 
 	private String type;
 
+	private List<String> vendorThingIdList=new ArrayList<>(); // for local rule
+
+
+	public List<String> getVendorThingIdList() {
+		return vendorThingIdList;
+	}
+
+	public void setVendorThingIdList(List<String> vendorThingIdList) {
+		this.vendorThingIdList = vendorThingIdList;
+	}
+
 	public String getType() {
 		return type;
 	}

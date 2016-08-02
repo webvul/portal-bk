@@ -27,7 +27,7 @@ import com.kii.extension.ruleengine.schedule.ScheduleService;
 import com.kii.extension.ruleengine.service.TriggerRecordDao;
 import com.kii.extension.ruleengine.store.trigger.CommandToThing;
 import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
-import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.WhenType;
 import com.kii.extension.ruleengine.store.trigger.condition.LogicCol;
@@ -92,16 +92,22 @@ public class LocalTriggerManager {
 
 		ThingOfKiiCloud gatewayOfKiiCloud = null;
 		boolean isLocalRule = false;
-		if( record instanceof SimpleTriggerRecord
+		if( record instanceof GroupTriggerRecord
 				&& record.getPredicate().getTriggersWhen().equals(WhenType.CONDITION_TRUE)
 				&& record.getPredicate().getSchedule() == null
 				&& ! ( record.getPredicate().getCondition()  instanceof LogicCol ) ){//  local rule
-			SimpleTriggerRecord simpleTriggerRecord = (SimpleTriggerRecord)record;
 
-//				List<Long> thingIds = new ArrayList<>();
-//				thingIds.add( simpleTriggerRecord.getSource().getThingID() );
-			GlobalThingInfo sourceThing = globalThingDao.findByID(simpleTriggerRecord.getSource().getThingID());
-			simpleTriggerRecord.getSource().setVendorThingID(sourceThing.getVendorThingID());
+			GroupTriggerRecord triggerRecord = (GroupTriggerRecord)record;
+
+			//source only one thing
+			if( ( triggerRecord.getSource().getTagList() != null && triggerRecord.getSource().getTagList().size() > 0 )
+					||  ( triggerRecord.getSource().getThingList() != null && triggerRecord.getSource().getThingList().size() > 1 )){
+				return gatewayOfKiiCloud;
+			}
+
+			GlobalThingInfo sourceThing = globalThingDao.findByID(triggerRecord.getSource().getThingList().get(0));
+			triggerRecord.getSource().setVendorThingIdList(new ArrayList<>());
+			triggerRecord.getSource().getVendorThingIdList().add(sourceThing.getVendorThingID());
 			//
 			gatewayOfKiiCloud = thingIFService.getThingGateway(sourceThing.getFullKiiThingID());
 			gatewayOfKiiCloud.setKiiAppID(sourceThing.getKiiAppID());
@@ -111,7 +117,7 @@ public class LocalTriggerManager {
 			Map<String, EndNodeOfGateway> allEndNodesOfGatewayMap = new HashMap<>();
 			allEndNodesOfGateway.forEach(endNodeOfGateway -> allEndNodesOfGatewayMap.put(endNodeOfGateway.getVendorThingID(), endNodeOfGateway));
 
-			List<ExecuteTarget> targets = simpleTriggerRecord.getTargets();
+			List<ExecuteTarget> targets = triggerRecord.getTargets();
 
 			targets:
 			for(ExecuteTarget target:targets){
@@ -119,14 +125,14 @@ public class LocalTriggerManager {
 
 					case "ThingCommand":
 						CommandToThing command=(CommandToThing)target;
-						command.setVendorThingIdList(new ArrayList<>());
+						command.getSelector().setVendorThingIdList(new ArrayList<>());
 						Set<GlobalThingInfo> thingList = thingTagService.getThingInfos(command.getSelector());
 
 						for (GlobalThingInfo thing : thingList){
 							if( allEndNodesOfGatewayMap.get(thing.getVendorThingID()) == null ){
 								break targets;
 							}
-							command.getVendorThingIdList().add(thing.getVendorThingID());
+							command.getSelector().getVendorThingIdList().add(thing.getVendorThingID());
 						}
 
 						break;

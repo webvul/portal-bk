@@ -10,7 +10,6 @@ public class CommandToThing implements   ExecuteTarget {
 
 	private TagSelector selector;
 
-	private List<String> vendorThingIdList=new ArrayList<>(); // for local rule
 
 	private ThingCommand command;
 
@@ -26,13 +25,6 @@ public class CommandToThing implements   ExecuteTarget {
 		this.check=sign;
 	}
 
-	public List<String> getVendorThingIdList() {
-		return vendorThingIdList;
-	}
-
-	public void setVendorThingIdList(List<String> vendorThingIdList) {
-		this.vendorThingIdList = vendorThingIdList;
-	}
 
 	@Override
 	public String getDelay() {

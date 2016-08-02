@@ -132,7 +132,13 @@ public class TriggerManager {
 
 	public String createTrigger(TriggerRecord record) {
 
-		ThingOfKiiCloud gatewayOfKiiCloud = localTriggerManager.checkLocalRule(record);
+		ThingOfKiiCloud gatewayOfKiiCloud = null;
+		try {
+			gatewayOfKiiCloud = localTriggerManager.checkLocalRule(record);
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error("checkLocalRule error ", e);
+		}
 
 		if( ! StringUtils.isEmpty(record.getId()) ){// saved local rule
 			//action
