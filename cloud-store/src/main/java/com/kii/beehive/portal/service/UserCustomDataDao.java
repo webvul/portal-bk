@@ -1,15 +1,16 @@
 package com.kii.beehive.portal.service;
 
+import java.util.Collections;
+import java.util.Map;
+
+import org.springframework.stereotype.Component;
+
 import com.kii.beehive.portal.store.entity.CustomData;
 import com.kii.beehive.portal.store.entity.UserCustomData;
 import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.entity.BucketInfo;
 import com.kii.extension.sdk.exception.ObjectNotFoundException;
 import com.kii.extension.sdk.service.AbstractDataAccess;
-import org.springframework.stereotype.Component;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @BindAppByName(appName = "portal", appBindSource = "propAppBindTool")
 @Component
@@ -30,10 +31,10 @@ public class UserCustomDataDao extends AbstractDataAccess<UserCustomData> {
 
 		if (super.checkExist(userID)) {
 
-			Map<String, Object> map = new HashMap<>();
-			map.put(type, data);
 
-			super.updateEntity(map, userID);
+			super.updateEntity(Collections.singletonMap(type,""),userID);
+
+			super.updateEntity(Collections.singletonMap(type,data),userID);
 
 		} else {
 
