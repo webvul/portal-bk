@@ -27,6 +27,7 @@ public class ObjectMapperFactory{
 		final ObjectMapper result = new ObjectMapper();
 		result.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 		result.configure(SerializationFeature.INDENT_OUTPUT, true);
+		result.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS,false);
 		result.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
 //		result.configure(DeserializationFeature.,true);
 		return result;

@@ -48,6 +48,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 		mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 		mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
 
+
 		mapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT,true);
 		mapper.configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES,true);
 		mapper.configure(DeserializationFeature.FAIL_ON_READING_DUP_TREE_KEY,true);

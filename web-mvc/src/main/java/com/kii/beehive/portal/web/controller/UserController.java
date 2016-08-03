@@ -304,9 +304,9 @@ public class UserController {
 
 	@RequestMapping(path = "/users/me/customData/{name}", method = {RequestMethod.GET},
 			consumes = {MediaType.ALL_VALUE})
-	public Map<String,Object> getCustomData(@PathVariable(value = "name") String name) {
+	public CustomData getCustomData(@PathVariable(value = "name") String name) {
 		BeehiveJdbcUser user = userManager.getUserByIDDirectly(AuthInfoStore.getUserID());
-		return dataDao.getUserData(name, user.getUserID()).getData();
+		return dataDao.getUserData(name, user.getUserID());
 
 	}
 
@@ -318,6 +318,9 @@ public class UserController {
 			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "field", "custom data content");
 		}
 		BeehiveJdbcUser user = userManager.getUserByIDDirectly(AuthInfoStore.getUserID());
+
+//		CustomData customData=new CustomData();
+//		customData.setData(data);
 		dataDao.setUserData(data, name, user.getUserID());
 
 	}

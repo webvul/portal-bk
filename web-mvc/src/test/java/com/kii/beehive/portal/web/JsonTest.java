@@ -2,7 +2,8 @@ package com.kii.beehive.portal.web;
 
 
 import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertTrue;
+
+import javax.annotation.PostConstruct;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -10,10 +11,14 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import com.kii.beehive.portal.store.entity.CustomData;
 import com.kii.beehive.portal.store.entity.PortalSyncUser;
+import com.kii.beehive.portal.store.entity.UserCustomData;
 import com.kii.beehive.portal.web.entity.SyncUserRestBean;
 
 public class JsonTest {
@@ -27,7 +32,7 @@ public class JsonTest {
 
 		String json="{\"data\":[\"abcd\",\"abc\"]}";
 
-		assertTrue(mapper.canSerialize(CustomData.class));
+//		assertTrue(mapper.canSerialize(CustomData.class));
 
 
 		CustomData data=mapper.readValue(json,CustomData.class);
@@ -35,9 +40,26 @@ public class JsonTest {
 		System.out.println(data);
 
 
+		UserCustomData  userData=new UserCustomData();
+		userData.addData("test",data);
+
+		String jsonUser=mapper.writeValueAsString(userData);
+
+		userData=mapper.readValue(jsonUser,UserCustomData.class);
+
+		System.out.println(userData.getDataMap().get("test").getData().get("data"));
+
 	}
 
 	private ObjectMapper mapper=new ObjectMapper();
+
+	@PostConstruct
+	public void init() {
+		mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+		mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
+//		mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+	}
 
 	@Test
 	public void testUserConvert() throws IOException {
