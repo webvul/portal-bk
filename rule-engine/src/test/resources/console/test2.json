@@ -9,7 +9,7 @@
 
         {"field": "b.count_b",
           "type": "eq",
-          "value": 2}
+          "value": 3}
       ]
 
     },

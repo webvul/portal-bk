@@ -19,6 +19,10 @@ public class CurrThing {
 
 	private String currThing="NONE";
 
+	public String getCurrThing(){
+		return currThing;
+	}
+
 
 	public void withExtValue(){
 

@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -205,11 +206,9 @@ public class EngineService {
 	public void createSummaryTrigger(SummaryTriggerRecord record,Map<String,Set<String> > summaryMap){
 
 		MultipleSrcTriggerRecord convertRecord=new MultipleSrcTriggerRecord();
-		convertRecord.setId(record.getId());
-		convertRecord.setPreparedCondition(record.getPreparedCondition());
-		convertRecord.setTargetParamList(record.getTargetParamList());
-		convertRecord.setPredicate(record.getPredicate());
-		convertRecord.setTarget(record.getTargets());
+
+		BeanUtils.copyProperties(record,convertRecord);
+
 
 		Map<String,Set<String>> thingMap=new HashMap<>();
 
@@ -238,10 +237,8 @@ public class EngineService {
 	public void createGroupTrigger(GroupTriggerRecord record,Collection<String> thingIDs){
 
 		MultipleSrcTriggerRecord convertRecord=new MultipleSrcTriggerRecord();
-		convertRecord.setId(record.getId());
-		convertRecord.setPreparedCondition(record.getPreparedCondition());
-		convertRecord.setTargetParamList(record.getTargetParamList());
-		convertRecord.setTarget(record.getTargets());
+		BeanUtils.copyProperties(record,convertRecord);
+
 
 		Condition cond=new All();
 		switch(record.getPolicy().getGroupPolicy()){
@@ -264,7 +261,11 @@ public class EngineService {
 				cond=TriggerConditionBuilder.newCondition().equal("comm",0).getConditionInstance();
 		}
 		RuleEnginePredicate predicate=new RuleEnginePredicate();
+
 		predicate.setCondition(cond);
+		predicate.setTriggersWhen(record.getPredicate().getTriggersWhen());
+		predicate.setSchedule(record.getPredicate().getSchedule());
+
 		convertRecord.setPredicate(predicate);
 
 		Map<String,Set<String>> thingMap=new HashMap<>();
@@ -280,6 +281,7 @@ public class EngineService {
 		elem.setSource(record.getSource());
 
 		convertRecord.addSource("comm",elem);
+
 		this.createMultipleSourceTrigger(convertRecord,thingMap);
 	}
 
