@@ -385,8 +385,12 @@ public class TriggerManager {
 		Map<String, Action> actions = new HashMap<>();
 		Action action = new Action();
 		actions.put(act.name(), action);
-		action.setField("triggerID", triggerID);
 
+		if(act==GatewayCommand.createTrigger){
+			action.setField("triggerJson", record);
+		}else {
+			action.setField("triggerID", triggerID);
+		}
 		//command								send to gateway
 		ThingCommand command = new ThingCommand();
 		command.setSchema("gateway");
