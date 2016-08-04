@@ -20,6 +20,7 @@ import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
 import com.kii.beehive.business.ruleengine.TriggerValidate;
+import com.kii.extension.ruleengine.store.trigger.BeehiveTriggerType;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 
@@ -56,11 +57,11 @@ public class CrossTriggerController {
 
 		record.setRecordStatus(TriggerRecord.StatusType.disable);
 
-		triggerID = mang.createTrigger(record);
+		TriggerRecord trigger = mang.createTrigger(record);
 
 		Map<String, Object> result = new HashMap<>();
-		result.put("triggerID", triggerID);
-		result.put("triggerPosition", record.getTriggerPosition());
+		result.put("triggerID", trigger.getTriggerID());
+		result.put("triggerPosition", trigger.getType()== BeehiveTriggerType.Gateway?"local":"cloud");
 
 		triggerLogTools.outputCreateLog(record, triggerID);
 

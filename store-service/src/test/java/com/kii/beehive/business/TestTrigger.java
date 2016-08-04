@@ -155,7 +155,7 @@ public class TestTrigger extends StoreServiceTestInit {
 
 		record.setPredicate(perdicate);
 
-		String triggerID=manager.createTrigger(record);
+		String triggerID=manager.createTrigger(record).getTriggerID();
 
 
 		TriggerRecord newRecord=manager.getTriggerByID(triggerID);

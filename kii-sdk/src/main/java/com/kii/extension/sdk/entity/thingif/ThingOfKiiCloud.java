@@ -88,4 +88,10 @@ public class ThingOfKiiCloud {
     public void setGlobalThingID(Long globalThingID) {
         this.globalThingID = globalThingID;
     }
+
+
+	public void fillKiiInfo(){
+
+
+	}
 }

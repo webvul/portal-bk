@@ -7,11 +7,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 import com.kii.extension.ruleengine.store.trigger.multiple.MultipleSrcTriggerRecord;
 import com.kii.extension.sdk.entity.KiiEntity;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME,
@@ -21,7 +19,8 @@ import java.util.List;
 		@JsonSubTypes.Type(value = SimpleTriggerRecord.class, name = "Simple"),
 		@JsonSubTypes.Type(value = GroupTriggerRecord.class, name = "Group"),
 		@JsonSubTypes.Type(value = SummaryTriggerRecord.class, name = "Summary"),
-		@JsonSubTypes.Type(value = MultipleSrcTriggerRecord.class, name = "Multiple")
+		@JsonSubTypes.Type(value = MultipleSrcTriggerRecord.class, name = "Multiple"),
+		@JsonSubTypes.Type(value = GatewayTriggerRecord.class,name="Gateway" )
 })
 public abstract class TriggerRecord extends KiiEntity {
 
@@ -39,13 +38,9 @@ public abstract class TriggerRecord extends KiiEntity {
 	private StatusType recordStatus;
 
 	private String name;
-	private TriggerPosition triggerPosition = TriggerPosition.cloud;
-
 
 	private String description;
 
-	private String gatewayVendorThingID;//for local
-	private String gatewayFullKiiThingID;//for local
 
 
 	public String getTriggerID() {
@@ -146,27 +141,13 @@ public abstract class TriggerRecord extends KiiEntity {
 		this.targetParamList = targetParamList;
 	}
 
-	public TriggerPosition getTriggerPosition() {
-		return triggerPosition;
-	}
+//	public TriggerPosition getTriggerPosition() {
+//		return triggerPosition;
+//	}
+//
+//	public void setTriggerPosition(TriggerPosition triggerPosition) {
+//		this.triggerPosition = triggerPosition;
+//	}
 
-	public void setTriggerPosition(TriggerPosition triggerPosition) {
-		this.triggerPosition = triggerPosition;
-	}
 
-	public String getGatewayVendorThingID() {
-		return gatewayVendorThingID;
-	}
-
-	public void setGatewayVendorThingID(String gatewayVendorThingID) {
-		this.gatewayVendorThingID = gatewayVendorThingID;
-	}
-
-	public String getGatewayFullKiiThingID() {
-		return gatewayFullKiiThingID;
-	}
-
-	public void setGatewayFullKiiThingID(String gatewayFullKiiThingID) {
-		this.gatewayFullKiiThingID = gatewayFullKiiThingID;
-	}
 }

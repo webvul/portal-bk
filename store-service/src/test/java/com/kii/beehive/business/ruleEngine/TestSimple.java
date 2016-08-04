@@ -127,7 +127,7 @@ public class TestSimple {
 
 		record.setPredicate(perdicate);
 
-		String triggerID=manager.createTrigger(record);
+		String triggerID=manager.createTrigger(record).getTriggerID();
 
 		manager.enableTrigger(triggerID);
 
@@ -188,7 +188,7 @@ public class TestSimple {
 
 		record.setPredicate(perdicate);
 
-		String triggerID=manager.createTrigger(record);
+		String triggerID=manager.createTrigger(record).getTriggerID();
 
 		manager.enableTrigger(triggerID);
 

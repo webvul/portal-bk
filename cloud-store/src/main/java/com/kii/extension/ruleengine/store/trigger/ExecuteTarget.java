@@ -10,7 +10,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 		defaultImpl=CommandToThing.class )
 @JsonSubTypes({
 		@JsonSubTypes.Type(value = CommandToThing.class,name="ThingCommand"),
-		@JsonSubTypes.Type(value = CallHttpApi.class,name="HttpApiCall")
+		@JsonSubTypes.Type(value = CallHttpApi.class,name="HttpApiCall"),
+		@JsonSubTypes.Type(value=CommandToThingInGW.class,name="ThingCommandInGW")
 })
 public interface ExecuteTarget {
 
