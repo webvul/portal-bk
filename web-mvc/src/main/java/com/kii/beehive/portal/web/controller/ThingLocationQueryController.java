@@ -72,7 +72,7 @@ public class ThingLocationQueryController {
 	}
 
 	@RequestMapping(value="/reports/thingQuery",method = RequestMethod.POST)
-	public List<String>  queryByThingLocation(@RequestBody ThingLocQuery query){
+	public List<Long>  queryByThingLocation(@RequestBody ThingLocQuery query){
 			return locationQueryManager.doQueryForReport(query);
 	}
 

@@ -26,9 +26,9 @@ public class LocationQueryManager {
 	private ThingLocationDao  thingLocDao;
 
 
-	public List<String> doQueryForReport(ThingLocQuery query){
+	public List<Long> doQueryForReport(ThingLocQuery query){
 
-		return thingLocDao.getThingsByLocation(query).stream().map(GlobalThingInfo::getVendorThingID).collect(Collectors.toList());
+		return thingLocDao.getThingsByLocation(query).stream().map(GlobalThingInfo::getId).collect(Collectors.toList());
 
 	}
 

@@ -120,7 +120,7 @@ Group by   thing.type, substring(loc.location ,？,？ )
 		}
 
 		String fullSql=StrTemplate.gener(sqlTmpWithGroup,
-				GlobalThingInfo.VANDOR_THING_ID,subGroup,GlobalThingSpringDao.TABLE_NAME,
+				GlobalThingInfo.ID_GLOBAL_THING,subGroup,GlobalThingSpringDao.TABLE_NAME,
 				ThingLocationRelDao.TABLE_NAME, GlobalThingInfo.ID_GLOBAL_THING,ThingLocationRelation.THING_ID,
 				subQuery);
 
@@ -143,7 +143,8 @@ Group by   thing.type, substring(loc.location ,？,？ )
 	}
 
 
-	private static final String SqlTmpWithTwoGroup="select group_concat(th.${0}) as thingids, th.${1} as type,loc.${2} as location  from " +
+	private static final String SqlTmpWithTwoGroup=
+			"select group_concat(th.${0}) as thingids, th.${1} as type,loc.${2} as location  from " +
 			" ${3} th inner join  ${4} loc on th.${5} = loc.${6} " +
 			" where th.is_deleted = false  ${7} " +
 			" group by th.${1},loc.${2}   ";
@@ -153,7 +154,7 @@ Group by   thing.type, substring(loc.location ,？,？ )
 		String subQuery=query.fillSubQuery(paramList);
 
 		String fullSql=StrTemplate.gener(SqlTmpWithTwoGroup,
-				GlobalThingInfo.VANDOR_THING_ID,GlobalThingInfo.THING_TYPE,ThingLocationRelation.LOCATION,
+				GlobalThingInfo.ID_GLOBAL_THING,GlobalThingInfo.THING_TYPE,ThingLocationRelation.LOCATION,
 				GlobalThingSpringDao.TABLE_NAME,ThingLocationRelDao.TABLE_NAME,GlobalThingInfo.ID_GLOBAL_THING,
 				ThingLocationRelation.THING_ID,subQuery);
 
