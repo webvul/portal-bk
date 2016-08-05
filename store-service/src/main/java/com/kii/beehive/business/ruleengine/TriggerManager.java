@@ -217,30 +217,28 @@ public class TriggerManager {
 		List<ExecuteTarget> targets = groupRecord.getTargets();
 
 //		targets:
-		for(ExecuteTarget target:targets){
+		for(ExecuteTarget target:targets)
 			switch (target.getType()) {
 
 				case "ThingCommand":
-					CommandToThing command=(CommandToThing)target;
-					CommandToThingInGW cmdInGW=new CommandToThingInGW();
+					CommandToThing command = (CommandToThing) target;
+					CommandToThingInGW cmdInGW = new CommandToThingInGW();
 					cmdInGW.setCommand(command.getCommand());
 					cmdInGW.getSelector().setVendorThingIdList(new ArrayList<>());
 					Set<GlobalThingInfo> thingList = thingTagService.getThingInfos(command.getSelector());
 
-					for (GlobalThingInfo thing : thingList){
-						if( allEndNodesOfGatewayMap.get(thing.getVendorThingID()) == null ){
+					for (GlobalThingInfo thing : thingList) {
+						if (allEndNodesOfGatewayMap.get(thing.getVendorThingID()) == null) {
 							throw new IllegalStateException();
 						}
 						cmdInGW.getSelector().getVendorThingIdList().add(thing.getVendorThingID());
 					}
 					triggerRecord.addTarget(cmdInGW);
-
 					break;
 				case "HttpApiCall":
-					triggerRecord.addTarget(target);
-					break;
+					throw new IllegalStateException();
+
 			}
-		}
 		triggerRecord.setGatewayVendorThingID(vendorThingID);
 		triggerRecord.setGatewayFullKiiThingID(fullKiiThingID);
 		triggerDao.addKiiEntity(triggerRecord);
