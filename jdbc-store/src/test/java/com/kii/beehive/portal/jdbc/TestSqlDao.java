@@ -196,6 +196,9 @@ public class TestSqlDao extends TestTemplate {
 	public void testThingDao(){
 
 
+		thingDao.getFullThingDetailByThingIDs(ids);
+
+
 		thingDao.findThingByGroupIDRelUserID(100l);
 
 		thingDao.findThingByGroupIDRelUserIDWithThingID(100l,100l);

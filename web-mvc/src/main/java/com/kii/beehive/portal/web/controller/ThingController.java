@@ -1,14 +1,16 @@
 package com.kii.beehive.portal.web.controller;
 
-import com.kii.beehive.business.manager.TagThingManager;
-import com.kii.beehive.business.service.ThingIFInAppService;
-import com.kii.beehive.portal.auth.AuthInfoStore;
-import com.kii.beehive.portal.jdbc.entity.*;
-import com.kii.beehive.portal.web.entity.ThingRestBean;
-import com.kii.beehive.portal.web.exception.ErrorCode;
-import com.kii.beehive.portal.web.exception.PortalException;
-import com.kii.extension.sdk.entity.thingif.EndNodeOfGateway;
-import com.kii.extension.sdk.entity.thingif.GatewayOfKiiCloud;
+import static java.util.Arrays.asList;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,12 +18,28 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static java.util.Arrays.asList;
+import com.kii.beehive.business.manager.TagThingManager;
+import com.kii.beehive.business.service.ThingIFInAppService;
+import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
+import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
+import com.kii.beehive.portal.jdbc.entity.TagIndex;
+import com.kii.beehive.portal.jdbc.entity.TagType;
+import com.kii.beehive.portal.jdbc.entity.UserGroup;
+import com.kii.beehive.portal.manager.ThingManager;
+import com.kii.beehive.portal.web.entity.ThingDetail;
+import com.kii.beehive.portal.web.entity.ThingRestBean;
+import com.kii.beehive.portal.web.exception.ErrorCode;
+import com.kii.beehive.portal.web.exception.PortalException;
+import com.kii.extension.sdk.entity.thingif.EndNodeOfGateway;
+import com.kii.extension.sdk.entity.thingif.GatewayOfKiiCloud;
 
 /**
  * Beehive API - Thing API
@@ -407,6 +425,8 @@ public class ThingController extends AbstractThingTagController {
 		thingTagManager.bindThingsToUsers(thingIds, userIds);
 	}
 
+
+
 	/**
 	 * Unbind things(devices) from users
 	 * DELETE /{globalThingIDs}/users/{userIDs}
@@ -582,4 +602,14 @@ public class ThingController extends AbstractThingTagController {
 		return resultList;
 	}
 
+	@Autowired
+	private ThingManager  thingManager;
+
+	@RequestMapping(value = "/queryDetailByIDs", method = {RequestMethod.POST})
+	public List<ThingDetail> getThingDetailWithLocByIDs(@RequestBody List<Long>  thingIDs){
+
+
+		return thingManager.getThingDetailByIDList(thingIDs).stream().map(ThingDetail::new).collect(Collectors.toList());
+
+	}
 }
