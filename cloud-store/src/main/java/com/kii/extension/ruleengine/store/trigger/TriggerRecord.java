@@ -120,9 +120,6 @@ public abstract class TriggerRecord extends KiiEntity {
 	public enum StatusType {
 		enable, disable, deleted;
 	}
-	public enum TriggerPosition{
-		cloud, local;
-	}
 
 	public void addTargetParam(String name, String param) {
 		CommandParam cmdParam = new CommandParam();

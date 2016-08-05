@@ -148,6 +148,23 @@ public class CrossTriggerController {
 	}
 
 
+	@RequestMapping(path="/gateway",method={RequestMethod.GET},consumes = {"*"})
+	public List<TriggerRecord> getGatewayTriggerList(){
+
+		return mang.getAllGatewayTrigger();
+
+	}
+
+	@RequestMapping(path="/gateway/{vendorThingID}",method={RequestMethod.GET},consumes = {"*"})
+	public List<TriggerRecord> getTriggerListByGatewayVendorThingID(@PathVariable("vendorThingID") String vendorThingID){
+
+		return mang.getTriggerListByGatewayVendorThingID(vendorThingID);
+
+	}
+
+
+
+
 	@RequestMapping(path = "/debug/dump", method = {RequestMethod.GET}, consumes = {"*"})
 	public Map<String, Object> getRuleEngineDump() {
 

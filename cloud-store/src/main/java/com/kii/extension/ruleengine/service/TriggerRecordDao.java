@@ -1,5 +1,9 @@
 package com.kii.extension.ruleengine.service;
 
+import java.util.Collections;
+import java.util.List;
+import org.springframework.stereotype.Component;
+import com.kii.extension.ruleengine.store.trigger.BeehiveTriggerType;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.entity.BucketInfo;
@@ -7,10 +11,6 @@ import com.kii.extension.sdk.exception.ObjectNotFoundException;
 import com.kii.extension.sdk.query.ConditionBuilder;
 import com.kii.extension.sdk.query.QueryParam;
 import com.kii.extension.sdk.service.AbstractDataAccess;
-import org.springframework.stereotype.Component;
-
-import java.util.Collections;
-import java.util.List;
 
 @Component
 @BindAppByName(appName = "portal", appBindSource = "propAppBindTool")
@@ -130,4 +130,39 @@ public class TriggerRecordDao extends AbstractDataAccess<TriggerRecord> {
 
 		return list;
 	}
+
+
+	public List<TriggerRecord> getTriggerListByGatewayVendorThingID(String gatewayVendorThingID){
+
+		String[] params= new String[2];
+		params[0] = TriggerRecord.StatusType.enable.name();
+		params[1] = TriggerRecord.StatusType.disable.name();
+		QueryParam query= ConditionBuilder.andCondition().equal("gatewayVendorThingID",gatewayVendorThingID)
+				.In("recordStatus",params).getFinalQueryParam();
+
+		List<TriggerRecord> list=super.query(query);
+
+		if(list.isEmpty()){
+			return null;
+		}
+		return list;
+
+	}
+	public List<TriggerRecord> getTriggerListByType(BeehiveTriggerType beehiveTriggerType){
+
+		String[] params= new String[2];
+		params[0] = TriggerRecord.StatusType.enable.name();
+		params[1] = TriggerRecord.StatusType.disable.name();
+		QueryParam query= ConditionBuilder.andCondition().equal("type",beehiveTriggerType)
+				.In("recordStatus",params).getFinalQueryParam();
+
+		List<TriggerRecord> list=super.query(query);
+
+		if(list.isEmpty()){
+			return null;
+		}
+		return list;
+
+	}
+
 }

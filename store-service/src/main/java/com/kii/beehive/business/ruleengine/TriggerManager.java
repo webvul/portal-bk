@@ -1,7 +1,6 @@
 package com.kii.beehive.business.ruleengine;
 
 import javax.annotation.PostConstruct;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,15 +8,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.kii.beehive.business.event.BusinessEventListenerService;
 import com.kii.beehive.business.helper.TriggerCreator;
 import com.kii.beehive.business.manager.AppInfoManager;
@@ -29,7 +25,6 @@ import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.service.EventListenerDao;
-import com.kii.beehive.portal.service.LocalTriggerRecordDao;
 import com.kii.extension.ruleengine.EngineService;
 import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
 import com.kii.extension.ruleengine.schedule.ScheduleService;
@@ -63,9 +58,6 @@ public class TriggerManager {
 
 	@Autowired
 	private TriggerRecordDao triggerDao;
-
-	@Autowired
-	private LocalTriggerRecordDao localTriggerRecordDao;
 
 	@Autowired
 	private GlobalThingSpringDao globalThingDao;
@@ -210,7 +202,7 @@ public class TriggerManager {
 		String thingID=gatewayOfKiiCloud.getThingID();
 
 //		String thingID="th.f83120e36100-a269-5e11-bf4b-0c5b4813";
-		String venderThingID=globalThingDao.getThingByFullKiiThingID(sourceThing.getKiiAppID(), thingID).getVendorThingID();
+		String vendorThingID=globalThingDao.getThingByFullKiiThingID(sourceThing.getKiiAppID(), thingID).getVendorThingID();
 
 		String fullKiiThingID=ThingIDTools.joinFullKiiThingID(sourceThing.getKiiAppID(), thingID);
 
@@ -245,7 +237,7 @@ public class TriggerManager {
 					break;
 			}
 		}
-		triggerRecord.setGatewayVendorThingID(venderThingID);
+		triggerRecord.setGatewayVendorThingID(vendorThingID);
 		triggerRecord.setGatewayFullKiiThingID(fullKiiThingID);
 		triggerDao.addKiiEntity(triggerRecord);
 
@@ -367,6 +359,19 @@ public class TriggerManager {
 		triggerDao.deleteTriggerRecord(triggerID);
 
 	}
+
+
+	public List<TriggerRecord> getAllGatewayTrigger() {
+		List<TriggerRecord> triggerList = triggerDao.getTriggerListByType(BeehiveTriggerType.Gateway);
+
+		return triggerList;
+	}
+	public List<TriggerRecord> getTriggerListByGatewayVendorThingID(String vendorThingID) {
+		List<TriggerRecord> triggerList = triggerDao.getTriggerListByGatewayVendorThingID(vendorThingID);
+
+		return triggerList;
+	}
+
 
 	private enum GatewayCommand{
 

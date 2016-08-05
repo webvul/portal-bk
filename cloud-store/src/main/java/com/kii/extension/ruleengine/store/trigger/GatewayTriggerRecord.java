@@ -9,7 +9,7 @@ public class GatewayTriggerRecord extends  TriggerRecord{
 
 	private String gatewayFullKiiThingID;
 
-	private VenderThingList  source=new VenderThingList();
+	private VendorThingList source=new VendorThingList();
 
 //	private TriggerGroupPolicy  policy;
 
@@ -23,11 +23,11 @@ public class GatewayTriggerRecord extends  TriggerRecord{
 //	}
 
 
-	public VenderThingList getSource() {
+	public VendorThingList getSource() {
 		return source;
 	}
 
-	public void setSource(VenderThingList source) {
+	public void setSource(VendorThingList source) {
 		this.source = source;
 	}
 

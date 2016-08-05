@@ -7,7 +7,7 @@ import com.kii.extension.sdk.entity.thingif.ThingCommand;
 public class CommandToThingInGW implements   ExecuteTarget {
 
 
-	private VenderThingList venderThingList=new VenderThingList();
+	private VendorThingList venderThingList=new VendorThingList();
 
 
 	private ThingCommand command;
@@ -44,11 +44,11 @@ public class CommandToThingInGW implements   ExecuteTarget {
 	}
 
 	@JsonUnwrapped
-	public VenderThingList getSelector() {
+	public VendorThingList getSelector() {
 		return venderThingList;
 	}
 
-	public void setSelector(VenderThingList selector) {
+	public void setSelector(VendorThingList selector) {
 		this.venderThingList = selector;
 	}
 

@@ -3,7 +3,7 @@ package com.kii.extension.ruleengine.store.trigger;
 import java.util.ArrayList;
 import java.util.List;
 
-public class VenderThingList {
+public class VendorThingList {
 
 	private List<String> vendorThingIdList=new ArrayList<>();
 
