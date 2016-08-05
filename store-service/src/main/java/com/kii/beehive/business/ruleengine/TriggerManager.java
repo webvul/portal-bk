@@ -194,7 +194,6 @@ public class TriggerManager {
 
 
 		GatewayTriggerRecord triggerRecord = new GatewayTriggerRecord();
-		triggerRecord.setPolicy(groupRecord.getPolicy());
 		triggerRecord.setRecordStatus(groupRecord.getRecordStatus());
 		triggerRecord.setPreparedCondition(groupRecord.getPreparedCondition());
 		triggerRecord.setPredicate(groupRecord.getPredicate());

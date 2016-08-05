@@ -11,16 +11,16 @@ public class GatewayTriggerRecord extends  TriggerRecord{
 
 	private VenderThingList  source=new VenderThingList();
 
-	private TriggerGroupPolicy  policy;
+//	private TriggerGroupPolicy  policy;
 
 
-	public TriggerGroupPolicy getPolicy() {
-		return policy;
-	}
-
-	public void setPolicy(TriggerGroupPolicy policy) {
-		this.policy = policy;
-	}
+//	public TriggerGroupPolicy getPolicy() {
+//		return policy;
+//	}
+//
+//	public void setPolicy(TriggerGroupPolicy policy) {
+//		this.policy = policy;
+//	}
 
 
 	public VenderThingList getSource() {
