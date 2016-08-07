@@ -202,3 +202,21 @@ CREATE TABLE `user_group` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1006 DEFAULT CHARSET=utf8mb4;
 
 
+CREATE TABLE `thing_geo` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `global_thing_id` int(11) DEFAULT NULL,
+  `vendor_thing_id` varchar(45) DEFAULT NULL,
+  `lng` double(17,14) NOT NULL,
+  `lat` double(17,14) NOT NULL,
+  `floor` int(3) DEFAULT NULL,
+  `building_id` varchar(15) DEFAULT NULL,
+  `ali_thing_id` varchar(45) DEFAULT NULL,
+  `description` mediumtext DEFAULT NULL,
+  `geo_type` int(1) DEFAULT NULL COMMENT 'POI点位类型，0：设备；1：非设备',
+  `create_by` varchar(45) DEFAULT NULL,
+  `create_date` datetime DEFAULT NULL,
+  `modify_by` varchar(45) DEFAULT NULL,
+  `modify_date` datetime DEFAULT NULL,
+  `is_deleted` tinyint(4) DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
