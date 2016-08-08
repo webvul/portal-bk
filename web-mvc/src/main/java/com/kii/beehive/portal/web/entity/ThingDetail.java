@@ -28,7 +28,10 @@ public class ThingDetail {
 
 		this.locs= (String) param.get("loc");
 
-		this.locations= Arrays.asList(StringUtils.split(locs,","));
+		if(!StringUtils.isBlank(locs)) {
+
+			this.locations = Arrays.asList(StringUtils.split(locs, ","));
+		}
 	}
 
 
