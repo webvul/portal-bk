@@ -6,5 +6,5 @@ package com.kii.beehive.business.data;
 public class Field {
 	public static final String SOURCE = "source";
 
-	public static final String EVENT_TIME = "object-eventTime";
+	public static final String EVENT_TIME = "object_eventTime";
 }
