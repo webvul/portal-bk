@@ -1,12 +1,20 @@
 package com.kii.beehive.portal.jdbc.dao;
 
-import com.kii.beehive.portal.common.utils.StrTemplate;
-import com.kii.beehive.portal.jdbc.entity.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
-
-import java.util.*;
+import com.kii.beehive.portal.common.utils.StrTemplate;
+import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
+import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
+import com.kii.beehive.portal.jdbc.entity.TagIndex;
+import com.kii.beehive.portal.jdbc.entity.TagUserRelation;
+import com.kii.beehive.portal.jdbc.entity.ThingUserRelation;
 
 
 @Repository
@@ -128,6 +136,19 @@ public class BeehiveUserJdbcDao extends SpringBaseDao<BeehiveJdbcUser> {
 		String fullSql = StrTemplate.gener(sqlTmp, TABLE_NAME);
 
 		return queryForObject(fullSql, userID);
+
+
+	}
+
+
+	public BeehiveJdbcUser getUserByFaceUserID(String faceUserID) {
+
+
+		String sqlTmp = "select * from ${0} where face_subject_id = ? ";
+
+		String fullSql = StrTemplate.gener(sqlTmp, TABLE_NAME);
+
+		return queryForObject(fullSql, faceUserID);
 
 
 	}

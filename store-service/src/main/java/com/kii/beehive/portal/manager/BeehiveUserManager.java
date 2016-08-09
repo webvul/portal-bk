@@ -1,5 +1,12 @@
 package com.kii.beehive.portal.manager;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import com.kii.beehive.business.service.KiiUserService;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.StringRandomTools;
@@ -9,18 +16,15 @@ import com.kii.beehive.portal.exception.UserExistException;
 import com.kii.beehive.portal.exception.UserNotExistException;
 import com.kii.beehive.portal.helper.AuthInfoService;
 import com.kii.beehive.portal.helper.RuleSetService;
-import com.kii.beehive.portal.jdbc.dao.*;
+import com.kii.beehive.portal.jdbc.dao.BeehiveArchiveUserDao;
+import com.kii.beehive.portal.jdbc.dao.BeehiveUserJdbcDao;
+import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
+import com.kii.beehive.portal.jdbc.dao.TeamGroupRelationDao;
+import com.kii.beehive.portal.jdbc.dao.TeamUserRelationDao;
+import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
 import com.kii.beehive.portal.jdbc.entity.BeehiveArchiveUser;
 import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 import com.kii.beehive.portal.jdbc.entity.TeamUserRelation;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Component
 @Transactional
@@ -172,6 +176,14 @@ public class BeehiveUserManager {
 		BeehiveJdbcUser user = userDao.getUserByUserID(userID);
 		if (user == null) {
 			throw new UserNotExistException(String.valueOf(userID));
+		}
+		return user;
+	}
+	public BeehiveJdbcUser getUserByFaceUserID(String faceUserID) {
+
+		BeehiveJdbcUser user = userDao.getUserByFaceUserID(faceUserID);
+		if (user == null) {
+			throw new UserNotExistException(String.valueOf(faceUserID));
 		}
 		return user;
 	}
