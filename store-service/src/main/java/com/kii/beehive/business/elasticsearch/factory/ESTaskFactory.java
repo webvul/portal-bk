@@ -96,7 +96,7 @@ public class ESTaskFactory {
 		TermsBuilder agg = AggregationBuilders.terms(Field.SOURCE)
 				.script(new Script("_source." + cfg.getBizDataCommonCarId()))
 				.subAggregation(AggregationBuilders.topHits("top").setSize(10000)
-						.addSort(SortBuilders.fieldSort(cfg.getBizDataCommonEventTime()).order(SortOrder.DESC)));
+						.addSort(SortBuilders.fieldSort(Field.EVENT_TIME).order(SortOrder.DESC)));
 		AvgTimeParkingSpaceToGatewayTask task = new AvgTimeParkingSpaceToGatewayTask();
 
 		task.setClient(indexOpClient);
