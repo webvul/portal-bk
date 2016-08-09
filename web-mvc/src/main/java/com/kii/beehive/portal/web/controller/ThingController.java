@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kii.beehive.business.manager.TagThingManager;
 import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
@@ -235,6 +236,7 @@ public class ThingController extends AbstractThingTagController {
 		thingInfo.setType(input.getType());
 		thingInfo.setStatus(input.getStatus());
 		thingInfo.setCustom(input.getCustom());
+		thingInfo.setFullKiiThingID(ThingIDTools.joinFullKiiThingID(input.getKiiAppID(),input.getVendorThingID()));
 
 
 		List<GlobalThingInfo> gList = thingTagManager.getThingsByVendorThingIds(Arrays.asList(thingInfo.getVendorThingID()));
