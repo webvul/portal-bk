@@ -62,7 +62,9 @@ public class SearchTask extends Task<SearchResponse> {
 		searchRequestBuilder.setPostFilter(postFilter);
 		if (null != aggregationBuilder) {
 			for (AggregationBuilder agg : aggregationBuilder) {
-				searchRequestBuilder.addAggregation(agg);
+				if (null != agg) {
+					searchRequestBuilder.addAggregation(agg);
+				}
 			}
 		}
 		if (null != size) {
