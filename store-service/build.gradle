@@ -10,6 +10,8 @@ dependencies {
     compile "com.floragunn:search-guard-2:${searchGuardVersion}"
     compile "com.floragunn:search-guard-ssl:${searchGuardSSLVersion}"
 
+    compile "io.socket:socket.io-client:0.7.0"
+
     testCompile 'org.eclipse.jetty:jetty-server:9.3.2.v20150730'
     testCompile 'org.eclipse.jetty:jetty-webapp:9.3.2.v20150730'
 }

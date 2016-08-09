@@ -52,5 +52,7 @@ dependencies {
 	
 	compile "com.fasterxml.jackson.core:jackson-annotations:2.6.3"
 
+	compile "redis.clients:jedis:2.8.1"
+
 	compile project(":commons")
 }

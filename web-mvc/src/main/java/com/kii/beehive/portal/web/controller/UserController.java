@@ -354,4 +354,14 @@ public class UserController {
 
 		return user;
 	}
+
+	@RequestMapping(value = "/users/face/{faceUserID}", method = {RequestMethod.GET}, consumes = {MediaType.ALL_VALUE})
+	public UserRestBean getUserByFaceUserID(@PathVariable("faceUserID") String faceUserID) {
+
+		UserRestBean bean = new UserRestBean();
+		bean.setBeehiveUser(userManager.getUserByFaceUserID(faceUserID));
+
+		return bean;
+	}
+
 }
