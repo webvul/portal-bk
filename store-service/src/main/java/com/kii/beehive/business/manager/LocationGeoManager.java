@@ -15,7 +15,7 @@ import com.kii.beehive.portal.jdbc.entity.ThingGeo;
 @Component
 public class LocationGeoManager {
 
-	private static final int EARCH_RADIUS = 6378137;
+	private static final int EARTH_RADIUS = 6378137;
 
 	@Autowired
 	private ThingGeoDao thingGeoDao;
@@ -118,7 +118,7 @@ public class LocationGeoManager {
 
 		double a = Math.sin(lat1) * Math.sin(lat2) + Math.cos(lat1) * Math.cos(lat2) * Math.cos((lng2 - lng1) * rad);
 
-		return EARCH_RADIUS * Math.acos(Math.min(a, 1));
+		return EARTH_RADIUS * Math.acos(Math.min(a, 1));
 	}
 
 	/**

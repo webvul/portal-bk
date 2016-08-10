@@ -12,6 +12,10 @@ import com.kii.beehive.portal.web.exception.PortalException;
  */
 public class LocationGeoRestBean {
 
+	public LocationGeoRestBean(){
+
+	}
+
 	public LocationGeoRestBean(ThingGeo thingGeo) {
 		this.setThingGeo(thingGeo);
 	}
