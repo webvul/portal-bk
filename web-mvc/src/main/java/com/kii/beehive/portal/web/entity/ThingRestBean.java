@@ -9,10 +9,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.BeanUtils;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
@@ -55,22 +53,20 @@ public class ThingRestBean  {
 		this.thingInfo = thingInfo;
 	}
 
-	@JsonSetter("globalThingID")
 	public void setGlobalThingID(Long globalThingID) {
 		this.thingInfo.setId(globalThingID);
 	}
 
-	@JsonGetter("globalThingID")
+	@JsonProperty("globalThingID")
 	public Long getGlobalThingID() {
 		return thingInfo.getId();
 	}
 
-	@JsonGetter("location")
+	@JsonProperty("location")
 	public String getLocation() {
 		return location;
 	}
 
-	@JsonSetter("location")
 	public void setLocation(String location) {
 		this.location = location;
 	}
