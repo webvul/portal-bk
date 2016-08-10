@@ -190,7 +190,7 @@ public class TriggerManager {
 
 
 		GatewayTriggerRecord triggerRecord = new GatewayTriggerRecord();
-		triggerRecord.setRecordStatus(groupRecord.getRecordStatus());
+		triggerRecord.setRecordStatus(TriggerRecord.StatusType.enable);
 		triggerRecord.setPreparedCondition(groupRecord.getPreparedCondition());
 		triggerRecord.setPredicate(groupRecord.getPredicate());
 		triggerRecord.setTargetParamList(groupRecord.getTargetParamList());
@@ -204,9 +204,6 @@ public class TriggerManager {
 		//
 		ThingOfKiiCloud gatewayOfKiiCloud = thingIFService.getThingGateway(sourceThing.getFullKiiThingID());
 		String thingID=gatewayOfKiiCloud.getThingID();
-
-//		String thingID="th.f83120e36100-a269-5e11-bf4b-0c5b4813";
-		String vendorThingID=globalThingDao.getThingByFullKiiThingID(sourceThing.getKiiAppID(), thingID).getVendorThingID();
 
 		String fullKiiThingID=ThingIDTools.joinFullKiiThingID(sourceThing.getKiiAppID(), thingID);
 
@@ -239,6 +236,10 @@ public class TriggerManager {
 					throw new IllegalStateException();
 
 			}
+
+
+//		String thingID="th.f83120e36100-a269-5e11-bf4b-0c5b4813";
+		String vendorThingID=globalThingDao.getThingByFullKiiThingID(sourceThing.getKiiAppID(), thingID).getVendorThingID();
 		triggerRecord.setGatewayVendorThingID(vendorThingID);
 		triggerRecord.setGatewayFullKiiThingID(fullKiiThingID);
 		triggerDao.addKiiEntity(triggerRecord);
