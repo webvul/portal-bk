@@ -1,11 +1,17 @@
 package com.kii.beehive.portal.jdbc.helper;
 
-import com.kii.beehive.portal.auth.AuthInfoStore;
-import com.kii.beehive.portal.common.utils.StrTemplate;
-import com.kii.beehive.portal.jdbc.annotation.JdbcField;
-import com.kii.beehive.portal.jdbc.annotation.JdbcFieldType;
-import com.kii.beehive.portal.jdbc.entity.BusinessEntity;
-import com.kii.beehive.portal.jdbc.entity.DBEntity;
+import javax.sql.DataSource;
+
+import java.beans.PropertyDescriptor;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -14,10 +20,15 @@ import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.object.SqlUpdate;
 
-import javax.sql.DataSource;
-import java.beans.PropertyDescriptor;
-import java.sql.Types;
-import java.util.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.common.utils.StrTemplate;
+import com.kii.beehive.portal.jdbc.annotation.JdbcField;
+import com.kii.beehive.portal.jdbc.annotation.JdbcFieldType;
+import com.kii.beehive.portal.jdbc.entity.BusinessEntity;
+import com.kii.beehive.portal.jdbc.entity.DBEntity;
 
 
 public class BindClsFullUpdateTool extends SqlUpdate {
@@ -31,6 +42,7 @@ public class BindClsFullUpdateTool extends SqlUpdate {
 
 	private final BeanWrapper wrapper;
 
+	private final ObjectMapper objectMapper;
 
 	private final String pkFieldName;
 
@@ -39,27 +51,28 @@ public class BindClsFullUpdateTool extends SqlUpdate {
 		return true;
 	}
 
-	private BindClsFullUpdateTool(DataSource ds, String tableName, BeanWrapper wrapper, String pkName) {
+	private BindClsFullUpdateTool(DataSource ds, String tableName, BeanWrapper wrapper, String pkName,ObjectMapper objectMapper) {
 		setDataSource(ds);
 		this.tableName = tableName;
 		this.wrapper = wrapper;
 		this.pkFieldName = pkName;
+		this.objectMapper=objectMapper;
 
 	}
 
-	private <T extends DBEntity> BindClsFullUpdateTool(DataSource ds, String tableName, Class<T> cls, String pkName) {
-		this(ds, tableName, PropertyAccessorFactory.forBeanPropertyAccess(BeanUtils.instantiate(cls)), pkName);
+	private <T extends DBEntity> BindClsFullUpdateTool(DataSource ds, String tableName, Class<T> cls, String pkName,ObjectMapper objectMapper) {
+		this(ds, tableName, PropertyAccessorFactory.forBeanPropertyAccess(BeanUtils.instantiate(cls)), pkName, objectMapper);
 	}
 
-	public static <E extends DBEntity> BindClsFullUpdateTool newInstance(DataSource ds, String tableName, String key, Class<E> cls, String pkName) {
-		BindClsFullUpdateTool inst = new BindClsFullUpdateTool(ds, tableName, cls, pkName);
+	public static <E extends DBEntity> BindClsFullUpdateTool newInstance(DataSource ds, String tableName, String key, Class<E> cls, String pkName,ObjectMapper objectMapper) {
+		BindClsFullUpdateTool inst = new BindClsFullUpdateTool(ds, tableName, cls, pkName,objectMapper);
 		inst.compileWithClass(key);
 		return inst;
 	}
 
 	public BindClsFullUpdateTool cloneInstance(BusinessEntity entity, String key, boolean ignoreNull) {
 
-		BindClsFullUpdateTool inst = new BindClsFullUpdateTool(super.getJdbcTemplate().getDataSource(), tableName, wrapper, pkFieldName);
+		BindClsFullUpdateTool inst = new BindClsFullUpdateTool(super.getJdbcTemplate().getDataSource(), tableName, wrapper, pkFieldName,objectMapper);
 
 		inst.compileWithEntity(entity, key, ignoreNull);
 		return inst;
@@ -68,7 +81,7 @@ public class BindClsFullUpdateTool extends SqlUpdate {
 
 	public BindClsFullUpdateTool cloneInstance(Map<String, Object> paramMap, String key) {
 
-		BindClsFullUpdateTool inst = new BindClsFullUpdateTool(super.getJdbcTemplate().getDataSource(), tableName, wrapper, pkFieldName);
+		BindClsFullUpdateTool inst = new BindClsFullUpdateTool(super.getJdbcTemplate().getDataSource(), tableName, wrapper, pkFieldName,objectMapper);
 
 		inst.compileWithFieldSet(new HashSet<>(paramMap.keySet()), key);
 		return inst;
@@ -265,6 +278,20 @@ public class BindClsFullUpdateTool extends SqlUpdate {
 			}
 			Object val = localWrapper.getPropertyValue(descriptor.getName());
 
+			if(fieldDesc.type()==JdbcFieldType.Json){
+
+				if(val==null){
+					val="{}";
+				}else {
+					try {
+						val = objectMapper.writeValueAsString(val);
+					} catch (JsonProcessingException e) {
+						log.error("json write fail", e);
+						val = "{}";
+					}
+				}
+
+			}
 			paramMap.put(descriptor.getName(), val);
 
 			log.debug(" fill update param " + fieldDesc.column() + " with " + val);

@@ -1,5 +1,7 @@
 package com.kii.beehive.portal.jdbc.entity;
 
+import java.util.Map;
+
 import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.jdbc.annotation.JdbcField;
 import com.kii.beehive.portal.jdbc.annotation.JdbcFieldType;
@@ -12,9 +14,9 @@ public class GlobalThingInfo extends BusinessEntity {
 
 	private String type;
 
-	private String status;
+	private Map<String,Object> status;
 
-	private String consumer;
+	private Map<String,Object> consumer;
 
 	private String fullKiiThingID;
 
@@ -68,20 +70,20 @@ public class GlobalThingInfo extends BusinessEntity {
 	}
 
 	@JdbcField(column = STATUS, type = JdbcFieldType.Json)
-	public String getStatus() {
+	public  Map<String,Object> getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus( Map<String,Object> status) {
 		this.status = status;
 	}
 
 	@JdbcField(column = CUSTOM_INFO, type = JdbcFieldType.Json)
-	public String getCustom() {
+	public  Map<String,Object> getCustom() {
 		return consumer;
 	}
 
-	public void setCustom(String custom) {
+	public void setCustom( Map<String,Object> custom) {
 		this.consumer = custom;
 	}
 
@@ -122,6 +124,12 @@ public class GlobalThingInfo extends BusinessEntity {
 
 		this.kiiThingID = idCombine.kiiThingID;
 		this.kiiAppID = idCombine.kiiAppID;
+	}
+
+	public void fillFullKiiThingID(){
+
+		this.fullKiiThingID=ThingIDTools.joinFullKiiThingID(kiiAppID,vendorThingID);
+
 	}
 
 	@Override

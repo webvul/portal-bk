@@ -22,8 +22,8 @@ public class TestThingRestBean extends WebTestTemplate {
 
         for (String id : invalidVendoThingIDs) {
             ThingRestBean bean = new ThingRestBean();
-            bean.setVendorThingID(id);
-            bean.setKiiAppID(KII_APP_ID);
+            bean.getThingInfo().setVendorThingID(id);
+            bean.getThingInfo().setKiiAppID(KII_APP_ID);
 
             try {
                 bean.verifyInput();
@@ -39,8 +39,8 @@ public class TestThingRestBean extends WebTestTemplate {
 
         for (String id : vendoThingIDs) {
             ThingRestBean bean = new ThingRestBean();
-            bean.setVendorThingID(id);
-            bean.setKiiAppID(KII_APP_ID);
+            bean.getThingInfo().setVendorThingID(id);
+            bean.getThingInfo().setKiiAppID(KII_APP_ID);
 
             try {
                 bean.verifyInput();

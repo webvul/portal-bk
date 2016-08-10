@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -63,9 +64,9 @@ public class TestThingUserGroupRelationDao extends TestTemplate {
 
 		thingInfo.setVendorThingID("demo_vendor_thing_id 1");
 		thingInfo.setKiiAppID("appID");
-		thingInfo.setCustom("custom");
-		thingInfo.setType("thingType A");
-		thingInfo.setStatus("this is a test about long text,we don't know the final required,so....");
+		thingInfo.setCustom(Collections.singletonMap("custom","val"));
+		thingInfo.setType("thingType");
+		thingInfo.setStatus(Collections.singletonMap("1","a"));
 		thingInfo.setFullKiiThingID(ThingIDTools.joinFullKiiThingID("abcdefghijk", "appID"));
 		thingId = globalThingSpringDao.saveOrUpdate(thingInfo);
 		this.allThingIds.add(thingId);

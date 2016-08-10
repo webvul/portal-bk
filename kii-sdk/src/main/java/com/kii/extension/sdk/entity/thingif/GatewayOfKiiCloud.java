@@ -1,9 +1,8 @@
 package com.kii.extension.sdk.entity.thingif;
 
 import java.util.Date;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Created by USER on 3/24/16.
@@ -98,14 +97,14 @@ public class GatewayOfKiiCloud {
         this.globalThingID = globalThingID;
     }
 
-    public static void main(String[] args) throws JsonProcessingException {
-
-        ObjectMapper m = new ObjectMapper();
-
-        GatewayOfKiiCloud g = new GatewayOfKiiCloud();
-        g.setGlobalThingID(10012L);
-
-        System.out.println(m.writeValueAsString(g));
-
-    }
+//    public static void main(String[] args) throws JsonProcessingException {
+//
+//        ObjectMapper m = new ObjectMapper();
+//
+//        GatewayOfKiiCloud g = new GatewayOfKiiCloud();
+//        g.setGlobalThingID(10012L);
+//
+//        System.out.println(m.writeValueAsString(g));
+//
+//    }
 }

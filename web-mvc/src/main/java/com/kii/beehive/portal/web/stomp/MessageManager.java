@@ -28,7 +28,8 @@ public class MessageManager implements ApplicationListener,
 	@Autowired
 	private SimpMessagingTemplate simpMessagingTemplate;
 
-	private ObjectMapper objectMapper = new ObjectMapper();
+	@Autowired
+	private ObjectMapper objectMapper;
 
 	@PostConstruct
 	private void init() {

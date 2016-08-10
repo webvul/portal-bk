@@ -2,7 +2,6 @@ package com.kii.beehive.business.ruleengine;
 
 import javax.annotation.PostConstruct;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -47,7 +46,6 @@ import com.kii.extension.sdk.entity.thingif.Action;
 import com.kii.extension.sdk.entity.thingif.EndNodeOfGateway;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
 import com.kii.extension.sdk.entity.thingif.ThingOfKiiCloud;
-import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
 @Component
 public class TriggerManager {
@@ -121,16 +119,10 @@ public class TriggerManager {
 			if (StringUtils.isEmpty(s.getStatus())) {
 				return;
 			}
-			ThingStatus status = null;
-			try {
-				status = mapper.readValue(s.getStatus(), ThingStatus.class);
-			} catch (IOException e) {
-				log.error("invalid thing " + s.getId() + " status ", e);
-				return;
-			}
+
 			ThingStatusInRule info = new ThingStatusInRule(s.getFullKiiThingID());
 			info.setCreateAt(s.getModifyDate());
-			info.setValues(status.getFields());
+			info.setValues(s.getStatus());
 
 			initThings.add(info);
 

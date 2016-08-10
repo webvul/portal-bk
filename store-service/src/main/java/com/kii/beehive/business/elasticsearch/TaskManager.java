@@ -33,6 +33,9 @@ public class TaskManager {
 
 	private final ThreadPoolTaskExecutor searchThreadPoolTaskExecutor;
 
+	@Autowired
+	private ObjectMapper mapper;
+
 	private final String DATE_FIELD = "state.taiwanNo1";
 	private final String TERM_FIELD = "target";
 
@@ -126,7 +129,7 @@ public class TaskManager {
 		try {
 			SearchResponse s = (SearchResponse) f.get();
 
-			ObjectMapper mapper = new ObjectMapper();
+//			ObjectMapper mapper = new ObjectMapper();
 			JsonNode actualObj = mapper.readTree(s.toString());
 			result = actualObj.get("aggregations").get("agg").toString();
 		} catch (Exception e) {
@@ -149,7 +152,7 @@ public class TaskManager {
 		String result = null;
 		try {
 			SearchResponse s = (SearchResponse) f.get();
-			ObjectMapper mapper = new ObjectMapper();
+//			ObjectMapper mapper = new ObjectMapper();
 			JsonNode actualObj = mapper.readTree(s.toString());
 			result = actualObj.get("hits").toString();
 		} catch (Exception e) {

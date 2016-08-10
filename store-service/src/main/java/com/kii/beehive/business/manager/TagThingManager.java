@@ -12,12 +12,14 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
 import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.CollectUtils;
@@ -51,7 +53,6 @@ import com.kii.beehive.portal.jdbc.entity.ThingUserGroupRelation;
 import com.kii.beehive.portal.jdbc.entity.ThingUserRelation;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
 import com.kii.beehive.portal.service.AppInfoDao;
-import com.kii.beehive.portal.store.entity.KiiAppInfo;
 import com.kii.extension.sdk.entity.thingif.GatewayOfKiiCloud;
 import com.kii.extension.sdk.exception.ObjectNotFoundException;
 
@@ -108,52 +109,7 @@ public class TagThingManager {
 	private GroupUserRelationDao groupUserRelationDao;
 
 
-	/**
-	 * create or update the thing including the location and custom tags
-	 *
-	 * @param thingInfo
-	 * @param location
-	 * @param tagList
-	 * @return
-	 */
-	public Long createThing(GlobalThingInfo thingInfo, String location, Collection<String> tagList)
-			throws ObjectNotFoundException, UnauthorizedException {
 
-		KiiAppInfo kiiAppInfo = appInfoDao.getAppInfoByID(thingInfo.getKiiAppID());
-
-		// check whether Kii App ID is existing
-		if (kiiAppInfo == null) {
-			throw EntryNotFoundException.appNotFound(thingInfo.getKiiAppID());
-		}
-
-		// check whether Kii App ID is Master App
-		if (kiiAppInfo.getMasterApp()) {
-			throw EntryNotFoundException.thingNotFound(thingInfo.getId());
-		}
-
-
-		long thingID = globalThingDao.saveOrUpdate(thingInfo);
-
-		// set location tag and location tag-thing relation
-		//if (Strings.isBlank(location)) {
-		//	location = DEFAULT_LOCATION;
-		//}
-
-
-		if (thingInfo.getId() == null) { //create
-			//this.saveOrUpdateThingLocation(thingID, location);
-
-			ThingUserRelation relation = new ThingUserRelation();
-			relation.setBeehiveUserID(Long.valueOf(thingInfo.getCreateBy()));
-			relation.setThingId(thingID);
-			thingUserRelationDao.saveOrUpdate(relation);
-		}
-
-		if (null != AuthInfoStore.getTeamID()) {
-			teamThingRelationDao.saveOrUpdate(new TeamThingRelation(AuthInfoStore.getTeamID(), thingID));
-		}
-		return thingID;
-	}
 
 	public List<String> getThingTypesOfAccessibleThingsByTagIds(Long userId, Collection<String> tagIDs)
 			throws ObjectNotFoundException {
@@ -729,17 +685,7 @@ public class TagThingManager {
 		return thing;
 	}
 
-	public GlobalThingInfo getCanUpdateThingById(Long userId, Long thingId) throws ObjectNotFoundException {
-		if (null != thingUserRelationDao.find(thingId, userId)) { // must be creator
-			GlobalThingInfo thingInfo = globalThingDao.findByID(thingId);
-			if (null != thingInfo) {
-				return thingInfo;
-			}
-		}
 
-		throw new UnauthorizedException(UnauthorizedException.NOT_THING_CREATOR, "user", String.valueOf(userId));
-
-	}
 
 	public List<TagIndex> getAccessibleTagsByTagTypeAndName(Long userId, String tagType, String displayName) {
 		List<Long> tagIds1 = tagUserRelationDao.findTagIds(userId, tagType, displayName);

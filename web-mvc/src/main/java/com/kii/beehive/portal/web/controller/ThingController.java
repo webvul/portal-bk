@@ -3,7 +3,6 @@ package com.kii.beehive.portal.web.controller;
 import static java.util.Arrays.asList;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -11,13 +10,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,8 +33,6 @@ import com.kii.beehive.portal.jdbc.entity.UserGroup;
 import com.kii.beehive.portal.manager.ThingManager;
 import com.kii.beehive.portal.web.entity.ThingDetail;
 import com.kii.beehive.portal.web.entity.ThingRestBean;
-import com.kii.beehive.portal.web.exception.ErrorCode;
-import com.kii.beehive.portal.web.exception.PortalException;
 import com.kii.extension.sdk.entity.thingif.EndNodeOfGateway;
 import com.kii.extension.sdk.entity.thingif.GatewayOfKiiCloud;
 
@@ -52,6 +47,10 @@ import com.kii.extension.sdk.entity.thingif.GatewayOfKiiCloud;
 public class ThingController extends AbstractThingTagController {
 	@Autowired
 	private ThingIFInAppService thingIFService;
+
+
+	@Autowired
+	private ThingManager simpleThingManager;
 
 	/**
 	 * GET /things/{globalThingID}/users
@@ -221,29 +220,8 @@ public class ThingController extends AbstractThingTagController {
 
 		input.verifyInput();
 
-		GlobalThingInfo thingInfo = null;
 
-		if (input.getId() == null) {
-			thingInfo = new GlobalThingInfo();
-		} else {
-//			thingInfo = thingTagManager.getAccessibleThingById(AuthInfoStore.getUserID(), input.getId());
-			thingInfo = thingTagManager.getCanUpdateThingById(AuthInfoStore.getUserID(), input.getId());
-		}
-
-		thingInfo.setVendorThingID(input.getVendorThingID());
-		thingInfo.setKiiAppID(input.getKiiAppID());
-		thingInfo.setType(input.getType());
-		thingInfo.setStatus(input.getStatus());
-		thingInfo.setCustom(input.getCustom());
-
-
-		List<GlobalThingInfo> gList = thingTagManager.getThingsByVendorThingIds(Arrays.asList(thingInfo.getVendorThingID()));
-
-		if (!gList.isEmpty() && !gList.get(0).getId().equals(input.getId())) {
-			throw new PortalException(ErrorCode.DUPLICATE_OBJECT, "type", "thing", "objectID", String.valueOf(gList));
-		}
-
-		Long thingID = thingTagManager.createThing(thingInfo, input.getLocation(), input.getInputTags());
+		Long thingID = simpleThingManager.createThing(input.getThingInfo(), input.getFullLocation(), input.getInputTags());
 
 
 		Map<String, Long> map = new HashMap<>();
@@ -262,45 +240,12 @@ public class ThingController extends AbstractThingTagController {
 	@RequestMapping(value = "/endnode", method = {RequestMethod.POST})
 	public Map<String, Long> createEndNodeThing(@RequestBody ThingRestBean input) {
 
-		input.verifyInput();
+		input.verifyInputForEndnode();
 
-		if (Strings.isBlank(input.getSchemaName())) {
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "field", "schemaName");
-		}
-		if (Strings.isBlank(input.getSchemaVersion())) {
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "field", "schemaVersion");
+		GlobalThingInfo thingInfo = input.getThingInfo();
 
-		}
-		if (Strings.isBlank(input.getGatewayVendorThingID())) {
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "field", "gatewayVendorThingID");
-		}
 
-		GlobalThingInfo thingInfo = null;
-
-		if (input.getId() == null) {
-			thingInfo = new GlobalThingInfo();
-		} else {
-			thingInfo = thingTagManager.getCanUpdateThingById(AuthInfoStore.getUserID(), input.getId());
-		}
-
-		GlobalThingInfo gateway = thingTagManager.getThingsByVendorThingId(input.getGatewayVendorThingID());
-
-		thingInfo.setVendorThingID(input.getVendorThingID());
-		thingInfo.setKiiAppID(input.getKiiAppID());
-		thingInfo.setType(input.getType());
-		thingInfo.setStatus(input.getStatus());
-		thingInfo.setCustom(input.getCustom());
-		thingInfo.setSchemaName(input.getSchemaName());
-		thingInfo.setSchemaVersion(input.getSchemaVersion());
-		thingInfo.setCreateBy(gateway.getCreateBy());
-
-		List<GlobalThingInfo> gList = thingTagManager.getThingsByVendorThingIds(Arrays.asList(thingInfo.getVendorThingID()));
-
-		if (!gList.isEmpty() && !gList.get(0).getId().equals(input.getId())) {
-			throw new PortalException(ErrorCode.DUPLICATE_OBJECT, "type", "thing", "objectID", String.valueOf(gList));
-		}
-
-		Long thingID = thingTagManager.createThing(thingInfo, input.getLocation(), input.getInputTags());
+		Long thingID = simpleThingManager.createEndNode(thingInfo, input.getFullLocation(),input.getGatewayVendorThingID(), input.getInputTags());
 
 
 		Map<String, Long> map = new HashMap<>();
@@ -553,7 +498,7 @@ public class ThingController extends AbstractThingTagController {
 	 * @return
 	 */
 	@RequestMapping(value = "/{globalThingID}/endnodes", method = {RequestMethod.GET}, consumes = {"*"})
-	public ResponseEntity<List<ThingRestBean>> getGatewayEndnodes(@PathVariable("globalThingID") Long globalThingID) {
+	public List<ThingRestBean> getGatewayEndnodes(@PathVariable("globalThingID") Long globalThingID) {
 
 		// get gateway info
 
@@ -563,7 +508,7 @@ public class ThingController extends AbstractThingTagController {
 		String fullKiiThingID = gatewayInfo.getFullKiiThingID();
 
 		if (Strings.isBlank(fullKiiThingID)) {
-			return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
+			return new ArrayList<>();
 		}
 
 		// get vendor thing id list of endnodes
@@ -577,16 +522,16 @@ public class ThingController extends AbstractThingTagController {
 		List<GlobalThingInfo> globalThingInfoList = thingTagManager.getThingsByVendorThingIds(vendorThingIDList);
 		List<ThingRestBean> resultList = this.toThingRestBean(globalThingInfoList);
 
-		return new ResponseEntity(resultList, HttpStatus.OK);
+		return resultList;
 	}
 
 	@RequestMapping(value = "/gateway", method = {RequestMethod.GET}, consumes = {"*"})
-	public ResponseEntity<List<GatewayOfKiiCloud>> getAllEGateway() {
+	public List<GatewayOfKiiCloud> getAllEGateway() {
 
 		List<GatewayOfKiiCloud> resultList = thingTagManager.getAllEGateway();
 
 
-		return new ResponseEntity(resultList, HttpStatus.OK);
+		return resultList;
 	}
 
 	private List<ThingRestBean> toThingRestBean(List<GlobalThingInfo> list) {

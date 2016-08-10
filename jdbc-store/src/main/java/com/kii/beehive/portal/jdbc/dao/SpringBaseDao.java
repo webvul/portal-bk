@@ -1,6 +1,7 @@
 package com.kii.beehive.portal.jdbc.dao;
 
 import javax.sql.DataSource;
+
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -25,6 +27,9 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.StrTemplate;
 import com.kii.beehive.portal.jdbc.annotation.JdbcField;
@@ -52,6 +57,9 @@ public abstract class SpringBaseDao<T extends BusinessEntity> {
 
 	private BeanWrapper beanWrapper;
 
+	@Autowired
+	private ObjectMapper objectMapper;
+
 
 	protected abstract String getTableName();
 
@@ -69,8 +77,8 @@ public abstract class SpringBaseDao<T extends BusinessEntity> {
 
 		ParameterizedType type = (ParameterizedType) getClass().getGenericSuperclass();
 		this.entityClass = (Class<T>) type.getActualTypeArguments()[0];
-		this.updateTool = BindClsFullUpdateTool.newInstance(dataSource, getTableName(), "id", entityClass, getKey());
-		this.rowMapper = new BindClsRowMapper<T>(entityClass);
+		this.updateTool = BindClsFullUpdateTool.newInstance(dataSource, getTableName(), "id", entityClass, getKey(),objectMapper);
+		this.rowMapper = new BindClsRowMapper<T>(entityClass,objectMapper);
 
 		this.beanWrapper = PropertyAccessorFactory.forBeanPropertyAccess(BeanUtils.instantiate(entityClass));
 	}
@@ -178,7 +186,7 @@ public abstract class SpringBaseDao<T extends BusinessEntity> {
 		entity.setModifyBy(AuthInfoStore.getUserIDStr());
 		entity.setModifyDate(new Date());
 		entity.setDeleted(false);
-		SqlParameterSource parameters = new AnnationBeanSqlParameterSource(entity);
+		SqlParameterSource parameters = new AnnationBeanSqlParameterSource(entity,objectMapper);
 		Number id = insertTool.executeAndReturnKey(parameters);
 		return id.longValue();
 	}
@@ -379,7 +387,7 @@ public abstract class SpringBaseDao<T extends BusinessEntity> {
 		SqlParameterSource[] sqlParameterSources = new SqlParameterSource[entityList.size()];
 
 		for (int i = 0; i < sqlParameterSources.length; i++) {
-			sqlParameterSources[i] = new AnnationBeanSqlParameterSource(entityList.get(i));
+			sqlParameterSources[i] = new AnnationBeanSqlParameterSource(entityList.get(i),objectMapper);
 		}
 
 		return insertTool.executeBatch(sqlParameterSources);

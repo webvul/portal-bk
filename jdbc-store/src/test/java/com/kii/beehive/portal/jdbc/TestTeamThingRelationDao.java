@@ -3,6 +3,8 @@ package com.kii.beehive.portal.jdbc;
 import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import java.util.Collections;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,9 +37,9 @@ public class TestTeamThingRelationDao extends TestTemplate {
 
 		thing.setVendorThingID("demo_vendor_thing_id");
 		thing.setKiiAppID("appID");
-		thing.setCustom("custom");
-		thing.setType("type");
-		thing.setStatus("1");
+		thing.setCustom(Collections.singletonMap("custom","val"));
+		thing.setType("thingType");
+		thing.setStatus(Collections.singletonMap("1","a"));
 		long thingID=globalThingDao.saveOrUpdate(thing);
 		thing.setId(thingID);
 		

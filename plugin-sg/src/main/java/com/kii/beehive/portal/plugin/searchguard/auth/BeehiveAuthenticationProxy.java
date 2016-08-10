@@ -18,6 +18,8 @@ import org.elasticsearch.ElasticsearchSecurityException;
 import org.elasticsearch.common.logging.ESLogger;
 import org.elasticsearch.common.logging.Loggers;
 import org.elasticsearch.common.settings.Settings;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.floragunn.searchguard.action.configupdate.TransportConfigUpdateAction;
@@ -40,7 +42,8 @@ public class BeehiveAuthenticationProxy implements AuthenticationBackend, Config
 
 	private static final String PROP_ADMIN_TOKEN = "beehive.admin.token";
 
-	private final ObjectMapper mapper;
+	@Autowired
+	private  ObjectMapper mapper;
 
 	private final String ADMIN_TOKEN;
 
@@ -60,7 +63,7 @@ public class BeehiveAuthenticationProxy implements AuthenticationBackend, Config
 		super();
 		API_ROOT = settings.get(PROP_API_ROOT);
 		ADMIN_TOKEN = settings.get(PROP_ADMIN_TOKEN);
-		mapper = new ObjectMapper();
+//		mapper = new ObjectMapper();
 		internalAuthenticationBackend = new InternalAuthenticationBackend(settings, tcua);
 	}
 

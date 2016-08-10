@@ -13,6 +13,9 @@ import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.jdbc.core.StatementCreatorUtils;
 import org.springframework.jdbc.core.namedparam.AbstractSqlParameterSource;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.kii.beehive.portal.jdbc.annotation.JdbcField;
 import com.kii.beehive.portal.jdbc.annotation.JdbcFieldType;
 
@@ -27,8 +30,10 @@ public class AnnationBeanSqlParameterSource extends AbstractSqlParameterSource {
 
 	private final Map<String,JdbcFieldType> sqlTypeMapper;
 
+	private final ObjectMapper mapper;
 
-	public AnnationBeanSqlParameterSource(Object object) {
+
+	public AnnationBeanSqlParameterSource(Object object,ObjectMapper mapper) {
 		this.beanWrapper = PropertyAccessorFactory.forBeanPropertyAccess(object);
 
 		Map<String,String> searchMap=new HashMap<>();
@@ -50,6 +55,8 @@ public class AnnationBeanSqlParameterSource extends AbstractSqlParameterSource {
 		fieldMapper= Collections.unmodifiableMap(searchMap);
 
 		sqlTypeMapper=Collections.unmodifiableMap(typeMap);
+
+		this.mapper=mapper;
 	}
 
 
@@ -82,7 +89,12 @@ public class AnnationBeanSqlParameterSource extends AbstractSqlParameterSource {
 			switch(sqlTypeMapper.get(paramName)){
 				case Auto:return value;
 				case Json:
-					return value;
+					try {
+						return mapper.writeValueAsString(value);
+					} catch (JsonProcessingException e) {
+						log.error("json write fail",e);
+						return "{}";
+					}
 				case EnumInt:return ((Enum)value).ordinal();
 				case EnumStr:return ((Enum)value).name();
 				default:return value;

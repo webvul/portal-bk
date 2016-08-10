@@ -1,6 +1,7 @@
 package com.kii.beehive.portal.jdbc.helper;
 
 import java.beans.PropertyDescriptor;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -9,12 +10,15 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.jdbc.core.RowMapper;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.beehive.portal.jdbc.annotation.DisplayField;
 import com.kii.beehive.portal.jdbc.annotation.JdbcField;
@@ -29,11 +33,13 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 
 	private final Map<String,JdbcFieldType> sqlTypeMapper;
 
+	private final  ObjectMapper  objectMapper;
+
 //	private final BeanWrapper beanWrapper;
 
 
 	private final Class<T> cls;
-	public BindClsRowMapper(Class<T> cls){
+	public BindClsRowMapper(Class<T> cls,ObjectMapper objectMapper){
 
 		this.cls=cls;
 
@@ -60,7 +66,7 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 
 		sqlTypeMapper=Collections.unmodifiableMap(typeMap);
 
-
+		this.objectMapper=objectMapper;
 	}
 
 
@@ -95,8 +101,17 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 					break;
 				case Json:
 
-					fieldInst=rs.getString(field);
-
+					String json=rs.getString(field);
+					try {
+						if(StringUtils.isBlank(json)){
+							fieldInst=null;
+							break;
+						}
+						Map<String,Object>  map = objectMapper.readValue(json,Map.class);
+						fieldInst=map;
+					} catch (IOException e) {
+						log.error("get json field fail",e);
+					}
 					break;
 				default:
 					fieldInst=rs.getObject(field);

@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,9 +67,9 @@ public class TestThingDao extends TestTemplate {
 	public void init() {
 		thing.setVendorThingID("demo_vendor_thing_id");
 		thing.setKiiAppID("appID");
-		thing.setCustom("custom");
+		thing.setCustom(Collections.singletonMap("custom","val"));
 		thing.setType("thingType");
-		thing.setStatus("this is a test about long text,we don't know the final required,so....");
+		thing.setStatus(Collections.singletonMap("1","a"));
 
 		String fullKiiThingID = ThingIDTools.joinFullKiiThingID("abcdefghijk", "appID");
 		thing.setFullKiiThingID(fullKiiThingID);
@@ -181,7 +182,7 @@ public class TestThingDao extends TestTemplate {
 		GlobalThingInfo thing2 = new GlobalThingInfo();
 		thing2.setVendorThingID("demo_vendor_thing_id2");
 		thing2.setKiiAppID("appID2");
-		thing2.setStatus("1");
+		thing2.setStatus(Collections.singletonMap("1","a"));
 
 		long id2 = globalThingDao.saveOrUpdate(thing2);
 		List<Long> ids = new ArrayList<>();
@@ -253,9 +254,9 @@ public class TestThingDao extends TestTemplate {
 	@Test
 	public void testUpdate() {
 		thing.setVendorThingID("demo_vendor_thing_id_update");
-		thing.setCustom("customUpdate");
-		thing.setType("typeUpdate");
-		thing.setStatus("Update");
+		thing.setCustom(Collections.singletonMap("custom","val"));
+		thing.setType("type");
+		thing.setStatus(Collections.singletonMap("1","power"));
 		globalThingDao.updateEntityAllByID(thing);
 		GlobalThingInfo entity = globalThingDao.findByID(thing.getId());
 		assertEquals(thing.getVendorThingID(), entity.getVendorThingID());

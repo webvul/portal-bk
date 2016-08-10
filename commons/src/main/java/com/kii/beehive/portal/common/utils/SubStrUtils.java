@@ -20,4 +20,6 @@ public class SubStrUtils {
 		}
 		return str.substring(idx+1,str.length()).trim();
 	}
+
+
 }

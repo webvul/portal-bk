@@ -16,6 +16,8 @@ public  class LocationsGeneral {
 		return general(blockNo,floorNo,null,null);
 	}
 
+
+
 	public static final String general(String blockNo,String floorNo,String type) {
 		return general(blockNo,floorNo,type,null);
 	}

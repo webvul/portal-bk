@@ -1,33 +1,34 @@
 package com.kii.beehive.portal.web.entity;
 
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.util.Strings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.BeanUtils;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
 
-public class ThingRestBean extends GlobalThingInfo {
+public class ThingRestBean  {
 
-	private final static Pattern validVendorThingIDPattern = Pattern.compile("([0-9a-zA-Z]|-)+");
 
-	private Logger log = LoggerFactory.getLogger(ThingRestBean.class);
+	//0807W-F02-03-118
+	private final static Pattern validVendorThingIDPattern = Pattern.compile("^\\d{4}\\w-[A-Z][\\d]{2}-\\d{2}-\\d{3}$");
 
-	private ObjectMapper mapper = new ObjectMapper();
+	private final static Pattern locationPattern = Pattern.compile("^\\d{4}\\w-[A-Z][\\d]{2}$");
+
+
+//	private Logger log = LoggerFactory.getLogger(ThingRestBean.class);
 
 	private String location;
 
@@ -35,21 +36,33 @@ public class ThingRestBean extends GlobalThingInfo {
 
 	private Set<String> tagNames = new HashSet<>();
 
-	@JsonIgnore
-	@Override
-	public Long getId() {
-		return super.getId();
+	private GlobalThingInfo  thingInfo= new GlobalThingInfo();
+
+	public ThingRestBean(){
+
+	}
+
+	public ThingRestBean(GlobalThingInfo thing){
+		BeanUtils.copyProperties(thing,thingInfo);
+	}
+
+	@JsonUnwrapped
+	public GlobalThingInfo getThingInfo() {
+		return thingInfo;
+	}
+
+	public void setThingInfo(GlobalThingInfo thingInfo) {
+		this.thingInfo = thingInfo;
 	}
 
 	@JsonSetter("globalThingID")
 	public void setGlobalThingID(Long globalThingID) {
-		this.setId(globalThingID);
+		this.thingInfo.setId(globalThingID);
 	}
 
 	@JsonGetter("globalThingID")
 	public Long getGlobalThingID() {
-		Long id = (this.getId() == 0) ? null : this.getId();
-		return id;
+		return thingInfo.getId();
 	}
 
 	@JsonGetter("location")
@@ -67,49 +80,6 @@ public class ThingRestBean extends GlobalThingInfo {
 		return tagNames;
 	}
 
-	@JsonSetter("custom")
-	public void setCustomJson(Map<String, Object> custom) {
-		try {
-			this.setCustom(mapper.writeValueAsString(custom));
-		} catch (Exception e) {
-			log.error("Excetpion in setCustomJson()", e);
-		}
-	}
-
-	@JsonGetter("custom")
-	public Map<String, Object> getCustomJson() {
-		try {
-			String custom = this.getCustom();
-			if (custom != null) {
-				return mapper.readValue(custom, Map.class);
-			}
-		} catch (Exception e) {
-			log.error("Excetpion in getCustomJson()", e);
-		}
-		return null;
-	}
-
-	@JsonSetter("status")
-	public void setStatusJson(Object status) {
-		try {
-			this.setStatus(mapper.writeValueAsString(status));
-		} catch (Exception e) {
-			log.error("Excetpion in setStatusJson()", e);
-		}
-	}
-
-	@JsonGetter("status")
-	public Map<String, Object> getStatusJson() {
-		try {
-			String status = this.getStatus();
-			if (status != null) {
-				return mapper.readValue(status, Map.class);
-			}
-		} catch (Exception e) {
-			log.error("Excetpion in getStatusJson(), status = " + this.getStatus(), e);
-		}
-		return null;
-	}
 
 	public String getGatewayVendorThingID() {
 		return gatewayVendorThingID;
@@ -123,20 +93,68 @@ public class ThingRestBean extends GlobalThingInfo {
 		this.tagNames = tags;
 	}
 
+	@JsonIgnore
+	public String getFullLocation(){
+
+		String loc=location;
+
+		if(StringUtils.isBlank(loc)){
+
+			String vendorThingID=thingInfo.getVendorThingID();
+			if(StringUtils.isNoneBlank(vendorThingID)){
+				//0807W-F02-03-118
+				loc= StringUtils.substring(vendorThingID,0,9);
+			}
+		}
+
+		return loc;
+	}
 
 	public void verifyInput() {
 
 		this.verifyVendorThingID();
 
-		if (Strings.isBlank(this.getKiiAppID())) {
+		if (Strings.isBlank(this.thingInfo.getKiiAppID())) {
 
 			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","kiiAppID");
+		}
+
+		if(StringUtils.isNotBlank(location)){
+			if(!locationPattern.matcher(location).matches()){
+				throw new PortalException(ErrorCode.INVALID_INPUT,"field","location","data",location);
+			}
+		}
+
+	}
+
+
+
+
+	public void verifyInputForEndnode() {
+
+		verifyInput();
+
+		if (Strings.isBlank(this.thingInfo.getKiiAppID())) {
+
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","kiiAppID");
+		}
+
+
+		if (Strings.isBlank(thingInfo.getSchemaName())) {
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "field", "schemaName");
+		}
+		if (Strings.isBlank(thingInfo.getSchemaVersion())) {
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "field", "schemaVersion");
+
+		}
+		if (Strings.isBlank(getGatewayVendorThingID())) {
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "field", "gatewayVendorThingID");
 		}
 	}
 
 	private void verifyVendorThingID() {
 
-		String vendorThingID = this.getVendorThingID();
+		String vendorThingID = this.thingInfo.getVendorThingID();
 
 		if (Strings.isBlank(vendorThingID)) {
 
