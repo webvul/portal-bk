@@ -44,7 +44,7 @@ public enum LocationType {
 		LocationType type=getTypeByLocation(location);
 		int level=type.ordinal();
 
-		for(int i=0;i<=level;i++){
+		for(int i=0;i<level;i++){
 			list.add(LocationType.values()[i].getLevelSeq(location));
 
 		}
