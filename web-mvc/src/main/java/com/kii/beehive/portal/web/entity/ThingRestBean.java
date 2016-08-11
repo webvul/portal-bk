@@ -130,6 +130,8 @@ public class ThingRestBean  {
 
 		verifyInput();
 
+
+
 		if (Strings.isBlank(this.thingInfo.getKiiAppID())) {
 
 			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","kiiAppID");

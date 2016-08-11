@@ -1,11 +1,19 @@
 package com.kii.beehive.portal.jdbc.dao;
 
-import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
-import java.util.*;
+import com.kii.beehive.portal.common.utils.StrTemplate;
+import com.kii.beehive.portal.jdbc.entity.TagIndex;
+import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
 
 
 @Repository
@@ -92,5 +100,26 @@ public class TagThingRelationDao extends SpringSimpleBaseDao<TagThingRelation> {
 		}
 		return Optional.ofNullable(findSingleFieldBySingleField(TagThingRelation.TAG_ID,
 				TagThingRelation.THING_ID, thingId, Long.class));
+	}
+
+	private static final String sqlAddTag="insert ${0} (${1},${2})  select  :thing_id ,${3} from ${4} tag where tag.${5} in (:tags)";
+
+	public int addTagRelation(Long id, Collection<String> tagList) {
+
+		String fullSql= StrTemplate.gener(sqlAddTag,TABLE_NAME,TagThingRelation.THING_ID,TagThingRelation.TAG_ID,
+				TagIndex.TAG_ID,TagIndexDao.TABLE_NAME,TagIndex.FULL_TAG_NAME);
+
+		Map<String,Object>  param=new HashMap<>();
+		param.put("thing_id",id);
+		param.put("tags",tagList);
+
+		int num= super.namedJdbcTemplate.update(fullSql,param);
+
+		if(num!=tagList.size()){
+			log.error("something miss");
+		}
+
+		return num;
+
 	}
 }

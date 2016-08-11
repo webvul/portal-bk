@@ -126,9 +126,12 @@ public class ThingManager {
 			}
 
 		}else{
+			getCanUpdateThingById(AuthInfoStore.getUserID(),id);
 			thingInfo.fillFullKiiThingID();
 			globalThingDao.updateEntityByID(thingInfo,id);
 		}
+
+		tagThingRelationDao.addTagRelation(id,tagList);
 
 		if (null != AuthInfoStore.getTeamID()) {
 			teamThingRelationDao.saveOrUpdate(new TeamThingRelation(AuthInfoStore.getTeamID(), id));
