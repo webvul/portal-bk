@@ -132,7 +132,7 @@ public class LocationDao extends AbstractDataAccess<LocationInfo> {
 
 			if(info.getLevel()==LocationType.area){
 				String area=LocationType.area.getLevelSeq(loc);
-				String areaType=StringUtils.substring(area,0,1);
+				String areaType=StringUtils.substring(area,-3,-2);
 				info.setAreaType(LocationInfo.AreaType.valueOf(areaType));
 			}
 
