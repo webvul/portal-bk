@@ -221,7 +221,7 @@ public class ThingController extends AbstractThingTagController {
 		input.verifyInput();
 
 
-		Long thingID = simpleThingManager.createThing(input.getThingInfo(), input.getFullLocation(), input.getInputTags());
+		Long thingID = simpleThingManager.createThing(input.getThingInfo(), input.getFullLocation());
 
 
 		Map<String, Long> map = new HashMap<>();
@@ -245,7 +245,7 @@ public class ThingController extends AbstractThingTagController {
 		GlobalThingInfo thingInfo = input.getThingInfo();
 
 
-		Long thingID = simpleThingManager.createEndNode(thingInfo, input.getFullLocation(),input.getGatewayVendorThingID(), input.getInputTags());
+		Long thingID = simpleThingManager.createEndNode(thingInfo, input.getFullLocation(),input.getGatewayVendorThingID());
 
 
 		Map<String, Long> map = new HashMap<>();

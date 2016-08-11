@@ -2,7 +2,6 @@ package com.kii.beehive.portal.manager;
 
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -78,20 +77,19 @@ public class ThingManager {
 	 *
 	 * @param thingInfo
 	 * @param location
-	 * @param tagList
 	 * @return
 	 */
-	public Long createEndNode(GlobalThingInfo thingInfo, String location, String gatewayID, Collection<String> tagList)
+	public Long createEndNode(GlobalThingInfo thingInfo, String location, String gatewayID)
 			throws ObjectNotFoundException, UnauthorizedException {
 
 		GlobalThingInfo gateway = getThingsByVendorThingId(gatewayID);
 
 		thingInfo.setCreateBy(gateway.getCreateBy());
-		return createThing(thingInfo,location,tagList);
+		return createThing(thingInfo,location);
 	}
 
 
-	public Long createThing(GlobalThingInfo thingInfo, String location, Collection<String> tagList)
+	public Long createThing(GlobalThingInfo thingInfo, String location)
 			throws ObjectNotFoundException, UnauthorizedException {
 		Long id=thingInfo.getId();
 
@@ -131,7 +129,6 @@ public class ThingManager {
 			globalThingDao.updateEntityByID(thingInfo,id);
 		}
 
-		tagThingRelationDao.addTagRelation(id,tagList);
 
 		if (null != AuthInfoStore.getTeamID()) {
 			teamThingRelationDao.saveOrUpdate(new TeamThingRelation(AuthInfoStore.getTeamID(), id));
