@@ -13,6 +13,9 @@ public class MultiplesValueMap {
 
 		String name=result.getName();
 		Object value=result.getValue();
+		if(value instanceof Long  || value instanceof Integer){
+			value=((Number)value).doubleValue();
+		}
 		valueMap.put(name,value);
 
 	}
@@ -38,9 +41,15 @@ public class MultiplesValueMap {
 	public Object getValue(String key){
 
 		if(!valueMap.containsKey(key)){
-			return 0;
+			return 0.0d;
 		}
-		return  valueMap.get(key);
+		Object obj=  valueMap.get(key);
+
+		if(obj instanceof Long ||obj instanceof Integer){
+			return ((Number)obj).doubleValue();
+		}
+
+		return obj;
 
 	}
 
@@ -48,7 +57,7 @@ public class MultiplesValueMap {
 	public Object getNumValue(String key){
 		Object val= valueMap.get(key);
 		if(val==null){
-			return 0;
+			return 0.0d;
 		}else if(val instanceof  String) {
 			return Double.parseDouble((String)val);
 		}else{

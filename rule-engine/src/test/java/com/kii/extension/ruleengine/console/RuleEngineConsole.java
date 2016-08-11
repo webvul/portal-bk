@@ -91,8 +91,8 @@ public class RuleEngineConsole {
 		engine.updateExternalValue("demo","two",222);
 
 		List<ThingStatusInRule> statusList=new ArrayList<>();
-		statusList.add(getStatusInRule("a","foo=100,bar=-10"));
-		statusList.add(getStatusInRule("b","foo=10,bar=-100"));
+		statusList.add(getStatusInRule("a","foo=230,bar=150"));
+		statusList.add(getStatusInRule("b","foo=230,bar=50"));
 		statusList.add(getStatusInRule("c","foo=-10,bar=10"));
 		statusList.add(getStatusInRule("d","foo=-100,bar=100"));
 

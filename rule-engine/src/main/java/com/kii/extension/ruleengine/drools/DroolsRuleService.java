@@ -319,6 +319,7 @@ public class DroolsRuleService {
 
 	public void fireCondition(){
 
+
 		getSession().fireAllRules();
 	};
 

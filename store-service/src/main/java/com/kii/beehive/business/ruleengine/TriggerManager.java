@@ -127,9 +127,11 @@ public class TriggerManager {
 			initThings.add(info);
 
 		});
-
-		service.initThingStatus(initThings);
-
+		try {
+			service.initThingStatus(initThings);
+		}catch(Exception e){
+			log.error("ruleEngine's first fire fail",e);
+		}
 
 	}
 

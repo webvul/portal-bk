@@ -20,6 +20,7 @@ import com.kii.extension.ruleengine.EngineService;
 import com.kii.extension.ruleengine.schedule.ScheduleService;
 import com.kii.extension.ruleengine.service.TriggerRecordDao;
 import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.SimplePeriod;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
@@ -68,9 +69,20 @@ public class TriggerCreator {
 		String triggerID=record.getId();
 
 		TriggerValidPeriod period=record.getPreparedCondition();
+
 		if(period!=null){
 			//ctrl enable sign by schedule.
 			record.setRecordStatus(TriggerRecord.StatusType.disable);
+		}
+
+		if(period instanceof SimplePeriod){
+			SimplePeriod  simp=(SimplePeriod)period;
+			long endDate=simp.getEndTime();
+			if(System.currentTimeMillis()>endDate){
+				triggerDao.deleteTriggerRecord(triggerID);
+				return;
+			}
+
 		}
 
 		try {
