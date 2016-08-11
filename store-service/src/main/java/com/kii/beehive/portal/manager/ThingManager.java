@@ -114,8 +114,6 @@ public class ThingManager {
 		}
 
 
-		thingInfo.fillFullKiiThingID();
-
 		if(id==null){
 			id=globalThingDao.insert(thingInfo);
 
@@ -128,6 +126,7 @@ public class ThingManager {
 			}
 
 		}else{
+			thingInfo.fillFullKiiThingID();
 			globalThingDao.updateEntityByID(thingInfo,id);
 		}
 
