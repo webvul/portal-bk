@@ -1,8 +1,10 @@
 package com.kii.extension.ruleengine.store.trigger;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -136,6 +138,12 @@ public abstract class TriggerRecord extends KiiEntity {
 
 	public void setTargetParamList(List<CommandParam> targetParamList) {
 		this.targetParamList = targetParamList;
+	}
+
+
+	@JsonGetter("createDate")
+	public Date getCreateDate(){
+		return super.getCreated();
 	}
 
 //	public TriggerPosition getTriggerPosition() {
