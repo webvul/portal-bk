@@ -13,6 +13,7 @@ import com.kii.beehive.portal.jdbc.dao.ThingLocationRelDao;
 import com.kii.beehive.portal.service.LocationDao;
 import com.kii.beehive.portal.service.SubLocInfo;
 import com.kii.beehive.portal.store.entity.LocationInfo;
+import com.kii.beehive.portal.store.entity.LocationType;
 
 @Component
 @Transactional
@@ -50,6 +51,9 @@ public class LocationManager {
 	}
 
 	public List<LocationInfo> getUpperLocation(String location){
+		if(LocationType.getTypeByLocation(location)==LocationType.building){
+			return new ArrayList<>();
+		}
 		return locDao.getPathToLoc(location);
 	}
 

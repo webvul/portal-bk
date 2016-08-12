@@ -40,6 +40,8 @@ public class LocationController {
 
 	@RequestMapping(value="/{location}/parent",method = RequestMethod.GET,consumes = {MediaType.ALL_VALUE})
 	public List<LocationInfo> getTopLevelLocation(@PathVariable("location") String location){
+
+
 		return manager.getUpperLocation(location);
 
 	}
