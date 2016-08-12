@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.util.Strings;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -185,8 +184,8 @@ public class ThingController extends AbstractThingTagController {
 
 
 		// set thing into output
-		ThingRestBean thingRestBean = new ThingRestBean();
-		BeanUtils.copyProperties(thingInfo, thingRestBean);
+		ThingRestBean thingRestBean = new ThingRestBean(thingInfo);
+//		BeanUtils.copyProperties(thingInfo, thingRestBean);
 
 		// set location and custom tags into output
 		String location = null;
@@ -538,8 +537,8 @@ public class ThingController extends AbstractThingTagController {
 		List<ThingRestBean> resultList = new ArrayList<>();
 		if (list != null) {
 			list.forEach(thingInfo -> {
-				ThingRestBean input = new ThingRestBean();
-				BeanUtils.copyProperties(thingInfo, input);
+				ThingRestBean input = new ThingRestBean(thingInfo);
+//				BeanUtils.copyProperties(thingInfo, input);
 				resultList.add(input);
 			});
 		}
