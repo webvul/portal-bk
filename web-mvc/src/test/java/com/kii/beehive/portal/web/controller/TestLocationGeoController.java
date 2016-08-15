@@ -20,6 +20,7 @@ import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.ThingGeo;
 import com.kii.beehive.portal.web.WebTestTemplate;
 import com.kii.beehive.portal.web.entity.LocationGeoRestBean;
+import com.kii.beehive.portal.web.entity.ThingRestBean;
 import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
 
@@ -30,6 +31,9 @@ public class TestLocationGeoController extends WebTestTemplate {
 
 	@Autowired
 	private LocationGeoController locationGeoController;
+
+	@Autowired
+	private ThingController thingController;
 
 	@Autowired
 	private ThingGeoDao thingGeoDao;
@@ -187,7 +191,8 @@ public class TestLocationGeoController extends WebTestTemplate {
 		// assert
 		Long id = result.getId();
 		assertTrue(id > 0);
-		assertEquals(thingGeo.getGlobalThingID(), result.getGlobalThingID());
+		// no corresponding record in global_thing, so globalThingID in thing_geo will be set as null
+		assertNull(result.getGlobalThingID());
 		assertEquals(thingGeo.getVendorThingID(), result.getVendorThingID());
 		assertEquals(thingGeo.getLng(), result.getLng());
 		assertEquals(thingGeo.getLat(), result.getLat());
@@ -222,7 +227,8 @@ public class TestLocationGeoController extends WebTestTemplate {
 
 		// assert
 		assertEquals(id, result.getId());
-		assertEquals(updateThingGeo.getGlobalThingID(), result.getGlobalThingID());
+		// no corresponding record in global_thing, so globalThingID in thing_geo will be set as null
+		assertNull(result.getGlobalThingID());
 		assertEquals(updateThingGeo.getVendorThingID(), result.getVendorThingID());
 		assertEquals(updateThingGeo.getLng(), result.getLng());
 		assertEquals(thingGeo.getLat(), result.getLat());
@@ -427,8 +433,8 @@ public class TestLocationGeoController extends WebTestTemplate {
 		assertEquals(2, response.size());
 
 		response.forEach(e -> {
-			Long id = e.getThingGeo().getGlobalThingID();
-			assertTrue(id == 3 || id ==4);
+			String temp = e.getThingGeo().getVendorThingID();
+			assertTrue("0807W-F02-15-304".equals(temp) || "0807W-F02-15-305".equals(temp));
 		});
 
 	}
@@ -436,7 +442,7 @@ public class TestLocationGeoController extends WebTestTemplate {
 	private GlobalThingInfo createGlobalThing(String vendorThingID) {
 		GlobalThingInfo thingInfo = new GlobalThingInfo();
 		thingInfo.setVendorThingID(vendorThingID);
-		thingInfo.setKiiAppID("someKiiAppID");
+		thingInfo.setKiiAppID("c1744915");
 		long id = this.globalThingSpringDao.saveOrUpdate(thingInfo);
 		thingInfo.setId(id);
 		return thingInfo;
@@ -509,15 +515,101 @@ public class TestLocationGeoController extends WebTestTemplate {
 		assertTrue(list.size() == 1);
 
 		ThingGeo thingGeo = list.get(0);
-		assertEquals(Long.valueOf(5), thingGeo.getGlobalThingID());
+		// no corresponding record in global_thing, so globalThingID in thing_geo will be set as null
+		assertNull(thingGeo.getGlobalThingID());
 		assertEquals("0806W-F02-15-301", thingGeo.getVendorThingID());
 
 		list = thingGeoDao.findByBuildingIDAndFloor("BuildingIDTest2", 8);
 		assertTrue(list.size() == 1);
 
 		thingGeo = list.get(0);
-		assertEquals(Long.valueOf(6), thingGeo.getGlobalThingID());
+		// no corresponding record in global_thing, so globalThingID in thing_geo will be set as null
+		assertNull(thingGeo.getGlobalThingID());
 		assertEquals("0907W-F02-15-301", thingGeo.getVendorThingID());
+
+
+	}
+
+	/**
+	 * below cases will be tested:
+	 * 1. create POI info in thing_geo with vendorThingID,
+	 * 		a. if vendorThingID not existing in global_thing, globalThingID in thing_geo will be null
+	 * 		b. if vendorThingID existing in global_thing, globalThingID in thing_geo will be synchronized
+	 * 2. create POI info in thing_geo without vendorThingID, both vendorThingID and globalThingID in thing_geo will
+	 * be null
+	 * 3. create thing info in global_thing, if vendorThingID existing in thing_geo, globalThingID in thing_geo will
+	 * be synchronized
+	 *
+	 */
+	@Test
+	public void testSyncGlobalThingIDByVendorThingID() {
+
+		// 1. create POI info in thing_geo with vendorThingID,
+		//		a. if vendorThingID not existing in global_thing, globalThingID in thing_geo will be null
+
+		String vendorThingIDForTest = "0807W-F02-03-118";
+
+		ThingGeo thingGeo = this.constructThingGeo(null, vendorThingIDForTest, 0d, 0d, 8, "someBuildingID",
+				"someAliThingID");
+
+		LocationGeoRestBean restBean = new LocationGeoRestBean(thingGeo);
+		this.locationGeoController.saveLocationGeo(restBean);
+
+		ThingGeo temp = thingGeoDao.findBySingleField(ThingGeo.VENDOR_THING_ID, vendorThingIDForTest).get(0);
+		assertNull(temp.getGlobalThingID());
+
+		thingGeoDao.hardDeleteByID(temp.getId());
+
+
+		// 1. create POI info in thing_geo with vendorThingID,
+		//		b. if vendorThingID existing in global_thing, globalThingID in thing_geo will be synchronized
+
+		GlobalThingInfo thingInfo = this.createGlobalThing(vendorThingIDForTest);
+
+		restBean = new LocationGeoRestBean(thingGeo);
+		this.locationGeoController.saveLocationGeo(restBean);
+
+		temp = thingGeoDao.findBySingleField(ThingGeo.VENDOR_THING_ID, vendorThingIDForTest).get(0);
+		assertEquals(thingInfo.getId(), temp.getGlobalThingID());
+
+		thingGeoDao.hardDeleteByID(temp.getId());
+		globalThingSpringDao.hardDeleteByID(thingInfo.getId());
+
+
+		// 2. create POI info in thing_geo without vendorThingID, both vendorThingID and globalThingID in thing_geo
+		// be null
+		thingGeo = this.constructThingGeo(null, null, 0d, 0d, 8, "someBuildingID", "someAliThingID");
+		restBean = new LocationGeoRestBean(thingGeo);
+		this.locationGeoController.saveLocationGeo(restBean);
+
+		temp = thingGeoDao.findBySingleField(ThingGeo.ALI_THING_ID, "someAliThingID").get(0);
+		assertNull(temp.getGlobalThingID());
+		assertNull(temp.getVendorThingID());
+
+		thingGeoDao.hardDeleteByID(temp.getId());
+
+
+		// 3. create thing info in global_thing, if vendorThingID existing in thing_geo, globalThingID in thing_geo
+		// will be synchronized
+		thingGeo = this.constructThingGeo(null, vendorThingIDForTest, 0d, 0d, 8, "someBuildingID",
+				"someAliThingID");
+
+		restBean = new LocationGeoRestBean(thingGeo);
+		this.locationGeoController.saveLocationGeo(restBean);
+
+		temp = thingGeoDao.findBySingleField(ThingGeo.VENDOR_THING_ID, vendorThingIDForTest).get(0);
+		assertNull(temp.getGlobalThingID());
+
+		thingInfo = new GlobalThingInfo();
+		thingInfo.setVendorThingID(vendorThingIDForTest);
+		thingInfo.setKiiAppID("c1744915");
+		thingInfo.setSchemaName("schemaName");
+		thingInfo.setSchemaVersion("schemaVersion");
+		ThingRestBean thingRestBean = new ThingRestBean(thingInfo);
+		Map<String, Long> response = this.thingController.createThing(thingRestBean);
+
+		temp = thingGeoDao.findBySingleField(ThingGeo.VENDOR_THING_ID, vendorThingIDForTest).get(0);
+		assertEquals(response.get("globalThingID"), temp.getGlobalThingID());
 
 
 	}
