@@ -34,6 +34,11 @@ public class LocationGeoRestBean {
 	@JsonIgnore
 	public void verifyInput(){
 
+		// in the case of update location geo, doesn't validate the input
+		if(thingGeo.getId() != null) {
+			return;
+		}
+
 		if(thingGeo.getLat() == null) {
 			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "field", "lat");
 		}

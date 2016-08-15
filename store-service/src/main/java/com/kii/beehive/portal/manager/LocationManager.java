@@ -2,12 +2,16 @@ package com.kii.beehive.portal.manager;
 
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kii.beehive.portal.exception.EntryNotFoundException;
+import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.ThingLocationDao;
 import com.kii.beehive.portal.jdbc.dao.ThingLocationRelDao;
 import com.kii.beehive.portal.service.LocationDao;
@@ -29,6 +33,11 @@ public class LocationManager {
 
 	@Autowired
 	private LocationDao locDao;
+
+
+	@Autowired
+	private GlobalThingSpringDao thingDao;
+
 
 	public void generalRoot(SubLocInfo  locInfo){
 
@@ -65,6 +74,7 @@ public class LocationManager {
 	//=========================
 
 	public List<LocationInfo> getThingRelLocations(Long thingID){
+		verifyThingID(thingID);
 
 		List<String>  locations=relDao.getRelation(thingID);
 
@@ -79,13 +89,19 @@ public class LocationManager {
 	//=========================
 
 	public void addRelation(Long thingID,List<String> locList){
+		verifyThingID(thingID);
 
-		relDao.addRelation(thingID,locList);
+		LinkedList list=new LinkedList(locList);
+		List<String>  relList=relDao.getRelation(thingID);
+
+		list.removeAll(relList);
+		relDao.addRelation(thingID,list);
 
 	}
 
 
 	public void removeRelation(Long thingID,List<String> locList){
+		verifyThingID(thingID);
 
 		relDao.removeRelation(thingID,locList);
 
@@ -93,6 +109,7 @@ public class LocationManager {
 
 
 	public void updateRelation(Long thingID,List<String> locList){
+		verifyThingID(thingID);
 
 		relDao.clearAllRelation(thingID);
 
@@ -101,10 +118,19 @@ public class LocationManager {
 	}
 
 	public void clearRelation(Long thingID){
-
+		verifyThingID(thingID);
 
 		relDao.clearAllRelation(thingID);
 
+	}
+
+	private void verifyThingID(Long thingID){
+
+		try {
+			thingDao.existEntity(thingID);
+		}catch(EmptyResultDataAccessException ex){
+			throw new EntryNotFoundException(String.valueOf(thingID),"thing");
+		}
 	}
 	
 

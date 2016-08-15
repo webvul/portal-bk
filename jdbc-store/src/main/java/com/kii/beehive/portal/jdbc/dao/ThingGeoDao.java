@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Repository;
 import com.kii.beehive.portal.common.utils.StrTemplate;
+import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.ThingGeo;
 
 @Repository
@@ -48,6 +49,9 @@ public class ThingGeoDao extends SpringBaseDao<ThingGeo> {
 			params.add(aliThingID);
 		}
 
+		// order by
+		sql += " order by " + ThingGeo.BUILDING_ID + ", " + ThingGeo.FLOOR;
+
 		String fullSql= StrTemplate.gener(sql,TABLE_NAME);
 
 		return query(fullSql,params.toArray());
@@ -69,9 +73,55 @@ public class ThingGeoDao extends SpringBaseDao<ThingGeo> {
 			params.add(floor);
 		}
 
+		// order by
+		sql += " order by " + ThingGeo.BUILDING_ID + ", " + ThingGeo.FLOOR;
+
 		String fullSql= StrTemplate.gener(sql,TABLE_NAME);
 
 		return query(fullSql,params.toArray());
+	}
+
+	public int cleanGlobalthingID(String buildingID, Integer floor) {
+		String sql="update ${0} set " + ThingGeo.GLOBAL_THING_ID + "=null where 1=1 ";
+		List<Object> params=new ArrayList<>();
+
+
+		if(buildingID != null){
+			sql+="  and " + ThingGeo.BUILDING_ID + " =  ? ";
+			params.add(buildingID);
+		}
+		if(floor != null){
+			sql+="  and " + ThingGeo.FLOOR + " =  ? ";
+			params.add(floor);
+		}
+
+		String fullSql= StrTemplate.gener(sql,TABLE_NAME);
+
+		return this.jdbcTemplate.update(fullSql, params.toArray());
+	}
+
+	public int syncGlobalThingID(String buildingID, Integer floor) {
+
+		String sql = "update ${0} geo inner join ${1} thing " +
+				"set geo.${2} = thing.${3} " +
+				"where thing.${4}=0 and geo.${5} = thing.${6} ";
+		List<Object> params=new ArrayList<>();
+
+
+		if(buildingID != null){
+			sql+="  and geo." + ThingGeo.BUILDING_ID + " =  ? ";
+			params.add(buildingID);
+		}
+		if(floor != null){
+			sql+="  and geo." + ThingGeo.FLOOR + " =  ? ";
+			params.add(floor);
+		}
+
+		String fullSql= StrTemplate.gener(sql,TABLE_NAME, GlobalThingSpringDao.TABLE_NAME,
+				ThingGeo.GLOBAL_THING_ID, GlobalThingInfo.ID_GLOBAL_THING,
+				GlobalThingInfo.IS_DELETED, ThingGeo.VENDOR_THING_ID, GlobalThingInfo.VANDOR_THING_ID);
+
+		return this.jdbcTemplate.update(fullSql, params.toArray());
 	}
 
 }

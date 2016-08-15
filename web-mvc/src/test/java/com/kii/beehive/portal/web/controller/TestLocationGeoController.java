@@ -14,7 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import com.kii.beehive.portal.exception.DuplicateException;
+import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.ThingGeoDao;
+import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.ThingGeo;
 import com.kii.beehive.portal.web.WebTestTemplate;
 import com.kii.beehive.portal.web.entity.LocationGeoRestBean;
@@ -31,6 +33,9 @@ public class TestLocationGeoController extends WebTestTemplate {
 
 	@Autowired
 	private ThingGeoDao thingGeoDao;
+
+	@Autowired
+	private GlobalThingSpringDao globalThingSpringDao;
 
 	private List<ThingGeo> testPOIData;
 
@@ -105,7 +110,7 @@ public class TestLocationGeoController extends WebTestTemplate {
 			ThingGeo thingGeo = testPOIData.get(i);
 			LocationGeoRestBean restBean = new LocationGeoRestBean(thingGeo);
 
-			ResponseEntity responseEntity = this.locationGeoController.createLocationGeo(restBean);
+			ResponseEntity responseEntity = this.locationGeoController.saveLocationGeo(restBean);
 			assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
 
 			Map<String, Long> map = (Map<String, Long>)responseEntity.getBody();
@@ -153,7 +158,9 @@ public class TestLocationGeoController extends WebTestTemplate {
 	}
 
 	@Test
-	public void testCreateLocationGeo1() {
+	public void testSaveLocationGeo() {
+
+		// test create locationGeo
 		ThingGeo thingGeo = new ThingGeo();
 		thingGeo.setGlobalThingID(99l);
 		thingGeo.setVendorThingID("someVendorThingID");
@@ -167,7 +174,7 @@ public class TestLocationGeoController extends WebTestTemplate {
 
 		LocationGeoRestBean restBean = new LocationGeoRestBean(thingGeo);
 
-		this.locationGeoController.createLocationGeo(restBean);
+		this.locationGeoController.saveLocationGeo(restBean);
 
 		ResponseEntity responseEntity = this.locationGeoController.getLocationGeoByBuildingID("someBuildingID");
 
@@ -177,6 +184,9 @@ public class TestLocationGeoController extends WebTestTemplate {
 
 		ThingGeo result = response.get(0).getThingGeo();
 
+		// assert
+		Long id = result.getId();
+		assertTrue(id > 0);
 		assertEquals(thingGeo.getGlobalThingID(), result.getGlobalThingID());
 		assertEquals(thingGeo.getVendorThingID(), result.getVendorThingID());
 		assertEquals(thingGeo.getLng(), result.getLng());
@@ -187,6 +197,40 @@ public class TestLocationGeoController extends WebTestTemplate {
 		assertEquals(thingGeo.getDescription(), result.getDescription());
 		assertEquals(thingGeo.getGeoType(), result.getGeoType());
 
+
+		// test update locationGeo
+
+		ThingGeo updateThingGeo = new ThingGeo();
+		updateThingGeo.setId(id);
+		updateThingGeo.setGlobalThingID(100l);
+		updateThingGeo.setVendorThingID("anotherVendoThingID");
+		updateThingGeo.setLng(100d);
+		updateThingGeo.setDescription("anotherDescription");
+		updateThingGeo.setGeoType(0);
+
+		restBean = new LocationGeoRestBean(updateThingGeo);
+
+		this.locationGeoController.saveLocationGeo(restBean);
+
+		responseEntity = this.locationGeoController.getLocationGeoByBuildingID("someBuildingID");
+
+		response = (List<LocationGeoRestBean>)responseEntity.getBody();
+
+		assertEquals(1, response.size());
+
+		result = response.get(0).getThingGeo();
+
+		// assert
+		assertEquals(id, result.getId());
+		assertEquals(updateThingGeo.getGlobalThingID(), result.getGlobalThingID());
+		assertEquals(updateThingGeo.getVendorThingID(), result.getVendorThingID());
+		assertEquals(updateThingGeo.getLng(), result.getLng());
+		assertEquals(thingGeo.getLat(), result.getLat());
+		assertEquals(thingGeo.getFloor(), result.getFloor());
+		assertEquals(thingGeo.getBuildingID(), result.getBuildingID());
+		assertEquals(thingGeo.getAliThingID(), result.getAliThingID());
+		assertEquals(updateThingGeo.getDescription(), result.getDescription());
+		assertEquals(updateThingGeo.getGeoType(), result.getGeoType());
 	}
 
 	@Test
@@ -203,7 +247,7 @@ public class TestLocationGeoController extends WebTestTemplate {
 		thingGeo.setBuildingID("BuildingIDTest9");
 
 		try {
-			this.locationGeoController.createLocationGeo(new LocationGeoRestBean(thingGeo));
+			this.locationGeoController.saveLocationGeo(new LocationGeoRestBean(thingGeo));
 			fail();
 		} catch (PortalException e) {
 			e.printStackTrace();
@@ -217,7 +261,7 @@ public class TestLocationGeoController extends WebTestTemplate {
 		thingGeo.setBuildingID("BuildingIDTest9");
 
 		try {
-			this.locationGeoController.createLocationGeo(new LocationGeoRestBean(thingGeo));
+			this.locationGeoController.saveLocationGeo(new LocationGeoRestBean(thingGeo));
 			fail();
 		} catch (PortalException e) {
 			e.printStackTrace();
@@ -226,9 +270,10 @@ public class TestLocationGeoController extends WebTestTemplate {
 
 		// test duplicated globalThing and vendorThingID
 		thingGeo = this.testPOIData.get(2);
+		thingGeo.setId(null);
 		thingGeo.setAliThingID("newAliThingID");
 		try {
-			this.locationGeoController.createLocationGeo(new LocationGeoRestBean(thingGeo));
+			this.locationGeoController.saveLocationGeo(new LocationGeoRestBean(thingGeo));
 			fail();
 		} catch (DuplicateException e) {
 			e.printStackTrace();
@@ -236,10 +281,11 @@ public class TestLocationGeoController extends WebTestTemplate {
 
 		// test duplicated aliThingID
 		thingGeo = this.testPOIData.get(3);
+		thingGeo.setId(null);
 		thingGeo.setGlobalThingID(11l);
 		thingGeo.setVendorThingID("newVendorThingID");
 		try {
-			this.locationGeoController.createLocationGeo(new LocationGeoRestBean(thingGeo));
+			this.locationGeoController.saveLocationGeo(new LocationGeoRestBean(thingGeo));
 			fail();
 		} catch (DuplicateException e) {
 			e.printStackTrace();
@@ -387,7 +433,94 @@ public class TestLocationGeoController extends WebTestTemplate {
 
 	}
 
+	private GlobalThingInfo createGlobalThing(String vendorThingID) {
+		GlobalThingInfo thingInfo = new GlobalThingInfo();
+		thingInfo.setVendorThingID(vendorThingID);
+		thingInfo.setKiiAppID("someKiiAppID");
+		long id = this.globalThingSpringDao.saveOrUpdate(thingInfo);
+		thingInfo.setId(id);
+		return thingInfo;
+	}
 
+	/**
+	 * the sync target of location geo is all the POI points on building "BuildingIDTest1" and floor 8,
+	 * as there are only below thing info in table global_thing, only the globalThingID in table thing_geo of below
+	 * first 3 will be updated
+	 * - "0807W-F02-15-301"
+	 * - "0807W-F02-15-302"
+	 * - "0807W-F02-15-303"
+	 * - "0907W-F02-15-301" (not on floor 8)
+	 */
+	@Test
+	public void testSyncLocationGeoByBuildingIDAndFloor() {
+
+		// create POI points
+		this.createLocationGeo();
+
+		// create thing
+		Long globalThingID1 = this.createGlobalThing("0807W-F02-15-301").getId();
+		Long globalThingID2 = this.createGlobalThing("0807W-F02-15-302").getId();
+		Long globalThingID3 = this.createGlobalThing("0807W-F02-15-303").getId();
+		Long globalThingID4 = this.createGlobalThing("0907W-F02-15-301").getId();
+
+		ResponseEntity responseEntity = this.locationGeoController.syncLocationGeoByFloor("BuildingIDTest1", 8);
+
+		assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+
+		List<LocationGeoRestBean> response = (List<LocationGeoRestBean>)responseEntity.getBody();
+
+		// assert
+		assertEquals(6, response.size());
+
+		response.forEach(e -> {
+			ThingGeo thingGeo = e.getThingGeo();
+			assertEquals("BuildingIDTest1", thingGeo.getBuildingID());
+			assertEquals(8, (int)thingGeo.getFloor());
+
+			// assert each thing geo
+			if("AliThingIDForTest1".equals(thingGeo.getAliThingID())) {
+				assertNull(thingGeo.getGlobalThingID());
+				assertNull(thingGeo.getVendorThingID());
+			}
+
+			if("0807W-F02-15-301".equals(thingGeo.getVendorThingID())) {
+				assertEquals(globalThingID1, thingGeo.getGlobalThingID());
+			}
+
+			if("0807W-F02-15-302".equals(thingGeo.getVendorThingID())) {
+				assertEquals(globalThingID2, thingGeo.getGlobalThingID());
+			}
+
+			if("0807W-F02-15-303".equals(thingGeo.getVendorThingID())) {
+				assertEquals(globalThingID3, thingGeo.getGlobalThingID());
+			}
+
+			if("0807W-F02-15-304".equals(thingGeo.getVendorThingID())) {
+				assertNull(thingGeo.getGlobalThingID());
+			}
+
+			if("0807W-F02-15-305".equals(thingGeo.getVendorThingID())) {
+				assertNull(thingGeo.getGlobalThingID());
+			}
+
+		});
+
+		List<ThingGeo> list = thingGeoDao.findByBuildingIDAndFloor("BuildingIDTest1", 7);
+		assertTrue(list.size() == 1);
+
+		ThingGeo thingGeo = list.get(0);
+		assertEquals(Long.valueOf(5), thingGeo.getGlobalThingID());
+		assertEquals("0806W-F02-15-301", thingGeo.getVendorThingID());
+
+		list = thingGeoDao.findByBuildingIDAndFloor("BuildingIDTest2", 8);
+		assertTrue(list.size() == 1);
+
+		thingGeo = list.get(0);
+		assertEquals(Long.valueOf(6), thingGeo.getGlobalThingID());
+		assertEquals("0907W-F02-15-301", thingGeo.getVendorThingID());
+
+
+	}
 
 
 
