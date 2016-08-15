@@ -6,9 +6,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kii.beehive.portal.exception.EntryNotFoundException;
+import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.ThingLocQuery;
 import com.kii.beehive.portal.jdbc.dao.ThingLocationDao;
 import com.kii.beehive.portal.jdbc.dao.ThingLocationRelDao;
@@ -24,6 +27,12 @@ public class LocationQueryManager {
 
 	@Autowired
 	private ThingLocationDao  thingLocDao;
+
+
+
+	@Autowired
+	private GlobalThingSpringDao thingDao;
+
 
 
 	public List<Long> doQueryForReport(ThingLocQuery query){
@@ -46,12 +55,23 @@ public class LocationQueryManager {
 
 
 	public List<GlobalThingInfo>  getRelThing(Long thingID,ThingLocQuery query){
+		verifyThingID(thingID);
 		return thingLocDao.getRelationThingsByThingLocatoin(thingID,query);
 	}
 
 	//===========================
 	public List<GlobalThingInfo>  getThingsByLocation(ThingLocQuery query){
+
 		return thingLocDao.getThingsByLocation(query);
+	}
+
+	private void verifyThingID(Long thingID){
+
+		try {
+			thingDao.existEntity(thingID);
+		}catch(EmptyResultDataAccessException ex){
+			throw new EntryNotFoundException(String.valueOf(thingID),"thing");
+		}
 	}
 
 }

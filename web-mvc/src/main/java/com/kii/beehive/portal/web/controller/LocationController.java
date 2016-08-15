@@ -46,7 +46,7 @@ public class LocationController {
 
 	}
 
-	@RequestMapping(value="/{location}/allSubLocation",method = RequestMethod.GET,consumes = {MediaType.ALL_VALUE})
+	@RequestMapping(value="/{location}/allSubLocationTag",method = RequestMethod.GET,consumes = {MediaType.ALL_VALUE})
 	public List<LocationInfo> getAllLowLevelLocations(@PathVariable("location") String location){
 
 		return manager.getAllLowLocation(location);

@@ -440,4 +440,15 @@ public abstract class SpringBaseDao<T extends BusinessEntity> {
 	}
 
 
+	private static String ExistSql="select 1  from ${0} t where t.${1} =  ? ";
+	public void existEntity(Long id) {
+
+		String fullSql=StrTemplate.gener(ExistSql,this.getTableName(),this.getKey());
+
+		fullSql=this.addDelSignPrefix(fullSql);
+
+
+		this.jdbcTemplate.queryForObject(fullSql, new Object[]{id}, Long.class);
+
+	}
 }
