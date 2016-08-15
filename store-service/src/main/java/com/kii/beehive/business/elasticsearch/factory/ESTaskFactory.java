@@ -1,7 +1,13 @@
 package com.kii.beehive.business.elasticsearch.factory;
 
-import javax.annotation.PreDestroy;
-import java.util.List;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.kii.beehive.business.data.Action;
+import com.kii.beehive.business.data.Field;
+import com.kii.beehive.business.elasticsearch.task.AvgTimeParkingSpaceToGatewayTask;
+import com.kii.beehive.business.elasticsearch.task.BulkUploadTask;
+import com.kii.beehive.business.elasticsearch.task.SearchTask;
+import com.kii.beehive.portal.service.BeehiveConfigDao;
+import com.kii.beehive.portal.store.entity.es.EsDataSourceCfgEntry;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -15,14 +21,9 @@ import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.kii.beehive.business.data.Action;
-import com.kii.beehive.business.data.Field;
-import com.kii.beehive.business.elasticsearch.task.AvgTimeParkingSpaceToGatewayTask;
-import com.kii.beehive.business.elasticsearch.task.BulkUploadTask;
-import com.kii.beehive.business.elasticsearch.task.SearchTask;
-import com.kii.beehive.portal.service.BeehiveConfigDao;
-import com.kii.beehive.portal.store.entity.es.EsDataSourceCfgEntry;
+
+import javax.annotation.PreDestroy;
+import java.util.List;
 
 /**
  * Created by hdchen on 7/1/16.

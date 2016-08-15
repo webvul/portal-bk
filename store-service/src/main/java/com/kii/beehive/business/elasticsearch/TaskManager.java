@@ -1,9 +1,9 @@
 package com.kii.beehive.business.elasticsearch;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kii.beehive.business.elasticsearch.factory.ESTaskFactory;
+import com.kii.beehive.business.elasticsearch.task.AvgTimeParkingSpaceToGatewayTask;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -16,10 +16,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kii.beehive.business.elasticsearch.factory.ESTaskFactory;
-import com.kii.beehive.business.elasticsearch.task.AvgTimeParkingSpaceToGatewayTask;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 /**
  * Created by hdchen on 6/30/16.
@@ -36,7 +37,7 @@ public class TaskManager {
 	@Autowired
 	private ObjectMapper mapper;
 
-	private final String DATE_FIELD = "state.taiwanNo1";
+	//private final String DATE_FIELD = "state.taiwanNo1";
 	private final String TERM_FIELD = "target";
 
 	@Autowired
@@ -72,14 +73,15 @@ public class TaskManager {
 	}
 
 	public String queryBuilderForAggs(String index, String type, String[] kiiThingIDs, long startDate, long endDate,
-									  String intervalField, int unit, String operatorField, String[] avgFields) {
+									  String intervalField, String dateField, int unit, String operatorField, String[]
+											  avgFields) {
 		BoolQueryBuilder qb = QueryBuilders.boolQuery();
 
 		for (String kiiThingID : kiiThingIDs) {
 			qb = qb.should(QueryBuilders.termQuery(TERM_FIELD, kiiThingID));
 		}
 
-		qb = qb.filter(QueryBuilders.rangeQuery(DATE_FIELD).from(startDate).to(endDate));
+		qb = qb.filter(QueryBuilders.rangeQuery(dateField).from(startDate).to(endDate));
 
 
 		DateHistogramInterval di = null;
@@ -101,7 +103,7 @@ public class TaskManager {
 				throw new IllegalArgumentException("Invalid intervalField = " + intervalField);
 		}
 
-		AggregationBuilder ab = AggregationBuilders.dateHistogram("agg").field(DATE_FIELD).interval(di);
+		AggregationBuilder ab = AggregationBuilders.dateHistogram("agg").field(dateField).interval(di);
 
 		for (String avgField : avgFields) {
 			switch (operatorField) {
@@ -123,7 +125,6 @@ public class TaskManager {
 		}
 
 		String result = null;
-
 		Future f = searchThreadPoolTaskExecutor.submit(taskFactory.getSearchTask(index, type, SearchType
 				.DFS_QUERY_THEN_FETCH, qb, ab, 0, 0));
 		try {
@@ -139,12 +140,12 @@ public class TaskManager {
 		return result;
 	}
 
-	public String queryBuilderForHistorical(String index, String type, String kiiThingID, long startDate, long
+	public String queryBuilderForHistorical(String index, String type, String kiiThingID, String dateField, long startDate, long
 			endDate, int size, int from) {
 
 		QueryBuilder qb = QueryBuilders.boolQuery()
 				.should(QueryBuilders.termQuery(TERM_FIELD, kiiThingID))
-				.filter(QueryBuilders.rangeQuery(DATE_FIELD).from(startDate).to(endDate));
+				.filter(QueryBuilders.rangeQuery(dateField).from(startDate).to(endDate));
 
 		Future f = searchThreadPoolTaskExecutor.submit(taskFactory.getSearchTask(index, type, SearchType
 				.DFS_QUERY_THEN_FETCH, qb, null, size, from));
