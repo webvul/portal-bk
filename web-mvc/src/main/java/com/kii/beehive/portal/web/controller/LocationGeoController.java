@@ -33,18 +33,18 @@ public class LocationGeoController {
 	private LocationGeoManager locationGeoManager;
 
 	/**
-	 * 添加POI位置信息
+	 * 添加/更新POI位置信息
 	 * POST /locationGeo
 	 * <p>
 	 * refer to doc "Beehive API - Location Geo API" for request/response details
 	 */
 	@RequestMapping(value = "", method = {RequestMethod.POST}, consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE})
-	public ResponseEntity createLocationGeo(@RequestBody LocationGeoRestBean bean) {
+	public ResponseEntity saveLocationGeo(@RequestBody LocationGeoRestBean bean) {
 
 		bean.verifyInput();
 
 		ThingGeo thingGeo = bean.getThingGeo();
-		long id = locationGeoManager.createLocationGeo(thingGeo);
+		long id = locationGeoManager.saveLocationGeo(thingGeo);
 
 		Map<String, Object> response = new HashMap<>();
 		response.put("id", id);
@@ -200,6 +200,23 @@ public class LocationGeoController {
 		}
 
 		return result;
+	}
+
+	/**
+	 * 同步特定楼层的所有POI点位
+	 * POST /locationGeo/sync/{buildingID}/{floor}
+	 * <p>
+	 * refer to doc "Beehive API - Location Geo API" for request/response details
+	 */
+	@RequestMapping(value = "/sync/{buildingID}/{floor}", method = {RequestMethod.POST})
+	public ResponseEntity syncLocationGeoByFloor(@PathVariable("buildingID") String buildingID, @PathVariable
+			("floor") int floor) {
+
+		List<ThingGeo> list = locationGeoManager.syncLocationGeoByBuildingIDAndFloor(buildingID, floor);
+
+		List<LocationGeoRestBean> response = this.toResponse(list);
+
+		return new ResponseEntity(response, HttpStatus.OK);
 	}
 
 }

@@ -21,20 +21,31 @@ public class LocationGeoManager {
 	private ThingGeoDao thingGeoDao;
 
 	/**
-	 * 添加POI位置信息
+	 * 添加/更新POI位置信息
 	 *
 	 * @param thingGeo
 	 * @return
 	 */
-	public Long createLocationGeo(ThingGeo thingGeo) {
+	public Long saveLocationGeo(ThingGeo thingGeo) {
 
-		List<ThingGeo> duplicatedThingGeoList = thingGeoDao.getDuplicatedThingGeo(thingGeo);
+		Long id = thingGeo.getId();
 
-		if(duplicatedThingGeoList != null && duplicatedThingGeoList.size() > 0) {
-			throw new DuplicateException("globalThingID, vendorThingID or aliThingID", "Location Geo");
+		if(id == null) {
+			// check whether any duplicated POI already in DB
+			List<ThingGeo> duplicatedThingGeoList = thingGeoDao.getDuplicatedThingGeo(thingGeo);
+
+			if (duplicatedThingGeoList != null && duplicatedThingGeoList.size() > 0) {
+				throw new DuplicateException("globalThingID, vendorThingID or aliThingID", "Location Geo");
+			}
+
+			// create POI
+			id = thingGeoDao.insert(thingGeo);
+		} else {
+			// update POI
+			thingGeoDao.updateEntityByID(thingGeo, id);
 		}
 
-		return thingGeoDao.insert(thingGeo);
+		return id;
 	}
 
 	/**
@@ -61,6 +72,7 @@ public class LocationGeoManager {
 	public List<ThingGeo> getLocationGeoByBuildingIDAndFloor(String buildingID, Integer floor) {
 
 		return thingGeoDao.findByBuildingIDAndFloor(buildingID, floor);
+
 	}
 
 	/**
@@ -204,6 +216,25 @@ public class LocationGeoManager {
 		System.out.println(5%6);
 
 
+	}
+
+	/**
+	 * 同步特定楼层的所有POI点位
+	 *
+	 * @param buildingID
+	 * @param floor
+	 * @return
+	 */
+	public List<ThingGeo> syncLocationGeoByBuildingIDAndFloor(String buildingID, Integer floor) {
+
+		// clean the existing thing id
+		thingGeoDao.cleanGlobalthingID(buildingID, floor);
+
+		// sync global thing id
+		thingGeoDao.syncGlobalThingID(buildingID, floor);
+
+		// return the updated POI info
+		return thingGeoDao.findByBuildingIDAndFloor(buildingID, floor);
 	}
 
 }
