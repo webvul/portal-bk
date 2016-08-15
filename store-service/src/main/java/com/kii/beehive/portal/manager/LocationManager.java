@@ -2,6 +2,7 @@ package com.kii.beehive.portal.manager;
 
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,7 +91,11 @@ public class LocationManager {
 	public void addRelation(Long thingID,List<String> locList){
 		verifyThingID(thingID);
 
-		relDao.addRelation(thingID,locList);
+		LinkedList list=new LinkedList(locList);
+		List<String>  relList=relDao.getRelation(thingID);
+
+		list.removeAll(relList);
+		relDao.addRelation(thingID,list);
 
 	}
 
