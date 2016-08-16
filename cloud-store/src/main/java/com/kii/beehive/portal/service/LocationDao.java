@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.store.entity.LocationInfo;
@@ -130,10 +129,12 @@ public class LocationDao extends AbstractDataAccess<LocationInfo> {
 
 			info.setDisplayName(loc);
 
+
 			if(info.getLevel()==LocationType.area){
 				String area=LocationType.area.getLevelSeq(loc);
-				String areaType=StringUtils.substring(area,-3,-2);
-				info.setAreaType(LocationInfo.AreaType.valueOf(areaType));
+//				String areaType=StringUtils.substring(area,-3,-2);
+
+				info.setAreaType(LocationInfo.AreaType.getInstance(area));
 			}
 
 			subLevel.put(loc,loc);

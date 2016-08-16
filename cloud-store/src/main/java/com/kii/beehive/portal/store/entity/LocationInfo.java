@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import com.kii.extension.sdk.entity.KiiEntity;
 
 public class LocationInfo extends KiiEntity {
@@ -59,6 +61,7 @@ public class LocationInfo extends KiiEntity {
 		this.displayName = displayName;
 	}
 
+	@JsonProperty("areaName")
 	public AreaType getAreaType() {
 		return areaType;
 	}
@@ -80,7 +83,27 @@ public class LocationInfo extends KiiEntity {
 
 	public  enum AreaType{
 
-		W,M,F,C;
+
+		Station('A'),Corridor('C'),MeetingRoom('M'),RestRoom('R'),ServiceRoom('S');
+
+		private char tag;
+
+		AreaType(char ch){
+			this.tag=ch;
+		}
+
+		public static AreaType getInstance(String area){
+			char ch=area.charAt(0);
+
+			switch(ch){
+				case 'C':return Corridor;
+				case 'M':return MeetingRoom;
+				case 'R':return RestRoom;
+				case 'S':return ServiceRoom;
+				default:return Station;
+			}
+		}
+
 	}
 
 	@Override

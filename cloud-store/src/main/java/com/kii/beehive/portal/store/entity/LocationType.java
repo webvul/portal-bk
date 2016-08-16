@@ -7,7 +7,11 @@ import java.util.regex.Pattern;
 
 public enum LocationType {
 
-	building("^(\\d{2})"),floor("^(\\d{2}\\d{2})"),partition("^(\\d{4}\\w)"),area("^(\\d{4}\\w-[A-Z][\\d]{2})$");
+	building("^(\\d{2})"),
+	floor("^(\\d{2}\\d{2})"),
+	partition("^(\\d{4}\\w)"),
+	area("^(\\d{4}\\w-[A-Z])$"),
+	site("^(\\d{4}\\w-[A-Z][\\d]{2})$");
 
 
 	private Pattern pattern;
@@ -27,7 +31,8 @@ public enum LocationType {
 			case 2:return building;
 			case 4:return floor;
 			case 5:return partition;
-			case 9:return area;
+			case 7:return area;
+			case 9:return site;
 			default:
 				throw new IllegalArgumentException("invalid location format");
 		}
@@ -67,7 +72,7 @@ public enum LocationType {
 	}
 
 	public static LocationType getNextLevel(LocationType type){
-		if(type == area){
+		if(type == site){
 			throw new IllegalArgumentException("this is least level");
 		}
 		return LocationType.values()[type.ordinal()+1];
