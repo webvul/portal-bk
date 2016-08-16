@@ -11,10 +11,10 @@ import com.kii.beehive.portal.jdbc.dao.ThingLocationRelDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.extension.ruleengine.store.trigger.TagSelector;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -53,7 +53,7 @@ public class ThingTagManager {
 			globalThingDao.updateKiiThingID(vendorID, fullKiiThingID);
 
 			List<String> locList = new ArrayList<>();
-			locList.add(vendorID);
+			locList.add(thing.getFullKiiThingID());
 			relDao.clearAllRelation(thing.getId());
 			relDao.addRelation(thing.getId(), locList);
 		}
