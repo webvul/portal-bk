@@ -10,6 +10,8 @@ public class SearchRestBean {
 	private int unit;
 	private String operatorField;
 	private String[] fields;
+	private String indexType;
+	private String dateField;
 	private int size;
 	private int from;
 
@@ -91,5 +93,21 @@ public class SearchRestBean {
 
 	public void setVendorThingIDs(String[] vendorThingIDs) {
 		this.vendorThingIDs = vendorThingIDs;
+	}
+
+	public String getIndexType() {
+		return indexType;
+	}
+
+	public void setIndexType(String indexType) {
+		this.indexType = indexType;
+	}
+
+	public String getDateField() {
+		return dateField;
+	}
+
+	public void setDateField(String dateField) {
+		this.dateField = dateField;
 	}
 }

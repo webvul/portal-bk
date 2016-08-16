@@ -1,15 +1,5 @@
 package com.kii.beehive.portal.web.controller;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import org.apache.logging.log4j.util.Strings;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.kii.beehive.business.elasticsearch.TaskManager;
 import com.kii.beehive.business.manager.TagThingManager;
@@ -20,6 +10,13 @@ import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.beehive.portal.web.entity.SearchRestBean;
 import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
+import org.apache.logging.log4j.util.Strings;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 
 /**
@@ -77,7 +74,9 @@ public class ESServiceController {
 	public String aggregate(@RequestBody SearchRestBean searchRestBean) {
 
 		if (searchRestBean.getVendorThingIDs().length == 0 || Strings.isBlank(searchRestBean.getIntervalField())
+				|| Strings.isBlank(searchRestBean.getIndexType())
 				|| Strings.isBlank(searchRestBean.getOperatorField())
+				|| Strings.isBlank(searchRestBean.getDateField())
 				|| searchRestBean.getStartDate() == null || searchRestBean.getEndDate() == null
 				|| searchRestBean.getFields() == null || searchRestBean.getFields().length == 0
 				|| searchRestBean.getUnit() == 0) {
@@ -104,11 +103,11 @@ public class ESServiceController {
 			throw EntryNotFoundException.thingNotFound(Arrays.toString(searchRestBean.getVendorThingIDs()));
 		}
 
-
-		String r = transportClientManager.queryBuilderForAggs(things.get(0).getKiiAppID(), "spark",
+		String r = transportClientManager.queryBuilderForAggs(things.get(0).getKiiAppID(), searchRestBean.getIndexType(),
 				kiiThingIDs.toArray(new String[kiiThingIDs.size()]),
 				searchRestBean.getStartDate(), searchRestBean.getEndDate(), searchRestBean.getIntervalField(),
-				searchRestBean.getUnit(), searchRestBean.getOperatorField(), searchRestBean.getFields());
+				searchRestBean.getDateField(), searchRestBean.getUnit(), searchRestBean.getOperatorField(),
+				searchRestBean.getFields());
 
 		return r;
 	}
@@ -121,9 +120,9 @@ public class ESServiceController {
 	 */
 	@RequestMapping(value = "/historical", method = {RequestMethod.POST})
 	public String historical(@RequestBody SearchRestBean searchRestBean) {
-		if (Strings.isBlank(searchRestBean.getVendorThingID())
-				|| searchRestBean.getStartDate() == null || searchRestBean.getEndDate() == null
-				|| searchRestBean.getSize() == 0) {
+		if (Strings.isBlank(searchRestBean.getVendorThingID()) || Strings.isBlank(searchRestBean.getDateField())
+				|| Strings.isBlank(searchRestBean.getIndexType()) || searchRestBean.getStartDate() == null
+				|| searchRestBean.getEndDate() == null || searchRestBean.getSize() == 0) {
 			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "field", "historical");
 		}
 
@@ -142,8 +141,8 @@ public class ESServiceController {
 
 		String kiiThingID = "thing:" + thing.getFullKiiThingID().substring(thing.getFullKiiThingID().indexOf("-") + 1);
 
-		String result = transportClientManager.queryBuilderForHistorical(thing.getKiiAppID(), "spark", kiiThingID,
-				searchRestBean.getStartDate(),
+		String result = transportClientManager.queryBuilderForHistorical(thing.getKiiAppID(), searchRestBean.getIndexType(), kiiThingID,
+				searchRestBean.getDateField(), searchRestBean.getStartDate(),
 				searchRestBean.getEndDate(), searchRestBean.getSize(), searchRestBean.getFrom());
 		return result;
 	}

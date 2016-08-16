@@ -3,10 +3,13 @@ package com.kii.beehive.business.manager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.kii.beehive.portal.exception.DuplicateException;
+import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.ThingGeoDao;
+import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.ThingGeo;
 
 /**
@@ -19,6 +22,9 @@ public class LocationGeoManager {
 
 	@Autowired
 	private ThingGeoDao thingGeoDao;
+
+	@Autowired
+	private GlobalThingSpringDao globalThingSpringDao;
 
 	/**
 	 * 添加/更新POI位置信息
@@ -45,7 +51,28 @@ public class LocationGeoManager {
 			thingGeoDao.updateEntityByID(thingGeo, id);
 		}
 
+		// sync globalThingID from global_thing into thing_geo
+		this.syncGlobalThingIDByVendorThingID(thingGeo);
+
 		return id;
+	}
+
+	private void syncGlobalThingIDByVendorThingID(ThingGeo thingGeo) {
+
+		String vendorThingID = thingGeo.getVendorThingID();
+		if(Strings.isBlank(vendorThingID)) {
+			return;
+		}
+
+		// get global thing id
+		Long globalThingID = null;
+		GlobalThingInfo thingInfo = globalThingSpringDao.getThingByVendorThingID(vendorThingID);
+		if(thingInfo != null) {
+			globalThingID = thingInfo.getId();
+		}
+
+		// sync global thing id into thing_geo
+		thingGeoDao.updateGlobalThingIDByVendorThingID(vendorThingID, globalThingID);
 	}
 
 	/**
