@@ -2,7 +2,6 @@ package com.kii.beehive.portal.web.controller;
 
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.logging.log4j.util.Strings;
@@ -46,8 +45,8 @@ public class LocationGeoController {
 		ThingGeo thingGeo = bean.getThingGeo();
 		long id = locationGeoManager.saveLocationGeo(thingGeo);
 
-		Map<String, Object> response = new HashMap<>();
-		response.put("id", id);
+		ThingGeo thingGeoResponse = locationGeoManager.findById(id);
+		LocationGeoRestBean response = new LocationGeoRestBean(thingGeoResponse);
 
 		return new ResponseEntity(response, HttpStatus.OK);
 	}

@@ -117,8 +117,9 @@ public class TestLocationGeoController extends WebTestTemplate {
 			ResponseEntity responseEntity = this.locationGeoController.saveLocationGeo(restBean);
 			assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
 
-			Map<String, Long> map = (Map<String, Long>)responseEntity.getBody();
-			Long id = map.get("id");
+			ThingGeo thingGeoResponse = ((LocationGeoRestBean)responseEntity.getBody()).getThingGeo();
+			Long id = thingGeoResponse.getId();
+
 			assertTrue(id != null);
 
 			ThingGeo temp = thingGeoDao.findByID(id);
@@ -567,7 +568,11 @@ public class TestLocationGeoController extends WebTestTemplate {
 		GlobalThingInfo thingInfo = this.createGlobalThing(vendorThingIDForTest);
 
 		restBean = new LocationGeoRestBean(thingGeo);
-		this.locationGeoController.saveLocationGeo(restBean);
+		ResponseEntity responseEntity = this.locationGeoController.saveLocationGeo(restBean);
+		ThingGeo thingGeoResponse = ((LocationGeoRestBean)responseEntity.getBody()).getThingGeo();
+		assertEquals(thingInfo.getId(), thingGeoResponse.getGlobalThingID());
+		assertEquals(thingGeo.getVendorThingID(), thingGeoResponse.getVendorThingID());
+		assertEquals(thingGeo.getAliThingID(), thingGeoResponse.getAliThingID());
 
 		temp = thingGeoDao.findBySingleField(ThingGeo.VENDOR_THING_ID, vendorThingIDForTest).get(0);
 		assertEquals(thingInfo.getId(), temp.getGlobalThingID());
