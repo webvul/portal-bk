@@ -52,10 +52,10 @@ public class ThingTagManager {
 		if (thing != null) {
 			globalThingDao.updateKiiThingID(vendorID, fullKiiThingID);
 
-			List<String> locList = new ArrayList<>();
+			/*List<String> locList = new ArrayList<>();
 			locList.add(thing.getFullKiiThingID());
 			relDao.clearAllRelation(thing.getId());
-			relDao.addRelation(thing.getId(), locList);
+			relDao.addRelation(thing.getId(), locList);*/
 		}
 	}
 
