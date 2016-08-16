@@ -8,6 +8,7 @@ import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.CollectUtils;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
+import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.beehive.portal.web.entity.ThingCommandDetailRestBean;
 import com.kii.beehive.portal.web.entity.ThingCommandRestBean;
 import com.kii.beehive.portal.web.exception.ErrorCode;
@@ -117,17 +118,18 @@ public class ThingIFController extends AbstractThingTagController {
 		for (ThingCommandRestBean restBean : restBeanList) {
 			TagSelector ts = restBean.getSelector();
 			if (ts != null && (!CollectionUtils.isEmpty(ts.getTagList()) || !CollectionUtils.isEmpty(ts.getThingList()))) {
-				if (!CollectionUtils.isEmpty(ts.getTagList())) {
-					List<TagIndex> tags = this.getTags(ts.getTagList());
-					this.checkPermissionOnTags(tags);
-				}
+				if (!Constants.ADMIN_ID.equals(AuthInfoStore.getUserID())) {
+					if (!CollectionUtils.isEmpty(ts.getTagList())) {
+						List<TagIndex> tags = this.getTags(ts.getTagList());
+						this.checkPermissionOnTags(tags);
+					}
 
-				if (!CollectionUtils.isEmpty(ts.getThingList())) {
-					List<String> tempThingList = ts.getThingList().stream().map(String::valueOf).collect(Collectors
-							.toList());
-					List<GlobalThingInfo> things = this.getThings(tempThingList);
-					this.checkPermissionOnThings(things);
-
+					if (!CollectionUtils.isEmpty(ts.getThingList())) {
+						List<String> tempThingList = ts.getThingList().stream().map(String::valueOf).collect(Collectors
+								.toList());
+						List<GlobalThingInfo> things = this.getThings(tempThingList);
+						this.checkPermissionOnThings(things);
+					}
 				}
 			} else {
 
