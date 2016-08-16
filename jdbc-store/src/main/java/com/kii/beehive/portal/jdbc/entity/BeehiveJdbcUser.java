@@ -176,7 +176,7 @@ public class BeehiveJdbcUser extends BusinessEntity {
 	public BeehiveJdbcUser cloneView() {
 
 		BeehiveJdbcUser user = new BeehiveJdbcUser();
-		BeanUtils.copyProperties(this, user, "kiiUserID", "activityToken", "defaultPassword", "userPassword","id");
+		BeanUtils.copyProperties(this, user, "kiiUserID", "activityToken", "defaultPassword", "userPassword");
 		return user;
 
 	}
