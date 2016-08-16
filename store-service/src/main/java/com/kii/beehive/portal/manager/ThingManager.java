@@ -19,6 +19,7 @@ import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.dao.TagThingRelationDao;
 import com.kii.beehive.portal.jdbc.dao.TeamThingRelationDao;
+import com.kii.beehive.portal.jdbc.dao.ThingGeoDao;
 import com.kii.beehive.portal.jdbc.dao.ThingLocationRelDao;
 import com.kii.beehive.portal.jdbc.dao.ThingUserRelationDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
@@ -59,6 +60,9 @@ public class ThingManager {
 
 	@Autowired
 	private AppInfoDao appInfoDao;
+
+	@Autowired
+	private ThingGeoDao thingGeoDao;
 
 	public List<Map<String,Object>> getThingDetailByIDList(List<Long> thingIDs){
 
@@ -133,6 +137,10 @@ public class ThingManager {
 		if (null != AuthInfoStore.getTeamID()) {
 			teamThingRelationDao.saveOrUpdate(new TeamThingRelation(AuthInfoStore.getTeamID(), id));
 		}
+
+		// sync globalThingID into thing_geo
+		thingGeoDao.updateGlobalThingIDByVendorThingID(thingInfo.getVendorThingID(), id);
+
 		return id;
 	}
 

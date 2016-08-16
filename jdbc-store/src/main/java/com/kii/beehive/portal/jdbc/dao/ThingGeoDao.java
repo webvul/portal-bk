@@ -2,6 +2,7 @@ package com.kii.beehive.portal.jdbc.dao;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Repository;
 import com.kii.beehive.portal.common.utils.StrTemplate;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
@@ -120,6 +121,22 @@ public class ThingGeoDao extends SpringBaseDao<ThingGeo> {
 		String fullSql= StrTemplate.gener(sql,TABLE_NAME, GlobalThingSpringDao.TABLE_NAME,
 				ThingGeo.GLOBAL_THING_ID, GlobalThingInfo.ID_GLOBAL_THING,
 				GlobalThingInfo.IS_DELETED, ThingGeo.VENDOR_THING_ID, GlobalThingInfo.VANDOR_THING_ID);
+
+		return this.jdbcTemplate.update(fullSql, params.toArray());
+	}
+
+	public int updateGlobalThingIDByVendorThingID(String vendorThingID, Long globalThingID) {
+
+		if(Strings.isBlank(vendorThingID)) {
+			return 0;
+		}
+
+		String sql = "update ${0} set ${1} = ? where ${2} = ?";
+		List<Object> params=new ArrayList<>();
+		params.add(globalThingID);
+		params.add(vendorThingID);
+
+		String fullSql= StrTemplate.gener(sql, TABLE_NAME, ThingGeo.GLOBAL_THING_ID, ThingGeo.VENDOR_THING_ID);
 
 		return this.jdbcTemplate.update(fullSql, params.toArray());
 	}
