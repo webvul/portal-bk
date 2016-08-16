@@ -264,4 +264,8 @@ public class LocationGeoManager {
 		return thingGeoDao.findByBuildingIDAndFloor(buildingID, floor);
 	}
 
+	public ThingGeo findById(long id) {
+		return thingGeoDao.findByID(id);
+	}
+
 }
