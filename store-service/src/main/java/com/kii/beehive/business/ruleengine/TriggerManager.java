@@ -1,22 +1,19 @@
 package com.kii.beehive.business.ruleengine;
 
 import javax.annotation.PostConstruct;
-
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.kii.beehive.business.event.BusinessEventListenerService;
 import com.kii.beehive.business.helper.TriggerCreator;
 import com.kii.beehive.business.manager.AppInfoManager;
@@ -37,11 +34,14 @@ import com.kii.extension.ruleengine.store.trigger.CommandToThing;
 import com.kii.extension.ruleengine.store.trigger.CommandToThingInGW;
 import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
 import com.kii.extension.ruleengine.store.trigger.GatewayTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.SummarySource;
+import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.TagSelector;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.WhenType;
-import com.kii.extension.ruleengine.store.trigger.condition.LogicCol;
+import com.kii.extension.ruleengine.store.trigger.condition.AndLogic;
+import com.kii.extension.ruleengine.store.trigger.condition.SimpleCondition;
 import com.kii.extension.sdk.entity.thingif.Action;
 import com.kii.extension.sdk.entity.thingif.EndNodeOfGateway;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
@@ -141,7 +141,7 @@ public class TriggerManager {
 
 		if(checkLocalRule(record)){
 			try {
-				return createGatewayRecord((GroupTriggerRecord) record);
+				return createGatewayRecord((SummaryTriggerRecord) record);
 			}catch(IllegalStateException e){
 				log.warn("invalid gateway trigger param");
 			}
@@ -158,19 +158,30 @@ public class TriggerManager {
 
 	private boolean checkLocalRule(TriggerRecord record) {
 
-		if( ! (record instanceof GroupTriggerRecord
+		if( ! (record instanceof SummaryTriggerRecord
 				&& record.getPredicate().getTriggersWhen().equals(WhenType.CONDITION_TRUE)
 				&& record.getPredicate().getSchedule() == null
-				&& ! ( record.getPredicate().getCondition()  instanceof LogicCol) ) ) {
+				&& ( record.getPredicate().getCondition()  instanceof AndLogic)
+				&& ( (AndLogic) record.getPredicate().getCondition() ).getClauses().size() == 2
+				&& ( (AndLogic) record.getPredicate().getCondition() ).getClauses().get(0) instanceof AndLogic
+				&& ( (AndLogic) ( ( (AndLogic) record.getPredicate().getCondition() ).getClauses().get(0) ) ).getClauses().size() == 2
+			    && ( (AndLogic) ( ( (AndLogic) record.getPredicate().getCondition() ).getClauses().get(0) ) ).getClauses().get(0) instanceof SimpleCondition
+			) ) {
+
 
 			return false;
 		}
 
-		GroupTriggerRecord  groupRecord=(GroupTriggerRecord)record;
+		SummaryTriggerRecord  summaryTriggerRecord =(SummaryTriggerRecord)record;
 
 		//source only one thing
-		if( ( groupRecord.getSource().getTagList() != null && groupRecord.getSource().getTagList().size() > 0 )
-				||  ( groupRecord.getSource().getThingList() != null && groupRecord.getSource().getThingList().size() > 1 )){
+		Collection<SummarySource> sourceCollection = summaryTriggerRecord.getSummarySource().values();
+		if(sourceCollection.size() != 1 ){
+			return false;
+		}
+		TagSelector selector = sourceCollection.iterator().next().getSource();
+		if( ( selector.getTagList() != null && selector.getTagList().size() > 0 )
+				||  ( selector.getThingList() != null && selector.getThingList().size() != 1 )){
 			return false;
 		}
 
@@ -180,19 +191,28 @@ public class TriggerManager {
 	}
 
 
-	private GatewayTriggerRecord createGatewayRecord(GroupTriggerRecord  groupRecord){
+	private GatewayTriggerRecord createGatewayRecord(SummaryTriggerRecord  summaryRecord){
 
 
 		GatewayTriggerRecord triggerRecord = new GatewayTriggerRecord();
 		triggerRecord.setRecordStatus(TriggerRecord.StatusType.enable);
-		triggerRecord.setPreparedCondition(groupRecord.getPreparedCondition());
-		triggerRecord.setPredicate(groupRecord.getPredicate());
-		triggerRecord.setTargetParamList(groupRecord.getTargetParamList());
+		triggerRecord.setPreparedCondition(summaryRecord.getPreparedCondition());
+		//
+		SimpleCondition condition = (SimpleCondition)( (AndLogic) ( ( (AndLogic) summaryRecord.getPredicate().getCondition() ).getClauses().get(0) ) ).getClauses().get(0);
+		//process "field": "EnvironmentSensor.Bri",
+		condition.setField(condition.getField().substring(condition.getField().indexOf(".")+1));
+		triggerRecord.setPredicate(summaryRecord.getPredicate());
+		triggerRecord.getPredicate().setCondition(condition);
 
-		triggerRecord.setUserID(groupRecord.getUserID());
-		triggerRecord.setDescription(groupRecord.getDescription());
+		triggerRecord.setTargetParamList(summaryRecord.getTargetParamList());
 
-		GlobalThingInfo sourceThing = globalThingDao.findByID(groupRecord.getSource().getThingList().get(0));
+		triggerRecord.setUserID(summaryRecord.getUserID());
+		triggerRecord.setDescription(summaryRecord.getDescription());
+
+		Collection<SummarySource> sourceCollection = summaryRecord.getSummarySource().values();
+		TagSelector selector = sourceCollection.iterator().next().getSource();
+
+		GlobalThingInfo sourceThing = globalThingDao.findByID(selector.getThingList().get(0));
 		triggerRecord.getSource().getVendorThingIdList().add(sourceThing.getVendorThingID());
 
 		//
@@ -205,7 +225,7 @@ public class TriggerManager {
 		Map<String, EndNodeOfGateway> allEndNodesOfGatewayMap = new HashMap<>();
 		allEndNodesOfGateway.forEach(endNodeOfGateway -> allEndNodesOfGatewayMap.put(endNodeOfGateway.getVendorThingID(), endNodeOfGateway));
 
-		List<ExecuteTarget> targets = groupRecord.getTargets();
+		List<ExecuteTarget> targets = summaryRecord.getTargets();
 
 //		targets:
 		for(ExecuteTarget target:targets)
@@ -243,9 +263,6 @@ public class TriggerManager {
 		return triggerRecord;
 
 	}
-
-
-
 
 	public Map<String, Object> getRuleEngingDump() {
 
