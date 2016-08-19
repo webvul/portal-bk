@@ -2,6 +2,7 @@ package com.kii.beehive.portal.manager;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,20 +43,30 @@ public class GatewayCallinManager {
 	public Long createEndNode(String vendorThingID, List<String> location, String gatewayID)
 			throws ObjectNotFoundException, UnauthorizedException {
 
+		GlobalThingInfo existTh =thingDao.getThingByVendorThingID(vendorThingID);
+		long id=existTh.getId();
+		if(existTh==null) {
 
-		GlobalThingInfo  thingInfo=new GlobalThingInfo();
-		thingInfo.setVendorThingID(vendorThingID);
+			GlobalThingInfo thingInfo = new GlobalThingInfo();
+			thingInfo.setVendorThingID(vendorThingID);
 
-		GlobalThingInfo gateway = thingDao.getThingByVendorThingID(gatewayID);
+			if(StringUtils.isBlank(gatewayID)){
 
-		thingInfo.setCreateBy(gateway.getCreateBy());
-		thingInfo.setKiiAppID("DEMO");
-		Long id=thingDao.insert(thingInfo);
+				throw new EntryNotFoundException("field","vendorGatewayID");
 
-		ThingUserRelation relation = new ThingUserRelation();
-		relation.setBeehiveUserID(Long.valueOf(thingInfo.getCreateBy()));
-		relation.setThingId(id);
-		thingUserRelationDao.saveOrUpdate(relation);
+			}
+
+			GlobalThingInfo gateway = thingDao.getThingByVendorThingID(gatewayID);
+
+			thingInfo.setCreateBy(gateway.getCreateBy());
+			thingInfo.setKiiAppID(gateway.getKiiAppID());
+			id = thingDao.insert(thingInfo);
+
+			ThingUserRelation relation = new ThingUserRelation();
+			relation.setBeehiveUserID(Long.valueOf(thingInfo.getCreateBy()));
+			relation.setThingId(id);
+			thingUserRelationDao.saveOrUpdate(relation);
+		}
 
 
 		if(!location.isEmpty()) {
@@ -71,6 +82,9 @@ public class GatewayCallinManager {
 
 		GlobalThingInfo existTh =thingDao.getThingByVendorThingID(thingInfo.getVendorThingID());
 
+		if(existTh==null){
+			throw new EntryNotFoundException(thingInfo.getVendorThingID(),"thing");
+		}
 
 		KiiAppInfo kiiAppInfo = appInfoDao.getAppInfoByID(thingInfo.getKiiAppID());
 

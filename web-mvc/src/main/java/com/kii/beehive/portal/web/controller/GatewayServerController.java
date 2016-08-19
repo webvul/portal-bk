@@ -35,7 +35,7 @@ public class GatewayServerController {
 
 
 		List<String> locList=input.getLocList();
-		if(locList.contains(input.getDefaultLoc())){
+		if(!locList.contains(input.getDefaultLoc())){
 			locList.add(input.getDefaultLoc());
 		}
 

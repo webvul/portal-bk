@@ -73,23 +73,20 @@ public class AddLocInput {
 		}
 
 
-		if (Strings.isBlank(gatewayVendorThingID)) {
-
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","vendorGatewayID");
-		}
-
 		Matcher matcher = validVendorThingIDPattern.matcher(vendorThingID);
 
 		if (!matcher.matches()) {
 			throw new PortalException(ErrorCode.INVALID_INPUT,"field","vendorThingID","data",vendorThingID);
 		}
 
-		 matcher = validVendorThingIDPattern.matcher(gatewayVendorThingID);
+		if (!Strings.isBlank(gatewayVendorThingID)){
 
-		if (!matcher.matches()) {
-			throw new PortalException(ErrorCode.INVALID_INPUT,"field","vendorGatewayID","data",gatewayVendorThingID);
+			matcher = validVendorThingIDPattern.matcher(gatewayVendorThingID);
+
+			if (!matcher.matches()) {
+				throw new PortalException(ErrorCode.INVALID_INPUT, "field", "vendorGatewayID", "data", gatewayVendorThingID);
+			}
 		}
-
 		if(!locList.stream().allMatch(l->locationPattern.matcher(l).matches())){
 
 			throw new PortalException(ErrorCode.INVALID_INPUT,"field","locactionList","data",locList.toString());
