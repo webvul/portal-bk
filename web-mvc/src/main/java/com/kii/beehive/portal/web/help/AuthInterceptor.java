@@ -1,6 +1,22 @@
 package com.kii.beehive.portal.web.help;
 
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import java.io.IOException;
+import java.util.Enumeration;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+
 import com.kii.beehive.business.helper.OpLogTools;
 import com.kii.beehive.business.manager.AppInfoManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
@@ -14,20 +30,6 @@ import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
 import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.exception.ObjectNotFoundException;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.Enumeration;
-import java.util.LinkedList;
-import java.util.List;
 
 @Component
 public class AuthInterceptor extends HandlerInterceptorAdapter {
@@ -100,6 +102,15 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 				|| subUrl.startsWith("/onboardinghelper")
 				|| subUrl.contains("/debug/")) {
 
+			list.set(1, subUrl);
+			logTool.write(list);
+
+			return super.preHandle(request, response, handler);
+
+		}
+
+
+		if(subUrl.startsWith("/gatewayServer")){
 			list.set(1, subUrl);
 			logTool.write(list);
 

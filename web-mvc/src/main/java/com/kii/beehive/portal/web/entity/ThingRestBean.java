@@ -145,9 +145,9 @@ public class ThingRestBean  {
 			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "field", "schemaVersion");
 
 		}
-		if (Strings.isBlank(getGatewayVendorThingID())) {
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "field", "gatewayVendorThingID");
-		}
+//		if (Strings.isBlank(getGatewayVendorThingID())) {
+//			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "field", "gatewayVendorThingID");
+//		}
 	}
 
 	private void verifyVendorThingID() {

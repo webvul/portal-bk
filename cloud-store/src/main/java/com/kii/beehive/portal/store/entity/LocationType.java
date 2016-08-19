@@ -10,7 +10,7 @@ public enum LocationType {
 	building("^(\\d{2})"),
 	floor("^(\\d{2}\\d{2})"),
 	partition("^(\\d{4}\\w)"),
-	area("^(\\d{4}\\w-[A-Z])$"),
+	area("^(\\d{4}\\w-[A-Z])"),
 	site("^(\\d{4}\\w-[A-Z][\\d]{2})$");
 
 

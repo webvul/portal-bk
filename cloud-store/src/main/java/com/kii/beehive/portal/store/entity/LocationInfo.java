@@ -84,23 +84,16 @@ public class LocationInfo extends KiiEntity {
 	public  enum AreaType{
 
 
-		Station('A'),Corridor('C'),MeetingRoom('M'),RestRoom('R'),ServiceRoom('S');
+		Station,MeetingRoom,Corridor,RestRoom,Entrance;
 
-		private char tag;
-
-		AreaType(char ch){
-			this.tag=ch;
-		}
 
 		public static AreaType getInstance(String area){
 			char ch=area.charAt(0);
 
-			switch(ch){
-				case 'C':return Corridor;
-				case 'M':return MeetingRoom;
-				case 'R':return RestRoom;
-				case 'S':return ServiceRoom;
-				default:return Station;
+			if(  ch < 'U'){
+				return Station;
+			}else{
+				return  AreaType.values()[(ch-'W')+1];
 			}
 		}
 

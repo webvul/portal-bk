@@ -180,8 +180,9 @@ public abstract class SpringBaseDao<T extends BusinessEntity> {
 
 	public <T extends BusinessEntity> long insert(T entity) {
 
-		if (entity.getCreateBy() == null)
+		if (entity.getCreateBy() == null) {
 			entity.setCreateBy(AuthInfoStore.getUserIDStr());
+		}
 		entity.setCreateDate(new Date());
 		entity.setModifyBy(AuthInfoStore.getUserIDStr());
 		entity.setModifyDate(new Date());
