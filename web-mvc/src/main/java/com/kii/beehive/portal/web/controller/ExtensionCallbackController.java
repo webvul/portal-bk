@@ -1,5 +1,14 @@
 package com.kii.beehive.portal.web.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 import com.kii.beehive.business.event.BusinessEventBus;
 import com.kii.beehive.business.manager.ThingTagManager;
 import com.kii.beehive.business.ruleengine.ThingStatusChangeCallback;
@@ -8,11 +17,6 @@ import com.kii.beehive.portal.web.constant.CallbackNames;
 import com.kii.beehive.portal.web.entity.CreatedThing;
 import com.kii.beehive.portal.web.entity.StateUpload;
 import com.kii.beehive.portal.web.help.InternalEventListenerRegistry;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
 
 @RestController(value = "extensionCallbackController")
 @RequestMapping(value = CallbackNames.CALLBACK_URL, consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {
@@ -44,6 +48,8 @@ public class ExtensionCallbackController {
 		String fullThingID = ThingIDTools.joinFullKiiThingID(appID, status.getThingID());
 
 		statusChangeCallback.onEventFire(status.getState(), fullThingID, status.getTimestamp());
+
+		statusChangeCallback.pushStatusUpload(appID, status.getThingID(), status.getState(), status.getTimestamp());
 
 		eventBus.onStatusUploadFire(fullThingID, status.getState(), status.getTimestamp());
 
