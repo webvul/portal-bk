@@ -213,7 +213,15 @@ public class TagThingManager {
 	}
 
 	public void removeThing(GlobalThingInfo thing) throws ObjectNotFoundException {
-		globalThingDao.deleteByID(thing.getId());
+		this.removeThing(thing, false);
+	}
+
+	public void removeThing(GlobalThingInfo thing, boolean hardRemove) throws ObjectNotFoundException {
+		if(hardRemove) {
+			globalThingDao.hardDeleteByID(thing.getId());
+		} else {
+			globalThingDao.deleteByID(thing.getId());
+		}
 
 		// remove thing from Kii Cloud
 		this.removeThingFromKiiCloud(thing);
@@ -238,7 +246,9 @@ public class TagThingManager {
 		try {
 			thingIFInAppService.removeThing(fullKiiThingID);
 		} catch (com.kii.extension.sdk.exception.ObjectNotFoundException e) {
-			throw EntryNotFoundException.thingNotFound(fullKiiThingID);
+			// it's normal case that thing existing in beehive DB but not in kii cloud before thing onboarding
+			// so no exception should be thrown in the case of ObjectNotFoundException
+			log.info("not found in Kii Cloud, full kii thing id: " + fullKiiThingID, e);
 		}
 	}
 

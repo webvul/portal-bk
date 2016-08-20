@@ -253,7 +253,7 @@ public class ThingController extends AbstractThingTagController {
 	}
 
 	/**
-	 * 移除设备
+	 * 移除设备(逻辑删除)
 	 * DELETE /things/{globalThingID}
 	 * <p>
 	 * refer to doc "Beehive API - Thing API" for request/response details
@@ -263,6 +263,20 @@ public class ThingController extends AbstractThingTagController {
 	@RequestMapping(value = "/{globalThingID}", method = {RequestMethod.DELETE}, consumes = {"*"})
 	public void removeThing(@PathVariable("globalThingID") Long globalThingID) {
 		thingTagManager.removeThing(getCreatedThings(globalThingID.toString()).get(0));
+
+	}
+
+	/**
+	 * 移除设备
+	 * DELETE /things/{globalThingID}/hard
+	 * <p>
+	 * refer to doc "Beehive API - Thing API" for request/response details
+	 *
+	 * @param globalThingID
+	 */
+	@RequestMapping(value = "/{globalThingID}/hard", method = {RequestMethod.DELETE}, consumes = {"*"})
+	public void hardRemoveThing(@PathVariable("globalThingID") Long globalThingID) {
+		thingTagManager.removeThing(getCreatedThings(globalThingID.toString()).get(0), true);
 
 	}
 

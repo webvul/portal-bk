@@ -4,6 +4,7 @@ import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertTrue;
 import static junit.framework.TestCase.fail;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Mockito.anyCollectionOf;
@@ -50,6 +51,7 @@ import com.kii.beehive.business.manager.TagThingManager;
 import com.kii.beehive.business.service.ThingIFCommandService;
 import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.dao.TagThingRelationDao;
@@ -756,8 +758,8 @@ public class TestThingController extends WebTestTemplate {
 		try {
 			thingController.removeThing(100L);
 			fail("Expect an PortalException");
-		} catch (PortalException e) {
-			assertEquals(HttpStatus.UNAUTHORIZED, e.getStatus());
+		} catch (EntryNotFoundException e) {
+			assertEquals(org.apache.http.HttpStatus.SC_NOT_FOUND, e.getStatusCode());
 		}
 
 		doReturn(Arrays.asList(100L)).when(thingTagManager).getCreatedThingIds(anyLong(), anyListOf(Long.class));
@@ -919,6 +921,43 @@ public class TestThingController extends WebTestTemplate {
 		}
 
 		return globalThingIDs;
+	}
+
+	@Test
+	public void testHardRemoveThing() throws Exception {
+
+		// test logical delete
+		GlobalThingInfo thingInfo1 = new GlobalThingInfo();
+		thingInfo1.setVendorThingID("0807W-F00-03-001");
+		thingInfo1.setKiiAppID(KII_APP_ID);
+
+		long globalThingID1 = globalThingDao.insert(thingInfo1);
+
+		thingController.removeThing(globalThingID1);
+
+		// assert
+		// the thing info is still existing in global_thing but with is_delete = 1
+		GlobalThingInfo thingInfoTemp = globalThingDao.findByID(globalThingID1);
+		assertNotNull(thingInfoTemp);
+		assertTrue(thingInfoTemp.getDeleted());
+
+
+		// test hard delete
+		GlobalThingInfo thingInfo2 = new GlobalThingInfo();
+		thingInfo2.setVendorThingID("0807W-F00-03-002");
+		thingInfo2.setKiiAppID(KII_APP_ID);
+
+		long globalThingID2 = globalThingDao.insert(thingInfo2);
+
+		thingController.hardRemoveThing(globalThingID2);
+
+		// assert
+		// the thing info is not existing in global_thing
+		thingInfoTemp = globalThingDao.findByID(globalThingID2);
+		assertNull(thingInfoTemp);
+
+
+
 	}
 
 }
