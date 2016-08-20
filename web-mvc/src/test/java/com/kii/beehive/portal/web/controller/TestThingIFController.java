@@ -2,7 +2,6 @@ package com.kii.beehive.portal.web.controller;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
-import static junit.framework.TestCase.assertNull;
 import static junit.framework.TestCase.assertTrue;
 import static junit.framework.TestCase.fail;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -52,7 +51,7 @@ public class TestThingIFController extends WebTestTemplate {
 	@Autowired
 	private ObjectMapper mapper;
 
-	private String[] vendorThingIDsForTest = new String[]{"someVendorThingID1", "someVendorThingID2", "someVendorThingID3", "someVendorThingID4", "someVendorThingID5"};
+	private String[] vendorThingIDsForTest = new String[]{"0807W-F00-03-001", "0807W-F00-03-002", "0807W-F00-03-003", "0807W-F00-03-004", "0807W-F00-03-005"};
 
 	private String[] thingTypesForTest = new String[]{"type1", "type1", "type2", "type2", "type2"};
 
@@ -174,7 +173,6 @@ public class TestThingIFController extends WebTestTemplate {
 		request.put("vendorThingID", vendorThingID);
 		request.put("kiiAppID", kiiAppID);
 		request.put("type", thingType);
-		request.put("location", "some location");
 
 		String ctx = mapper.writeValueAsString(request);
 
@@ -213,7 +211,7 @@ public class TestThingIFController extends WebTestTemplate {
 				.andReturn().getResponse().getContentAsString();
 
 		GlobalThingInfo thingInfo = globalThingDao.findByID(globalThingID);
-		assertNull(thingInfo);
+		assertTrue(thingInfo.getDeleted());
 
 	}
 
@@ -423,11 +421,11 @@ public class TestThingIFController extends WebTestTemplate {
 	 * below scenario will be tested:
 	 * <p>
 	 * 1. try to send one command to below things, and specify the target thing type "type1" in the command
-	 * - vendor thing id "someVendorThingID1", thing type "type1"
-	 * - vendor thing id "someVendorThingID2", thing type "type1"
-	 * - vendor thing id "someVendorThingID3", thing type "type2"
-	 * - vendor thing id "someVendorThingID4", thing type "type2"
-	 * - vendor thing id "someVendorThingID5", thing type "type2"
+	 * - vendor thing id "0807W-F00-03-001", thing type "type1"
+	 * - vendor thing id "0807W-F00-03-002", thing type "type1"
+	 * - vendor thing id "0807W-F00-03-003", thing type "type2"
+	 * - vendor thing id "0807W-F00-03-004", thing type "type2"
+	 * - vendor thing id "0807W-F00-03-005", thing type "type2"
 	 * <p>
 	 * 2. actually the command will be send to all things, as thing type in the command will only work while specifying tagList rather than thingList
 	 *
@@ -437,11 +435,11 @@ public class TestThingIFController extends WebTestTemplate {
 	public void testSendCommandToThingList() throws Exception {
 
 		// 1. try to send one command to below things in one cluster, and specify the target thing type "type1" in the command
-		//  - vendor thing id "someVendorThingID1", thing type "type1"
-		//  - vendor thing id "someVendorThingID2", thing type "type1"
-		//  - vendor thing id "someVendorThingID3", thing type "type2"
-		//  - vendor thing id "someVendorThingID4", thing type "type2"
-		//  - vendor thing id "someVendorThingID5", thing type "type2"
+		//  - vendor thing id "0807W-F00-03-001", thing type "type1"
+		//  - vendor thing id "0807W-F00-03-002", thing type "type1"
+		//  - vendor thing id "0807W-F00-03-003", thing type "type2"
+		//  - vendor thing id "0807W-F00-03-004", thing type "type2"
+		//  - vendor thing id "0807W-F00-03-005", thing type "type2"
 		List<HashMap<String, Object>> requestList = new ArrayList<>();
 		HashMap<String, Object> command = new HashMap<>();
 
@@ -488,15 +486,15 @@ public class TestThingIFController extends WebTestTemplate {
 	 * <p>
 	 * 1. try to send one command to below tags with andExpress true, and specify the target thing type "type2"
 	 * - tag "A"
-	 * - vendor thing id "someVendorThingID1", thing type "type1"
-	 * - vendor thing id "someVendorThingID2", thing type "type1"
-	 * - vendor thing id "someVendorThingID3", thing type "type2"
+	 * - vendor thing id "0807W-F00-03-001", thing type "type1"
+	 * - vendor thing id "0807W-F00-03-002", thing type "type1"
+	 * - vendor thing id "0807W-F00-03-003", thing type "type2"
 	 * - tag "B"
-	 * - vendor thing id "someVendorThingID3", thing type "type2"
-	 * - vendor thing id "someVendorThingID4", thing type "type2"
-	 * - vendor thing id "someVendorThingID5", thing type "type2"
+	 * - vendor thing id "0807W-F00-03-003", thing type "type2"
+	 * - vendor thing id "0807W-F00-03-004", thing type "type2"
+	 * - vendor thing id "0807W-F00-03-005", thing type "type2"
 	 * <p>
-	 * 2. actually the command will only be send to "someVendorThingID3" which is in both tag "A" and "B", and in thing type "type2"
+	 * 2. actually the command will only be send to "0807W-F00-03-003" which is in both tag "A" and "B", and in thing type "type2"
 	 *
 	 * @throws Exception
 	 */
@@ -505,13 +503,13 @@ public class TestThingIFController extends WebTestTemplate {
 
 		// 1. try to send one command to below tags with andExpress true, and specify the target thing type "type2"
 		//  - tag "A"
-		//      - vendor thing id "someVendorThingID1", thing type "type1"
-		//      - vendor thing id "someVendorThingID2", thing type "type1"
-		//      - vendor thing id "someVendorThingID3", thing type "type2"
+		//      - vendor thing id "0807W-F00-03-001", thing type "type1"
+		//      - vendor thing id "0807W-F00-03-002", thing type "type1"
+		//      - vendor thing id "0807W-F00-03-003", thing type "type2"
 		//  - tag "B"
-		//      - vendor thing id "someVendorThingID3", thing type "type2"
-		//      - vendor thing id "someVendorThingID4", thing type "type2"
-		//      - vendor thing id "someVendorThingID5", thing type "type2"
+		//      - vendor thing id "0807W-F00-03-003", thing type "type2"
+		//      - vendor thing id "0807W-F00-03-004", thing type "type2"
+		//      - vendor thing id "0807W-F00-03-005", thing type "type2"
 
 		// bind things to tags
 		this.bindThingsToTag(globalThingIDListForTests.subList(0, 3), displayNames[0]);
@@ -544,7 +542,7 @@ public class TestThingIFController extends WebTestTemplate {
 		System.out.println("Response: " + result);
 		System.out.println("========================================================");
 
-		// 2. actually the command will only be send to "someVendorThingID3" which is in both tag "A" and "B", and in thing type "type2"
+		// 2. actually the command will only be send to "0807W-F00-03-003" which is in both tag "A" and "B", and in thing type "type2"
 		assertTrue(list.size() == 1);
 
 		// one thing in both tag "A" and "B", and in thing type "type2"
@@ -564,15 +562,15 @@ public class TestThingIFController extends WebTestTemplate {
 	 * <p>
 	 * 1. try to send one command to below tags with andExpress false, and specify the target thing type "type2"
 	 * - tag "A"
-	 * - vendor thing id "someVendorThingID1", thing type "type1"
-	 * - vendor thing id "someVendorThingID2", thing type "type1"
-	 * - vendor thing id "someVendorThingID3", thing type "type2"
+	 * - vendor thing id "0807W-F00-03-001", thing type "type1"
+	 * - vendor thing id "0807W-F00-03-002", thing type "type1"
+	 * - vendor thing id "0807W-F00-03-003", thing type "type2"
 	 * - tag "B"
-	 * - vendor thing id "someVendorThingID3", thing type "type2"
-	 * - vendor thing id "someVendorThingID4", thing type "type2"
-	 * - vendor thing id "someVendorThingID5", thing type "type2"
+	 * - vendor thing id "0807W-F00-03-003", thing type "type2"
+	 * - vendor thing id "0807W-F00-03-004", thing type "type2"
+	 * - vendor thing id "0807W-F00-03-005", thing type "type2"
 	 * <p>
-	 * 2. actually the command will only be send to "someVendorThingID3", "someVendorThingID4" and "someVendorThingID5" which meet both of below conditions:
+	 * 2. actually the command will only be send to "0807W-F00-03-003", "0807W-F00-03-004" and "0807W-F00-03-005" which meet both of below conditions:
 	 * - in tag "A" or "B"
 	 * - in thing type "type2"
 	 *
@@ -583,13 +581,13 @@ public class TestThingIFController extends WebTestTemplate {
 
 		// 1. try to send one command to below tags with andExpress false, and specify the target thing type "type2"
 		//  - tag "A"
-		//      - vendor thing id "someVendorThingID1", thing type "type1"
-		//      - vendor thing id "someVendorThingID2", thing type "type1"
-		//      - vendor thing id "someVendorThingID3", thing type "type2"
+		//      - vendor thing id "0807W-F00-03-001", thing type "type1"
+		//      - vendor thing id "0807W-F00-03-002", thing type "type1"
+		//      - vendor thing id "0807W-F00-03-003", thing type "type2"
 		//  - tag "B"
-		//      - vendor thing id "someVendorThingID3", thing type "type2"
-		//      - vendor thing id "someVendorThingID4", thing type "type2"
-		//      - vendor thing id "someVendorThingID5", thing type "type2"
+		//      - vendor thing id "0807W-F00-03-003", thing type "type2"
+		//      - vendor thing id "0807W-F00-03-004", thing type "type2"
+		//      - vendor thing id "0807W-F00-03-005", thing type "type2"
 
 		// bind things to tags
 		this.bindThingsToTag(globalThingIDListForTests.subList(0, 3), displayNames[0]);
@@ -622,7 +620,7 @@ public class TestThingIFController extends WebTestTemplate {
 		System.out.println("Response: " + result);
 		System.out.println("========================================================");
 
-		// 2. actually the command will only be send to "someVendorThingID3", "someVendorThingID4" and "someVendorThingID5" which meet both of below conditions:
+		// 2. actually the command will only be send to "0807W-F00-03-003", "0807W-F00-03-004" and "0807W-F00-03-005" which meet both of below conditions:
 		//  - in tag "A" or "B"
 		//  - in thing type "type2"
 		assertTrue(list.size() == 1);
@@ -646,21 +644,21 @@ public class TestThingIFController extends WebTestTemplate {
 	 * <p>
 	 * 1. construct below relations between tags and things
 	 * - tag "A"
-	 * - vendor thing id "someVendorThingID1", thing type "type1"
-	 * - vendor thing id "someVendorThingID2", thing type "type1"
-	 * - vendor thing id "someVendorThingID3", thing type "type2"
+	 * - vendor thing id "0807W-F00-03-001", thing type "type1"
+	 * - vendor thing id "0807W-F00-03-002", thing type "type1"
+	 * - vendor thing id "0807W-F00-03-003", thing type "type2"
 	 * - tag "B"
-	 * - vendor thing id "someVendorThingID3", thing type "type2"
-	 * - vendor thing id "someVendorThingID4", thing type "type2"
-	 * - vendor thing id "someVendorThingID5", thing type "type2"
+	 * - vendor thing id "0807W-F00-03-003", thing type "type2"
+	 * - vendor thing id "0807W-F00-03-004", thing type "type2"
+	 * - vendor thing id "0807W-F00-03-005", thing type "type2"
 	 * <p>
 	 * 2. send below two commands:
 	 * command a. target: existing in both tag "A" and "B", thing type: "type2"
-	 * command b. target: "someVendorThingID1" and "someVendorThingID5"
+	 * command b. target: "0807W-F00-03-001" and "0807W-F00-03-005"
 	 * <p>
 	 * 3. actually the commands will be send to below things:
-	 * command a. "someVendorThingID3"
-	 * command b. "someVendorThingID1" and "someVendorThingID5"
+	 * command a. "0807W-F00-03-003"
+	 * command b. "0807W-F00-03-001" and "0807W-F00-03-005"
 	 *
 	 * @throws Exception
 	 */
@@ -669,13 +667,13 @@ public class TestThingIFController extends WebTestTemplate {
 
 		// 1. construct below relations between tags and things
 		//  - tag "A"
-		//      - vendor thing id "someVendorThingID1", thing type "type1"
-		//      - vendor thing id "someVendorThingID2", thing type "type1"
-		//      - vendor thing id "someVendorThingID3", thing type "type2"
+		//      - vendor thing id "0807W-F00-03-001", thing type "type1"
+		//      - vendor thing id "0807W-F00-03-002", thing type "type1"
+		//      - vendor thing id "0807W-F00-03-003", thing type "type2"
 		//  - tag "B"
-		//      - vendor thing id "someVendorThingID3", thing type "type2"
-		//      - vendor thing id "someVendorThingID4", thing type "type2"
-		//      - vendor thing id "someVendorThingID5", thing type "type2"
+		//      - vendor thing id "0807W-F00-03-003", thing type "type2"
+		//      - vendor thing id "0807W-F00-03-004", thing type "type2"
+		//      - vendor thing id "0807W-F00-03-005", thing type "type2"
 
 		// bind things to tags
 		this.bindThingsToTag(globalThingIDListForTests.subList(0, 3), displayNames[0]);
@@ -683,7 +681,7 @@ public class TestThingIFController extends WebTestTemplate {
 
 		// 2. send below two commands:
 		//      command a. target: existing in both tag "A" and "B", thing type: "type2"
-		//      command b. target: "someVendorThingID1" and "someVendorThingID5, thing type: "type1"
+		//      command b. target: "0807W-F00-03-001" and "someVendorThingID5, thing type: "type1"
 		List<HashMap<String, Object>> requestList = new ArrayList<>();
 
 		HashMap<String, Object> commandA = new HashMap<>();
@@ -726,8 +724,8 @@ public class TestThingIFController extends WebTestTemplate {
 		System.out.println("========================================================");
 
 		// 3. actually the commands will only be send to below things:
-		//      command a. "someVendorThingID3"
-		//      command b. "someVendorThingID1" and "someVendorThingID5"
+		//      command a. "0807W-F00-03-003"
+		//      command b. "0807W-F00-03-001" and "0807W-F00-03-005"
 		assertTrue(list.size() == 2);
 
 		// one thing meet the condition for command a
@@ -756,12 +754,12 @@ public class TestThingIFController extends WebTestTemplate {
 	 * below scenario will be tested:
 	 * <p>
 	 * 1. try to create below things
-	 * - vendor thing id "someVendorThingIDX", thing type "type1", do onboaridng
-	 * - vendor thing id "someVendorThingIDY", thing type "type1", don't do onboarding
+	 * - vendor thing id "0807W-F00-03-999", thing type "type1", do onboaridng
+	 * - vendor thing id "0807W-F00-03-998", thing type "type1", don't do onboarding
 	 * <p>
 	 * 2. try to send command to above things
 	 * <p>
-	 * 3. actually the command will be send to "someVendorThingIDX" only, as "someVendorThingIDY" is not boarded yet so got skipped
+	 * 3. actually the command will be send to "0807W-F00-03-999" only, as "0807W-F00-03-998" is not boarded yet so got skipped
 	 *
 	 * @throws Exception
 	 */
@@ -769,24 +767,24 @@ public class TestThingIFController extends WebTestTemplate {
 	public void testSendCommandToThingWithoutOnboarding() throws Exception {
 
 		// 1. try to create below things
-		//  - vendor thing id "someVendorThingIDX", thing type "type1", do onboaridng
-		//  - vendor thing id "someVendorThingIDY", thing type "type1", don't do onboarding
+		//  - vendor thing id "0807W-F00-03-999", thing type "type1", do onboaridng
+		//  - vendor thing id "0807W-F00-03-998", thing type "type1", don't do onboarding
 
 		// for the clear after test case completed
-		this.vendorThingIDsForTest = this.combineArray(this.vendorThingIDsForTest, "someVendorThingIDX", "someVendorThingIDY");
+		this.vendorThingIDsForTest = this.combineArray(this.vendorThingIDsForTest, "0807W-F00-03-999", "0807W-F00-03-998");
 		this.thingTypesForTest = this.combineArray(this.thingTypesForTest, "type1", "type2");
 		this.kiiAppIDForTest = this.combineArray(this.kiiAppIDForTest, kiiAppIDForTest[0], kiiAppIDForTest[1]);
 
-		// create "someVendorThingIDX"
-		Long globalThingIDX = this.createThing("someVendorThingIDX", "type1", kiiAppIDForTest[0]);
+		// create "0807W-F00-03-999"
+		Long globalThingIDX = this.createThing("0807W-F00-03-999", "type1", kiiAppIDForTest[0]);
 		this.globalThingIDListForTests.add(globalThingIDX);
 
-		Map<String, Object> onboardingInfo = this.getOnboardingInfo("someVendorThingIDX");
-		this.onboarding("someVendorThingIDX", onboardingInfo);
+		Map<String, Object> onboardingInfo = this.getOnboardingInfo("0807W-F00-03-999");
+		this.onboarding("0807W-F00-03-999", onboardingInfo);
 		System.out.println("thing with global thing id : someVendorThingIDX is onboarded");
 
-		// create "someVendorThingIDY"
-		Long globalThingIDY = this.createThing("someVendorThingIDY", "type1", kiiAppIDForTest[0]);
+		// create "0807W-F00-03-998"
+		Long globalThingIDY = this.createThing("0807W-F00-03-998", "type1", kiiAppIDForTest[0]);
 		this.globalThingIDListForTests.add(globalThingIDY);
 
 		// 2. try to send command to above things
@@ -815,7 +813,7 @@ public class TestThingIFController extends WebTestTemplate {
 		System.out.println("Response: " + result);
 		System.out.println("========================================================");
 
-		// 3. actually the command will be send to "someVendorThingIDX" only, as "someVendorThingIDY" is not boarded yet so got skipped
+		// 3. actually the command will be send to "0807W-F00-03-999" only, as "0807W-F00-03-998" is not boarded yet so got skipped
 		assertTrue(list.size() == 1);
 
 		// two things in type "type1"
@@ -888,17 +886,17 @@ public class TestThingIFController extends WebTestTemplate {
 	/**
 	 * below scenario will be tested:
 	 *
-	 * 1. send command1 to vendor thing id "someVendorThingID1"
+	 * 1. send command1 to vendor thing id "0807W-F00-03-001"
 	 * 2. sleep 10 seconds (mark the 5th second as timestampA)
-	 * 3. send command2 to vendor thing id "someVendorThingID2"
-	 * 4. send command3 to vendor thing id "someVendorThingID1"
+	 * 3. send command2 to vendor thing id "0807W-F00-03-002"
+	 * 4. send command3 to vendor thing id "0807W-F00-03-001"
 	 * 5. sleep 10 seconds (mark the 5th second as timestampB)
-	 * 6. send command4 to vendor thing id "someVendorThingID1"
-	 * 7. when query the commands sent to vendor thing id "someVendorThingID1" before timestampB, command1 and
+	 * 6. send command4 to vendor thing id "0807W-F00-03-001"
+	 * 7. when query the commands sent to vendor thing id "0807W-F00-03-001" before timestampB, command1 and
 	 * command3 will be returned
-	 * 8. when query the commands sent to vendor thing id "someVendorThingID1" before timestampB and after
+	 * 8. when query the commands sent to vendor thing id "0807W-F00-03-001" before timestampB and after
 	 * timestampA, command3 will be returned
-	 * 9. when query the commands sent to vendor thing id "someVendorThingID1" after timestampA, command3 and command4
+	 * 9. when query the commands sent to vendor thing id "0807W-F00-03-001" after timestampA, command3 and command4
 	 * will be returned
 	 *
 	 */
@@ -910,9 +908,9 @@ public class TestThingIFController extends WebTestTemplate {
 		String comandStr = mapper.writeValueAsString(command);
 		ThingCommand thingCommand = mapper.readValue(comandStr, ThingCommand.class);
 
-		// get full kii thing ids of "someVendorThingID1" and "someVendorThingID2"
-		GlobalThingInfo thing1 = globalThingDao.getThingByVendorThingID("someVendorThingID1");
-		GlobalThingInfo thing2 = globalThingDao.getThingByVendorThingID("someVendorThingID2");
+		// get full kii thing ids of "0807W-F00-03-001" and "0807W-F00-03-002"
+		GlobalThingInfo thing1 = globalThingDao.getThingByVendorThingID("0807W-F00-03-001");
+		GlobalThingInfo thing2 = globalThingDao.getThingByVendorThingID("0807W-F00-03-002");
 		long globalThingID1 = thing1.getId();
 		long globalThingID2 = thing2.getId();
 		String fullKiiThingID1 = thing1.getFullKiiThingID();
@@ -920,7 +918,7 @@ public class TestThingIFController extends WebTestTemplate {
 		String userID1 = appInfoManager.getDefaultOwer(thing1.getKiiAppID()).getUserID();
 		String userID2 = appInfoManager.getDefaultOwer(thing2.getKiiAppID()).getUserID();
 
-		// 1. send command1 to vendor thing id "someVendorThingID1";
+		// 1. send command1 to vendor thing id "0807W-F00-03-001";
 		thingCommand.setUserID(userID1);
 		String command1 = thingIFInAppService.sendCommand(thingCommand, fullKiiThingID1);
 
@@ -929,11 +927,11 @@ public class TestThingIFController extends WebTestTemplate {
 		long timestampA = System.currentTimeMillis();
 		Thread.sleep(5000);
 
-		// 3. send command2 to vendor thing id "someVendorThingID2"
+		// 3. send command2 to vendor thing id "0807W-F00-03-002"
 		thingCommand.setUserID(userID2);
 		String command2 = thingIFInAppService.sendCommand(thingCommand, fullKiiThingID2);
 
-		// 4. send command3 to vendor thing id "someVendorThingID1"
+		// 4. send command3 to vendor thing id "0807W-F00-03-001"
 		thingCommand.setUserID(userID1);
 		String command3 = thingIFInAppService.sendCommand(thingCommand, fullKiiThingID1);
 
@@ -942,11 +940,11 @@ public class TestThingIFController extends WebTestTemplate {
 		long timestampB = System.currentTimeMillis();
 		Thread.sleep(5000);
 
-		// 6. send command4 to vendor thing id "someVendorThingID1"
+		// 6. send command4 to vendor thing id "0807W-F00-03-001"
 		thingCommand.setUserID(userID1);
 		String command4 = thingIFInAppService.sendCommand(thingCommand, fullKiiThingID1);
 
-		// 7. when query the commands sent to vendor thing id "someVendorThingID1" before timestampB, command1 and
+		// 7. when query the commands sent to vendor thing id "0807W-F00-03-001" before timestampB, command1 and
 		// command3 will be returned
 		Map<String, Object> request = new HashMap<>();
 		request.put("globalThingID", globalThingID1);
@@ -982,7 +980,7 @@ public class TestThingIFController extends WebTestTemplate {
 		}
 
 
-		// 8. when query the commands sent to vendor thing id "someVendorThingID1" before timestampB and after
+		// 8. when query the commands sent to vendor thing id "0807W-F00-03-001" before timestampB and after
 		// timestampA, command3 will be returned
 		request = new HashMap<>();
 		request.put("globalThingID", globalThingID1);
@@ -1015,7 +1013,7 @@ public class TestThingIFController extends WebTestTemplate {
 		assertEquals(CommandStateType.SENDING.name(), commandDetailMap.get("commandState"));
 
 
-		// 9. when query the commands sent to vendor thing id "someVendorThingID1" after timestampA, command3 and
+		// 9. when query the commands sent to vendor thing id "0807W-F00-03-001" after timestampA, command3 and
 		// command4 will be returned
 		request = new HashMap<>();
 		request.put("globalThingID", globalThingID1);
@@ -1058,11 +1056,11 @@ public class TestThingIFController extends WebTestTemplate {
 	 * below scenario will be tested:
 	 * <p>
 	 * 1. try to send one command to below things, and specify the target thing type "type1" in the command
-	 * - vendor thing id "someVendorThingID1", thing type "type1"
-	 * - vendor thing id "someVendorThingID2", thing type "type1"
-	 * - vendor thing id "someVendorThingID3", thing type "type2"
-	 * - vendor thing id "someVendorThingID4", thing type "type2"
-	 * - vendor thing id "someVendorThingID5", thing type "type2"
+	 * - vendor thing id "0807W-F00-03-001", thing type "type1"
+	 * - vendor thing id "0807W-F00-03-002", thing type "type1"
+	 * - vendor thing id "0807W-F00-03-003", thing type "type2"
+	 * - vendor thing id "0807W-F00-03-004", thing type "type2"
+	 * - vendor thing id "0807W-F00-03-005", thing type "type2"
 	 * <p>
 	 * 2. actually the command will be send to all things, as thing type in the command will only work while specifying tagList rather than thingList
 	 *
@@ -1072,11 +1070,11 @@ public class TestThingIFController extends WebTestTemplate {
 	public void testSendSingleCommandToThingList() throws Exception {
 
 		// 1. try to send one command to below things, and specify the target thing type "type1" in the command
-		//  - vendor thing id "someVendorThingID1", thing type "type1"
-		//  - vendor thing id "someVendorThingID2", thing type "type1"
-		//  - vendor thing id "someVendorThingID3", thing type "type2"
-		//  - vendor thing id "someVendorThingID4", thing type "type2"
-		//  - vendor thing id "someVendorThingID5", thing type "type2"
+		//  - vendor thing id "0807W-F00-03-001", thing type "type1"
+		//  - vendor thing id "0807W-F00-03-002", thing type "type1"
+		//  - vendor thing id "0807W-F00-03-003", thing type "type2"
+		//  - vendor thing id "0807W-F00-03-004", thing type "type2"
+		//  - vendor thing id "0807W-F00-03-005", thing type "type2"
 		HashMap<String, Object> command = new HashMap<>();
 
 		command.put("thingList", globalThingIDListForTests);
@@ -1118,19 +1116,19 @@ public class TestThingIFController extends WebTestTemplate {
 	 * <p>
 	 * 1. construct below relations between tags and things
 	 * - tag "A"
-	 * - vendor thing id "someVendorThingID1", thing type "type1"
-	 * - vendor thing id "someVendorThingID2", thing type "type1"
-	 * - vendor thing id "someVendorThingID3", thing type "type2"
+	 * - vendor thing id "0807W-F00-03-001", thing type "type1"
+	 * - vendor thing id "0807W-F00-03-002", thing type "type1"
+	 * - vendor thing id "0807W-F00-03-003", thing type "type2"
 	 * - tag "B"
-	 * - vendor thing id "someVendorThingID3", thing type "type2"
-	 * - vendor thing id "someVendorThingID4", thing type "type2"
-	 * - vendor thing id "someVendorThingID5", thing type "type2"
+	 * - vendor thing id "0807W-F00-03-003", thing type "type2"
+	 * - vendor thing id "0807W-F00-03-004", thing type "type2"
+	 * - vendor thing id "0807W-F00-03-005", thing type "type2"
 	 * <p>
 	 * 2. send below command:
 	 * - target: existing in both tag "A" and "B", thing type: "type2"
 	 * <p>
 	 * 3. actually the commands will be send to below things:
-	 * - "someVendorThingID3"
+	 * - "0807W-F00-03-003"
 	 *
 	 * @throws Exception
 	 */
@@ -1139,13 +1137,13 @@ public class TestThingIFController extends WebTestTemplate {
 
 		// 1. construct below relations between tags and things
 		//  - tag "A"
-		//      - vendor thing id "someVendorThingID1", thing type "type1"
-		//      - vendor thing id "someVendorThingID2", thing type "type1"
-		//      - vendor thing id "someVendorThingID3", thing type "type2"
+		//      - vendor thing id "0807W-F00-03-001", thing type "type1"
+		//      - vendor thing id "0807W-F00-03-002", thing type "type1"
+		//      - vendor thing id "0807W-F00-03-003", thing type "type2"
 		//  - tag "B"
-		//      - vendor thing id "someVendorThingID3", thing type "type2"
-		//      - vendor thing id "someVendorThingID4", thing type "type2"
-		//      - vendor thing id "someVendorThingID5", thing type "type2"
+		//      - vendor thing id "0807W-F00-03-003", thing type "type2"
+		//      - vendor thing id "0807W-F00-03-004", thing type "type2"
+		//      - vendor thing id "0807W-F00-03-005", thing type "type2"
 
 		// bind things to tags
 		this.bindThingsToTag(globalThingIDListForTests.subList(0, 3), displayNames[0]);
@@ -1178,13 +1176,165 @@ public class TestThingIFController extends WebTestTemplate {
 		System.out.println("========================================================");
 
 		// 3. actually the commands will be send to below things:
-		// - "someVendorThingID3"
+		// - "0807W-F00-03-003"
 		assertTrue(list.size() == 1);
 
 		Map<String, Object> commandMap = list.get(0);
 		Long globalThingID = Long.valueOf((Integer) commandMap.get("globalThingID"));
 		assertEquals(globalThingIDListForTests.get(2), globalThingID);
 		assertTrue(!Strings.isBlank((String) commandMap.get("commandID")));
+
+
+	}
+
+	@Test
+	public void testSearchThingStates() throws Exception {
+
+		// update state for thing1
+		GlobalThingInfo thingInfo1 = globalThingDao.findByID(globalThingIDListForTests.get(0));
+
+		Map<String, Object> states1 = new HashMap<>();
+		states1.put("Bri", 80);
+		states1.put("Power", 1);
+		states1.put("Color", "#111111");
+
+		String stateString1 = mapper.writeValueAsString(states1);
+
+		globalThingDao.updateState(stateString1, thingInfo1.getFullKiiThingID());
+
+
+		// update state for thing2
+		GlobalThingInfo thingInfo2 = globalThingDao.findByID(globalThingIDListForTests.get(1));
+
+		Map<String, Object> states2 = new HashMap<>();
+		states2.put("Bri", 90);
+		states2.put("Color", "#222222");
+
+		String stateString2 = mapper.writeValueAsString(states2);
+
+		globalThingDao.updateState(stateString2, thingInfo2.getFullKiiThingID());
+
+
+		// update state for thing3
+		GlobalThingInfo thingInfo3 = globalThingDao.findByID(globalThingIDListForTests.get(2));
+
+		Map<String, Object> states3 = new HashMap<>();
+		states3.put("Bri", 100);
+		states3.put("Power", 0);
+		states3.put("Color", "#333333");
+
+		String stateString3 = mapper.writeValueAsString(states3);
+
+		globalThingDao.updateState(stateString3, thingInfo3.getFullKiiThingID());
+
+
+		// search thing state Bri/Power in thing1/thing2
+
+		HashMap<String, Object> request = new HashMap<>();
+
+		request.put("thingList", new Long[]{thingInfo1.getId(), thingInfo2.getId()});
+		request.put("stateList", new String[]{"Bri", "Power"});
+
+		String ctx = mapper.writeValueAsString(request);
+
+		String result = this.mockMvc.perform(
+				post("/thing-if/states/search").content(ctx)
+						.contentType(MediaType.APPLICATION_JSON)
+						.characterEncoding("UTF-8")
+						.header(Constants.ACCESS_TOKEN, tokenForTest)
+		)
+				.andExpect(status().isOk())
+				.andReturn().getResponse().getContentAsString();
+
+		List<Map<String, Object>> list = mapper.readValue(result, List.class);
+
+		System.out.println("========================================================");
+		System.out.println("Response: " + result);
+		System.out.println("========================================================");
+
+		// assert
+		assertTrue(list.size() == 2);
+
+		list.forEach(e -> {
+			long globalThingID = ((Integer)e.get("globalThingID")).longValue();
+			String vendorThingID = (String)e.get("vendorThingID");
+			Map<String, Object> states = (Map)e.get("states");
+
+			if(globalThingID == thingInfo1.getId()) {
+				assertEquals(vendorThingIDsForTest[0], vendorThingID);
+				assertTrue(states.keySet().size() == 2);
+
+				assertEquals(states1.get("Bri"), states.get("Bri"));
+				assertEquals(states1.get("Power"), states.get("Power"));
+
+			} else if(globalThingID == thingInfo2.getId()) {
+				assertEquals(vendorThingIDsForTest[1], vendorThingID);
+				assertTrue(states.keySet().size() == 1);
+
+				assertEquals(states2.get("Bri"), states.get("Bri"));
+
+			} else {
+				fail();
+			}
+		});
+
+
+		// search thing state all in thing1/thing2/some other thing
+
+		request = new HashMap<>();
+
+		request.put("thingList", new Long[]{thingInfo1.getId(), thingInfo2.getId(), globalThingIDListForTests.get(4)});
+
+		ctx = mapper.writeValueAsString(request);
+
+		result = this.mockMvc.perform(
+				post("/thing-if/states/search").content(ctx)
+						.contentType(MediaType.APPLICATION_JSON)
+						.characterEncoding("UTF-8")
+						.header(Constants.ACCESS_TOKEN, tokenForTest)
+		)
+				.andExpect(status().isOk())
+				.andReturn().getResponse().getContentAsString();
+
+		list = mapper.readValue(result, List.class);
+
+		System.out.println("========================================================");
+		System.out.println("Response: " + result);
+		System.out.println("========================================================");
+
+		// assert
+		assertTrue(list.size() == 3);
+
+		list.forEach(e -> {
+			long globalThingID = ((Integer)e.get("globalThingID")).longValue();
+			String vendorThingID = (String)e.get("vendorThingID");
+			Map<String, Object> states = (Map)e.get("states");
+
+			if(globalThingID == thingInfo1.getId()) {
+				assertEquals(vendorThingIDsForTest[0], vendorThingID);
+				assertTrue(states.keySet().size() == 3);
+
+				assertEquals(states1.get("Bri"), states.get("Bri"));
+				assertEquals(states1.get("Power"), states.get("Power"));
+				assertEquals(states1.get("Color"), states.get("Color"));
+
+			} else if(globalThingID == thingInfo2.getId()) {
+				assertEquals(vendorThingIDsForTest[1], vendorThingID);
+				assertTrue(states.keySet().size() == 2);
+
+				assertEquals(states2.get("Bri"), states.get("Bri"));
+				assertEquals(states2.get("Color"), states.get("Color"));
+
+			} else if(globalThingID == globalThingIDListForTests.get(4)) {
+				assertEquals(vendorThingIDsForTest[4], vendorThingID);
+				assertTrue(states.keySet().size() == 0);
+
+			} else {
+				fail();
+			}
+		});
+
+
 
 
 	}
