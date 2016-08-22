@@ -37,39 +37,28 @@ public class IndustryTemplateController {
     @Autowired
     private IndustryTemplateManager industryTemplateManager;
 
-    /**
-     * get industry template by below url params:
-     * - thing type
-     * - industry template name
-     * - industry template version
-     *
-     * @param thingType
-     * @param name
-     * @param version
-     * @return
-     * @throws IOException
-     */
-//    @RequestMapping(path = "", method = {RequestMethod.GET})
-//    public Map<String, Object> query(@RequestParam("thingType") String thingType, @RequestParam("name") String name, @RequestParam("version") String version) throws IOException {
-//
-//        List<IndustryTemplate> list = industryTemplateManager.getIndustryTemplate(thingType, name, version);
-//
-//        IndustryTemplate industryTemplate = CollectUtils.getFirst(list);
-//        if(industryTemplate == null) {
-//            return null;
-//        }
-//
-//        String strContent = industryTemplate.getContent();
-//        Map<String, Object> result = (Map<String, Object>)objectMapper.readValue(strContent, Map.class);
-//
-//        return result;
-//    }
     @RequestMapping(path = "", method = {RequestMethod.GET}, consumes = { "*" })
     public IndustryTemplateRestBean query(@RequestParam("thingType") String thingType, @RequestParam("name") String name, @RequestParam("version") String version) throws IOException {
 
         List<IndustryTemplate> list = industryTemplateManager.getIndustryTemplate(thingType, name, version);
 
         IndustryTemplate industryTemplate = CollectUtils.getFirst(list);
+        if(industryTemplate == null) {
+            return null;
+        }
+
+        String strContent = industryTemplate.getContent();
+        Map<String, Object> content = (Map<String, Object>)objectMapper.readValue(strContent, Map.class);
+        //
+        IndustryTemplateRestBean restBean = new IndustryTemplateRestBean();
+        restBean.setIndustryTemplate(industryTemplate);
+        restBean.setContent(content);
+        return restBean;
+    }
+    @RequestMapping(path = "/{id}", method = {RequestMethod.GET}, consumes = { "*" })
+    public IndustryTemplateRestBean getById(@PathVariable("id") Long id) throws IOException {
+
+        IndustryTemplate industryTemplate = industryTemplateManager.findByID(id);
         if(industryTemplate == null) {
             return null;
         }
