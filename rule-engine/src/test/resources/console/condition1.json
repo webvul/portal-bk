@@ -1,0 +1,93 @@
+{
+
+  "description": "aa",
+  "type": "Summary",
+  "summarySource": {
+    "EnvironmentSensor": {
+      "expressList": [
+        {
+          "stateName": "Bri",
+          "function": "min",
+          "summaryAlias": "Bri"
+        }
+      ],
+      "source": {
+        "tagList": [],
+        "thingList": [
+          4697,
+          4698
+        ],
+        "andExpress": false
+      }
+    }
+  },
+  "userID": 640,
+  "targets": [
+    {
+      "tagList": [],
+      "thingList": [
+        4696
+      ],
+      "doubleCheck": false,
+      "type": "ThingCommand",
+      "andExpress": false,
+      "command": {
+        "metadata": {
+          "type": "Lighting"
+        },
+        "schemaVersion": 0,
+        "actions": [
+          {
+            "turnPower": {
+              "Power": true
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "predicate": {
+    "condition": {
+      "clauses": [
+        {
+          "clauses": [
+            {
+              "field": "EnvironmentSensor.Bri",
+              "lowerIncluded": true,
+              "lowerLimit": 10,
+              "type": "range"
+            },
+            {
+              "field": "EnvironmentSensor.Bri",
+              "lowerIncluded": true,
+              "lowerLimit": 10,
+              "type": "range"
+            }
+          ],
+          "type": "and"
+        },
+        {
+          "clauses": [
+            {
+              "field": "EnvironmentSensor.Bri",
+              "lowerIncluded": true,
+              "lowerLimit": 10,
+              "type": "range"
+            },
+            {
+              "field": "EnvironmentSensor.Bri",
+              "lowerIncluded": true,
+              "lowerLimit": 10,
+              "type": "range"
+            }
+          ],
+          "type": "and"
+        }
+      ],
+      "type": "and"
+    },
+    "triggersWhen": "CONDITION_TRUE"
+  },
+  "targetParamList": [],
+  "name": "aa"
+}
