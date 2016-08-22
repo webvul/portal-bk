@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
+import com.kii.beehive.business.service.sms.SmsSendService;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.entitys.PermissionTree;
 import com.kii.beehive.portal.faceplusplus.BeehiveFacePlusPlusService;
@@ -57,8 +58,8 @@ public class UserController {
 	@Autowired
 	private BeehiveFacePlusPlusService service;
 
-//	@Autowired
-//	private SmsSendService smsService;
+	@Autowired
+	private SmsSendService smsService;
 
 	@Autowired
 	private UserCustomDataDao dataDao;
@@ -98,7 +99,7 @@ public class UserController {
 
 		String token = (String) newUser.get("activityToken");
 
-//		smsService.sendActivitySms(userInfo, token);
+		smsService.sendActivitySms(userInfo, token);
 
 		Map<String, Object> result = new HashMap<>();
 		result.put("activityToken", token);
@@ -119,7 +120,7 @@ public class UserController {
 		map.put("userID", userID);
 		map.put("activityToken", token);
 
-//		smsService.sendResetPwdSms(userID, token);
+		smsService.sendResetPwdSms(userID, token);
 
 		return map;
 

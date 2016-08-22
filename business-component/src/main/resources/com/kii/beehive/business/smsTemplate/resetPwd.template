@@ -1,2 +1,1 @@
-用户${userName}在beehive上的账户密码已经重置
-请尽快访问 http://www.openibplatform.com/beehive-portal/resetPassword.do?userID=${userID} 重新设置密码
+${activityCode}
