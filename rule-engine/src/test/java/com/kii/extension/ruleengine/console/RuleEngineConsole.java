@@ -145,12 +145,6 @@ public class RuleEngineConsole {
 
 				engine.updateThingStatus(arrays[1], status, new Date());
 				break;
-			case "enable":
-				engine.enableTrigger(triggerID);
-				break;
-			case "disable":
-				engine.disableTrigger(triggerID);
-				break;
 			case "remove":
 				engine.removeTrigger(triggerID);
 				break;

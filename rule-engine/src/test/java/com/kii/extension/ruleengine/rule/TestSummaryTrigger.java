@@ -20,6 +20,7 @@ import com.kii.extension.ruleengine.store.trigger.SummaryFunctionType;
 import com.kii.extension.ruleengine.store.trigger.SummarySource;
 import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TagSelector;
+import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.WhenType;
 
 public class TestSummaryTrigger extends  TestInit{
@@ -84,9 +85,12 @@ public class TestSummaryTrigger extends  TestInit{
 		String triggerID="300";
 		record.setId(triggerID);
 
+		record.setRecordStatus(TriggerRecord.StatusType.enable);
+
+
 		engine.createSummaryTrigger(record,thingMap);
 
-		engine.enableTrigger(triggerID);
+//		engine.enableTrigger(triggerID);
 
 		Set<String> thingIDs=new HashSet<>();
 
@@ -155,9 +159,11 @@ public class TestSummaryTrigger extends  TestInit{
 		String triggerID="301";
 		record.setId(triggerID);
 
+		record.setRecordStatus(TriggerRecord.StatusType.enable);
+
 //		engine.createStreamSummaryTrigger(record,thingMap);
 
-		engine.enableTrigger(triggerID);
+//		engine.enableTrigger(triggerID);
 
 		Set<String> thingIDs=new HashSet<>();
 

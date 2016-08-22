@@ -9,6 +9,7 @@ import com.kii.extension.ruleengine.TriggerConditionBuilder;
 import com.kii.extension.ruleengine.store.trigger.Condition;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.WhenType;
 
 public class TestSimpleTrigger extends TestInit{
@@ -39,6 +40,7 @@ public class TestSimpleTrigger extends TestInit{
 
 
 		record.setPredicate(perdicate);
+		record.setRecordStatus(TriggerRecord.StatusType.enable);
 
 
 		String triggerID="100";
@@ -46,7 +48,7 @@ public class TestSimpleTrigger extends TestInit{
 
 		engine.createSimpleTrigger(kiiThingID,record);
 
-		engine.enableTrigger(triggerID);
+//		engine.enableTrigger(triggerID);
 
 		sendBadThingStatus(kiiThingID);
 		sendGoodThingStatus(kiiThingID);
@@ -92,11 +94,12 @@ public class TestSimpleTrigger extends TestInit{
 
 		String triggerID="101";
 		record.setId(triggerID);
+		record.setRecordStatus(TriggerRecord.StatusType.enable);
 
 
 		engine.createSimpleTrigger(kiiThingID,record);
 
-		engine.enableTrigger(triggerID);
+//		engine.enableTrigger(triggerID);
 
 		sendGoodThingStatus(kiiThingID);
 

@@ -107,6 +107,19 @@ public class DroolsRuleService {
 	}
 
 
+//
+//	public boolean isRun(){
+//
+//		return true;
+//
+//	}
+//
+//	public void start(){
+//
+//		kieSession.halt();
+//
+//
+//	}
 
 
 	public DroolsRuleService(boolean isStream,String...  rules){

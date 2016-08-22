@@ -56,6 +56,16 @@ public class EngineService {
 	@Autowired
 	private RelationStore  relationStore;
 
+
+
+//	@Scheduled(fixedRate=10*60*1000)
+//	public void  daemonDrools(){
+//
+//
+//
+//
+//	}
+
 	private void fillDelayParam(TriggerRecord record){
 
 
@@ -84,6 +94,8 @@ public class EngineService {
 
 
 	}
+
+
 
 
 	public void createMultipleSourceTrigger(MultipleSrcTriggerRecord record,Map<String,Set<String> > thingMap){
@@ -161,47 +173,6 @@ public class EngineService {
 	}
 
 
-//	public void createStreamSummaryTrigger(SummaryTriggerRecord record, Map<String,Set<String> > summaryMap){
-//
-//		Trigger trigger=new Trigger(record.getId());
-//
-//		trigger.setType(TriggerType.summary);
-//		trigger.setWhen(record.getPredicate().getTriggersWhen());
-//		trigger.setStream(true);
-//		trigger.setEnable(record.getRecordStatus()== TriggerRecord.StatusType.enable);
-//
-//		String 	rule = ruleGeneral.getSimpleTriggerDrl(record.getId(), TriggerType.summary, record.getPredicate(),record.getTargetParamList());
-//
-//		droolsTriggerService.addSummaryTrigger(trigger,rule);
-//
-//		record.getSummarySource().forEach((k,v)->{
-//
-//			v.getExpressList().forEach((exp)->{
-//
-//				Summary summary=new Summary();
-//				summary.setTriggerID(trigger.getTriggerID());
-//				summary.setFieldName(exp.getStateName());
-//
-//				summary.setName(k+"."+exp.getSummaryAlias());
-//				summary.setThingCol(summaryMap.get(k));
-//
-//				if(exp.getSlideFuntion()!=null){
-//					String drl=ruleGeneral.generSlideConfig(trigger.getTriggerID(),k,exp);
-//					summary.setFunName(exp.getFunction().name());
-//					droolsTriggerService.addSlideSummary(summary,drl);
-//
-//				}else{
-//					summary.setFunName(exp.getFunction().name());
-//					droolsTriggerService.addTriggerData(summary);
-//				}
-//
-//			});
-//
-//		});
-//
-//		droolsTriggerService.fireCondition();
-//
-//	}
 
 	public void createSummaryTrigger(SummaryTriggerRecord record,Map<String,Set<String> > summaryMap){
 
@@ -285,42 +256,6 @@ public class EngineService {
 		this.createMultipleSourceTrigger(convertRecord,thingMap);
 	}
 
-	/*
-
-	public void createGroupTrigger(Collection<String> thingIDs, GroupTriggerRecord record){
-
-
-		Trigger trigger=new Trigger(record.getId());
-
-		trigger.setType(TriggerType.group);
-
-		Group group=new Group();
-
-		TriggerGroupPolicy policy=record.getPolicy();
-		group.setPolicy(policy.getGroupPolicy());
-		group.setNumber(policy.getCriticalNumber());
-		group.setTriggerID(record.getId());
-		group.setName("comm");
-
-		trigger.setStream(false);
-
-		RuleEnginePredicate predicate=record.getPredicate();
-
-		trigger.setWhen(predicate.getTriggersWhen());
-
-		group.setThingCol(thingIDs);
-
-		trigger.setEnable(record.getRecordStatus()== TriggerRecord.StatusType.enable);
-
-		String rule=ruleGeneral.generGroupDrlConfig(record.getId(),policy.getGroupPolicy(),predicate);
-
-		droolsTriggerService.addTrigger(trigger,rule);
-		droolsTriggerService.addTriggerData(group);
-
-		droolsTriggerService.fireCondition();
-
-	}
-	*/
 
 
 	public void  createSimpleTrigger(String thingID, SimpleTriggerRecord record)  {
@@ -421,23 +356,6 @@ public class EngineService {
 	public Set<String> getRelationTriggersByThingID(String thingID){
 
 		return relationStore.getTriggerSetByThingID(thingID);
-	}
-
-	
-	public void disableTrigger(String triggerID) {
-
-		droolsTriggerService.disableTrigger(triggerID);
-
-	}
-
-
-	public void enableTrigger(String triggerID) {
-
-
-		droolsTriggerService.enableTrigger(triggerID);
-
-		droolsTriggerService.fireCondition();
-
 	}
 
 	public void removeTrigger(String triggerID){

@@ -96,7 +96,7 @@ public class TriggerManager {
 
 	@PostConstruct
 	public void init() {
-		List<TriggerRecord> recordList = triggerDao.getAllTrigger();
+		List<TriggerRecord> recordList = triggerDao.getAllEnableTrigger();
 
 
 		scheduleService.startSchedule();
@@ -149,7 +149,9 @@ public class TriggerManager {
 
 		triggerDao.addKiiEntity(record);
 
-		creator.addTriggerToEngine(record);
+		if(record.getRecordStatus()== TriggerRecord.StatusType.enable) {
+			creator.addTriggerToEngine(record);
+		}
 		return record;
 
 
@@ -286,7 +288,7 @@ public class TriggerManager {
 
 		}else {
 
-			service.disableTrigger(triggerID);
+			service.removeTrigger(triggerID);
 		}
 	}
 
@@ -304,7 +306,8 @@ public class TriggerManager {
 
 		}else {
 
-			service.enableTrigger(triggerID);
+			creator.addTriggerToEngine(record);
+
 		}
 	}
 
