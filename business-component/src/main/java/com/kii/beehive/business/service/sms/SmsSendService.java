@@ -106,12 +106,12 @@ http://221.179.180.158:9007/QxtSms/QxtFirewall?OperID=test&OperPass=test&SendTim
 		try {
 			String template = StreamUtils.copyToString(loader.getResource("classpath:com/kii/beehive/business/smsTemplate/"+name+".template").getInputStream(), Charsets.UTF_8);
 
-			String tinyUrl=getTinyUrl(user);
+//			String tinyUrl=getTinyUrl(user);
 			Map<String,String> paramMap=new HashMap<>();
 			paramMap.put("userName",user.getUserName());
 			paramMap.put("activityCode",token);
 			paramMap.put("userID",user.getUserID());
-			paramMap.put("url",tinyUrl);
+//			paramMap.put("url",tinyUrl);
 
 			return StrTemplate.generByMap(template,paramMap);
 
