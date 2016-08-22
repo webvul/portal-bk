@@ -1,12 +1,22 @@
 package com.kii.beehive.portal.jdbc.dao;
 
-import com.kii.beehive.portal.auth.AuthInfoStore;
-import com.kii.beehive.portal.common.utils.StrTemplate;
-import com.kii.beehive.portal.jdbc.entity.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Repository;
 
-import java.util.*;
+import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.common.utils.StrTemplate;
+import com.kii.beehive.portal.jdbc.entity.TagGroupRelation;
+import com.kii.beehive.portal.jdbc.entity.TagIndex;
+import com.kii.beehive.portal.jdbc.entity.TagThingRelation;
+import com.kii.beehive.portal.jdbc.entity.TagType;
+import com.kii.beehive.portal.jdbc.entity.TeamUserRelation;
 
 @Repository
 public class TagIndexDao extends SpringBaseDao<TagIndex> {
@@ -352,8 +362,8 @@ public class TagIndexDao extends SpringBaseDao<TagIndex> {
 		return Optional.ofNullable(namedJdbcTemplate.query(sb.toString(), params, getRowMapper()));
 	}
 
-	public Optional<List<Long>> findTagIdsByTeamAndTagTypeAndName(Long teamId, TagType type, String displayName) {
-		StringBuilder sb = new StringBuilder("SELECT t1.").append(TagIndex.TAG_ID).append(" FROM ").
+	public boolean findTagIdsByTeamAndTagTypeAndName(Long teamId, TagType type, String displayName) {
+		StringBuilder sb = new StringBuilder("SELECT 1 ").append(" FROM ").
 				append(TABLE_NAME).append(" t1");
 
 		List<Object> params = new ArrayList();
@@ -377,9 +387,10 @@ public class TagIndexDao extends SpringBaseDao<TagIndex> {
 			params.add(displayName);
 		}
 
-		sb = super.addDelSignPrefix(sb);
+		String fullSql=sb.append(sbWhere).toString();
+		fullSql = super.addDelSignPrefix(fullSql);
 
-		return Optional.ofNullable(jdbcTemplate.queryForList(sb.append(sbWhere).toString(),
-				params.toArray(new Object[]{}), Long.class));
+		return jdbcTemplate.queryForList(fullSql,
+				params.toArray(new Object[]{}), Integer.class).isEmpty();
 	}
 }

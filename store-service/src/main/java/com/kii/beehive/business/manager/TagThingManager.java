@@ -266,18 +266,6 @@ public class TagThingManager {
 
 	}
 
-	public Long createTag(TagIndex tag) {
-		Long tagID = tagIndexDao.saveOrUpdate(tag);
-
-		if (AuthInfoStore.getTeamID() != null) {
-			teamTagRelationDao.saveOrUpdate(new TeamTagRelation(AuthInfoStore.getTeamID(), tagID));
-		}
-
-		tagUserRelationDao.saveOrUpdate(new TagUserRelation(tagID, AuthInfoStore.getUserID()));
-
-		return tagID;
-	}
-
 
 	/**
 	 * save the thing-location relation
@@ -294,7 +282,15 @@ public class TagThingManager {
 		List<TagIndex> list = tagIndexDao.findTagByTagTypeAndName(TagType.Location.toString(), location);
 		Long tagId;
 		if (null == list || list.isEmpty()) {
-			tagId = this.createTag(new TagIndex(TagType.Location, location, null));
+			TagIndex tag=new TagIndex(TagType.Location,location,null);
+
+			tagId = tagIndexDao.saveOrUpdate(tag);
+
+			if (AuthInfoStore.getTeamID() != null) {
+				teamTagRelationDao.saveOrUpdate(new TeamTagRelation(AuthInfoStore.getTeamID(), tagId));
+			}
+
+			tagUserRelationDao.saveOrUpdate(new TagUserRelation(tagId, AuthInfoStore.getUserID()));
 		} else {
 			if (!list.get(0).getCreateBy().equals(AuthInfoStore.getUserID())) {
 				throw new UnauthorizedException(UnauthorizedException.NOT_TAG_CREATER);
@@ -526,17 +522,7 @@ public class TagThingManager {
 		return getThingsByIds(thingIds);
 	}
 
-	public List<TagIndex> getTagIndexes(List<String> tagIDList) throws ObjectNotFoundException {
-		List<Long> tagIds = tagIDList.stream().filter(Pattern.compile("^[0-9]+$").asPredicate()).map(Long::valueOf)
-				.collect(Collectors.toList());
-		List<TagIndex> tagIndexes = tagIndexDao.findByIDs(tagIds);
-		if (null == tagIndexes || !tagIndexes.stream().map(TagIndex::getId).map(Object::toString).
-				collect(Collectors.toSet()).containsAll(tagIDList)) {
-			tagIds.removeAll(tagIndexes.stream().map(TagIndex::getId).collect(Collectors.toList()));
-			throw EntryNotFoundException.existsNullTag(tagIds);
-		}
-		return tagIndexes;
-	}
+
 
 	public List<TagIndex> getTagIndexes(Collection<String> displayNames, TagType tagType) throws
 			ObjectNotFoundException {
@@ -834,10 +820,7 @@ public class TagThingManager {
 				tagGroupRelationDao.findTagIdsByUserGroupId(userGroupId).orElse(Collections.emptyList()));
 	}
 
-	public boolean isTagDisplayNamePresent(Long teamId, TagType type, String displayName) {
-		return !tagIndexDao.findTagIdsByTeamAndTagTypeAndName(teamId, type, displayName).
-				orElse(Collections.emptyList()).isEmpty();
-	}
+
 
 
 	/**

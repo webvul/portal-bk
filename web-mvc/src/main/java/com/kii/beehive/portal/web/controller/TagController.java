@@ -1,20 +1,30 @@
 package com.kii.beehive.portal.web.controller;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.logging.log4j.util.Strings;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 import com.kii.beehive.portal.jdbc.entity.TagIndex;
 import com.kii.beehive.portal.jdbc.entity.TagType;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
+import com.kii.beehive.portal.manager.TagManager;
 import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
-import com.kii.extension.sdk.exception.ObjectNotFoundException;
-import org.apache.logging.log4j.util.Strings;
-import org.springframework.http.MediaType;
-import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Beehive API - Thing API
@@ -26,6 +36,8 @@ import java.util.stream.Collectors;
 		MediaType.APPLICATION_JSON_UTF8_VALUE})
 public class TagController extends AbstractThingTagController {
 
+	@Autowired
+	private TagManager tagManager;
 	/**
 	 * 创建tag
 	 * POST /tags/custom
@@ -41,22 +53,23 @@ public class TagController extends AbstractThingTagController {
 			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "field", "displayName");
 		}
 
-		if (null != tag.getId()) {
-			try {
-				TagIndex existedTag = thingTagManager.getTagIndexes(Arrays.asList(tag.getId().toString())).get(0);
-				if (!thingTagManager.isTagCreator(existedTag)) {
-					throw new PortalException(ErrorCode.TAG_NO_PRIVATE, "tagName", existedTag.getFullTagName());
-				}
-			} catch (ObjectNotFoundException e) {
-				throw new PortalException(ErrorCode.NOT_FOUND);
-			}
-		} else if (thingTagManager.isTagDisplayNamePresent(AuthInfoStore.getTeamID(), TagType.Custom, displayName)) {
-			throw new PortalException(ErrorCode.TAG_NO_PRIVATE);
-		}
-		tag.setTagType(TagType.Custom);
-		tag.setFullTagName(TagType.Custom.getTagName(displayName));
-		long tagID = thingTagManager.createTag(tag);
+//		if (null != tag.getId()) {
+//			try {
+//				TagIndex existedTag = thingTagManager.getTagIndexes(Arrays.asList(tag.getId().toString())).get(0);
+//				if (!thingTagManager.isTagCreator(existedTag)) {
+//					throw new PortalException(ErrorCode.TAG_NO_PRIVATE, "tagName", existedTag.getFullTagName());
+//				}
+//			} catch (ObjectNotFoundException e) {
+//				throw new PortalException(ErrorCode.NOT_FOUND);
+//			}
+//		} else if (thingTagManager.isTagDisplayNamePresent(AuthInfoStore.getTeamID(), TagType.Custom, displayName)) {
+//			throw new PortalException(ErrorCode.TAG_NO_PRIVATE);
+//		}
+//		tag.setTagType(TagType.Custom);
+//		tag.setFullTagName(TagType.Custom.getTagName(displayName));
+//		long tagID = thingTagManager.createTag(tag);
 
+		Long tagID=tagManager.createCustomTag(tag);
 
 		Map<String, Object> map = new HashMap<>();
 		map.put("id", tagID);
