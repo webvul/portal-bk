@@ -1,32 +1,18 @@
 {
-
-  "description": "aa",
-  "type": "Summary",
-  "summarySource": {
-    "EnvironmentSensor": {
-      "expressList": [
-        {
-          "stateName": "Bri",
-          "function": "min",
-          "summaryAlias": "Bri"
-        }
-      ],
-      "source": {
-        "tagList": [],
-        "thingList": [
-          4697,
-          4698
-        ],
-        "andExpress": false
-      }
-    }
+  "prepareCondition": {
+    "endCron": "0 0 0 ? * 2-6",
+    "type": "cron",
+    "startCron": "0 0 0 ? * 2-6"
   },
+  "description": "aef",
+  "type": "Summary",
+  "summarySource": {},
   "userID": 640,
   "targets": [
     {
       "tagList": [],
       "thingList": [
-        4696
+        1502
       ],
       "doubleCheck": false,
       "type": "ThingCommand",
@@ -47,47 +33,12 @@
     }
   ],
   "predicate": {
-    "condition": {
-      "clauses": [
-        {
-          "clauses": [
-            {
-              "field": "EnvironmentSensor.Bri",
-              "lowerIncluded": true,
-              "lowerLimit": 10,
-              "type": "range"
-            },
-            {
-              "field": "EnvironmentSensor.Bri",
-              "lowerIncluded": true,
-              "lowerLimit": 10,
-              "type": "range"
-            }
-          ],
-          "type": "and"
-        },
-        {
-          "clauses": [
-            {
-              "field": "EnvironmentSensor.Bri",
-              "lowerIncluded": true,
-              "lowerLimit": 10,
-              "type": "range"
-            },
-            {
-              "field": "EnvironmentSensor.Bri",
-              "lowerIncluded": true,
-              "lowerLimit": 10,
-              "type": "range"
-            }
-          ],
-          "type": "and"
-        }
-      ],
-      "type": "and"
+    "schedule": {
+      "cron": "0 2 11 ? * *",
+      "type": "Cron"
     },
     "triggersWhen": "CONDITION_TRUE"
   },
   "targetParamList": [],
-  "name": "aa"
+  "name": "ddfaf"
 }

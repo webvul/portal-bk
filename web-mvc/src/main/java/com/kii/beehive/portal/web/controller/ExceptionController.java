@@ -57,9 +57,13 @@ public class ExceptionController {
 
 		log.error("global exception ", ex);
 
-		Map<String, String> errorMap = new HashMap<>();
+		Map<String, Object> errorMap = new HashMap<>();
 		errorMap.put("errorCode", ex.getClass().getSimpleName());
 		errorMap.put("errorMessage", ex.getMessage());
+
+		StackTraceElement[]  traceList=ex.getStackTrace();
+
+		errorMap.put("stackTrace",traceList);
 
 		ResponseEntity<Object> resp = new ResponseEntity(errorMap, headers,HttpStatus.INTERNAL_SERVER_ERROR);
 		return resp;
