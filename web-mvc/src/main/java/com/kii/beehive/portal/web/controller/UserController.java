@@ -32,6 +32,7 @@ import com.kii.beehive.portal.faceplusplus.BeehiveFacePlusPlusService;
 import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 import com.kii.beehive.portal.manager.AuthManager;
 import com.kii.beehive.portal.manager.BeehiveUserManager;
+import com.kii.beehive.portal.manager.UserAdminManager;
 import com.kii.beehive.portal.service.UserCustomDataDao;
 import com.kii.beehive.portal.store.entity.CustomData;
 import com.kii.beehive.portal.web.entity.UserRestBean;
@@ -46,6 +47,9 @@ public class UserController {
 
 	@Autowired
 	private BeehiveUserManager userManager;
+
+	@Autowired
+	private UserAdminManager adminManager;
 
 	@Autowired
 	private AuthManager authManager;
@@ -88,7 +92,7 @@ public class UserController {
 
 		user.verifyInput();
 
-		Map<String, Object> newUser = userManager.addUser(user.getBeehiveUser());
+		Map<String, Object> newUser = adminManager.addUser(user.getBeehiveUser());
 
 		BeehiveJdbcUser userInfo = (BeehiveJdbcUser) newUser.get("user");
 
@@ -137,7 +141,7 @@ public class UserController {
 		BeehiveJdbcUser updateUser = new BeehiveJdbcUser();
 		BeanUtils.copyProperties(user, updateUser, "kiiUserID", "activityToken", "userPassword", "roleName", "userID", "enable");
 
-		userManager.updateUser(updateUser, userID);
+		adminManager.updateUser(updateUser, userID);
 
 
 		Map<String, String> map = new HashMap<>();
@@ -149,7 +153,7 @@ public class UserController {
 	@RequestMapping(value = "/usermanager/{userID}/enable", method = {RequestMethod.PUT})
 	public Map<String, String> enableUser(@PathVariable("userID") String userID) {
 
-		userManager.updateUserSign(userID, true);
+		adminManager.updateUserSign(userID, true);
 
 
 		Map<String, String> map = new HashMap<>();
@@ -162,7 +166,7 @@ public class UserController {
 	@RequestMapping(value = "/usermanager/{userID}/disable", method = {RequestMethod.PUT})
 	public Map<String, String> disableUser(@PathVariable("userID") String userID) {
 
-		userManager.disableUser(userID);
+		adminManager.disableUser(userID);
 
 
 		Map<String, String> map = new HashMap<>();
@@ -176,7 +180,7 @@ public class UserController {
 	public void hardDeleteUser(@PathVariable("userID") String userID) {
 
 		BeehiveJdbcUser beehiveJdbcUser = userManager.getUserByUserID(userID);
-		userManager.removeUser(beehiveJdbcUser.getId());
+		adminManager.removeUser(beehiveJdbcUser.getId());
 
 	}
 
@@ -192,7 +196,7 @@ public class UserController {
 	public UserRestBean getUser(@PathVariable("userID") String userID) {
 
 		UserRestBean bean = new UserRestBean();
-		bean.setBeehiveUser(userManager.getUserByUserID(userID));
+		bean.setBeehiveUser(adminManager.getUserByUserID(userID));
 
 		return bean;
 	}

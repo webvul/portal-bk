@@ -22,6 +22,9 @@ public class TestUserManger extends StoreServiceTestInit {
 	private BeehiveUserManager userManager;
 
 	@Autowired
+	private UserAdminManager  adminManager;
+
+	@Autowired
 	private AuthManager authManager;
 
 	@Autowired
@@ -48,7 +51,7 @@ public class TestUserManger extends StoreServiceTestInit {
 		user.setUserName(name);
 //		user.setCompany("kiicloud");
 
-		Map<String, Object> result = userManager.addUser(user);
+		Map<String, Object> result = adminManager.addUser(user);
 
 		BeehiveJdbcUser newUser = (BeehiveJdbcUser) result.get("user");
 

@@ -1,18 +1,16 @@
 package com.kii.beehive.portal.manager;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.commons.lang3.StringUtils;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.kii.beehive.business.service.KiiUserService;
 import com.kii.beehive.portal.auth.AuthInfoStore;
-import com.kii.beehive.portal.common.utils.StringRandomTools;
 import com.kii.beehive.portal.entitys.PermissionTree;
 import com.kii.beehive.portal.exception.UnauthorizedException;
-import com.kii.beehive.portal.exception.UserExistException;
 import com.kii.beehive.portal.exception.UserNotExistException;
 import com.kii.beehive.portal.helper.AuthInfoService;
 import com.kii.beehive.portal.helper.RuleSetService;
@@ -59,9 +57,6 @@ public class BeehiveUserManager {
 	private GroupUserRelationDao groupUserRelationDao;
 
 
-//	@Autowired
-//	private TeamDao teamDao;
-
 
 	public PermissionTree getUsersPermissonTree(Long userID) {
 
@@ -88,40 +83,6 @@ public class BeehiveUserManager {
 
 	}
 
-	public Map<String, Object> addUser(BeehiveJdbcUser user) {
-
-
-		BeehiveJdbcUser existsUser = userDao.getUserByLoginId(user);
-
-		if (existsUser != null) {
-			throw new UserExistException(user, existsUser);
-		}
-
-		if (StringUtils.isBlank(user.getRoleName())) {
-			user.setRoleName("commUser");
-		}
-
-		user.setEnable(false);
-		user = userDao.addUser(user);
-
-		String loginID = kiiUserService.addBeehiveUser(user, user.getDefaultPassword());
-
-		user.setKiiUserID(loginID);
-
-		String token = StringRandomTools.getRandomStr(6);
-
-		user.setActivityToken(user.getHashedPwd(token));
-
-		userDao.updateEntityAllByID(user);
-
-		Map<String, Object> result = new HashMap<>();
-
-		result.put("user", user);
-		result.put("activityToken", token);
-
-
-		return result;
-	}
 
 
 //	private Long addTeam(String teamName,Long userID){
@@ -148,18 +109,7 @@ public class BeehiveUserManager {
 //	}
 
 
-	public void deleteUser(Long userID) {
-//		checkTeam(userID);
-		BeehiveJdbcUser user = userDao.getUserByID(userID);
 
-		groupUserRelationDao.delete(userID, null);
-
-		kiiUserService.disableBeehiveUser(user);
-
-		userDao.deleteUser(userID);
-
-
-	}
 
 	public BeehiveJdbcUser getUserByIDDirectly(Long userID) {
 
@@ -204,10 +154,6 @@ public class BeehiveUserManager {
 
 	}
 
-	/**
-	 *
-	 */
-
 
 	public List<BeehiveJdbcUser> simpleQueryUser(Map<String, Object> queryMap) {
 
@@ -229,27 +175,6 @@ public class BeehiveUserManager {
 	}
 
 
-	public void updateUserSign(String userID, boolean b) {
-
-
-		int i = userDao.updateEnableSign(userID, b);
-		if (i == 0) {
-			throw new UserNotExistException(userID);
-		}
-	}
-
-
-	public void disableUser(String userID) {
-
-		int i = userDao.updateEnableSign(userID, false);
-		if (i == 0) {
-			throw new UserNotExistException(userID);
-		}
-		authService.removeTokenByUserID(userID);
-
-	}
-
-
 	public void removeUser(Long userID) {
 		BeehiveJdbcUser user = userDao.getUserByID(userID);
 		if (user == null) {
@@ -258,7 +183,11 @@ public class BeehiveUserManager {
 
 		userDao.hardDeleteByID(user.getId());
 
+		groupUserRelationDao.delete(userID, null);
+
 		authService.removeTokenByUserID(user.getUserID());
+
+		kiiUserService.removeBeehiveUser(user);
 
 		BeehiveArchiveUser archiveUser = new BeehiveArchiveUser(user);
 

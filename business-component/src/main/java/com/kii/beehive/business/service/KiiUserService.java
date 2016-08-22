@@ -94,20 +94,6 @@ public class KiiUserService {
 
 	}
 
-	public void removeBeehiveUser(String kiiUserID) {
-
-		userService.removeUserByID(kiiUserID);
-	}
-
-	public void disableBeehiveUser(BeehiveJdbcUser user) {
-		userService.disableUser(user.getKiiUserID());
-	}
-
-
-	public void enableUser(String kiiUserID) {
-
-		userService.enableUser(kiiUserID);
-	}
 
 	public KiiUser getKiiUser(String token) {
 		tokenBind.bindToken(token);
@@ -115,7 +101,19 @@ public class KiiUserService {
 	}
 
 
-	public KiiUser getKiiUser() {
-		return userService.getUserDetail();
+
+	public void removeBeehiveUser(BeehiveJdbcUser  user) {
+		LoginInfo loginInfo=userService.login(user.getKiiCloudLoginName(),user.getUserPassword());
+
+		tokenBind.bindToken(loginInfo.getToken());
+
+
+		userService.removeUserByID(user.getKiiUserID());
 	}
+
+
+
+//	public KiiUser getKiiUser() {
+//		return userService.getUserDetail();
+//	}
 }
