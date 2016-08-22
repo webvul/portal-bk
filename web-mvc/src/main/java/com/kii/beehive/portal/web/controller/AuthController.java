@@ -196,7 +196,7 @@ public class AuthController {
 	 *
 	 * @return
 	 */
-	@RequestMapping(value = "/logout", method = {RequestMethod.POST})
+	@RequestMapping(value = "/logout", method = {RequestMethod.POST},consumes=MediaType.ALL_VALUE)
 	public void logout(HttpServletRequest request) {
 
 		String token = AuthUtils.getTokenFromHeader(request);

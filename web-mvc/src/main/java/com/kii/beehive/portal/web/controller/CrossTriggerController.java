@@ -81,7 +81,7 @@ public class CrossTriggerController {
 	}
 
 
-	@RequestMapping(path = "/{triggerID}/enable", method = {RequestMethod.PUT})
+	@RequestMapping(path = "/{triggerID}/enable", method = {RequestMethod.PUT},consumes={MediaType.ALL_VALUE})
 	public Map<String, Object> enableTrigger(@PathVariable("triggerID") String triggerID) {
 		Map<String, Object> result = new HashMap<>();
 		result.put("result", "success");
@@ -98,7 +98,7 @@ public class CrossTriggerController {
 	}
 
 
-	@RequestMapping(path = "/{triggerID}/disable", method = {RequestMethod.PUT})
+	@RequestMapping(path = "/{triggerID}/disable", method = {RequestMethod.PUT},consumes={MediaType.ALL_VALUE})
 	public Map<String, Object> disableTrigger(@PathVariable("triggerID") String triggerID) {
 		Map<String, Object> result = new HashMap<>();
 		result.put("result", "success");
@@ -114,14 +114,14 @@ public class CrossTriggerController {
 		return result;
 	}
 
-	@RequestMapping(path = "/{triggerID}", method = {RequestMethod.GET}, consumes = {"*"})
+	@RequestMapping(path = "/{triggerID}", method = {RequestMethod.GET}, consumes = {MediaType.ALL_VALUE})
 	public TriggerRecord getTriggerById(@PathVariable("triggerID") String triggerID) {
 
 		return mang.getTriggerByID(triggerID);
 
 	}
 
-	@RequestMapping(path = "/all", method = {RequestMethod.GET}, consumes = {"*"})
+	@RequestMapping(path = "/all", method = {RequestMethod.GET}, consumes = {MediaType.ALL_VALUE})
 	public List<TriggerRecord> getTriggerListByCurrentUser() {
 
 		Long currentUserId = AuthInfoStore.getUserID();
@@ -131,7 +131,7 @@ public class CrossTriggerController {
 
 	}
 
-	@RequestMapping(path = "/deleteTrigger", method = {RequestMethod.GET}, consumes = {"*"})
+	@RequestMapping(path = "/deleteTrigger", method = {RequestMethod.GET}, consumes = {MediaType.ALL_VALUE})
 	public List<TriggerRecord> getDeleteTriggerListByCurrentUser() {
 
 		Long currentUserId = AuthInfoStore.getUserID();
@@ -141,21 +141,21 @@ public class CrossTriggerController {
 
 	}
 
-	@RequestMapping(path = "/things/{thingId}", method = {RequestMethod.GET}, consumes = {"*"})
+	@RequestMapping(path = "/things/{thingId}", method = {RequestMethod.GET}, consumes = {MediaType.ALL_VALUE})
 	public List<SimpleTriggerRecord> getTriggerListByThingIdAndUserId(@PathVariable("thingId") String thingId) {
 		Long currentUserId = AuthInfoStore.getUserID();
 		return mang.getTriggerListByUserIdAndThingId(currentUserId, thingId);
 	}
 
 
-	@RequestMapping(path="/gateway",method={RequestMethod.GET},consumes = {"*"})
+	@RequestMapping(path="/gateway",method={RequestMethod.GET},consumes = {MediaType.ALL_VALUE})
 	public List<TriggerRecord> getGatewayTriggerList(){
 
 		return mang.getAllGatewayTrigger();
 
 	}
 
-	@RequestMapping(path="/gateway/{vendorThingID}",method={RequestMethod.GET},consumes = {"*"})
+	@RequestMapping(path="/gateway/{vendorThingID}",method={RequestMethod.GET},consumes = {MediaType.ALL_VALUE})
 	public List<TriggerRecord> getTriggerListByGatewayVendorThingID(@PathVariable("vendorThingID") String vendorThingID){
 
 		return mang.getTriggerListByGatewayVendorThingID(vendorThingID);
@@ -165,13 +165,13 @@ public class CrossTriggerController {
 
 
 
-	@RequestMapping(path = "/debug/dump", method = {RequestMethod.GET}, consumes = {"*"})
+	@RequestMapping(path = "/debug/dump", method = {RequestMethod.GET}, consumes = {MediaType.ALL_VALUE})
 	public Map<String, Object> getRuleEngineDump() {
 
 		return mang.getRuleEngingDump();
 	}
 
-	@RequestMapping(path = "/debug/reinit", method = {RequestMethod.POST}, consumes = {"*"})
+	@RequestMapping(path = "/debug/reinit", method = {RequestMethod.POST}, consumes = {MediaType.ALL_VALUE})
 	public void reInit() {
 
 		mang.reinit();
