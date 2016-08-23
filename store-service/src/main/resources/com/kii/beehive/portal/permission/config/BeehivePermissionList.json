@@ -18,32 +18,38 @@
       "displayName":"触发器管理",
       "url":"/triggers/**"
     },
-    "industrytemplate":{
-      "displayName":"行业模板管理",
-      "url":"/industrytemplate/**",
+
+    "industrytemplate-query": {
+      "displayName": "行业模板管理",
+      "url": "/industrytemplate/query",
       "submodule": {
-        "getIndustryTemplateInfo": {
-          "submodule": {
-            "industryTemplate_getInfo": {
-              "method": "GET",
-              "url": "/industrytemplate/"
-            },
-            "industryTemplate_getObj": {
-              "method": "GET",
-              "url": "/industrytemplate/*"
-            }
-          }
+        "getById": {
+          "method": "GET",
+          "url": "/industrytemplate/query/**"
         },
-        "industryTemplate_setObj":{
-          "method": "PUT",
-          "url": "/industrytemplate/*"
-        },
-        "industryTemplate_addInfo":{
+        "queryInfo":{
+          "method": "GET",
+          "url": "/industrytemplate/query"
+        }
+
+      }
+    },
+    "industrytemplate-manage": {
+      "displayName": "行业模板管理",
+      "url": "/industrytemplate/manage",
+      "submodule": {
+        "new": {
           "method": "POST",
-          "url": "/industrytemplate"
+          "url": "/industrytemplate/manage"
+        },
+        "update": {
+          "method": "PUT",
+          "url": "/industrytemplate/manage/**"
         }
       }
     },
+
+
     "user": {
       "displayName": "用户信息",
       "url": "/users/**",

@@ -30,7 +30,7 @@ public class IndustryTemplateDao extends SpringBaseDao<IndustryTemplate> {
 			where.append(" AND ").append(fieldName).append("=?");
 		}
 
-		String sql = "SELECT * FROM " + TABLE_NAME + " WHERE 1=1" + where.toString();
+		String sql = "SELECT * FROM " + TABLE_NAME + " WHERE 1=1" + where.toString() + " order by version desc";
 
 
 		List<IndustryTemplate> rows = query(sql, values.toArray() );

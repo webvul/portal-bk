@@ -1,6 +1,7 @@
 package com.kii.beehive.portal.web.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +38,30 @@ public class IndustryTemplateController {
     @Autowired
     private IndustryTemplateManager industryTemplateManager;
 
-    @RequestMapping(path = "", method = {RequestMethod.GET}, consumes = { "*" })
+    @RequestMapping(path = "/query/list", method = {RequestMethod.GET}, consumes = { "*" })
+    public List<IndustryTemplateRestBean> queryList(@RequestParam("thingType") String thingType, @RequestParam("name") String name) throws IOException {
+
+        List<IndustryTemplate> list = industryTemplateManager.getIndustryTemplate(thingType, name, null);
+        List<IndustryTemplateRestBean> restBeanList = new ArrayList<>();
+        list.forEach(industryTemplate -> {
+            String strContent = industryTemplate.getContent();
+            Map<String, Object> content = null;
+            try {
+                content = (Map<String, Object>)objectMapper.readValue(strContent, Map.class);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            IndustryTemplateRestBean restBean = new IndustryTemplateRestBean();
+            restBean.setIndustryTemplate(industryTemplate);
+            restBean.setContent(content);
+            restBeanList.add(restBean);
+        });
+
+
+
+        return restBeanList;
+    }
+    @RequestMapping(path = "/query", method = {RequestMethod.GET}, consumes = { "*" })
     public IndustryTemplateRestBean query(@RequestParam("thingType") String thingType, @RequestParam("name") String name, @RequestParam("version") String version) throws IOException {
 
         List<IndustryTemplate> list = industryTemplateManager.getIndustryTemplate(thingType, name, version);
@@ -55,7 +79,7 @@ public class IndustryTemplateController {
         restBean.setContent(content);
         return restBean;
     }
-    @RequestMapping(path = "/{id}", method = {RequestMethod.GET}, consumes = { "*" })
+    @RequestMapping(path = "/query/{id}", method = {RequestMethod.GET}, consumes = { "*" })
     public IndustryTemplateRestBean getById(@PathVariable("id") Long id) throws IOException {
 
         IndustryTemplate industryTemplate = industryTemplateManager.findByID(id);
@@ -82,7 +106,7 @@ public class IndustryTemplateController {
      * @param industryTemplateRestBean
      * @throws JsonProcessingException
      */
-    @RequestMapping(path = "", method = {RequestMethod.POST})
+    @RequestMapping(path = "/manage", method = {RequestMethod.POST})
     public Map<String, Object> insert(@RequestBody IndustryTemplateRestBean industryTemplateRestBean) throws JsonProcessingException {
         Map<String, Object> result = new HashMap<>();
         result.put("result", "success");
@@ -106,7 +130,7 @@ public class IndustryTemplateController {
         return result;
     }
 
-    @RequestMapping(path = "/{id}", method = {RequestMethod.PUT})
+    @RequestMapping(path = "/manage/{id}", method = {RequestMethod.PUT})
     public Map<String, Object> update(@PathVariable Long id, @RequestBody IndustryTemplateRestBean industryTemplateRestBean) throws JsonProcessingException {
         Map<String, Object> result = new HashMap<>();
         result.put("result", "success");
