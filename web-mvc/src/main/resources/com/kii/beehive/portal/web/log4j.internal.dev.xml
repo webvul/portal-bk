@@ -23,24 +23,24 @@
 	</logger>
 
 	<logger name="org.apache.http.wire">
-		<level value="debug" />
+		<level value="info" />
 	</logger>
 
 	<logger name="org.springframework.web">
-		<level value="debug" />
+		<level value="info" />
 	</logger>
 
     <logger name="org.springframework.cache" >
-        <level value="debug" />
+        <level value="info" />
     </logger>
 
 	
     <logger name="com.kii" >
-        <level value="debug" />
+        <level value="info" />
     </logger>
 
 	<root>
-		<priority value="debug" />
+		<priority value="info" />
         <appender-ref ref="file" />
 	</root>
 </log4j:configuration>
