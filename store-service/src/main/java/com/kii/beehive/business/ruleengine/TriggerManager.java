@@ -99,7 +99,7 @@ public class TriggerManager {
 		List<TriggerRecord> recordList = triggerDao.getAllEnableTrigger();
 
 
-		scheduleService.startSchedule();
+//		scheduleService.startSchedule();
 
 		recordList.forEach(record -> {
 

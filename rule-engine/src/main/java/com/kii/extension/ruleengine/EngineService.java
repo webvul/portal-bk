@@ -155,9 +155,9 @@ public class EngineService {
 				}
 		);
 
-		if(record.getPredicate().getSchedule()==null) {
+//		if(record.getPredicate().getSchedule()!=null) {
 			droolsTriggerService.fireCondition();
-		}
+//		}
 	}
 
 
@@ -290,9 +290,9 @@ public class EngineService {
 
 
 
-		if(record.getPredicate().getSchedule()==null) {
+//		if(record.getPredicate().getSchedule()!=null) {
 			droolsTriggerService.fireCondition();
-		}
+//		}
 
 	}
 

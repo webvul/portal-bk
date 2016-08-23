@@ -48,6 +48,8 @@ public class RuleEngScheduleFactory {
 		sched.addJob(getStartJob(),false);
 		sched.addJob(getStopJob(),false);
 
+
+		sched.start();
 		return sched;
 
 	}

@@ -98,7 +98,7 @@ public class RuleEngineConsole {
 
 		engine.initThingStatus(statusList);
 
-		schedule.startSchedule();
+//		schedule.startSchedule();
 
 	}
 
