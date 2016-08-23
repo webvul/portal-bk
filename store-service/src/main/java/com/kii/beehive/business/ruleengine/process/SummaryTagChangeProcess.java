@@ -11,6 +11,7 @@ import com.kii.extension.ruleengine.EngineService;
 import com.kii.extension.ruleengine.service.TriggerRecordDao;
 import com.kii.extension.ruleengine.store.trigger.SummarySource;
 import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 
 @Component(BusinessEventListenerService.REFRESH_SUMMARY_GROUP)
 public class SummaryTagChangeProcess implements TagChangeProcess {
@@ -40,16 +41,18 @@ public class SummaryTagChangeProcess implements TagChangeProcess {
 
 		SummaryTriggerRecord record = (SummaryTriggerRecord) triggerDao.getTriggerRecord(triggerID);
 
+		if(record.getRecordStatus()== TriggerRecord.StatusType.enable) {
 
-		SummarySource summary=record.getSummarySource().get(groupID);
+			SummarySource summary = record.getSummarySource().get(groupID);
 
 
-		if(record==null||summary==null){
+			if (record == null || summary == null) {
 
-			listenerService.disableTrigger(listener.getId());
-			return;
+				listenerService.disableTrigger(listener.getId());
+				return;
+			}
+
+			engine.changeThingsInSummary(triggerID, groupID, thingTagService.getKiiThingIDs(summary.getSource()));
 		}
-
-		engine.changeThingsInSummary(triggerID,groupID,thingTagService.getKiiThingIDs(summary.getSource()));
 	}
 }

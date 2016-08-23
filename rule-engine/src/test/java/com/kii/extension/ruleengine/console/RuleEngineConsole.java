@@ -172,7 +172,7 @@ public class RuleEngineConsole {
 				triggerID = arrays[1];
 				break;
 			case "listTrigger":
-				triggerSet.forEach((s) -> System.out.println("s"));
+				triggerSet.forEach((s) -> System.out.println(s));
 				break;
 			case "setExt":
 				String name = arrays[1];

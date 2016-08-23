@@ -288,6 +288,8 @@ public class TriggerManager {
 
 		}else {
 
+			scheduleService.removeManagerTaskForSchedule(triggerID);
+
 			service.removeTrigger(triggerID);
 		}
 	}
@@ -363,9 +365,12 @@ public class TriggerManager {
 			sendGatewayCommand((GatewayTriggerRecord) record, GatewayCommand.deleteTrigger);
 
 		}else {
-			service.removeTrigger(triggerID);
 
-			scheduleService.removeManagerTaskForSchedule(triggerID);
+			if(record.getRecordStatus()== TriggerRecord.StatusType.enable) {
+				service.removeTrigger(triggerID);
+
+				scheduleService.removeManagerTaskForSchedule(triggerID);
+			}
 
 			List<EventListener> eventListenerList = eventListenerDao.getEventListenerByTargetKey(triggerID);
 			for (EventListener eventListener : eventListenerList) {

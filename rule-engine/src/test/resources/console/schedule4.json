@@ -1,0 +1,47 @@
+{
+  "prepareCondition": {
+    "endCron": "0 0 17 ? * *",
+    "type": "cron",
+    "startCron": "0 0 0 ? * *"
+  },
+  "description": "time-new",
+  "type": "Simple",
+  "source": {
+    "thingID" : 3
+  },
+  "userID": 640,
+  "targets": [
+    {
+      "tagList": [],
+      "thingList": [
+        4696
+      ],
+      "doubleCheck": false,
+      "type": "ThingCommand",
+      "andExpress": false,
+      "command": {
+        "metadata": {
+          "type": "Lighting"
+        },
+        "schemaVersion": 0,
+        "actions": [
+          {
+            "turnPower": {
+              "Power": false
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "predicate": {
+    "schedule": {
+      "cron": "0 0/5 9-11 * * ?",
+      "type": "Cron"
+    },
+    "triggersWhen": "CONDITION_TRUE"
+  },
+  "recordStatus": "enable",
+  "targetParamList": [],
+  "name": "time-new"
+}

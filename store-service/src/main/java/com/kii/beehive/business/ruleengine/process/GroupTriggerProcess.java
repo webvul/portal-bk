@@ -12,6 +12,7 @@ import com.kii.beehive.portal.event.EventListener;
 import com.kii.extension.ruleengine.EngineService;
 import com.kii.extension.ruleengine.service.TriggerRecordDao;
 import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 
 @Component(BusinessEventListenerService.REFRESH_THING_GROUP)
 public class GroupTriggerProcess implements TagChangeProcess {
@@ -45,7 +46,10 @@ public class GroupTriggerProcess implements TagChangeProcess {
 			return;
 		}
 
-		Set<String> thingIDList=thingTagService.getKiiThingIDs(trigger.getSource());
-		engine.changeThingsInTrigger(trigger.getId(),thingIDList);
+		if(trigger.getRecordStatus()== TriggerRecord.StatusType.enable) {
+
+			Set<String> thingIDList = thingTagService.getKiiThingIDs(trigger.getSource());
+			engine.changeThingsInTrigger(trigger.getId(), thingIDList);
+		}
 	}
 }

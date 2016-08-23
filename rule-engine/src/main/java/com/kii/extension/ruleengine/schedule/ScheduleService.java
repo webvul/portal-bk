@@ -79,7 +79,7 @@ public class ScheduleService {
 
 					data.put("jobType",k.getGroup());
 
-					triggerMap.put(trigger.getKey().getName(), data);
+					triggerMap.put(k.toString(), data);
 
 
 				} catch (SchedulerException e) {
@@ -114,9 +114,9 @@ public class ScheduleService {
 			e.printStackTrace();
 		}
 
-
-
 	}
+
+
 
 	public void removeManagerTaskForSchedule(String triggerID) {
 		try {
@@ -130,6 +130,7 @@ public class ScheduleService {
 	}
 
 	public void addManagerTaskForSchedule(String triggerID, SchedulePeriod period) throws SchedulerException {
+
 
 
 		Trigger triggerStart= TriggerBuilder.newTrigger()
@@ -157,7 +158,7 @@ public class ScheduleService {
 		Date nextStart=triggerStart.getNextFireTime();
 
 		//fire miss trigger by hand
-		if(nextStart.getTime()>=nextStop.getTime()){
+		if(nextStart.getTime()>=nextStop.getTime() ){
 			JobDataMap  dataMap=scheduler.getJobDetail(RuleEngScheduleFactory.START_JOB).getJobDataMap();
 			dataMap.put(TRIGGER_ID, triggerID);
 			scheduler.triggerJob(RuleEngScheduleFactory.START_JOB,dataMap);
