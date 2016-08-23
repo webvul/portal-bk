@@ -4,12 +4,18 @@ import java.io.IOException;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.kii.extension.ruleengine.drools.entity.Trigger;
 import com.kii.extension.ruleengine.drools.entity.TriggerType;
+import com.kii.extension.ruleengine.schedule.ScheduleService;
 import com.kii.extension.ruleengine.store.trigger.WhenType;
 
 public class TestScheduleTrigger extends InitTest {
+
+
+	@Autowired
+	private ScheduleService  scheduleService;
 
 	@Before
 	public void init() throws IOException {
@@ -35,17 +41,17 @@ public class TestScheduleTrigger extends InitTest {
 
 		trigger.setType(TriggerType.simple);
 		trigger.setWhen(WhenType.CONDITION_FALSE_TO_TRUE);
-
+//
 //		trigger.setTriggerID(id);
 
-		addThing(id,String.valueOf(10));
+//		addThing(id,String.valueOf(10));
 
 
 		ruleLoader.addOrUpdateData(trigger);
 
 		updateThingState("10", paramOk);
 
-//		ruleLoader.fireCondition();
+		ruleLoader.fireCondition();
 
 		System.in.read();
 

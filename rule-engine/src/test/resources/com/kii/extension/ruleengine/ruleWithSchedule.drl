@@ -10,27 +10,13 @@ import com.kii.extension.ruleengine.drools.entity.*;
 /////////////////////////////////////
 
 rule "add trigger 500's  express "
-	timer (cron:* 0/1 * * * ?)
+	timer (cron:0/10 * * * * ?)
 when
-    Trigger( $triggerID:triggerID=="500")
-    Thing(triggerID==$triggerID,$thingID:thingID)
-    CurrThing(thing == $thingID)
-    ThingStatusInRule( thingID == $thingID ,(values["foo"]>10&&values["bar"]<0)  )
+    // Trigger( $triggerID:triggerID=="500")
+   // CurrThing(init == false)
 then
-	insertLogical(new MatchResult($triggerID));
+	// insertLogical(new MatchResult($triggerID));
 	System.out.println("the cron been fired:"+System.currentTimeMillis());
 end
 
 
-rule "add trigger 501's  express "
-	timer (int: 0s 1m)
-when
-    Trigger( $triggerID:triggerID=="501"  )
-    Thing(triggerID==$triggerID,$thingID:thingID)
-    CurrThing(thing == $thingID)
-    ThingStatusInRule( thingID==$thingID,(values["foo"]>10&&values["bar"]<0)  )
-then
-	insertLogical(new MatchResult($triggerID));
-	System.out.println("the interval been fired:"+System.currentTimeMillis());
-
-end

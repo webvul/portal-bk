@@ -1,9 +1,5 @@
 {
-  "prepareCondition": {
-    "endCron": "0 0 17 ? * *",
-    "type": "cron",
-    "startCron": "0 0 0 ? * *"
-  },
+
   "description": "time-new",
   "type": "Simple",
   "source": {
@@ -36,7 +32,7 @@
   ],
   "predicate": {
     "schedule": {
-      "cron": "0 0/5 9-11 * * ?",
+      "cron": "0 45 * * * ?",
       "type": "Cron"
     },
     "triggersWhen": "CONDITION_TRUE"

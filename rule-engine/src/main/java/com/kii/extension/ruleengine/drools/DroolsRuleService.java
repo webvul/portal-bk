@@ -235,6 +235,7 @@ public class DroolsRuleService {
 		kb.buildAll();
 		kieContainer.updateToVersion(kb.getKieModule().getReleaseId());
 
+
 		handleMap.clear();
 		getSession().getObjects().forEach((obj)->{
 
