@@ -20,7 +20,29 @@
     },
     "industrytemplate":{
       "displayName":"行业模板管理",
-      "url":"/industrytemplate/**"
+      "url":"/industrytemplate/**",
+      "submodule": {
+        "getIndustryTemplateInfo": {
+          "submodule": {
+            "industryTemplate_getInfo": {
+              "method": "GET",
+              "url": "/industrytemplate/"
+            },
+            "industryTemplate_getObj": {
+              "method": "GET",
+              "url": "/industrytemplate/*"
+            }
+          }
+        },
+        "industryTemplate_setObj":{
+          "method": "PUT",
+          "url": "/industrytemplate/*"
+        },
+        "industryTemplate_addInfo":{
+          "method": "POST",
+          "url": "/industrytemplate"
+        }
+      }
     },
     "user": {
       "displayName": "用户信息",

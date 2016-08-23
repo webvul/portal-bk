@@ -3,7 +3,8 @@
   "denyRuleSet": [
     "usermanager",
     "system",
-    "industrytemplate"
+    "industryTemplate_setObj",
+    "industryTemplate_addInfo"
   ],
   "ruleName": "commUser",
   "acceptRuleSet": []

@@ -333,7 +333,7 @@ public class AuthManager {
 		boolean sign = permisssionTree.doVerify(method, url);
 
 		if (!sign) {
-			throw new UnauthorizedException(UnauthorizedException.ACCESS_INVALID);
+			throw new UnauthorizedException(UnauthorizedException.ACCESS_INVALID,"url",url,"method",method);
 		}
 
 		authService.bindUser(user);

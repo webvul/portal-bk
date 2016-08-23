@@ -1,8 +1,8 @@
 package com.kii.beehive.business.elasticsearch.factory;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.kii.beehive.business.data.Action;
-import com.kii.beehive.business.data.Field;
+import com.kii.beehive.business.elasticsearch.data.Action;
+import com.kii.beehive.business.elasticsearch.data.Field;
 import com.kii.beehive.business.elasticsearch.task.AvgTimeParkingSpaceToGatewayTask;
 import com.kii.beehive.business.elasticsearch.task.BulkUploadTask;
 import com.kii.beehive.business.elasticsearch.task.SearchTask;
