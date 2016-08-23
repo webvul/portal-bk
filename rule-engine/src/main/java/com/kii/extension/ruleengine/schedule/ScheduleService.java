@@ -34,16 +34,16 @@ public class ScheduleService {
 	@Autowired
 	private Scheduler scheduler;
 
-//	@PostConstruct
-	public void startSchedule(){
-
-		try {
-			scheduler.start();
-		} catch (SchedulerException e) {
-			e.printStackTrace();
-			throw new IllegalArgumentException(e);
-		}
-	}
+////	@PostConstruct
+//	public void startSchedule(){
+//
+//		try {
+//			scheduler.start();
+//		} catch (SchedulerException e) {
+//			e.printStackTrace();
+//			throw new IllegalArgumentException(e);
+//		}
+//	}
 	
 	@PreDestroy
 	public void stop(){
