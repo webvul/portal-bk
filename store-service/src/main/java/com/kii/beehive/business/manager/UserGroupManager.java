@@ -115,7 +115,7 @@ public class UserGroupManager {
 		}
 
 		UserGroup orgi = orgiList.get(0);
-		if (!orgi.getCreateBy().equals(loginUserID)) {
+		if (!orgi.getCreateBy().equals(loginUserID.toString())) {
 			throw new UnauthorizedException(UnauthorizedException.NOT_GROUP_CREATER, "group", orgi.getName(), "currUser", String.valueOf(loginUserID));
 		}
 		orgi.setName(userGroup.getName());
