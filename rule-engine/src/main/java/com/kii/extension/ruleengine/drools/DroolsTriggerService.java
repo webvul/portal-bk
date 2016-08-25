@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import com.kii.extension.ruleengine.drools.entity.CurrThing;
 import com.kii.extension.ruleengine.drools.entity.ExternalValues;
 import com.kii.extension.ruleengine.drools.entity.MatchResult;
 import com.kii.extension.ruleengine.drools.entity.MultiplesValueMap;
@@ -183,12 +184,16 @@ public class DroolsTriggerService {
 		getService(trigger).addOrUpdateData(trigger);
 	}
 
-	public void setInitSign(boolean sign){
-		cloudService.setInitSign(sign);
-		streamService.setInitSign(sign);
-
-//		fireCondition();
+	public void startInit(){
+		cloudService.setStatus(CurrThing.Status.inInit);
+		streamService.setStatus(CurrThing.Status.inInit);
 	}
+
+	public void finishInit(){
+		cloudService.setStatus(CurrThing.Status.inIdle);
+		streamService.setStatus(CurrThing.Status.inIdle);
+	}
+
 
 	public void initThingStatus(ThingStatusInRule newStatus){
 

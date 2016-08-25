@@ -62,11 +62,12 @@ public class DroolsRuleService {
 	private final ExternalCollect  external=new ExternalCollect();
 
 
-	public void setInitSign(boolean sign){
-		this.currThing.setInit(sign);
+	public void setStatus(CurrThing.Status  status){
+		this.currThing.setStatus(status);
 
 		kieSession.update(currThingHandler,currThing);
 	}
+
 
 
 	public Map<String,Object>  getEngineEntitys(){
@@ -106,20 +107,6 @@ public class DroolsRuleService {
 		return map;
 	}
 
-
-//
-//	public boolean isRun(){
-//
-//		return true;
-//
-//	}
-//
-//	public void start(){
-//
-//		kieSession.halt();
-//
-//
-//	}
 
 
 	public DroolsRuleService(boolean isStream,String...  rules){
@@ -218,7 +205,7 @@ public class DroolsRuleService {
 
 
 
-	public synchronized void addCondition(String name,String rule){
+	public  void addCondition(String name,String rule){
 
 
 		log.debug("add rule:"+rule);
@@ -245,6 +232,8 @@ public class DroolsRuleService {
 
 		});
 
+		setStatus(CurrThing.Status.inIdle);
+
 	}
 
 
@@ -269,6 +258,10 @@ public class DroolsRuleService {
 			handleMap.put(getEntityKey(obj),handle);
 
 		});
+
+		setStatus(CurrThing.Status.inIdle);
+
+
 	}
 
 
@@ -280,7 +273,7 @@ public class DroolsRuleService {
 
 	public void addOrUpdateExternal(ExternalValues entity){
 
-		currThing.withExtValue();
+		setStatus(CurrThing.Status.inExt);
 
 		external.putEntity(entity.getName(),entity);
 
