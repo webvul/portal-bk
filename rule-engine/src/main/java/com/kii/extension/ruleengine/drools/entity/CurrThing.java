@@ -4,53 +4,48 @@ import java.util.Set;
 
 public class CurrThing {
 
-	private boolean isInit=false;
+	private Status status=Status.inInit;
 
-	private boolean inExt=false;
+	public  enum Status{
 
-	public boolean isInit() {
-		return isInit;
+		inInit,inExt,inThing,inIdle;
+
 	}
 
-	public void setInit(boolean init) {
-		isInit = init;
+	public boolean isInit() {
+		return status==Status.inInit;
+	}
+
+	public void  setStatus(CurrThing.Status  status) {
+
+		this.status=status;
 	}
 
 
 	private String currThing="NONE";
 
-	public String getCurrThing(){
-		return currThing;
-	}
-
-
-	public void withExtValue(){
-
-		inExt=true;
-	}
 
 	public void setCurrThing(String curr){
 		this.currThing=curr;
-		inExt=false;
+		status=Status.inThing;
 	}
 
 	public boolean valid(Set<String> th){
 
 
-		return inExt|| (!isInit&&(th.contains(currThing)));
+		return status==Status.inExt|| (status==Status.inThing&&(th.contains(currThing)));
 
 	}
 
 	public boolean valid(String th){
 
-		return inExt|| (!isInit&&(th.equals(currThing)));
+		return status==Status.inExt|| (status==Status.inThing&&(th.equals(currThing)));
 	}
 
 	@Override
 	public String toString() {
 		return "CurrThing{" +
-				"isInit=" + isInit +
-				", inExt=" + inExt +
+				" status =" + status.name() +
 				", currThing='" + currThing + '\'' +
 				'}';
 	}

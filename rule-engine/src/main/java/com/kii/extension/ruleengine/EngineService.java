@@ -57,15 +57,6 @@ public class EngineService {
 	private RelationStore  relationStore;
 
 
-
-//	@Scheduled(fixedRate=10*60*1000)
-//	public void  daemonDrools(){
-//
-//
-//
-//
-//	}
-
 	private void fillDelayParam(TriggerRecord record){
 
 
@@ -101,8 +92,6 @@ public class EngineService {
 	public void createMultipleSourceTrigger(MultipleSrcTriggerRecord record,Map<String,Set<String> > thingMap){
 
 		fillDelayParam(record);
-
-//		List<String> thingList=thingMap.values().stream().flatMap(th->th.stream()).collect(Collectors.toList());
 
 		relationStore.fillThingTriggerElemIndex(thingMap,record.getTriggerID());
 
@@ -155,9 +144,7 @@ public class EngineService {
 				}
 		);
 
-//		if(record.getPredicate().getSchedule()!=null) {
-			droolsTriggerService.fireCondition();
-//		}
+		droolsTriggerService.fireCondition();
 	}
 
 
@@ -289,10 +276,7 @@ public class EngineService {
 		}
 
 
-
-//		if(record.getPredicate().getSchedule()!=null) {
-			droolsTriggerService.fireCondition();
-//		}
+		droolsTriggerService.fireCondition();
 
 	}
 
@@ -315,12 +299,13 @@ public class EngineService {
 
 	public void initThingStatus(List<ThingStatusInRule> thingInfos) {
 
-		droolsTriggerService.setInitSign(true);
+		droolsTriggerService.startInit();
 
 		thingInfos.forEach(th->droolsTriggerService.initThingStatus(th));
 
+		droolsTriggerService.finishInit();
 		droolsTriggerService.fireCondition();
-		droolsTriggerService.setInitSign(false);
+
 	}
 
 	public void updateThingStatus(String thingID,ThingStatus status,Date time) {
