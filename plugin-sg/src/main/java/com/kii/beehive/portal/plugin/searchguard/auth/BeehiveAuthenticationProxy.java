@@ -155,8 +155,8 @@ public class BeehiveAuthenticationProxy implements AuthenticationBackend, Config
 							}
 						}
 				);
-				System.out.println("User: " + auth.getUser().getUserName() + ", Role: " + auth.getUser().getRoleName());
-				return new User(auth.getUser().getUserName(), Arrays.asList(auth.getUser().getRoleName()));
+				System.out.println("User: " + auth.getUserName() + ", Role: " + auth.getRoleName());
+				return new User(auth.getUserName(), Arrays.asList(auth.getRoleName()));
 			} else {
 				throw new ElasticsearchSecurityException(response.getStatusLine().getStatusCode() + ", " + response
 						.getEntity().getContent().toString());
