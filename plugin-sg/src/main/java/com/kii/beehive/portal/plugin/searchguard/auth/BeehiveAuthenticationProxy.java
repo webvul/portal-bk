@@ -26,7 +26,7 @@ import com.floragunn.searchguard.auth.internal.InternalAuthenticationBackend;
 import com.floragunn.searchguard.configuration.ConfigChangeListener;
 import com.floragunn.searchguard.user.AuthCredentials;
 import com.floragunn.searchguard.user.User;
-import com.kii.beehive.portal.entitys.AuthUser;
+import com.kii.beehive.portal.plugin.searchguard.data.AuthInfo;
 import com.kii.beehive.portal.plugin.searchguard.data.BeehiveAuthCredential;
 
 
@@ -141,12 +141,12 @@ public class BeehiveAuthenticationProxy implements AuthenticationBackend, Config
 				while (0 < (len = br.read(buf))) {
 					sb.append(buf, 0, len);
 				}
-				AuthUser auth = AccessController.doPrivileged(
-						new PrivilegedAction<AuthUser>() {
+				AuthInfo auth = AccessController.doPrivileged(
+						new PrivilegedAction<AuthInfo>() {
 							@Override
-							public AuthUser run() {
+							public AuthInfo run() {
 								try {
-									return mapper.readValue(sb.toString(), AuthUser.class);
+									return mapper.readValue(sb.toString(), AuthInfo.class);
 								} catch (IOException e) {
 									throw new ElasticsearchSecurityException(
 											BeehiveAuthenticationProxy.class.getSimpleName() + ": " +
