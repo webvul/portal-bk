@@ -46,8 +46,7 @@ public class StompDecoderDecorator extends StompDecoder {
 		for (Message<byte[]> message : messages) {
 			StompHeaderAccessor headerAccessor =
 					MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
-			if (StompCommand.SUBSCRIBE.equals(headerAccessor.getCommand()) ||
-					StompCommand.UNSUBSCRIBE.equals(headerAccessor.getCommand())) {
+			if (StompCommand.SUBSCRIBE.equals(headerAccessor.getCommand())) {
 				if (!headerAccessor.getDestination().startsWith(broker)) {
 					continue;
 				}
