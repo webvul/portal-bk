@@ -7,7 +7,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 @Configuration
 @EnableAspectJAutoProxy
-@ComponentScan("com.kii.extension.sdk")
+@ComponentScan(value = "com.kii.extension.sdk")
 public class KiiCloudSDKConfig {
 
 

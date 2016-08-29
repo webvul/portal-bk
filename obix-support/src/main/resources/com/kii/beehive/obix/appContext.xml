@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:cache="http://www.springframework.org/schema/cache"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+         http://www.springframework.org/schema/beans/spring-beans.xsd
+         http://www.springframework.org/schema/cache
+         http://www.springframework.org/schema/cache/spring-cache.xsd
+         http://www.springframework.org/schema/tx
+         http://www.springframework.org/schema/tx/spring-tx.xsd
+         http://www.springframework.org/schema/task
+         http://www.springframework.org/schema/task/spring-task.xsd
+         http://www.springframework.org/schema/context
+         http://www.springframework.org/schema/context/spring-context.xsd">
+
+
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations" value="classpath:com/kii/beehive/obix/config.${spring.profile}.properties"/>
+        <property name="fileEncoding" value="UTF8"/>
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
+    </bean>
+
+    <context:component-scan base-package="com.kii.beehive.obix">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Repository"/>
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Component"/>
+        <context:exclude-filter type="regex"
+                                expression="com.kii.beehive.obix.web.*"></context:exclude-filter>
+    </context:component-scan>
+
+
+    <!-- cache -->
+    <cache:annotation-driven/>
+
+    <bean id="cacheManager"
+          class="org.springframework.cache.ehcache.EhCacheCacheManager">
+        <property name="cacheManager" ref="ehcache"/>
+    </bean>
+
+    <bean id="ehcache" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+        <property name="configLocation" value="classpath:com/kii/beehive/obix/ehcache.xml"/>
+    </bean>
+
+    <!-- task  -->
+
+    <task:annotation-driven executor="myExecutor" scheduler="myScheduler"/>
+    <task:executor id="myExecutor" pool-size="5"/>
+    <task:scheduler id="myScheduler" pool-size="10"/>
+
+    <!-- kiicloud connect -->
+    <bean class="com.kii.extension.factory.KiiCloudSDKConfig"/>
+
+    <bean name="propAppBindTool" class="com.kii.extension.factory.LocalPropertyBindTool">
+        <property name="propFileName"
+                  value="classpath:com/kii/beehive/obix/obix.store.${spring.profile}.properties"/>
+    </bean>
+
+
+    <!--
+    <bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="jdbcUrl" value="${beehive.jdbc.url}"/>
+        <property name="username" value="${beehive.jdbc.username}"/>
+        <property name="password" value="${beehive.jdbc.password}"/>
+    </bean>
+
+    <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <tx:annotation-driven transaction-manager="txManager"/>
+    -->
+
+</beans>

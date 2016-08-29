@@ -8,4 +8,5 @@ include 'cloud-store'
 include 'rule-engine'
 include 'business-component'
 include 'plugin-sg'
+include 'obix-support'
 
