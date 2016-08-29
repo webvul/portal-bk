@@ -110,7 +110,7 @@ public class UserGroupManager {
 		}
 
 		List<UserGroup> userGroupList = userGroupDao.findUserGroupByName(userGroup.getName());
-		if (userGroupList.size() > 0 && userGroupList.get(0).getId() != userGroup.getId()) {
+		if (userGroupList.size() > 0 && !userGroupList.get(0).getId().equals(userGroup.getId())) {
 			throw new DuplicateException(userGroup.getName(), "UserGroup");
 		}
 
