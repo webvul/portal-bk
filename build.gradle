@@ -4,8 +4,8 @@ ext {
     aspectjVersion = "1.8.1"
     jacksonVersion = "2.6.1"
     elasticsearchVersion = "2.3.3"
-    searchGuardVersion = "2.3.3.0-rc1"
-    searchGuardSSLVersion = "2.3.3.13"
+    searchGuardVersion = "2.3.3.5"
+    searchGuardSSLVersion = "2.3.3.15"
 }
 
 allprojects {
