@@ -42,7 +42,7 @@ public class TagManager {
 
 		if (null != tag.getId()) {
 			TagIndex existedTag = getTagIndexes(Arrays.asList(tag.getId().toString())).get(0);
-			if (existedTag.getCreateBy().equals(AuthInfoStore.getUserID())) {
+			if (existedTag.getCreateBy().equals(AuthInfoStore.getUserIDStr())) {
 				throw new UnauthorizedException(UnauthorizedException.NOT_TAG_CREATER);
 			}
 

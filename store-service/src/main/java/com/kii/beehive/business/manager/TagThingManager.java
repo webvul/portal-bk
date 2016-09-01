@@ -292,7 +292,7 @@ public class TagThingManager {
 
 			tagUserRelationDao.saveOrUpdate(new TagUserRelation(tagId, AuthInfoStore.getUserID()));
 		} else {
-			if (!list.get(0).getCreateBy().equals(AuthInfoStore.getUserID())) {
+			if (!list.get(0).getCreateBy().equals(AuthInfoStore.getUserIDStr())) {
 				throw new UnauthorizedException(UnauthorizedException.NOT_TAG_CREATER);
 			}
 			tagId = list.get(0).getId();
@@ -332,7 +332,7 @@ public class TagThingManager {
 	}
 
 	public boolean isTagCreator(TagIndex tag) {
-		if (tag.getCreateBy().equals(AuthInfoStore.getUserID())) {
+		if (tag.getCreateBy().equals(AuthInfoStore.getUserIDStr())) {
 			return true;
 		} else {
 			return false;
@@ -348,7 +348,7 @@ public class TagThingManager {
 	}
 
 	public boolean isThingCreator(GlobalThingInfo thing) {
-		if (thing.getCreateBy().equals(AuthInfoStore.getUserID())) {
+			if (thing.getCreateBy().equals(AuthInfoStore.getUserIDStr())) {
 			return true;
 		} else {
 			return false;
