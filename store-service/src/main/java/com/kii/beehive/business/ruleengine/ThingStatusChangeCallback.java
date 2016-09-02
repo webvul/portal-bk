@@ -30,7 +30,6 @@ public class ThingStatusChangeCallback {
 
 	public void onEventFire( ThingStatus status, String thingID,Date timestamp) {
 
-
 		engine.updateThingStatus(thingID,status,timestamp);
 	}
 

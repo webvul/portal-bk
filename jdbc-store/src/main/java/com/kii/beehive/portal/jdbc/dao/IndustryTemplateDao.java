@@ -36,4 +36,12 @@ public class IndustryTemplateDao extends SpringBaseDao<IndustryTemplate> {
 		List<IndustryTemplate> rows = query(sql, values.toArray() );
 		return rows;
 	}
+	public List<IndustryTemplate> getMaxVersionList() {
+
+		String sql = "SELECT *, max(version) FROM " + TABLE_NAME + " WHERE 1=1"
+				+ " group by schema_type, thing_type, `name`";
+
+		List<IndustryTemplate> rows = query( sql );
+		return rows;
+	}
 }

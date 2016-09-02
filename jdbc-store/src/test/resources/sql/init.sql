@@ -63,7 +63,8 @@ CREATE TABLE `global_thing` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1090 DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `industry_template` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,,
+  `schema_type` varchar(20) NOT NULL COMMENT 'industrytemplate,device,haystack',
   `thing_type` varchar(20) NOT NULL,
   `name` varchar(20) NOT NULL,
   `version` varchar(10) NOT NULL,

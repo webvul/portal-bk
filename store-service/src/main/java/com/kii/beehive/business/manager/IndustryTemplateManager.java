@@ -20,16 +20,19 @@ public class IndustryTemplateManager {
     /**
      * get industry template
      *
-     * @param thingType
-     * @param name
-     * @param verison
-     * @return
      */
-    public List<IndustryTemplate> getIndustryTemplate(String thingType, String name, String verison) {
+    public List<IndustryTemplate> getMaxVersionList() {
+        return dao.getMaxVersionList();
+    }
+    public List<IndustryTemplate> getIndustryTemplate(IndustryTemplate.SchemaType schemaType, String thingType, String name, String verison) {
 
         List<String> fields = new ArrayList<>();
         List<Object> values = new ArrayList<>();
 
+        if(!Strings.isBlank(thingType)) {
+            fields.add(IndustryTemplate.SCHEMA_TYPE);
+            values.add(schemaType.name());
+        }
         if(!Strings.isBlank(thingType)) {
             fields.add(IndustryTemplate.THING_TYPE);
             values.add(thingType);

@@ -29,7 +29,7 @@ import com.kii.beehive.portal.web.exception.PortalException;
  * this class provides the web url access to industry template related functions
  */
 @RestController
-@RequestMapping(path = "/industrytemplate", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+@RequestMapping(path = "/schema", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
 public class IndustryTemplateController {
 
     @Autowired
@@ -38,10 +38,120 @@ public class IndustryTemplateController {
     @Autowired
     private IndustryTemplateManager industryTemplateManager;
 
-    @RequestMapping(path = "/query/list", method = {RequestMethod.GET}, consumes = { "*" })
-    public List<IndustryTemplateRestBean> queryList(@RequestParam("thingType") String thingType, @RequestParam("name") String name) throws IOException {
 
-        List<IndustryTemplate> list = industryTemplateManager.getIndustryTemplate(thingType, name, null);
+    /**
+     * add industry template, below fields are required in the json request body:
+     * - thing type
+     * - industry template name
+     * - industry template version
+     * - content : for the format, refer to "./web-mvc/src/main/resources/com/kii/demohelper/web/industrytemplate/demo.json"
+     *
+     * @param industryTemplateRestBean
+     * @throws JsonProcessingException
+     */
+    @RequestMapping(path = "/manage/{schemaType}", method = {RequestMethod.POST})
+    public Map<String, Object> insert(@PathVariable IndustryTemplate.SchemaType schemaType,
+                                      @RequestBody IndustryTemplateRestBean industryTemplateRestBean) throws JsonProcessingException {
+        Map<String, Object> result = new HashMap<>();
+        result.put("result", "success");
+        industryTemplateRestBean.getIndustryTemplate().setSchemaType( schemaType );
+        industryTemplateRestBean.verifyInput();
+        // check DUPLICATE_OBJECT
+        List<IndustryTemplate> list = industryTemplateManager.getIndustryTemplate(
+                industryTemplateRestBean.getIndustryTemplate().getSchemaType(),
+                industryTemplateRestBean.getIndustryTemplate().getThingType(),
+                industryTemplateRestBean.getIndustryTemplate().getName(),
+                industryTemplateRestBean.getIndustryTemplate().getVersion());
+
+        IndustryTemplate industryTemplate = CollectUtils.getFirst(list);
+        if(industryTemplate != null) {
+            throw new PortalException(ErrorCode.DUPLICATE_OBJECT,"type","industryTemplate","objectID",industryTemplateRestBean.getIndustryTemplate().getName());
+        }
+        //
+        String strContent = objectMapper.writeValueAsString(industryTemplateRestBean.getContent());
+        industryTemplateRestBean.getIndustryTemplate().setContent(strContent);
+
+        industryTemplateManager.insertIndustryTemplate(industryTemplateRestBean.getIndustryTemplate());
+        return result;
+    }
+
+    @RequestMapping(path = "/manage/{schemaType}/{id}", method = {RequestMethod.PUT})
+    public Map<String, Object> update(@PathVariable IndustryTemplate.SchemaType schemaType,
+                                      @PathVariable Long id,
+                                      @RequestBody IndustryTemplateRestBean industryTemplateRestBean) throws JsonProcessingException {
+        Map<String, Object> result = new HashMap<>();
+        result.put("result", "success");
+        IndustryTemplate oldIndustryTemplate = industryTemplateManager.findByID(id);
+        if( oldIndustryTemplate == null) {
+            throw new PortalException(ErrorCode.NOT_FOUND,"type","industryTemplate","objectID",String.valueOf(id));
+        }
+        industryTemplateRestBean.verifyInput();
+        /*//check
+        Map<String, Object> contentMap = industryTemplateRestBean.getContent();
+        if(  ! ( oldIndustryTemplate.getName().equals(contentMap.get("name"))
+                && oldIndustryTemplate.getThingType().equals(contentMap.get("thingType"))
+                && oldIndustryTemplate.getVersion().equals(contentMap.get("version")) )
+                ){
+            throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","industryTemplate");
+        }*/
+        //
+        String strContent = objectMapper.writeValueAsString(industryTemplateRestBean.getContent());
+        oldIndustryTemplate.setContent(strContent);
+
+        industryTemplateManager.updateIndustryTemplate(oldIndustryTemplate);
+        return result;
+    }
+
+
+    @RequestMapping(path = "/query/{schemaType}", method = {RequestMethod.GET}, consumes = { "*" })
+    public IndustryTemplateRestBean query(@PathVariable IndustryTemplate.SchemaType schemaType,
+                                          @RequestParam("thingType") String thingType,
+                                          @RequestParam("name") String name,
+                                          @RequestParam("version") String version) throws IOException {
+
+        List<IndustryTemplate> list = industryTemplateManager.getIndustryTemplate( schemaType, thingType, name, version);
+
+        IndustryTemplate industryTemplate = CollectUtils.getFirst(list);
+        if(industryTemplate == null) {
+            return null;
+        }
+
+        String strContent = industryTemplate.getContent();
+        Map<String, Object> content = (Map<String, Object>)objectMapper.readValue(strContent, Map.class);
+        //
+        IndustryTemplateRestBean restBean = new IndustryTemplateRestBean();
+        restBean.setIndustryTemplate(industryTemplate);
+        restBean.setContent(content);
+        return restBean;
+    }
+
+    @RequestMapping(path = "/query/maxVersion", method = {RequestMethod.GET}, consumes = { "*" })
+    public List<IndustryTemplateRestBean> getMaxVersionList() throws IOException {
+
+        List<IndustryTemplate> list = industryTemplateManager.getMaxVersionList();
+        List<IndustryTemplateRestBean> restBeanList = new ArrayList<>();
+        list.forEach(industryTemplate -> {
+            String strContent = industryTemplate.getContent();
+            Map<String, Object> content = null;
+            try {
+                content = (Map<String, Object>)objectMapper.readValue(strContent, Map.class);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            IndustryTemplateRestBean restBean = new IndustryTemplateRestBean();
+            restBean.setIndustryTemplate(industryTemplate);
+            restBean.setContent(content);
+            restBeanList.add(restBean);
+        });
+
+        return restBeanList;
+    }
+    @RequestMapping(path = "/query/{schemaType}/list", method = {RequestMethod.GET}, consumes = { "*" })
+    public List<IndustryTemplateRestBean> queryList(@PathVariable IndustryTemplate.SchemaType schemaType,
+                                                    @RequestParam("thingType") String thingType,
+                                                    @RequestParam("name") String name) throws IOException {
+
+        List<IndustryTemplate> list = industryTemplateManager.getIndustryTemplate( schemaType, thingType, name, null );
         List<IndustryTemplateRestBean> restBeanList = new ArrayList<>();
         list.forEach(industryTemplate -> {
             String strContent = industryTemplate.getContent();
@@ -61,26 +171,10 @@ public class IndustryTemplateController {
 
         return restBeanList;
     }
-    @RequestMapping(path = "/query", method = {RequestMethod.GET}, consumes = { "*" })
-    public IndustryTemplateRestBean query(@RequestParam("thingType") String thingType, @RequestParam("name") String name, @RequestParam("version") String version) throws IOException {
 
-        List<IndustryTemplate> list = industryTemplateManager.getIndustryTemplate(thingType, name, version);
-
-        IndustryTemplate industryTemplate = CollectUtils.getFirst(list);
-        if(industryTemplate == null) {
-            return null;
-        }
-
-        String strContent = industryTemplate.getContent();
-        Map<String, Object> content = (Map<String, Object>)objectMapper.readValue(strContent, Map.class);
-        //
-        IndustryTemplateRestBean restBean = new IndustryTemplateRestBean();
-        restBean.setIndustryTemplate(industryTemplate);
-        restBean.setContent(content);
-        return restBean;
-    }
-    @RequestMapping(path = "/query/{id}", method = {RequestMethod.GET}, consumes = { "*" })
-    public IndustryTemplateRestBean getById(@PathVariable("id") Long id) throws IOException {
+    @RequestMapping(path = "/query/{schemaType}/{id}", method = {RequestMethod.GET}, consumes = { "*" })
+    public IndustryTemplateRestBean getById(@PathVariable IndustryTemplate.SchemaType schemaType,
+                                            @PathVariable("id") Long id) throws IOException {
 
         IndustryTemplate industryTemplate = industryTemplateManager.findByID(id);
         if(industryTemplate == null) {
@@ -96,82 +190,7 @@ public class IndustryTemplateController {
         return restBean;
     }
 
-    /**
-     * add industry template, below fields are required in the json request body:
-     * - thing type
-     * - industry template name
-     * - industry template version
-     * - content : for the format, refer to "./web-mvc/src/main/resources/com/kii/demohelper/web/industrytemplate/demo.json"
-     *
-     * @param industryTemplateRestBean
-     * @throws JsonProcessingException
-     */
-    @RequestMapping(path = "/manage", method = {RequestMethod.POST})
-    public Map<String, Object> insert(@RequestBody IndustryTemplateRestBean industryTemplateRestBean) throws JsonProcessingException {
-        Map<String, Object> result = new HashMap<>();
-        result.put("result", "success");
 
-        industryTemplateRestBean.verifyInput();
-        // check DUPLICATE_OBJECT
-        List<IndustryTemplate> list = industryTemplateManager.getIndustryTemplate(
-                industryTemplateRestBean.getIndustryTemplate().getThingType(),
-                industryTemplateRestBean.getIndustryTemplate().getName(),
-                industryTemplateRestBean.getIndustryTemplate().getVersion());
 
-        IndustryTemplate industryTemplate = CollectUtils.getFirst(list);
-        if(industryTemplate != null) {
-            throw new PortalException(ErrorCode.DUPLICATE_OBJECT,"type","industryTemplate","objectID",industryTemplateRestBean.getIndustryTemplate().getName());
-        }
-        //
-        String strContent = objectMapper.writeValueAsString(industryTemplateRestBean.getContent());
-        industryTemplateRestBean.getIndustryTemplate().setContent(strContent);
-
-        industryTemplateManager.insertIndustryTemplate(industryTemplateRestBean.getIndustryTemplate());
-        return result;
-    }
-
-    @RequestMapping(path = "/manage/{id}", method = {RequestMethod.PUT})
-    public Map<String, Object> update(@PathVariable Long id, @RequestBody IndustryTemplateRestBean industryTemplateRestBean) throws JsonProcessingException {
-        Map<String, Object> result = new HashMap<>();
-        result.put("result", "success");
-        IndustryTemplate oldIndustryTemplate = industryTemplateManager.findByID(id);
-        if( oldIndustryTemplate == null) {
-            throw new PortalException(ErrorCode.NOT_FOUND,"type","industryTemplate","objectID",String.valueOf(id));
-        }
-        industryTemplateRestBean.verifyInput();
-        //
-        String strContent = objectMapper.writeValueAsString(industryTemplateRestBean.getContent());
-        oldIndustryTemplate.setContent(strContent);
-
-        industryTemplateManager.updateIndustryTemplate(oldIndustryTemplate);
-        return result;
-    }
-
-    /**
-     * get industry template sample, the industry template sample is as below:
-     * - thing type : demoThingType
-     * - industry template name : demoName
-     * - industry template version : demoVer
-     * - content : refer to "./web-mvc/src/main/resources/com/kii/demohelper/web/industrytemplate/demo.json"
-     *
-     * @return
-     * @throws IOException
-     */
-    @RequestMapping(path = "/sample", method = {RequestMethod.GET}, consumes = { "*" })
-    public Map<String, Object> querySample() throws IOException {
-
-        List<IndustryTemplate> list = industryTemplateManager.getIndustryTemplate("demoThingType", "demoName",
-                "demoVer");
-
-        IndustryTemplate industryTemplate = CollectUtils.getFirst(list);
-        if(industryTemplate == null) {
-            return null;
-        }
-
-        String strContent = industryTemplate.getContent();
-        Map<String, Object> result = (Map<String, Object>)objectMapper.readValue(strContent, Map.class);
-
-        return result;
-    }
 
 }
