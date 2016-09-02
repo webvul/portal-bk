@@ -125,27 +125,6 @@ public class IndustryTemplateController {
         return restBean;
     }
 
-    @RequestMapping(path = "/query/all/maxVersion", method = {RequestMethod.GET}, consumes = { "*" })
-    public List<IndustryTemplateRestBean> getMaxVersionList() throws IOException {
-
-        List<IndustryTemplate> list = industryTemplateManager.getMaxVersionList();
-        List<IndustryTemplateRestBean> restBeanList = new ArrayList<>();
-        list.forEach(industryTemplate -> {
-            String strContent = industryTemplate.getContent();
-            Map<String, Object> content = null;
-            try {
-                content = (Map<String, Object>)objectMapper.readValue(strContent, Map.class);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            IndustryTemplateRestBean restBean = new IndustryTemplateRestBean();
-            restBean.setIndustryTemplate(industryTemplate);
-            restBean.setContent(content);
-            restBeanList.add(restBean);
-        });
-
-        return restBeanList;
-    }
     @RequestMapping(path = "/query/{schemaType}/list", method = {RequestMethod.GET}, consumes = { "*" })
     public List<IndustryTemplateRestBean> queryList(@PathVariable IndustryTemplate.SchemaType schemaType,
                                                     @RequestParam("thingType") String thingType,
@@ -191,6 +170,27 @@ public class IndustryTemplateController {
     }
 
 
+    @RequestMapping(path = "/queryMaxVersion", method = {RequestMethod.GET}, consumes = { "*" })
+    public List<IndustryTemplateRestBean> getMaxVersionList() throws IOException {
+
+        List<IndustryTemplate> list = industryTemplateManager.getMaxVersionList();
+        List<IndustryTemplateRestBean> restBeanList = new ArrayList<>();
+        list.forEach(industryTemplate -> {
+            String strContent = industryTemplate.getContent();
+            Map<String, Object> content = null;
+            try {
+                content = (Map<String, Object>)objectMapper.readValue(strContent, Map.class);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            IndustryTemplateRestBean restBean = new IndustryTemplateRestBean();
+            restBean.setIndustryTemplate(industryTemplate);
+            restBean.setContent(content);
+            restBeanList.add(restBean);
+        });
+
+        return restBeanList;
+    }
 
 
 }
