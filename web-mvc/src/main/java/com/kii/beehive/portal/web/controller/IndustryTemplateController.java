@@ -125,7 +125,7 @@ public class IndustryTemplateController {
         return restBean;
     }
 
-    @RequestMapping(path = "/query/maxVersion", method = {RequestMethod.GET}, consumes = { "*" })
+    @RequestMapping(path = "/query/all/maxVersion", method = {RequestMethod.GET}, consumes = { "*" })
     public List<IndustryTemplateRestBean> getMaxVersionList() throws IOException {
 
         List<IndustryTemplate> list = industryTemplateManager.getMaxVersionList();
