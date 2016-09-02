@@ -28,16 +28,17 @@ public class ExecuteResultDao extends AbstractDataAccess<TriggerResult> {
 
 
 	public void addException(ExceptionResponse  response){
-		super.addEntity(response,response.getTriggerID());
+		super.addEntity(response);
 	}
 
 
 	public void addResponse(HttpCallResponse response){
-		super.addEntity(response,response.getTriggerID());
+
+		super.addEntity(response);
 	}
 
 	public void addCommandResult(CommandResponse commandResponse) {
 
-		super.addEntity(commandResponse,commandResponse.getTriggerID());
+		super.addEntity(commandResponse);
 	}
 }

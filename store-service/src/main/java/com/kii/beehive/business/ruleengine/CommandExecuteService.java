@@ -125,6 +125,8 @@ public class CommandExecuteService {
 
 							httpCallService.doHttpApiCall(call,record.getTriggerID());
 
+
+
 							break;
 					}
 				}

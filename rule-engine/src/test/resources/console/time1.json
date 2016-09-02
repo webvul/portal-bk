@@ -1,0 +1,45 @@
+{
+  "prepareCondition": {
+    "endCron": "0 0 19 ? * *",
+    "type": "cron",
+    "startCron": "0 0 9 ? * *"
+  },
+  "description": "time",
+  "type": "Summary",
+  "summarySource": {},
+  "userID": 640,
+  "targets": [
+    {
+      "tagList": [],
+      "thingList": [
+        1
+      ],
+      "doubleCheck": false,
+      "type": "ThingCommand",
+      "andExpress": false,
+      "command": {
+        "metadata": {
+          "type": "Lighting"
+        },
+        "schemaVersion": 0,
+        "actions": [
+          {
+            "turnPower": {
+              "Power": true
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "predicate": {
+    "schedule": {
+      "cron": "0 57 17 * * ?",
+      "type": "Cron"
+    },
+    "triggersWhen": "CONDITION_TRUE"
+  },
+  "recordStatus": "enable",
+  "targetParamList": [],
+  "name": "time"
+}
