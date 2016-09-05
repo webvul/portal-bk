@@ -55,7 +55,7 @@ public class CrossTriggerController {
 
 		String triggerID = null;
 
-		record.setRecordStatus(TriggerRecord.StatusType.disable);
+		record.setRecordStatus(TriggerRecord.StatusType.enable);
 
 		TriggerRecord trigger = mang.createTrigger(record);
 

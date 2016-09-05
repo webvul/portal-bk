@@ -1,7 +1,7 @@
 package com.kii.extension.ruleengine.store.trigger;
 
 
-public class GatewayTriggerRecord extends  TriggerRecord{
+public class GatewayTriggerRecord extends  SummaryTriggerRecord{
 
 
 
@@ -10,17 +10,6 @@ public class GatewayTriggerRecord extends  TriggerRecord{
 	private String gatewayFullKiiThingID;
 
 	private VendorThingList source=new VendorThingList();
-
-//	private TriggerGroupPolicy  policy;
-
-
-//	public TriggerGroupPolicy getPolicy() {
-//		return policy;
-//	}
-//
-//	public void setPolicy(TriggerGroupPolicy policy) {
-//		this.policy = policy;
-//	}
 
 
 	public VendorThingList getSource() {

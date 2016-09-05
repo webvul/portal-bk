@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -196,26 +197,29 @@ public class TriggerManager {
 	private GatewayTriggerRecord createGatewayRecord(SummaryTriggerRecord  summaryRecord){
 
 
-		GatewayTriggerRecord triggerRecord = new GatewayTriggerRecord();
-		triggerRecord.setRecordStatus(TriggerRecord.StatusType.enable);
-		triggerRecord.setPreparedCondition(summaryRecord.getPreparedCondition());
+		GatewayTriggerRecord gatewayTriggerRecord = new GatewayTriggerRecord();
+
+		BeanUtils.copyProperties(summaryRecord, gatewayTriggerRecord);
+
+		gatewayTriggerRecord.setRecordStatus(TriggerRecord.StatusType.enable);
+//		gatewayTriggerRecord.setPreparedCondition(summaryRecord.getPreparedCondition());
 		//
-		SimpleCondition condition = (SimpleCondition)( (AndLogic) ( ( (AndLogic) summaryRecord.getPredicate().getCondition() ).getClauses().get(0) ) ).getClauses().get(0);
-		//process "field": "EnvironmentSensor.Bri",
-		condition.setField(condition.getField().substring(condition.getField().indexOf(".")+1));
-		triggerRecord.setPredicate(summaryRecord.getPredicate());
-		triggerRecord.getPredicate().setCondition(condition);
-
-		triggerRecord.setTargetParamList(summaryRecord.getTargetParamList());
-
-		triggerRecord.setUserID(summaryRecord.getUserID());
-		triggerRecord.setDescription(summaryRecord.getDescription());
+//		SimpleCondition condition = (SimpleCondition)( (AndLogic) ( ( (AndLogic) summaryRecord.getPredicate().getCondition() ).getClauses().get(0) ) ).getClauses().get(0);
+//		//process "field": "EnvironmentSensor.Bri",
+//		condition.setField(condition.getField().substring(condition.getField().indexOf(".")+1));
+//		gatewayTriggerRecord.setPredicate(summaryRecord.getPredicate());
+//		gatewayTriggerRecord.getPredicate().setCondition(condition);
+//
+//		gatewayTriggerRecord.setTargetParamList(summaryRecord.getTargetParamList());
+//
+//		gatewayTriggerRecord.setUserID(summaryRecord.getUserID());
+//		gatewayTriggerRecord.setDescription(summaryRecord.getDescription());
 
 		Collection<SummarySource> sourceCollection = summaryRecord.getSummarySource().values();
 		TagSelector selector = sourceCollection.iterator().next().getSource();
 
 		GlobalThingInfo sourceThing = globalThingDao.findByID(selector.getThingList().get(0));
-		triggerRecord.getSource().getVendorThingIdList().add(sourceThing.getVendorThingID());
+		gatewayTriggerRecord.getSource().getVendorThingIdList().add(sourceThing.getVendorThingID());
 
 		//
 		ThingOfKiiCloud gatewayOfKiiCloud = thingIFService.getThingGateway(sourceThing.getFullKiiThingID());
@@ -246,7 +250,7 @@ public class TriggerManager {
 						}
 						cmdInGW.getSelector().getVendorThingIdList().add(thing.getVendorThingID());
 					}
-					triggerRecord.addTarget(cmdInGW);
+					gatewayTriggerRecord.addTarget(cmdInGW);
 					break;
 				case "HttpApiCall":
 					throw new IllegalStateException();
@@ -256,13 +260,13 @@ public class TriggerManager {
 
 //		String thingID="th.f83120e36100-a269-5e11-bf4b-0c5b4813";
 		String vendorThingID=globalThingDao.getThingByFullKiiThingID(sourceThing.getKiiAppID(), thingID).getVendorThingID();
-		triggerRecord.setGatewayVendorThingID(vendorThingID);
-		triggerRecord.setGatewayFullKiiThingID(fullKiiThingID);
-		triggerDao.addKiiEntity(triggerRecord);
+		gatewayTriggerRecord.setGatewayVendorThingID(vendorThingID);
+		gatewayTriggerRecord.setGatewayFullKiiThingID(fullKiiThingID);
+		triggerDao.addKiiEntity(gatewayTriggerRecord);
 
-		sendGatewayCommand(triggerRecord,GatewayCommand.createTrigger);
+		sendGatewayCommand(gatewayTriggerRecord,GatewayCommand.createTrigger);
 
-		return triggerRecord;
+		return gatewayTriggerRecord;
 
 	}
 
