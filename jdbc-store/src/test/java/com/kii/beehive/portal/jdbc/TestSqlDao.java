@@ -86,15 +86,15 @@ public class TestSqlDao extends TestTemplate {
 
 		for(ThingLocQuery q:array){
 
-			thingLocDao.getIDsByLocationAndTypeGroup(q);
+			thingLocDao.getIDsByLocationAndTypeGroup(q,10l);
 
-			thingLocDao.getIDsByTypeGroup(q,true);
+			thingLocDao.getIDsByTypeGroup(q,10l,true);
 
-			thingLocDao.getIDsByTypeGroup(q,false);
+			thingLocDao.getIDsByTypeGroup(q,10l,false);
 
-			thingLocDao.getThingsByLocation(q);
+			thingLocDao.getThingsByLocation(q,10l);
 
-			thingLocDao.getRelationThingsByThingLocatoin(100l,q);
+			thingLocDao.getRelationThingsByThingLocatoin(100l,10l,q);
 
 		}
 

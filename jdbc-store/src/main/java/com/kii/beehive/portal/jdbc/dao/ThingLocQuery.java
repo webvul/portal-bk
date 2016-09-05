@@ -1,6 +1,6 @@
 package com.kii.beehive.portal.jdbc.dao;
 
-import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -18,43 +18,43 @@ public class ThingLocQuery {
 	private boolean includeSub;
 
 
-	public String fillSubQuery(List<Object> paramList){
+	public String fillSubQuery(Map<String,Object> paramList){
 
 		String sqlTmp="";
 		if(StringUtils.isNoneBlank(getType())){
-			sqlTmp+=" and th."+ GlobalThingInfo.THING_TYPE+" =  ? ";
-			paramList.add(getType());
+			sqlTmp+=" and th."+ GlobalThingInfo.THING_TYPE+" =  :type ";
+			paramList.put("type",getType());
 		}
 
 
 		if(includeLocation()){
 			sqlTmp+="and loc."+ ThingLocationRelation.LOCATION+getLocationQuery();
-			paramList.add(getLocationParam());
+			paramList.put("loc",getLocationParam());
 		}
 
 		return sqlTmp;
 	}
 
 
-	public String fillLocQuery(List<Object> paramList){
+	public String fillLocQuery(Map<String,Object> paramList){
 
 		String sqlTmp="";
 
 		if(includeLocation()){
 			sqlTmp+="and loc."+ ThingLocationRelation.LOCATION+getLocationQuery();
-			paramList.add(getLocationParam());
+			paramList.put("loc",getLocationParam());
 		}
 
 		return sqlTmp;
 	}
 
-	public String fillTypeQuery(List<Object> paramList){
+	public String fillTypeQuery(Map<String,Object> paramList){
 
 		String sqlTmp="";
 
 		if(StringUtils.isNoneBlank(getType())){
-			sqlTmp+=" and th."+ GlobalThingInfo.THING_TYPE+" =  ? ";
-			paramList.add(getType());
+			sqlTmp+=" and th."+ GlobalThingInfo.THING_TYPE+" =  :type ";
+			paramList.put("type",getType());
 		}
 
 		return sqlTmp;
@@ -76,9 +76,9 @@ public class ThingLocQuery {
 
 	private String getLocationQuery(){
 		if(includeSub) {
-			return " like ? ";
+			return " like :loc ";
 		}else{
-			return " = ? ";
+			return " = :loc ";
 		}
 	}
 

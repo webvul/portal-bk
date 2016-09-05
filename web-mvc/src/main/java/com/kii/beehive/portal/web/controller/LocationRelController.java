@@ -29,7 +29,7 @@ public class LocationRelController {
 	@RequestMapping(value="/things/{thingID}/locationTag/{location}",method = RequestMethod.PUT,consumes = {MediaType.ALL_VALUE})
 	public void addLocationInThing(@PathVariable("thingID") long thingID,@PathVariable("location") String location){
 
-		manager.updateRelation(thingID, Collections.singletonList(location));
+		manager.addRelation(thingID, Collections.singletonList(location));
 
 	}
 

@@ -221,3 +221,34 @@ CREATE TABLE `thing_geo` (
   `is_deleted` tinyint(4) DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+
+create or replace  view   view_thing_user_ownership  as
+select DISTINCT
+th.`id_global_thing` as thing_id ,
+u.beehive_user_id as user_id ,
+tag.tag_id as tag_id ,
+g.user_group_id as group_id ,
+gg.user_group_id as tag_group_id,
+convert(th.create_by,signed) as th_create,
+convert(tag.create_by ,signed) as tag_create ,
+convert(g.create_by ,signed) as group_create ,
+convert(gg.create_by ,signed) as tag_group_create,
+if(u.beehive_user_id  in (
+ convert(th.create_by , SIGNED),convert (tag.create_by , SIGNED ),convert(g.create_by , SIGNED),convert(gg.create_by,SIGNED))
+  ,true,false)  as is_creater
+from global_thing th
+ left join rel_thing_user  rtu on rtu.`thing_id` = th.`id_global_thing`
+ left join rel_thing_tag rtt on rtt.`thing_id` = th.id_global_thing
+ left join rel_thing_group rtg on rtg.`thing_id` = th.id_global_thing
+ left join tag_index tag on ( tag.`tag_id` = rtt.tag_id)
+ left join user_group g on ( g.user_group_id = rtg.user_group_id )
+
+ left join rel_tag_group  rttg on rttg.tag_id =tag.tag_id
+ left join user_group gg on (gg.user_group_id = rttg.user_group_id)
+
+ left join rel_tag_user rttu on rttu.tag_id = tag.tag_id
+ left join `rel_group_user` rgu on ( rgu.`user_group_id` =  g.user_group_id or rgu.user_group_id = gg.user_group_id  )
+ join beehive_user u on ( u.beehive_user_id
+ in ( rtu.beehive_user_id , rttu.beehive_user_id , rgu.beehive_user_id ,
+ convert(th.create_by , SIGNED),convert (tag.create_by , SIGNED ),convert(g.create_by , SIGNED),convert(gg.create_by,SIGNED))
+  )

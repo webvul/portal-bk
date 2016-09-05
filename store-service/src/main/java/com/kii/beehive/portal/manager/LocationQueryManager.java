@@ -10,6 +10,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.ThingLocQuery;
@@ -37,17 +38,17 @@ public class LocationQueryManager {
 
 	public List<Long> doQueryForReport(ThingLocQuery query){
 
-		return thingLocDao.getThingsByLocation(query).stream().map(GlobalThingInfo::getId).collect(Collectors.toList());
+		return thingLocDao.getThingsByLocation(query,AuthInfoStore.getUserID()).stream().map(GlobalThingInfo::getId).collect(Collectors.toList());
 
 	}
 
 	public Map<String,ThingLocationDao.ThingIDs> doQueryWithGroup(ThingLocQuery query, boolean withType){
-		return thingLocDao.getIDsByTypeGroup(query,withType);
+		return thingLocDao.getIDsByTypeGroup(query,AuthInfoStore.getUserID(),withType);
 	}
 
 	public Map<String,Map<String,ThingLocationDao.ThingIDs>> doQueryForReportWithAllGroup(ThingLocQuery query){
 
-			return thingLocDao.getIDsByLocationAndTypeGroup(query);
+			return thingLocDao.getIDsByLocationAndTypeGroup(query,AuthInfoStore.getUserID());
 	}
 
 
@@ -56,13 +57,13 @@ public class LocationQueryManager {
 
 	public List<GlobalThingInfo>  getRelThing(Long thingID,ThingLocQuery query){
 		verifyThingID(thingID);
-		return thingLocDao.getRelationThingsByThingLocatoin(thingID,query);
+		return thingLocDao.getRelationThingsByThingLocatoin(thingID,AuthInfoStore.getUserID(),query);
 	}
 
 	//===========================
 	public List<GlobalThingInfo>  getThingsByLocation(ThingLocQuery query){
 
-		return thingLocDao.getThingsByLocation(query);
+		return thingLocDao.getThingsByLocation(query, AuthInfoStore.getUserID());
 	}
 
 	private void verifyThingID(Long thingID){

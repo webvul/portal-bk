@@ -36,25 +36,28 @@ on th.thing_id = loc.thing_id
 Where    loc.location like “locationPrefix%” [and th.type = ?]
 	 */
 
-	private static final String sqlTmpQueryThing="select th.* from ${1} th " +
+	private static final String sqlTmpQueryThing="select th.* from ${1} th inner join ${6} rel  on rel.${7} = th.${0} " +
 			" where th.${0} in " +
 			" (select loc.${3} from  ${2} loc where th.${0} = loc.${3} ${4} ) " +
-			"  ${5}  ";
+			"  and rel.${8} = :user_id " +
+			"  ${5} ";
 
-	public List<GlobalThingInfo> getThingsByLocation(ThingLocQuery query){
+	public List<GlobalThingInfo> getThingsByLocation(ThingLocQuery query,long userID){
 
-		List<Object> paramList=new ArrayList<>();
+		Map<String,Object> paramMap=new HashMap<>();
 
-		String subLocQuery=query.fillLocQuery(paramList);
+		String subLocQuery=query.fillLocQuery(paramMap);
 
-		String subQuery=query.fillTypeQuery(paramList);
+		String subQuery=query.fillTypeQuery(paramMap);
 
 		String fullSql= StrTemplate.gener(sqlTmpQueryThing,
 				GlobalThingInfo.ID_GLOBAL_THING,GlobalThingSpringDao.TABLE_NAME,ThingLocationRelDao.TABLE_NAME,
-				ThingLocationRelation.THING_ID,subLocQuery,subQuery);
+				ThingLocationRelation.THING_ID,subLocQuery,subQuery,
+				GlobalThingInfo.VIEW_THING_OWNER,GlobalThingInfo.VIEW_THING_ID,GlobalThingInfo.VIEW_USER_ID);
 
+		paramMap.put("user_id",userID);
 
-		return query(fullSql,paramList.toArray(new Object[0]));
+		return queryByNamedParam(fullSql,paramMap);
 	}
 
 
@@ -69,27 +72,31 @@ Where thing_id  in
  */
 
 
-	private static final String sqlTmpRelThing="select  th.* from ${0} th where th.${1} in " +
+	private static final String sqlTmpRelThing="select  th.* from ${0} th " +
+			" inner join ${7}  v on v.${8} = th.${1}  where th.${1} in " +
 			"(select loc.${2} from ${3} locSrc  inner join  ${3}  loc on  locSrc.${4} = loc.${4} " +
-			" where locSrc.${2} =  ?  ${5} )  ${6}  ";
+			" where locSrc.${2} =  :thing_id  ${5} ) " +
+			" and v.${9} = :user_id " +
+			" ${6}  ";
 
-	public List<GlobalThingInfo> getRelationThingsByThingLocatoin(long thingID,ThingLocQuery query ){
+	public List<GlobalThingInfo> getRelationThingsByThingLocatoin(long thingID,long userID,ThingLocQuery query ){
 
-		List<Object> paramList=new ArrayList<>();
-		paramList.add(thingID);
+		Map<String,Object> paramMap=new HashMap<>();
+		paramMap.put("thing_id",thingID);
+		paramMap.put("user_id",userID);
+
+		String subQuery1=query.fillLocQuery(paramMap);
 
 
-		String subQuery1=query.fillLocQuery(paramList);
-
-
-		String subQuery2=query.fillTypeQuery(paramList);
+		String subQuery2=query.fillTypeQuery(paramMap);
 
 		String fullSql=StrTemplate.gener(sqlTmpRelThing,
 				GlobalThingSpringDao.TABLE_NAME,GlobalThingInfo.ID_GLOBAL_THING,ThingLocationRelation.THING_ID,
 				ThingLocationRelDao.TABLE_NAME, ThingLocationRelation.LOCATION,subQuery1,
-				subQuery2);
+				subQuery2,GlobalThingInfo.VIEW_THING_OWNER,GlobalThingInfo.VIEW_THING_ID,
+				GlobalThingInfo.VIEW_USER_ID);
 
-		return super.query(fullSql,paramList.toArray(new Object[0]));
+		return super.queryByNamedParam(fullSql,paramMap);
 
 	}
 
@@ -106,13 +113,15 @@ Group by   thing.type, substring(loc.location ,？,？ )
 
 	private static final String sqlTmpWithGroup="select group_concat(th.${0}) as thingids, ${1} as name from " +
 			" ${2} th inner join  ${3} loc on th.${4} = loc.${5} " +
-			" where th.is_deleted = false  ${6} " +
+			"  inner join ${7} v on v.${8} = th.${0} " +
+			" where th.is_deleted = false  and v.${9} = :user_id " +
+			" ${6} " +
 			" group by ${1}  ";
-	public Map<String,ThingIDs> getIDsByTypeGroup(ThingLocQuery query,boolean groupByType){
+	public Map<String,ThingIDs> getIDsByTypeGroup(ThingLocQuery query,long userID,boolean groupByType){
 
 
-		List<Object> paramList=new ArrayList<>();
-		String subQuery=query.fillSubQuery(paramList);
+		Map<String,Object> paramMap=new HashMap<>();
+		String subQuery=query.fillSubQuery(paramMap);
 
 		String subGroup="loc."+ThingLocationRelation.LOCATION;
 		if(groupByType){
@@ -122,9 +131,11 @@ Group by   thing.type, substring(loc.location ,？,？ )
 		String fullSql=StrTemplate.gener(sqlTmpWithGroup,
 				GlobalThingInfo.ID_GLOBAL_THING,subGroup,GlobalThingSpringDao.TABLE_NAME,
 				ThingLocationRelDao.TABLE_NAME, GlobalThingInfo.ID_GLOBAL_THING,ThingLocationRelation.THING_ID,
-				subQuery);
+				subQuery,GlobalThingInfo.VIEW_THING_OWNER,GlobalThingInfo.VIEW_THING_ID,
+				GlobalThingInfo.VIEW_USER_ID);
 
-		List<Map<String,Object>>  list=jdbcTemplate.queryForList(fullSql,paramList.toArray(new Object[0]));
+		paramMap.put("user_id",userID);
+		List<Map<String,Object>>  list=namedJdbcTemplate.queryForList(fullSql,paramMap);
 
 		Map<String,ThingIDs> result=new HashMap<>();
 
@@ -146,19 +157,23 @@ Group by   thing.type, substring(loc.location ,？,？ )
 	private static final String SqlTmpWithTwoGroup=
 			"select group_concat(th.${0}) as thingids, th.${1} as type,loc.${2} as location  from " +
 			" ${3} th inner join  ${4} loc on th.${5} = loc.${6} " +
-			" where th.is_deleted = false  ${7} " +
+			" inner join ${8} v on v.${9} = th.${0} " +
+			" where th.is_deleted = false and v.${10} = :user_id  ${7} " +
 			" group by th.${1},loc.${2}   ";
-	public Map<String,Map<String,ThingIDs>> getIDsByLocationAndTypeGroup(ThingLocQuery query){
+	public Map<String,Map<String,ThingIDs>> getIDsByLocationAndTypeGroup(ThingLocQuery query,long userID){
 
-		List<Object> paramList=new ArrayList<>();
-		String subQuery=query.fillSubQuery(paramList);
+		Map<String,Object> paramMap=new HashMap<>();
+		String subQuery=query.fillSubQuery(paramMap);
 
 		String fullSql=StrTemplate.gener(SqlTmpWithTwoGroup,
 				GlobalThingInfo.ID_GLOBAL_THING,GlobalThingInfo.THING_TYPE,ThingLocationRelation.LOCATION,
 				GlobalThingSpringDao.TABLE_NAME,ThingLocationRelDao.TABLE_NAME,GlobalThingInfo.ID_GLOBAL_THING,
-				ThingLocationRelation.THING_ID,subQuery);
+				ThingLocationRelation.THING_ID,subQuery,GlobalThingInfo.VIEW_THING_OWNER,
+				GlobalThingInfo.VIEW_THING_ID,GlobalThingInfo.VIEW_USER_ID);
 
-		List<Map<String,Object>>  list=jdbcTemplate.queryForList(fullSql,paramList.toArray(new Object[0]));
+		paramMap.put("user_id",userID);
+
+		List<Map<String,Object>>  list=namedJdbcTemplate.queryForList(fullSql,paramMap);
 
 		Map<String,Map<String,ThingIDs>> result=new HashMap<>();
 
