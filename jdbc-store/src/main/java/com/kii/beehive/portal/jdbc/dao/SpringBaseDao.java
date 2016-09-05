@@ -109,7 +109,7 @@ public abstract class SpringBaseDao<T extends BusinessEntity> {
 	}
 
 	private static Pattern wherePtn = Pattern.compile("\\swhere\\s", Pattern.CASE_INSENSITIVE);
-	private static Pattern fromPtn = Pattern.compile("select\\s+(\\w+\\.)(\\*|\\w+)\\s+from", Pattern.CASE_INSENSITIVE);
+	private static Pattern fromPtn = Pattern.compile("select\\s+(?:distinct)\\s+(\\w+\\.)(\\*|\\w+)\\s+from", Pattern.CASE_INSENSITIVE);
 
 	protected String addDelSignPrefix(String sql) {
 

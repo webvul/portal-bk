@@ -38,7 +38,7 @@ Where    loc.location like “locationPrefix%” [and th.type = ?]
 
 	private static final String sqlTmpQueryThing="select distinct th.* from ${1} th inner join ${6} rel  on rel.${7} = th.${0} " +
 			" where th.${0} in " +
-			" (select loc.${3} from  ${2} loc where th.${0} = loc.${3} ${4} ) " +
+			" (select loc.${3} from  ${2} loc where th.${0} = loc.${3} ${4} )  " +
 			"  and rel.${8} = :user_id " +
 			"  ${5} ";
 
