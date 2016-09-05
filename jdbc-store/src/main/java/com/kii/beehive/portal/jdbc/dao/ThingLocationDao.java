@@ -36,7 +36,7 @@ on th.thing_id = loc.thing_id
 Where    loc.location like “locationPrefix%” [and th.type = ?]
 	 */
 
-	private static final String sqlTmpQueryThing="select th.* from ${1} th inner join ${6} rel  on rel.${7} = th.${0} " +
+	private static final String sqlTmpQueryThing="select distinct th.* from ${1} th inner join ${6} rel  on rel.${7} = th.${0} " +
 			" where th.${0} in " +
 			" (select loc.${3} from  ${2} loc where th.${0} = loc.${3} ${4} ) " +
 			"  and rel.${8} = :user_id " +
@@ -72,7 +72,7 @@ Where thing_id  in
  */
 
 
-	private static final String sqlTmpRelThing="select  th.* from ${0} th " +
+	private static final String sqlTmpRelThing="select distinct th.* from ${0} th " +
 			" inner join ${7}  v on v.${8} = th.${1}  where th.${1} in " +
 			"(select loc.${2} from ${3} locSrc  inner join  ${3}  loc on  locSrc.${4} = loc.${4} " +
 			" where locSrc.${2} =  :thing_id  ${5} ) " +
@@ -111,7 +111,7 @@ Group by   thing.type, substring(loc.location ,？,？ )
 	 */
 
 
-	private static final String sqlTmpWithGroup="select group_concat(th.${0}) as thingids, ${1} as name from " +
+	private static final String sqlTmpWithGroup="select group_concat(DISTINCT th.${0}) as thingids,  ${1} as name from " +
 			" ${2} th inner join  ${3} loc on th.${4} = loc.${5} " +
 			"  inner join ${7} v on v.${8} = th.${0} " +
 			" where th.is_deleted = false  and v.${9} = :user_id " +
