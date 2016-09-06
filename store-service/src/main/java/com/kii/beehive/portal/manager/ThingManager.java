@@ -1,40 +1,33 @@
 package com.kii.beehive.portal.manager;
 
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.exception.DuplicateException;
 import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.beehive.portal.exception.UnauthorizedException;
-import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
-import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
-import com.kii.beehive.portal.jdbc.dao.TagThingRelationDao;
-import com.kii.beehive.portal.jdbc.dao.TeamThingRelationDao;
-import com.kii.beehive.portal.jdbc.dao.ThingGeoDao;
-import com.kii.beehive.portal.jdbc.dao.ThingLocationRelDao;
-import com.kii.beehive.portal.jdbc.dao.ThingUserRelationDao;
+import com.kii.beehive.portal.jdbc.dao.*;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.TeamThingRelation;
 import com.kii.beehive.portal.jdbc.entity.ThingUserRelation;
 import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
 import com.kii.extension.sdk.exception.ObjectNotFoundException;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 @Component
 @Transactional
 public class ThingManager {
 
 	@Autowired
-	private GlobalThingSpringDao  thingDao;
+	private GlobalThingSpringDao thingDao;
 
 
 	@Autowired
@@ -64,10 +57,10 @@ public class ThingManager {
 	@Autowired
 	private ThingGeoDao thingGeoDao;
 
-	public List<Map<String,Object>> getThingDetailByIDList(List<Long> thingIDs){
+	public List<Map<String, Object>> getThingDetailByIDList(List<Long> thingIDs) {
 
 
-		if(thingIDs==null||thingIDs.isEmpty()){
+		if (thingIDs == null || thingIDs.isEmpty()) {
 			return new ArrayList<>();
 		}
 
@@ -89,18 +82,18 @@ public class ThingManager {
 		GlobalThingInfo gateway = getThingsByVendorThingId(gatewayID);
 
 		thingInfo.setCreateBy(gateway.getCreateBy());
-		return createThing(thingInfo,location);
+		return createThing(thingInfo, location);
 	}
 
 
 	public Long createThing(GlobalThingInfo thingInfo, String location)
 			throws ObjectNotFoundException, UnauthorizedException {
-		Long id=thingInfo.getId();
+		Long id = thingInfo.getId();
 
 		GlobalThingInfo existTh = getThingsByVendorThingId(thingInfo.getVendorThingID());
 
-		if (existTh!=null&&existTh.getId().equals(thingInfo.getId())) {
-			throw new DuplicateException(thingInfo.getVendorThingID(),"thing");
+		if (existTh != null && !existTh.getId().equals(thingInfo.getId())) {
+			throw new DuplicateException(thingInfo.getVendorThingID(), "thing");
 		}
 
 		KiiAppInfo kiiAppInfo = appInfoDao.getAppInfoByID(thingInfo.getKiiAppID());
@@ -116,21 +109,21 @@ public class ThingManager {
 		}
 
 
-		if(id==null){
-			id=globalThingDao.insert(thingInfo);
+		if (id == null) {
+			id = globalThingDao.insert(thingInfo);
 
 			ThingUserRelation relation = new ThingUserRelation();
 			relation.setBeehiveUserID(Long.valueOf(thingInfo.getCreateBy()));
 			relation.setThingId(id);
 			thingUserRelationDao.saveOrUpdate(relation);
-			if(StringUtils.isNotBlank(location)) {
+			if (StringUtils.isNotBlank(location)) {
 				locationRelDao.addRelation(id, Collections.singletonList(location));
 			}
 
-		}else{
-			getCanUpdateThingById(AuthInfoStore.getUserID(),id);
+		} else {
+			getCanUpdateThingById(AuthInfoStore.getUserID(), id);
 			thingInfo.fillFullKiiThingID();
-			globalThingDao.updateEntityByID(thingInfo,id);
+			globalThingDao.updateEntityByID(thingInfo, id);
 		}
 
 
@@ -145,7 +138,7 @@ public class ThingManager {
 	}
 
 
-	private  GlobalThingInfo getCanUpdateThingById(Long userId, Long thingId) throws ObjectNotFoundException {
+	private GlobalThingInfo getCanUpdateThingById(Long userId, Long thingId) throws ObjectNotFoundException {
 		if (null != thingUserRelationDao.find(thingId, userId)) { // must be creator
 			GlobalThingInfo thingInfo = globalThingDao.findByID(thingId);
 			if (null != thingInfo) {
