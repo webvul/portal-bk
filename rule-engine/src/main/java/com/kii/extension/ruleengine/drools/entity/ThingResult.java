@@ -3,7 +3,7 @@ package com.kii.extension.ruleengine.drools.entity;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ThingResult {
+public class ThingResult implements  RuntimeEntry{
 
 
 	private final String triggerID;
@@ -48,6 +48,11 @@ public class ThingResult {
 				", name='" + name + '\'' +
 				", value=" + value +
 				'}';
+	}
+
+	@Override
+	public String getID() {
+		return triggerID+":thing:"+name;
 	}
 
 //	@Override

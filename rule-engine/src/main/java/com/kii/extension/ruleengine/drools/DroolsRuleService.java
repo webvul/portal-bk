@@ -34,6 +34,7 @@ import org.springframework.stereotype.Component;
 import com.kii.extension.ruleengine.drools.entity.CurrThing;
 import com.kii.extension.ruleengine.drools.entity.ExternalCollect;
 import com.kii.extension.ruleengine.drools.entity.ExternalValues;
+import com.kii.extension.ruleengine.drools.entity.RuntimeEntry;
 
 @Component
 @Scope(scopeName= ConfigurableBeanFactory.SCOPE_PROTOTYPE)
@@ -305,7 +306,12 @@ public class DroolsRuleService {
 	}
 
 	private String getEntityKey(Object entity) {
-		return entity.getClass().getName()+":"+entity.hashCode();
+		if(entity instanceof RuntimeEntry) {
+
+			return entity.getClass().getName()+":"+((RuntimeEntry)entity).getID();
+		}else{
+			return entity.getClass().getName()+":"+entity.hashCode();
+		}
 	}
 
 	public <T> List<T> doQuery(String queryName,Object... params){

@@ -22,6 +22,14 @@ public class CurrThing {
 	}
 
 
+	public CurrThing.Status getStatus(){
+		return status;
+	}
+
+	public String getCurrThing(){
+		return currThing;
+	}
+
 	private String currThing="NONE";
 
 

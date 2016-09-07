@@ -147,6 +147,7 @@ public class RuleEngineConsole {
 				break;
 			case "remove":
 				engine.removeTrigger(triggerID);
+				schedule.removeManagerTaskForSchedule(triggerID);
 				break;
 			case "setThingCol":
 

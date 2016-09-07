@@ -19,6 +19,7 @@ import com.kii.extension.ruleengine.drools.entity.ThingResult;
 import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
 import com.kii.extension.ruleengine.drools.entity.Trigger;
 import com.kii.extension.ruleengine.drools.entity.TriggerData;
+import com.kii.extension.ruleengine.drools.entity.TriggerType;
 
 @Component
 public class DroolsTriggerService {
@@ -70,18 +71,11 @@ public class DroolsTriggerService {
 
 	}
 
-	public void addTrigger(Trigger triggerInput,String ruleContent,boolean withSchedule){
+	public void addTrigger(Trigger triggerInput,String ruleContent){
 
 
 		Trigger trigger=new Trigger(triggerInput);
 		triggerMap.put(trigger.getTriggerID(),trigger);
-
-//		if(withSchedule){
-//			ResultParam param=new ResultParam(trigger.getTriggerID());
-//
-//			getService(trigger).addOrUpdateData(param);
-//		}
-
 
 		getService(trigger).addCondition("rule"+trigger.getTriggerID(),ruleContent);
 
@@ -89,19 +83,13 @@ public class DroolsTriggerService {
 
 	}
 
-	public void addMultipleTrigger(Trigger triggerInput,String ruleContent,boolean withSchedule){
+	public void addMultipleTrigger(Trigger triggerInput,String ruleContent){
 		Trigger trigger=new Trigger(triggerInput);
 		triggerMap.put(trigger.getTriggerID(),trigger);
 
 		getService(trigger).addCondition("rule"+trigger.getTriggerID(),ruleContent);
 
 		getService(trigger).addOrUpdateData(trigger);
-
-
-//		if(withSchedule){
-//			ResultParam param=new ResultParam(trigger.getTriggerID());
-//			getService(trigger).addOrUpdateData(param);
-//		}
 
 		MultiplesValueMap map=new MultiplesValueMap();
 		map.setTriggerID(trigger.getTriggerID());
@@ -152,7 +140,6 @@ public class DroolsTriggerService {
 	public void removeTrigger(String triggerID){
 
 
-
 		Trigger trigger=triggerMap.get(triggerID);
 
 		getService(trigger).removeData(trigger);
@@ -162,6 +149,17 @@ public class DroolsTriggerService {
 		if(map != null ){
 			map.values().forEach(summary-> getService(trigger).removeData(summary));
 		}
+
+		if(trigger.getType()== TriggerType.multiple) {
+
+			MultiplesValueMap mulMap = new MultiplesValueMap();
+			mulMap.setTriggerID(trigger.getTriggerID());
+			getService(trigger).removeData(mulMap);
+
+			ThingResult result = new ThingResult(trigger.getTriggerID());
+			getService(trigger).removeData(result);
+		}
+
 	}
 
 	public void enableTrigger(String triggerID) {
@@ -184,12 +182,12 @@ public class DroolsTriggerService {
 		getService(trigger).addOrUpdateData(trigger);
 	}
 
-	public void startInit(){
+	public void inInit(){
 		cloudService.setStatus(CurrThing.Status.inInit);
 		streamService.setStatus(CurrThing.Status.inInit);
 	}
 
-	public void finishInit(){
+	public void inIdle(){
 		cloudService.setStatus(CurrThing.Status.inIdle);
 		streamService.setStatus(CurrThing.Status.inIdle);
 	}

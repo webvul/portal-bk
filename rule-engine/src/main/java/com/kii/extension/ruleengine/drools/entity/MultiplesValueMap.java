@@ -3,7 +3,7 @@ package com.kii.extension.ruleengine.drools.entity;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MultiplesValueMap {
+public class MultiplesValueMap implements RuntimeEntry{
 
 	private String triggerID;
 
@@ -81,4 +81,8 @@ public class MultiplesValueMap {
 				'}';
 	}
 
+	@Override
+	public String getID() {
+		return triggerID;
+	}
 }

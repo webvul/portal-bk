@@ -1,6 +1,6 @@
 package com.kii.extension.ruleengine.drools.entity;
 
-public abstract class TriggerData {
+public abstract class TriggerData implements  RuntimeEntry {
 
 
 	private String triggerID;
@@ -22,5 +22,10 @@ public abstract class TriggerData {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	@Override
+	public String getID() {
+		return triggerID+":elem:"+name;
 	}
 }

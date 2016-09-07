@@ -34,17 +34,6 @@ public class ScheduleService {
 	@Autowired
 	private Scheduler scheduler;
 
-////	@PostConstruct
-//	public void startSchedule(){
-//
-//		try {
-//			scheduler.start();
-//		} catch (SchedulerException e) {
-//			e.printStackTrace();
-//			throw new IllegalArgumentException(e);
-//		}
-//	}
-	
 	@PreDestroy
 	public void stop(){
 		
@@ -141,7 +130,6 @@ public class ScheduleService {
 				.build();
 
 
-
 		scheduler.scheduleJob(triggerStart);
 
 		Trigger triggerEnd= TriggerBuilder.newTrigger()
@@ -157,7 +145,6 @@ public class ScheduleService {
 		Date nextStop=triggerEnd.getNextFireTime();
 		Date nextStart=triggerStart.getNextFireTime();
 
-		//fire miss trigger by hand
 		if(nextStart.getTime()>=nextStop.getTime() ){
 			JobDataMap  dataMap=scheduler.getJobDetail(RuleEngScheduleFactory.START_JOB).getJobDataMap();
 			dataMap.put(TRIGGER_ID, triggerID);

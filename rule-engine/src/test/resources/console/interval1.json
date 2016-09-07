@@ -1,0 +1,45 @@
+{
+  "prepareCondition": {
+    "endCron": "0 0 18 ? * *",
+    "type": "cron",
+    "startCron": "0 0 7 ? * *"
+  },
+  "description": "",
+  "type": "Summary",
+  "summarySource": {},
+  "userID": 640,
+  "targets": [
+    {
+      "tagList": [],
+      "thingList": [
+        5994
+      ],
+      "doubleCheck": false,
+      "type": "ThingCommand",
+      "andExpress": false,
+      "command": {
+        "metadata": {
+          "type": "AirCondition"
+        },
+        "schemaVersion": 0,
+        "actions": [
+          {
+            "turnPower": {
+              "Power": 0
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "predicate": {
+    "schedule": {
+      "interval": 1,
+      "type": "Interval",
+      "timeUnit": "Minute"
+    },
+    "triggersWhen": "CONDITION_TRUE"
+  },
+  "targetParamList": [],
+  "name": "Alfred's Test (Interval Schedule)"
+}

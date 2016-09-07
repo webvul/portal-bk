@@ -109,7 +109,7 @@ public class EngineService {
 		thingMap.values().forEach( v->thingSet.addAll(v));
 		trigger.setThingSet(thingSet);
 
-		droolsTriggerService.addMultipleTrigger(trigger,drl,withSchedule);
+		droolsTriggerService.addMultipleTrigger(trigger,drl);
 
 		record.getSummarySource().forEach((name,src)->{
 
@@ -143,6 +143,7 @@ public class EngineService {
 
 				}
 		);
+
 
 		droolsTriggerService.fireCondition();
 	}
@@ -265,7 +266,7 @@ public class EngineService {
 
 		String rule=ruleGeneral.getSimpleTriggerDrl(triggerID,record.getPredicate(),record.getTargetParamList());
 
-		droolsTriggerService.addTrigger(trigger,rule,record.getPredicate().getSchedule()!=null);
+		droolsTriggerService.addTrigger(trigger,rule);
 
 		if(!StringUtils.isEmpty(thingID)) {
 			SingleThing thing=new SingleThing();
@@ -299,11 +300,11 @@ public class EngineService {
 
 	public void initThingStatus(List<ThingStatusInRule> thingInfos) {
 
-		droolsTriggerService.startInit();
+		droolsTriggerService.inInit();
 
 		thingInfos.forEach(th->droolsTriggerService.initThingStatus(th));
 
-		droolsTriggerService.finishInit();
+		droolsTriggerService.inIdle();
 		droolsTriggerService.fireCondition();
 
 	}
