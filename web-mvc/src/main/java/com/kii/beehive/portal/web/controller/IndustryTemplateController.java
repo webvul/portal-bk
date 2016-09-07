@@ -65,7 +65,7 @@ public class IndustryTemplateController {
 
         IndustryTemplate industryTemplate = CollectUtils.getFirst(list);
         if(industryTemplate != null) {
-            throw new PortalException(ErrorCode.DUPLICATE_OBJECT,"type","industryTemplate","objectID",industryTemplateRestBean.getIndustryTemplate().getName());
+            throw new PortalException(ErrorCode.DUPLICATE_OBJECT,"type","schema","objectID",industryTemplateRestBean.getIndustryTemplate().getName());
         }
         //
         String strContent = objectMapper.writeValueAsString(industryTemplateRestBean.getContent());
@@ -83,7 +83,7 @@ public class IndustryTemplateController {
         result.put("result", "success");
         IndustryTemplate oldIndustryTemplate = industryTemplateManager.findByID(id);
         if( oldIndustryTemplate == null) {
-            throw new PortalException(ErrorCode.NOT_FOUND,"type","industryTemplate","objectID",String.valueOf(id));
+            throw new PortalException(ErrorCode.NOT_FOUND,"type","schema","objectID",String.valueOf(id));
         }
         industryTemplateRestBean.verifyInput();
         /*//check
