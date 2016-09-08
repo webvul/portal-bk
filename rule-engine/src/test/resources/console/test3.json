@@ -1,0 +1,44 @@
+{
+  "prepareCondition": {
+    "endCron": "0 0 20 ? * *",
+    "type": "cron",
+    "startCron": "0 0 8 ? * *"
+  },
+  "description": "RT",
+  "type": "Summary",
+  "summarySource": {},
+  "userID": 0,
+  "targets": [
+    {
+      "tagList": [],
+      "thingList": [
+        4782,
+        4783
+      ],
+      "doubleCheck": false,
+      "type": "ThingCommand",
+      "andExpress": false,
+      "command": {
+        "metadata": {
+          "type": "Lighting"
+        },
+        "schemaVersion": 0,
+        "actions": [
+          {
+            "setBri": {
+              "Bri": 99
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "predicate": {
+    "schedule": {
+      "interval": 15,
+      "type": "Interval",
+      "timeUnit": "Minute"
+    },
+    "triggersWhen": "CONDITION_TRUE"
+  }
+}

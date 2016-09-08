@@ -10,6 +10,8 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -40,8 +42,10 @@ import com.kii.extension.tools.CronGeneral;
 @Component
 public class CommandExecuteService {
 
-	public static final String SCHEMA = "threaddemo";
-	private static final int SCHEMA_VERSION = 1;
+//	public static final String SCHEMA = "threaddemo";
+//	private static final int SCHEMA_VERSION = 1;
+
+	private Logger log= LoggerFactory.getLogger(CommandExecuteService.class);
 
 	@Autowired
 	private ThingIFInAppService thingIFService;
@@ -101,21 +105,39 @@ public class CommandExecuteService {
 						case "ThingCommand":
 							CommandToThing command=(CommandToThing)target;
 
+
+							for (Map<String, Action> actionMap : command.getCommand().getActions()) {
+
+								actionMap.values().forEach((act) -> {
+									act.getFields().forEach((n, v) -> {
+
+										if(v instanceof  String){
+											act.setField(n, StrTemplate.generByMap((String)v, params));
+										}
+
+									});
+								});
+							}
+
 							Set<GlobalThingInfo> thingList = thingTagService.getThingInfos(command.getSelector());
 
 							thingList.stream().filter((th) -> !StringUtils.isEmpty(th.getFullKiiThingID())).forEach(thing -> {
 
-								for (Map<String, Action> actionMap : command.getCommand().getActions()) {
-
-									actionMap.values().forEach((act) -> {
-										act.getFields().forEach((n, v) -> {
-											act.setField(n, StrTemplate.generByMap(n, params));
-										});
-									});
+								ThingCommand  cmd=command.getCommand();
+								String version=thing.getSchemaVersion();
+								int ver=1;
+								try {
+									 ver = Integer.parseInt(version);
+								}catch(Exception e){
+									log.error("SchemaVersion invalid",e);
 								}
+								cmd.setSchemaVersion(ver);
+								cmd.setSchema(thing.getSchemaName());
+
 								sendCmd(command.getCommand(), thing,record.getTriggerID());
 
 							});
+
 							logTool.outputCommandLog(thingList,record);
 							break;
 						case "HttpApiCall":
@@ -124,8 +146,6 @@ public class CommandExecuteService {
 							call.fillParam(params);
 
 							httpCallService.doHttpApiCall(call,record.getTriggerID());
-
-
 
 							break;
 					}
@@ -159,8 +179,7 @@ public class CommandExecuteService {
 
 
 		command.setUserID(appInfoManager.getDefaultOwer(appID).getUserID());
-		command.setSchema(SCHEMA);
-		command.setSchemaVersion(SCHEMA_VERSION);
+
 
 		String cmdResult=thingIFService.sendCommand(command,thingInfo.getFullKiiThingID());
 		CommandResponse resp=new CommandResponse(cmdResult);
