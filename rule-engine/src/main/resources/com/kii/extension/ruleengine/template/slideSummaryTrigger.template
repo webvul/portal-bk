@@ -13,6 +13,6 @@ when
                     $sum : ${funName}($thingStatusInRule.getNumValue($summary.getFieldName()))
                   )
 then
-	System.out.println("compute  sum summary by slide length"+$summary.getName()+" "+$sum);
+
 	insert(new SummaryResult($triggerID,$summary.getName(),$sum));
 end

@@ -145,7 +145,7 @@ public class EngineService {
 		);
 
 
-		droolsTriggerService.fireCondition();
+		droolsTriggerService.refreshContext();
 	}
 
 
@@ -277,7 +277,7 @@ public class EngineService {
 		}
 
 
-		droolsTriggerService.fireCondition();
+		droolsTriggerService.refreshContext();
 
 	}
 
@@ -286,6 +286,8 @@ public class EngineService {
 
 		relationStore.maintainThingTriggerIndex(newThings,triggerID);
 		droolsTriggerService.updateThingsWithName(triggerID,"comm",newThings);
+
+		droolsTriggerService.refreshContext();
 
 	}
 
@@ -296,6 +298,9 @@ public class EngineService {
 
 		droolsTriggerService.updateThingsWithName(triggerID,summaryName,newThings);
 
+		droolsTriggerService.refreshContext();
+
+
 	}
 
 	public void initThingStatus(List<ThingStatusInRule> thingInfos) {
@@ -304,8 +309,7 @@ public class EngineService {
 
 		thingInfos.forEach(th->droolsTriggerService.initThingStatus(th));
 
-		droolsTriggerService.inIdle();
-		droolsTriggerService.fireCondition();
+		droolsTriggerService.refreshContext();
 
 	}
 
@@ -347,6 +351,9 @@ public class EngineService {
 	public void removeTrigger(String triggerID){
 
 		droolsTriggerService.removeTrigger(triggerID);
+
+
+		droolsTriggerService.refreshContext();
 
 	}
 }

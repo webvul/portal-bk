@@ -1,6 +1,6 @@
 {
   "prepareCondition": {
-    "endCron": "0 0 18 ? * *",
+    "endCron": "0 18 16 ? * *",
     "type": "cron",
     "startCron": "0 0 7 ? * *"
   },
@@ -34,7 +34,7 @@
   ],
   "predicate": {
     "schedule": {
-      "interval": 1,
+      "interval": 2,
       "type": "Interval",
       "timeUnit": "Minute"
     },

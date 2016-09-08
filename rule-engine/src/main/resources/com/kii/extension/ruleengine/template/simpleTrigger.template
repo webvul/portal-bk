@@ -9,15 +9,14 @@ import com.kii.extension.ruleengine.drools.entity.*;
 rule "${triggerID} user custom segment:simple"
 when
     $ext:ExternalCollect()
-    Trigger( $triggerID:triggerID, (triggerID=="${triggerID}" && enable==true &&  type ==TriggerType.simple ) )
+    Trigger( $triggerID:triggerID,$enable:enable, (triggerID=="${triggerID}" && enable==true &&  type ==TriggerType.simple ) )
     SingleThing($thingID:thingID,$triggerID==$triggerID)
     CurrThing( valid($thingID) )
     $status:ThingStatusInRule(thingID == $thingID,${express}  )
 then
 
-	System.out.println("fire simple trigger "+$triggerID );
-
 	MatchResult result=new MatchResult($triggerID);
+   result.setParam("enable",$enable);
 
 	${fillParam}
 

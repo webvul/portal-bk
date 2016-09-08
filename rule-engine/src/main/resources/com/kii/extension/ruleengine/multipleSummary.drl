@@ -14,7 +14,6 @@ then
     	setSummaryValue($summary),
     	setThingValue($thing)
     };
-    System.out.println("compute  summary value :"+$multiplesMap.getValues()+" to multiple map ");
 end
 
 
@@ -27,7 +26,6 @@ when
                     $sum : sum($status.getNumValue($summary.getFieldName()))
                   )
 then
-	System.out.println("compute  sum summary "+$sum);
 	insert(new SummaryResult($triggerID,$name,$sum));
 end
 
@@ -40,7 +38,6 @@ when
                     $sum : count($status)
                   )
 then
-	System.out.println("compute  count summary "+$sum);
 	insert(new SummaryResult($triggerID,$name,$sum));
 end
 
@@ -52,7 +49,6 @@ when
                     $sum : max($status.getNumValue($summary.getFieldName()))
                   )
 then
-	System.out.println("compute  max summary "+$sum);
 	insert(new SummaryResult($triggerID,$name,$sum));
 end
 
@@ -64,7 +60,6 @@ when
                     $sum : min($status.getNumValue($summary.getFieldName()))
                   )
 then
-	System.out.println("compute  min summary "+$sum);
 	insert(new SummaryResult($triggerID,$name,$sum));
 end
 
@@ -77,6 +72,5 @@ when
                     $sum : average($status.getNumValue($summary.getFieldName()))
                   )
 then
-	System.out.println("compute  avg summary "+$sum);
 	insert(new SummaryResult($triggerID,$name,$sum));
 end

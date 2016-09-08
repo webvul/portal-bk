@@ -6,7 +6,6 @@ when
     $thing:SingleThing( triggerID==$triggerID &&  name== "${name}" )
     $status:ThingStatusInRule(thingID==$thing.thingID && ${express} )
 then
-	System.out.println("compute  thing ${name}  status summary ");
 	insertLogical(new ThingResult($triggerID,"${name}",$status));
 end
 

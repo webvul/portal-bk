@@ -12,12 +12,13 @@ rule "${triggerID} user custom segment:schedule"
 when
     CurrThing(init == false)
     $ext:ExternalCollect()
-    Trigger( $triggerID:triggerID =="${triggerID}" && enable == true  )
+    Trigger( $triggerID:triggerID =="${triggerID}" && enable == true  ,$enable:enable )
     SingleThing($thingID:thingID,triggerID==$triggerID)
     $status:ThingStatusInRule( thingID == $thingID,${express}  )
 then
     ResultParam result=new ResultParam($triggerID);
 
+   result.setParam("enable",$enable);
 	${fillParam}
 
 	CommandExec exec=(CommandExec)kcontext.getKieRuntime().getEnvironment().get("exec");

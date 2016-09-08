@@ -12,10 +12,11 @@ rule "${triggerID} user custom segment:pure schedule"
 when
     CurrThing(init == false)
     $ext:ExternalCollect()
-    Trigger( $triggerID:triggerID,  triggerID=="${triggerID}" && enable == true )
+    Trigger( $triggerID:triggerID, $enable:enable, triggerID=="${triggerID}" && enable == true )
 then
     ResultParam result=new ResultParam($triggerID);
 
+    result.setParam("enable",$enable);
 	${fillParam}
 
 	CommandExec exec=(CommandExec)kcontext.getKieRuntime().getEnvironment().get("exec");
