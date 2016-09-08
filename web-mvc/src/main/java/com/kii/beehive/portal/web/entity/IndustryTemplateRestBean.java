@@ -45,7 +45,7 @@ public class IndustryTemplateRestBean {
 		if(Strings.isBlank(industryTemplate.getVersion())) {
 			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","version");
 		}
-		if(Strings.isBlank(industryTemplate.getContent())) {
+		if( getContent() == null ) {
 			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","content");
 		}
 
