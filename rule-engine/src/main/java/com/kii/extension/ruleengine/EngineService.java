@@ -329,7 +329,6 @@ public class EngineService {
 
 		values.addValue(key,value);
 		droolsTriggerService.addExternalValue(values);
-		droolsTriggerService.fireCondition();
 
 	}
 
@@ -339,7 +338,6 @@ public class EngineService {
 		val.setValues(values);
 
 		droolsTriggerService.addExternalValue(val);
-		droolsTriggerService.fireCondition();
 
 	}
 

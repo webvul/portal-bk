@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.junit.Ignore;
@@ -19,7 +18,6 @@ import org.springframework.util.StreamUtils;
 import com.kii.extension.ruleengine.drools.CommandExec;
 import com.kii.extension.ruleengine.drools.DroolsRuleService;
 import com.kii.extension.ruleengine.drools.entity.CurrThing;
-import com.kii.extension.ruleengine.drools.entity.MatchResult;
 import com.kii.extension.ruleengine.drools.entity.SingleThing;
 import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
 
@@ -61,12 +59,13 @@ public class InitTest {
 	protected boolean isMatch(String triggerID){
 
 
-		List<MatchResult> results=ruleLoader.doQuery("get Match Result by TriggerID");
+//		List<MatchResult> results=ruleLoader.doQuery("get Match Result by TriggerID");
+//
+//
+//		return results.stream().filter(  (r)->r.getTriggerID()==triggerID ).findAny().isPresent();
 
 
-		return results.stream().filter(  (r)->r.getTriggerID()==triggerID ).findAny().isPresent();
-
-
+		return true;
 	}
 
 

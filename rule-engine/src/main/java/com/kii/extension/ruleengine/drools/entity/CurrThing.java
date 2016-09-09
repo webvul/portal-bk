@@ -4,6 +4,7 @@ import java.util.Set;
 
 public class CurrThing {
 
+	public  static final String NONE = "NONE";
 	private Status status=Status.inInit;
 
 	public  enum Status{
@@ -19,6 +20,8 @@ public class CurrThing {
 	public void  setStatus(CurrThing.Status  status) {
 
 		this.status=status;
+
+		this.currThing=NONE;
 	}
 
 
@@ -30,12 +33,12 @@ public class CurrThing {
 		return currThing;
 	}
 
-	private String currThing="NONE";
+	private String currThing= NONE;
 
 
 	public void setCurrThing(String curr){
+
 		this.currThing=curr;
-		status=Status.inThing;
 	}
 
 	public boolean valid(Set<String> th){

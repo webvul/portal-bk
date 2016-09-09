@@ -54,31 +54,31 @@ public class TestSimpleTrigger extends InitTest {
 		addThing(id,String.valueOf(0));
 
 		updateThingState("0", paramNo);
-		ruleLoader.fireCondition();
+//		ruleLoader.fireCondition();
 
 		updateThingState("0", paramOk);
 
-		ruleLoader.fireCondition();
+//		ruleLoader.fireCondition();
 
 		assertEquals(1,exec.getHitCount(id));
 
 		updateThingState("0", paramOk);
 
-		ruleLoader.fireCondition();
+//		ruleLoader.fireCondition();
 
 		assertEquals(1,exec.getHitCount(id));
 
 
 		updateThingState("0", paramNo);
 
-		ruleLoader.fireCondition();
+//		ruleLoader.fireCondition();
 
 		assertEquals(1,exec.getHitCount(id));
 
 
 		updateThingState("0", paramOk);
 
-		ruleLoader.fireCondition();
+//		ruleLoader.fireCondition();
 
 		assertEquals(2,exec.getHitCount(id));
 
@@ -109,25 +109,25 @@ public class TestSimpleTrigger extends InitTest {
 
 		updateThingState(thingID);
 
-		ruleLoader.fireCondition();
+//		ruleLoader.fireCondition();
 
 		updateThingState(thingID,paramOk);
-		ruleLoader.fireCondition();
+//		ruleLoader.fireCondition();
 		assertTrue(isMatch(triggerID));
 
 //		paramOk.put("foo",101);
 		updateThingState(thingID,paramOk);
-		ruleLoader.fireCondition();
+//		ruleLoader.fireCondition();
 		assertTrue(isMatch(triggerID));
 
 
 		updateThingState(thingID, paramNo);
-		ruleLoader.fireCondition();
+//		ruleLoader.fireCondition();
 		assertFalse(isMatch(triggerID));
 
 
 		updateThingState(thingID,paramOk);
-		ruleLoader.fireCondition();
+//		ruleLoader.fireCondition();
 		assertTrue(isMatch(triggerID));
 
 	}
@@ -152,29 +152,29 @@ public class TestSimpleTrigger extends InitTest {
 
 		updateThingState("2");
 
-		ruleLoader.fireCondition();
+//		ruleLoader.fireCondition();
 
 		updateThingState("2", paramOk);
 
-		ruleLoader.fireCondition();
+//		ruleLoader.fireCondition();
 
 		assertEquals(0,exec.getHitCount(triggerID));
 
 		updateThingState("2", paramNo);
 
-		ruleLoader.fireCondition();
+//		ruleLoader.fireCondition();
 
 		assertEquals(1,exec.getHitCount(triggerID));
 
 		updateThingState("2", paramOk);
 
-		ruleLoader.fireCondition();
+//		ruleLoader.fireCondition();
 
 		assertEquals(1,exec.getHitCount(triggerID));
 
 		updateThingState("2", paramNo);
 
-		ruleLoader.fireCondition();
+//		ruleLoader.fireCondition();
 
 		assertEquals(2,exec.getHitCount(triggerID));
 
@@ -201,47 +201,47 @@ public class TestSimpleTrigger extends InitTest {
 
 		updateThingState("2");
 
-		ruleLoader.fireCondition();
+//		ruleLoader.fireCondition();
 
 		updateThingState("2", paramOk);
 
-		ruleLoader.fireCondition();
+//		ruleLoader.fireCondition();
 
 		assertEquals(1,exec.getHitCount(triggerID));
 
 		updateThingState("2", paramNo);
 
-		ruleLoader.fireCondition();
+//		ruleLoader.fireCondition();
 
 		assertEquals(2,exec.getHitCount(triggerID));
 
 		updateThingState("2", paramOk);
 
-		ruleLoader.fireCondition();
+//		ruleLoader.fireCondition();
 
 		assertEquals(3,exec.getHitCount(triggerID));
 
 		updateThingState("2", paramNo);
 
-		ruleLoader.fireCondition();
+//		ruleLoader.fireCondition();
 
 		assertEquals(4,exec.getHitCount(triggerID));
 
 		updateThingState("2", paramNo);
 
-		ruleLoader.fireCondition();
+//		ruleLoader.fireCondition();
 
 		assertEquals(4,exec.getHitCount(triggerID));
 
 		updateThingState("2", paramOk);
 
-		ruleLoader.fireCondition();
+//		ruleLoader.fireCondition();
 
 		assertEquals(5,exec.getHitCount(triggerID));
 
 		updateThingState("2", paramOk);
 
-		ruleLoader.fireCondition();
+//		ruleLoader.fireCondition();
 
 		assertEquals(5,exec.getHitCount(triggerID));
 

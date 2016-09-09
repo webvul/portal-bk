@@ -51,7 +51,7 @@ public class TestScheduleTrigger extends InitTest {
 
 		updateThingState("10", paramOk);
 
-		ruleLoader.fireCondition();
+//		ruleLoader.fireCondition();
 
 		System.in.read();
 
@@ -109,7 +109,7 @@ public class TestScheduleTrigger extends InitTest {
 
 		updateThingState("11", paramOk);
 
-		ruleLoader.fireCondition();
+//		ruleLoader.fireCondition();
 
 
 	}

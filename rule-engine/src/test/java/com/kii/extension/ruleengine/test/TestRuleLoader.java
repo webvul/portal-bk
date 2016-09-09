@@ -48,31 +48,31 @@ public class TestRuleLoader extends InitTest {
 
 		updateThingState("0", paramOk);
 
-		ruleLoader.fireCondition();
+//		ruleLoader.fireCondition();
 
 		assertEquals(1,exec.getHitCount(i));
 
 		updateThingState("0", paramOk);
 
-		ruleLoader.fireCondition();
+//		ruleLoader.fireCondition();
 
 		assertEquals(1,exec.getHitCount(i));
 
 		updateThingState("0", paramNo);
-		ruleLoader.fireCondition();
+//		ruleLoader.fireCondition();
 
 
 		updateThingState("0",paramOk);
 
 		ruleLoader.addCondition("trigger101",getDrlContent("rule101"));
 
-		ruleLoader.fireCondition();
+//		ruleLoader.fireCondition();
 
 		assertEquals(2,exec.getHitCount(i));
 
 		updateThingState("0", paramOk);
 
-		ruleLoader.fireCondition();
+//		ruleLoader.fireCondition();
 
 		assertEquals(2,exec.getHitCount(i));
 

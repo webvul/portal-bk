@@ -28,6 +28,7 @@ public class ThingStatusChangeCallback {
 	@Value("${thing.state.queue:thing_state_queue}")
 	private String thingStateQueue;
 
+	@Async
 	public void onEventFire( ThingStatus status, String thingID,Date timestamp) {
 
 		engine.updateThingStatus(thingID,status,timestamp);

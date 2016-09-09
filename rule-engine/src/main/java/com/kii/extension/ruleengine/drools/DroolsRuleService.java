@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 
 import org.apache.commons.codec.Charsets;
 import org.kie.api.KieBase;
@@ -34,6 +35,7 @@ import org.springframework.stereotype.Component;
 import com.kii.extension.ruleengine.drools.entity.CurrThing;
 import com.kii.extension.ruleengine.drools.entity.ExternalCollect;
 import com.kii.extension.ruleengine.drools.entity.ExternalValues;
+import com.kii.extension.ruleengine.drools.entity.MatchResult;
 import com.kii.extension.ruleengine.drools.entity.RuntimeEntry;
 
 @Component
@@ -63,11 +65,41 @@ public class DroolsRuleService {
 	private final ExternalCollect  external=new ExternalCollect();
 
 
-	public void setStatus(CurrThing.Status  status){
-		this.currThing.setStatus(status);
+	private final Consumer<List<MatchResult>> consumer;
 
-		kieSession.update(currThingHandler,currThing);
+
+	public void setCurrThingID(String thingID){
+		settingCurrThing(thingID, CurrThing.Status.inThing);
 	}
+
+
+	public void setStatus(CurrThing.Status  status){
+		settingCurrThing(CurrThing.NONE, status);
+	}
+
+	private void settingCurrThing(String thingID,CurrThing.Status  status){
+
+		synchronized (currThing) {
+			this.currThing.setStatus(status);
+			this.currThing.setCurrThing(thingID);
+
+			kieSession.update(currThingHandler, currThing);
+
+			fireCondition();
+		}
+	}
+
+
+	private  void fireCondition(){
+
+
+		getSession().fireAllRules();
+
+
+		List<MatchResult>  lists= doQuery("get Match Result by TriggerID");
+
+		consumer.accept(lists);
+	};
 
 
 
@@ -110,8 +142,9 @@ public class DroolsRuleService {
 
 
 
-	public DroolsRuleService(boolean isStream,String...  rules){
+	public DroolsRuleService(Consumer<List<MatchResult>>  consumer , boolean isStream,String...  rules){
 
+		this.consumer=consumer;
 
 		ks = KieServices.Factory.get();
 
@@ -233,7 +266,7 @@ public class DroolsRuleService {
 
 		});
 
-		setStatus(CurrThing.Status.inIdle);
+		this.setStatus(CurrThing.Status.inIdle);
 
 	}
 
@@ -274,11 +307,13 @@ public class DroolsRuleService {
 
 	public void addOrUpdateExternal(ExternalValues entity){
 
-		setStatus(CurrThing.Status.inExt);
 
 		external.putEntity(entity.getName(),entity);
 
 		getSession().update(externalHandler,external);
+
+		setStatus(CurrThing.Status.inExt);
+
 
 	}
 
@@ -298,12 +333,7 @@ public class DroolsRuleService {
 
 	}
 
-	public void setCurrThingID(String thingID){
-		this.currThing.setCurrThing(thingID);
 
-		kieSession.update(currThingHandler,currThing);
-
-	}
 
 	private String getEntityKey(Object entity) {
 		if(entity instanceof RuntimeEntry) {
@@ -314,7 +344,7 @@ public class DroolsRuleService {
 		}
 	}
 
-	public <T> List<T> doQuery(String queryName,Object... params){
+	private <T> List<T> doQuery(String queryName,Object... params){
 
 
 
@@ -330,11 +360,6 @@ public class DroolsRuleService {
 		return list;
 	}
 
-	public void fireCondition(){
-
-
-		getSession().fireAllRules();
-	};
 
 	
 	public void removeData(Object obj) {

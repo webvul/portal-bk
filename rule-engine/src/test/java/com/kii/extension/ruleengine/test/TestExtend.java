@@ -25,7 +25,7 @@ public class TestExtend extends InitTest{
 		status.addValue("delay",2);
 
 		ruleLoader.addCondition("ruleResult",getDrlContent("ruleResult"));
-		ruleLoader.fireCondition();
+//		ruleLoader.fireCondition();
 		ruleLoader.addOrUpdateData(status);
 
 		ExternalValues  ext=new ExternalValues("name");
@@ -33,7 +33,7 @@ public class TestExtend extends InitTest{
 
 		ruleLoader.addOrUpdateExternal(ext);
 
-		ruleLoader.fireCondition();
+//		ruleLoader.fireCondition();
 
 //		System.in.read();
 

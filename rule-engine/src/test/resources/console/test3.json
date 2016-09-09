@@ -1,19 +1,36 @@
 {
   "prepareCondition": {
-    "endCron": "0 0 20 ? * *",
+    "endCron": "0 59 23 ? * *",
     "type": "cron",
-    "startCron": "0 0 8 ? * *"
+    "startCron": "0 0 0 ? * *"
   },
-  "description": "RT",
+  "description": "",
   "type": "Summary",
-  "summarySource": {},
-  "userID": 0,
+  "summarySource": {
+    "EnvironmentSensor": {
+      "expressList": [
+        {
+          "stateName": "Bri",
+          "function": "min",
+          "summaryAlias": "Bri"
+        }
+      ],
+      "source": {
+        "tagList": [],
+        "thingList": [
+          0,
+          1
+        ],
+        "andExpress": false
+      }
+    }
+  },
+  "userID": 1307,
   "targets": [
     {
       "tagList": [],
       "thingList": [
-        4782,
-        4783
+        6072
       ],
       "doubleCheck": false,
       "type": "ThingCommand",
@@ -26,7 +43,10 @@
         "actions": [
           {
             "setBri": {
-              "Bri": 99
+              "Bri": 0
+            },
+            "turnPower": {
+              "Power": 0
             }
           }
         ]
@@ -34,11 +54,48 @@
     }
   ],
   "predicate": {
-    "schedule": {
-      "interval": 15,
-      "type": "Interval",
-      "timeUnit": "Minute"
+    "condition": {
+      "clauses": [
+        {
+          "clauses": [
+            {
+              "field": "EnvironmentSensor.Bri",
+              "lowerIncluded": true,
+              "lowerLimit": 60,
+              "type": "range"
+            },
+            {
+              "field": "EnvironmentSensor.Bri",
+              "lowerIncluded": true,
+              "lowerLimit": 60,
+              "type": "range"
+            }
+          ],
+          "type": "and"
+        },
+        {
+          "clauses": [
+            {
+              "field": "EnvironmentSensor.Bri",
+              "lowerIncluded": true,
+              "lowerLimit": 60,
+              "type": "range"
+            },
+            {
+              "field": "EnvironmentSensor.Bri",
+              "lowerIncluded": true,
+              "lowerLimit": 60,
+              "type": "range"
+            }
+          ],
+          "type": "and"
+        }
+      ],
+      "type": "and"
     },
     "triggersWhen": "CONDITION_TRUE"
-  }
+  },
+  "recordStatus": "enable",
+  "targetParamList": [],
+  "name": "#C02"
 }

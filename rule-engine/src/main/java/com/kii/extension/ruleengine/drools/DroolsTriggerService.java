@@ -1,7 +1,6 @@
 package com.kii.extension.ruleengine.drools;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Component;
 
 import com.kii.extension.ruleengine.drools.entity.CurrThing;
 import com.kii.extension.ruleengine.drools.entity.ExternalValues;
-import com.kii.extension.ruleengine.drools.entity.MatchResult;
 import com.kii.extension.ruleengine.drools.entity.MultiplesValueMap;
 import com.kii.extension.ruleengine.drools.entity.Summary;
 import com.kii.extension.ruleengine.drools.entity.ThingResult;
@@ -204,6 +202,7 @@ public class DroolsTriggerService {
 
 	public void addThingStatus(ThingStatusInRule newStatus){
 
+
 		cloudService.addOrUpdateData(newStatus);
 		cloudService.setCurrThingID(newStatus.getThingID());
 
@@ -211,7 +210,7 @@ public class DroolsTriggerService {
 		streamService.setCurrThingID(newStatus.getThingID());
 
 
-		fireCondition();
+//		fireCondition();
 	}
 
 	public void addExternalValue(ExternalValues newValues){
@@ -220,31 +219,26 @@ public class DroolsTriggerService {
 		cloudService.addOrUpdateExternal(newValues);
 		streamService.addOrUpdateExternal(newValues);
 
-		fireCondition();
+//		fireCondition();
 	}
 
 	public void refreshContext(){
 
 		inIdle();
 
-		fireCondition();
+//		fireCondition();
 	}
 
 
-	public  void fireCondition(){
-
-		cloudService.fireCondition();
-
-		List<MatchResult> results=cloudService.doQuery("get Match Result by TriggerID");
-
-		results.forEach(r-> exec.doExecute(r.getTriggerID(),r));
-
-		streamService.fireCondition();
-		results=streamService.doQuery("get Match Result by TriggerID");
-
-		results.forEach(r-> exec.doExecute(r.getTriggerID(),r));
-
-	}
+//	private   void fireCondition(){
+//
+//		List<MatchResult>  results=cloudService.fireCondition();
+//
+//		results.addAll(streamService.fireCondition());
+//
+//		results.forEach(r-> exec.doExecute(r.getTriggerID(),r));
+//
+//	}
 	
 
 }
