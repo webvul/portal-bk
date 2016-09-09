@@ -270,7 +270,12 @@ public class TriggerManager {
 		gatewayTriggerRecord.getSource().getVendorThingIdList().add(sourceThing.getVendorThingID());
 		gatewayTriggerRecord.getSource().getThingList().add(sourceThing.getId());
 		//
-		ThingOfKiiCloud gatewayOfKiiCloud = thingIFService.getThingGateway(sourceThing.getFullKiiThingID());
+		ThingOfKiiCloud gatewayOfKiiCloud = null;
+		try {
+			gatewayOfKiiCloud = thingIFService.getThingGateway(sourceThing.getFullKiiThingID());
+		} catch (Exception e) {
+			throw new IllegalStateException();
+		}
 		String thingID=gatewayOfKiiCloud.getThingID();
 
 		String fullKiiThingID= ThingIDTools.joinFullKiiThingID(sourceThing.getKiiAppID(), thingID);
