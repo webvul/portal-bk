@@ -171,6 +171,7 @@ public class DroolsTriggerService {
 
 		getService(trigger).addOrUpdateData(trigger);
 
+
 	}
 
 	public void disableTrigger(String triggerID) {
@@ -180,6 +181,7 @@ public class DroolsTriggerService {
 		trigger.setEnable(false);
 
 		getService(trigger).addOrUpdateData(trigger);
+
 	}
 
 	public void inInit(){
@@ -217,6 +219,13 @@ public class DroolsTriggerService {
 
 		cloudService.addOrUpdateExternal(newValues);
 		streamService.addOrUpdateExternal(newValues);
+
+		fireCondition();
+	}
+
+	public void refreshContext(){
+
+		inIdle();
 
 		fireCondition();
 	}

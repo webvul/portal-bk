@@ -37,6 +37,14 @@ public class CommandExec {
 		int oldValue=map.computeIfAbsent(triggerID,(id)->new AtomicInteger(0)).incrementAndGet();
 		log.info("execute trigger  " + triggerID+" been fire "+oldValue+" with params:"+result.getParams());
 
+
+		String enable=result.getParams().get("enable");
+
+		if(enable.equals("false")){
+			log.info("the trigger had been disabled ");
+			return;
+		}
+
 		EventCallback  callback=applicationCtx.getBean(EventCallback.class);
 		if(callback==null){
 			log.error("not found valid callback instance ");
@@ -53,6 +61,13 @@ public class CommandExec {
 
 		int oldValue=map.computeIfAbsent(triggerID,(id)->new AtomicInteger(0)).incrementAndGet();
 		log.info("execute trigger  " + triggerID+" been fire "+oldValue+" with params:"+result.getParams());
+
+		String enable=result.getParams().get("enable");
+
+		if(enable.equals("false")){
+			log.info("the trigger had been disabled ");
+			return;
+		}
 
 		EventCallback  callback=applicationCtx.getBean(EventCallback.class);
 		if(callback==null){

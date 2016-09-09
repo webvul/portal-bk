@@ -159,6 +159,43 @@ public class TriggerManager {
 	}
 
 
+	public TriggerRecord updateTrigger(TriggerRecord record) {
+
+		TriggerRecord oldRecord = this.getTriggerByID(record.getId());
+
+		if(oldRecord.getType().equals(BeehiveTriggerType.Gateway)){
+
+			if( ! checkLocalRule(record) ){
+				//
+				throw new IllegalStateException();
+
+			}else {
+
+				GatewayTriggerRecord gatewayTriggerRecord = convertToGatewayTriggerRecord((SummaryTriggerRecord) record);
+
+				triggerDao.updateEntity(gatewayTriggerRecord, record.getId());
+
+				sendGatewayCommand(gatewayTriggerRecord,GatewayCommand.updateTrigger);
+
+				return gatewayTriggerRecord;
+			}
+
+
+		}else {
+			record.setRecordStatus(TriggerRecord.StatusType.enable);
+
+			this.deleteTrigger(record.getTriggerID());
+
+			creator.addTriggerToEngine(record);
+
+			triggerDao.updateEntity(record, record.getId());
+
+			return record;
+		}
+
+	}
+
+
 	private boolean checkLocalRule(TriggerRecord record) {
 
 		if( ! (record instanceof SummaryTriggerRecord
@@ -197,6 +234,17 @@ public class TriggerManager {
 	private GatewayTriggerRecord createGatewayRecord(SummaryTriggerRecord  summaryRecord){
 
 
+		GatewayTriggerRecord gatewayTriggerRecord = convertToGatewayTriggerRecord(summaryRecord);
+
+		triggerDao.addKiiEntity(gatewayTriggerRecord);
+
+		sendGatewayCommand(gatewayTriggerRecord,GatewayCommand.createTrigger);
+
+		return gatewayTriggerRecord;
+
+	}
+
+	private GatewayTriggerRecord convertToGatewayTriggerRecord(SummaryTriggerRecord summaryRecord) {
 		GatewayTriggerRecord gatewayTriggerRecord = new GatewayTriggerRecord();
 
 		BeanUtils.copyProperties(summaryRecord, gatewayTriggerRecord);
@@ -220,12 +268,17 @@ public class TriggerManager {
 
 		GlobalThingInfo sourceThing = globalThingDao.findByID(selector.getThingList().get(0));
 		gatewayTriggerRecord.getSource().getVendorThingIdList().add(sourceThing.getVendorThingID());
-
+		gatewayTriggerRecord.getSource().getThingList().add(sourceThing.getId());
 		//
-		ThingOfKiiCloud gatewayOfKiiCloud = thingIFService.getThingGateway(sourceThing.getFullKiiThingID());
+		ThingOfKiiCloud gatewayOfKiiCloud = null;
+		try {
+			gatewayOfKiiCloud = thingIFService.getThingGateway(sourceThing.getFullKiiThingID());
+		} catch (Exception e) {
+			throw new IllegalStateException();
+		}
 		String thingID=gatewayOfKiiCloud.getThingID();
 
-		String fullKiiThingID=ThingIDTools.joinFullKiiThingID(sourceThing.getKiiAppID(), thingID);
+		String fullKiiThingID= ThingIDTools.joinFullKiiThingID(sourceThing.getKiiAppID(), thingID);
 
 		List<EndNodeOfGateway> allEndNodesOfGateway = thingIFService.getAllEndNodesOfGateway(fullKiiThingID);
 		Map<String, EndNodeOfGateway> allEndNodesOfGatewayMap = new HashMap<>();
@@ -241,7 +294,8 @@ public class TriggerManager {
 					CommandToThing command = (CommandToThing) target;
 					CommandToThingInGW cmdInGW = new CommandToThingInGW();
 					cmdInGW.setCommand(command.getCommand());
-					cmdInGW.getSelector().setVendorThingIdList(new ArrayList<>());
+//					cmdInGW.getSelector().setVendorThingIdList(new ArrayList<>());
+//					cmdInGW.getSelector().setThingList(new ArrayList<>());
 					Set<GlobalThingInfo> thingList = thingTagService.getThingInfos(command.getSelector());
 
 					for (GlobalThingInfo thing : thingList) {
@@ -249,6 +303,7 @@ public class TriggerManager {
 							throw new IllegalStateException();
 						}
 						cmdInGW.getSelector().getVendorThingIdList().add(thing.getVendorThingID());
+						cmdInGW.getSelector().getThingList().add(thing.getId());
 					}
 					gatewayTriggerRecord.addTarget(cmdInGW);
 					break;
@@ -262,12 +317,7 @@ public class TriggerManager {
 		String vendorThingID=globalThingDao.getThingByFullKiiThingID(sourceThing.getKiiAppID(), thingID).getVendorThingID();
 		gatewayTriggerRecord.setGatewayVendorThingID(vendorThingID);
 		gatewayTriggerRecord.setGatewayFullKiiThingID(fullKiiThingID);
-		triggerDao.addKiiEntity(gatewayTriggerRecord);
-
-		sendGatewayCommand(gatewayTriggerRecord,GatewayCommand.createTrigger);
-
 		return gatewayTriggerRecord;
-
 	}
 
 	public Map<String, Object> getRuleEngingDump() {
@@ -365,14 +415,12 @@ public class TriggerManager {
 
 		if(record.getType()==BeehiveTriggerType.Gateway){
 
-
 			sendGatewayCommand((GatewayTriggerRecord) record, GatewayCommand.deleteTrigger);
 
 		}else {
 
 			if(record.getRecordStatus()== TriggerRecord.StatusType.enable) {
 				service.removeTrigger(triggerID);
-
 				scheduleService.removeManagerTaskForSchedule(triggerID);
 			}
 
@@ -401,7 +449,7 @@ public class TriggerManager {
 
 	private enum GatewayCommand{
 
-		deleteTrigger,disableTrigger,enableTrigger,createTrigger;
+		deleteTrigger,disableTrigger,enableTrigger,createTrigger,updateTrigger;
 	}
 
 
@@ -416,7 +464,7 @@ public class TriggerManager {
 		Action action = new Action();
 		actions.put(act.name(), action);
 
-		if(act==GatewayCommand.createTrigger){
+		if(act == GatewayCommand.createTrigger || act == GatewayCommand.updateTrigger){
 			action.setField("triggerJson", record);
 		}else {
 			action.setField("triggerID", triggerID);

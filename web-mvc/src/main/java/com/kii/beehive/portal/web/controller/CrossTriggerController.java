@@ -68,6 +68,22 @@ public class CrossTriggerController {
 		return result;
 	}
 
+	@RequestMapping(path = "/{triggerID}", method = {RequestMethod.PUT},consumes={MediaType.ALL_VALUE})
+	public Map<String, Object> updateTrigger(@PathVariable("triggerID") String triggerID, @RequestBody TriggerRecord record) {
+		Map<String, Object> result = new HashMap<>();
+		result.put("result", "success");
+
+		record.setId(triggerID);
+
+		record.setUserID(AuthInfoStore.getUserID());
+
+		triggerValidate.validateTrigger(record);
+
+		mang.updateTrigger(record);
+
+		return result;
+	}
+
 	@RequestMapping(path = "/{triggerID}", method = {RequestMethod.DELETE}, consumes = {"*"})
 	public Map<String, Object> deleteTrigger(@PathVariable("triggerID") String triggerID) {
 		Map<String, Object> result = new HashMap<>();
@@ -79,7 +95,6 @@ public class CrossTriggerController {
 
 		return result;
 	}
-
 
 	@RequestMapping(path = "/{triggerID}/enable", method = {RequestMethod.PUT},consumes={MediaType.ALL_VALUE})
 	public Map<String, Object> enableTrigger(@PathVariable("triggerID") String triggerID) {

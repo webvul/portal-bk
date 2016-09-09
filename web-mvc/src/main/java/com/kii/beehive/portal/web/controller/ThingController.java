@@ -560,14 +560,12 @@ public class ThingController extends AbstractThingTagController {
 		return resultList;
 	}
 
-	@Autowired
-	private ThingManager  thingManager;
 
 	@RequestMapping(value = "/queryDetailByIDs", method = {RequestMethod.POST})
 	public List<ThingDetail> getThingDetailWithLocByIDs(@RequestBody List<Long>  thingIDs){
 
 
-		return thingManager.getThingDetailByIDList(thingIDs).stream().map(ThingDetail::new).collect(Collectors.toList());
+		return simpleThingManager.getThingDetailByIDList(thingIDs).stream().map(ThingDetail::new).collect(Collectors.toList());
 
 	}
 }

@@ -36,9 +36,17 @@ public class IndustryTemplateRestBean {
 
 	@JsonIgnore
 	public void verifyInput(){
-		if(Strings.isBlank(industryTemplate.getThingType()) || Strings.isBlank(industryTemplate.getName()) || Strings.isBlank
-				(industryTemplate.getVersion()) || getContent() == null) {
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","industryTemplate");
+		if(Strings.isBlank(industryTemplate.getName())) {
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","name");
+		}
+		if(Strings.isBlank(industryTemplate.getThingType())) {
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","thingType");
+		}
+		if(Strings.isBlank(industryTemplate.getVersion())) {
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","version");
+		}
+		if( getContent() == null ) {
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING,"field","content");
 		}
 
 	}

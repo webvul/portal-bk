@@ -13,12 +13,13 @@ rule "${triggerID} user custom segment:multiple "
 when
 
 	$ext:ExternalCollect()
-    Trigger( $triggerID:triggerID,$thingSet:thingSet, ( triggerID=="${triggerID}" &&  enable == true && type ==TriggerType.multiple) )
+    Trigger( $triggerID:triggerID,$thingSet:thingSet,$enable:enable, ( triggerID=="${triggerID}" &&  enable == true && type ==TriggerType.multiple) )
     CurrThing(valid($thingSet))
     $muiMap:MultiplesValueMap( triggerID==$triggerID, ${express}  )
 then
 	MatchResult result=new MatchResult($triggerID);
 
+   result.setParam("enable",$enable);
 	${fillParam}
 
 	insertLogical(result);

@@ -14,10 +14,12 @@ rule "${triggerID} user custom segment:multiple "
 when
     CurrThing(init == false)
     $ext:ExternalCollect()
-    Trigger( $triggerID:triggerID, ( triggerID=="${triggerID}" &&  enable == true && type ==TriggerType.multiple) )
+    Trigger( $triggerID:triggerID, $enable:enable, ( triggerID=="${triggerID}" &&  enable == true && type ==TriggerType.multiple) )
     $muiMap:MultiplesValueMap( triggerID==$triggerID, ${express}  )
 then
     ResultParam result=new ResultParam($triggerID);
+
+    result.setParam("enable",$enable);
 
 	${fillParam}
 
