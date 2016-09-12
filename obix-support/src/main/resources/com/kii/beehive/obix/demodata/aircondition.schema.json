@@ -1,0 +1,298 @@
+{
+  "statesSchema": {
+    "type": "object",
+    "properties": {
+      "Temp": {
+        "displayNameCN": "设置温度",
+        "enum": null,
+        "maximum": 30,
+        "minimum": 10,
+        "type": "float",
+        "unit": "˚C",
+        "enumType": null
+      },
+      "Valve": {
+        "displayNameCN": "阀门状态",
+        "enum": {
+          "开": 1,
+          "关": 0
+        },
+        "maximum": 1,
+        "minimum": 0,
+        "type": "int",
+        "unit": null,
+        "enumType": "BOOLEAN"
+      },
+      "Speed": {
+        "displayNameCN": "风速",
+        "enum": {
+          "中速": 1,
+          "自动": 3,
+          "高速": 2,
+          "低速": 0
+        },
+        "maximum": 3,
+        "minimum": 0,
+        "type": "int",
+        "unit": null,
+        "enumType": "NUMBER"
+      },
+      "HighSpeed": {
+        "displayNameCN": "风速(高速)",
+        "enum": {
+          "关闭": 0,
+          "高速": 1
+        },
+        "maximum": 1,
+        "minimum": 0,
+        "type": "int",
+        "unit": null,
+        "enumType": "BOOLEAN"
+      },
+      "MinSpeed": {
+        "displayNameCN": "风速(中速)",
+        "enum": {
+          "关闭": 0,
+          "中速": 1
+        },
+        "maximum": 1,
+        "minimum": 0,
+        "type": "int",
+        "unit": null,
+        "enumType": "BOOLEAN"
+      },
+      "LowSpeed": {
+        "displayNameCN": "风速(低速)",
+        "enum": {
+          "关闭": 0,
+          "低速": 1
+        },
+        "maximum": 1,
+        "minimum": 0,
+        "type": "int",
+        "unit": null,
+        "enumType": "BOOLEAN"
+      },
+      "Mode": {
+        "displayNameCN": "运行模式",
+        "enum": {
+          "通风": 0,
+          "制热": 1,
+          "制冷": 2
+        },
+        "maximum": 2,
+        "minimum": 0,
+        "type": "int",
+        "unit": null,
+        "enumType": "NUMBER"
+      },
+      "Power": {
+        "displayNameCN": "电源",
+        "enum": {
+          "开": 1,
+          "关": 0
+        },
+        "maximum": 1,
+        "minimum": 0,
+        "type": "int",
+        "unit": null,
+        "enumType": "BOOLEAN"
+      }
+    },
+    "title": "空调"
+  },
+  "actions": {
+    "turnPower": {
+      "in": {
+        "displayNameCN": "电源控制",
+        "required": [
+          "Power"
+        ],
+        "type": "object",
+        "properties": {
+          "Power": {
+            "displayNameCN": "电源",
+            "enum": {
+              "开": 1,
+              "关": 0
+            },
+            "maximum": 1,
+            "minimum": 0,
+            "type": "int",
+            "unit": null,
+            "enumType": "BOOLEAN"
+          }
+        },
+        "title": "turnPower"
+      }
+    },
+    "setValve": {
+      "in": {
+        "displayNameCN": "阀门控制",
+        "required": [
+          "Valve"
+        ],
+        "type": "object",
+        "properties": {
+          "Valve": {
+            "displayNameCN": "阀门状态",
+            "enum": {
+              "开": 1,
+              "关": 0
+            },
+            "maximum": 1,
+            "minimum": 0,
+            "type": "int",
+            "unit": null,
+            "enumType": "BOOLEAN"
+          }
+        },
+        "title": "setValve"
+      }
+    },
+    "setTemp": {
+      "in": {
+        "displayNameCN": "温度控制",
+        "required": [
+          "Temp"
+        ],
+        "type": "object",
+        "properties": {
+          "Temp": {
+            "displayNameCN": "设置温度",
+            "enum": null,
+            "maximum": 30,
+            "minimum": 10,
+            "type": "float",
+            "unit": "˚C",
+            "enumType": null
+          }
+        },
+        "title": "setTemp"
+      }
+    },
+    "setMode": {
+      "in": {
+        "displayNameCN": "运行模式",
+        "required": [
+          "Mode"
+        ],
+        "type": "object",
+        "properties": {
+          "Mode": {
+            "displayNameCN": "运行模式",
+            "enum": {
+              "通风": 0,
+              "制热": 1,
+              "制冷": 2
+            },
+            "maximum": 2,
+            "minimum": 0,
+            "type": "int",
+            "unit": null,
+            "enumType": "NUMBER"
+          }
+        },
+        "title": "setMode"
+      }
+    },
+    "setSpeed": {
+      "in": {
+        "displayNameCN": "风速控制",
+        "required": [
+          "Speed"
+        ],
+        "type": "object",
+        "properties": {
+          "Speed": {
+            "displayNameCN": "风速",
+            "enum": {
+              "中速": 1,
+              "自动": 3,
+              "高速": 2,
+              "低速": 0
+            },
+            "maximum": 3,
+            "minimum": 0,
+            "type": "int",
+            "unit": null,
+            "enumType": "NUMBER"
+          }
+        },
+        "title": "setSpeed"
+      }
+    },
+    "MinSpeed": {
+      "in": {
+        "displayNameCN": "中速模式",
+        "required": [
+          "Speed"
+        ],
+        "type": "object",
+        "properties": {
+          "Speed": {
+            "displayNameCN": "风速",
+            "enum": {
+              "中速": 1,
+              "关闭": 0
+            },
+            "maximum": 1,
+            "minimum": 0,
+            "type": "int",
+            "unit": null,
+            "enumType": "BOOLEAN"
+          }
+        },
+        "title": "MinSpeed"
+      }
+    },
+    "LowSpeed": {
+      "in": {
+        "displayNameCN": "低速模式",
+        "required": [
+          "Speed"
+        ],
+        "type": "object",
+        "properties": {
+          "Speed": {
+            "displayNameCN": "风速",
+            "enum": {
+              "关闭": 0,
+              "低速": 1
+            },
+            "maximum": 1,
+            "minimum": 0,
+            "type": "int",
+            "unit": null,
+            "enumType": "BOOLEAN"
+          }
+        },
+        "title": "LowSpeed"
+      }
+    },
+    "HighSpeed": {
+      "in": {
+        "displayNameCN": "高速模式",
+        "required": [
+          "Speed"
+        ],
+        "type": "object",
+        "properties": {
+          "Speed": {
+            "displayNameCN": "风速",
+            "enum": {
+              "高速": 1,
+              "关闭": 0
+            },
+            "maximum": 1,
+            "minimum": 0,
+            "type": "int",
+            "unit": null,
+            "enumType": "BOOLEAN"
+          }
+        },
+        "title": "HighSpeed"
+      }
+    }
+  }
+}
