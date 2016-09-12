@@ -33,6 +33,7 @@ import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.result.CommandResponse;
+import com.kii.extension.ruleengine.store.trigger.result.ExceptionResponse;
 import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.entity.thingif.Action;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
@@ -175,17 +176,26 @@ public class CommandExecuteService {
 
 
 	private void sendCmd(ThingCommand command, GlobalThingInfo thingInfo,String triggerID) {
-		String appID=thingInfo.getKiiAppID();
 
-
-		command.setUserID(appInfoManager.getDefaultOwer(appID).getUserID());
-
-
-		String cmdResult=thingIFService.sendCommand(command,thingInfo.getFullKiiThingID());
-		CommandResponse resp=new CommandResponse(cmdResult);
+		CommandResponse resp = new CommandResponse();
 		resp.setCommand(command);
 
-		resp.setTriggerID(triggerID);
+		try {
+			String appID = thingInfo.getKiiAppID();
+
+
+			command.setUserID(appInfoManager.getDefaultOwer(appID).getUserID());
+
+
+			String cmdResult = thingIFService.sendCommand(command, thingInfo.getFullKiiThingID());
+
+			resp.setResult(cmdResult);
+			resp.setTriggerID(triggerID);
+		}catch(Exception ex){
+
+			resultDao.addException(new ExceptionResponse(ex.getCause()));
+		}
+
 		resultDao.addCommandResult(resp);
 
 	}

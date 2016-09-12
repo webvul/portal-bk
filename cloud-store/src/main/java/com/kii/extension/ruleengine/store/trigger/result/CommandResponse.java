@@ -14,14 +14,11 @@ public class CommandResponse extends KiiEntity implements TriggerResult {
 
 
 
+
 	public CommandResponse(){
 
 	}
 
-	public CommandResponse(String cmdResult) {
-		super();
-		result=cmdResult;
-	}
 
 	public ThingCommand getCommand() {
 		return command;

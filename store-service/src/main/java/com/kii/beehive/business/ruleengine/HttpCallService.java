@@ -42,7 +42,7 @@ public class HttpCallService {
 
 		try {
 
-			HttpUriRequest request=getRequest(call);
+//			HttpUriRequest request=getRequest(call);
 
 			HttpResponse response = tool.doRequest(getRequest(call));
 
