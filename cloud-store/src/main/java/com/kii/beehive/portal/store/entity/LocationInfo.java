@@ -10,6 +10,9 @@ import com.kii.extension.sdk.entity.KiiEntity;
 
 public class LocationInfo extends KiiEntity {
 
+
+	private String aliSiteNumber;
+
 	private String location;
 
 	private String parentLoc;
@@ -22,6 +25,13 @@ public class LocationInfo extends KiiEntity {
 
 	private Map<String,String> subLocations=new HashMap<>();
 
+	public String getAliSiteNumber() {
+		return aliSiteNumber;
+	}
+
+	public void setAliSiteNumber(String aliSiteNumber) {
+		this.aliSiteNumber = aliSiteNumber;
+	}
 
 	@Override
 	public String getId(){

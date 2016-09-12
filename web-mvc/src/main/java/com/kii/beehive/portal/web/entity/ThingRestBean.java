@@ -20,8 +20,8 @@ import com.kii.beehive.portal.web.exception.PortalException;
 public class ThingRestBean  {
 
 
-	//0807W-F02-03-118
-	private final static Pattern validVendorThingIDPattern = Pattern.compile("^\\d{4}\\w-[A-Z][\\d]{2}-\\d{2}-\\d{3}$");
+	//0807W-F02-A-118
+	private final static Pattern validVendorThingIDPattern = Pattern.compile("^\\d{4}\\w-[A-Z][\\d]{2}-\\w{1}-\\d{3}$");
 
 	private final static Pattern locationPattern = Pattern.compile("^\\d{4}\\w-[A-Z][\\d]{2}$");
 
