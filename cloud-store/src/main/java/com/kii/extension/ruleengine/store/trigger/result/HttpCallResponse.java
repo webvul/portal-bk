@@ -3,6 +3,7 @@ package com.kii.extension.ruleengine.store.trigger.result;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.kii.extension.ruleengine.store.trigger.CallHttpApi;
 import com.kii.extension.sdk.entity.KiiEntity;
 
 public class HttpCallResponse extends KiiEntity implements TriggerResult{
@@ -10,6 +11,9 @@ public class HttpCallResponse extends KiiEntity implements TriggerResult{
 	private int status;
 
 	private String body;
+
+	private CallHttpApi  httpRequest;
+
 
 	private Map<String,String> headers=new HashMap<>();
 
@@ -51,8 +55,18 @@ public class HttpCallResponse extends KiiEntity implements TriggerResult{
 		headers.put(name,value);
 	}
 
+	public CallHttpApi getHttpRequest() {
+		return httpRequest;
+	}
+
+	public void setHttpRequest(CallHttpApi httpRequest) {
+		this.httpRequest = httpRequest;
+	}
+
 	@Override
 	public String getType() {
 		return "httpResponse";
 	}
+
+
 }

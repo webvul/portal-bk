@@ -42,6 +42,8 @@ public class HttpCallService {
 
 		try {
 
+			HttpUriRequest request=getRequest(call);
+
 			HttpResponse response = tool.doRequest(getRequest(call));
 
 
@@ -51,6 +53,9 @@ public class HttpCallService {
 
 
 			HttpCallResponse resp=new HttpCallResponse();
+
+			resp.setHttpRequest(call);
+
 			resp.setTriggerID(triggerID);
 			resp.setStatus(response.getStatusLine().getStatusCode());
 

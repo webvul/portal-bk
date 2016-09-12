@@ -183,6 +183,8 @@ public class CommandExecuteService {
 
 		String cmdResult=thingIFService.sendCommand(command,thingInfo.getFullKiiThingID());
 		CommandResponse resp=new CommandResponse(cmdResult);
+		resp.setCommand(command);
+
 		resp.setTriggerID(triggerID);
 		resultDao.addCommandResult(resp);
 

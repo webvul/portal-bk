@@ -85,22 +85,13 @@ public class DroolsRuleService {
 
 			kieSession.update(currThingHandler, currThing);
 
-			fireCondition();
+			getSession().fireAllRules();
+
+			List<MatchResult>  lists= doQuery("get Match Result by TriggerID");
+
+			consumer.accept(lists);
 		}
 	}
-
-
-	private  void fireCondition(){
-
-
-		getSession().fireAllRules();
-
-
-		List<MatchResult>  lists= doQuery("get Match Result by TriggerID");
-
-		consumer.accept(lists);
-	};
-
 
 
 	public Map<String,Object>  getEngineEntitys(){
