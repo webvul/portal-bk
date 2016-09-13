@@ -70,21 +70,21 @@ public class RuleEngineFactory {
 
 	}
 
-	@Bean(name="streamDroolsService")
-	public DroolsRuleService  getStreamService(){
-
-
-		DroolsRuleService droolsService= new DroolsRuleService(consumer,true,
-				getDrlContent("triggerComm"),
-				getDrlContent("multipleSummary")
-		)
-				;
-
-		droolsService.bindWithInstance("exec",exec);
-
-		return droolsService;
-
-	}
+//	@Bean(name="streamDroolsService")
+//	public DroolsRuleService  getStreamService(){
+//
+//
+//		DroolsRuleService droolsService= new DroolsRuleService(consumer,true,
+//				getDrlContent("triggerComm"),
+//				getDrlContent("multipleSummary")
+//		)
+//				;
+//
+//		droolsService.bindWithInstance("exec",exec);
+//
+//		return droolsService;
+//
+//	}
 
 
 

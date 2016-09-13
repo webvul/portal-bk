@@ -1,30 +1,24 @@
 package com.kii.beehive.business.ruleengine;
 
+import javax.annotation.PostConstruct;
+
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.business.helper.TriggerCreator;
-import com.kii.beehive.business.manager.AppInfoManager;
-import com.kii.beehive.business.manager.ThingTagManager;
-import com.kii.beehive.business.service.ThingIFInAppService;
-import com.kii.beehive.portal.common.utils.StrTemplate;
-import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
-import com.kii.beehive.portal.service.AppInfoDao;
-import com.kii.extension.ruleengine.service.ExecuteResultDao;
+import com.kii.extension.ruleengine.EventCallback;
 import com.kii.extension.ruleengine.service.TriggerRecordDao;
 import com.kii.extension.ruleengine.store.trigger.CallHttpApi;
 import com.kii.extension.ruleengine.store.trigger.CommandToThing;
@@ -32,61 +26,54 @@ import com.kii.extension.ruleengine.store.trigger.CronPrefix;
 import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.result.CommandResponse;
-import com.kii.extension.ruleengine.store.trigger.result.ExceptionResponse;
-import com.kii.extension.sdk.context.AppBindToolResolver;
-import com.kii.extension.sdk.entity.thingif.Action;
-import com.kii.extension.sdk.entity.thingif.ThingCommand;
 import com.kii.extension.tools.CronGeneral;
 
 
 @Component
-public class CommandExecuteService {
-
-//	public static final String SCHEMA = "threaddemo";
-//	private static final int SCHEMA_VERSION = 1;
-
-	private Logger log= LoggerFactory.getLogger(CommandExecuteService.class);
-
-	@Autowired
-	private ThingIFInAppService thingIFService;
+public class CommandExecuteService implements EventCallback {
 
 	@Autowired
 	private TriggerRecordDao triggerDao;
 
 
 	@Autowired
-	private AppInfoManager appInfoManager;
-
-
-	@Autowired
-	private ThingTagManager thingTagService;
+	private ThingCommandForTriggerService commandService;
 
 
 	@Autowired
 	private HttpCallService  httpCallService;
 
-	@Autowired
-	private TriggerLogTools  logTool;
-
-	@Autowired
-	private AppInfoDao appInfoDao;
-
-	@Autowired
-	private AppBindToolResolver resolver;
-
 	@Lazy
 	@Autowired
 	private TriggerCreator creator;
 
-	@Autowired
-	private ExecuteResultDao resultDao;
 
 
 	private ScheduledExecutorService executeService=new ScheduledThreadPoolExecutor(10);
 
 
-	public void doCommand(TriggerRecord  record,Map<String,String> params) {
+	@PostConstruct
+	public  void init(){
+
+
+	}
+
+
+	@Async
+	@Override
+	public void onTriggerFire(String triggerID,Map<String,String> params) {
+
+		TriggerRecord trigger=triggerDao.getEnableTriggerRecord(triggerID);
+
+		if(trigger==null){
+			return;
+		}
+
+		doCommand(trigger,params);
+	}
+
+
+	private  void doCommand(TriggerRecord  record,Map<String,String> params) {
 
 		List<ExecuteTarget> targets=record.getTargets();
 
@@ -97,59 +84,21 @@ public class CommandExecuteService {
 			String delayParam="delay_"+idx;
 
 
-			Runnable run=new Runnable() {
-				@Override
-				public void run() {
+			Runnable run= () -> {
 
-					switch (target.getType()) {
+				switch (target.getType()) {
 
-						case "ThingCommand":
-							CommandToThing command=(CommandToThing)target;
+					case "ThingCommand":
+						CommandToThing command=(CommandToThing)target;
 
+						commandService.executeCommand(record.getTriggerID(),command,params);
+						break;
+					case "HttpApiCall":
+						CallHttpApi call=(CallHttpApi)target;
 
-							for (Map<String, Action> actionMap : command.getCommand().getActions()) {
+						httpCallService.doHttpApiCall(call,record.getTriggerID(),params);
 
-								actionMap.values().forEach((act) -> {
-									act.getFields().forEach((n, v) -> {
-
-										if(v instanceof  String){
-											act.setField(n, StrTemplate.generByMap((String)v, params));
-										}
-
-									});
-								});
-							}
-
-							Set<GlobalThingInfo> thingList = thingTagService.getThingInfos(command.getSelector());
-
-							thingList.stream().filter((th) -> !StringUtils.isEmpty(th.getFullKiiThingID())).forEach(thing -> {
-
-								ThingCommand  cmd=command.getCommand();
-								String version=thing.getSchemaVersion();
-								int ver=1;
-								try {
-									 ver = Integer.parseInt(version);
-								}catch(Exception e){
-									log.error("SchemaVersion invalid",e);
-								}
-								cmd.setSchemaVersion(ver);
-								cmd.setSchema(thing.getSchemaName());
-
-								sendCmd(command.getCommand(), thing,record.getTriggerID());
-
-							});
-
-							logTool.outputCommandLog(thingList,record);
-							break;
-						case "HttpApiCall":
-							CallHttpApi call=(CallHttpApi)target;
-
-							call.fillParam(params);
-
-							httpCallService.doHttpApiCall(call,record.getTriggerID());
-
-							break;
-					}
+						break;
 				}
 			};
 
@@ -175,30 +124,6 @@ public class CommandExecuteService {
 	}
 
 
-	private void sendCmd(ThingCommand command, GlobalThingInfo thingInfo,String triggerID) {
-
-		CommandResponse resp = new CommandResponse();
-		resp.setCommand(command);
-
-		try {
-			String appID = thingInfo.getKiiAppID();
-
-
-			command.setUserID(appInfoManager.getDefaultOwer(appID).getUserID());
-
-
-			String cmdResult = thingIFService.sendCommand(command, thingInfo.getFullKiiThingID());
-
-			resp.setResult(cmdResult);
-			resp.setTriggerID(triggerID);
-		}catch(Exception ex){
-
-			resultDao.addException(new ExceptionResponse(ex.getCause()));
-		}
-
-		resultDao.addCommandResult(resp);
-
-	}
 
 
 	private void  addNewTrigger(TriggerRecord  record,int delay,int idx){

@@ -1,6 +1,9 @@
 package com.kii.extension.ruleengine.schedule;
 
 import org.quartz.JobDataMap;
+import org.quartz.JobExecutionContext;
+import org.quartz.SchedulerException;
+import org.quartz.TriggerKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,11 +23,23 @@ public class StartTriggerJob implements JobInSpring {
 
 	public void execute(JobDataMap paramMap)  {
 
-		String triggerID=paramMap.getString(ScheduleService.TRIGGER_ID);
-		log.info("start job enable trigger: "+triggerID);
+		String triggerID=paramMap.getString(ProxyJob.TRIGGER_ID);
 
+		boolean isDrools=paramMap.getBoolean(ProxyJob.TYPE_SIGN);
 
-		bean.enableTrigger(triggerID);
+		if(isDrools) {
+			log.info("stop job disable trigger: " + triggerID);
+
+			bean.enableTrigger(triggerID);
+		}else{
+
+			JobExecutionContext context=(JobExecutionContext)paramMap.get(ProxyJob.JOB_CONTEXT);
+			try {
+				context.getScheduler().resumeTrigger(TriggerKey.triggerKey(triggerID,ScheduleService.EXEC_PRE));
+			} catch (SchedulerException e) {
+				e.printStackTrace();
+			}
+		}
 
 
 	}

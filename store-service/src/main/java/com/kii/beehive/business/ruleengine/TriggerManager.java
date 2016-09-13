@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -100,21 +102,11 @@ public class TriggerManager {
 		List<TriggerRecord> recordList = triggerDao.getAllEnableTrigger();
 
 
-//		scheduleService.startSchedule();
+		List<TriggerRecord>  list=recordList.stream().filter((r)->r.getType()!= BeehiveTriggerType.Gateway).collect(Collectors.toList());
 
-		recordList.forEach(record -> {
+		service.enteryInit();
 
-			try {
-				if(record.getType()== BeehiveTriggerType.Gateway){
-					return;
-				}
-				creator.addTriggerToEngine(record);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		});
-
-		List<ThingStatusInRule> initThings = new ArrayList<>();
+		list.forEach(r->creator.addTriggerToEngine(r));
 
 		thingTagService.iteratorAllThingsStatus(s -> {
 			if (StringUtils.isEmpty(s.getStatus())) {
@@ -125,15 +117,10 @@ public class TriggerManager {
 			info.setCreateAt(s.getModifyDate());
 			info.setValues(s.getStatus());
 
-			initThings.add(info);
-
+			service.initThingStatus(info);
 		});
-		try {
-			service.initThingStatus(initThings);
-		}catch(Exception e){
-			log.error("ruleEngine's first fire fail",e);
-		}
 
+		service.leaveInit();
 	}
 
 

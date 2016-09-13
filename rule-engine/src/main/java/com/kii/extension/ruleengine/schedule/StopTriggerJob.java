@@ -1,6 +1,9 @@
 package com.kii.extension.ruleengine.schedule;
 
 import org.quartz.JobDataMap;
+import org.quartz.JobExecutionContext;
+import org.quartz.SchedulerException;
+import org.quartz.TriggerKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +21,26 @@ public class StopTriggerJob implements JobInSpring {
 	@Autowired
 	private DroolsTriggerService bean;
 
+
+
 	@Override
 	public void execute(JobDataMap paramMap) {
-		String triggerID=paramMap.getString(ScheduleService.TRIGGER_ID);
-		log.info("stop job disable trigger: "+triggerID);
+		String triggerID=paramMap.getString(ProxyJob.TRIGGER_ID);
 
-		bean.disableTrigger(triggerID);
+		boolean isDrools=paramMap.getBoolean(ProxyJob.TYPE_SIGN);
 
+		if(isDrools) {
+			log.info("stop job disable trigger: " + triggerID);
+
+			bean.disableTrigger(triggerID);
+		}else{
+
+			JobExecutionContext context=(JobExecutionContext)paramMap.get(ProxyJob.JOB_CONTEXT);
+			try {
+				context.getScheduler().pauseTrigger(TriggerKey.triggerKey(triggerID,ScheduleService.EXEC_PRE));
+			} catch (SchedulerException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }

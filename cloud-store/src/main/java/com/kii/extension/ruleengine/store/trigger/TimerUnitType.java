@@ -2,7 +2,7 @@ package com.kii.extension.ruleengine.store.trigger;
 
 public enum TimerUnitType {
 
-	Day("d"),Hour("h"),Minute("m"),Second("s");
+	Hour("h"),Minute("m"),Second("s");
 
 	private String val;
 

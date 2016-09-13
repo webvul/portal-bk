@@ -23,6 +23,8 @@ then
 
 	${fillParam}
 
+	System.out.println("fire from multiple schedule trigger ");
+
 	CommandExec exec=(CommandExec)kcontext.getKieRuntime().getEnvironment().get("exec");
     exec.doExecute($triggerID,result);
 end

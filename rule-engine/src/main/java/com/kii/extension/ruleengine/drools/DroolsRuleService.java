@@ -68,28 +68,61 @@ public class DroolsRuleService {
 	private final Consumer<List<MatchResult>> consumer;
 
 
-	public void setCurrThingID(String thingID){
-		settingCurrThing(thingID, CurrThing.Status.inThing);
+
+	public void enterInit(){
+
+		this.currThing.setStatus(CurrThing.Status.inInit);
+		this.currThing.setCurrThing(CurrThing.NONE);
+
+		kieSession.update(currThingHandler, currThing);
+	}
+
+	public void leaveInit(){
+
+//		getSession().fireAllRules();
+
+		this.currThing.setStatus(CurrThing.Status.inIdle);
+		this.currThing.setCurrThing(CurrThing.NONE);
+
+		kieSession.update(currThingHandler, currThing);
+
+		kieSession.fireAllRules();
+
+	}
+
+	public void toIdle(){
+		settingCurrThing(CurrThing.NONE, CurrThing.Status.inIdle);
 	}
 
 
-	public void setStatus(CurrThing.Status  status){
-		settingCurrThing(CurrThing.NONE, status);
+	public void inThing(String thingID){
+		settingCurrThing(thingID, CurrThing.Status.inThing);
+	}
+
+	public void inExt(){
+		settingCurrThing(CurrThing.NONE, CurrThing.Status.inExt);
 	}
 
 	private void settingCurrThing(String thingID,CurrThing.Status  status){
 
 		synchronized (currThing) {
+
+			CurrThing.Status  oldStatus=currThing.getStatus();
+
+			if(oldStatus==CurrThing.Status.inInit){
+				return;
+			}
+
 			this.currThing.setStatus(status);
 			this.currThing.setCurrThing(thingID);
 
 			kieSession.update(currThingHandler, currThing);
+			kieSession.fireAllRules();
 
-			getSession().fireAllRules();
-
-			List<MatchResult>  lists= doQuery("get Match Result by TriggerID");
-
-			consumer.accept(lists);
+			if(status== CurrThing.Status.inThing||status== CurrThing.Status.inExt) {
+				List<MatchResult> lists = doQuery("get Match Result by TriggerID");
+				consumer.accept(lists);
+			}
 		}
 	}
 
@@ -100,7 +133,7 @@ public class DroolsRuleService {
 		Map<String,Object>  map=new HashMap<>();
 
 
-		Collection<? extends Object> objs=getSession().getObjects();
+		Collection<? extends Object> objs=kieSession.getObjects();
 
 		Map<String,Object>  entityMap=new HashMap<>();
 
@@ -189,15 +222,6 @@ public class DroolsRuleService {
 	}
 
 
-
-	private KieSession getSession(){
-
-
-		return kieSession;
-	}
-
-
-
 	public void clear(){
 
 		boolean isDeletedRule = false;
@@ -217,7 +241,7 @@ public class DroolsRuleService {
 			kb.buildAll();
 			kieContainer.updateToVersion(kb.getKieModule().getReleaseId());
 		}
-		handleMap.keySet().forEach( key -> getSession().delete(handleMap.get(key)) );
+		handleMap.keySet().forEach( key -> kieSession.delete(handleMap.get(key)) );
 		handleMap.clear();
 	}
 
@@ -249,15 +273,15 @@ public class DroolsRuleService {
 
 
 		handleMap.clear();
-		getSession().getObjects().forEach((obj)->{
+		kieSession.getObjects().forEach((obj)->{
 
-			FactHandle handle=getSession().getFactHandle(obj);
+			FactHandle handle=kieSession.getFactHandle(obj);
 
 			handleMap.put(getEntityKey(obj),handle);
 
 		});
 
-		this.setStatus(CurrThing.Status.inIdle);
+		toIdle();
 
 	}
 
@@ -276,15 +300,15 @@ public class DroolsRuleService {
 
 		kieContainer.updateToVersion(kb.getKieModule().getReleaseId());
 		pathSet.remove(path);
-		getSession().getObjects().forEach((obj)->{
+		kieSession.getObjects().forEach((obj)->{
 
-			FactHandle handle=getSession().getFactHandle(obj);
+			FactHandle handle=kieSession.getFactHandle(obj);
 
 			handleMap.put(getEntityKey(obj),handle);
 
 		});
 
-		setStatus(CurrThing.Status.inIdle);
+		toIdle();
 
 
 	}
@@ -293,7 +317,7 @@ public class DroolsRuleService {
 
 
 	public void setGlobal(String name,Object key){
-		getSession().setGlobal(name,key);
+		kieSession.setGlobal(name,key);
 	}
 
 	public void addOrUpdateExternal(ExternalValues entity){
@@ -301,9 +325,9 @@ public class DroolsRuleService {
 
 		external.putEntity(entity.getName(),entity);
 
-		getSession().update(externalHandler,external);
+		kieSession.update(externalHandler,external);
 
-		setStatus(CurrThing.Status.inExt);
+		inExt();
 
 
 	}
@@ -314,9 +338,9 @@ public class DroolsRuleService {
 
 		handleMap.compute(getEntityKey(entity),(k,v)->{
 			    if(v==null) {
-					return getSession().insert(entity);
+					return kieSession.insert(entity);
 				}else{
-					getSession().update(v,entity);
+					kieSession.update(v,entity);
 					return v;
 				}
 			}
@@ -339,7 +363,7 @@ public class DroolsRuleService {
 
 
 
-		QueryResults results = getSession().getQueryResults( queryName,params );
+		QueryResults results = kieSession.getQueryResults( queryName,params );
 
 		List<T>  list=new ArrayList<>();
 
@@ -357,7 +381,7 @@ public class DroolsRuleService {
 		String entityKey = getEntityKey(obj);
 		FactHandle handler=handleMap.get(entityKey);
 		if(handler!=null) {
-			getSession().delete(handler);
+			kieSession.delete(handler);
 			handleMap.remove(entityKey);
 		}
 	}
@@ -367,7 +391,7 @@ public class DroolsRuleService {
 		String entityKey = getEntityKey(obj);
 		FactHandle handler=handleMap.get(entityKey);
 		if(handler!=null) {
-			getSession().delete(handler);
+			kieSession.delete(handler);
 		}
 	}
 }

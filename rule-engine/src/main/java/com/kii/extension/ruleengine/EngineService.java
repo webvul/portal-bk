@@ -1,15 +1,12 @@
 package com.kii.extension.ruleengine;
 
-import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -24,17 +21,9 @@ import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
 import com.kii.extension.ruleengine.drools.entity.Trigger;
 import com.kii.extension.ruleengine.drools.entity.TriggerType;
 import com.kii.extension.ruleengine.store.trigger.CommandParam;
-import com.kii.extension.ruleengine.store.trigger.Condition;
 import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
-import com.kii.extension.ruleengine.store.trigger.Express;
-import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.SummaryFunctionType;
-import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.TagSelector;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.condition.All;
 import com.kii.extension.ruleengine.store.trigger.multiple.GroupSummarySource;
 import com.kii.extension.ruleengine.store.trigger.multiple.MultipleSrcTriggerRecord;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
@@ -144,8 +133,6 @@ public class EngineService {
 				}
 		);
 
-
-		droolsTriggerService.refreshContext();
 	}
 
 
@@ -159,92 +146,6 @@ public class EngineService {
 		return droolsTriggerService.getEngineRuntime();
 
 	}
-
-
-
-	public void createSummaryTrigger(SummaryTriggerRecord record,Map<String,Set<String> > summaryMap){
-
-		MultipleSrcTriggerRecord convertRecord=new MultipleSrcTriggerRecord();
-
-		BeanUtils.copyProperties(record,convertRecord);
-
-
-		Map<String,Set<String>> thingMap=new HashMap<>();
-
-		record.getSummarySource().forEach((k,v)->{
-
-			TagSelector source=v.getSource();
-
-			v.getExpressList().forEach((exp)->{
-
-				GroupSummarySource  elem=new GroupSummarySource();
-
-				elem.setFunction(exp.getFunction());
-				elem.setStateName(exp.getStateName());
-				elem.setSource(source);
-
-				String index=k+"."+exp.getSummaryAlias();
-				convertRecord.addSource(index,elem);
-				thingMap.put(index,summaryMap.get(k));
-
-			});
-		});
-
-		this.createMultipleSourceTrigger(convertRecord,thingMap);
-	}
-
-	public void createGroupTrigger(GroupTriggerRecord record,Collection<String> thingIDs){
-
-		MultipleSrcTriggerRecord convertRecord=new MultipleSrcTriggerRecord();
-		BeanUtils.copyProperties(record,convertRecord);
-
-
-		Condition cond=new All();
-		switch(record.getPolicy().getGroupPolicy()){
-			//	Any,All,Some,Percent,None;
-
-			case All:
-				cond=TriggerConditionBuilder.newCondition().equal("comm",thingIDs.size()).getConditionInstance();
-				break;
-			case Any:
-				cond=TriggerConditionBuilder.newCondition().greatAndEq("comm",1).getConditionInstance();
-				break;
-			case Some:
-				cond=TriggerConditionBuilder.newCondition().greatAndEq("comm",record.getPolicy().getCriticalNumber()).getConditionInstance();
-				break;
-			case Percent:
-				int percent=(record.getPolicy().getCriticalNumber()*thingIDs.size())/100;
-				cond=TriggerConditionBuilder.newCondition().equal("comm",percent).getConditionInstance();
-				break;
-			case None:
-				cond=TriggerConditionBuilder.newCondition().equal("comm",0).getConditionInstance();
-		}
-		RuleEnginePredicate predicate=new RuleEnginePredicate();
-
-		predicate.setCondition(cond);
-		predicate.setTriggersWhen(record.getPredicate().getTriggersWhen());
-		predicate.setSchedule(record.getPredicate().getSchedule());
-
-		convertRecord.setPredicate(predicate);
-
-		Map<String,Set<String>> thingMap=new HashMap<>();
-		thingMap.put("comm",new HashSet<>(thingIDs));
-
-		GroupSummarySource  elem=new GroupSummarySource();
-
-		elem.setFunction(SummaryFunctionType.count);
-		Express exp=new Express();
-		exp.setCondition(record.getPredicate().getCondition());
-		elem.setExpress(exp);
-
-		elem.setSource(record.getSource());
-
-		convertRecord.addSource("comm",elem);
-
-		this.createMultipleSourceTrigger(convertRecord,thingMap);
-	}
-
-
 
 	public void  createSimpleTrigger(String thingID, SimpleTriggerRecord record)  {
 
@@ -277,7 +178,6 @@ public class EngineService {
 		}
 
 
-		droolsTriggerService.refreshContext();
 
 	}
 
@@ -287,7 +187,6 @@ public class EngineService {
 		relationStore.maintainThingTriggerIndex(newThings,triggerID);
 		droolsTriggerService.updateThingsWithName(triggerID,"comm",newThings);
 
-		droolsTriggerService.refreshContext();
 
 	}
 
@@ -298,19 +197,21 @@ public class EngineService {
 
 		droolsTriggerService.updateThingsWithName(triggerID,summaryName,newThings);
 
-		droolsTriggerService.refreshContext();
-
-
 	}
 
-	public void initThingStatus(List<ThingStatusInRule> thingInfos) {
 
-		droolsTriggerService.inInit();
+	public void enteryInit(){
+		droolsTriggerService.enterInit();
+	}
 
-		thingInfos.forEach(th->droolsTriggerService.initThingStatus(th));
 
-		droolsTriggerService.refreshContext();
+	public void leaveInit(){
+		droolsTriggerService.leaveInit();
+	}
 
+
+	public void initThingStatus(ThingStatusInRule  status){
+		droolsTriggerService.addThingStatus(status);
 	}
 
 	public void updateThingStatus(String thingID,ThingStatus status,Date time) {
@@ -350,8 +251,6 @@ public class EngineService {
 
 		droolsTriggerService.removeTrigger(triggerID);
 
-
-		droolsTriggerService.refreshContext();
 
 	}
 }

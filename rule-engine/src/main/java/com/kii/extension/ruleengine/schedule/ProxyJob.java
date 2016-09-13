@@ -8,6 +8,12 @@ import org.springframework.context.ApplicationContext;
 
 public class ProxyJob implements Job {
 
+
+	public static final String TYPE_SIGN = "Type_Sign";
+	public static final String JOB_CONTEXT = "Job_Context";
+	public static final String TRIGGER_ID = "triggerID";
+
+
 	private Class<? extends JobInSpring> beanClass;
 
 	private ApplicationContext applicationCtx;
@@ -33,9 +39,12 @@ public class ProxyJob implements Job {
 
 		JobDataMap dataMap=context.getMergedJobDataMap();
 
+		dataMap.put(JOB_CONTEXT,context);
 		JobInSpring  jobInSpring=applicationCtx.getBean(beanClass);
 
 		jobInSpring.execute(dataMap);
+
+
 
 	}
 }

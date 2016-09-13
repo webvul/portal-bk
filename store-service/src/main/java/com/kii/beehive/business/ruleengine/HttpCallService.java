@@ -3,6 +3,7 @@ package com.kii.beehive.business.ruleengine;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Map;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -36,12 +37,15 @@ public class HttpCallService {
 	@Autowired
 	private ExecuteResultDao  resultDao;
 
+	@Autowired
+	private TriggerLogTools  logTool;
 
-	public void doHttpApiCall(CallHttpApi call,String triggerID ){
+	public void doHttpApiCall(CallHttpApi call,String triggerID ,Map<String,String> params){
 
 
 		try {
 
+			call.fillParam(params);
 //			HttpUriRequest request=getRequest(call);
 
 			HttpResponse response = tool.doRequest(getRequest(call));

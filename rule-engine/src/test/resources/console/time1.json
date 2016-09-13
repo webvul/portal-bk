@@ -34,7 +34,7 @@
   ],
   "predicate": {
     "schedule": {
-      "cron": "0 57 17 * * ?",
+      "cron": "0 0/4 * * * ?",
       "type": "Cron"
     },
     "triggersWhen": "CONDITION_TRUE"

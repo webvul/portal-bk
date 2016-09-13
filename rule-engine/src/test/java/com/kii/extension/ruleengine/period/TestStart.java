@@ -29,7 +29,7 @@ public class TestStart {
 		period.setStartCron("0 30 17 * * ?");
 		period.setEndCron("0 0 6 * * ?");
 
-		scheduleService.addManagerTaskForSchedule("abc",period);
+		scheduleService.addManagerTaskForSchedule("abc",period,true);
 
 		System.in.read();
 

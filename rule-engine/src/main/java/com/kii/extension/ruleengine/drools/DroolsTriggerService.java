@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import com.kii.extension.ruleengine.drools.entity.CurrThing;
 import com.kii.extension.ruleengine.drools.entity.ExternalValues;
 import com.kii.extension.ruleengine.drools.entity.MultiplesValueMap;
 import com.kii.extension.ruleengine.drools.entity.Summary;
@@ -26,14 +25,6 @@ public class DroolsTriggerService {
 	@Qualifier("cloudDroolsService")
 	private DroolsRuleService cloudService;
 
-	@Autowired
-	@Qualifier("streamDroolsService")
-	private DroolsRuleService streamService;
-
-	@Autowired
-	private CommandExec exec;
-
-
 
 	private final Map<String, Trigger> triggerMap=new ConcurrentHashMap<>();
 
@@ -42,7 +33,6 @@ public class DroolsTriggerService {
 
 	public void clear(){
 		cloudService.clear();
-		streamService.clear();
 		triggerMap.clear();
 		thingColMap.clear();
 	}
@@ -53,7 +43,6 @@ public class DroolsTriggerService {
 		Map<String,Object> map=new HashMap<>();
 
 		map.put("cloud",cloudService.getEngineEntitys());
-//		map.put("stream",streamService.getEngineEntitys());
 
 		return map;
 
@@ -62,7 +51,7 @@ public class DroolsTriggerService {
 	private DroolsRuleService getService(Trigger trigger){
 
 		if(trigger.isStream()){
-			return streamService;
+			return null;
 		}else{
 			return cloudService;
 		}
@@ -140,8 +129,7 @@ public class DroolsTriggerService {
 
 		Trigger trigger=triggerMap.get(triggerID);
 
-		getService(trigger).removeData(trigger);
-		getService(trigger).removeCondition("rule"+triggerID);
+
 
 		Map<String,Summary> map= thingColMap.remove(triggerID);
 		if(map != null ){
@@ -157,6 +145,9 @@ public class DroolsTriggerService {
 			ThingResult result = new ThingResult(trigger.getTriggerID());
 			getService(trigger).removeData(result);
 		}
+
+		getService(trigger).removeData(trigger);
+		getService(trigger).removeCondition("rule"+triggerID);
 
 	}
 
@@ -182,63 +173,31 @@ public class DroolsTriggerService {
 
 	}
 
-	public void inInit(){
-		cloudService.setStatus(CurrThing.Status.inInit);
-		streamService.setStatus(CurrThing.Status.inInit);
+	public void enterInit(){
+		cloudService.enterInit();
 	}
 
-	public void inIdle(){
-		cloudService.setStatus(CurrThing.Status.inIdle);
-		streamService.setStatus(CurrThing.Status.inIdle);
+	public void leaveInit(){
+		cloudService.leaveInit();
 	}
 
 
-	public void initThingStatus(ThingStatusInRule newStatus){
-
-		cloudService.addOrUpdateData(newStatus);
-		streamService.addOrUpdateData(newStatus);
-	}
 
 
 	public void addThingStatus(ThingStatusInRule newStatus){
 
 
 		cloudService.addOrUpdateData(newStatus);
-		cloudService.setCurrThingID(newStatus.getThingID());
+		cloudService.inThing(newStatus.getThingID());
 
-		streamService.addOrUpdateData(newStatus);
-		streamService.setCurrThingID(newStatus.getThingID());
-
-
-//		fireCondition();
 	}
 
 	public void addExternalValue(ExternalValues newValues){
 
 
 		cloudService.addOrUpdateExternal(newValues);
-		streamService.addOrUpdateExternal(newValues);
-
-//		fireCondition();
-	}
-
-	public void refreshContext(){
-
-		inIdle();
-
-//		fireCondition();
 	}
 
 
-//	private   void fireCondition(){
-//
-//		List<MatchResult>  results=cloudService.fireCondition();
-//
-//		results.addAll(streamService.fireCondition());
-//
-//		results.forEach(r-> exec.doExecute(r.getTriggerID(),r));
-//
-//	}
-	
 
 }

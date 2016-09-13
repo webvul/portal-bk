@@ -3,11 +3,14 @@ package com.kii.beehive.business.helper;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.commons.lang3.StringUtils;
 import org.quartz.SchedulerException;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,14 +20,21 @@ import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.beehive.portal.exception.InvalidTriggerFormatException;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.extension.ruleengine.EngineService;
+import com.kii.extension.ruleengine.TriggerConditionBuilder;
 import com.kii.extension.ruleengine.schedule.ScheduleService;
 import com.kii.extension.ruleengine.service.TriggerRecordDao;
+import com.kii.extension.ruleengine.store.trigger.Condition;
+import com.kii.extension.ruleengine.store.trigger.Express;
 import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.SimplePeriod;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.SummaryFunctionType;
 import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.TagSelector;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerValidPeriod;
+import com.kii.extension.ruleengine.store.trigger.condition.All;
 import com.kii.extension.ruleengine.store.trigger.multiple.GroupSummarySource;
 import com.kii.extension.ruleengine.store.trigger.multiple.MultipleSrcTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.multiple.ThingSource;
@@ -52,6 +62,7 @@ public class TriggerCreator {
 
 	@Autowired
 	private EngineService service;
+
 
 
 	public String createTrigger(TriggerRecord record) {
@@ -85,7 +96,30 @@ public class TriggerCreator {
 
 		}
 
+
+		//if not exist condition, turn to quartz task
+
+		Condition  condition=record.getPredicate().getCondition();
+		String express=record.getPredicate().getExpress();
+		if(condition==null&& StringUtils.isBlank(express)){
+
+			try {
+				scheduleService.addExecuteTask(triggerID,record.getPredicate().getSchedule(),record.getRecordStatus()==TriggerRecord.StatusType.enable);
+				if(period!=null) {
+					scheduleService.addManagerTask(triggerID, record.getPreparedCondition(),false);
+				}
+
+			}catch (SchedulerException e) {
+				e.printStackTrace();
+				throw new InvalidTriggerFormatException("schedule init fail");
+			}
+		}
+
 		try {
+
+
+
+
 			if (record instanceof SimpleTriggerRecord) {
 				addSimpleToEngine((SimpleTriggerRecord) record);
 			} else if (record instanceof GroupTriggerRecord) {
@@ -120,7 +154,7 @@ public class TriggerCreator {
 			}
 
 			if(period!=null) {
-				scheduleService.addManagerTask(triggerID, period);
+				scheduleService.addManagerTask(triggerID, period,true);
 			}
 		} catch (RuntimeException e) {
 
@@ -153,16 +187,10 @@ public class TriggerCreator {
 
 	}
 
+	private void addSummaryToEngine(SummaryTriggerRecord record ){
 
-	private void addGroupToEngine(GroupTriggerRecord record) {
 
-		Set<String> thingIDs = thingTagService.getKiiThingIDs(record.getSource());
-
-		service.createGroupTrigger(record,thingIDs);
-	}
-
-	private void addSummaryToEngine(SummaryTriggerRecord record) {
-		Map<String, Set<String>> thingMap = new HashMap<>();
+		Map<String, Set<String>> summaryMap = new HashMap<>();
 
 		final AtomicBoolean isStream = new AtomicBoolean(false);
 
@@ -173,15 +201,92 @@ public class TriggerCreator {
 			}
 			;
 
-			thingMap.put(k, thingTagService.getKiiThingIDs(v.getSource()));
+			summaryMap.put(k, thingTagService.getKiiThingIDs(v.getSource()));
 		});
 
-		if(isStream.get()) {
-//			service.createStreamSummaryTrigger(record, thingMap);
-		}else{
-			service.createSummaryTrigger(record,thingMap);
-		}
+		MultipleSrcTriggerRecord convertRecord=new MultipleSrcTriggerRecord();
+
+		BeanUtils.copyProperties(record,convertRecord);
+
+
+		Map<String,Set<String>> thingMap=new HashMap<>();
+
+		record.getSummarySource().forEach((k,v)->{
+
+			TagSelector source=v.getSource();
+
+			v.getExpressList().forEach((exp)->{
+
+				GroupSummarySource  elem=new GroupSummarySource();
+
+				elem.setFunction(exp.getFunction());
+				elem.setStateName(exp.getStateName());
+				elem.setSource(source);
+
+				String index=k+"."+exp.getSummaryAlias();
+				convertRecord.addSource(index,elem);
+				thingMap.put(index,summaryMap.get(k));
+
+			});
+		});
+
+		service.createMultipleSourceTrigger(convertRecord,thingMap);
 	}
+
+	private  void addGroupToEngine(GroupTriggerRecord record){
+
+		Set<String> thingIDs = thingTagService.getKiiThingIDs(record.getSource());
+
+
+		MultipleSrcTriggerRecord convertRecord=new MultipleSrcTriggerRecord();
+		BeanUtils.copyProperties(record,convertRecord);
+
+
+		Condition cond=new All();
+		switch(record.getPolicy().getGroupPolicy()){
+			//	Any,All,Some,Percent,None;
+
+			case All:
+				cond= TriggerConditionBuilder.newCondition().equal("comm",thingIDs.size()).getConditionInstance();
+				break;
+			case Any:
+				cond=TriggerConditionBuilder.newCondition().greatAndEq("comm",1).getConditionInstance();
+				break;
+			case Some:
+				cond=TriggerConditionBuilder.newCondition().greatAndEq("comm",record.getPolicy().getCriticalNumber()).getConditionInstance();
+				break;
+			case Percent:
+				int percent=(record.getPolicy().getCriticalNumber()*thingIDs.size())/100;
+				cond=TriggerConditionBuilder.newCondition().equal("comm",percent).getConditionInstance();
+				break;
+			case None:
+				cond=TriggerConditionBuilder.newCondition().equal("comm",0).getConditionInstance();
+		}
+		RuleEnginePredicate predicate=new RuleEnginePredicate();
+
+		predicate.setCondition(cond);
+		predicate.setTriggersWhen(record.getPredicate().getTriggersWhen());
+		predicate.setSchedule(record.getPredicate().getSchedule());
+
+		convertRecord.setPredicate(predicate);
+
+		Map<String,Set<String>> thingMap=new HashMap<>();
+		thingMap.put("comm",new HashSet<>(thingIDs));
+
+		GroupSummarySource  elem=new GroupSummarySource();
+
+		elem.setFunction(SummaryFunctionType.count);
+		Express exp=new Express();
+		exp.setCondition(record.getPredicate().getCondition());
+		elem.setExpress(exp);
+
+		elem.setSource(record.getSource());
+
+		convertRecord.addSource("comm",elem);
+
+		service.createMultipleSourceTrigger(convertRecord,thingMap);
+	}
+
 
 
 
@@ -209,6 +314,7 @@ public class TriggerCreator {
 			service.createMultipleSourceTrigger(record,thingMap);
 		}
 	}
-
+	
+	
 
 }

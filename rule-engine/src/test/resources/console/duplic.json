@@ -1,16 +1,19 @@
 {
-
-  "description": "time-new",
-  "type": "Simple",
-  "source": {
-    "thingID" : 3
+  "prepareCondition": {
+    "endCron": "0 0 20 ? * *",
+    "type": "cron",
+    "startCron": "0 0 8 ? * *"
   },
-  "userID": 640,
+  "description": "RT",
+  "type": "Summary",
+  "summarySource": {},
+  "userID": 0,
   "targets": [
     {
       "tagList": [],
       "thingList": [
-        4696
+        0,
+        1
       ],
       "doubleCheck": false,
       "type": "ThingCommand",
@@ -22,8 +25,8 @@
         "schemaVersion": 0,
         "actions": [
           {
-            "turnPower": {
-              "Power": false
+            "setBri": {
+              "Bri": 99
             }
           }
         ]
@@ -32,12 +35,13 @@
   ],
   "predicate": {
     "schedule": {
-      "cron": "0 0/3 * * * ?",
-      "type": "Cron"
+      "interval": 2,
+      "type": "Interval",
+      "timeUnit": "Minute"
     },
     "triggersWhen": "CONDITION_TRUE"
   },
   "recordStatus": "enable",
   "targetParamList": [],
-  "name": "time-new"
+  "name": "Alfred's test2"
 }
