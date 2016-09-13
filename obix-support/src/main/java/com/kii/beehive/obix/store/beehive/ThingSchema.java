@@ -5,24 +5,23 @@ import java.util.Map;
 
 public class ThingSchema {
 
-	private Map<String,PointDetail> statesSchema=new HashMap<>();
+	private StatusContains statesSchema;
 
-	private Map<String,Action>  actions=new HashMap<>();
+	private Map<String,ActionContains>  actions=new HashMap<>();
 
-
-	public Map<String, PointDetail> getStatesSchema() {
+	public StatusContains getStatesSchema() {
 		return statesSchema;
 	}
 
-	public void setStatesSchema(Map<String, PointDetail> statesSchema) {
+	public void setStatesSchema(StatusContains statesSchema) {
 		this.statesSchema = statesSchema;
 	}
 
-	public Map<String, Action> getActions() {
+	public Map<String, ActionContains> getActions() {
 		return actions;
 	}
 
-	public void setActions(Map<String, Action> actions) {
+	public void setActions(Map<String, ActionContains> actions) {
 		this.actions = actions;
 	}
 }

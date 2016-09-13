@@ -20,10 +20,10 @@ import com.kii.beehive.obix.common.UrlInfo;
 import com.kii.beehive.obix.service.ThingSchemaService;
 import com.kii.beehive.obix.store.EnumRange;
 import com.kii.beehive.obix.store.LocationInfo;
-import com.kii.beehive.obix.store.PointDetail;
+import com.kii.beehive.obix.store.ObixPointDetail;
 import com.kii.beehive.obix.store.PointInfo;
 import com.kii.beehive.obix.store.ThingInfo;
-import com.kii.beehive.obix.store.ThingSchema;
+import com.kii.beehive.obix.store.ObixThingSchema;
 import com.kii.beehive.obix.web.entity.ObixContain;
 import com.kii.beehive.obix.web.entity.ObixType;
 
@@ -42,8 +42,8 @@ public class ObixContainResponseAdvice implements ResponseBodyAdvice {
 	@PostConstruct
 	private void init(){
 
-		clsSet.add(ThingSchema.class.getName());
-		clsSet.add(PointDetail.class.getName());
+		clsSet.add(ObixThingSchema.class.getName());
+		clsSet.add(ObixPointDetail.class.getName());
 		clsSet.add(EnumRange.class.getName());
 		clsSet.add(LocationInfo.class.getName());
 		clsSet.add(PointInfo.class.getName());
@@ -71,12 +71,12 @@ public class ObixContainResponseAdvice implements ResponseBodyAdvice {
 		UrlInfo url=new UrlInfo(request.getURI());
 
 
-		if(cls.equals(ThingSchema.class)){
+		if(cls.equals(ObixThingSchema.class)){
 
-			return convertSchema((ThingSchema)body,url);
-		}else if(cls.equals(PointDetail.class)){
+			return convertSchema((ObixThingSchema)body,url);
+		}else if(cls.equals(ObixPointDetail.class)){
 
-			return convertPoint((PointDetail) body,url);
+			return convertPoint((ObixPointDetail) body,url);
 		}else if(cls.equals(EnumRange.class)){
 
 			return convertRange((EnumRange) body,url);
@@ -94,7 +94,7 @@ public class ObixContainResponseAdvice implements ResponseBodyAdvice {
 	}
 
 
-	private ObixContain convertSchema(ThingSchema schema, UrlInfo url){
+	private ObixContain convertSchema(ObixThingSchema schema, UrlInfo url){
 
 
 		ObixContain obix=new ObixContain();
@@ -124,7 +124,7 @@ public class ObixContainResponseAdvice implements ResponseBodyAdvice {
 	}
 
 
-	private ObixContain initPointContain(PointDetail point,UrlInfo baseUrl){
+	private ObixContain initPointContain(ObixPointDetail point, UrlInfo baseUrl){
 		ObixContain obix=new ObixContain();
 
 		obix.setName(point.getFieldName());
@@ -148,7 +148,7 @@ public class ObixContainResponseAdvice implements ResponseBodyAdvice {
 		return obix;
 	}
 
-	private ObixContain convertPoint(PointDetail point,UrlInfo url){
+	private ObixContain convertPoint(ObixPointDetail point, UrlInfo url){
 		ObixContain obix=initPointContain(point,url);
 
 		if(obix.getObixType()==ObixType.ENUM){
@@ -180,7 +180,7 @@ public class ObixContainResponseAdvice implements ResponseBodyAdvice {
 
 	private ObixContain convertThing(ThingInfo th,UrlInfo url){
 
-		ThingSchema  schema=schemaService.getThingSchema(th.getSchema());
+		ObixThingSchema schema=schemaService.getThingSchema(th.getSchema());
 
 		ObixContain obix= convertSchema(schema,url);
 
@@ -204,7 +204,7 @@ public class ObixContainResponseAdvice implements ResponseBodyAdvice {
 
 	private ObixContain convertPoint(String schema,PointInfo p,UrlInfo url){
 
-		PointDetail  meta=schemaService.getPointSchema(schema,p.getFieldName());
+		ObixPointDetail meta=schemaService.getPointSchema(schema,p.getFieldName());
 
 		ObixContain obix=initPointContain(meta,url);
 

@@ -6,7 +6,7 @@ import java.util.Map;
 
 import com.kii.extension.sdk.entity.KiiEntity;
 
-public class ThingSchema extends KiiEntity{
+public class ObixThingSchema extends KiiEntity{
 
 
 
@@ -16,7 +16,7 @@ public class ThingSchema extends KiiEntity{
 
 	private String description;
 
-	private Map<String,PointDetail>  fieldCollect=new HashMap<>();
+	private Map<String,ObixPointDetail>  fieldCollect=new HashMap<>();
 
 	private Map<String,Boolean> tagCollect=new HashMap<>();
 
@@ -57,20 +57,20 @@ public class ThingSchema extends KiiEntity{
 		this.description = description;
 	}
 
-	public Map<String, PointDetail> getFieldCollect() {
+	public Map<String, ObixPointDetail> getFieldCollect() {
 		return fieldCollect;
 	}
 
-	public void setFieldCollect(Map<String, PointDetail> fieldCollect) {
+	public void setFieldCollect(Map<String, ObixPointDetail> fieldCollect) {
 		this.fieldCollect = fieldCollect;
 	}
 
-	public void addField(PointDetail  detail){
+	public void addField(ObixPointDetail detail){
 
 		this.fieldCollect.put(detail.getFieldName(),detail);
 	}
 
-	public void addFieldList(List<PointDetail>  details){
+	public void addFieldList(List<ObixPointDetail>  details){
 		details.forEach(this::addField);
 	}
 
