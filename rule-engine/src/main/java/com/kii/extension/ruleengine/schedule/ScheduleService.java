@@ -113,7 +113,6 @@ public class ScheduleService {
 	}
 
 
-
 	public void removeManagerTaskForSchedule(String triggerID) {
 		try {
 			scheduler.unscheduleJob(TriggerKey.triggerKey(triggerID,START_PRE));
@@ -263,4 +262,5 @@ public class ScheduleService {
 		}
 
 	}
+
 }

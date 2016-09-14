@@ -4,10 +4,13 @@ package com.kii.beehive.business.helper;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.quartz.SchedulerException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,13 +18,17 @@ import org.springframework.stereotype.Component;
 
 import com.kii.beehive.business.event.BusinessEventListenerService;
 import com.kii.beehive.business.manager.ThingTagManager;
+import com.kii.beehive.portal.event.EventListener;
 import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.beehive.portal.exception.InvalidTriggerFormatException;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
+import com.kii.beehive.portal.service.EventListenerDao;
 import com.kii.extension.ruleengine.EngineService;
 import com.kii.extension.ruleengine.TriggerConditionBuilder;
+import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
 import com.kii.extension.ruleengine.schedule.ScheduleService;
 import com.kii.extension.ruleengine.service.TriggerRecordDao;
+import com.kii.extension.ruleengine.store.trigger.BeehiveTriggerType;
 import com.kii.extension.ruleengine.store.trigger.Condition;
 import com.kii.extension.ruleengine.store.trigger.Express;
 import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
@@ -58,10 +65,49 @@ public class TriggerCreator {
 	private ScheduleService scheduleService;
 
 
+	@Autowired
+	private EventListenerDao eventListenerDao;
+
 
 	@Autowired
 	private EngineService service;
 
+
+	public void clear(){
+
+		service.clear();
+		scheduleService.clearTrigger();
+
+		init();
+	}
+
+	public void init(){
+
+
+		List<TriggerRecord> recordList = triggerDao.getAllEnableTrigger();
+
+
+		List<TriggerRecord>  list=recordList.stream().filter((r)->r.getType()!= BeehiveTriggerType.Gateway).collect(Collectors.toList());
+
+		service.enteryInit();
+
+		list.forEach(r->addTriggerToEngine(r));
+
+		thingTagService.iteratorAllThingsStatus(s -> {
+			if (org.springframework.util.StringUtils.isEmpty(s.getStatus())) {
+				return;
+			}
+
+			ThingStatusInRule info = new ThingStatusInRule(s.getFullKiiThingID());
+			info.setCreateAt(s.getModifyDate());
+			info.setValues(s.getStatus());
+
+			service.initThingStatus(info);
+		});
+
+		service.leaveInit();
+
+	}
 
 
 	public String createTrigger(TriggerRecord record) {
@@ -72,6 +118,55 @@ public class TriggerCreator {
 
 		return record.getId();
 
+	}
+
+	public void removeTrigger(TriggerRecord  record){
+
+		String triggerID=record.getTriggerID();
+
+		if(record.getRecordStatus()== TriggerRecord.StatusType.enable) {
+
+			if(record.isInDrools()) {
+				service.removeTrigger(triggerID);
+				scheduleService.removeManagerTaskForSchedule(triggerID);
+
+				List<EventListener> eventListenerList = eventListenerDao.getEventListenerByTargetKey(triggerID);
+				for (EventListener eventListener : eventListenerList) {
+					eventListenerDao.removeEntity(eventListener.getId());
+				}
+			}else{
+
+				scheduleService.removeManagerTaskForSchedule(triggerID);
+			}
+		}
+
+	}
+
+	public void disableTrigger(TriggerRecord  record){
+
+		String triggerID=record.getTriggerID();
+
+		if(record.getRecordStatus()== TriggerRecord.StatusType.enable) {
+
+			if(record.isInDrools()) {
+				service.removeTrigger(triggerID);
+				scheduleService.removeManagerTaskForSchedule(triggerID);
+			}else{
+				scheduleService.removeManagerTaskForSchedule(triggerID);
+			}
+		}
+
+	}
+
+
+	public Map<String, Object> getRuleEngingDump() {
+
+		Map<String, Object> map = service.dumpEngineRuntime();
+
+
+		map.put("schedule", scheduleService.dump());
+
+		return map;
 	}
 
 	public void addTriggerToEngine(TriggerRecord record) {
@@ -98,21 +193,25 @@ public class TriggerCreator {
 
 		//if not exist condition, turn to quartz task
 
-//		Condition  condition=record.getPredicate().getCondition();
-//		String express=record.getPredicate().getExpress();
-//		if(condition==null&& StringUtils.isBlank(express)){
-//
-//			try {
-//				scheduleService.addExecuteTask(triggerID,record.getPredicate().getSchedule(),record.getRecordStatus()==TriggerRecord.StatusType.enable);
-//				if(period!=null) {
-//					scheduleService.addManagerTask(triggerID, record.getPreparedCondition(),false);
-//				}
-//
-//			}catch (SchedulerException e) {
-//				e.printStackTrace();
-//				throw new InvalidTriggerFormatException("schedule init fail");
-//			}
-//		}
+		Condition  condition=record.getPredicate().getCondition();
+		String express=record.getPredicate().getExpress();
+		if(condition==null&& StringUtils.isBlank(express)){
+
+			try {
+				scheduleService.addExecuteTask(triggerID,record.getPredicate().getSchedule(),record.getRecordStatus()==TriggerRecord.StatusType.enable);
+				if(period!=null) {
+					scheduleService.addManagerTask(triggerID, record.getPreparedCondition(),false);
+				}
+
+				triggerDao.setQuartzSign(triggerID);
+
+			}catch (SchedulerException e) {
+				e.printStackTrace();
+				throw new InvalidTriggerFormatException("schedule init fail");
+			}
+
+			return;
+		}
 
 		try {
 

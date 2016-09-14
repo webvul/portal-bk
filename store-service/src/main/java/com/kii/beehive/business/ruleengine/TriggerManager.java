@@ -1,6 +1,7 @@
 package com.kii.beehive.business.ruleengine;
 
 import javax.annotation.PostConstruct;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -8,29 +9,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kii.beehive.business.event.BusinessEventListenerService;
+
 import com.kii.beehive.business.helper.TriggerCreator;
 import com.kii.beehive.business.manager.AppInfoManager;
 import com.kii.beehive.business.manager.ThingTagManager;
 import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.portal.common.utils.ThingIDTools;
-import com.kii.beehive.portal.event.EventListener;
 import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
-import com.kii.beehive.portal.service.EventListenerDao;
-import com.kii.extension.ruleengine.EngineService;
-import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
-import com.kii.extension.ruleengine.schedule.ScheduleService;
 import com.kii.extension.ruleengine.service.TriggerRecordDao;
 import com.kii.extension.ruleengine.store.trigger.BeehiveTriggerType;
 import com.kii.extension.ruleengine.store.trigger.CommandToThing;
@@ -68,59 +63,24 @@ public class TriggerManager {
 	private GlobalThingSpringDao globalThingDao;
 
 	@Autowired
-	private BusinessEventListenerService eventService;
-
-	@Autowired
-	private EngineService service;
-
-	@Autowired
 	private ThingTagManager thingTagService;
 
 	@Autowired
 	private ObjectMapper mapper;
 
 	@Autowired
-	private EventListenerDao eventListenerDao;
-
-	@Autowired
-	private ScheduleService scheduleService;
-
-	@Autowired
 	private TriggerCreator creator;
 
 
 	public void reinit() {
-
-		service.clear();
-		scheduleService.clearTrigger();
+		creator.clear();
 
 		init();
 	}
 
 	@PostConstruct
 	public void init() {
-		List<TriggerRecord> recordList = triggerDao.getAllEnableTrigger();
-
-
-		List<TriggerRecord>  list=recordList.stream().filter((r)->r.getType()!= BeehiveTriggerType.Gateway).collect(Collectors.toList());
-
-		service.enteryInit();
-
-		list.forEach(r->creator.addTriggerToEngine(r));
-
-		thingTagService.iteratorAllThingsStatus(s -> {
-			if (StringUtils.isEmpty(s.getStatus())) {
-				return;
-			}
-
-			ThingStatusInRule info = new ThingStatusInRule(s.getFullKiiThingID());
-			info.setCreateAt(s.getModifyDate());
-			info.setValues(s.getStatus());
-
-			service.initThingStatus(info);
-		});
-
-		service.leaveInit();
+		creator.init();
 	}
 
 
@@ -169,6 +129,7 @@ public class TriggerManager {
 
 
 		}else {
+
 			record.setRecordStatus(TriggerRecord.StatusType.enable);
 
 			this.deleteTrigger(record.getTriggerID());
@@ -309,12 +270,7 @@ public class TriggerManager {
 
 	public Map<String, Object> getRuleEngingDump() {
 
-		Map<String, Object> map = service.dumpEngineRuntime();
-
-
-		map.put("schedule", scheduleService.dump());
-
-		return map;
+		return creator.getRuleEngingDump();
 	}
 
 
@@ -329,9 +285,8 @@ public class TriggerManager {
 
 		}else {
 
-			scheduleService.removeManagerTaskForSchedule(triggerID);
+			creator.disableTrigger(record);
 
-			service.removeTrigger(triggerID);
 		}
 	}
 
@@ -406,15 +361,7 @@ public class TriggerManager {
 
 		}else {
 
-			if(record.getRecordStatus()== TriggerRecord.StatusType.enable) {
-				service.removeTrigger(triggerID);
-				scheduleService.removeManagerTaskForSchedule(triggerID);
-			}
-
-			List<EventListener> eventListenerList = eventListenerDao.getEventListenerByTargetKey(triggerID);
-			for (EventListener eventListener : eventListenerList) {
-				eventListenerDao.removeEntity(eventListener.getId());
-			}
+				creator.removeTrigger(record);
 		}
 
 		triggerDao.deleteTriggerRecord(triggerID);

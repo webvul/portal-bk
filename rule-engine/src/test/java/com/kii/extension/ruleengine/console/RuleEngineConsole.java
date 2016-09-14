@@ -55,7 +55,9 @@ public class RuleEngineConsole {
 
 	private String triggerID=null;
 
-	private Set<String> triggerSet=new HashSet<>();
+//	private Set<String> triggerSet=new HashSet<>();
+
+	private Map<String,Boolean> triggerMap=new HashMap<>();
 
 	private Map<String,Set<String>> tagMap=new HashMap<>();
 
@@ -160,8 +162,12 @@ public class RuleEngineConsole {
 				engine.updateThingStatus(arrays[1], status, new Date());
 				break;
 			case "remove":
-				engine.removeTrigger(triggerID);
-				schedule.removeManagerTaskForSchedule(triggerID);
+				if(triggerMap.get(triggerID)) {
+					engine.removeTrigger(triggerID);
+					schedule.removeManagerTaskForSchedule(triggerID);
+				}else{
+					schedule.removeManagerTaskForSchedule(triggerID);
+				}
 				break;
 			case "setThingCol":
 
@@ -186,12 +192,9 @@ public class RuleEngineConsole {
 			case "selectTrigger":
 				triggerID = arrays[1];
 				break;
-//			case "refresh":
-//				engine.refreshContext();
-//				break;
 
 			case "listTrigger":
-				triggerSet.forEach((s) -> System.out.println(s));
+				triggerMap.keySet().forEach((s) -> System.out.println(s));
 				break;
 			case "setExt":
 				String name = arrays[1];
@@ -289,6 +292,8 @@ public class RuleEngineConsole {
 			if(period!=null) {
 				schedule.addManagerTask(triggerID, record.getPreparedCondition(),false);
 			}
+
+			triggerMap.put(triggerID,false);
 			return;
 		}
 
@@ -323,11 +328,9 @@ public class RuleEngineConsole {
 			schedule.addManagerTask(triggerID, period,true);
 		}
 
-		triggerID=id;
-
 		System.out.println("create trigger "+triggerID);
 
-		triggerSet.add(id);
+		triggerMap.put(triggerID,true);
 	}
 
 

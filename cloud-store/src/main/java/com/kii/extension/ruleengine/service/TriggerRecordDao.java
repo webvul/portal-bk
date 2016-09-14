@@ -165,4 +165,8 @@ public class TriggerRecordDao extends AbstractDataAccess<TriggerRecord> {
 
 	}
 
+	public void setQuartzSign(String triggerID) {
+
+		super.updateEntity(Collections.singletonMap("inDrools",false),triggerID);
+	}
 }

@@ -43,7 +43,15 @@ public abstract class TriggerRecord extends KiiEntity {
 
 	private String description;
 
+	private boolean inDrools=true;
 
+	public boolean isInDrools() {
+		return inDrools;
+	}
+
+	public void setInDrools(boolean drools) {
+		inDrools = drools;
+	}
 
 	public String getTriggerID() {
 		return super.getId();

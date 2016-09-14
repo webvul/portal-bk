@@ -41,7 +41,7 @@ public class SummaryTagChangeProcess implements TagChangeProcess {
 
 		SummaryTriggerRecord record = (SummaryTriggerRecord) triggerDao.getTriggerRecord(triggerID);
 
-		if(record.getRecordStatus()== TriggerRecord.StatusType.enable) {
+		if(record.getRecordStatus()== TriggerRecord.StatusType.enable&&record.isInDrools()) {
 
 			SummarySource summary = record.getSummarySource().get(groupID);
 
