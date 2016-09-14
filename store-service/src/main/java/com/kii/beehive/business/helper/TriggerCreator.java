@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.commons.lang3.StringUtils;
 import org.quartz.SchedulerException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,21 +98,21 @@ public class TriggerCreator {
 
 		//if not exist condition, turn to quartz task
 
-		Condition  condition=record.getPredicate().getCondition();
-		String express=record.getPredicate().getExpress();
-		if(condition==null&& StringUtils.isBlank(express)){
-
-			try {
-				scheduleService.addExecuteTask(triggerID,record.getPredicate().getSchedule(),record.getRecordStatus()==TriggerRecord.StatusType.enable);
-				if(period!=null) {
-					scheduleService.addManagerTask(triggerID, record.getPreparedCondition(),false);
-				}
-
-			}catch (SchedulerException e) {
-				e.printStackTrace();
-				throw new InvalidTriggerFormatException("schedule init fail");
-			}
-		}
+//		Condition  condition=record.getPredicate().getCondition();
+//		String express=record.getPredicate().getExpress();
+//		if(condition==null&& StringUtils.isBlank(express)){
+//
+//			try {
+//				scheduleService.addExecuteTask(triggerID,record.getPredicate().getSchedule(),record.getRecordStatus()==TriggerRecord.StatusType.enable);
+//				if(period!=null) {
+//					scheduleService.addManagerTask(triggerID, record.getPreparedCondition(),false);
+//				}
+//
+//			}catch (SchedulerException e) {
+//				e.printStackTrace();
+//				throw new InvalidTriggerFormatException("schedule init fail");
+//			}
+//		}
 
 		try {
 
