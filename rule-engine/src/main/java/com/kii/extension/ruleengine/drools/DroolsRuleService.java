@@ -110,6 +110,8 @@ public class DroolsRuleService {
 			CurrThing.Status  oldStatus=currThing.getStatus();
 
 			if(oldStatus==CurrThing.Status.inInit){
+				kieSession.fireAllRules();
+
 				return;
 			}
 
@@ -117,7 +119,6 @@ public class DroolsRuleService {
 			this.currThing.setCurrThing(thingID);
 
 			kieSession.update(currThingHandler, currThing);
-			kieSession.fireAllRules();
 
 			if(status== CurrThing.Status.inThing||status== CurrThing.Status.inExt) {
 				List<MatchResult> lists = doQuery("get Match Result by TriggerID");
