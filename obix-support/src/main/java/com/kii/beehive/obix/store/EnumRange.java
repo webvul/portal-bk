@@ -12,6 +12,30 @@ public class EnumRange {
 
 	private Map<String,RangeElement> valueMap=new HashMap<>();
 
+
+	public EnumRange(){
+
+	}
+
+
+	public EnumRange(Map<String,Object> enumMap,PointDataType type){
+
+
+		enumMap.forEach((k,v)->{
+
+			RangeElement  elem=new RangeElement();
+			elem.setVal(v);
+			elem.setDisplayName(k);
+			elem.setName(k);
+
+			addElement(elem);
+
+		});
+
+		this.type=type;
+
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -42,5 +66,9 @@ public class EnumRange {
 
 	public void addElements(List<RangeElement> elems){
 		elems.forEach(this::addElement);
+	}
+
+	public boolean isExist() {
+		return !valueMap.isEmpty();
 	}
 }

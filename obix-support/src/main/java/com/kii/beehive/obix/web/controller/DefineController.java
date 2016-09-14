@@ -1,51 +1,63 @@
 package com.kii.beehive.obix.web.controller;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 
-import com.kii.beehive.obix.service.ThingSchemaService;
-import com.kii.beehive.obix.store.EnumRange;
-import com.kii.beehive.obix.store.ObixPointDetail;
-import com.kii.beehive.obix.store.ObixThingSchema;
+import com.kii.beehive.obix.dao.DefineContractDao;
+import com.kii.beehive.obix.web.entity.ObixContain;
+
 
 @RestController
-@RequestMapping(path="/def",method= RequestMethod.GET,consumes = {MediaType.ALL_VALUE},produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+@RequestMapping(path="/def/contract",method= RequestMethod.GET,consumes = {MediaType.ALL_VALUE},produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
 public class DefineController {
 
 
-
 	@Autowired
-	private ThingSchemaService  schemaService;
+	private  DefineContractDao  defineDao;
 
 
-	@RequestMapping(path="/{schemaName}" )
-	public ObixThingSchema getSchemaDefine(@PathVariable("schemaName") String schemaName){
+	@RequestMapping(path="/{contractName}" )
+	public ObixContain getDefine(@PathVariable("contractName") String name,UriComponentsBuilder builder){
 
 
-		return schemaService.getThingSchema(schemaName);
+		ObixContain  define=defineDao.getDefineContract(StringUtils.capitalize(name));
+
+		String baseUrl=builder.toUriString()+"/def/contract";
+
+		define.setHref(baseUrl+define.getHref());
+
+		define.setIs(getExpendUrl(define.getIs(),baseUrl));
+
+		define.setOf(getExpendUrl(define.getOf(),baseUrl));
+
+		define.getChildren().forEach((c)->{
+
+			c.setIs(getExpendUrl(c.getIs(),baseUrl));
+		});
+
+
+		return define;
 	}
 
+	private String getExpendUrl(String isStr,String baseUrl){
+		if(StringUtils.isBlank(isStr)){
+			return "";
+		}
+		String[] list=StringUtils.split(isStr," ");
 
-	@RequestMapping(path="/{schemaName}/{fieldName}/~range" )
-	public EnumRange getPointRangeDefine(@PathVariable("schemaName") String schemaName,@PathVariable("fieldName") String fieldName){
+		for(int i=0;i<list.length;i++) {
+			if (list[i].startsWith("/")) {
+				list[i]=baseUrl+list[i];
+			}
+		}
 
-
-		return schemaService.getEnumRange(schemaName,fieldName);
+		return StringUtils.join(list," ");
 	}
-
-	@RequestMapping(path="/{schemaName}/{fieldName}" )
-	public ObixPointDetail getPointDefine(@PathVariable("schemaName") String schemaName,
-										  @PathVariable("fieldName") String fieldName){
-
-
-		return schemaService.getPointSchema(schemaName,fieldName);
-	}
-
-
-
 
 }

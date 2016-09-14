@@ -12,13 +12,9 @@ import com.kii.beehive.obix.store.ObixThingSchema;
 @Component
 public class ThingSchemaService {
 
-//
-//	ThingSchema schema=new ThingSchema();
 
 	@Autowired
 	private ThingSchemaDao schemaDao;
-
-	EnumRange powRange=new EnumRange();
 
 
 	public ObixThingSchema getThingSchema(String schemaName){
@@ -30,8 +26,8 @@ public class ThingSchemaService {
 		return schemaDao.getObixThingSchemaByName(schemaName).getFieldCollect().get(pointName);
 	}
 
-	public EnumRange getEnumRange(String schemaName,String enumName){
-		return powRange;
+	public EnumRange getEnumRange(String schemaName,String pointName){
+		return  schemaDao.getObixThingSchemaByName(schemaName).getFieldCollect().get(pointName).getRange();
 	}
 
 

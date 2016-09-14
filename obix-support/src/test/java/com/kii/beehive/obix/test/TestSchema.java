@@ -33,6 +33,8 @@ public class TestSchema extends TestTemplate{
 		ThingSchema  schema=mapper.readValue(json,ThingSchema.class);
 
 
+		System.out.println(schema.getStatesSchema().getProperties());
+
 
 
 	}

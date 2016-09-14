@@ -39,7 +39,7 @@ public class ObixContain {
 
 	private String status;
 
-	private int precision;
+	private Integer precision;
 
 	private String tz;
 
@@ -176,11 +176,11 @@ public class ObixContain {
 		this.status = status;
 	}
 
-	public int getPrecision() {
+	public Integer getPrecision() {
 		return precision;
 	}
 
-	public void setPrecision(int precision) {
+	public void setPrecision(Integer precision) {
 		this.precision = precision;
 	}
 
@@ -201,11 +201,7 @@ public class ObixContain {
 	}
 
 	public Set<ObixContain> getChildren() {
-		if(children.isEmpty()){
-			return null;
-		}else{
 			return children;
-		}
 	}
 
 	public void setChildren(Set<ObixContain> children) {

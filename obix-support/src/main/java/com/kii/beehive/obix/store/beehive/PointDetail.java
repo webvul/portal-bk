@@ -1,6 +1,9 @@
 package com.kii.beehive.obix.store.beehive;
 
+import java.util.HashMap;
 import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class PointDetail {
 
@@ -16,7 +19,7 @@ public class PointDetail {
 
 	private String displayNameCN;
 
-	private Map<String,Object> enumMap;
+	private Map<String,Object> enumMap=new HashMap<>();
 
 	private Number  maximum;
 
@@ -41,6 +44,7 @@ public class PointDetail {
 		this.displayNameCN = displayNameCN;
 	}
 
+	@JsonProperty("enum")
 	public Map<String, Object> getEnumMap() {
 		return enumMap;
 	}

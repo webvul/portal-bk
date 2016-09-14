@@ -2,7 +2,6 @@ package com.kii.beehive.obix.dao;
 
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,12 +12,10 @@ import org.springframework.util.StreamUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Charsets;
 
-import com.kii.beehive.obix.store.EnumRange;
 import com.kii.beehive.obix.store.ObixPointDetail;
 import com.kii.beehive.obix.store.ObixThingSchema;
-import com.kii.beehive.obix.store.PointDataType;
-import com.kii.beehive.obix.store.RangeElement;
 import com.kii.beehive.obix.store.beehive.ActionInput;
+import com.kii.beehive.obix.store.beehive.PointDetail;
 import com.kii.beehive.obix.store.beehive.ThingSchema;
 
 @Component
@@ -54,7 +51,6 @@ public class ThingSchemaDao {
 	}
 
 
-	private Map<String,EnumRange> rangeMap=new HashMap<>();
 
 
 	private ObixThingSchema convert(ThingSchema th)  {
@@ -63,17 +59,7 @@ public class ThingSchemaDao {
 
 		th.getStatesSchema().getProperties().forEach((k,v)->{
 
-			ObixPointDetail point=new ObixPointDetail();
-			point.setFieldName(k);
-			point.setMaxValue(v.getMaximum());
-			point.setMinValue(v.getMinimum());
-			point.setDescription(v.getDisplayNameCN());
-			point.setType(PointDataType.getInstance(v.getType()));
-
-			EnumRange range=getRange(v.getEnumMap());
-			rangeMap.put(k,range);
-
-			point.setUnitRef(v.getUnit());
+			ObixPointDetail point=new ObixPointDetail(k,v);
 
 			point.setExistCur(true);
 
@@ -82,23 +68,25 @@ public class ThingSchemaDao {
 
 		th.getActions().forEach((k,v)->{
 
-			ObixPointDetail point=schema.getFieldCollect().get(k);
-
 			ActionInput in=v.getIn();
 
+			Map<String,PointDetail> pointMap=in.getProperties();
 
-			point.setFieldName(k);
-			point.setMaxValue(v.getMaximum());
-			point.setMinValue(v.getMinimum());
-			point.setDescription(v.getDisplayNameCN());
-			point.setType(PointDataType.getInstance(v.getType()));
+			if(pointMap.size()>1||pointMap.size()==0){
+				return;
+			}
+			Map.Entry<String,PointDetail> entry=pointMap.entrySet().iterator().next();
 
-			EnumRange range=getRange(v.getEnumMap());
-			rangeMap.put(k,range);
+			PointDetail detail=entry.getValue();
+			String fieldName=entry.getKey();
 
-			point.setUnitRef(v.getUnit());
+			ObixPointDetail point=schema.getFieldCollect().get(fieldName);
 
-			point.setExistCur(true);
+			if(point==null){
+				point=new ObixPointDetail(fieldName,detail);
+			}
+
+			point.setWritable(true);
 
 			schema.addField(point);
 		});
@@ -107,21 +95,5 @@ public class ThingSchemaDao {
 		return schema;
 	}
 
-	private  EnumRange getRange(Map<String,Object> enumMap){
 
-		EnumRange range=new EnumRange();
-
-		enumMap.forEach((k,v)->{
-
-			RangeElement  elem=new RangeElement();
-			elem.setVal(v);
-			elem.setDisplayName(k);
-			elem.setName(k);
-
-			range.addElement(elem);
-
-		});
-
-		return range;
-	}
 }

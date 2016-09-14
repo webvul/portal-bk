@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.kii.beehive.obix.store.beehive.PointDetail;
+
 public class ObixPointDetail {
 
 
@@ -30,6 +32,43 @@ public class ObixPointDetail {
 	private String unitRef;
 
 	private Map<String,Boolean> tagCollect=new HashMap<>();
+
+	private EnumRange range=new EnumRange();
+
+
+	public ObixPointDetail(){
+
+
+	}
+
+	public ObixPointDetail(String fieldName,PointDetail  detail){
+		setFieldName(fieldName);
+
+		setDescription(detail.getDisplayNameCN());
+		setType(PointDataType.getInstance(detail.getType()));
+
+
+		if(detail.getEnumMap()!=null) {
+			range = new EnumRange(detail.getEnumMap(),type);
+
+			type=PointDataType.Enum;
+
+		}
+
+		if(type==PointDataType.Int||type==PointDataType.Float){
+			setMaxValue(detail.getMaximum());
+			setMinValue(detail.getMinimum());
+		}
+		setUnitRef(detail.getUnit());
+	}
+
+	public EnumRange getRange() {
+		return range;
+	}
+
+	public void setRange(EnumRange range) {
+		this.range = range;
+	}
 
 	public String getSuperRef() {
 		return superRef;

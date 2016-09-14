@@ -1,0 +1,14 @@
+
+{
+  "obix": "obj",
+  "href": "/commEquip",
+  "name": "CommEquip",
+  "displayName": "commEquip",
+  "is":"/commEntity",
+  "children":[{
+      "obix":"list",
+      "name":"pointCollect",
+      "of":"/commPoint"
+  }
+  ]
+}
