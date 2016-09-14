@@ -282,15 +282,15 @@ public class RuleEngineConsole {
 		}
 
 
-//		Condition  condition=record.getPredicate().getCondition();
-//		String express=record.getPredicate().getExpress();
-//		if(condition==null&& StringUtils.isEmpty(express)){
-//			schedule.addExecuteTask(triggerID,record.getPredicate().getSchedule(),record.getRecordStatus()==TriggerRecord.StatusType.enable);
-//			if(period!=null) {
-//				schedule.addManagerTask(triggerID, record.getPreparedCondition(),false);
-//			}
-//			return;
-//		}
+		Condition  condition=record.getPredicate().getCondition();
+		String express=record.getPredicate().getExpress();
+		if(condition==null&& StringUtils.isEmpty(express)){
+			schedule.addExecuteTask(triggerID,record.getPredicate().getSchedule(),record.getRecordStatus()==TriggerRecord.StatusType.enable);
+			if(period!=null) {
+				schedule.addManagerTask(triggerID, record.getPreparedCondition(),false);
+			}
+			return;
+		}
 
 		switch(record.getType()) {
 			case Simple:

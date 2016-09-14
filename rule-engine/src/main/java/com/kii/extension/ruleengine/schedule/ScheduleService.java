@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.quartz.JobDataMap;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SimpleScheduleBuilder;
@@ -155,10 +156,14 @@ public class ScheduleService {
 		Date nextStop=triggerEnd.getNextFireTime();
 		Date nextStart=triggerStart.getNextFireTime();
 
+		JobDataMap  innMap=new JobDataMap();
+		innMap.put(ProxyJob.TRIGGER_ID,triggerID);
+
 		if(nextStart.getTime()>=nextStop.getTime() ){
-			scheduler.triggerJob(RuleEngScheduleFactory.START_JOB);
+
+			scheduler.triggerJob(RuleEngScheduleFactory.START_JOB,innMap);
 		}else{
-			scheduler.triggerJob(RuleEngScheduleFactory.STOP_JOB);
+			scheduler.triggerJob(RuleEngScheduleFactory.STOP_JOB,innMap);
 		}
 	}
 
@@ -170,6 +175,10 @@ public class ScheduleService {
 		if(period.getEndTime()<now){
 			return;
 		}
+
+		JobDataMap  innMap=new JobDataMap();
+		innMap.put(ProxyJob.TRIGGER_ID,triggerID);
+
 
 		if(period.getStartTime()>=now){
 			Trigger triggerStart = TriggerBuilder.newTrigger()
@@ -184,7 +193,7 @@ public class ScheduleService {
 			scheduler.scheduleJob(triggerStart);
 		}else if(period.getEndTime()>=now){
 			//fire miss start job by hand
-			scheduler.triggerJob(RuleEngScheduleFactory.START_JOB);
+			scheduler.triggerJob(RuleEngScheduleFactory.START_JOB,innMap);
 		}
 
 
@@ -224,7 +233,7 @@ public class ScheduleService {
 					simple=simpleSchedule().withIntervalInSeconds(interval.getInterval());
 					break;
 				case Minute:
-					simple=simpleSchedule().withIntervalInSeconds(interval.getInterval());
+					simple=simpleSchedule().withIntervalInMinutes(interval.getInterval());
 					break;
 			}
 			builder.withSchedule(simple.withMisfireHandlingInstructionIgnoreMisfires().repeatForever());
