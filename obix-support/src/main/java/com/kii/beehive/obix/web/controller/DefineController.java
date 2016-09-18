@@ -28,18 +28,23 @@ public class DefineController {
 
 		ObixContain  define=defineDao.getDefineContract(StringUtils.capitalize(name));
 
-		String baseUrl=builder.toUriString()+"/def/contract";
+		UriComponentsBuilder  baseBuilder=builder.pathSegment("def","contract");
 
-		define.setHref(baseUrl+define.getHref());
+		String baseUrl=baseBuilder.toUriString();
 
 		define.setIs(getExpendUrl(define.getIs(),baseUrl));
 
 		define.setOf(getExpendUrl(define.getOf(),baseUrl));
 
+		String fullPath=builder.pathSegment(name).toUriString();
+
+		define.setHref(fullPath);
+
 		define.getChildren().forEach((c)->{
 
 			c.setIs(getExpendUrl(c.getIs(),baseUrl));
 		});
+
 
 
 		return define;
@@ -53,6 +58,7 @@ public class DefineController {
 
 		for(int i=0;i<list.length;i++) {
 			if (list[i].startsWith("/")) {
+
 				list[i]=baseUrl+list[i];
 			}
 		}

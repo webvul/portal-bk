@@ -1,8 +1,8 @@
 package com.kii.beehive.obix.common;
 
-import java.net.URI;
-
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 public class UrlInfo {
 
@@ -15,11 +15,13 @@ public class UrlInfo {
 
 	private final String fullUrl;
 
-	public UrlInfo(URI url){
+	public UrlInfo(UriComponentsBuilder builder){
 
-		fullUrl=url.toASCIIString();
+		UriComponents url=builder.build();
 
-		host=url.getScheme()+"//"+url.getHost()+":"+url.getPort();
+		fullUrl=builder.toUriString();
+
+		host=url.getHost();
 
 		rootUrl= StringUtils.substringBefore(url.getPath(),"/def")+"/def";
 

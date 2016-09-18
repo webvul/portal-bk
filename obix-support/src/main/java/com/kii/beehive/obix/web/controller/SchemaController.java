@@ -3,7 +3,6 @@ package com.kii.beehive.obix.web.controller;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -34,13 +33,15 @@ public class SchemaController {
 
 
 	@RequestMapping(path="/{schemaName}" )
-	public ObixContain getSchemaDefine(@PathVariable("schemaName") String schemaName,ServerHttpRequest request){
+	public ObixContain getSchemaDefine(@PathVariable("schemaName") String schemaName,UriComponentsBuilder builder){
 
 
 		ObixThingSchema schema= schemaService.getThingSchema(schemaName);
 
 
-		return convertSchema(schema,new UrlInfo(request.getURI()));
+		builder.pathSegment("def","schema",schemaName);
+
+		return convertSchema(schema,new UrlInfo(builder));
 	}
 
 
@@ -109,6 +110,8 @@ public class SchemaController {
 									  @PathVariable("fieldName") String fieldName,
 									  UriComponentsBuilder builder){
 
+		builder.pathSegment("def","schema",schemaName,fieldName);
+
 
 		ObixPointDetail point= schemaService.getPointSchema(schemaName,fieldName);
 
@@ -150,6 +153,8 @@ public class SchemaController {
 	public ObixContain getPointRangeDefine(@PathVariable("schemaName") String schemaName, @PathVariable("fieldName") String fieldName,UriComponentsBuilder builder){
 
 
+		builder.pathSegment("def","schema",schemaName,fieldName,"~range");
+
 		EnumRange range= schemaService.getEnumRange(schemaName,fieldName);
 
 		return convertRange(range,builder);
@@ -164,6 +169,7 @@ public class SchemaController {
 			ObixContain elem=new ObixContain();
 			elem.setObixType(ObixType.getInstance(range.getType()));
 			elem.setName(k);
+			elem.setVal(v.getVal());
 			elem.setDisplayName(v.getDisplayName());
 
 			obix.addChild(elem);
