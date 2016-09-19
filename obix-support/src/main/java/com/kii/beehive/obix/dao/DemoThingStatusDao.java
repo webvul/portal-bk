@@ -53,7 +53,7 @@ public class DemoThingStatusDao {
 		thing.setThingID("thing"+idx);
 		thing.setStatus(status);
 		thing.setSchema("aircondition");
-		thing.setLocation("0103W");
+		thing.setLocation("0103");
 
 		return thing;
 	}

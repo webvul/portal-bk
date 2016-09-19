@@ -46,7 +46,8 @@ public class ThingInfo {
 
 		int i=0;
 		for(PointInfo  p:pointCollect){
-			p.setLocation(location+"-0"+i);
+			p.setLocation(location+"-"+(char)('A'+i)+i);
+			i++;
 		}
 
 	}
