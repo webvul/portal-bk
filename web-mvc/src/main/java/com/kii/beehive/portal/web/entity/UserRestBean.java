@@ -27,7 +27,7 @@ public class UserRestBean {
 
 
 	public UserRestBean(BeehiveJdbcUser user){
-		this.beehiveUser = user;
+		this.beehiveUser = user.cloneView();
 	}
 
 
