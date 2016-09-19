@@ -34,6 +34,7 @@ public class ThingSchemaDao {
 
 			ThingSchema schema = mapper.readValue(json, ThingSchema.class);
 
+			schema.setName(name);
 			return schema;
 		}catch(IOException e){
 			throw new IllegalArgumentException(e);

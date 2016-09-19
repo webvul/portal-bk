@@ -51,7 +51,7 @@ public class SchemaController {
 
 		ObixContain obix=new ObixContain();
 
-		obix.setName(schema.getFullSchemaName());
+		obix.setName(schema.getName());
 		obix.setDisplayName(schema.getDescription());
 
 		obix.setObixType(ObixType.OBJ);

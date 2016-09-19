@@ -31,6 +31,7 @@ public class ObixThingSchema extends KiiEntity{
 
 	public  ObixThingSchema(ThingSchema th)  {
 
+		name=th.getName();
 
 		th.getStatesSchema().getProperties().forEach((k,v)->{
 
@@ -79,13 +80,13 @@ public class ObixThingSchema extends KiiEntity{
 		this.superRef = superRef;
 	}
 
-	public String getFullSchemaName(){
-		return name+"_"+framewireVersion;
-	}
-
-	public void setFullSchemaName(){
-
-	}
+//	public String getFullSchemaName(){
+//		return name+"_"+framewireVersion;
+//	}
+//
+//	public void setFullSchemaName(){
+//
+//	}
 
 	public String getFramewireVersion() {
 		return framewireVersion;

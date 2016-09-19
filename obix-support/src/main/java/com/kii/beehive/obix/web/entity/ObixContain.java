@@ -13,7 +13,7 @@ public class ObixContain {
 
 	private String href;
 
-	private String is;
+	private String is="";
 
 	private String name;
 

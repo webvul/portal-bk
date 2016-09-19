@@ -5,9 +5,21 @@ import java.util.Map;
 
 public class ThingSchema {
 
+
+	private String name;
+
 	private StatusContains statesSchema;
 
 	private Map<String,ActionContains>  actions=new HashMap<>();
+
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
 
 	public StatusContains getStatesSchema() {
 		return statesSchema;

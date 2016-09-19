@@ -50,8 +50,8 @@ public class DeviceController {
 		obix.setName(thing.getName());
 
 		obix.addToIs("h:equip");
-		obix.addToIs(baseUrl+"def/contract/commEquip");
-		obix.addToIs(baseUrl+"def/contract/siteRef");
+		obix.addToIs(baseUrl+"/def/contract/commEquip");
+		obix.addToIs(baseUrl+"/def/contract/siteRef");
 
 
 		obix.addToIs("h:ahu");
@@ -77,7 +77,7 @@ public class DeviceController {
 
 		ObixContain obix=new ObixContain();
 
-		obix.setName(schema.getFullSchemaName());
+		obix.setName(schema.getName());
 		obix.setDisplayName(schema.getDescription());
 
 		obix.setObixType(ObixType.OBJ);
@@ -100,7 +100,6 @@ public class DeviceController {
 
 		ObixContain obix=new ObixContain();
 
-		obix.setObixType(ObixType.REF);
 
 		obix.setName(point.getFieldName());
 		obix.setDisplayName(point.getDescription());
@@ -108,7 +107,7 @@ public class DeviceController {
 		obix.setHref(point.getFieldName()+"/");
 
 		if(StringUtils.isNotBlank(point.getSuperRef())) {
-			obix.setIs(baseUrl+"def/contract"+point.getSuperRef());
+			obix.setIs(baseUrl+"/def/contract"+point.getSuperRef());
 		}
 		obix.setObixType(ObixType.getInstance(point.getType()));
 		obix.setWritable(point.isWritable());
@@ -121,20 +120,22 @@ public class DeviceController {
 		obix.setUnit(unitService.getObixUnitRef(point.getUnitRef()));
 
 		if(obix.getObixType()==ObixType.ENUM){
-			obix.setRange(baseUrl+"def/schema/"+thingSchemaName+"/"+p.getFieldName()+"/~range");
+			obix.setRange(baseUrl+"/def/schema/"+thingSchemaName+"/"+p.getFieldName()+"/~range");
 		}
 		obix.setHref(p.getFieldName()+"/");
 		obix.setDisplay(p.getFieldName());
 		obix.setName(p.getFieldName());
 		obix.setVal(p.getValue());
-		obix.addToIs(baseUrl+"def/"+thingSchemaName+"/"+p.getFieldName());
-		obix.addToIs(baseUrl+"def/contract/commPoint");
+		obix.addToIs(baseUrl+"/def/schema/"+thingSchemaName+"/"+p.getFieldName());
+		obix.addToIs(baseUrl+"/def/contract/commPoint");
 
 		if(p.getSchema().isWritable()) {
 			obix.addToIs("obix:writablePoint");
 		}else{
 			obix.addToIs("obix:point");
 		}
+
+		obix.setObixType(ObixType.REF);
 
 		return obix;
 	}
@@ -178,9 +179,9 @@ public class DeviceController {
 		obixP.setDisplay(p.getFieldName());
 		obixP.setName(p.getFieldName());
 		obixP.setVal(p.getValue());
-		obixP.addToIs(baseUrl+"def/contract/siteRef" );
-		obixP.addToIs(baseUrl+"def/"+thing.getSchema().getName()+"/"+p.getFieldName());
-		obixP.addToIs(baseUrl+"def/contract/commPoint");
+		obixP.addToIs(baseUrl+"/def/contract/siteRef" );
+		obixP.addToIs(baseUrl+"/def/schema/"+thing.getSchema().getName()+"/"+p.getFieldName());
+		obixP.addToIs(baseUrl+"/def/contract/commPoint");
 
 
 		if(p.getSchema().isWritable()) {
@@ -198,6 +199,7 @@ public class DeviceController {
 		ObixContain obixT= convertThingSchema(thing.getSchema(),baseUrl);
 
 		obixT.setName("equipRef");
+		obixT.setObixType(ObixType.REF);
 		obixP.addChild(obixT);
 
 		return obixP;
