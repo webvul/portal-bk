@@ -561,7 +561,9 @@ public class ThingController extends AbstractThingTagController {
 		OnBoardingResult onBoardingResult = thingIFService.onBoarding(param, thing.getKiiAppID());
 		Map<String, Object> map = new HashMap<>();
 		map.put("thingID", onBoardingResult.getThingID());
-		return map;
+		ModelAndView model = new ModelAndView();
+		model.addAllObjects(map);
+		return model;
 	}
 
 	@RequestMapping(value = "/gateway", method = {RequestMethod.GET}, consumes = {"*"})
