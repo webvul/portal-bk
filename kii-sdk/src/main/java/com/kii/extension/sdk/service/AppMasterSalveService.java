@@ -94,7 +94,7 @@ X-Kii-AppKey: <appKey>
 
 
 
-	static String url="http://$(0).$(1).kiiapps.com/api/apps/$(0)/integration/webauth/callback";
+	static String url="https://$(0).$(1).kiiapps.com/api/apps/$(0)/integration/webauth/callback";
 
 	public  ClientInfo addSalveApp(@AppBindParam AppInfo  masterApp,AppInfo  salveAppInfo){
 		/*
