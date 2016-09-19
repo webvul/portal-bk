@@ -257,7 +257,7 @@ public class TriggerCreator {
 		} catch (RuntimeException e) {
 
 			e.printStackTrace();
-			triggerDao.deleteTriggerRecord(triggerID,"create trigger instance fail:"+e.getCause());
+			triggerDao.deleteTriggerRecord(triggerID,"create trigger instance fail:exception "+e.getClass().getName()+" msg:"+e.getMessage());
 			throw e;
 
 		} catch (SchedulerException e) {
