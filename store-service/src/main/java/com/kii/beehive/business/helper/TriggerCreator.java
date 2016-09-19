@@ -184,7 +184,7 @@ public class TriggerCreator {
 			SimplePeriod  simp=(SimplePeriod)period;
 			long endDate=simp.getEndTime();
 			if(System.currentTimeMillis()>endDate){
-				triggerDao.deleteTriggerRecord(triggerID);
+				triggerDao.deleteTriggerRecord(triggerID,"cron timeout");
 				return;
 			}
 
@@ -257,7 +257,7 @@ public class TriggerCreator {
 		} catch (RuntimeException e) {
 
 			e.printStackTrace();
-			triggerDao.deleteTriggerRecord(triggerID);
+			triggerDao.deleteTriggerRecord(triggerID,"create trigger instance fail:exception "+e.getClass().getName()+" msg:"+e.getMessage());
 			throw e;
 
 		} catch (SchedulerException e) {

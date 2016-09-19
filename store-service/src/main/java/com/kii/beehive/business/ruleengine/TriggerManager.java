@@ -364,7 +364,7 @@ public class TriggerManager {
 				creator.removeTrigger(record);
 		}
 
-		triggerDao.deleteTriggerRecord(triggerID);
+		triggerDao.deleteTriggerRecord(triggerID,"oper by user");
 
 	}
 

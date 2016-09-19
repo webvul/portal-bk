@@ -1,39 +1,28 @@
 package com.kii.beehive.portal.web.controller;
 
-import static java.util.Arrays.asList;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
+import com.kii.beehive.business.manager.TagThingManager;
+import com.kii.beehive.business.service.ThingIFInAppService;
+import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.jdbc.entity.*;
+import com.kii.beehive.portal.manager.ThingManager;
+import com.kii.beehive.portal.service.AppInfoDao;
+import com.kii.beehive.portal.store.entity.KiiAppInfo;
+import com.kii.beehive.portal.web.entity.ThingDetail;
+import com.kii.beehive.portal.web.entity.ThingRestBean;
+import com.kii.beehive.portal.web.exception.ErrorCode;
+import com.kii.beehive.portal.web.exception.PortalException;
+import com.kii.extension.sdk.entity.thingif.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
-import com.kii.beehive.business.manager.TagThingManager;
-import com.kii.beehive.business.service.ThingIFInAppService;
-import com.kii.beehive.portal.auth.AuthInfoStore;
-import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
-import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
-import com.kii.beehive.portal.jdbc.entity.TagIndex;
-import com.kii.beehive.portal.jdbc.entity.TagType;
-import com.kii.beehive.portal.jdbc.entity.UserGroup;
-import com.kii.beehive.portal.manager.ThingManager;
-import com.kii.beehive.portal.web.entity.ThingDetail;
-import com.kii.beehive.portal.web.entity.ThingRestBean;
-import com.kii.extension.sdk.entity.thingif.EndNodeOfGateway;
-import com.kii.extension.sdk.entity.thingif.GatewayOfKiiCloud;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static java.util.Arrays.asList;
 
 /**
  * Beehive API - Thing API
@@ -50,6 +39,9 @@ public class ThingController extends AbstractThingTagController {
 
 	@Autowired
 	private ThingManager simpleThingManager;
+
+	@Autowired
+	private AppInfoDao appInfoDao;
 
 	/**
 	 * GET /things/{globalThingID}/users
@@ -244,7 +236,7 @@ public class ThingController extends AbstractThingTagController {
 		GlobalThingInfo thingInfo = input.getThingInfo();
 
 
-		Long thingID = simpleThingManager.createEndNode(thingInfo, input.getFullLocation(),input.getGatewayVendorThingID());
+		Long thingID = simpleThingManager.createEndNode(thingInfo, input.getFullLocation(), input.getGatewayVendorThingID());
 
 
 		Map<String, Long> map = new HashMap<>();
@@ -382,7 +374,6 @@ public class ThingController extends AbstractThingTagController {
 		Set<String> userIds = getUserIds(userIDs);
 		thingTagManager.bindThingsToUsers(thingIds, userIds);
 	}
-
 
 
 	/**
@@ -538,6 +529,62 @@ public class ThingController extends AbstractThingTagController {
 		return resultList;
 	}
 
+	/**
+	 * 設備onBoarding
+	 * POST /things/onboarding/{vendorThingID}
+	 * <p>
+	 *
+	 * @param vendorThingID
+	 * @return
+	 */
+	@RequestMapping(value = "/onboarding/{vendorThingID}", method = {RequestMethod.POST}, consumes = {"*"})
+	public ModelAndView onboardingThing(@PathVariable("vendorThingID") String vendorThingID) {
+
+
+		GlobalThingInfo thing = thingTagManager.getThingsByVendorThingId(vendorThingID);
+
+		if (thing == null) {
+			throw new PortalException(ErrorCode.NOT_FOUND, "body", "global thing", "objectID", vendorThingID);
+		}
+
+		KiiAppInfo appInfo = appInfoDao.getAppInfoByID(thing.getKiiAppID());
+
+		OnBoardingParam param = new OnBoardingParam();
+
+		param.setVendorThingID(vendorThingID);
+		param.setThingPassword(vendorThingID);
+		param.setUserID(appInfo.getOwner());
+
+		OnBoardingResult onBoardingResult = thingIFService.onBoarding(param, thing.getKiiAppID());
+		Map<String, Object> map = new HashMap<>();
+		map.put("thingID", onBoardingResult.getThingID());
+		ModelAndView model = new ModelAndView();
+		model.addAllObjects(map);
+		return model;
+	}
+
+	/**
+	 * 更新設備數據
+	 * PUT /things/status/{vendorThingID}
+	 * <p>
+	 *
+	 * @param vendorThingID
+	 * @return
+	 */
+	@RequestMapping(value = "/status/{vendorThingID}", method = {RequestMethod.PUT}, consumes = {"*"})
+	public void updateStatus(@PathVariable("vendorThingID") String vendorThingID, @RequestBody ThingStatus status) {
+
+
+		GlobalThingInfo thing = thingTagManager.getThingsByVendorThingId(vendorThingID);
+
+		if (thing == null) {
+			throw new PortalException(ErrorCode.NOT_FOUND, "body", "global thing", "objectID", vendorThingID);
+		}
+
+		thingIFService.putStatus(thing.getFullKiiThingID(), status);
+
+	}
+
 	@RequestMapping(value = "/gateway", method = {RequestMethod.GET}, consumes = {"*"})
 	public List<GatewayOfKiiCloud> getAllEGateway() {
 
@@ -562,7 +609,7 @@ public class ThingController extends AbstractThingTagController {
 
 
 	@RequestMapping(value = "/queryDetailByIDs", method = {RequestMethod.POST})
-	public List<ThingDetail> getThingDetailWithLocByIDs(@RequestBody List<Long>  thingIDs){
+	public List<ThingDetail> getThingDetailWithLocByIDs(@RequestBody List<Long> thingIDs) {
 
 
 		return simpleThingManager.getThingDetailByIDList(thingIDs).stream().map(ThingDetail::new).collect(Collectors.toList());

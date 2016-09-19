@@ -1,8 +1,12 @@
 package com.kii.extension.ruleengine.service;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import org.springframework.stereotype.Component;
+
 import com.kii.extension.ruleengine.store.trigger.BeehiveTriggerType;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.sdk.annotation.BindAppByName;
@@ -82,7 +86,7 @@ public class TriggerRecordDao extends AbstractDataAccess<TriggerRecord> {
 
 	}
 
-	public void deleteTriggerRecord(String id) {
+	public void deleteTriggerRecord(String id,String reason) {
 
 		TriggerRecord record = getObjectByID(id);
 		if (record.getRecordStatus() == TriggerRecord.StatusType.deleted) {
@@ -92,7 +96,11 @@ public class TriggerRecordDao extends AbstractDataAccess<TriggerRecord> {
 			throw e;
 		}
 
-		super.updateEntity(Collections.singletonMap("recordStatus", TriggerRecord.StatusType.deleted), id);
+		Map<String,Object> param=new HashMap<>();
+		param.put("recordStatus",TriggerRecord.StatusType.deleted);
+		param.put("deletedReason",reason);
+
+		super.updateEntity(param, id);
 
 	}
 
