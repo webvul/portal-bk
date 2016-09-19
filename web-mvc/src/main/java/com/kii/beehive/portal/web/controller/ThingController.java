@@ -11,10 +11,7 @@ import com.kii.beehive.portal.web.entity.ThingDetail;
 import com.kii.beehive.portal.web.entity.ThingRestBean;
 import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
-import com.kii.extension.sdk.entity.thingif.EndNodeOfGateway;
-import com.kii.extension.sdk.entity.thingif.GatewayOfKiiCloud;
-import com.kii.extension.sdk.entity.thingif.OnBoardingParam;
-import com.kii.extension.sdk.entity.thingif.OnBoardingResult;
+import com.kii.extension.sdk.entity.thingif.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -564,6 +561,28 @@ public class ThingController extends AbstractThingTagController {
 		ModelAndView model = new ModelAndView();
 		model.addAllObjects(map);
 		return model;
+	}
+
+	/**
+	 * 更新設備數據
+	 * PUT /things/status/{vendorThingID}
+	 * <p>
+	 *
+	 * @param vendorThingID
+	 * @return
+	 */
+	@RequestMapping(value = "/status/{vendorThingID}", method = {RequestMethod.PUT}, consumes = {"*"})
+	public void updateStatus(@PathVariable("vendorThingID") String vendorThingID, @RequestBody ThingStatus status) {
+
+
+		GlobalThingInfo thing = thingTagManager.getThingsByVendorThingId(vendorThingID);
+
+		if (thing == null) {
+			throw new PortalException(ErrorCode.NOT_FOUND, "body", "global thing", "objectID", vendorThingID);
+		}
+
+		thingIFService.putStatus(thing.getFullKiiThingID(), status);
+
 	}
 
 	@RequestMapping(value = "/gateway", method = {RequestMethod.GET}, consumes = {"*"})
