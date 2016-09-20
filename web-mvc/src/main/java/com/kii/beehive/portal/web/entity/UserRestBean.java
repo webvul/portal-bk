@@ -59,7 +59,8 @@ public class UserRestBean {
 	}
 
 	private static Pattern numPattern=Pattern.compile("^1[\\d]{10}$");
-	private static Pattern mailPattern=Pattern.compile("^[\\w\\.]+@[\\w\\.]+$");
+//	private static Pattern mailPattern=Pattern.compile("^[\\w\\.]+@[\\w\\.]+$");
+	private static Pattern mailPattern=Pattern.compile("^[\\w\\-\\.]+@[\\w\\-\\.]+$");
 
 	@JsonIgnore
 	public void verifyInput(){
