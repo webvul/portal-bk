@@ -120,6 +120,7 @@ public class DroolsRuleService {
 
 			kieSession.update(currThingHandler, currThing);
 
+			kieSession.fireAllRules();
 			if(status== CurrThing.Status.inThing||status== CurrThing.Status.inExt) {
 				List<MatchResult> lists = doQuery("get Match Result by TriggerID");
 				consumer.accept(lists);

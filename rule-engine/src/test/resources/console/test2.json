@@ -1,140 +1,125 @@
 {
-  "predicate": {
-    "condition": {
-      "type":"or",
-      "clauses":[
-        {"field": "a.sum_a",
-          "type": "eq",
-          "value": 100},
 
-        {"field": "b.count_b",
-          "type": "eq",
-          "value": 3}
-      ]
-
-    },
-    "triggersWhen": "CONDITION_TRUE_TO_FALSE"
-  },
+  "description": "",
   "type": "Summary",
   "summarySource": {
-    "a": {
+    "Lighting": {
       "expressList": [
         {
-          "stateName": "brightness",
-          "function": "sum",
-          "summaryAlias": "sum_a"
-        }
-      ],
-      "source": {
-        "thingList": [
-          0,
-          1
-        ],
-        "andExpress": false
-      }
-    },
-    "b": {
-      "expressList": [
-        {
-          "stateName": "brightness",
-          "function": "count",
-          "summaryAlias": "count_b"
-        }
-      ],
-      "source": {
-        "thingList": [
-          0,
-          1
-        ],
-        "andExpress": false
-      }
-    },
-    "c": {
-      "expressList": [
-        {
-          "stateName": "brightness",
-          "function": "max",
-          "summaryAlias": "max_c"
-        }
-      ],
-      "source": {
-        "thingList": [
-          0,
-          1
-        ],
-        "andExpress": false
-      }
-    },
-    "d": {
-      "expressList": [
-        {
-          "stateName": "brightness",
+          "stateName": "Bri",
           "function": "min",
-          "summaryAlias": "min_d"
+          "summaryAlias": "Bri"
         }
       ],
       "source": {
+        "tagList": [],
         "thingList": [
-          0,
           1
         ],
         "andExpress": false
       }
     },
-    "e": {
+    "AirCondition": {
       "expressList": [
         {
-          "stateName": "brightness",
+          "stateName": "Valve",
           "function": "average",
-          "summaryAlias": "average_e"
+          "summaryAlias": "Valve"
         }
       ],
       "source": {
+        "tagList": [],
         "thingList": [
-          0,
-          1
-        ],
-        "andExpress": false
-      }
-    },
-    "f": {
-      "expressList": [
-        {
-          "stateName": "brightness",
-          "function": "sum",
-          "summaryAlias": "sum_f"
-        }
-      ],
-      "source": {
-        "thingList": [
-         0,
-          1
+          2
         ],
         "andExpress": false
       }
     }
   },
-
-  "targets": [{
-    "tagList": [],
-    "thingList": [1002],
-    "andExpress":"false",
-
-    "command":{
-      "description":"httpcall-summary-joling",
-      "title":"httpcall-summary-joling",
-      "actions":[
-        {"setPower":
-        {"power":"false"}
-        }]
-    },
-    "type":"thingCommand"
-  },
+  "userID": 640,
+  "targets": [
     {
-      "url":"http://114.215.196.178:8080/beehive-portal/api/oauth2/registUser",
-      "contentType":"application/json",
-      "content":"{\"userName\":\"bbaa\",\"password\":\"1qaz2wsx\",\"displayNamel\":\"bbaa\"}",
-      "method":"POST",
-      "type":"HttpApiCall"
-    }]
+      "tagList": [],
+      "thingList": [
+        6290
+      ],
+      "doubleCheck": false,
+      "type": "ThingCommand",
+      "andExpress": false,
+      "command": {
+        "metadata": {
+          "type": "Lighting"
+        },
+        "schemaVersion": 0,
+        "actions": [
+          {
+            "turnPower": {
+              "Power": 1
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "predicate": {
+    "condition": {
+      "clauses": [
+        {
+          "clauses": [
+            {
+              "field": "Lighting.Bri",
+              "lowerIncluded": false,
+              "lowerLimit": 20,
+              "type": "range"
+            },
+            {
+              "field": "Lighting.Bri",
+              "lowerIncluded": false,
+              "lowerLimit": 20,
+              "type": "range"
+            }
+          ],
+          "type": "and"
+        },
+        {
+          "clauses": [
+            {
+              "field": "AirCondition.Valve",
+              "type": "eq",
+              "value": 1
+            },
+            {
+              "field": "AirCondition.Valve",
+              "type": "eq",
+              "value": 1
+            }
+          ],
+          "type": "and"
+        },
+        {
+          "clauses": [
+            {
+              "field": "Lighting.Bri",
+              "lowerIncluded": false,
+              "lowerLimit": 20,
+              "type": "range"
+            },
+            {
+              "field": "Lighting.Bri",
+              "lowerIncluded": false,
+              "lowerLimit": 20,
+              "type": "range"
+            }
+          ],
+          "type": "and"
+        }
+      ],
+      "type": "and"
+    },
+    "triggersWhen": "CONDITION_TRUE"
+  },
+  "recordStatus": "enable",
+  "targetParamList": [],
+  "inDrools": true,
+  "name": "test_by_lucas_con1"
 }

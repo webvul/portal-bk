@@ -122,6 +122,7 @@ public class DroolsTriggerService {
 		data.setThingCol(newThings);
 
 		getService(trigger).addOrUpdateData(data);
+
 	}
 
 	public void removeTrigger(String triggerID){
