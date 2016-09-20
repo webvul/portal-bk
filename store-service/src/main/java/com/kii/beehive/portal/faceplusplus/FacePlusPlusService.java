@@ -211,7 +211,9 @@ public class FacePlusPlusService {
 
 
     protected void startConnection() throws URISyntaxException {
-        Socket socket = IO.socket(faceWebSocketUri + "/event/");
+        IO.Options options = new IO.Options();
+        options.transports = new String[]{"websocket"};
+        Socket socket = IO.socket(faceWebSocketUri + "/event/", options);
         socket.io().on(Manager.EVENT_TRANSPORT, new Emitter.Listener() {
             @Override
             public void call(Object... args) {
