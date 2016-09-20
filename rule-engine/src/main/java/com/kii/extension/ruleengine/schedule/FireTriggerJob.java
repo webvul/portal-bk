@@ -26,8 +26,7 @@ public class FireTriggerJob implements JobInSpring {
 	public void execute(JobDataMap paramMap)  {
 
 		String triggerID=paramMap.getString(ProxyJob.TRIGGER_ID);
-		log.info("start job enable trigger: "+triggerID);
-
+		log.info("fire execute job trigger: "+triggerID);
 
 		EventCallback callback=applicationCtx.getBean(EventCallback.class);
 

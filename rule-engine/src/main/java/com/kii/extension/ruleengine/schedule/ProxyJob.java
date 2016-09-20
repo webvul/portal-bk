@@ -37,9 +37,11 @@ public class ProxyJob implements Job {
 	@Override
 	public void execute(JobExecutionContext context) throws JobExecutionException {
 
+
 		JobDataMap dataMap=context.getMergedJobDataMap();
 
 		dataMap.put(JOB_CONTEXT,context);
+
 		JobInSpring  jobInSpring=applicationCtx.getBean(beanClass);
 
 		jobInSpring.execute(dataMap);

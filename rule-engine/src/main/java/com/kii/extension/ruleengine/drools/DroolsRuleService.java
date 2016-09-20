@@ -181,7 +181,7 @@ public class DroolsRuleService {
 
 			String drlName="src/main/resources/comm_"+i+".drl";
 
-			byte[]  bytes=kfs.read(drlName);
+//			byte[]  bytes=kfs.read(drlName);
 
 			kfs.write(drlName, rule);
 			pathSet.add(drlName);

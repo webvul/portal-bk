@@ -5,6 +5,7 @@ import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
 
 import javax.annotation.PreDestroy;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -209,16 +210,37 @@ public class ScheduleService {
 	}
 
 
+	public void enableExecuteTask(String triggerID) throws SchedulerException {
+
+		TriggerKey  key=TriggerKey.triggerKey(triggerID,EXEC_PRE);
+		scheduler.resumeTrigger(key);
+
+	}
+
+
+	public void disableExecuteTask(String triggerID) throws SchedulerException {
+
+		TriggerKey  key=TriggerKey.triggerKey(triggerID,EXEC_PRE);
+
+		scheduler.pauseTrigger(key);
+
+	}
+
+
 	public void addExecuteTask(String triggerID, SchedulePrefix schedule,boolean enable)throws SchedulerException{
 
-		TriggerBuilder builder = TriggerBuilder.newTrigger()
-				.withIdentity(TriggerKey.triggerKey(triggerID,EXEC_PRE))
+		TriggerKey key=TriggerKey.triggerKey(triggerID,EXEC_PRE);
+
+		TriggerBuilder builder = TriggerBuilder
+				.newTrigger()
+				.withIdentity(key)
 				.usingJobData(ProxyJob.TRIGGER_ID, triggerID)
 				.forJob(RuleEngScheduleFactory.EXEC_JOB);
 
 
 		if(schedule instanceof CronPrefix){
-			builder.withSchedule(cronSchedule(((CronPrefix)schedule).getCron()));
+			builder.withSchedule(cronSchedule(((CronPrefix)schedule).getCron()).withMisfireHandlingInstructionDoNothing());
+
 
 		}else if(schedule instanceof IntervalPrefix){
 			IntervalPrefix interval=(IntervalPrefix)schedule;
@@ -235,17 +257,23 @@ public class ScheduleService {
 					simple=simpleSchedule().withIntervalInMinutes(interval.getInterval());
 					break;
 			}
-			builder.withSchedule(simple.withMisfireHandlingInstructionIgnoreMisfires().repeatForever());
+			builder.withSchedule(simple.withMisfireHandlingInstructionNextWithExistingCount().repeatForever());
 		}
 
-		scheduler.scheduleJob(builder.build());
-
-		if(enable){
-			scheduler.resumeTrigger(TriggerKey.triggerKey(triggerID,EXEC_PRE));
-		}else{
-			scheduler.pauseTrigger(TriggerKey.triggerKey(triggerID,EXEC_PRE));
-
+		if(!enable){
+			Calendar cal= Calendar.getInstance();
+			cal.add(Calendar.MINUTE,1);
+			builder.startAt(cal.getTime());
 		}
+
+		Trigger trigger=builder.build();
+
+		scheduler.scheduleJob(trigger);
+
+		if(!enable){
+			scheduler.pauseTrigger(key);
+		}
+
 
 	}
 

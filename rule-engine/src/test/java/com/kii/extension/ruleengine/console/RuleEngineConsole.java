@@ -109,7 +109,7 @@ public class RuleEngineConsole {
 		statusList.add(getStatusInRule("d","foo=-100,bar=100"));
 
 
-		loadAll();
+//		loadAll();
 
 		statusList.forEach(s->engine.initThingStatus(s));
 
@@ -140,7 +140,7 @@ public class RuleEngineConsole {
 	}
 
 
-	public void doMsgCycle(String cmd,String[] arrays){
+	public void doMsgCycle(String cmd,String[] arrays) throws SchedulerException {
 
 
 
@@ -168,6 +168,13 @@ public class RuleEngineConsole {
 				}else{
 					schedule.removeManagerTaskForSchedule(triggerID);
 				}
+				break;
+
+			case "enable":
+				schedule.enableExecuteTask(triggerID);
+				break;
+			case "disable":
+				schedule.disableExecuteTask(triggerID);
 				break;
 			case "setThingCol":
 

@@ -1,8 +1,8 @@
 {
   "prepareCondition": {
-    "endCron": "0 0 19 ? * *",
+    "endCron": "0 0 11 ? * *",
     "type": "cron",
-    "startCron": "0 0 9 ? * *"
+    "startCron": "0 55 10 ? * *"
   },
   "description": "time",
   "type": "Summary",
@@ -34,8 +34,9 @@
   ],
   "predicate": {
     "schedule": {
-      "cron": "0 0/4 * * * ?",
-      "type": "Cron"
+      "interval": 1,
+      "type": "Interval",
+      "timeUnit": "Minute"
     },
     "triggersWhen": "CONDITION_TRUE"
   },
