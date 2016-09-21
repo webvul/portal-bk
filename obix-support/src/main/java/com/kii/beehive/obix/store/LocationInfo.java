@@ -1,9 +1,7 @@
 package com.kii.beehive.obix.store;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LocationInfo  {
 
@@ -15,21 +13,22 @@ public class LocationInfo  {
 
 	private String displayName;
 
-	private Map<String,LocationInfo> subLocations=new HashMap<>();
+	private List<String> subLocations=new ArrayList<>();
 
 
-	private Set<ThingInfo>  thingCollect=new HashSet<>();
+	private List<EntityInfo>  entityCollect=new ArrayList<>();
 
-	public Set<ThingInfo> getThingCollect() {
-		return thingCollect;
+	public List<EntityInfo> getEntityCollect() {
+		return entityCollect;
 	}
 
-	public void setThingCollect(Set<ThingInfo> thingCollect) {
-		this.thingCollect = thingCollect;
+	public void setEntityCollect(List<EntityInfo> entityCollect) {
+		this.entityCollect = entityCollect;
 	}
 
-
-
+	public  void addEntity(EntityInfo entity){
+		this.entityCollect.add(entity);
+	}
 
 	public String getLocation() {
 		return location;
@@ -55,14 +54,22 @@ public class LocationInfo  {
 		this.displayName = displayName;
 	}
 
-	public Map<String, LocationInfo> getSubLocations() {
+
+	public String getParentLoc() {
+		return parentLoc;
+	}
+
+	public void setParentLoc(String parentLoc) {
+		this.parentLoc = parentLoc;
+	}
+
+	public List<String> getSubLocations() {
 		return subLocations;
 	}
 
-	public void setSubLocations(Map<String, LocationInfo> subLocations) {
+	public void setSubLocations(List<String> subLocations) {
 		this.subLocations = subLocations;
 	}
-
 
 	public int getLevel() {
 		return level;
@@ -72,8 +79,5 @@ public class LocationInfo  {
 		this.level = level;
 	}
 
-	public void fillSubLocations(Set<LocationInfo> subLocs) {
 
-		subLocs.forEach(l->subLocations.put(l.getLocation(),l));
-	}
 }

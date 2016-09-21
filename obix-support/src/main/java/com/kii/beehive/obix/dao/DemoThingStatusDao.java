@@ -2,7 +2,9 @@ package com.kii.beehive.obix.dao;
 
 import javax.annotation.PostConstruct;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.RandomUtils;
@@ -17,6 +19,9 @@ public class DemoThingStatusDao {
 
 	private Map<String,Thing>  thingMap=new HashMap<>();
 
+	private Map<String,List<String>> locThingMap=new HashMap<>();
+
+
 
 	@PostConstruct
 	public void init(){
@@ -28,12 +33,24 @@ public class DemoThingStatusDao {
 
 	}
 
+	public List<String> getThingIDByLoc(String loc){
+		List<String> list= locThingMap.get(loc);
+
+		if(list==null){
+			return new ArrayList<>();
+		}
+
+		return list;
+	}
+
 	public Thing getThingByID(String thingID){
 
 
 		return thingMap.get(thingID);
 
 	}
+
+
 
 	private Thing generThingStatus(int idx) {
 		ThingStatus  status=new ThingStatus();
@@ -53,10 +70,17 @@ public class DemoThingStatusDao {
 		thing.setThingID("thing"+idx);
 		thing.setStatus(status);
 		thing.setSchema("aircondition");
-		thing.setLocation("0103");
+		String loc="01-0"+idx%3;
+		thing.setLocation(loc);
+
+		locThingMap.computeIfAbsent(loc,(l)->{
+			return new ArrayList<>();
+		}).add(thing.getThingID());
 
 		return thing;
 	}
+
+
 
 	public void setThingStatus(String thingID,String name,Object val){
 
@@ -65,7 +89,7 @@ public class DemoThingStatusDao {
 
 		status.setField(name,val);
 
-//		thingMap.put(thingID,status);
 	}
+	
 
 }

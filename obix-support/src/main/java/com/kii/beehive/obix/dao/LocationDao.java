@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class LocationDao {
 
+	//01-02-A03
+
 	public List<String> getTopLocation(){
 
 		List<String>  list=new ArrayList<>();
@@ -29,11 +31,11 @@ public class LocationDao {
 			List<String> list=new ArrayList<>();
 
 			for(int i=1;i<5;i++){
-				list.add(loc+"0"+i);
+				list.add(loc+"-0"+i);
 			}
 			return list;
 
-		}else if(loc.length()==4){
+		}else if(loc.length()==5){
 			List<String> list=new ArrayList<>();
 
 			for(int i=0;i<5;i++){
@@ -51,14 +53,15 @@ public class LocationDao {
 
 			return "";
 
-		}else if(loc.length()==4){
+		}else if(loc.length()==5){
 			return StringUtils.substring(loc,0,2);
 
-		}else if(loc.length()==7){
-			return StringUtils.substring(loc,0,4);
+		}else if(loc.length()==9){
+			return StringUtils.substring(loc,0,5);
 		}else{
 			return "";
 		}
 
 	}
+
 }

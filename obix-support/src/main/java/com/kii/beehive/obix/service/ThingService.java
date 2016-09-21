@@ -1,5 +1,9 @@
 package com.kii.beehive.obix.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -34,9 +38,24 @@ public class ThingService {
 		ThingInfo info=new ThingInfo(schema,thing.getStatus());
 
 		info.setName(thing.getThingID());
-		info.initLocation(thing.getLocation());
 
 		return info;
+
+	}
+
+	public List<ThingInfo>  getThingInfoByLoc(String loc){
+
+		return thingDao.getThingIDByLoc(loc).stream().map(this::getFullThingInfo).collect(Collectors.toList());
+
+	}
+
+	public List<PointInfo>  getPointInfoByLoc(String loc){
+
+		String thLoc= StringUtils.substringBeforeLast(loc,"-");
+
+		return getThingInfoByLoc(thLoc).stream()
+				.flatMap((th)->th.getPointCollect().stream())
+				.filter((p-> p.getLocation().equals(loc))).collect(Collectors.toList());
 
 	}
 
@@ -47,6 +66,8 @@ public class ThingService {
 				.stream().filter(p->p.getFieldName().equals(pointName)).findAny().get();
 
 	}
+
+
 
 	private void setPointInfo(String thingID,PointInfo point){
 

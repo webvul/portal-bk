@@ -6,7 +6,7 @@ import java.util.Set;
 import com.kii.beehive.obix.store.beehive.ThingSchema;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
-public class ThingInfo {
+public class ThingInfo   implements  EntityInfo{
 
 	private Set<PointInfo> pointCollect=new HashSet<>();
 
@@ -29,7 +29,7 @@ public class ThingInfo {
 
 		schema.getFieldCollect().forEach((k,v)->{
 
-			PointInfo  point=new PointInfo(v,k,status.getField(k));
+			PointInfo  point=new PointInfo(v,k,status.getField(k),name);
 
 
 			pointCollect.add(point);
@@ -40,7 +40,7 @@ public class ThingInfo {
 
 	}
 
-	public void initLocation( String location){
+	private  void initLocation( String location){
 
 		this.location=location;
 
@@ -65,7 +65,11 @@ public class ThingInfo {
 	}
 
 	public void setLocation(String location) {
+
 		this.location = location;
+
+
+		initLocation(location);
 	}
 
 	public Set<String> getCustomTags() {
@@ -91,4 +95,5 @@ public class ThingInfo {
 	public void setSchema(ObixThingSchema schema) {
 		this.schema = schema;
 	}
+
 }

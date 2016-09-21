@@ -8,6 +8,7 @@ import com.kii.beehive.obix.store.beehive.PointDetail;
 
 public class ObixPointDetail {
 
+	private String thingSchema;
 
 	private String fieldName;
 
@@ -41,8 +42,10 @@ public class ObixPointDetail {
 
 	}
 
-	public ObixPointDetail(String fieldName,PointDetail  detail){
+	public ObixPointDetail(String thingSchemaName,String fieldName,PointDetail  detail){
 		setFieldName(fieldName);
+
+		this.thingSchema=thingSchemaName;
 
 		setDescription(detail.getDisplayNameCN());
 		setType(PointDataType.getInstance(detail.getType()));
@@ -188,5 +191,13 @@ public class ObixPointDetail {
 		}else{
 			tagCollect.remove("hist");
 		}
+	}
+
+	public String getThingSchema() {
+		return thingSchema;
+	}
+
+	public void setThingSchema(String thingSchema) {
+		this.thingSchema = thingSchema;
 	}
 }

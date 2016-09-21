@@ -35,7 +35,7 @@ public class ObixThingSchema extends KiiEntity{
 
 		th.getStatesSchema().getProperties().forEach((k,v)->{
 
-			ObixPointDetail point=new ObixPointDetail(k,v);
+			ObixPointDetail point=new ObixPointDetail(name,k,v);
 
 			point.setExistCur(true);
 
@@ -59,7 +59,7 @@ public class ObixThingSchema extends KiiEntity{
 			ObixPointDetail point=getFieldCollect().get(fieldName);
 
 			if(point==null){
-				point=new ObixPointDetail(fieldName,detail);
+				point=new ObixPointDetail(name,fieldName,detail);
 			}
 
 			point.setWritable(true);
