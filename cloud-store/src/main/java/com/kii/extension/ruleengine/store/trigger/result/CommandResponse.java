@@ -1,17 +1,14 @@
 package com.kii.extension.ruleengine.store.trigger.result;
 
-import com.kii.extension.sdk.entity.KiiEntity;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
 
-public class CommandResponse extends KiiEntity implements TriggerResult {
+public class CommandResponse extends  TriggerResult {
 
 
-	private String triggerID;
 
 	private String result;
 
 	private ThingCommand command;
-
 
 
 
@@ -34,13 +31,6 @@ public class CommandResponse extends KiiEntity implements TriggerResult {
 	}
 
 
-	public String getTriggerID() {
-		return triggerID;
-	}
-
-	public void setTriggerID(String triggerID) {
-		this.triggerID = triggerID;
-	}
 
 	public String getResult() {
 		return result;

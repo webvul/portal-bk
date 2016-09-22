@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.business.helper.OpLogTools;
-import com.kii.beehive.business.ruleengine.TriggerLogTools;
 import com.kii.beehive.business.ruleengine.TriggerManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.web.exception.ErrorCode;
@@ -38,8 +37,6 @@ public class CrossTriggerController {
 	@Autowired
 	private TriggerValidate triggerValidate;
 
-	@Autowired
-	private TriggerLogTools triggerLogTools;
 
 	/**
 	 * onboarding should be already done on the things in the param
@@ -63,7 +60,6 @@ public class CrossTriggerController {
 		result.put("triggerID", trigger.getTriggerID());
 		result.put("triggerPosition", trigger.getType()== BeehiveTriggerType.Gateway?"local":"cloud");
 
-		triggerLogTools.outputCreateLog(record, triggerID);
 
 		return result;
 	}
@@ -91,7 +87,6 @@ public class CrossTriggerController {
 
 		mang.deleteTrigger(triggerID);
 
-		triggerLogTools.outputDeleteLog(triggerID);
 
 		return result;
 	}
@@ -107,7 +102,6 @@ public class CrossTriggerController {
 
 		mang.enableTrigger(triggerID);
 
-		triggerLogTools.outputEnableLog(record);
 
 		return result;
 	}
@@ -124,7 +118,6 @@ public class CrossTriggerController {
 
 		mang.disableTrigger(triggerID);
 
-		triggerLogTools.outputDisableLog(record);
 
 		return result;
 	}

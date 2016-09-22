@@ -1,13 +1,12 @@
 package test.mock;
 
 
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ResourceLoader;
 
 import com.kii.extension.ruleengine.EventCallback;
+import com.kii.extension.ruleengine.ExecuteParam;
 import com.kii.extension.ruleengine.drools.CommandExec;
 
 
@@ -53,7 +52,7 @@ public class MockEventBus implements EventCallback {
 
 
 	@Override
-	public void onTriggerFire(String triggerID, Map<String,String> params) {
+	public void onTriggerFire(String triggerID, ExecuteParam params) {
 
 	}
 }

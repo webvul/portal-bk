@@ -11,12 +11,13 @@ when
     $ext:ExternalCollect()
     Trigger( $triggerID:triggerID,$enable:enable, (triggerID=="${triggerID}" && enable==true &&  type ==TriggerType.simple ) )
     SingleThing($thingID:thingID,$triggerID==$triggerID)
-    CurrThing( valid($thingID) )
+    $curr:CurrThing( valid($thingID) )
     $status:ThingStatusInRule(thingID == $thingID,${express}  )
 then
 
 	MatchResult result=new MatchResult($triggerID);
-   result.setParam("enable",$enable);
+   result.setEnable($enable);
+   result.setFireSource($curr);
 
 	${fillParam}
 

@@ -3,7 +3,6 @@ package com.kii.beehive.business.ruleengine;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.Map;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -20,9 +19,9 @@ import org.springframework.util.StringUtils;
 
 import com.google.common.base.Charsets;
 
+import com.kii.extension.ruleengine.ExecuteParam;
 import com.kii.extension.ruleengine.service.ExecuteResultDao;
 import com.kii.extension.ruleengine.store.trigger.CallHttpApi;
-import com.kii.extension.ruleengine.store.trigger.result.ExceptionResponse;
 import com.kii.extension.ruleengine.store.trigger.result.HttpCallResponse;
 import com.kii.extension.sdk.commons.HttpTool;
 
@@ -37,16 +36,18 @@ public class HttpCallService {
 	@Autowired
 	private ExecuteResultDao  resultDao;
 
+
 	@Autowired
-	private TriggerLogTools  logTool;
+	private ResponseBuilder  builder;
 
-	public void doHttpApiCall(CallHttpApi call,String triggerID ,Map<String,String> params){
+	public void doHttpApiCall(CallHttpApi call,String triggerID ,ExecuteParam params){
 
+
+		HttpCallResponse result=builder.getHttpResponse(triggerID,params);
 
 		try {
 
-			call.fillParam(params);
-//			HttpUriRequest request=getRequest(call);
+			call.fillParam(params.getBusinessParams());
 
 			HttpResponse response = tool.doRequest(getRequest(call));
 
@@ -55,13 +56,9 @@ public class HttpCallService {
 
 			log.info("http call result:"+code);
 
+			result.setHttpRequest(call);
 
-			HttpCallResponse resp=new HttpCallResponse();
-
-			resp.setHttpRequest(call);
-
-			resp.setTriggerID(triggerID);
-			resp.setStatus(response.getStatusLine().getStatusCode());
+			result.setStatus(response.getStatusLine().getStatusCode());
 
 			HttpEntity  entity=response.getEntity();
 			if(entity!=null&&entity.isStreaming()){
@@ -73,24 +70,25 @@ public class HttpCallService {
 					 encode = hEncode.getValue();
 				}
 				for(Header head:response.getAllHeaders()){
-					resp.addHeader(head.getName(),head.getValue());
+					result.addHeader(head.getName(),head.getValue());
 				}
 				try {
 
 					String ctx= StreamUtils.copyToString(entity.getContent(), Charset.forName(encode));
-					resp.setBody(ctx);
+					result.setBody(ctx);
 
 				} catch (IOException e) {
 					log.warn("get response body fail",e);
 				}
 			}
 
-			resultDao.addResponse(resp);
 		}catch(Exception ex){
 
-			resultDao.addException(new ExceptionResponse(ex.getCause()));
-
+			result.bindException(ex);
 		}
+
+		resultDao.addResponse(result);
+
 
 
 	}

@@ -5,7 +5,6 @@ import javax.annotation.PostConstruct;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -19,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import com.kii.beehive.business.helper.TriggerCreator;
 import com.kii.extension.ruleengine.EventCallback;
+import com.kii.extension.ruleengine.ExecuteParam;
 import com.kii.extension.ruleengine.service.TriggerRecordDao;
 import com.kii.extension.ruleengine.store.trigger.CallHttpApi;
 import com.kii.extension.ruleengine.store.trigger.CommandToThing;
@@ -48,7 +48,6 @@ public class CommandExecuteService implements EventCallback {
 	private TriggerCreator creator;
 
 
-
 	private ScheduledExecutorService executeService=new ScheduledThreadPoolExecutor(10);
 
 
@@ -61,27 +60,21 @@ public class CommandExecuteService implements EventCallback {
 
 	@Async
 	@Override
-	public void onTriggerFire(String triggerID,Map<String,String> params) {
+	public void onTriggerFire(String triggerID,ExecuteParam params) {
 
-		TriggerRecord trigger=triggerDao.getEnableTriggerRecord(triggerID);
 
-		if(trigger==null){
+
+		TriggerRecord record=triggerDao.getEnableTriggerRecord(triggerID);
+
+		if(record==null){
 			return;
 		}
-
-		doCommand(trigger,params);
-	}
-
-
-	private  void doCommand(TriggerRecord  record,Map<String,String> params) {
 
 		List<ExecuteTarget> targets=record.getTargets();
 
 		int idx=0;
 
 		for(ExecuteTarget target:targets){
-
-			String delayParam="delay_"+idx;
 
 
 			Runnable run= () -> {
@@ -102,7 +95,7 @@ public class CommandExecuteService implements EventCallback {
 				}
 			};
 
-			String delay=params.get(delayParam);
+			String delay=params.getDelayParam(idx);
 
 			if(StringUtils.isBlank(delay)) {
 				executeService.submit(run);
@@ -119,9 +112,8 @@ public class CommandExecuteService implements EventCallback {
 			idx++;
 
 		}
-
-
 	}
+
 
 
 

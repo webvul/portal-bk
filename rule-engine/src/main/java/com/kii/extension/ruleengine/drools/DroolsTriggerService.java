@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import com.kii.extension.ruleengine.drools.entity.ExternalValues;
 import com.kii.extension.ruleengine.drools.entity.MultiplesValueMap;
 import com.kii.extension.ruleengine.drools.entity.Summary;
+import com.kii.extension.ruleengine.drools.entity.SummaryResult;
 import com.kii.extension.ruleengine.drools.entity.ThingResult;
 import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
 import com.kii.extension.ruleengine.drools.entity.Trigger;
@@ -130,11 +131,15 @@ public class DroolsTriggerService {
 
 		Trigger trigger=triggerMap.get(triggerID);
 
-
-
 		Map<String,Summary> map= thingColMap.remove(triggerID);
 		if(map != null ){
-			map.values().forEach(summary-> getService(trigger).removeData(summary));
+			map.values().forEach(summary-> {
+				getService(trigger).removeData(summary);
+
+				SummaryResult result=new SummaryResult(summary.getTriggerID(),summary.getName(),null);
+
+				getService(trigger).removeData(result);
+			});
 		}
 
 		if(trigger.getType()== TriggerType.multiple) {
@@ -145,6 +150,8 @@ public class DroolsTriggerService {
 
 			ThingResult result = new ThingResult(trigger.getTriggerID());
 			getService(trigger).removeData(result);
+
+
 		}
 
 		getService(trigger).removeData(trigger);

@@ -1,8 +1,5 @@
 package com.kii.extension.ruleengine.schedule;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.quartz.JobDataMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +9,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import com.kii.extension.ruleengine.EventCallback;
+import com.kii.extension.ruleengine.ExecuteParam;
 
 @Component
 public class FireTriggerJob implements JobInSpring {
@@ -30,11 +28,9 @@ public class FireTriggerJob implements JobInSpring {
 
 		EventCallback callback=applicationCtx.getBean(EventCallback.class);
 
-		Map<String,String> param=new HashMap<>();
-		param.put("enable",Boolean.toString(true));
+		ExecuteParam param=new ExecuteParam();
 
 		callback.onTriggerFire(triggerID,param);
-
 
 	}
 }
