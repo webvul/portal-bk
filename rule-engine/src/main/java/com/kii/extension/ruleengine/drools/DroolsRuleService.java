@@ -224,28 +224,28 @@ public class DroolsRuleService {
 	}
 
 
-	public void clear(){
-
-		boolean isDeletedRule = false;
-		Set<String> deletePathSet=new HashSet<>();
-		for(String drlPath:pathSet){
-			String name=drlPath.substring(drlPath.lastIndexOf("/"),drlPath.length());
-			if(name.startsWith("/comm")){
-				continue;
-			}
-			kfs.delete(drlPath);
-			deletePathSet.add(drlPath);
-			isDeletedRule = true;
-		}
-		pathSet.removeAll(deletePathSet);
-		if(isDeletedRule){
-			KieBuilder kb=ks.newKieBuilder(kfs);
-			kb.buildAll();
-			kieContainer.updateToVersion(kb.getKieModule().getReleaseId());
-		}
-		handleMap.keySet().forEach( key -> kieSession.delete(handleMap.get(key)) );
-		handleMap.clear();
-	}
+//	public void clear(){
+//
+//		boolean isDeletedRule = false;
+//		Set<String> deletePathSet=new HashSet<>();
+//		for(String drlPath:pathSet){
+//			String name=drlPath.substring(drlPath.lastIndexOf("/"),drlPath.length());
+//			if(name.startsWith("/comm")){
+//				continue;
+//			}
+//			kfs.delete(drlPath);
+//			deletePathSet.add(drlPath);
+//			isDeletedRule = true;
+//		}
+//		pathSet.removeAll(deletePathSet);
+//		if(isDeletedRule){
+//			KieBuilder kb=ks.newKieBuilder(kfs);
+//			kb.buildAll();
+//			kieContainer.updateToVersion(kb.getKieModule().getReleaseId());
+//		}
+//		handleMap.keySet().forEach( key -> kieSession.delete(handleMap.get(key)) );
+//		handleMap.clear();
+//	}
 
 
 
@@ -271,17 +271,18 @@ public class DroolsRuleService {
 		KieBuilder kb=ks.newKieBuilder(kfs);
 
 		kb.buildAll();
+
 		kieContainer.updateToVersion(kb.getKieModule().getReleaseId());
 
-
 		handleMap.clear();
-		kieSession.getObjects().forEach((obj)->{
+		kieSession.getFactHandles().forEach((handle)->{
 
-			FactHandle handle=kieSession.getFactHandle(obj);
+			Object obj=kieSession.getObject(handle);
 
 			handleMap.put(getEntityKey(obj),handle);
 
 		});
+
 
 		toIdle();
 
@@ -318,9 +319,9 @@ public class DroolsRuleService {
 
 
 
-	public void setGlobal(String name,Object key){
-		kieSession.setGlobal(name,key);
-	}
+//	public void setGlobal(String name,Object key){
+//		kieSession.setGlobal(name,key);
+//	}
 
 	public void addOrUpdateExternal(ExternalValues entity){
 
@@ -389,11 +390,11 @@ public class DroolsRuleService {
 	}
 
 
-	public void removeFact(Object obj) {
-		String entityKey = getEntityKey(obj);
-		FactHandle handler=handleMap.get(entityKey);
-		if(handler!=null) {
-			kieSession.delete(handler);
-		}
-	}
+//	public void removeFact(Object obj) {
+//		String entityKey = getEntityKey(obj);
+//		FactHandle handler=handleMap.get(entityKey);
+//		if(handler!=null) {
+//			kieSession.delete(handler);
+//		}
+//	}
 }

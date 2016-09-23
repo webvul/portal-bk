@@ -42,7 +42,7 @@ import com.kii.extension.ruleengine.store.trigger.multiple.ThingSource;
 @Component
 public class RuleGeneral {
 
-	private static final String EVAL_TRUE = " eval( true ) ";
+	private static final String EVAL_TRUE = " true ";
 	private Logger log= LoggerFactory.getLogger(RuleGeneral.class);
 
 	@Autowired

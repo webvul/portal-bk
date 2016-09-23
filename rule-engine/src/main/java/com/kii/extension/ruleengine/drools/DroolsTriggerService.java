@@ -32,11 +32,11 @@ public class DroolsTriggerService {
 	private final Map<String,Map<String,Summary>> thingColMap =new ConcurrentHashMap<>();
 
 
-	public void clear(){
-		cloudService.clear();
-		triggerMap.clear();
-		thingColMap.clear();
-	}
+//	public void clear(){
+//		cloudService.clear();
+//		triggerMap.clear();
+//		thingColMap.clear();
+//	}
 
 
 	public  Map<String,Object> getEngineRuntime(){

@@ -137,7 +137,8 @@ public class EngineService {
 
 
 	public void clear(){
-		droolsTriggerService.clear();
+
+//		droolsTriggerService.clear();
 	}
 
 
