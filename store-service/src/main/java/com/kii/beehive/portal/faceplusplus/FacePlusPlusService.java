@@ -90,6 +90,7 @@ public class FacePlusPlusService {
             result = objectMapper.readValue(responseBody, new TypeReference<HashMap>() {});
         } catch (IOException e) {
             e.printStackTrace();
+            throw new FacePlusPlusException();
         }
         return result;
     }
@@ -114,6 +115,7 @@ public class FacePlusPlusService {
             result = objectMapper.readValue(responseBody, new TypeReference<HashMap>() {});
         } catch (IOException e) {
             e.printStackTrace();
+            throw new FacePlusPlusException();
         }
         return result;
     }
@@ -131,6 +133,7 @@ public class FacePlusPlusService {
             result = objectMapper.readValue(responseBody, new TypeReference<HashMap>() {});
         } catch (IOException e) {
             e.printStackTrace();
+            throw new FacePlusPlusException();
         }
         return result;
     }
@@ -152,6 +155,7 @@ public class FacePlusPlusService {
             result = objectMapper.readValue(responseBody, new TypeReference<HashMap>() {});
         } catch (IOException e) {
             e.printStackTrace();
+            throw new FacePlusPlusException();
         }
         return result;
     }
