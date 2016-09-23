@@ -144,6 +144,14 @@ public class SchemaController {
 		}
 		obix.setHref(builder.toUriString());
 
+		if(point.isWritable()){
+			obix.addToIs("h:op");
+			obix.addToIs("obix:writablePoint");
+		}else{
+			obix.addToIs("h:sensor");
+			obix.addToIs("obix:point");
+		}
+
 		return obix;
 	}
 

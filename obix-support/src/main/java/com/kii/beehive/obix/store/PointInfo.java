@@ -8,14 +8,19 @@ public class PointInfo {
 
 	private String location;
 
-	private String thingSchema;
+	private ObixPointDetail  schema;
 
-	public String getThingSchema() {
-		return thingSchema;
+
+	public PointInfo(){
+
 	}
 
-	public void setThingSchema(String thingSchema) {
-		this.thingSchema = thingSchema;
+	public PointInfo(ObixPointDetail  detail,String name,Object val){
+
+		fieldName=name;
+		value=val;
+
+		this.schema=detail;
 	}
 
 	public String getFieldName() {
@@ -40,5 +45,13 @@ public class PointInfo {
 
 	public void setLocation(String location) {
 		this.location = location;
+	}
+
+	public ObixPointDetail getSchema() {
+		return schema;
+	}
+
+	public void setSchema(ObixPointDetail schema) {
+		this.schema = schema;
 	}
 }

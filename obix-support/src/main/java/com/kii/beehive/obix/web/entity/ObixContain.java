@@ -80,6 +80,10 @@ public class ObixContain {
 		this.is = is;
 	}
 
+	public void addToIs(String is){
+		this.is+=" "+is;
+	}
+
 	public String getName() {
 		return name;
 	}

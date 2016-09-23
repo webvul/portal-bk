@@ -17,6 +17,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.business.helper.TriggerCreator;
+import com.kii.beehive.portal.common.utils.StrTemplate;
+import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.extension.ruleengine.EventCallback;
 import com.kii.extension.ruleengine.ExecuteParam;
 import com.kii.extension.ruleengine.service.TriggerRecordDao;
@@ -27,6 +29,8 @@ import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.tools.CronGeneral;
+
+
 
 
 @Component
@@ -77,6 +81,7 @@ public class CommandExecuteService implements EventCallback {
 		for(ExecuteTarget target:targets){
 
 
+
 			Runnable run= () -> {
 
 				switch (target.getType()) {
@@ -84,10 +89,12 @@ public class CommandExecuteService implements EventCallback {
 					case "ThingCommand":
 						CommandToThing command=(CommandToThing)target;
 
-						commandService.executeCommand(record.getTriggerID(),command,params);
+						commandService.executeCommand(triggerID,command,params);
 						break;
 					case "HttpApiCall":
 						CallHttpApi call=(CallHttpApi)target;
+
+						call.fillParam(params.getBusinessParams());
 
 						httpCallService.doHttpApiCall(call,record.getTriggerID(),params);
 

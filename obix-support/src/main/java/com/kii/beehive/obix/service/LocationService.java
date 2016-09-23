@@ -46,7 +46,7 @@ public class LocationService {
 
 		PointInfo p= points.stream().filter(pointID::equals).findAny().get();
 
-		p.setThingSchema(th.getSchema());
+//		p.setThingSchema(th.getSchema());
 
 		return p;
 	}
@@ -105,7 +105,7 @@ public class LocationService {
 			ThingInfo thing = new ThingInfo();
 			thing.setLocation(loc+"0"+i);
 			thing.setName(prefix + i);
-			thing.setSchema("demo");
+//			thing.setSchema("demo");
 
 			Set<PointInfo> pointSet=new HashSet<>();
 
@@ -134,7 +134,7 @@ public class LocationService {
 			locCol.add(loc+"-B");
 			locCol.add(loc+"-C");
 
-			thing.setLocationCollect(locCol);
+//			thing.setLocationCollect(locCol);
 
 			Set<String> customTags=new HashSet<>();
 			customTags.add("foo");

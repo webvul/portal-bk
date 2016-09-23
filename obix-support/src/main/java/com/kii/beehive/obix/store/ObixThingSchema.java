@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.kii.beehive.obix.store.beehive.ActionInput;
+import com.kii.beehive.obix.store.beehive.PointDetail;
+import com.kii.beehive.obix.store.beehive.ThingSchema;
 import com.kii.extension.sdk.entity.KiiEntity;
 
 public class ObixThingSchema extends KiiEntity{
@@ -23,6 +26,49 @@ public class ObixThingSchema extends KiiEntity{
 	private String name;
 
 	private String superRef;
+
+
+
+	public  ObixThingSchema(ThingSchema th)  {
+
+
+		th.getStatesSchema().getProperties().forEach((k,v)->{
+
+			ObixPointDetail point=new ObixPointDetail(k,v);
+
+			point.setExistCur(true);
+
+			addField(point);
+		});
+
+		th.getActions().forEach((k,v)->{
+
+			ActionInput in=v.getIn();
+
+			Map<String,PointDetail> pointMap=in.getProperties();
+
+			if(pointMap.size()>1||pointMap.size()==0){
+				return;
+			}
+			Map.Entry<String,PointDetail> entry=pointMap.entrySet().iterator().next();
+
+			PointDetail detail=entry.getValue();
+			String fieldName=entry.getKey();
+
+			ObixPointDetail point=getFieldCollect().get(fieldName);
+
+			if(point==null){
+				point=new ObixPointDetail(fieldName,detail);
+			}
+
+			point.setWritable(true);
+
+			addField(point);
+		});
+
+	}
+
+
 
 
 	public String getSuperRef() {

@@ -3,21 +3,53 @@ package com.kii.beehive.obix.store;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.kii.beehive.obix.store.beehive.ThingSchema;
+import com.kii.extension.sdk.entity.thingif.ThingStatus;
+
 public class ThingInfo {
 
 	private Set<PointInfo> pointCollect=new HashSet<>();
 
 	private String name;
 
-	private String schema;
+	private ObixThingSchema schema;
 
 	private String location;
-
-	private Set<String> locationCollect=new HashSet<>();
 
 	private Set<String> customTags=new HashSet<>();
 
 
+	public ThingInfo(){
+
+	}
+
+	public ThingInfo(ThingSchema thSchema, ThingStatus status){
+
+		this.schema=new ObixThingSchema(thSchema);
+
+		schema.getFieldCollect().forEach((k,v)->{
+
+			PointInfo  point=new PointInfo(v,k,status.getField(k));
+
+
+			pointCollect.add(point);
+
+		});
+
+
+
+	}
+
+	public void initLocation( String location){
+
+		this.location=location;
+
+		int i=0;
+		for(PointInfo  p:pointCollect){
+			p.setLocation(location+"-0"+i);
+		}
+
+	}
 
 	public String getName() {
 		return name;
@@ -27,28 +59,12 @@ public class ThingInfo {
 		this.name = name;
 	}
 
-	public String getSchema() {
-		return schema;
-	}
-
-	public void setSchema(String schema) {
-		this.schema = schema;
-	}
-
 	public String getLocation() {
 		return location;
 	}
 
 	public void setLocation(String location) {
 		this.location = location;
-	}
-
-	public Set<String> getLocationCollect() {
-		return locationCollect;
-	}
-
-	public void setLocationCollect(Set<String> locationCollect) {
-		this.locationCollect = locationCollect;
 	}
 
 	public Set<String> getCustomTags() {
@@ -65,5 +81,13 @@ public class ThingInfo {
 
 	public void setPointCollect(Set<PointInfo> pointCollect) {
 		this.pointCollect = pointCollect;
+	}
+
+	public ObixThingSchema getSchema() {
+		return schema;
+	}
+
+	public void setSchema(ObixThingSchema schema) {
+		this.schema = schema;
 	}
 }
