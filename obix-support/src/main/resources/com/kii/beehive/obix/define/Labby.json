@@ -1,0 +1,74 @@
+{
+  "obix": "obj",
+  "children": [
+    {
+      "obix":"ref",
+      "name":"about",
+      "is":"obix:about"
+    },
+    {
+      "obix":"op",
+      "name":"batch",
+      "in":"obix:BatchIn",
+      "out":"obix:BatchOut"
+    },
+    {
+      "obix":"ref",
+      "name":"watchService",
+      "is":"obix:WatchService",
+      "href":"watchService/"
+    },
+    {
+      "obix":"list",
+      "name":"tagsapce",
+      "of":"obix:uri",
+      "children":[
+        {"obix":"uri",
+         "name":"h",
+         "val":"tags/haystack",
+          "displayName":"haystack",
+        "children":[
+          {"obix":"str","name":"version","val":"3.0.0"}
+        ]},
+        {"obix":"uri",
+          "name":"b",
+          "val":"tags/beehive",
+          "displayName":"beehive",
+          "children":[
+            {"obix":"str","name":"version","val":"1.0.0"}
+          ]}
+      ]
+    },
+    {
+      "obix":"list",
+      "name":"bindings",
+      "of":"obix:uri",
+      "children":[
+        {
+          "obix": "uri",
+          "name": "http",
+          "val": "http://docs.oasis-open.org/obix/obix-rest/v1.0/obix-rest-v1.0.pdf",
+          "displayName": "HTTP Binding"
+        }
+      ]
+    },
+    {
+      "obix":"list",
+      "name":"encodings",
+      "of":"obix:str",
+      "children":[
+        {
+          "obix": "str",
+          "name": "application/json",
+          "displayName": "JSON"
+        }
+
+      ]
+    },
+    {
+      "obix":"ref",
+      "name":"location",
+      "href":"site/"
+    }
+  ]
+}

@@ -25,14 +25,4 @@ public class TriggerResult extends  CommResult{
 		return result;
 	}
 
-
-
-	@Override
-	public String toString() {
-		return "TriggerResult{" +
-				"triggerID='" + triggerID + '\'' +
-				", delay=" + delay +
-				", params=" + params +
-				'}';
-	}
 }
