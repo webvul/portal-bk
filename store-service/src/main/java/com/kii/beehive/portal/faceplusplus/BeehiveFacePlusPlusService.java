@@ -1,17 +1,16 @@
 package com.kii.beehive.portal.faceplusplus;
 
-import com.kii.beehive.portal.exception.EntryNotFoundException;
-import com.kii.beehive.portal.faceplusplus.entitys.FaceUser;
-import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
-import com.kii.beehive.portal.manager.BeehiveUserManager;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+import com.kii.beehive.portal.exception.EntryNotFoundException;
+import com.kii.beehive.portal.faceplusplus.entitys.FaceUser;
+import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
+import com.kii.beehive.portal.manager.BeehiveUserManager;
 
 @Component
 public class BeehiveFacePlusPlusService {
@@ -38,7 +37,7 @@ public class BeehiveFacePlusPlusService {
 		for (Map<String, Object> photoMap : photoList) {
 			Integer photoId = (Integer) ((Map<String, Object>) photoMap.get("data")).get("id");
 			if (photoId == null) {
-				throw new RuntimeException("upload face++ photo error ! ");
+				throw new RuntimeException("upload face++ photo error ! " + photoMap.get("desc"));
 			}
 			photoIds.add(photoId);
 		}
