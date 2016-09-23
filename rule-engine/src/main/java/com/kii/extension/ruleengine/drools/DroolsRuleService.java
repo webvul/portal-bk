@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import org.apache.commons.codec.Charsets;
 import org.kie.api.KieBase;
@@ -390,11 +391,13 @@ public class DroolsRuleService {
 	}
 
 
-//	public void removeFact(Object obj) {
-//		String entityKey = getEntityKey(obj);
-//		FactHandle handler=handleMap.get(entityKey);
-//		if(handler!=null) {
-//			kieSession.delete(handler);
-//		}
-//	}
+	public void removeFact(Function<Object,Boolean> function) {
+
+		Collection<FactHandle>  handles=kieSession.getFactHandles(function::apply);
+
+		handles.forEach((handle)->{
+			kieSession.delete(handle);
+		});
+
+	}
 }

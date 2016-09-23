@@ -39,11 +39,21 @@ public abstract class TriggerRecord extends KiiEntity {
 
 	private StatusType recordStatus;
 
+	private String deletedReason;
+
 	private String name;
 
 	private String description;
 
 	private boolean inDrools=true;
+
+	public String getDeletedReason() {
+		return deletedReason;
+	}
+
+	public void setDeletedReason(String deletedReason) {
+		this.deletedReason = deletedReason;
+	}
 
 	public boolean isInDrools() {
 		return inDrools;

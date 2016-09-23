@@ -2,7 +2,7 @@ package com.kii.extension.ruleengine.drools.entity;
 
 import java.util.Objects;
 
-public class SummaryResult {
+public class SummaryResult implements  WithTrigger {
 
 	private final String triggerID;
 

@@ -63,7 +63,7 @@ public class TestInit {
 
 	private void sendThingStatus(String id, ThingStatus status){
 
-		engine.updateThingStatus(id,status,new Date());
+		engine.updateThingStatus(id,status.getFields(),new Date());
 
 	}
 

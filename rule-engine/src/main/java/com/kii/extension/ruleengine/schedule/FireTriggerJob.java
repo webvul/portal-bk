@@ -8,8 +8,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import com.kii.extension.ruleengine.EventCallback;
-import com.kii.extension.ruleengine.ExecuteParam;
+import com.kii.extension.ruleengine.EngineService;
 
 @Component
 public class FireTriggerJob implements JobInSpring {
@@ -26,11 +25,10 @@ public class FireTriggerJob implements JobInSpring {
 		String triggerID=paramMap.getString(ProxyJob.TRIGGER_ID);
 		log.info("fire execute job trigger: "+triggerID);
 
-		EventCallback callback=applicationCtx.getBean(EventCallback.class);
+		boolean isPureSchedule=paramMap.getBoolean(ProxyJob.IS_TRIGGER);
 
-		ExecuteParam param=new ExecuteParam();
-
-		callback.onTriggerFire(triggerID,param);
+		EngineService  engine=applicationCtx.getBean(EngineService.class);
+		engine.fireSchedule(triggerID);
 
 	}
 }

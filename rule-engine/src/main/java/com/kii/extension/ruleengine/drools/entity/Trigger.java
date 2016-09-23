@@ -8,7 +8,7 @@ import org.springframework.beans.BeanUtils;
 
 import com.kii.extension.ruleengine.store.trigger.WhenType;
 
-public class Trigger {
+public class Trigger implements WithTrigger{
 
 	private final String triggerID;
 

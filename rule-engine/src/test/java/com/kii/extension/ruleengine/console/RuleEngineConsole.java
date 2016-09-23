@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.quartz.SchedulerException;
-import org.springframework.beans.BeanUtils;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
@@ -22,21 +21,13 @@ import org.springframework.util.StringUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.kii.extension.ruleengine.EngineService;
-import com.kii.extension.ruleengine.TriggerConditionBuilder;
+import com.kii.extension.ruleengine.BeehiveTriggerService;
 import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
-import com.kii.extension.ruleengine.schedule.ScheduleService;
-import com.kii.extension.ruleengine.store.trigger.Condition;
-import com.kii.extension.ruleengine.store.trigger.Express;
 import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.SummaryFunctionType;
 import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TagSelector;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.TriggerValidPeriod;
-import com.kii.extension.ruleengine.store.trigger.condition.All;
 import com.kii.extension.ruleengine.store.trigger.multiple.GroupSummarySource;
 import com.kii.extension.ruleengine.store.trigger.multiple.MultipleSrcTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.multiple.ThingSource;
@@ -46,10 +37,12 @@ import com.kii.extension.sdk.entity.thingif.ThingStatus;
 public class RuleEngineConsole {
 
 
+//
+//	private EngineService  engine;
+//
+//	private ScheduleService  schedule;
 
-	private EngineService  engine;
-
-	private ScheduleService  schedule;
+	private BeehiveTriggerService service;
 
 	private ObjectMapper  mapper;
 
@@ -63,12 +56,15 @@ public class RuleEngineConsole {
 
 
 	public RuleEngineConsole(ClassPathXmlApplicationContext context){
-		 engine=context.getBean(EngineService.class);
+//		 engine=context.getBean(EngineService.class);
 
 		 mapper=context.getBean(ObjectMapper.class);
 
 
-		schedule=context.getBean(ScheduleService.class);
+//		schedule=context.getBean(ScheduleService.class);
+
+
+		service=context.getBean(BeehiveTriggerService.class);
 
 
 		Set<String> ths=new HashSet<>();
@@ -95,11 +91,11 @@ public class RuleEngineConsole {
 	public void init(){
 
 
-		engine.enteryInit();
+		service.enterInit();
 
-		engine.updateExternalValue("demo","one",111);
+		service.updateExternalValue("demo","one",111);
 
-		engine.updateExternalValue("demo","two",222);
+		service.updateExternalValue("demo","two",222);
 
 
 		List<ThingStatusInRule> statusList=new ArrayList<>();
@@ -111,9 +107,9 @@ public class RuleEngineConsole {
 
 //		loadAll();
 
-		statusList.forEach(s->engine.initThingStatus(s));
+		statusList.forEach(s->service.updateThingStatus(s.getThingID(),s.getValues()));
 
-		engine.leaveInit();
+		service.leaveInit();
 
 	}
 
@@ -159,22 +155,12 @@ public class RuleEngineConsole {
 
 				ThingStatus status = getStatus(params);
 
-				engine.updateThingStatus(arrays[1], status, new Date());
+				service.updateThingStatus(arrays[1], status.getFields());
 				break;
 			case "remove":
 				if(triggerMap.get(triggerID)) {
-					engine.removeTrigger(triggerID);
-					schedule.removeManagerTaskForSchedule(triggerID);
-				}else{
-					schedule.removeManagerTaskForSchedule(triggerID);
+					service.removeTrigger(triggerID);
 				}
-				break;
-
-			case "enable":
-				schedule.enableExecuteTask(triggerID);
-				break;
-			case "disable":
-				schedule.disableExecuteTask(triggerID);
 				break;
 			case "setThingCol":
 
@@ -207,13 +193,11 @@ public class RuleEngineConsole {
 				String name = arrays[1];
 				String value = arrays[2];
 
-				engine.updateExternalValue("demo", name, value);
+				service.updateExternalValue("demo", name, value);
 				break;
 			case "dump":
 
-				Map<String, Object> result = engine.dumpEngineRuntime();
-
-				result.put("schedule",schedule.dump());
+				Map<String, Object> result = service.getRuleEngingDump();
 
 				try {
 					String json = mapper.writeValueAsString(result);
@@ -285,55 +269,38 @@ public class RuleEngineConsole {
 		triggerID=id;
 		record.setRecordStatus(TriggerRecord.StatusType.enable);
 
-		TriggerValidPeriod period=record.getPreparedCondition();
-		if(period!=null){
-			//ctrl enable sign by schedule.
-			record.setRecordStatus(TriggerRecord.StatusType.disable);
-		}
-
-
-		Condition  condition=record.getPredicate().getCondition();
-		String express=record.getPredicate().getExpress();
-		if(condition==null&& StringUtils.isEmpty(express)){
-			schedule.addExecuteTask(triggerID,record.getPredicate().getSchedule(),record.getRecordStatus()==TriggerRecord.StatusType.enable);
-			if(period!=null) {
-				schedule.addManagerTask(triggerID, record.getPreparedCondition(),false);
-			}
-
-			triggerMap.put(triggerID,false);
-			return;
-		}
+		Map<String,Set<String>>  thingMap=new HashMap<>();
 
 		switch(record.getType()) {
 			case Simple:
 				SimpleTriggerRecord rec=(SimpleTriggerRecord)record;
-				char thID= (char) ((int)rec.getSource().getThingID()+'a');
+				char thID= (char) ( (int)rec.getSource().getThingID()-1+'a');
 
-				engine.createSimpleTrigger(String.valueOf(thID),rec);
+				String thingID=String.valueOf(thID);
+
+				thingMap.put("comm",Collections.singleton(thingID));
 
 				break;
 			case Multiple:
 
-				engine.createMultipleSourceTrigger((MultipleSrcTriggerRecord) record, getThingMap((MultipleSrcTriggerRecord)record));
+				thingMap= getThingMap((MultipleSrcTriggerRecord)record);
 				break;
 			case Group:
 				GroupTriggerRecord recGroup=(GroupTriggerRecord)record;
 
-				createGroupTrigger(recGroup,getThingMap(recGroup) );
+				thingMap=getThingMap(recGroup );
 
 				break;
 			case Summary:
 
 				SummaryTriggerRecord recSummary=(SummaryTriggerRecord)record;
 
-				addSummaryToEngine(recSummary, getThingMap(recSummary));
+				thingMap=getThingMap(recSummary);
 
 				break;
 		}
 
-		if(period!=null) {
-			schedule.addManagerTask(triggerID, period,true);
-		}
+		service.addTriggerToEngine(record,thingMap);
 
 		System.out.println("create trigger "+triggerID);
 
@@ -368,7 +335,7 @@ public class RuleEngineConsole {
 	}
 
 
-	private Set<String> getThingMap(GroupTriggerRecord  record ){
+	private Map<String,Set<String>> getThingMap(GroupTriggerRecord  record ){
 
 		TagSelector sele=record.getSource();
 
@@ -386,7 +353,7 @@ public class RuleEngineConsole {
 				);
 			}
 
-		return thSet;
+		return Collections.singletonMap("comm",thSet);
 	}
 
 	private Map<String,Set<String>> getThingMap(MultipleSrcTriggerRecord  record ){
@@ -479,89 +446,6 @@ public class RuleEngineConsole {
 		}catch(NumberFormatException e) {
 			status.setField(key, value);
 		}
-	}
-
-	private void addSummaryToEngine(SummaryTriggerRecord record ,Map<String, Set<String>> summaryMap){
-
-		MultipleSrcTriggerRecord convertRecord=new MultipleSrcTriggerRecord();
-
-		BeanUtils.copyProperties(record,convertRecord);
-
-
-		Map<String,Set<String>> thingMap=new HashMap<>();
-
-		record.getSummarySource().forEach((k,v)->{
-
-			TagSelector source=v.getSource();
-
-			v.getExpressList().forEach((exp)->{
-
-				GroupSummarySource  elem=new GroupSummarySource();
-
-				elem.setFunction(exp.getFunction());
-				elem.setStateName(exp.getStateName());
-				elem.setSource(source);
-
-				String index=k+"."+exp.getSummaryAlias();
-				convertRecord.addSource(index,elem);
-				thingMap.put(index,summaryMap.get(k));
-
-			});
-		});
-
-		engine.createMultipleSourceTrigger(convertRecord,thingMap);
-	}
-
-	private  void createGroupTrigger(GroupTriggerRecord record,Set<String> thingIDs){
-
-
-		MultipleSrcTriggerRecord convertRecord=new MultipleSrcTriggerRecord();
-		BeanUtils.copyProperties(record,convertRecord);
-
-
-		Condition cond=new All();
-		switch(record.getPolicy().getGroupPolicy()){
-			//	Any,All,Some,Percent,None;
-
-			case All:
-				cond= TriggerConditionBuilder.newCondition().equal("comm",thingIDs.size()).getConditionInstance();
-				break;
-			case Any:
-				cond=TriggerConditionBuilder.newCondition().greatAndEq("comm",1).getConditionInstance();
-				break;
-			case Some:
-				cond=TriggerConditionBuilder.newCondition().greatAndEq("comm",record.getPolicy().getCriticalNumber()).getConditionInstance();
-				break;
-			case Percent:
-				int percent=(record.getPolicy().getCriticalNumber()*thingIDs.size())/100;
-				cond=TriggerConditionBuilder.newCondition().equal("comm",percent).getConditionInstance();
-				break;
-			case None:
-				cond=TriggerConditionBuilder.newCondition().equal("comm",0).getConditionInstance();
-		}
-		RuleEnginePredicate predicate=new RuleEnginePredicate();
-
-		predicate.setCondition(cond);
-		predicate.setTriggersWhen(record.getPredicate().getTriggersWhen());
-		predicate.setSchedule(record.getPredicate().getSchedule());
-
-		convertRecord.setPredicate(predicate);
-
-		Map<String,Set<String>> thingMap=new HashMap<>();
-		thingMap.put("comm",new HashSet<>(thingIDs));
-
-		GroupSummarySource  elem=new GroupSummarySource();
-
-		elem.setFunction(SummaryFunctionType.count);
-		Express exp=new Express();
-		exp.setCondition(record.getPredicate().getCondition());
-		elem.setExpress(exp);
-
-		elem.setSource(record.getSource());
-
-		convertRecord.addSource("comm",elem);
-
-		engine.createMultipleSourceTrigger(convertRecord,thingMap);
 	}
 
 

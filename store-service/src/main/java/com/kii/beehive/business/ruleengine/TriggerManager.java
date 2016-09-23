@@ -72,11 +72,11 @@ public class TriggerManager {
 	private TriggerCreator creator;
 
 
-	public void reinit() {
-		creator.clear();
-
-		init();
-	}
+//	public void reinit() {
+//		creator.clear();
+//
+//		init();
+//	}
 
 	@PostConstruct
 	public void init() {

@@ -1,31 +1,7 @@
 package com.kii.extension.ruleengine.drools.entity;
 
-import java.util.HashMap;
-import java.util.Map;
+public class TriggerResult extends  CommResult{
 
-public class TriggerResult {
-
-	private final String triggerID;
-
-	private String delay=null;
-
-	private Map<String,String> params=new HashMap<>();
-
-	public String getDelay() {
-		return delay;
-	}
-
-	public void setDelay(String delay) {
-		this.delay = delay;
-	}
-
-	public Map<String, String> getParams() {
-		return params;
-	}
-
-	public void setParams(Map<String, String> params) {
-		this.params = params;
-	}
 
 	public TriggerResult(MatchResult  result ){
 
@@ -37,10 +13,6 @@ public class TriggerResult {
 	public TriggerResult(String triggerID ){
 
 		this.triggerID=triggerID;
-	}
-
-	public String getTriggerID() {
-		return triggerID;
 	}
 
 

@@ -103,7 +103,7 @@ public class TestMulTrigger extends TestInit {
 		status.setField("foo",val);
 		status.setField("bar",val2);
 
-		engine.updateThingStatus(thingID,status,new Date());
+		engine.updateThingStatus(thingID,status.getFields(),new Date());
 
 	}
 

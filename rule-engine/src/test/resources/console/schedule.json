@@ -1,8 +1,9 @@
 {
   "predicate" : {
-    "schedule" : {
-      "type" : "Cron",
-      "cron" : "  0 18 12 25 7  ? "
+    "schedule": {
+      "interval": 1,
+      "type": "Interval",
+      "timeUnit": "Minute"
     },
     "express" :"$p{power}!=0",
     "triggersWhen":"CONDITION_TRUE"

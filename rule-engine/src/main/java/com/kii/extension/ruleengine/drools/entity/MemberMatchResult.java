@@ -3,7 +3,7 @@ package com.kii.extension.ruleengine.drools.entity;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MemberMatchResult {
+public class MemberMatchResult implements  WithTrigger{
 
 
 	private String thingID;

@@ -31,7 +31,7 @@ public class ThingStatusChangeCallback {
 	@Async
 	public void onEventFire( ThingStatus status, String thingID,Date timestamp) {
 
-		engine.updateThingStatus(thingID,status,timestamp);
+		engine.updateThingStatus(thingID,status.getFields(),timestamp);
 	}
 
 	@Async

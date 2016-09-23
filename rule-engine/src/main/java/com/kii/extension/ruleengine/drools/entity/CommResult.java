@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public abstract  class CommResult {
+public abstract  class CommResult implements WithTrigger{
 
 
 	protected   String triggerID;

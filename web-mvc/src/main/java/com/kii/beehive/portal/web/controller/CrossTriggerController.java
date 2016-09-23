@@ -179,9 +179,9 @@ public class CrossTriggerController {
 		return mang.getRuleEngingDump();
 	}
 
-	@RequestMapping(path = "/debug/reinit", method = {RequestMethod.POST}, consumes = {MediaType.ALL_VALUE})
-	public void reInit() {
-
-		mang.reinit();
-	}
+//	@RequestMapping(path = "/debug/reinit", method = {RequestMethod.POST}, consumes = {MediaType.ALL_VALUE})
+//	public void reInit() {
+//
+//		mang.reinit();
+//	}
 }

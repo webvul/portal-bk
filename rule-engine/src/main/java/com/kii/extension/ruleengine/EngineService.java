@@ -26,7 +26,6 @@ import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.multiple.GroupSummarySource;
 import com.kii.extension.ruleengine.store.trigger.multiple.MultipleSrcTriggerRecord;
-import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
 @Component
 public class EngineService {
@@ -168,6 +167,7 @@ public class EngineService {
 
 		String rule=ruleGeneral.getSimpleTriggerDrl(triggerID,record.getPredicate(),record.getTargetParamList());
 
+
 		droolsTriggerService.addTrigger(trigger,rule);
 
 		if(!StringUtils.isEmpty(thingID)) {
@@ -211,15 +211,15 @@ public class EngineService {
 	}
 
 
-	public void initThingStatus(ThingStatusInRule  status){
-		droolsTriggerService.addThingStatus(status);
-	}
+//	public void initThingStatus(ThingStatusInRule  status){
+//		droolsTriggerService.addThingStatus(status);
+//	}
 
-	public void updateThingStatus(String thingID,ThingStatus status,Date time) {
+	public void updateThingStatus(String thingID,Map<String,Object> status,Date time) {
 
 
 		ThingStatusInRule newStatus=new ThingStatusInRule(thingID);
-		newStatus.setValues(status.getFields());
+		newStatus.setValues(status);
 		newStatus.setCreateAt(time);
 
 		droolsTriggerService.addThingStatus(newStatus);
@@ -252,6 +252,11 @@ public class EngineService {
 
 		droolsTriggerService.removeTrigger(triggerID);
 
+
+	}
+
+	public void fireSchedule(String triggerID){
+		droolsTriggerService.updateScheduleSign(triggerID);
 
 	}
 }
