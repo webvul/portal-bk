@@ -8,7 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 @Component
-public class LocationDao {
+public class DemoLocationDao {
 
 	//01-02-A03
 

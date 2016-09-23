@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
-import org.springframework.context.annotation.ImportResource;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -30,7 +29,6 @@ import com.kii.beehive.obix.web.interceptor.NavigateIntercepter;
 
 @EnableWebMvc
 @Configuration
-@ImportResource("classpath:com/kii/beehive/obix/appContext.xml")
 @ComponentScan(basePackages = {"com.kii.beehive.obix"},includeFilters = {
 		@ComponentScan.Filter(type = FilterType.ANNOTATION, value =  {Component.class, Controller.class} )})
 public class WebMVCConfig extends WebMvcConfigurerAdapter {
@@ -95,7 +93,7 @@ public class WebMVCConfig extends WebMvcConfigurerAdapter {
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
 
-		registry.addMapping("/obix/**")
+		registry.addMapping("/**")
 				.allowedOrigins("*")
 				.allowedMethods("GET","POST","PUT","DELETE");
 	}

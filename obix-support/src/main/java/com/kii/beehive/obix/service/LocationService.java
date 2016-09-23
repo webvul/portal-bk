@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.obix.dao.DemoThingStatusDao;
-import com.kii.beehive.obix.dao.LocationDao;
+import com.kii.beehive.obix.dao.DemoLocationDao;
 import com.kii.beehive.obix.store.LocationInfo;
 
 @Component
@@ -17,7 +17,7 @@ public class LocationService {
 
 
 	@Autowired
-	private LocationDao locDao;
+	private DemoLocationDao locDao;
 
 	@Autowired
 	private DemoThingStatusDao  thingDao;
