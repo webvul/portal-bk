@@ -2,22 +2,31 @@ package com.kii.extension.ruleengine.drools.entity;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public abstract  class CommResult implements WithTrigger{
 
 
-	protected   String triggerID;
+	protected    String triggerID;
 
-	protected String delay=null;
+	private String delay=null;
 
-	protected Map<String,String> params=new HashMap<>();
+	private  Map<String,String> params=new HashMap<>();
 
 
 	private CurrThing  currThing;
 
 	private boolean enable=false;
 
+
+	public void  fill(CommResult target){
+
+		target.setEnable(enable);
+		target.setFireSource(currThing);
+		target.setDelay(delay);
+		target.setParams(new HashMap<>(params));
+		target.triggerID=this.triggerID;
+
+	}
 
 	public void setFireSource(CurrThing curr){
 
@@ -42,18 +51,6 @@ public abstract  class CommResult implements WithTrigger{
 				'}';
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		MatchResult that = (MatchResult) o;
-		return Objects.equals(triggerID, that.triggerID);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(triggerID);
-	}
 
 	public boolean isEnable() {
 		return enable;

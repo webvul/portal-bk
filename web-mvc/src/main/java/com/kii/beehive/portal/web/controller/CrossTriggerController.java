@@ -179,6 +179,12 @@ public class CrossTriggerController {
 		return mang.getRuleEngingDump();
 	}
 
+	@RequestMapping(path = "/debug/dump/{triggerID}", method = {RequestMethod.GET}, consumes = {MediaType.ALL_VALUE})
+	public Map<String, Object> getRuleEngineDumpByID(@PathVariable("triggerID") String triggerID) {
+
+		return mang.getRuleEngingDump(triggerID);
+	}
+
 //	@RequestMapping(path = "/debug/reinit", method = {RequestMethod.POST}, consumes = {MediaType.ALL_VALUE})
 //	public void reInit() {
 //

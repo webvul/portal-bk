@@ -8,6 +8,7 @@ import javax.annotation.PreDestroy;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -55,18 +56,32 @@ public class ScheduleService {
 	}
 
 
-	public Map<String,Object> dump(){
+	public Map<String,Object> dump(String triggerID){
 
-		GroupMatcher<TriggerKey> any= GroupMatcher.anyTriggerGroup();
 
 		Map<String,Object> triggerMap=new HashMap<>();
 
 		try {
-			Set<TriggerKey> keys = scheduler.getTriggerKeys(any);
+
+			Set<TriggerKey> keys = new HashSet<>();
+
+			if(triggerID==null) {
+				GroupMatcher<TriggerKey> any= GroupMatcher.anyGroup();
+
+				keys = scheduler.getTriggerKeys(any);
+			}else{
+				keys.add(TriggerKey.triggerKey(triggerID,START_PRE));
+				keys.add(TriggerKey.triggerKey(triggerID,STOP_PRE));
+				keys.add(TriggerKey.triggerKey(triggerID,EXEC_PRE));
+
+			}
 
 			keys.forEach((k) -> {
 				try {
 					Trigger trigger = scheduler.getTrigger(k);
+					if(trigger==null){
+						return;
+					}
 					Map<String,Object> data=new HashMap<>();
 					data.put("endTime",trigger.getEndTime());
 					data.put("startTime",trigger.getStartTime());

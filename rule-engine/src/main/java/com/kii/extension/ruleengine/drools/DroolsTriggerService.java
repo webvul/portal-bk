@@ -31,11 +31,11 @@ public class DroolsTriggerService {
 
 
 
-	public  Map<String,Object> getEngineRuntime(){
+	public  Map<String,Object> getEngineRuntime(String triggerID){
 
 		Map<String,Object> map=new HashMap<>();
 
-		map.put("cloud",cloudService.getEngineEntitys());
+		map.put("cloud",cloudService.getEngineEntitys(triggerID));
 
 		return map;
 

@@ -192,9 +192,10 @@ public class TriggerCreator {
 	}
 
 
-	public Map<String, Object> getRuleEngingDump() {
 
-		return general.getRuleEngingDump();
+	public Map<String, Object> getRuleEngingDump(String triggerID) {
+
+		return general.getRuleEngingDump(triggerID);
 	}
 
 	private String  addSimpleToEngine(SimpleTriggerRecord record) {

@@ -5,9 +5,7 @@ public class TriggerResult extends  CommResult{
 
 	public TriggerResult(MatchResult  result ){
 
-		this.triggerID=result.getTriggerID();
-		this.delay=result.getDelay();
-		this.params.putAll(result.getParams());
+		result.fill(this);
 	}
 
 	public TriggerResult(String triggerID ){
@@ -19,8 +17,7 @@ public class TriggerResult extends  CommResult{
 	public MatchResult getMatchResult(){
 		MatchResult result=new MatchResult(triggerID);
 
-		result.setDelay(this.getDelay());
-		result.setParams(this.getParams());
+		this.fill(result);
 
 		return result;
 	}

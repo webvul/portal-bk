@@ -141,9 +141,9 @@ public class EngineService {
 	}
 
 
-	public Map<String,Object>  dumpEngineRuntime(){
+	public Map<String,Object>  dumpEngineRuntime(String triggerID){
 
-		return droolsTriggerService.getEngineRuntime();
+		return droolsTriggerService.getEngineRuntime(triggerID);
 
 	}
 

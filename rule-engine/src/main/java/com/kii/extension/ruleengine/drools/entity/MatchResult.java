@@ -9,8 +9,6 @@ public class MatchResult extends CommResult{
 
 	public MatchResult(ResultParam param){
 
-		this.triggerID=param.getTriggerID();
-		this.delay=param.getDelay();
-		this.params.putAll(param.getParams());
+		param.fill(this);
 	}
 }

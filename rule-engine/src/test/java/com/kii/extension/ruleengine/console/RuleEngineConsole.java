@@ -195,9 +195,10 @@ public class RuleEngineConsole {
 
 				service.updateExternalValue("demo", name, value);
 				break;
+
 			case "dump":
 
-				Map<String, Object> result = service.getRuleEngingDump();
+				Map<String, Object> result = service.getRuleEngingDump(null);
 
 				try {
 					String json = mapper.writeValueAsString(result);

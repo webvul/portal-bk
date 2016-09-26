@@ -4,23 +4,21 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.common.base.Objects;
-
 //@Role(Role.Type.EVENT)
 //@Timestamp("createAt")
-public class ThingStatusInRule {
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		ThingStatusInRule that = (ThingStatusInRule) o;
-		return Objects.equal(thingID, that.thingID);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hashCode(thingID);
-	}
+public class ThingStatusInRule implements RuntimeEntry{
+//	@Override
+//	public boolean equals(Object o) {
+//		if (this == o) return true;
+//		if (o == null || getClass() != o.getClass()) return false;
+//		ThingStatusInRule that = (ThingStatusInRule) o;
+//		return Objects.equal(thingID, that.thingID);
+//	}
+//
+//	@Override
+//	public int hashCode() {
+//		return Objects.hashCode(thingID);
+//	}
 
 	private final String thingID;
 
@@ -78,5 +76,10 @@ public class ThingStatusInRule {
 				"thingID='" + thingID + '\'' +
 				", values=" + values +
 				'}';
+	}
+
+	@Override
+	public String getID() {
+		return thingID;
 	}
 }

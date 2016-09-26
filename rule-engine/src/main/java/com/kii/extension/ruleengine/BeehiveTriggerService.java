@@ -46,15 +46,16 @@ public class BeehiveTriggerService {
 		scheduleService.removeManagerTaskForSchedule(triggerID);
 	}
 
-	public Map<String, Object> getRuleEngingDump() {
+	public Map<String, Object> getRuleEngingDump(String triggerID) {
 
-		Map<String, Object> map = service.dumpEngineRuntime();
+		Map<String, Object> map = service.dumpEngineRuntime(triggerID);
 
 
-		map.put("schedule", scheduleService.dump());
+		map.put("schedule", scheduleService.dump(triggerID));
 
 		return map;
 	}
+
 
 
 	public void updateExternalValue(String name,String key,Object value){

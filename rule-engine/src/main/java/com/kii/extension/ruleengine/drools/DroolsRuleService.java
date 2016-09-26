@@ -23,6 +23,7 @@ import org.kie.api.event.rule.DebugRuleRuntimeEventListener;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.KieSessionConfiguration;
+import org.kie.api.runtime.ObjectFilter;
 import org.kie.api.runtime.conf.TimedRuleExectionOption;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.api.runtime.rule.QueryResults;
@@ -38,6 +39,8 @@ import com.kii.extension.ruleengine.drools.entity.ExternalCollect;
 import com.kii.extension.ruleengine.drools.entity.ExternalValues;
 import com.kii.extension.ruleengine.drools.entity.MatchResult;
 import com.kii.extension.ruleengine.drools.entity.RuntimeEntry;
+import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
+import com.kii.extension.ruleengine.drools.entity.WithTrigger;
 
 @Component
 @Scope(scopeName= ConfigurableBeanFactory.SCOPE_PROTOTYPE)
@@ -130,13 +133,24 @@ public class DroolsRuleService {
 	}
 
 
-	public Map<String,Object>  getEngineEntitys(){
+	public Map<String,Object>  getEngineEntitys(String triggerID){
 
 
 		Map<String,Object>  map=new HashMap<>();
 
 
-		Collection<? extends Object> objs=kieSession.getObjects();
+		Collection<? extends Object> objs=kieSession.getObjects((ObjectFilter) object -> {
+			if(triggerID==null){
+				return true;
+			}
+			if(object instanceof WithTrigger){
+					return ((WithTrigger)object).getTriggerID().equals(triggerID);
+			}
+			if(object instanceof ThingStatusInRule){
+					return false;
+			}
+			return true;
+		});
 
 		Map<String,Object>  entityMap=new HashMap<>();
 
@@ -157,6 +171,9 @@ public class DroolsRuleService {
 		for(String drlPath:pathSet){
 			String name=drlPath.substring(drlPath.lastIndexOf("/"),drlPath.length());
 			if(name.startsWith("/comm")){
+				continue;
+			}
+			if(triggerID!=null&&!name.contains(triggerID)){
 				continue;
 			}
 			String drlCtx=new String(kfs.read(drlPath), Charsets.UTF_8);
