@@ -26,7 +26,7 @@ public class DeviceController {
 	private ThingService  thingService;
 
 
-
+	@Autowired
 	private ObixContainConvertService  convertService;
 
 	@RequestMapping(path="/{thingID}",method=RequestMethod.GET )
