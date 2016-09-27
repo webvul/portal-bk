@@ -28,13 +28,20 @@ public class ExecuteParam {
 	}
 
 	public ExecuteParam(CommResult params){
+
+
+		String relThing=null;
+		String source=null;
 		if(params.getFireSource()!=null){
-			relationThing=params.getFireSource().getCurrThing();
-			fireSource=params.getFireSource().getStatus().name();
+			relThing=params.getFireSource().getCurrThing();
+			source=params.getFireSource().getStatus().name();
 		}else{
-			fireSource="Other";
-			relationThing="NONE";
+			relThing="Schedule";
+			source="NONE";
 		}
+
+		fireSource=relThing;
+		relationThing=source;
 
 		this.triggerID=params.getTriggerID();
 		fireTime=new Date();

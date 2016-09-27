@@ -18,9 +18,9 @@ when
 
 then
     ResultParam result=new ResultParam($triggerID);
+	result.setSchedule();
 
    result.setEnable($enable);
-    result.setFireSource($curr);
 	${fillParam}
 
 	CommandExec exec=(CommandExec)kcontext.getKieRuntime().getEnvironment().get("exec");

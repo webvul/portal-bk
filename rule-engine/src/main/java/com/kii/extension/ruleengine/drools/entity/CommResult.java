@@ -15,6 +15,8 @@ public abstract  class CommResult implements WithTrigger{
 
 	private CurrThing  currThing;
 
+	private boolean isSchedule=false;
+
 	private boolean enable=false;
 
 
@@ -31,6 +33,14 @@ public abstract  class CommResult implements WithTrigger{
 	public void setFireSource(CurrThing curr){
 
 		this.currThing=curr;
+	}
+
+	public void setSchedule(){
+		this.isSchedule=true;
+	}
+
+	public boolean getSchedule(){
+		return isSchedule;
 	}
 
 	public CurrThing getFireSource(){

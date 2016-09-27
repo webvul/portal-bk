@@ -18,8 +18,7 @@ when
     ScheduleFire(triggerID==$triggerID,enable==true)
 then
     ResultParam result=new ResultParam($triggerID);
-
-    result.setFireSource($curr);
+	result.setSchedule();
 
     result.setEnable($enable);
 
