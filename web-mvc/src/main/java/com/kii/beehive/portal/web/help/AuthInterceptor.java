@@ -85,7 +85,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
 		String url = request.getRequestURI();
 
-		if(url.contains("obix")){
+		if(url.contains("/obix/")){
 			return super.preHandle(request, response, handler);
 		}
 
