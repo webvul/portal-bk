@@ -7,7 +7,7 @@ import com.kii.beehive.business.event.BusinessEventListenerService;
 import com.kii.beehive.business.event.impl.TagChangeProcess;
 import com.kii.beehive.business.manager.ThingTagManager;
 import com.kii.beehive.portal.event.EventListener;
-import com.kii.extension.ruleengine.EngineService;
+import com.kii.extension.ruleengine.BeehiveTriggerService;
 import com.kii.extension.ruleengine.service.TriggerRecordDao;
 import com.kii.extension.ruleengine.store.trigger.SummarySource;
 import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
@@ -27,7 +27,7 @@ public class SummaryTagChangeProcess implements TagChangeProcess {
 
 
 	@Autowired
-	private EngineService engine;
+	private BeehiveTriggerService engine;
 
 	@Autowired
 	private BusinessEventListenerService listenerService;

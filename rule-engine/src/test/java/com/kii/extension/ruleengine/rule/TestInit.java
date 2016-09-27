@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.kii.extension.ruleengine.EngineService;
+import com.kii.extension.ruleengine.BeehiveTriggerService;
 import com.kii.extension.ruleengine.drools.CommandExec;
 import com.kii.extension.ruleengine.store.trigger.CommandToThing;
 import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
@@ -21,7 +21,7 @@ import com.kii.extension.sdk.entity.thingif.ThingStatus;
 public class TestInit {
 
 	@Autowired
-	protected EngineService engine;
+	protected BeehiveTriggerService engine;
 
 
 

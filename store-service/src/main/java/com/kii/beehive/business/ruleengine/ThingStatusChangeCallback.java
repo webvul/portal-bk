@@ -9,16 +9,17 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.kii.beehive.portal.entitys.ThingStateUpload;
 import com.kii.beehive.portal.jedis.dao.MessageQueueDao;
-import com.kii.extension.ruleengine.EngineService;
+import com.kii.extension.ruleengine.BeehiveTriggerService;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
 @Component
 public class ThingStatusChangeCallback {
 
 	@Autowired
-	private EngineService engine;
+	private BeehiveTriggerService engine;
 
 	@Autowired
 	private MessageQueueDao messageQueueDao;

@@ -8,6 +8,8 @@ import com.kii.extension.ruleengine.drools.entity.CommResult;
 
 public class ExecuteParam {
 
+	private String triggerID;
+
 	private final Date fireTime;
 
 	private final  String fireSource;
@@ -34,8 +36,17 @@ public class ExecuteParam {
 			relationThing="NONE";
 		}
 
+		this.triggerID=params.getTriggerID();
 		fireTime=new Date();
 		this.businessParams=params.getParams();
+	}
+
+	public String getTriggerID() {
+		return triggerID;
+	}
+
+	public void setTriggerID(String triggerID) {
+		this.triggerID = triggerID;
 	}
 
 	public Date getFireTime() {

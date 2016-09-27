@@ -42,6 +42,8 @@ public class ResponseBuilder {
 		result.setFireTime(params.getFireTime());
 		result.setBusinessParam(params.getBusinessParams());
 
+		result.setTriggerID(params.getTriggerID());
+
 		return;
 
 	}

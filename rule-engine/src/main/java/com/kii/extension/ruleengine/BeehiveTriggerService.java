@@ -3,16 +3,30 @@ package com.kii.extension.ruleengine;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.quartz.SchedulerException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import com.kii.extension.ruleengine.drools.DroolsTriggerService;
+import com.kii.extension.ruleengine.drools.RuleGeneral;
+import com.kii.extension.ruleengine.drools.entity.ExternalValues;
+import com.kii.extension.ruleengine.drools.entity.SingleThing;
+import com.kii.extension.ruleengine.drools.entity.Summary;
+import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
+import com.kii.extension.ruleengine.drools.entity.Trigger;
+import com.kii.extension.ruleengine.drools.entity.TriggerType;
 import com.kii.extension.ruleengine.schedule.ScheduleService;
+import com.kii.extension.ruleengine.store.trigger.CommandParam;
 import com.kii.extension.ruleengine.store.trigger.Condition;
+import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
 import com.kii.extension.ruleengine.store.trigger.Express;
 import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
@@ -37,18 +51,28 @@ public class BeehiveTriggerService {
 
 
 	@Autowired
-	private EngineService service;
+	private DroolsTriggerService droolsTriggerService;
+
+	@Autowired
+	private RuleGeneral ruleGeneral;
+
+	@Autowired
+	private ObjectMapper mapper;
+
+
+	@Autowired
+	private RelationStore  relationStore;
 
 
 	public void removeTrigger(String triggerID){
 
-		service.removeTrigger(triggerID);
+		droolsTriggerService.removeTrigger(triggerID);
 		scheduleService.removeManagerTaskForSchedule(triggerID);
 	}
 
 	public Map<String, Object> getRuleEngingDump(String triggerID) {
 
-		Map<String, Object> map = service.dumpEngineRuntime(triggerID);
+		Map<String, Object> map = droolsTriggerService.getEngineRuntime(triggerID);
 
 
 		map.put("schedule", scheduleService.dump(triggerID));
@@ -59,26 +83,31 @@ public class BeehiveTriggerService {
 
 
 	public void updateExternalValue(String name,String key,Object value){
-
-		service.updateExternalValue(name,key,value);
+		ExternalValues val=new ExternalValues(name);
+		val.addValue(key,value);
+		droolsTriggerService.addExternalValue(val);
 	}
 
-
-
-		public void enterInit(){
-		service.enteryInit();
+	public void enterInit(){
+		droolsTriggerService.enterInit();
 	}
 
 	public void leaveInit(){
-		service.leaveInit();
+		droolsTriggerService.leaveInit();
 	}
 
 	public void updateThingStatus(String thingID, Map<String,Object> status){
-		service.updateThingStatus(thingID,status,new Date());
+		updateThingStatus(thingID,status,new Date());
+
 	}
 
 	public void updateThingStatus(String thingID,  Map<String,Object> status,Date time){
-		service.updateThingStatus(thingID,status,time);
+
+		ThingStatusInRule newStatus=new ThingStatusInRule(thingID);
+		newStatus.setValues(status);
+		newStatus.setCreateAt(new Date());
+
+		droolsTriggerService.addThingStatus(newStatus);
 	}
 
 
@@ -163,7 +192,36 @@ public class BeehiveTriggerService {
 		Set<String>  thingIDs=thingIDsMap.get("comm");
 		String thingID=thingIDs.iterator().next();
 
-		service.createSimpleTrigger(thingID,record);
+
+		fillDelayParam(record);
+
+
+		relationStore.fillThingTriggerIndex(thingID,record.getTriggerID());
+
+
+		String triggerID=record.getId();
+
+		Trigger trigger=new Trigger(triggerID);
+
+		trigger.setType(TriggerType.simple);
+		trigger.setStream(false);
+		trigger.setWhen(record.getPredicate().getTriggersWhen());
+
+		trigger.setEnable(TriggerRecord.StatusType.enable == record.getRecordStatus());
+
+		String rule=ruleGeneral.getSimpleTriggerDrl(triggerID,record.getPredicate(),record.getTargetParamList());
+
+
+		droolsTriggerService.addTrigger(trigger,rule);
+
+		if(!StringUtils.isEmpty(thingID)) {
+			SingleThing thing=new SingleThing();
+			thing.setThingID(thingID);
+			thing.setTriggerID(triggerID);
+			thing.setName("comm");
+			droolsTriggerService.addTriggerData(thing);
+		}
+
 
 	}
 
@@ -196,7 +254,7 @@ public class BeehiveTriggerService {
 			});
 		});
 
-		service.createMultipleSourceTrigger(convertRecord,thingMap);
+		addMulToEngine(convertRecord,thingMap);
 	}
 
 	private  void addGroupToEngine(GroupTriggerRecord record,Map<String,Set<String>>  thingIDsMap){
@@ -250,7 +308,7 @@ public class BeehiveTriggerService {
 
 		convertRecord.addSource("comm",elem);
 
-		service.createMultipleSourceTrigger(convertRecord,thingMap);
+		addMulToEngine(convertRecord,thingMap);
 	}
 
 
@@ -258,9 +316,110 @@ public class BeehiveTriggerService {
 
 	private void addMulToEngine(MultipleSrcTriggerRecord record,Map<String, Set<String>> thingMap) {
 
-			service.createMultipleSourceTrigger(record,thingMap);
+
+		fillDelayParam(record);
+
+		relationStore.fillThingTriggerElemIndex(thingMap,record.getTriggerID());
+
+		Trigger trigger=new Trigger(record.getId());
+		trigger.setType(TriggerType.multiple);
+		trigger.setStream(false);
+		trigger.setWhen(record.getPredicate().getTriggersWhen());
+
+		boolean withSchedule=record.getPredicate().getSchedule()!=null;
+
+
+		String drl=ruleGeneral.generMultipleDrlConfig(record,withSchedule);
+
+		Set<String> thingSet=new HashSet<>();
+		thingMap.values().forEach( v->thingSet.addAll(v));
+		trigger.setThingSet(thingSet);
+
+		droolsTriggerService.addMultipleTrigger(trigger,drl);
+
+		record.getSummarySource().forEach((name,src)->{
+
+					switch(src.getType()){
+						case summary:
+							GroupSummarySource source=(GroupSummarySource)src;
+
+							Summary summary=new Summary();
+							summary.setTriggerID(trigger.getTriggerID());
+							summary.setFieldName(source.getStateName());
+							summary.setFunName(source.getFunction().name());
+							summary.setThingCol(thingMap.get(name));
+							summary.setName(name);
+
+							droolsTriggerService.addTriggerData(summary);
+
+							break;
+						case thing:
+
+							SingleThing thing=new SingleThing();
+							thing.setTriggerID(trigger.getTriggerID());
+							thing.setName(name);
+
+							thing.setThingID(thingMap.get(name).iterator().next());
+
+							droolsTriggerService.addTriggerData(thing);
+							break;
+						default:
+					}
+
+
+				}
+		);
+
 	}
 
+
+
+	private void fillDelayParam(TriggerRecord record){
+
+
+		List<CommandParam> list=record.getTargetParamList();
+
+		int i=0;
+		for(ExecuteTarget target:record.getTargets()){
+
+			String delay=target.getDelay();
+
+			if(StringUtils.isBlank(delay)){
+				i++;
+				continue;
+			}
+
+			CommandParam  param=new CommandParam();
+			param.setName("delay_"+i);
+			param.setExpress(delay);
+
+			list.add(param);
+
+			i++;
+		}
+
+		record.setTargetParamList(list);
+
+
+	}
+
+
+	public void changeThingsInTrigger(String triggerID,Set<String> newThings){
+
+		relationStore.maintainThingTriggerIndex(newThings,triggerID);
+		droolsTriggerService.updateThingsWithName(triggerID,"comm",newThings);
+
+
+	}
+
+
+	public void changeThingsInSummary(String triggerID,String summaryName,Set<String> newThings){
+
+		relationStore.maintainThingTriggerIndex(newThings,triggerID,summaryName);
+
+		droolsTriggerService.updateThingsWithName(triggerID,summaryName,newThings);
+
+	}
 
 
 }

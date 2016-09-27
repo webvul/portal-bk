@@ -8,7 +8,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import com.kii.extension.ruleengine.EngineService;
+import com.kii.extension.ruleengine.drools.DroolsTriggerService;
+
 
 @Component
 public class FireTriggerJob implements JobInSpring {
@@ -27,8 +28,8 @@ public class FireTriggerJob implements JobInSpring {
 
 		boolean isPureSchedule=paramMap.getBoolean(ProxyJob.IS_TRIGGER);
 
-		EngineService  engine=applicationCtx.getBean(EngineService.class);
-		engine.fireSchedule(triggerID);
+		DroolsTriggerService  engine=applicationCtx.getBean(DroolsTriggerService.class);
+		engine.updateScheduleSign(triggerID);
 
 	}
 }

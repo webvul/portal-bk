@@ -175,7 +175,6 @@ public class DroolsTriggerService {
 
 		cloudService.removeData(fire);
 
-		cloudService.toIdle();
 	}
 
 
