@@ -3,6 +3,7 @@ import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -30,6 +31,32 @@ public class UtilTest {
 	private Pattern msgP=Pattern.compile("\\<msgid\\>([^<]+)",Pattern.MULTILINE);
 
 
+
+
+	private ObjectMapper mapper=new ObjectMapper();
+
+
+	@Test
+	public void testMax() throws IOException {
+
+		Map<String,Object> val=new HashMap<>();
+
+		BigInteger  big=new BigInteger("92233720368547758079223372036854775807");
+		val.put("long",big);
+		val.put("double",1.0e15);
+
+		String json=mapper.writeValueAsString(val);
+
+		System.out.println(json);
+
+		val=mapper.readValue(json,Map.class);
+
+		BigInteger v= (BigInteger) val.get("long");
+
+		double d=(double)val.get("double");
+
+		System.out.println(v);
+	}
 	@Test
 	public void testReplace(){
 

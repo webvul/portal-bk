@@ -380,7 +380,7 @@ public class DroolsRuleService {
 		}
 	}
 
-	private <T> List<T> doQuery(String queryName,Object... params){
+	private <T extends MatchResult> List<T> doQuery(String queryName, Object... params){
 
 
 

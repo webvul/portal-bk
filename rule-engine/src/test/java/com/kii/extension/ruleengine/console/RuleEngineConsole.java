@@ -153,9 +153,16 @@ public class RuleEngineConsole {
 			case "setStatus":
 				String params = arrays[2];
 
+				int num=1;
+				if(arrays.length>2){
+					num=Integer.parseInt(arrays[3]);
+				};
+
 				ThingStatus status = getStatus(params);
 
-				service.updateThingStatus(arrays[1], status.getFields());
+				for(int i=0;i<num;i++) {
+					service.updateThingStatus(arrays[1], status.getFields());
+				}
 				break;
 			case "remove":
 				if(triggerMap.get(triggerID)) {

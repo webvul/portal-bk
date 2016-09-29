@@ -2,6 +2,7 @@ package com.kii.extension.ruleengine.drools.entity;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public abstract  class CommResult implements WithTrigger{
 
@@ -61,6 +62,19 @@ public abstract  class CommResult implements WithTrigger{
 				'}';
 	}
 
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		CommResult that = (CommResult) o;
+		return Objects.equals(triggerID, that.triggerID);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(triggerID);
+	}
 
 	public boolean isEnable() {
 		return enable;
