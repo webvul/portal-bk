@@ -1,4 +1,8 @@
 {
+  "prepareCondition":{
+    "type":"simple",
+    "startAt":1475139614000,"endAt":1475139914000
+  },
   "predicate" : {
     "schedule": {
       "interval": 1,

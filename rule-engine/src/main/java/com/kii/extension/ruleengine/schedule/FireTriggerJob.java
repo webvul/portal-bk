@@ -26,8 +26,6 @@ public class FireTriggerJob implements JobInSpring {
 		String triggerID=paramMap.getString(ProxyJob.TRIGGER_ID);
 		log.info("fire execute job trigger: "+triggerID);
 
-		boolean isPureSchedule=paramMap.getBoolean(ProxyJob.IS_TRIGGER);
-
 		DroolsTriggerService  engine=applicationCtx.getBean(DroolsTriggerService.class);
 		engine.updateScheduleSign(triggerID);
 

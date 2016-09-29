@@ -154,7 +154,7 @@ public class RuleEngineConsole {
 				String params = arrays[2];
 
 				int num=1;
-				if(arrays.length>2){
+				if(arrays.length>3){
 					num=Integer.parseInt(arrays[3]);
 				};
 

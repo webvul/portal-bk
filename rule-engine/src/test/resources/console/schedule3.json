@@ -1,38 +1,47 @@
 {
-
-  "prepareCondition":{
-    "type":"simple",
-    "startAt":1469694430000,"endAt":1470794430000
+  "prepareCondition": {
+    "endCron": "0 0 18 ? * *",
+    "type": "cron",
+    "startCron": "0 50 17 ? * *"
   },
-  "predicate" : {
-    "schedule":{
-      "cron":"0 0/1 * * * ?",
-      "type":"Cron"},
-    "express" :"$p{power}!=0",
-    "triggersWhen":"CONDITION_TRUE"
-  },
-  "targets" : [ {
-    "delay":"$p{delay}",
-    "command" : {
-      "actions" : [ {
-        "ON" : {
-          "power" : true
-        }
-      } ],
-      "schemaVersion" : 0,
-      "metadata" : { }
+  "description": "",
+  "type": "Summary",
+  "summarySource": {},
+  "userID": 640,
+  "targets": [
+    {
+      "tagList": [],
+      "thingList": [
+        6310
+      ],
+      "doubleCheck": false,
+      "type": "ThingCommand",
+      "andExpress": false,
+      "command": {
+        "metadata": {
+          "type": "Lighting"
+        },
+        "schemaVersion": 0,
+        "actions": [
+          {
+            "turnPower": {
+              "Power": 0
+            }
+          }
+        ]
+      }
     }
-  } ],
-  "targetParamList" : [ {
-    "name" : "foo_a",
-    "express" : "$p{foo}"
-  }, {
-    "name" : "ext_b",
-    "express" : "$e{demo.two}"
-  } ],
-  "type" : "Simple",
-  "source" : {
-    "thingID" : 3
+  ],
+  "predicate": {
+    "schedule": {
+      "interval": 2,
+      "type": "Interval",
+      "timeUnit": "Minute"
+    },
+    "triggersWhen": "CONDITION_TRUE"
   },
-  "triggerID" : "000"
+  "recordStatus": "enable",
+  "targetParamList": [],
+  "inDrools": true,
+  "name": "time 005"
 }

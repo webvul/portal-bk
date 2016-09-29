@@ -5,7 +5,6 @@ import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
 
 import javax.annotation.PreDestroy;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -275,19 +274,9 @@ public class ScheduleService {
 			builder.withSchedule(simple.withMisfireHandlingInstructionNextWithExistingCount().repeatForever());
 		}
 
-		if(!enable){
-			Calendar cal= Calendar.getInstance();
-			cal.add(Calendar.MINUTE,1);
-			builder.startAt(cal.getTime());
-		}
-
 		Trigger trigger=builder.build();
 
 		scheduler.scheduleJob(trigger);
-
-		if(!enable){
-			scheduler.pauseTrigger(key);
-		}
 
 
 	}

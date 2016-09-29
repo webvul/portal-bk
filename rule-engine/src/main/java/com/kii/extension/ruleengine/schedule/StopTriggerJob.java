@@ -29,18 +29,16 @@ public class StopTriggerJob implements JobInSpring {
 
 		boolean isDrools=paramMap.getBoolean(ProxyJob.TYPE_SIGN);
 
-		if(isDrools) {
-			log.info("stop job disable trigger: " + triggerID);
+		log.info("stop job disable trigger: " + triggerID);
 
-			bean.disableTrigger(triggerID);
-		}else{
+		bean.disableTrigger(triggerID);
 
-			JobExecutionContext context=(JobExecutionContext)paramMap.get(ProxyJob.JOB_CONTEXT);
-			try {
+		JobExecutionContext context=(JobExecutionContext)paramMap.get(ProxyJob.JOB_CONTEXT);
+		try {
 				context.getScheduler().pauseTrigger(TriggerKey.triggerKey(triggerID,ScheduleService.EXEC_PRE));
-			} catch (SchedulerException e) {
+		} catch (SchedulerException e) {
 				e.printStackTrace();
-			}
 		}
 	}
+
 }
