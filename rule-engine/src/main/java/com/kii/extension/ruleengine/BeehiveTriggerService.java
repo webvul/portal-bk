@@ -137,7 +137,7 @@ public class BeehiveTriggerService {
 		if(record.getPredicate().getSchedule()!=null) {
 
 			try {
-				scheduleService.addExecuteTask(triggerID, record.getPredicate().getSchedule(), record.getRecordStatus() == TriggerRecord.StatusType.enable);
+				scheduleService.addExecuteTask(triggerID, record.getPredicate().getSchedule());
 
 			} catch (SchedulerException e) {
 				e.printStackTrace();

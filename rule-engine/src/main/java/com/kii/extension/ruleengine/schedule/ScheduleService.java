@@ -241,7 +241,7 @@ public class ScheduleService {
 	}
 
 
-	public void addExecuteTask(String triggerID, SchedulePrefix schedule,boolean enable)throws SchedulerException{
+	public void addExecuteTask(String triggerID, SchedulePrefix schedule)throws SchedulerException{
 
 		TriggerKey key=TriggerKey.triggerKey(triggerID,EXEC_PRE);
 

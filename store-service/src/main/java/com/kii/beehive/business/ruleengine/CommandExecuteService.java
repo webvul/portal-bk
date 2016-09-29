@@ -17,8 +17,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.business.helper.TriggerCreator;
-import com.kii.beehive.portal.common.utils.StrTemplate;
-import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.extension.ruleengine.EventCallback;
 import com.kii.extension.ruleengine.ExecuteParam;
 import com.kii.extension.ruleengine.service.TriggerRecordDao;
@@ -128,7 +126,6 @@ public class CommandExecuteService implements EventCallback {
 	private void  addNewTrigger(TriggerRecord  record,int delay,int idx){
 
 
-		int i=0;
 		ExecuteTarget  target=record.getTargets().get(idx);
 
 		if(target.isDoubleCheck()){
