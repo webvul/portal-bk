@@ -109,8 +109,6 @@ public class TagThingManager {
 	private GroupUserRelationDao groupUserRelationDao;
 
 
-
-
 	public List<String> getThingTypesOfAccessibleThingsByTagIds(Long userId, Collection<String> tagIDs)
 			throws ObjectNotFoundException {
 		Set<Long> targetTagIds = tagIDs.stream().filter(Pattern.compile("^[0-9]+$").asPredicate()).
@@ -217,7 +215,7 @@ public class TagThingManager {
 	}
 
 	public void removeThing(GlobalThingInfo thing, boolean hardRemove) throws ObjectNotFoundException {
-		if(hardRemove) {
+		if (hardRemove) {
 			globalThingDao.hardDeleteByID(thing.getId());
 		} else {
 			globalThingDao.deleteByID(thing.getId());
@@ -282,7 +280,7 @@ public class TagThingManager {
 		List<TagIndex> list = tagIndexDao.findTagByTagTypeAndName(TagType.Location.toString(), location);
 		Long tagId;
 		if (null == list || list.isEmpty()) {
-			TagIndex tag=new TagIndex(TagType.Location,location,null);
+			TagIndex tag = new TagIndex(TagType.Location, location, null);
 
 			tagId = tagIndexDao.saveOrUpdate(tag);
 
@@ -348,7 +346,7 @@ public class TagThingManager {
 	}
 
 	public boolean isThingCreator(GlobalThingInfo thing) {
-			if (thing.getCreateBy().equals(AuthInfoStore.getUserIDStr())) {
+		if (thing.getCreateBy().equals(AuthInfoStore.getUserIDStr())) {
 			return true;
 		} else {
 			return false;
@@ -387,22 +385,24 @@ public class TagThingManager {
 		ThingUserRelation tur = thingUserRelationDao.find(thing.getId(), AuthInfoStore.getUserID());
 		if (tur != null) {
 			return true;
-		} else {
-			List<UserGroup> userGroupList = userGroupDao.findUserGroup(AuthInfoStore.getUserID(), null, null);
-			for (UserGroup ug : userGroupList) {
-				ThingUserGroupRelation tgr = thingUserGroupRelationDao.find(thing.getId(), ug.getId());
-				if (tgr != null) return true;
-				//carlos group->tag->thing relation
-				List<Long> tagIds = tagGroupRelationDao.findTagIdsByUserGroupId(ug.getId())
-						.orElse(Collections.emptyList());
-				for (Long tagId : tagIds) {
-					TagThingRelation tagThingRelation = tagThingRelationDao.findByThingIDAndTagID(thing.getId(), tagId);
-					if (tagThingRelation != null) return true;
-				}
-
-			}
-			return false;
 		}
+		List<UserGroup> userGroupList = userGroupDao.findUserGroup(AuthInfoStore.getUserID(), null, null);
+		for (UserGroup ug : userGroupList) {
+			ThingUserGroupRelation tgr = thingUserGroupRelationDao.find(thing.getId(), ug.getId());
+			if (tgr != null) return true;
+			//carlos group->tag->thing relation
+			List<Long> tagIds = tagGroupRelationDao.findTagIdsByUserGroupId(ug.getId())
+					.orElse(Collections.emptyList());
+			for (Long tagId : tagIds) {
+				TagThingRelation tagThingRelation = tagThingRelationDao.findByThingIDAndTagID(thing.getId(), tagId);
+				if (tagThingRelation != null) return true;
+			}
+		}
+		for (Long tagId : tagThingRelationDao.findTagIds(thing.getId()).orElse(Collections.emptyList())) {
+			if (null != tagUserRelationDao.find(tagId, AuthInfoStore.getUserID())) return true;
+		}
+		return false;
+
 	}
 
 	private List<Team> findTeamList(Collection<String> teamIDs) {
@@ -521,7 +521,6 @@ public class TagThingManager {
 		}
 		return getThingsByIds(thingIds);
 	}
-
 
 
 	public List<TagIndex> getTagIndexes(Collection<String> displayNames, TagType tagType) throws
@@ -682,7 +681,6 @@ public class TagThingManager {
 	}
 
 
-
 	public List<TagIndex> getAccessibleTagsByTagTypeAndName(Long userId, String tagType, String displayName) {
 		List<Long> tagIds1 = tagUserRelationDao.findTagIds(userId, tagType, displayName);
 		List<Long> tagIds2 = tagGroupRelationDao.findTagIdsByUserId(userId, tagType, displayName);
@@ -819,8 +817,6 @@ public class TagThingManager {
 		return tagIndexDao.findByIDs(
 				tagGroupRelationDao.findTagIdsByUserGroupId(userGroupId).orElse(Collections.emptyList()));
 	}
-
-
 
 
 	/**
