@@ -50,7 +50,6 @@ public class ThingCommandForTriggerService {
 
 	public void executeCommand(String triggerID,CommandToThing command,ExecuteParam params){
 
-
 		for (Map<String, Action> actionMap : command.getCommand().getActions()) {
 
 			actionMap.values().forEach((act) -> {

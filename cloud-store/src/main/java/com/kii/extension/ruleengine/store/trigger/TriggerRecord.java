@@ -45,7 +45,7 @@ public abstract class TriggerRecord extends KiiEntity {
 
 	private String description;
 
-	private boolean inDrools=true;
+//	private boolean inDrools=true;
 
 	public String getDeletedReason() {
 		return deletedReason;
@@ -55,13 +55,13 @@ public abstract class TriggerRecord extends KiiEntity {
 		this.deletedReason = deletedReason;
 	}
 
-	public boolean isInDrools() {
-		return inDrools;
-	}
-
-	public void setInDrools(boolean drools) {
-		inDrools = drools;
-	}
+//	public boolean isInDrools() {
+//		return inDrools;
+//	}
+//
+//	public void setInDrools(boolean drools) {
+//		inDrools = drools;
+//	}
 
 	public String getTriggerID() {
 		return super.getId();
@@ -127,6 +127,10 @@ public abstract class TriggerRecord extends KiiEntity {
 	@JsonIgnore
 	public void addTarget(ExecuteTarget target) {
 		this.targets.add(target);
+	}
+
+	public List<ExecuteTarget>  getTarget(){
+		return targets;
 	}
 
 	private BeehiveTriggerType type;
