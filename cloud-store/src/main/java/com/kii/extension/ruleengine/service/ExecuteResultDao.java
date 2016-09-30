@@ -4,7 +4,6 @@ package com.kii.extension.ruleengine.service;
 import org.springframework.stereotype.Component;
 
 import com.kii.extension.ruleengine.store.trigger.result.CommandResponse;
-import com.kii.extension.ruleengine.store.trigger.result.ExceptionResponse;
 import com.kii.extension.ruleengine.store.trigger.result.HttpCallResponse;
 import com.kii.extension.ruleengine.store.trigger.result.TriggerResult;
 import com.kii.extension.sdk.annotation.BindAppByName;
@@ -24,11 +23,6 @@ public class ExecuteResultDao extends AbstractDataAccess<TriggerResult> {
 	@Override
 	protected BucketInfo getBucketInfo() {
 		return new BucketInfo("triggerExecuteResult");
-	}
-
-
-	public void addException(ExceptionResponse  response){
-		super.addEntity(response);
 	}
 
 

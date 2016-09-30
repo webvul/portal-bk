@@ -7,7 +7,7 @@
       "lowerIncluded" : true,
       "type" : "range"
     },
-    "triggersWhen":"CONDITION_TRUE"
+    "triggersWhen":"CONDITION_TRUE_TO_FALSE"
   },
   "targets" : [ {
     "command" : {
@@ -31,6 +31,7 @@
   "policy" : {
     "groupPolicy" : "Percent",
     "criticalNumber" : 75
+
   },
   "source" : {
     "thingList" : [ ],

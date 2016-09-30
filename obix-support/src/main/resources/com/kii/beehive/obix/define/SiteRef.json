@@ -1,0 +1,14 @@
+{
+  "obix": "obj",
+  "href": "/siteRef",
+  "name": "siteRef",
+  "displayName": "site",
+  "writable": false,
+  "is":"h:siteRef",
+  "children":[
+    {
+      "obix":"ref",
+      "name":"siteRef",
+      "is":"/location"
+  }]
+}

@@ -1,8 +1,13 @@
 {
+  "prepareCondition":{
+    "type":"simple",
+    "startAt":1475139614000,"endAt":1475139914000
+  },
   "predicate" : {
-    "schedule" : {
-      "type" : "Cron",
-      "cron" : "  0 18 12 25 7  ? "
+    "schedule": {
+      "interval": 1,
+      "type": "Interval",
+      "timeUnit": "Minute"
     },
     "express" :"$p{power}!=0",
     "triggersWhen":"CONDITION_TRUE"

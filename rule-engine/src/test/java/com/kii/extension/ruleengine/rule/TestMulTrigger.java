@@ -13,7 +13,7 @@ import java.util.Set;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.kii.extension.ruleengine.EngineService;
+import com.kii.extension.ruleengine.BeehiveTriggerService;
 import com.kii.extension.ruleengine.TriggerConditionBuilder;
 import com.kii.extension.ruleengine.store.trigger.Condition;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
@@ -30,7 +30,7 @@ public class TestMulTrigger extends TestInit {
 
 
 	@Autowired
-	private EngineService  engine;
+	private BeehiveTriggerService engine;
 
 
 	@Test
@@ -82,7 +82,7 @@ public class TestMulTrigger extends TestInit {
 		thingSet.put("two",new HashSet<>(thList));
 		thingSet.put("one",new HashSet<>(Arrays.asList("thing-100")));
 
-		engine.createMultipleSourceTrigger(record,thingSet);
+		engine.addTriggerToEngine(record,thingSet);
 
 		setFooBarStatus(100,-100,"thing-100");
 
@@ -103,7 +103,7 @@ public class TestMulTrigger extends TestInit {
 		status.setField("foo",val);
 		status.setField("bar",val2);
 
-		engine.updateThingStatus(thingID,status,new Date());
+		engine.updateThingStatus(thingID,status.getFields(),new Date());
 
 	}
 

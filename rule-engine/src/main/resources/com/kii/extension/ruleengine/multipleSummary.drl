@@ -35,10 +35,10 @@ when
 	$trigger:Trigger(type==TriggerType.multiple,$triggerID:triggerID)
 	$summary:Summary(triggerID==$triggerID, funName=="count" ,$name:name,$things:things)
 	accumulate( $status : MemberMatchResult(thingID memberOf $things ,name==$name);
-                    $sum : count($status)
+                    $val : count($status)
                   )
 then
-	insert(new SummaryResult($triggerID,$name,$sum));
+	insert(new SummaryResult($triggerID,$name,$val));
 end
 
 rule "in unit,compute the  max of  fieldName value: funName"
@@ -46,10 +46,11 @@ when
 	$trigger:Trigger(type==TriggerType.multiple,$triggerID:triggerID)
 	$summary:Summary(triggerID==$triggerID, funName=="max" ,$name:name,$things:things)
 	accumulate( $status : MemberMatchResult(thingID memberOf $things , name==$name);
-                    $sum : max($status.getNumValue($summary.getFieldName()))
+                    $val : max($status.getNumValue($summary.getFieldName()))
                   )
 then
-	insert(new SummaryResult($triggerID,$name,$sum));
+	System.out.println("max summary result:"+$summary);
+	insert(new SummaryResult($triggerID,$name,$val));
 end
 
 rule "in unit,compute the  min of  fieldName value: funName"
@@ -57,10 +58,11 @@ when
 	$trigger:Trigger(type==TriggerType.multiple,$triggerID:triggerID)
 	$summary:Summary(triggerID==$triggerID, funName=="min" ,$name:name,$things:things)
 	accumulate( $status : MemberMatchResult(thingID memberOf $things , name==$name);
-                    $sum : min($status.getNumValue($summary.getFieldName()))
+                    $val : min($status.getNumValue($summary.getFieldName()))
                   )
 then
-	insert(new SummaryResult($triggerID,$name,$sum));
+	System.out.println("min summary result:"+$val);
+	insert(new SummaryResult($triggerID,$name,$val));
 end
 
 
@@ -69,8 +71,8 @@ when
 	$trigger:Trigger(type==TriggerType.multiple,$triggerID:triggerID)
 	$summary:Summary(triggerID==$triggerID, funName=="average" ,$name:name,$things:things)
 	accumulate( $status : MemberMatchResult(thingID memberOf $things , name ==$name );
-                    $sum : average($status.getNumValue($summary.getFieldName()))
+                    $val : average($status.getNumValue($summary.getFieldName()))
                   )
 then
-	insert(new SummaryResult($triggerID,$name,$sum));
+	insert(new SummaryResult($triggerID,$name,$val));
 end

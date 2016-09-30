@@ -1,6 +1,6 @@
 package com.kii.extension.ruleengine.drools.entity;
 
-public abstract class TriggerData implements  RuntimeEntry {
+public abstract class TriggerData implements  RuntimeEntry,WithTrigger {
 
 
 	private String triggerID;

@@ -1,9 +1,8 @@
 {
   "predicate":{
-    "schedule":{
-      "cron":"0 0/5 * * * ?",
-      "type":"Cron"},
-    "express":"$p{one}>$p{two}"},
+    "triggersWhen": "CONDITION_TRUE_TO_FALSE",
+    "express":"$p{one}>$p{two}"
+  },
   "targets":[{
     "thingList":[0],
     "tagList":[],
@@ -17,14 +16,7 @@
         }]
     },
     "type":"thingCommand"
-  },
-    {
-      "url":"http://localhost",
-      "headers":{},
-      "content":"{\"foo\":\"bar\",\"name\":\"abc\",\"val\":123}",
-      "method":"POST",
-      "type":"HttpApiCall"
-    }],
+  }],
   "targetParamList":[
     {
       "name":"foo",
@@ -35,7 +27,7 @@
   "summarySource":{
     "two":{
       "stateName":"foo",
-      "function":"count",
+      "function":"min",
       "source":{
         "thingList":["2","3"],
         "tagList":[],
@@ -47,14 +39,10 @@
       "stateName":"bar",
       "function":"max",
       "source":{
-        "thingList":["1","2"],
+        "thingList":["3","2"],
         "tagList":[],
         "andExpress":false
       },
       "type":"summary"}
-  },
-  "prepareCondition":{
-    "type":"simple",
-    "startAt":100,"endAt":101
   }
 }

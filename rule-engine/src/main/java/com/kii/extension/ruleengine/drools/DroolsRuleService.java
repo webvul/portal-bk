@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import org.apache.commons.codec.Charsets;
 import org.kie.api.KieBase;
@@ -22,6 +23,7 @@ import org.kie.api.event.rule.DebugRuleRuntimeEventListener;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.KieSessionConfiguration;
+import org.kie.api.runtime.ObjectFilter;
 import org.kie.api.runtime.conf.TimedRuleExectionOption;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.api.runtime.rule.QueryResults;
@@ -37,6 +39,8 @@ import com.kii.extension.ruleengine.drools.entity.ExternalCollect;
 import com.kii.extension.ruleengine.drools.entity.ExternalValues;
 import com.kii.extension.ruleengine.drools.entity.MatchResult;
 import com.kii.extension.ruleengine.drools.entity.RuntimeEntry;
+import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
+import com.kii.extension.ruleengine.drools.entity.WithTrigger;
 
 @Component
 @Scope(scopeName= ConfigurableBeanFactory.SCOPE_PROTOTYPE)
@@ -129,13 +133,24 @@ public class DroolsRuleService {
 	}
 
 
-	public Map<String,Object>  getEngineEntitys(){
+	public Map<String,Object>  getEngineEntitys(String triggerID){
 
 
 		Map<String,Object>  map=new HashMap<>();
 
 
-		Collection<? extends Object> objs=kieSession.getObjects();
+		Collection<? extends Object> objs=kieSession.getObjects((ObjectFilter) object -> {
+			if(triggerID==null){
+				return true;
+			}
+			if(object instanceof WithTrigger){
+					return ((WithTrigger)object).getTriggerID().equals(triggerID);
+			}
+			if(object instanceof ThingStatusInRule){
+					return false;
+			}
+			return true;
+		});
 
 		Map<String,Object>  entityMap=new HashMap<>();
 
@@ -156,6 +171,9 @@ public class DroolsRuleService {
 		for(String drlPath:pathSet){
 			String name=drlPath.substring(drlPath.lastIndexOf("/"),drlPath.length());
 			if(name.startsWith("/comm")){
+				continue;
+			}
+			if(triggerID!=null&&!name.contains(triggerID)){
 				continue;
 			}
 			String drlCtx=new String(kfs.read(drlPath), Charsets.UTF_8);
@@ -224,28 +242,28 @@ public class DroolsRuleService {
 	}
 
 
-	public void clear(){
-
-		boolean isDeletedRule = false;
-		Set<String> deletePathSet=new HashSet<>();
-		for(String drlPath:pathSet){
-			String name=drlPath.substring(drlPath.lastIndexOf("/"),drlPath.length());
-			if(name.startsWith("/comm")){
-				continue;
-			}
-			kfs.delete(drlPath);
-			deletePathSet.add(drlPath);
-			isDeletedRule = true;
-		}
-		pathSet.removeAll(deletePathSet);
-		if(isDeletedRule){
-			KieBuilder kb=ks.newKieBuilder(kfs);
-			kb.buildAll();
-			kieContainer.updateToVersion(kb.getKieModule().getReleaseId());
-		}
-		handleMap.keySet().forEach( key -> kieSession.delete(handleMap.get(key)) );
-		handleMap.clear();
-	}
+//	public void clear(){
+//
+//		boolean isDeletedRule = false;
+//		Set<String> deletePathSet=new HashSet<>();
+//		for(String drlPath:pathSet){
+//			String name=drlPath.substring(drlPath.lastIndexOf("/"),drlPath.length());
+//			if(name.startsWith("/comm")){
+//				continue;
+//			}
+//			kfs.delete(drlPath);
+//			deletePathSet.add(drlPath);
+//			isDeletedRule = true;
+//		}
+//		pathSet.removeAll(deletePathSet);
+//		if(isDeletedRule){
+//			KieBuilder kb=ks.newKieBuilder(kfs);
+//			kb.buildAll();
+//			kieContainer.updateToVersion(kb.getKieModule().getReleaseId());
+//		}
+//		handleMap.keySet().forEach( key -> kieSession.delete(handleMap.get(key)) );
+//		handleMap.clear();
+//	}
 
 
 
@@ -271,17 +289,18 @@ public class DroolsRuleService {
 		KieBuilder kb=ks.newKieBuilder(kfs);
 
 		kb.buildAll();
+
 		kieContainer.updateToVersion(kb.getKieModule().getReleaseId());
 
-
 		handleMap.clear();
-		kieSession.getObjects().forEach((obj)->{
+		kieSession.getFactHandles().forEach((handle)->{
 
-			FactHandle handle=kieSession.getFactHandle(obj);
+			Object obj=kieSession.getObject(handle);
 
 			handleMap.put(getEntityKey(obj),handle);
 
 		});
+
 
 		toIdle();
 
@@ -318,9 +337,9 @@ public class DroolsRuleService {
 
 
 
-	public void setGlobal(String name,Object key){
-		kieSession.setGlobal(name,key);
-	}
+//	public void setGlobal(String name,Object key){
+//		kieSession.setGlobal(name,key);
+//	}
 
 	public void addOrUpdateExternal(ExternalValues entity){
 
@@ -361,7 +380,7 @@ public class DroolsRuleService {
 		}
 	}
 
-	private <T> List<T> doQuery(String queryName,Object... params){
+	private <T extends MatchResult> List<T> doQuery(String queryName, Object... params){
 
 
 
@@ -389,11 +408,13 @@ public class DroolsRuleService {
 	}
 
 
-	public void removeFact(Object obj) {
-		String entityKey = getEntityKey(obj);
-		FactHandle handler=handleMap.get(entityKey);
-		if(handler!=null) {
-			kieSession.delete(handler);
-		}
+	public void removeFact(Function<Object,Boolean> function) {
+
+		Collection<FactHandle>  handles=kieSession.getFactHandles(function::apply);
+
+		handles.forEach((handle)->{
+			kieSession.delete(handle);
+		});
+
 	}
 }

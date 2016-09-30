@@ -14,10 +14,10 @@ import com.kii.beehive.business.manager.ThingTagManager;
 import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.portal.common.utils.StrTemplate;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
+import com.kii.extension.ruleengine.ExecuteParam;
 import com.kii.extension.ruleengine.service.ExecuteResultDao;
 import com.kii.extension.ruleengine.store.trigger.CommandToThing;
 import com.kii.extension.ruleengine.store.trigger.result.CommandResponse;
-import com.kii.extension.ruleengine.store.trigger.result.ExceptionResponse;
 import com.kii.extension.sdk.entity.thingif.Action;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
 
@@ -45,9 +45,10 @@ public class ThingCommandForTriggerService {
 
 
 	@Autowired
-	private TriggerLogTools  logTool;
+	private ResponseBuilder  builder;
 
-	public void executeCommand(String triggerID,CommandToThing command,Map<String,String> params){
+
+	public void executeCommand(String triggerID,CommandToThing command,ExecuteParam params){
 
 
 		for (Map<String, Action> actionMap : command.getCommand().getActions()) {
@@ -56,7 +57,7 @@ public class ThingCommandForTriggerService {
 				act.getFields().forEach((n, v) -> {
 
 					if(v instanceof  String){
-						act.setField(n, StrTemplate.generByMap((String)v, params));
+						act.setField(n, StrTemplate.generByMap((String)v, params.getBusinessParams()));
 					}
 
 				});
@@ -78,37 +79,31 @@ public class ThingCommandForTriggerService {
 			cmd.setSchemaVersion(ver);
 			cmd.setSchema(thing.getSchemaName());
 
-			sendCmd(command.getCommand(), thing,triggerID);
+			CommandResponse resp =  builder.getCmdResponse(triggerID,params);
+			resp.setCommand(cmd);
+
+			try {
+				String appID = thing.getKiiAppID();
+
+
+				cmd.setUserID(appInfoManager.getDefaultOwer(appID).getUserID());
+
+
+				String cmdResult = thingIFService.sendCommand(cmd, thing.getFullKiiThingID());
+
+				resp.setResult(cmdResult);
+			}catch(Exception ex){
+
+				resp.bindException(ex);
+			}
+
+			resultDao.addCommandResult(resp);
 
 		});
 
 
 	}
 
-	private void sendCmd(ThingCommand command, GlobalThingInfo thingInfo, String triggerID) {
-
-		CommandResponse resp = new CommandResponse();
-		resp.setCommand(command);
-
-		try {
-			String appID = thingInfo.getKiiAppID();
-
-
-			command.setUserID(appInfoManager.getDefaultOwer(appID).getUserID());
-
-
-			String cmdResult = thingIFService.sendCommand(command, thingInfo.getFullKiiThingID());
-
-			resp.setResult(cmdResult);
-			resp.setTriggerID(triggerID);
-		}catch(Exception ex){
-
-			resultDao.addException(new ExceptionResponse(ex.getCause()));
-		}
-
-		resultDao.addCommandResult(resp);
-
-	}
 
 
 }

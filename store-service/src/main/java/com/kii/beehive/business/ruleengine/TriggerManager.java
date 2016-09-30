@@ -72,12 +72,6 @@ public class TriggerManager {
 	private TriggerCreator creator;
 
 
-	public void reinit() {
-		creator.clear();
-
-		init();
-	}
-
 	@PostConstruct
 	public void init() {
 		creator.init();
@@ -270,9 +264,13 @@ public class TriggerManager {
 
 	public Map<String, Object> getRuleEngingDump() {
 
-		return creator.getRuleEngingDump();
+		return creator.getRuleEngingDump(null);
 	}
 
+	public Map<String, Object> getRuleEngingDump(String triggerID) {
+
+		return creator.getRuleEngingDump(triggerID);
+	}
 
 	public void disableTrigger(String triggerID) {
 		TriggerRecord  record= triggerDao.getTriggerRecord(triggerID);

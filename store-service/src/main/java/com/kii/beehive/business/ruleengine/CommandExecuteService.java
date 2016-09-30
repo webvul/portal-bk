@@ -5,7 +5,6 @@ import javax.annotation.PostConstruct;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -19,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import com.kii.beehive.business.helper.TriggerCreator;
 import com.kii.extension.ruleengine.EventCallback;
+import com.kii.extension.ruleengine.ExecuteParam;
 import com.kii.extension.ruleengine.service.TriggerRecordDao;
 import com.kii.extension.ruleengine.store.trigger.CallHttpApi;
 import com.kii.extension.ruleengine.store.trigger.CommandToThing;
@@ -27,6 +27,8 @@ import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.tools.CronGeneral;
+
+
 
 
 @Component
@@ -48,7 +50,6 @@ public class CommandExecuteService implements EventCallback {
 	private TriggerCreator creator;
 
 
-
 	private ScheduledExecutorService executeService=new ScheduledThreadPoolExecutor(10);
 
 
@@ -61,19 +62,15 @@ public class CommandExecuteService implements EventCallback {
 
 	@Async
 	@Override
-	public void onTriggerFire(String triggerID,Map<String,String> params) {
+	public void onTriggerFire(String triggerID,ExecuteParam params) {
 
-		TriggerRecord trigger=triggerDao.getEnableTriggerRecord(triggerID);
 
-		if(trigger==null){
+
+		TriggerRecord record=triggerDao.getEnableTriggerRecord(triggerID);
+
+		if(record==null){
 			return;
 		}
-
-		doCommand(trigger,params);
-	}
-
-
-	private  void doCommand(TriggerRecord  record,Map<String,String> params) {
 
 		List<ExecuteTarget> targets=record.getTargets();
 
@@ -81,7 +78,6 @@ public class CommandExecuteService implements EventCallback {
 
 		for(ExecuteTarget target:targets){
 
-			String delayParam="delay_"+idx;
 
 
 			Runnable run= () -> {
@@ -91,10 +87,12 @@ public class CommandExecuteService implements EventCallback {
 					case "ThingCommand":
 						CommandToThing command=(CommandToThing)target;
 
-						commandService.executeCommand(record.getTriggerID(),command,params);
+						commandService.executeCommand(triggerID,command,params);
 						break;
 					case "HttpApiCall":
 						CallHttpApi call=(CallHttpApi)target;
+
+						call.fillParam(params.getBusinessParams());
 
 						httpCallService.doHttpApiCall(call,record.getTriggerID(),params);
 
@@ -102,7 +100,7 @@ public class CommandExecuteService implements EventCallback {
 				}
 			};
 
-			String delay=params.get(delayParam);
+			String delay=params.getDelayParam(idx);
 
 			if(StringUtils.isBlank(delay)) {
 				executeService.submit(run);
@@ -119,9 +117,8 @@ public class CommandExecuteService implements EventCallback {
 			idx++;
 
 		}
-
-
 	}
+
 
 
 
@@ -129,7 +126,6 @@ public class CommandExecuteService implements EventCallback {
 	private void  addNewTrigger(TriggerRecord  record,int delay,int idx){
 
 
-		int i=0;
 		ExecuteTarget  target=record.getTargets().get(idx);
 
 		if(target.isDoubleCheck()){

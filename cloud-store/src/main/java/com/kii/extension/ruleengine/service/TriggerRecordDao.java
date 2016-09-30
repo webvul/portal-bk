@@ -48,7 +48,7 @@ public class TriggerRecordDao extends AbstractDataAccess<TriggerRecord> {
 
 		QueryParam query = ConditionBuilder.andCondition().equal("_id", id).equal("recordStatus", TriggerRecord.StatusType.enable).getFinalQueryParam();
 
-		List<TriggerRecord> list = super.query(query);
+		List<TriggerRecord> list = super.fullQuery(query);
 
 		if (list.isEmpty()) {
 			return null;
@@ -64,7 +64,7 @@ public class TriggerRecordDao extends AbstractDataAccess<TriggerRecord> {
 		params[1] = TriggerRecord.StatusType.disable.name();
 		QueryParam query = ConditionBuilder.andCondition().equal("userID", userId).In("recordStatus", params).getFinalQueryParam();
 
-		List<TriggerRecord> list = super.query(query);
+		List<TriggerRecord> list = super.fullQuery(query);
 
 		if (list.isEmpty()) {
 			return null;
@@ -77,7 +77,7 @@ public class TriggerRecordDao extends AbstractDataAccess<TriggerRecord> {
 
 		QueryParam query = ConditionBuilder.andCondition().equal("userID", userId).equal("recordStatus", TriggerRecord.StatusType.deleted).getFinalQueryParam();
 
-		List<TriggerRecord> list = super.query(query);
+		List<TriggerRecord> list = super.fullQuery(query);
 
 		if (list.isEmpty()) {
 			return null;

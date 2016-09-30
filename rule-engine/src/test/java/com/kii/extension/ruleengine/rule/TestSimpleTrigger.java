@@ -3,6 +3,11 @@ package com.kii.extension.ruleengine.rule;
 
 import static junit.framework.TestCase.assertEquals;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
 import org.junit.Test;
 
 import com.kii.extension.ruleengine.TriggerConditionBuilder;
@@ -46,7 +51,11 @@ public class TestSimpleTrigger extends TestInit{
 		String triggerID="100";
 		record.setId(triggerID);
 
-		engine.createSimpleTrigger(kiiThingID,record);
+		Map<String,Set<String>> map=new HashMap<>();
+
+		map.put("comm", Collections.singleton(kiiThingID));
+
+		engine.addTriggerToEngine(record,map);
 
 //		engine.enableTrigger(triggerID);
 
@@ -97,7 +106,7 @@ public class TestSimpleTrigger extends TestInit{
 		record.setRecordStatus(TriggerRecord.StatusType.enable);
 
 
-		engine.createSimpleTrigger(kiiThingID,record);
+		engine.addTriggerToEngine(record,new HashMap<>());
 
 //		engine.enableTrigger(triggerID);
 

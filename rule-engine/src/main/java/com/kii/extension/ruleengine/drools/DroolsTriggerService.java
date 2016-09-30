@@ -11,12 +11,13 @@ import org.springframework.stereotype.Component;
 
 import com.kii.extension.ruleengine.drools.entity.ExternalValues;
 import com.kii.extension.ruleengine.drools.entity.MultiplesValueMap;
+import com.kii.extension.ruleengine.drools.entity.ScheduleFire;
 import com.kii.extension.ruleengine.drools.entity.Summary;
 import com.kii.extension.ruleengine.drools.entity.ThingResult;
 import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
 import com.kii.extension.ruleengine.drools.entity.Trigger;
 import com.kii.extension.ruleengine.drools.entity.TriggerData;
-import com.kii.extension.ruleengine.drools.entity.TriggerType;
+import com.kii.extension.ruleengine.drools.entity.WithTrigger;
 
 @Component
 public class DroolsTriggerService {
@@ -28,21 +29,13 @@ public class DroolsTriggerService {
 
 	private final Map<String, Trigger> triggerMap=new ConcurrentHashMap<>();
 
-	private final Map<String,Map<String,Summary>> thingColMap =new ConcurrentHashMap<>();
 
 
-	public void clear(){
-		cloudService.clear();
-		triggerMap.clear();
-		thingColMap.clear();
-	}
-
-
-	public  Map<String,Object> getEngineRuntime(){
+	public  Map<String,Object> getEngineRuntime(String triggerID){
 
 		Map<String,Object> map=new HashMap<>();
 
-		map.put("cloud",cloudService.getEngineEntitys());
+		map.put("cloud",cloudService.getEngineEntitys(triggerID));
 
 		return map;
 
@@ -93,10 +86,6 @@ public class DroolsTriggerService {
 
 		getService(trigger).addOrUpdateData(data);
 
-		if(data instanceof Summary) {
-
-			thingColMap.computeIfAbsent(trigger.getTriggerID(), (id) -> new HashMap<>()).put((data).getName(), (Summary) data);
-		}
 	}
 
 
@@ -109,16 +98,15 @@ public class DroolsTriggerService {
 		getService(trigger).addCondition("slide-rule"+summary.getTriggerID()+summary.getName(),drl);
 
 
-		thingColMap.computeIfAbsent(trigger.getTriggerID(), (id) -> new HashMap<>()).put((summary).getName(), summary);
-
 	}
 
 	public void updateThingsWithName(String triggerID,String name,Set<String> newThings){
 
 		Trigger trigger=triggerMap.get(triggerID);
 
-		Summary data= thingColMap.get(triggerID).get(name);
-
+		Summary data= new Summary();
+		data.setTriggerID(triggerID);
+		data.setName(name);
 		data.setThingCol(newThings);
 
 		getService(trigger).addOrUpdateData(data);
@@ -130,24 +118,15 @@ public class DroolsTriggerService {
 
 		Trigger trigger=triggerMap.get(triggerID);
 
-
-
-		Map<String,Summary> map= thingColMap.remove(triggerID);
-		if(map != null ){
-			map.values().forEach(summary-> getService(trigger).removeData(summary));
-		}
-
-		if(trigger.getType()== TriggerType.multiple) {
-
-			MultiplesValueMap mulMap = new MultiplesValueMap();
-			mulMap.setTriggerID(trigger.getTriggerID());
-			getService(trigger).removeData(mulMap);
-
-			ThingResult result = new ThingResult(trigger.getTriggerID());
-			getService(trigger).removeData(result);
-		}
-
 		getService(trigger).removeData(trigger);
+
+		getService(trigger).removeFact(	(o)->{
+			if(o instanceof WithTrigger){
+				return ((WithTrigger)o).getTriggerID().equals(triggerID);
+			}
+			return false;
+		});
+
 		getService(trigger).removeCondition("rule"+triggerID);
 
 	}
@@ -183,6 +162,20 @@ public class DroolsTriggerService {
 	}
 
 
+
+	public void updateScheduleSign(String triggerID){
+
+		ScheduleFire fire=new ScheduleFire();
+		fire.setTriggerID(triggerID);
+		fire.setEnable(true);
+
+		cloudService.addOrUpdateData(fire);
+
+		cloudService.toIdle();
+
+		cloudService.removeData(fire);
+
+	}
 
 
 	public void addThingStatus(ThingStatusInRule newStatus){

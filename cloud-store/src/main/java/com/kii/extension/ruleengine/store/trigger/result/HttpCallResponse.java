@@ -4,9 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.kii.extension.ruleengine.store.trigger.CallHttpApi;
-import com.kii.extension.sdk.entity.KiiEntity;
 
-public class HttpCallResponse extends KiiEntity implements TriggerResult{
+public class HttpCallResponse extends  TriggerResult{
 
 	private int status;
 
@@ -17,15 +16,7 @@ public class HttpCallResponse extends KiiEntity implements TriggerResult{
 
 	private Map<String,String> headers=new HashMap<>();
 
-	private String triggerID;
 
-	public String getTriggerID() {
-		return triggerID;
-	}
-
-	public void setTriggerID(String triggerID) {
-		this.triggerID = triggerID;
-	}
 
 	public int getStatus() {
 		return status;

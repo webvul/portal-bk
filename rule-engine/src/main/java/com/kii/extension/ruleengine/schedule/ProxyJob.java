@@ -12,6 +12,7 @@ public class ProxyJob implements Job {
 	public static final String TYPE_SIGN = "Type_Sign";
 	public static final String JOB_CONTEXT = "Job_Context";
 	public static final String TRIGGER_ID = "triggerID";
+	public static final String IS_TRIGGER="Trigger_Sign";
 
 
 	private Class<? extends JobInSpring> beanClass;
@@ -49,4 +50,6 @@ public class ProxyJob implements Job {
 
 
 	}
+
+
 }

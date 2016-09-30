@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.kii.extension.ruleengine.EventCallback;
+import com.kii.extension.ruleengine.ExecuteParam;
 
 public class MockEventCallback implements EventCallback {
 
@@ -18,7 +19,7 @@ public class MockEventCallback implements EventCallback {
 
 
 	@Override
-	public void onTriggerFire(String triggerID,Map<String,String> params) {
+	public void onTriggerFire(String triggerID,ExecuteParam params) {
 
 
 		AtomicInteger  a=count.getOrDefault(triggerID,new AtomicInteger(0));

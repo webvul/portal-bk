@@ -1,0 +1,41 @@
+
+{
+  "obix": "obj",
+  "href": "/location",
+  "name": "site",
+  "writable": false,
+  "is":"h:site",
+  "children":[
+    {
+    "obix":"list",
+    "name":"subLocation",
+    "of":"/location"
+    },
+    {
+    "obix":"ref",
+    "name":"upperLocation",
+    "is":"/location"
+    },
+    {
+    "obix":"list",
+    "name":"entityCollect",
+    "of":"/siteRef"
+    },
+    {
+    "obix":"real",
+    "name":"longitude",
+      "min":-180,
+      "max":180
+    },
+    {
+    "obix":"real",
+    "name":"latitude",
+      "min":-180,
+      "max":180
+    },
+    {
+    "obix":"str",
+    "name":"address"
+    }
+]
+}

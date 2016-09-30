@@ -10,16 +10,17 @@ import com.kii.extension.ruleengine.drools.CommandExec;
 
 
 rule "${triggerID} user custom segment:multiple "
-   ${timer}
 when
-    CurrThing(init == false)
+    $curr:CurrThing(init == false)
     $ext:ExternalCollect()
     Trigger( $triggerID:triggerID, $enable:enable, ( triggerID=="${triggerID}" &&  enable == true && type ==TriggerType.multiple) )
     $muiMap:MultiplesValueMap( triggerID==$triggerID, ${express}  )
+    ScheduleFire(triggerID==$triggerID,enable==true)
 then
     ResultParam result=new ResultParam($triggerID);
+	result.setSchedule();
 
-    result.setParam("enable",$enable);
+    result.setEnable($enable);
 
 	${fillParam}
 

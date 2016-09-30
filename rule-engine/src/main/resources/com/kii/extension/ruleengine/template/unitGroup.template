@@ -8,6 +8,6 @@ when
     $summary:Summary( triggerID==$triggerID , $things:things ,name=="${name}" )
     $status:ThingStatusInRule( $thingID:thingID memberOf $things,${express}  )
 then
-	System.out.println("gener member match result");
+	System.out.println("gener member match result"+$summary+" "+$thingID);
 	insertLogical(new MemberMatchResult($summary,$status));
 end

@@ -5,9 +5,9 @@ import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
 
 import javax.annotation.PreDestroy;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -55,18 +55,32 @@ public class ScheduleService {
 	}
 
 
-	public Map<String,Object> dump(){
+	public Map<String,Object> dump(String triggerID){
 
-		GroupMatcher<TriggerKey> any= GroupMatcher.anyTriggerGroup();
 
 		Map<String,Object> triggerMap=new HashMap<>();
 
 		try {
-			Set<TriggerKey> keys = scheduler.getTriggerKeys(any);
+
+			Set<TriggerKey> keys = new HashSet<>();
+
+			if(triggerID==null) {
+				GroupMatcher<TriggerKey> any= GroupMatcher.anyGroup();
+
+				keys = scheduler.getTriggerKeys(any);
+			}else{
+				keys.add(TriggerKey.triggerKey(triggerID,START_PRE));
+				keys.add(TriggerKey.triggerKey(triggerID,STOP_PRE));
+				keys.add(TriggerKey.triggerKey(triggerID,EXEC_PRE));
+
+			}
 
 			keys.forEach((k) -> {
 				try {
 					Trigger trigger = scheduler.getTrigger(k);
+					if(trigger==null){
+						return;
+					}
 					Map<String,Object> data=new HashMap<>();
 					data.put("endTime",trigger.getEndTime());
 					data.put("startTime",trigger.getStartTime());
@@ -227,7 +241,7 @@ public class ScheduleService {
 	}
 
 
-	public void addExecuteTask(String triggerID, SchedulePrefix schedule,boolean enable)throws SchedulerException{
+	public void addExecuteTask(String triggerID, SchedulePrefix schedule)throws SchedulerException{
 
 		TriggerKey key=TriggerKey.triggerKey(triggerID,EXEC_PRE);
 
@@ -260,19 +274,9 @@ public class ScheduleService {
 			builder.withSchedule(simple.withMisfireHandlingInstructionNextWithExistingCount().repeatForever());
 		}
 
-		if(!enable){
-			Calendar cal= Calendar.getInstance();
-			cal.add(Calendar.MINUTE,1);
-			builder.startAt(cal.getTime());
-		}
-
 		Trigger trigger=builder.build();
 
 		scheduler.scheduleJob(trigger);
-
-		if(!enable){
-			scheduler.pauseTrigger(key);
-		}
 
 
 	}
