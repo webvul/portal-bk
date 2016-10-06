@@ -32,7 +32,7 @@ public class SearchAction extends BaseRestHandler {
 		controller.registerHandler(GET, contextPath + "/{index}/_search", this);
 		controller.registerHandler(POST, contextPath + "/{index}/_search", this);
 		controller.registerHandler(GET, contextPath + "/{index}/{type}/_search", this);
-		controller.registerHandler(POST, contextPath + "/{index}/{type}_search", this);
+		controller.registerHandler(POST, contextPath + "/{index}/{type}/_search", this);
 	}
 
 	@Override
