@@ -10,7 +10,6 @@ import com.kii.extension.ruleengine.drools.CommandExec;
 
 
 rule "${triggerID} user custom segment:multiple "
-	no-loop true
 when
     $curr:CurrThing(init == false)
     $ext:ExternalCollect()
