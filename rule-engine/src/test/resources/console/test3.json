@@ -6,31 +6,13 @@
   },
   "description": "",
   "type": "Summary",
-  "summarySource": {
-    "EnvironmentSensor": {
-      "expressList": [
-        {
-          "stateName": "Bri",
-          "function": "min",
-          "summaryAlias": "Bri"
-        }
-      ],
-      "source": {
-        "tagList": [],
-        "thingList": [
-          0,
-          1
-        ],
-        "andExpress": false
-      }
-    }
-  },
-  "userID": 1307,
+  "summarySource": {},
+  "userID": 640,
   "targets": [
     {
       "tagList": [],
       "thingList": [
-        6072
+        1110
       ],
       "doubleCheck": false,
       "type": "ThingCommand",
@@ -42,11 +24,13 @@
         "schemaVersion": 0,
         "actions": [
           {
-            "setBri": {
-              "Bri": 0
-            },
             "turnPower": {
-              "Power": 0
+              "Power": 17
+            }
+          },
+          {
+            "setBri": {
+              "Bri": 5
             }
           }
         ]
@@ -54,48 +38,14 @@
     }
   ],
   "predicate": {
-    "condition": {
-      "clauses": [
-        {
-          "clauses": [
-            {
-              "field": "EnvironmentSensor.Bri",
-              "lowerIncluded": true,
-              "lowerLimit": 60,
-              "type": "range"
-            },
-            {
-              "field": "EnvironmentSensor.Bri",
-              "lowerIncluded": true,
-              "lowerLimit": 60,
-              "type": "range"
-            }
-          ],
-          "type": "and"
-        },
-        {
-          "clauses": [
-            {
-              "field": "EnvironmentSensor.Bri",
-              "lowerIncluded": true,
-              "lowerLimit": 60,
-              "type": "range"
-            },
-            {
-              "field": "EnvironmentSensor.Bri",
-              "lowerIncluded": true,
-              "lowerLimit": 60,
-              "type": "range"
-            }
-          ],
-          "type": "and"
-        }
-      ],
-      "type": "and"
+    "schedule": {
+      "cron": "0 0/1 12-13 ? * *",
+      "type": "Cron"
     },
     "triggersWhen": "CONDITION_TRUE"
   },
   "recordStatus": "enable",
   "targetParamList": [],
-  "name": "#C02"
+  "inDrools": true,
+  "name": "release_test_time1"
 }

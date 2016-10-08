@@ -165,15 +165,17 @@ public class DroolsTriggerService {
 
 	public void updateScheduleSign(String triggerID){
 
+		Trigger trigger=triggerMap.get(triggerID);
+		if(trigger==null||!trigger.isEnable()){
+			return;
+		}
+
 		ScheduleFire fire=new ScheduleFire();
 		fire.setTriggerID(triggerID);
 		fire.setEnable(true);
 
-		cloudService.addOrUpdateData(fire);
+		cloudService.updateScheduleData(fire);
 
-		cloudService.toIdle();
-
-		cloudService.removeData(fire);
 
 	}
 

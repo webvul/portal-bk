@@ -39,6 +39,7 @@ import com.kii.extension.ruleengine.drools.entity.ExternalCollect;
 import com.kii.extension.ruleengine.drools.entity.ExternalValues;
 import com.kii.extension.ruleengine.drools.entity.MatchResult;
 import com.kii.extension.ruleengine.drools.entity.RuntimeEntry;
+import com.kii.extension.ruleengine.drools.entity.ScheduleFire;
 import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
 import com.kii.extension.ruleengine.drools.entity.WithTrigger;
 
@@ -79,11 +80,12 @@ public class DroolsRuleService {
 		this.currThing.setCurrThing(CurrThing.NONE);
 
 		kieSession.update(currThingHandler, currThing);
+
+		kieSession.fireAllRules();
 	}
 
 	public void leaveInit(){
 
-//		getSession().fireAllRules();
 
 		this.currThing.setStatus(CurrThing.Status.inIdle);
 		this.currThing.setCurrThing(CurrThing.NONE);
@@ -99,12 +101,35 @@ public class DroolsRuleService {
 	}
 
 
+
+
 	public void inThing(String thingID){
 		settingCurrThing(thingID, CurrThing.Status.inThing);
 	}
 
 	public void inExt(){
 		settingCurrThing(CurrThing.NONE, CurrThing.Status.inExt);
+	}
+
+
+	public  void updateScheduleData(ScheduleFire fire){
+
+		synchronized (currThing) {
+
+			CurrThing.Status  oldStatus=currThing.getStatus();
+			if(oldStatus==CurrThing.Status.inThing) {
+
+				this.currThing.setStatus(CurrThing.Status.inIdle);
+				this.currThing.setCurrThing(CurrThing.NONE);
+				kieSession.update(currThingHandler, currThing);
+
+			}
+
+			FactHandle  handler=kieSession.insert(fire);
+			kieSession.fireAllRules();
+			kieSession.delete(handler);
+
+		}
 	}
 
 	private void settingCurrThing(String thingID,CurrThing.Status  status){
@@ -152,10 +177,10 @@ public class DroolsRuleService {
 			return true;
 		});
 
-		Map<String,Object>  entityMap=new HashMap<>();
+		Set<Object>  entityMap=new HashSet<>();
 
 		for(Object obj:objs){
-			entityMap.put(getEntityKey(obj),obj);
+			entityMap.add(obj);
 		}
 
 		map.put("entitys",entityMap);

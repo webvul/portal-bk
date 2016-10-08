@@ -5,6 +5,7 @@ import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
 
 import javax.annotation.PreDestroy;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -58,7 +59,7 @@ public class ScheduleService {
 	public Map<String,Object> dump(String triggerID){
 
 
-		Map<String,Object> triggerMap=new HashMap<>();
+		Set<Object> triggerMap=new HashSet<>();
 
 		try {
 
@@ -90,7 +91,7 @@ public class ScheduleService {
 
 					data.put("jobType",k.getGroup());
 
-					triggerMap.put(k.toString(), data);
+					triggerMap.add(data);
 
 
 				} catch (SchedulerException e) {
@@ -101,7 +102,7 @@ public class ScheduleService {
 		}catch(SchedulerException e){
 			e.printStackTrace();
 		}
-		return triggerMap;
+		return Collections.singletonMap("schedule",triggerMap);
 	}
 
 	

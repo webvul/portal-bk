@@ -12,6 +12,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.quartz.SchedulerException;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -37,10 +40,6 @@ import com.kii.extension.sdk.entity.thingif.ThingStatus;
 public class RuleEngineConsole {
 
 
-//
-//	private EngineService  engine;
-//
-//	private ScheduleService  schedule;
 
 	private BeehiveTriggerService service;
 
@@ -48,20 +47,17 @@ public class RuleEngineConsole {
 
 	private String triggerID=null;
 
-//	private Set<String> triggerSet=new HashSet<>();
 
 	private Map<String,Boolean> triggerMap=new HashMap<>();
 
 	private Map<String,Set<String>> tagMap=new HashMap<>();
 
 
+	private ScheduledExecutorService executeService=new ScheduledThreadPoolExecutor(10);
+
 	public RuleEngineConsole(ClassPathXmlApplicationContext context){
-//		 engine=context.getBean(EngineService.class);
 
 		 mapper=context.getBean(ObjectMapper.class);
-
-
-//		schedule=context.getBean(ScheduleService.class);
 
 
 		service=context.getBean(BeehiveTriggerService.class);
@@ -88,14 +84,27 @@ public class RuleEngineConsole {
 	}
 
 
-	public void init(){
+	public void init() throws IOException, SchedulerException {
 
 
 		service.enterInit();
 
-		service.updateExternalValue("demo","one",111);
+//		service.updateExternalValue("demo","one",111);
+//
+//		service.updateExternalValue("demo","two",222);
 
-		service.updateExternalValue("demo","two",222);
+
+
+
+
+		String[] init={"test3","test1","test2"};
+
+		for(String name:init) {
+			String jsonTrigger = getFileContext(name);
+
+			addTrigger(jsonTrigger, name);
+		}
+//		loadAll();
 
 
 		List<ThingStatusInRule> statusList=new ArrayList<>();
@@ -103,13 +112,18 @@ public class RuleEngineConsole {
 		statusList.add(getStatusInRule("b","foo=230,bar=50"));
 		statusList.add(getStatusInRule("c","foo=-10,bar=10"));
 		statusList.add(getStatusInRule("d","foo=-100,bar=100"));
-
-
-//		loadAll();
-
 		statusList.forEach(s->service.updateThingStatus(s.getThingID(),s.getValues()));
 
 		service.leaveInit();
+
+		executeService.scheduleAtFixedRate(()->{
+
+			Map<String,Object> map=new HashMap<>();
+			map.put("time",System.currentTimeMillis()%100);
+			service.updateThingStatus("e", map);
+
+
+		},3, 5,TimeUnit.SECONDS);
 
 	}
 
@@ -230,7 +244,17 @@ public class RuleEngineConsole {
 
 		RuleEngineConsole console=new RuleEngineConsole(context);
 
-		console.init();
+
+		try {
+			console.init();
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.exit(-1);
+		} catch (SchedulerException e) {
+			e.printStackTrace();
+			System.exit(-1);
+
+		}
 
 		System.out.println(">>> input command\n");
 

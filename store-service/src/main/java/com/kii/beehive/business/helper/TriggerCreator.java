@@ -1,13 +1,13 @@
 package com.kii.beehive.business.helper;
 
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,11 +19,9 @@ import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.beehive.portal.exception.InvalidTriggerFormatException;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.service.EventListenerDao;
-import com.kii.extension.ruleengine.TriggerCreateException;
 import com.kii.extension.ruleengine.BeehiveTriggerService;
+import com.kii.extension.ruleengine.TriggerCreateException;
 import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
-import com.kii.extension.ruleengine.service.TriggerRecordDao;
-import com.kii.extension.ruleengine.store.trigger.BeehiveTriggerType;
 import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
@@ -34,10 +32,6 @@ import com.kii.extension.ruleengine.store.trigger.multiple.ThingSource;
 
 @Component
 public class TriggerCreator {
-
-	@Autowired
-	private TriggerRecordDao triggerDao;
-
 
 	@Autowired
 	private BusinessEventListenerService eventService;
@@ -57,17 +51,24 @@ public class TriggerCreator {
 
 
 
-	public void init(){
+	public List<String> init(List<TriggerRecord> list){
 
 
-		List<TriggerRecord> recordList = triggerDao.getAllEnableTrigger();
-
-
-		List<TriggerRecord>  list=recordList.stream().filter((r)->r.getType()!= BeehiveTriggerType.Gateway).collect(Collectors.toList());
+		List<String> errList=new ArrayList<>();
 
 		general.enterInit();
 
-		list.forEach(r->addTriggerToEngine(r));
+
+		for(TriggerRecord  trigger:list){
+
+			try {
+				createTrigger(trigger);
+			}catch(TriggerCreateException ex){
+				errList.add(trigger.getTriggerID());
+			}
+
+		}
+
 
 		thingTagService.iteratorAllThingsStatus(s -> {
 			if (org.springframework.util.StringUtils.isEmpty(s.getStatus())) {
@@ -83,28 +84,31 @@ public class TriggerCreator {
 
 		general.leaveInit();
 
-	}
-
-
-	public String createTrigger(TriggerRecord record) {
-
-		triggerDao.addKiiEntity(record);
-
-		addTriggerToEngine(record);
-
-		return record.getId();
+		return errList;
 
 	}
 
+//
+//	public void saveTrigger(TriggerRecord record){
+//		triggerDao.addKiiEntity(record);
+//	}
+
+	public void createTrigger(TriggerRecord record) throws TriggerCreateException {
 
 
-	public void addTriggerToEngine(TriggerRecord record) {
+		Map<String,Set<String>>   map=getTriggerDataMap(record);
+
+		general.addTriggerToEngine(record,map);
+
+		return;
+
+	}
+
+
+
+	public Map<String,Set<String>> getTriggerDataMap(TriggerRecord record) throws TriggerCreateException {
 
 		String triggerID=record.getId();
-
-//		if(record.getPredicate().getSchedule()!=null){
-//			triggerDao.setQuartzSign(triggerID);
-//		}
 
 		try {
 
@@ -152,14 +156,13 @@ public class TriggerCreator {
 
 			}
 
-			general.addTriggerToEngine(record,map);
+			return map;
 
 		} catch (TriggerCreateException e) {
-			triggerDao.deleteTriggerRecord(triggerID,e.getReason());
+//			triggerDao.deleteTriggerRecord(triggerID,e.getReason());
 			throw e;
 		}
 
-		return ;
 	}
 
 

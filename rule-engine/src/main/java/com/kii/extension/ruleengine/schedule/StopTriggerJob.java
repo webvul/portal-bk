@@ -27,8 +27,6 @@ public class StopTriggerJob implements JobInSpring {
 	public void execute(JobDataMap paramMap) {
 		String triggerID=paramMap.getString(ProxyJob.TRIGGER_ID);
 
-		boolean isDrools=paramMap.getBoolean(ProxyJob.TYPE_SIGN);
-
 		log.info("stop job disable trigger: " + triggerID);
 
 		bean.disableTrigger(triggerID);

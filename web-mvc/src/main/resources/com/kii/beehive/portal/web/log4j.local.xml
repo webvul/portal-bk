@@ -29,6 +29,10 @@
         <level value="debug" />
     </logger>
 
+    <logger name="org.drools.core" >
+        <level value="debug" />
+    </logger>
+
 
     <logger name="org.springframework.jdbc.core" >
         <level value="debug" />

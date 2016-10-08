@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +75,15 @@ public class TriggerManager {
 
 	@PostConstruct
 	public void init() {
-		creator.init();
+
+		List<TriggerRecord> recordList = triggerDao.getAllEnableTrigger();
+
+
+		List<TriggerRecord>  list=recordList.stream().filter((r)->r.getType()!= BeehiveTriggerType.Gateway).collect(Collectors.toList());
+
+		List<String> errList=creator.init(list);
+
+		errList.forEach(err->triggerDao.deleteTriggerRecord(err,"create trigger fail in system init "));
 	}
 
 
@@ -86,13 +95,14 @@ public class TriggerManager {
 				return createGatewayRecord((SummaryTriggerRecord) record);
 			}catch(IllegalStateException e){
 				log.warn("invalid gateway trigger param");
+				return record;
 			}
 		}
 
 		triggerDao.addKiiEntity(record);
 
 		if(record.getRecordStatus()== TriggerRecord.StatusType.enable) {
-			creator.addTriggerToEngine(record);
+			creator.createTrigger(record);
 		}
 		return record;
 
@@ -128,7 +138,7 @@ public class TriggerManager {
 
 			this.deleteTrigger(record.getTriggerID());
 
-			creator.addTriggerToEngine(record);
+			creator.createTrigger(record);
 
 			triggerDao.updateEntity(record, record.getId());
 
@@ -302,7 +312,7 @@ public class TriggerManager {
 
 		}else {
 
-			creator.addTriggerToEngine(record);
+			creator.createTrigger(record);
 
 		}
 	}
