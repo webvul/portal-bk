@@ -28,7 +28,7 @@ public class TestSchedule {
 		period.setStartCron("0/50  * *  *  *  ?");
 
 
-		scheduleService.addManagerTaskForSchedule("aaa",period,false);
+		scheduleService.addManagerTask("aaa",period,null);
 
 		System.in.read();
 
@@ -44,7 +44,7 @@ public class TestSchedule {
 		period.setStartCron("0  5/1 *  *  *  ?");
 
 
-		scheduleService.addManagerTaskForSchedule("aaa",period,false);
+		scheduleService.addManagerTask("aaa",period,null);
 
 		System.in.read();
 

@@ -1,5 +1,7 @@
 package com.kii.extension.ruleengine.store.trigger;
 
+import java.io.Serializable;
+
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
@@ -10,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 		@JsonSubTypes.Type(value = IntervalPrefix.class,name="Interval"),
 		@JsonSubTypes.Type(value = CronPrefix.class,name="Cron"),
 })
-public interface SchedulePrefix {
+public interface SchedulePrefix extends  Serializable{
 
 	String getType();
 

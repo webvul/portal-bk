@@ -3,7 +3,6 @@ package com.kii.extension.ruleengine.schedule;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.SchedulerException;
-import org.quartz.TriggerKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +32,7 @@ public class StopTriggerJob implements JobInSpring {
 
 		JobExecutionContext context=(JobExecutionContext)paramMap.get(ProxyJob.JOB_CONTEXT);
 		try {
-				context.getScheduler().pauseTrigger(TriggerKey.triggerKey(triggerID,ScheduleService.EXEC_PRE));
+				context.getScheduler().unscheduleJob(TriggerFactory.getExecTriggerKey(triggerID));
 		} catch (SchedulerException e) {
 				e.printStackTrace();
 		}

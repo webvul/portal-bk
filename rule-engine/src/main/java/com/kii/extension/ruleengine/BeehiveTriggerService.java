@@ -1,5 +1,6 @@
 package com.kii.extension.ruleengine;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -132,19 +133,6 @@ public class BeehiveTriggerService {
 
 		}
 
-		//if  exist schedule, turn to quartz task
-
-		if(record.getPredicate().getSchedule()!=null) {
-
-			try {
-				scheduleService.addExecuteTask(triggerID, record.getPredicate().getSchedule());
-
-			} catch (SchedulerException e) {
-				e.printStackTrace();
-				throw new TriggerCreateException("schedule init fail:" + e.getMessage(),e);
-			}
-
-		}
 
 		try {
 
@@ -170,15 +158,15 @@ public class BeehiveTriggerService {
 				throw new TriggerCreateException("unsupport trigger type");
 			}
 
-			if(period!=null) {
-				scheduleService.addManagerTask(triggerID, period,true);
-			}
+
+			scheduleService.addManagerTask(triggerID, period,record.getPredicate().getSchedule());
+
 		} catch (RuntimeException e) {
 
 			e.printStackTrace();
 			throw new TriggerCreateException("create trigger instance fail:exception "+e.getClass().getName()+" msg:"+e.getMessage(),e);
 
-		} catch (SchedulerException e) {
+		} catch (SchedulerException|IOException e) {
 			e.printStackTrace();
 			throw new TriggerCreateException("global schedule init fail",e);
 		}

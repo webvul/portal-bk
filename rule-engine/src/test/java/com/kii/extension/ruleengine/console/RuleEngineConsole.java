@@ -97,13 +97,13 @@ public class RuleEngineConsole {
 
 
 
-		String[] init={"test3","test1","test2"};
-
-		for(String name:init) {
-			String jsonTrigger = getFileContext(name);
-
-			addTrigger(jsonTrigger, name);
-		}
+//		String[] init={"test3","test1","test2"};
+//
+//		for(String name:init) {
+//			String jsonTrigger = getFileContext(name);
+//
+//			addTrigger(jsonTrigger, name);
+//		}
 //		loadAll();
 
 
@@ -123,7 +123,7 @@ public class RuleEngineConsole {
 			service.updateThingStatus("e", map);
 
 
-		},3, 5,TimeUnit.SECONDS);
+		},3, 30,TimeUnit.SECONDS);
 
 	}
 

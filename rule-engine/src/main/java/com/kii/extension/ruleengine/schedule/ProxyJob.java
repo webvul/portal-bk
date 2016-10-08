@@ -9,10 +9,10 @@ import org.springframework.context.ApplicationContext;
 public class ProxyJob implements Job {
 
 
-	public static final String TYPE_SIGN = "Type_Sign";
+//	public static final String TYPE_SIGN = "Type_Sign";
 	public static final String JOB_CONTEXT = "Job_Context";
 	public static final String TRIGGER_ID = "triggerID";
-	public static final String IS_TRIGGER="Trigger_Sign";
+	public static final String WITH_TIMER="Is_Timer";
 
 
 	private Class<? extends JobInSpring> beanClass;

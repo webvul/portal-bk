@@ -39,7 +39,7 @@
   ],
   "predicate": {
     "schedule": {
-      "cron": "0 0/1 12-13 ? * *",
+      "cron": "0 0/1 8-19 ? * *",
       "type": "Cron"
     },
     "triggersWhen": "CONDITION_TRUE"

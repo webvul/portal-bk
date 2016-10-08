@@ -1,10 +1,8 @@
 package com.kii.extension.ruleengine.schedule;
 
-import static org.quartz.CronScheduleBuilder.cronSchedule;
-import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
-
 import javax.annotation.PreDestroy;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -15,36 +13,32 @@ import java.util.Set;
 import org.quartz.JobDataMap;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
-import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
-import org.quartz.TriggerBuilder;
 import org.quartz.TriggerKey;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.kii.extension.ruleengine.store.trigger.CronPrefix;
-import com.kii.extension.ruleengine.store.trigger.IntervalPrefix;
-import com.kii.extension.ruleengine.store.trigger.SchedulePeriod;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.kii.extension.ruleengine.store.trigger.SchedulePrefix;
-import com.kii.extension.ruleengine.store.trigger.SimplePeriod;
 import com.kii.extension.ruleengine.store.trigger.TriggerValidPeriod;
 
 @Component
 public class ScheduleService {
 	
-	
-	private static final String STOP_PRE = "Stop";
-	private static final String START_PRE = "Start";
 
-	public static final String EXEC_PRE="Exec";
-
-	
 	@Autowired
 	private Scheduler scheduler;
 
+	@Autowired
+	private TriggerFactory factory;
+
+	@Autowired
+	private ObjectMapper mapper;
+
 	@PreDestroy
-	public void stop(){
+	public void stop() {
 		
 		try {
 			scheduler.shutdown();
@@ -56,40 +50,37 @@ public class ScheduleService {
 	}
 
 
-	public Map<String,Object> dump(String triggerID){
+	public Map<String, Object> dump(String triggerID) {
 
 
-		Set<Object> triggerMap=new HashSet<>();
+		Set<Object> triggerMap = new HashSet<>();
 
 		try {
 
 			Set<TriggerKey> keys = new HashSet<>();
 
-			if(triggerID==null) {
-				GroupMatcher<TriggerKey> any= GroupMatcher.anyGroup();
+			if (triggerID == null) {
+				GroupMatcher<TriggerKey> any = GroupMatcher.anyGroup();
 
 				keys = scheduler.getTriggerKeys(any);
-			}else{
-				keys.add(TriggerKey.triggerKey(triggerID,START_PRE));
-				keys.add(TriggerKey.triggerKey(triggerID,STOP_PRE));
-				keys.add(TriggerKey.triggerKey(triggerID,EXEC_PRE));
-
+			} else {
+				keys.addAll(TriggerFactory.getAllTriggers(triggerID));
 			}
 
 			keys.forEach((k) -> {
 				try {
 					Trigger trigger = scheduler.getTrigger(k);
-					if(trigger==null){
+					if (trigger == null) {
 						return;
 					}
-					Map<String,Object> data=new HashMap<>();
-					data.put("endTime",trigger.getEndTime());
-					data.put("startTime",trigger.getStartTime());
+					Map<String, Object> data = new HashMap<>();
+					data.put("endTime", trigger.getEndTime());
+					data.put("startTime", trigger.getStartTime());
 
-					data.put("nextFireTime",trigger.getNextFireTime());
-					data.put("previousFireTime",trigger.getPreviousFireTime());
+					data.put("nextFireTime", trigger.getNextFireTime());
+					data.put("previousFireTime", trigger.getPreviousFireTime());
 
-					data.put("jobType",k.getGroup());
+					data.put("jobType", k.getGroup());
 
 					triggerMap.add(data);
 
@@ -99,21 +90,20 @@ public class ScheduleService {
 				}
 
 			});
-		}catch(SchedulerException e){
+		} catch (SchedulerException e) {
 			e.printStackTrace();
 		}
-		return Collections.singletonMap("schedule",triggerMap);
+		return Collections.singletonMap("schedule", triggerMap);
 	}
 
-	
 
 	/**
 	 * for reInit
 	 */
-	public void clearTrigger(){
+	public void clearTrigger() {
 
 		try {
-			Set<TriggerKey>  triggers = scheduler.getTriggerKeys(GroupMatcher.anyTriggerGroup());
+			Set<TriggerKey> triggers = scheduler.getTriggerKeys(GroupMatcher.anyTriggerGroup());
 
 			triggers.forEach(triggerKey -> {
 				try {
@@ -131,169 +121,84 @@ public class ScheduleService {
 
 	public void removeManagerTaskForSchedule(String triggerID) {
 		try {
-			scheduler.unscheduleJob(TriggerKey.triggerKey(triggerID,START_PRE));
-
-			scheduler.unscheduleJob(TriggerKey.triggerKey(triggerID,STOP_PRE));
-
-			scheduler.unscheduleJob(TriggerKey.triggerKey(triggerID,EXEC_PRE));
+			scheduler.unscheduleJobs(TriggerFactory.getAllTriggers(triggerID));
 
 		} catch (SchedulerException e) {
 			throw new IllegalArgumentException(e);
 		}
 	}
 
-	public void addManagerTaskForSchedule(String triggerID, SchedulePeriod period,boolean isDrools) throws SchedulerException {
-
-
-
-		Trigger triggerStart= TriggerBuilder.newTrigger()
-				.withIdentity(TriggerKey.triggerKey(triggerID,START_PRE))
-				.usingJobData(ProxyJob.TRIGGER_ID,triggerID)
-				.usingJobData(ProxyJob.TYPE_SIGN,isDrools)
-				.forJob(RuleEngScheduleFactory.START_JOB)
-				.withSchedule(cronSchedule(period.getStartCron()))
-				.build();
-
-
-		scheduler.scheduleJob(triggerStart);
-
-		Trigger triggerEnd= TriggerBuilder.newTrigger()
-				.withIdentity(TriggerKey.triggerKey(triggerID,STOP_PRE))
-				.usingJobData(ProxyJob.TRIGGER_ID,triggerID)
-				.usingJobData(ProxyJob.TYPE_SIGN,isDrools)
-				.forJob(RuleEngScheduleFactory.STOP_JOB)
-				.withSchedule(cronSchedule(period.getEndCron()))
-				.build();
-
-
-		scheduler.scheduleJob(triggerEnd);
-
-		Date nextStop=triggerEnd.getNextFireTime();
-		Date nextStart=triggerStart.getNextFireTime();
-
-		JobDataMap  innMap=new JobDataMap();
-		innMap.put(ProxyJob.TRIGGER_ID,triggerID);
-
-		if(nextStart.getTime()>=nextStop.getTime() ){
-
-			scheduler.triggerJob(RuleEngScheduleFactory.START_JOB,innMap);
-		}else{
-			scheduler.triggerJob(RuleEngScheduleFactory.STOP_JOB,innMap);
-		}
-	}
-
-	public void addManagerTaskForSimple(String triggerID, SimplePeriod period,boolean isDrools) throws SchedulerException {
-
-		long now=System.currentTimeMillis();
-
-		//the trigger had finished
-		if(period.getEndTime()<now){
-			return;
-		}
-
-		JobDataMap  innMap=new JobDataMap();
-		innMap.put(ProxyJob.TRIGGER_ID,triggerID);
-
-
-		if(period.getStartTime()>=now){
-			Trigger triggerStart = TriggerBuilder.newTrigger()
-					.withIdentity(TriggerKey.triggerKey(triggerID,START_PRE))
-					.usingJobData(ProxyJob.TRIGGER_ID, triggerID)
-					.usingJobData(ProxyJob.TYPE_SIGN,isDrools)
-					.forJob(RuleEngScheduleFactory.START_JOB)
-					.startAt(new Date(period.getStartTime()))
-					.build();
-
-
-			scheduler.scheduleJob(triggerStart);
-		}else if(period.getEndTime()>=now){
-			//fire miss start job by hand
-			scheduler.triggerJob(RuleEngScheduleFactory.START_JOB,innMap);
-		}
-
-
-		Trigger triggerEnd = TriggerBuilder.newTrigger()
-					.withIdentity(TriggerKey.triggerKey(triggerID,STOP_PRE))
-					.usingJobData(ProxyJob.TRIGGER_ID, triggerID)
-					.usingJobData(ProxyJob.TYPE_SIGN,isDrools)
-					.forJob(RuleEngScheduleFactory.STOP_JOB)
-					.startAt(new Date(period.getEndTime()))
-					.build();
-
-
-		scheduler.scheduleJob(triggerEnd);
-	}
-
 
 	public void enableExecuteTask(String triggerID) throws SchedulerException {
 
-		TriggerKey  key=TriggerKey.triggerKey(triggerID,EXEC_PRE);
-		scheduler.resumeTrigger(key);
+		scheduler.resumeTrigger(TriggerFactory.getExecTriggerKey(triggerID));
 
 	}
 
 
 	public void disableExecuteTask(String triggerID) throws SchedulerException {
 
-		TriggerKey  key=TriggerKey.triggerKey(triggerID,EXEC_PRE);
 
-		scheduler.pauseTrigger(key);
+		scheduler.pauseTrigger(TriggerFactory.getExecTriggerKey(triggerID));
 
 	}
 
 
-	public void addExecuteTask(String triggerID, SchedulePrefix schedule)throws SchedulerException{
-
-		TriggerKey key=TriggerKey.triggerKey(triggerID,EXEC_PRE);
-
-		TriggerBuilder builder = TriggerBuilder
-				.newTrigger()
-				.withIdentity(key)
-				.usingJobData(ProxyJob.TRIGGER_ID, triggerID)
-				.forJob(RuleEngScheduleFactory.EXEC_JOB);
+	public void addManagerTask(String triggerID, TriggerValidPeriod period, SchedulePrefix schedule) throws SchedulerException, IOException {
 
 
-		if(schedule instanceof CronPrefix){
-			builder.withSchedule(cronSchedule(((CronPrefix)schedule).getCron()).withMisfireHandlingInstructionDoNothing());
-
-
-		}else if(schedule instanceof IntervalPrefix){
-			IntervalPrefix interval=(IntervalPrefix)schedule;
-
-			SimpleScheduleBuilder simple=simpleSchedule().withIntervalInMinutes(interval.getInterval());
-			switch(interval.getTimeUnit()){
-				case Hour:
-					simple=simpleSchedule().withIntervalInHours(interval.getInterval());
-					break;
-				case Second:
-					simple=simpleSchedule().withIntervalInSeconds(interval.getInterval());
-					break;
-				case Minute:
-					simple=simpleSchedule().withIntervalInMinutes(interval.getInterval());
-					break;
-			}
-			builder.withSchedule(simple.withMisfireHandlingInstructionNextWithExistingCount().repeatForever());
+		if(period==null){
+			addExecTask(triggerID,schedule);
+			return;
 		}
 
-		Trigger trigger=builder.build();
+		Trigger[] array = factory.addManagerTask(triggerID, period, schedule);
+
+		if (array == null) {
+			return;
+		}
+
+		for (int i = 0; i < array.length; i++) {
+			if (array[i] != null) {
+				scheduler.scheduleJob(array[i]);
+			}
+		}
+
+		JobDataMap innMap = new JobDataMap();
+		innMap.put(ProxyJob.TRIGGER_ID, triggerID);
+		innMap.put(ProxyJob.WITH_TIMER,mapper.writeValueAsString(schedule));
+
+
+		if (array[0] == null) {
+			scheduler.triggerJob(RuleEngScheduleFactory.START_JOB, innMap);
+			return;
+		}
+
+		if (array[1] != null && array[0] != null) {
+
+			Date nextStart = array[0].getNextFireTime();
+			Date nextStop = array[1].getNextFireTime();
+
+			if (nextStart.getTime() >= nextStop.getTime()) {
+
+				scheduler.triggerJob(RuleEngScheduleFactory.START_JOB, innMap);
+			} else {
+				scheduler.triggerJob(RuleEngScheduleFactory.STOP_JOB, innMap);
+			}
+		}
+
+
+	}
+
+	private void addExecTask(String triggerID, SchedulePrefix schedule) throws SchedulerException, IOException {
+
+		if(schedule==null){
+			return;
+		}
+
+		Trigger trigger=factory.getExecuteTask(triggerID,schedule);
 
 		scheduler.scheduleJob(trigger);
 
-
 	}
-
-	
-	public void addManagerTask(String triggerID,TriggerValidPeriod period,boolean isDrools) throws SchedulerException {
-
-
-		if(period instanceof SimplePeriod){
-			addManagerTaskForSimple(triggerID,(SimplePeriod)period,isDrools);
-		}else if(period instanceof SchedulePeriod){
-			addManagerTaskForSchedule(triggerID,(SchedulePeriod)period,isDrools);
-		}else{
-			throw new IllegalArgumentException("invalid period type");
-		}
-
-	}
-
 }
