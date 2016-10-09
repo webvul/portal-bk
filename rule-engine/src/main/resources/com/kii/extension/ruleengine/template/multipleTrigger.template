@@ -14,7 +14,7 @@ when
 
 	$ext:ExternalCollect()
     Trigger( $triggerID:triggerID,$thingSet:thingSet,$enable:enable, ( triggerID=="${triggerID}" &&  enable == true && type ==TriggerType.multiple) )
-    $curr:CurrThing(valid($thingSet))
+    $curr:CurrThing(init == false)
     $muiMap:MultiplesValueMap( triggerID==$triggerID, ${express}  )
 then
 	MatchResult result=new MatchResult($triggerID);

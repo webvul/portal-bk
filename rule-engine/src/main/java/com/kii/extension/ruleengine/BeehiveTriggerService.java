@@ -180,7 +180,6 @@ public class BeehiveTriggerService {
 		Set<String>  thingIDs=thingIDsMap.get("comm");
 		String thingID=thingIDs.iterator().next();
 
-
 		fillDelayParam(record);
 
 
@@ -191,6 +190,7 @@ public class BeehiveTriggerService {
 
 		Trigger trigger=new Trigger(triggerID);
 
+		trigger.setThingSet(thingIDs);
 		trigger.setType(TriggerType.simple);
 		trigger.setStream(false);
 		trigger.setWhen(record.getPredicate().getTriggersWhen());

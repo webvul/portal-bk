@@ -18,7 +18,7 @@ public class ExternalCollect implements Serializable{
 	}
 
 	public ExternalValues getEntity(String name){
-		return externalValuesMap.get(name);
+		return externalValuesMap.getOrDefault(name,new ExternalValues(name));
 	}
 
 	public void putEntity(String name,ExternalValues  values){
@@ -41,7 +41,7 @@ public class ExternalCollect implements Serializable{
 		String key= fullPath.substring(0,idx);
 		String name=fullPath.substring(idx+1);
 
-		return externalValuesMap.get(key).getValue(name);
+		return getEntity(key).getValue(name);
 	}
 
 	public Object getNumValue(String fullPath){
@@ -55,7 +55,7 @@ public class ExternalCollect implements Serializable{
 		String key= fullPath.substring(0,idx);
 		String name=fullPath.substring(idx+1);
 
-		Object val= externalValuesMap.get(key).getValue(name);
+		Object val= getEntity(key).getValue(name);
 		if(val==null){
 			return 0;
 		}

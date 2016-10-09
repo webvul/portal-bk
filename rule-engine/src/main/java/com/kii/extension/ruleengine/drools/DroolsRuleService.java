@@ -177,10 +177,10 @@ public class DroolsRuleService {
 			return true;
 		});
 
-		Set<Object>  entityMap=new HashSet<>();
+		Map<String,Object>  entityMap=new HashMap<>();
 
 		for(Object obj:objs){
-			entityMap.add(obj);
+			entityMap.put(this.getEntityKey(obj),obj);
 		}
 
 		map.put("entitys",entityMap);
