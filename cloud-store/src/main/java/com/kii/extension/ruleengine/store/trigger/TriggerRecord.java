@@ -129,9 +129,9 @@ public abstract class TriggerRecord extends KiiEntity {
 		this.targets.add(target);
 	}
 
-	public List<ExecuteTarget>  getTarget(){
-		return targets;
-	}
+//	public List<ExecuteTarget>  getTarget(){
+//		return targets;
+//	}
 
 	private BeehiveTriggerType type;
 
