@@ -89,15 +89,15 @@ public class TriggerManager {
 
 	public TriggerRecord createTrigger(TriggerRecord record) {
 
-
-		if(checkLocalRule(record)){
-			try {
-				return createGatewayRecord((SummaryTriggerRecord) record);
-			}catch(IllegalStateException e){
-				log.warn("invalid gateway trigger param");
-				return record;
-			}
-		}
+//		TODO temp comment LocalRule
+//		if(checkLocalRule(record)){
+//			try {
+//				return createGatewayRecord((SummaryTriggerRecord) record);
+//			}catch(IllegalStateException e){
+//				log.warn("invalid gateway trigger param");
+//				return record;
+//			}
+//		}
 
 		triggerDao.addKiiEntity(record);
 
