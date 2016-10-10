@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kii.beehive.portal.entitys.ThingID;
 import com.kii.beehive.portal.jdbc.dao.ThingLocQuery;
 import com.kii.beehive.portal.jdbc.dao.ThingLocationDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
@@ -72,7 +73,7 @@ public class ThingLocationQueryController {
 	}
 
 	@RequestMapping(value="/reports/thingQuery",method = RequestMethod.POST)
-	public List<Long>  queryByThingLocation(@RequestBody ThingLocQuery query){
+	public List<ThingID>  queryByThingLocation(@RequestBody ThingLocQuery query){
 			return locationQueryManager.doQueryForReport(query);
 	}
 

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.entitys.ThingID;
 import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.ThingLocQuery;
@@ -35,10 +36,9 @@ public class LocationQueryManager {
 	private GlobalThingSpringDao thingDao;
 
 
+	public List<ThingID> doQueryForReport(ThingLocQuery query){
 
-	public List<Long> doQueryForReport(ThingLocQuery query){
-
-		return thingLocDao.getThingsByLocation(query,AuthInfoStore.getUserID()).stream().map(GlobalThingInfo::getId).collect(Collectors.toList());
+		return thingLocDao.getThingsByLocation(query,AuthInfoStore.getUserID()).stream().map(ThingID::new).collect(Collectors.toList());
 
 	}
 
