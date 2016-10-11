@@ -6,7 +6,8 @@ import com.kii.extension.ruleengine.store.trigger.WhenType;
 
 
 query "get Match Result by TriggerID" ()
-	Trigger($triggerID:triggerID,when==WhenType.CONDITION_TRUE,enable==true)
+	Trigger($triggerID:triggerID,$thingSet:thingSet,when==WhenType.CONDITION_TRUE,enable==true)
+	CurrThing( valid ($thingSet) )
     results : MatchResult( triggerID == $triggerID )
 end
 
