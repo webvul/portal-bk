@@ -17,7 +17,6 @@ import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -538,7 +537,7 @@ public class ThingController extends AbstractThingTagController {
 	 * @return
 	 */
 	@RequestMapping(value = "/onboarding/{vendorThingID}", method = {RequestMethod.POST}, consumes = {"*"})
-	public ModelAndView onboardingThing(@PathVariable("vendorThingID") String vendorThingID) {
+	public Map<String, Object> onboardingThing(@PathVariable("vendorThingID") String vendorThingID) {
 
 
 		GlobalThingInfo thing = thingTagManager.getThingsByVendorThingId(vendorThingID);
@@ -558,9 +557,7 @@ public class ThingController extends AbstractThingTagController {
 		OnBoardingResult onBoardingResult = thingIFService.onBoarding(param, thing.getKiiAppID());
 		Map<String, Object> map = new HashMap<>();
 		map.put("thingID", onBoardingResult.getThingID());
-		ModelAndView model = new ModelAndView();
-		model.addAllObjects(map);
-		return model;
+		return map;
 	}
 
 	/**
