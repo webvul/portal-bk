@@ -139,9 +139,9 @@ public class ESServiceController {
 			thingTagManager.getAccessibleThingById(AuthInfoStore.getUserID(), thing.getId());
 		}
 
-		String kiiThingID = "thing:" + thing.getFullKiiThingID().substring(thing.getFullKiiThingID().indexOf("-") + 1);
+		String kiiThingID = thing.getFullKiiThingID().substring(thing.getFullKiiThingID().indexOf("-") + 1);
 
-		String result = transportClientManager.queryBuilderForHistorical(thing.getKiiAppID(), searchRestBean.getIndexType(), kiiThingID,
+		String result = transportClientManager.queryBuilderForHistorical(thing.getKiiAppID(), kiiThingID, kiiThingID,
 				searchRestBean.getDateField(), searchRestBean.getStartDate(),
 				searchRestBean.getEndDate(), searchRestBean.getSize(), searchRestBean.getFrom());
 		return result;
