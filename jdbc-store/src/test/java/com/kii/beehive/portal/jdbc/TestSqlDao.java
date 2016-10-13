@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.kii.beehive.portal.jdbc.dao.BeehiveUserJdbcDao;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
+import com.kii.beehive.portal.jdbc.dao.IndustryTemplateDao;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.dao.ThingLocQuery;
 import com.kii.beehive.portal.jdbc.dao.ThingLocationDao;
@@ -38,6 +39,9 @@ public class TestSqlDao extends TestTemplate {
 	@Autowired
 	private BeehiveUserJdbcDao  userDao;
 
+	@Autowired
+	private IndustryTemplateDao  templateDao;
+
 	List<Long> ids=new ArrayList<>();
 
 
@@ -53,8 +57,12 @@ public class TestSqlDao extends TestTemplate {
 	}
 
 
+@Test
+public void testTemplate(){
 
-
+	templateDao.getTemplateByThingID(1l);
+	templateDao.getTemplateByName("foo");
+}
 
 	@Test
 	public void testThingLocal(){

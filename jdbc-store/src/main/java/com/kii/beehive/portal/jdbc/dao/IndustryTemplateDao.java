@@ -52,18 +52,18 @@ public class IndustryTemplateDao extends SpringBaseDao<IndustryTemplate> {
 
 	private static final String sqlQueryByThingID="select t.* " +
 			"from ${0} t inner join ${1} th on ( th.${2} = t.${3} and th.${4}=t.${5} ) " +
-			"where  t.${6} = ${7} and th.${8} = ?  ";
+			"where  t.${6} = ? and th.${7} = ?  ";
 
 	public IndustryTemplate getTemplateByThingID(Long thingID){
 
 		String[] params=new String[]{IndustryTemplateDao.TABLE_NAME,GlobalThingSpringDao.TABLE_NAME,
 				GlobalThingInfo.SCHEMA_VERSION,IndustryTemplate.VERSION,
 			    GlobalThingInfo.SCHEMA_NAME,IndustryTemplate.THING_TYPE,
-				IndustryTemplate.SCHEMA_TYPE,"industrytemplate",GlobalThingInfo.ID_GLOBAL_THING};
+				IndustryTemplate.SCHEMA_TYPE,GlobalThingInfo.ID_GLOBAL_THING};
 
 		String fullSql= StrTemplate.gener(sqlQueryByThingID,params);
 
-		return super.queryForObject(fullSql,new Object[]{thingID});
+		return super.queryForObject(fullSql,new Object[]{"industrytemplate",thingID});
 
 	}
 
