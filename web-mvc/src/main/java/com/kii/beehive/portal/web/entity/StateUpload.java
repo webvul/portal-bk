@@ -17,7 +17,6 @@ public class StateUpload {
 
 	private Map<String,Object> expandFields=new HashMap<>();
 
-	//TODO:fill this field in kiicloud's thing status change trigger
 	private Date timestamp=new Date();
 
 	public Date getTimestamp() {
