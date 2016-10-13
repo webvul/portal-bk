@@ -1,25 +1,26 @@
 package com.kii.extension.ruleengine.store.trigger;
 
 
-public class GatewayTriggerRecord extends  SummaryTriggerRecord{
+import java.util.HashMap;
+import java.util.Map;
 
+public class GatewayTriggerRecord extends TriggerRecord {
+
+	private Map<String,GatewaySummarySource> summarySource=new HashMap<>();
 
 
 	private String gatewayVendorThingID;
 
 	private String gatewayFullKiiThingID;
 
-	private VendorThingList source=new VendorThingList();
 
-
-	public VendorThingList getSource() {
-		return source;
+	public Map<String, GatewaySummarySource> getSummarySource() {
+		return summarySource;
 	}
 
-	public void setSource(VendorThingList source) {
-		this.source = source;
+	public void setSummarySource(Map<String, GatewaySummarySource> summarySource) {
+		this.summarySource = summarySource;
 	}
-
 	public String getGatewayVendorThingID() {
 		return gatewayVendorThingID;
 	}
