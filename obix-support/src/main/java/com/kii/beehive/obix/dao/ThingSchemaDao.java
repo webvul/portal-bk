@@ -6,13 +6,15 @@ import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StreamUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Charsets;
 
 import com.kii.beehive.obix.store.ObixThingSchema;
 import com.kii.beehive.obix.store.beehive.ThingSchema;
+import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
+import com.kii.beehive.portal.jdbc.dao.IndustryTemplateDao;
+import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
+import com.kii.beehive.portal.jdbc.entity.IndustryTemplate;
 
 @Component
 public class ThingSchemaDao {
@@ -25,24 +27,50 @@ public class ThingSchemaDao {
 	@Autowired
 	private ResourceLoader loader;
 
+	@Autowired
+	private IndustryTemplateDao  templateDao;
 
-	public ThingSchema  getThingSchemaByName(String name)  {
+
+	@Autowired
+	private GlobalThingSpringDao  thingDao;
+
+
+	public ThingSchema getThingSchemaByName(String name){
+
+		IndustryTemplate template=templateDao.getTemplateByName(name);
 
 		try {
-			String json = StreamUtils.copyToString(loader.getResource("classpath:com/kii/beehive/obix/demodata/" + name + ".schema.json").getInputStream(), Charsets.UTF_8);
+			ThingSchema schema = mapper.readValue(template.getContent(), ThingSchema.class);
 
+			schema.setVersion(1);
 
-			ThingSchema schema = mapper.readValue(json, ThingSchema.class);
-
-			schema.setName(name);
 			return schema;
-		}catch(IOException e){
+		}catch(IOException  e){
+			throw new IllegalArgumentException(e);
+		}
+	}
+
+	public ThingSchema  getThingSchemaByThingVendorID(String id)  {
+
+
+		GlobalThingInfo  thing=thingDao.getThingByVendorThingID(id);
+
+
+		IndustryTemplate template=templateDao.getTemplateByThingID(thing.getId());
+
+		try {
+			ThingSchema schema = mapper.readValue(template.getContent(), ThingSchema.class);
+
+			schema.setVersion(1);
+
+			return schema;
+		}catch(IOException  e){
 			throw new IllegalArgumentException(e);
 		}
 	}
 
 
-	public ObixThingSchema getObixThingSchemaByName(String name){
+	public ObixThingSchema getObixThingSchemaByName(String name)  {
 
 		return new ObixThingSchema(getThingSchemaByName(name));
 	}

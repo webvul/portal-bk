@@ -9,7 +9,9 @@ ext {
 
 dependencies {
 
-	compile project(":kii-sdk")
+	compile project(":jdbc-store")
+	compile project(":cloud-store")
+	compile project(":business-component")
 
 
 	compile "org.springframework:spring-webmvc:${springVersion}"

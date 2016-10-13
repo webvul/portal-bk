@@ -6,13 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.obix.store.EntityInfo;
-import com.kii.beehive.obix.store.LocationInfo;
+import com.kii.beehive.obix.store.LocationView;
 import com.kii.beehive.obix.store.ObixPointDetail;
 import com.kii.beehive.obix.store.ObixThingSchema;
 import com.kii.beehive.obix.store.PointInfo;
 import com.kii.beehive.obix.store.ThingInfo;
 import com.kii.beehive.obix.web.entity.ObixContain;
 import com.kii.beehive.obix.web.entity.ObixType;
+import com.kii.beehive.portal.store.entity.LocationInfo;
 
 @Component
 public class ObixContainConvertService {
@@ -85,16 +86,20 @@ public class ObixContainConvertService {
 	}
 
 
-	public ObixContain getFullObix(LocationInfo loc, String baseUrl){
+	public ObixContain getFullObix(LocationView view, String baseUrl){
 		ObixContain obix=new ObixContain();
 
 		obix.setObixType(ObixType.OBJ);
 
 
-		obix.addChild(getLocList(loc, baseUrl));
+		LocationInfo loc=view.getLocation();
 
-		if(loc.getParentLoc()!=null) {
-			ObixContain parent = getEmbeddedObix(loc.getParentLoc(), baseUrl);
+
+		obix.addChild(getLocList(view, baseUrl));
+
+
+		if(loc.getParent()!=null) {
+			ObixContain parent = getEmbeddedObix(loc.getParent(), baseUrl);
 			parent.setName("parentLoc");
 			obix.addChild(parent);
 		}
@@ -104,7 +109,7 @@ public class ObixContainConvertService {
 		eList.setObixType(ObixType.LIST);
 		eList.setOf(baseUrl+"def/contract/commEntity");
 
-		loc.getEntityCollect().forEach(e->{
+		view.getEntityCollect().forEach(e->{
 			eList.addChild(getEmbeddedObix(e,baseUrl));
 		});
 		obix.addChild(eList);
@@ -112,14 +117,17 @@ public class ObixContainConvertService {
 		return obix;
 	}
 
-	public ObixContain getLocList(LocationInfo loc, String baseUrl) {
+	public ObixContain getLocList(LocationView view, String baseUrl) {
 		ObixContain list=new ObixContain();
 		list.setObixType(ObixType.LIST);
 		list.setOf(baseUrl+"def/contract/location");
 
-		loc.getSubLocations().forEach(l->{
-			list.addChild(getEmbeddedObix(l,baseUrl));
-		});
+
+		view.getLocation().getSubLocations().keySet().forEach(l-> {
+					list.addChild(getEmbeddedObix(l, baseUrl));
+					return;
+				}
+		);
 		return list;
 	}
 
@@ -129,7 +137,26 @@ public class ObixContainConvertService {
 		ObixContain obix=new ObixContain();
 
 		obix.setObixType(ObixType.REF);
-		loc=StringUtils.replace(loc,"-","/");
+
+		StringBuilder  fullLoc=new StringBuilder();
+		if(loc.length()>=2) {
+			fullLoc.append(loc.substring(0, 2)).append("/");
+		}
+		if(loc.length()>=4){
+			fullLoc.append(loc.substring(2, 4)).append("/");
+		}
+		if(loc.length()>=5){
+			fullLoc.append(loc.substring(4, 5)).append("/");
+		}
+		if(loc.length()>=7){
+			fullLoc.append(loc.substring(6, 7)).append("/");
+		}
+		if(loc.length()==10){
+			fullLoc.append(loc.substring(7, 10)).append("/");
+		}
+
+		loc=fullLoc.toString();
+
 		obix.setHref(baseUrl+"/site/"+loc);
 		obix.setDisplay(loc);
 		obix.setName("siteRef");

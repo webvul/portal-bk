@@ -1,65 +1,51 @@
 package com.kii.beehive.obix.service;
 
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.kii.beehive.obix.dao.DemoThingStatusDao;
-import com.kii.beehive.obix.dao.DemoLocationDao;
-import com.kii.beehive.obix.store.LocationInfo;
+import com.kii.beehive.obix.helper.ThingStatusService;
+import com.kii.beehive.obix.store.LocationView;
+import com.kii.beehive.portal.service.LocationDao;
+import com.kii.beehive.portal.store.entity.LocationInfo;
 
 @Component
+@Transactional
 public class LocationService {
 
 
 
 	@Autowired
-	private DemoLocationDao locDao;
+	private LocationDao locDao;
 
 	@Autowired
-	private DemoThingStatusDao  thingDao;
-
-	@Autowired
-	private ThingService  thService;
+	private ThingStatusService thingService;
 
 
-	public List<LocationInfo> getRootLoc(){
 
-		List<LocationInfo>  locList=new ArrayList<>();
+	public List<LocationView> getRootLoc(){
 
-		locDao.getTopLocation().forEach(s->{
-			LocationInfo  loc=new LocationInfo();
-			loc.setLocation(s);
-			loc.setParent(null);
-
-			List<String> subLoc=locDao.getChildLoc(s);
-			loc.setSubLocations(subLoc);
-
-			locList.add(loc);
-
-		});
-
-		return locList;
+		return locDao.getTopLocation().stream().map(LocationView::new).collect(Collectors.toList());
 
 	}
 	
 	
-	public LocationInfo getLocationInfo(String locStr) {
-
-		LocationInfo  loc=new LocationInfo();
-		loc.setLocation(locStr);
-		loc.setParent(locDao.getParentLoc(locStr));
-		loc.setSubLocations(locDao.getChildLoc(locStr));
+	public LocationView getLocationInfo(String locStr) {
 
 
-		thService.getThingInfoByLoc(locStr).forEach(loc::addEntity);
+		LocationInfo loc=locDao.getObjectByID(locStr);
 
-		thService.getPointInfoByLoc(locStr).forEach(loc::addEntity);
+		LocationView view =new LocationView(loc);
 
-		return loc;
+		thingService.getThingInfoByLoc(locStr).forEach(view::addEntity);
+
+		thingService.getPointInfoByLoc(locStr).forEach(view::addEntity);
+
+		return view;
 
 	}
 }

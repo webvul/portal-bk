@@ -1,7 +1,11 @@
 package com.kii.beehive.portal.jdbc.dao;
 
 import java.util.List;
+
 import org.springframework.stereotype.Repository;
+
+import com.kii.beehive.portal.common.utils.StrTemplate;
+import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.IndustryTemplate;
 
 @Repository
@@ -43,5 +47,38 @@ public class IndustryTemplateDao extends SpringBaseDao<IndustryTemplate> {
 
 		List<IndustryTemplate> rows = query( sql );
 		return rows;
+	}
+
+
+	private static final String sqlQueryByThingID="select t.* " +
+			"from ${0} t inner join ${1} th on ( th.${2} = t.${3} and th.${4}=t.${5} ) " +
+			"where  t.${6} = ${7} and th.${8} = ?  ";
+
+	public IndustryTemplate getTemplateByThingID(Long thingID){
+
+		String[] params=new String[]{IndustryTemplateDao.TABLE_NAME,GlobalThingSpringDao.TABLE_NAME,
+				GlobalThingInfo.SCHEMA_VERSION,IndustryTemplate.VERSION,
+			    GlobalThingInfo.SCHEMA_NAME,IndustryTemplate.THING_TYPE,
+				IndustryTemplate.SCHEMA_TYPE,"industrytemplate",GlobalThingInfo.ID_GLOBAL_THING};
+
+		String fullSql= StrTemplate.gener(sqlQueryByThingID,params);
+
+		return super.queryForObject(fullSql,new Object[]{thingID});
+
+	}
+
+	private static final String sqlByName="select * from ${0} where ${1} = ? and ${2}=? ";
+
+	public IndustryTemplate getTemplateByName(String name){
+
+		String fullSql=StrTemplate.gener(sqlByName,IndustryTemplateDao.TABLE_NAME,IndustryTemplate.NAME,IndustryTemplate.SCHEMA_TYPE);
+
+		List<IndustryTemplate>  list=super.query(fullSql,new Object[]{name,"industrytemplate"});
+
+		if(list.size()==1){
+			return list.get(0);
+		}else{
+			return null;
+		}
 	}
 }

@@ -1,5 +1,6 @@
 package com.kii.beehive.obix.store.beehive;
 
+import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
 public class Thing {
@@ -11,6 +12,21 @@ public class Thing {
 	private String location;
 
 	private ThingStatus  status;
+
+	public Thing(){
+
+	}
+
+	public Thing(GlobalThingInfo thing){
+
+		this.thingID=thing.getVendorThingID();
+		this.schema=thing.getSchemaName();
+
+		this.status=new ThingStatus();
+
+		this.status.setFields(thing.getStatus());
+
+	}
 
 	public String getThingID() {
 		return thingID;

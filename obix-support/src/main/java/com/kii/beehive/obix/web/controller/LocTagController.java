@@ -11,7 +11,7 @@ import org.springframework.web.context.request.WebRequest;
 
 import com.kii.beehive.obix.service.LocationService;
 import com.kii.beehive.obix.service.ObixContainConvertService;
-import com.kii.beehive.obix.store.LocationInfo;
+import com.kii.beehive.obix.store.LocationView;
 import com.kii.beehive.obix.web.entity.ObixContain;
 import com.kii.beehive.obix.web.entity.ObixType;
 
@@ -55,8 +55,8 @@ public class LocTagController {
 
 			locService.getRootLoc().forEach(l->{
 
-				ObixContain  loc=convertService.getEmbeddedObix(l.getLocation(),baseUrl);
-				loc.setName(l.getLocation());
+				ObixContain  loc=convertService.getEmbeddedObix(l.getLocation().getLocation(),baseUrl);
+				loc.setName(l.getLocation().getLocation());
 				loc.setObixType(ObixType.REF);
 				obj.addChild(loc);
 
@@ -64,9 +64,13 @@ public class LocTagController {
 			return obj;
 		}
 
-		locStr=StringUtils.replace(locStr,"/","-");
+		locStr=locStr.replaceAll("/","");
 
-		LocationInfo currLoc=locService.getLocationInfo(locStr);
+		if(locStr.length()>5){
+			locStr=locStr.substring(0,5)+"-"+locStr.substring(5);
+		}
+
+		LocationView currLoc=locService.getLocationInfo(locStr);
 
 		ObixContain  loc=convertService.getFullObix(currLoc,baseUrl);
 		loc.setName(locStr);

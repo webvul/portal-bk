@@ -6,12 +6,22 @@ import java.util.Map;
 public class ThingSchema {
 
 
+	private int version;
+
 	private String name;
 
 	private StatusContains statesSchema;
 
 	private Map<String,ActionContains>  actions=new HashMap<>();
 
+
+	public int getVersion() {
+		return version;
+	}
+
+	public void setVersion(int version) {
+		this.version = version;
+	}
 
 	public String getName() {
 		return name;

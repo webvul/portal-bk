@@ -40,17 +40,6 @@ public class ThingInfo   implements  EntityInfo{
 
 	}
 
-	private  void initLocation( String location){
-
-		this.location=location;
-
-		int i=0;
-		for(PointInfo  p:pointCollect){
-			p.setLocation(location+"-"+(char)('A'+i)+i);
-			i++;
-		}
-
-	}
 
 	public String getName() {
 		return name;
@@ -69,7 +58,9 @@ public class ThingInfo   implements  EntityInfo{
 		this.location = location;
 
 
-		initLocation(location);
+		for(PointInfo  p:pointCollect){
+			p.setLocation(location);
+		}
 	}
 
 	public Set<String> getCustomTags() {
