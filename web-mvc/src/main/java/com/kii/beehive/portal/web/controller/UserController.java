@@ -355,7 +355,8 @@ public class UserController {
 		}
 
 		BeehiveJdbcUser user = service.updateUserWithFace(userId, clearOldPhoto, photoFiles);
-
+		user.setUserPassword(null);
+		user.setRoleName(null);
 		return user;
 	}
 
@@ -363,7 +364,10 @@ public class UserController {
 	public UserRestBean getUserByFaceUserID(@PathVariable("faceUserID") String faceUserID) {
 
 		UserRestBean bean = new UserRestBean();
-		bean.setBeehiveUser(userManager.getUserByFaceUserID(faceUserID));
+		BeehiveJdbcUser user = userManager.getUserByFaceUserID(faceUserID);
+//		user.setUserPassword(null);
+//		user.setRoleName(null);
+		bean.setBeehiveUser(user);
 
 		return bean;
 	}

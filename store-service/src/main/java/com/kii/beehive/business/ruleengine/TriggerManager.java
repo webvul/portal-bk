@@ -1,24 +1,21 @@
 package com.kii.beehive.business.ruleengine;
 
 import javax.annotation.PostConstruct;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.kii.beehive.business.helper.TriggerCreator;
 import com.kii.beehive.business.manager.AppInfoManager;
 import com.kii.beehive.business.manager.ThingTagManager;
@@ -32,15 +29,15 @@ import com.kii.extension.ruleengine.store.trigger.BeehiveTriggerType;
 import com.kii.extension.ruleengine.store.trigger.CommandToThing;
 import com.kii.extension.ruleengine.store.trigger.CommandToThingInGW;
 import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
+import com.kii.extension.ruleengine.store.trigger.GatewaySummarySource;
 import com.kii.extension.ruleengine.store.trigger.GatewayTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.SummarySource;
 import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TagSelector;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.WhenType;
 import com.kii.extension.ruleengine.store.trigger.condition.AndLogic;
-import com.kii.extension.ruleengine.store.trigger.condition.SimpleCondition;
+import com.kii.extension.ruleengine.store.trigger.condition.OrLogic;
 import com.kii.extension.sdk.entity.thingif.Action;
 import com.kii.extension.sdk.entity.thingif.EndNodeOfGateway;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
@@ -95,7 +92,6 @@ public class TriggerManager {
 //				return createGatewayRecord((SummaryTriggerRecord) record);
 //			}catch(IllegalStateException e){
 //				log.warn("invalid gateway trigger param");
-//				return record;
 //			}
 //		}
 
@@ -151,13 +147,13 @@ public class TriggerManager {
 	private boolean checkLocalRule(TriggerRecord record) {
 
 		if( ! (record instanceof SummaryTriggerRecord
-				&& record.getPredicate().getTriggersWhen().equals(WhenType.CONDITION_TRUE)
+//				&& record.getPredicate().getTriggersWhen().equals(WhenType.CONDITION_TRUE)
 				&& record.getPredicate().getSchedule() == null
-				&& ( record.getPredicate().getCondition()  instanceof AndLogic)
-				&& ( (AndLogic) record.getPredicate().getCondition() ).getClauses().size() == 2
-				&& ( (AndLogic) record.getPredicate().getCondition() ).getClauses().get(0) instanceof AndLogic
-				&& ( (AndLogic) ( ( (AndLogic) record.getPredicate().getCondition() ).getClauses().get(0) ) ).getClauses().size() == 2
-			    && ( (AndLogic) ( ( (AndLogic) record.getPredicate().getCondition() ).getClauses().get(0) ) ).getClauses().get(0) instanceof SimpleCondition
+				&& ( record.getPredicate().getCondition()  instanceof AndLogic || record.getPredicate().getCondition() instanceof OrLogic)
+//				&& ( (AndLogic) record.getPredicate().getCondition() ).getClauses().size() <= 2
+//				&& ( (AndLogic) record.getPredicate().getCondition() ).getClauses().get(0) instanceof AndLogic
+//				&& ( (AndLogic) ( ( (AndLogic) record.getPredicate().getCondition() ).getClauses().get(0) ) ).getClauses().size() == 2
+//			    && ( (AndLogic) ( ( (AndLogic) record.getPredicate().getCondition() ).getClauses().get(0) ) ).getClauses().get(0) instanceof SimpleCondition
 			) ) {
 
 
@@ -168,16 +164,15 @@ public class TriggerManager {
 
 		//source only one thing
 		Collection<SummarySource> sourceCollection = summaryTriggerRecord.getSummarySource().values();
-		if(sourceCollection.size() != 1 ){
-			return false;
+		Iterator<SummarySource> sourceIterator = sourceCollection.iterator();
+		while (sourceIterator.hasNext()){ //每个SummarySource只有 单个 thing
+			SummarySource summarySource = sourceIterator.next();
+			TagSelector selector = summarySource.getSource();
+			if( ( selector.getTagList() != null && selector.getTagList().size() > 0 )
+					||  ( selector.getThingList() != null && selector.getThingList().size() != 1 )){
+				return false;
+			}
 		}
-		TagSelector selector = sourceCollection.iterator().next().getSource();
-		if( ( selector.getTagList() != null && selector.getTagList().size() > 0 )
-				||  ( selector.getThingList() != null && selector.getThingList().size() != 1 )){
-			return false;
-		}
-
-
 
 		return true ;
 	}
@@ -198,29 +193,13 @@ public class TriggerManager {
 
 	private GatewayTriggerRecord convertToGatewayTriggerRecord(SummaryTriggerRecord summaryRecord) {
 		GatewayTriggerRecord gatewayTriggerRecord = new GatewayTriggerRecord();
-
 		BeanUtils.copyProperties(summaryRecord, gatewayTriggerRecord);
-
 		gatewayTriggerRecord.setRecordStatus(TriggerRecord.StatusType.enable);
-//		gatewayTriggerRecord.setPreparedCondition(summaryRecord.getPreparedCondition());
-		//
-//		SimpleCondition condition = (SimpleCondition)( (AndLogic) ( ( (AndLogic) summaryRecord.getPredicate().getCondition() ).getClauses().get(0) ) ).getClauses().get(0);
-//		//process "field": "EnvironmentSensor.Bri",
-//		condition.setField(condition.getField().substring(condition.getField().indexOf(".")+1));
-//		gatewayTriggerRecord.setPredicate(summaryRecord.getPredicate());
-//		gatewayTriggerRecord.getPredicate().setCondition(condition);
-//
-//		gatewayTriggerRecord.setTargetParamList(summaryRecord.getTargetParamList());
-//
-//		gatewayTriggerRecord.setUserID(summaryRecord.getUserID());
-//		gatewayTriggerRecord.setDescription(summaryRecord.getDescription());
 
 		Collection<SummarySource> sourceCollection = summaryRecord.getSummarySource().values();
-		TagSelector selector = sourceCollection.iterator().next().getSource();
-
-		GlobalThingInfo sourceThing = globalThingDao.findByID(selector.getThingList().get(0));
-		gatewayTriggerRecord.getSource().getVendorThingIdList().add(sourceThing.getVendorThingID());
-		gatewayTriggerRecord.getSource().getThingList().add(sourceThing.getId());
+		Iterator<SummarySource> sourceIterator = sourceCollection.iterator();
+		TagSelector sourceSelector = sourceIterator.next().getSource();
+		GlobalThingInfo sourceThing = globalThingDao.findByID(sourceSelector.getThingList().get(0));
 		//
 		ThingOfKiiCloud gatewayOfKiiCloud = null;
 		try {
@@ -229,16 +208,29 @@ public class TriggerManager {
 			throw new IllegalStateException();
 		}
 		String thingID=gatewayOfKiiCloud.getThingID();
-
 		String fullKiiThingID= ThingIDTools.joinFullKiiThingID(sourceThing.getKiiAppID(), thingID);
-
+		//query all things of the gateway
 		List<EndNodeOfGateway> allEndNodesOfGateway = thingIFService.getAllEndNodesOfGateway(fullKiiThingID);
 		Map<String, EndNodeOfGateway> allEndNodesOfGatewayMap = new HashMap<>();
 		allEndNodesOfGateway.forEach(endNodeOfGateway -> allEndNodesOfGatewayMap.put(endNodeOfGateway.getVendorThingID(), endNodeOfGateway));
 
-		List<ExecuteTarget> targets = summaryRecord.getTargets();
+		//source in same gateway
+		summaryRecord.getSummarySource().forEach( (key , summarySource )-> {
+			//每个SummarySource只有 单个 thing
+			TagSelector selector = summarySource.getSource();
+			GlobalThingInfo sourceThingTemp = globalThingDao.findByID(selector.getThingList().get(0));
+			if (allEndNodesOfGatewayMap.get(sourceThingTemp.getVendorThingID()) == null) {
+				throw new IllegalStateException();
+			}
+			GatewaySummarySource gatewaySummarySource = new GatewaySummarySource();
+			BeanUtils.copyProperties(summarySource , gatewaySummarySource);
+			gatewaySummarySource.getSourceVendorThing().getVendorThingIdList().add(sourceThingTemp.getVendorThingID());
+			gatewaySummarySource.getSourceVendorThing().getThingList().add(sourceThingTemp.getId());
+			gatewayTriggerRecord.getSummarySource().put(key, gatewaySummarySource);
+		});
 
-//		targets:
+		//command target
+		List<ExecuteTarget> targets = summaryRecord.getTargets();
 		for(ExecuteTarget target:targets)
 			switch (target.getType()) {
 
@@ -246,8 +238,6 @@ public class TriggerManager {
 					CommandToThing command = (CommandToThing) target;
 					CommandToThingInGW cmdInGW = new CommandToThingInGW();
 					cmdInGW.setCommand(command.getCommand());
-//					cmdInGW.getSelector().setVendorThingIdList(new ArrayList<>());
-//					cmdInGW.getSelector().setThingList(new ArrayList<>());
 					Set<GlobalThingInfo> thingList = thingTagService.getThingInfos(command.getSelector());
 
 					for (GlobalThingInfo thing : thingList) {
@@ -264,8 +254,6 @@ public class TriggerManager {
 
 			}
 
-
-//		String thingID="th.f83120e36100-a269-5e11-bf4b-0c5b4813";
 		String vendorThingID=globalThingDao.getThingByFullKiiThingID(sourceThing.getKiiAppID(), thingID).getVendorThingID();
 		gatewayTriggerRecord.setGatewayVendorThingID(vendorThingID);
 		gatewayTriggerRecord.setGatewayFullKiiThingID(fullKiiThingID);
