@@ -35,7 +35,7 @@ public class ThingSchemaDao {
 	private GlobalThingSpringDao  thingDao;
 
 
-	public ThingSchema getThingSchemaByName(String name){
+	private ThingSchema getThingSchemaByName(String name){
 
 		IndustryTemplate template=templateDao.getTemplateByName(name);
 
@@ -60,7 +60,7 @@ public class ThingSchemaDao {
 
 		try {
 			ThingSchema schema = mapper.readValue(template.getContent(), ThingSchema.class);
-
+			schema.setName(template.getName());
 			schema.setVersion(1);
 
 			return schema;

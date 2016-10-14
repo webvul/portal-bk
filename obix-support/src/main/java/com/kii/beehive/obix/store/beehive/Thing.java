@@ -13,6 +13,8 @@ public class Thing {
 
 	private ThingStatus  status;
 
+	private long dbID;
+
 	public Thing(){
 
 	}
@@ -26,6 +28,12 @@ public class Thing {
 
 		this.status.setFields(thing.getStatus());
 
+		this.dbID=thing.getId();
+
+	}
+
+	public Long getDBId(){
+		return dbID;
 	}
 
 	public String getThingID() {

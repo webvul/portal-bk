@@ -43,7 +43,7 @@ public class LocationService {
 
 		thingService.getThingInfoByLoc(locStr).forEach(view::addEntity);
 
-		thingService.getPointInfoByLoc(locStr).forEach(view::addEntity);
+//		thingService.getPointInfoByLoc(locStr).forEach(view::addEntity);
 
 		return view;
 
