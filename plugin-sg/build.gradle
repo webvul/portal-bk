@@ -6,7 +6,12 @@ dependencies {
     compile "com.floragunn:search-guard-2:${searchGuardVersion}"
     compile "org.elasticsearch:elasticsearch:${elasticsearchVersion}"
     compile "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
-    compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.4.1'
+    compile("org.apache.httpcomponents:httpclient:4.5.2")
+    compile("org.apache.httpcomponents:httpcore:4.4.5")
+    compile("org.apache.httpcomponents:httpcore-nio:4.4.5")
+    compile("org.apache.httpcomponents:httpasyncclient:4.1.2")
+    compile("org.slf4j:slf4j-api:1.7.12")
+    compile("com.kii.dataanalytic:beehive-client:1.0-SNAPSHOT")
 }
 
 ant.propertyfile(file: "src/plugin-metadata/plugin-descriptor.properties") {
@@ -30,7 +35,11 @@ task buildPluginZip(type: Zip, dependsOn: [":plugin-sg:jar"]) {
     from configurations.compile.find { it.name.startsWith("jackson-databind") }
     from configurations.compile.find { it.name.startsWith("jackson-annotations") }
     from configurations.compile.find { it.name.startsWith("httpcore") }
+    from configurations.compile.find { it.name.startsWith("httpcore-nio") }
     from configurations.compile.find { it.name.startsWith("httpclient") }
+    from configurations.compile.find { it.name.startsWith("httpasyncclient") }
+    from configurations.compile.find { it.name.startsWith("slf4j-api") }
+    from configurations.compile.find { it.name.startsWith("beehive-client") }
     from configurations.compile.find { it.name.startsWith("commons-logging") }
     from 'src/plugin-metadata'
 }

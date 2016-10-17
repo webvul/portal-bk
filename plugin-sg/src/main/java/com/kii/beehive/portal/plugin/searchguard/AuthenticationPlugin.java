@@ -3,6 +3,7 @@ package com.kii.beehive.portal.plugin.searchguard;
 import org.elasticsearch.action.ActionModule;
 import org.elasticsearch.plugins.Plugin;
 import org.elasticsearch.rest.RestModule;
+import com.kii.beehive.portal.plugin.searchguard.rest.LocationReportAction;
 import com.kii.beehive.portal.plugin.searchguard.rest.SearchAction;
 
 /**
@@ -21,6 +22,7 @@ public class AuthenticationPlugin extends Plugin {
 
 	public void onModule(final RestModule module) {
 		module.addRestAction(SearchAction.class);
+		module.addRestAction(LocationReportAction.class);
 	}
 
 	public void onModule(final ActionModule module) {
