@@ -25,6 +25,7 @@ import org.elasticsearch.rest.RestController;
 import org.elasticsearch.rest.RestRequest;
 import org.elasticsearch.rest.action.search.RestSearchAction;
 import org.elasticsearch.rest.action.support.RestActions;
+import org.elasticsearch.rest.action.support.RestStatusToXContentListener;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import com.kii.beehive.client.RestClient;
 import com.kii.beehive.client.RestClientBuilder;
@@ -68,6 +69,7 @@ public class LocationReportAction extends BaseRestHandler {
 
 	@Override
 	protected void handleRequest(RestRequest restRequest, RestChannel restChannel, Client client) throws Exception {
+		final boolean sourceOnly = restRequest.paramAsBoolean("sourceOnly", false);
 		final List<String> thingIds = AccessController.doPrivileged(new PrivilegedAction<List<String>>() {
 			@Override
 			public List<String> run() {
@@ -101,6 +103,7 @@ public class LocationReportAction extends BaseRestHandler {
 						QueryBuilders.templateQuery(RestActions.getRestContent(restRequest).toUtf8(), params))
 						.buildAsBytes());
 		//searchRequest.writeTo(new OutputStreamStreamOutput(System.out));
-		client.search(searchRequest, new SourceOnlyListener(restChannel));
+		client.search(searchRequest,
+				sourceOnly ? new SourceOnlyListener(restChannel) : new RestStatusToXContentListener(restChannel));
 	}
 }
