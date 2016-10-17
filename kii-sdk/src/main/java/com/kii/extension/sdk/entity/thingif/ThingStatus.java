@@ -29,6 +29,9 @@ public class ThingStatus {
 
 	@JsonIgnore
 	public Object getField(String key){
+		if(fields==null){
+			return null;
+		}
 		return this.fields.get(key);
 	}
 

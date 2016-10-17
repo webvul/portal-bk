@@ -64,6 +64,12 @@ public class DeviceController {
 								@RequestBody ObixContain  input){
 
 
+		PointInfo point=new PointInfo();
+		point.setValue(input.getVal());
+		point.setFieldName(input.getName());
+
+		thingService.setPointInfo(thingID,point);
+
 
 	}
 

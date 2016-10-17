@@ -16,6 +16,7 @@ import com.kii.beehive.obix.store.beehive.ThingSchema;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.ThingLocQuery;
 import com.kii.beehive.portal.jdbc.dao.ThingLocationDao;
+import com.kii.beehive.portal.jdbc.dao.ThingLocationRelDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.service.LocationDao;
 import com.kii.extension.sdk.entity.thingif.Action;
@@ -42,6 +43,8 @@ public class ThingStatusService {
 	private ThingIFInAppService thingIFService;
 
 
+	@Autowired
+	private ThingLocationRelDao locRelationDao;
 
 	@Autowired
 	private AppInfoManager appInfoManager;
@@ -70,6 +73,12 @@ public class ThingStatusService {
 
 		ThingInfo info=new ThingInfo(schema,thing.getStatus());
 
+		List<String> locs=locRelationDao.getRelation(thing.getDBId());
+		if(!locs.isEmpty()){
+			info.setLocation(locs.get(0));
+		}else{
+			info.setLocation("");
+		}
 		info.setName(thing.getThingID());
 
 		info.setPointCollect(info.getSchema().getFieldCollect().entrySet().stream().map(entry->{
@@ -79,6 +88,8 @@ public class ThingStatusService {
 			return new PointInfo(entry.getValue(),name,thing.getStatus().getField(name),thing.getThingID());
 
 		}).collect(Collectors.toSet()));
+
+//		info.setLocation(thing.getLocation());
 
 		return info;
 
@@ -109,7 +120,7 @@ public class ThingStatusService {
 
 		ThingCommand cmd=new ThingCommand();
 
-		ThingSchema schema=schemaDao.getThingSchemaByName(thingID);
+		ThingSchema schema=schemaDao.getThingSchemaByThingVendorID(thingID);
 
 		String actionDef=schema.getActions().entrySet().stream().filter((a)->a.getValue().getIn().getProperties().containsKey(name)).findFirst().get().getKey();
 

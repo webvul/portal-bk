@@ -16,7 +16,7 @@ import com.kii.beehive.obix.web.entity.ObixContain;
 import com.kii.beehive.obix.web.entity.ObixType;
 
 @RestController
-@RequestMapping(path="/site",method= RequestMethod.GET,consumes = {MediaType.ALL_VALUE},produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+@RequestMapping(method= RequestMethod.GET,consumes = {MediaType.ALL_VALUE},produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
 public class LocTagController {
 
 
@@ -29,10 +29,14 @@ public class LocTagController {
 
 
 
-	@RequestMapping(path="/**")
+	@RequestMapping(path="/site/**")
 	public ObixContain getRootLoc(WebRequest request){
 
 		String url= StringUtils.substringAfter(request.getDescription(false),"=");
+
+		if(!url.endsWith("/")){
+			url+="/";
+		}
 
 		String baseUrl=StringUtils.substringBefore(url,"/site/");
 
@@ -40,7 +44,7 @@ public class LocTagController {
 
 		String[]  list=StringUtils.split(locStr,"/");
 
-		if(list.length>4){
+		if(list.length>5){
 			return new ObixContain();
 		}
 

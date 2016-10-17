@@ -139,6 +139,9 @@ public class ObixContainConvertService {
 		obix.setObixType(ObixType.REF);
 
 		StringBuilder  fullLoc=new StringBuilder();
+		if(loc==null){
+			loc="";
+		}
 		if(loc.length()>=2) {
 			fullLoc.append(loc.substring(0, 2)).append("/");
 		}
@@ -151,8 +154,8 @@ public class ObixContainConvertService {
 		if(loc.length()>=7){
 			fullLoc.append(loc.substring(6, 7)).append("/");
 		}
-		if(loc.length()==10){
-			fullLoc.append(loc.substring(7, 10)).append("/");
+		if(loc.length()==9){
+			fullLoc.append(loc.substring(7, 9)).append("/");
 		}
 
 		loc=fullLoc.toString();
