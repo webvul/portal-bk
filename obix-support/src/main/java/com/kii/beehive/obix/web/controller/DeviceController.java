@@ -66,7 +66,7 @@ public class DeviceController {
 
 		PointInfo point=new PointInfo();
 		point.setValue(input.getVal());
-		point.setFieldName(input.getName());
+		point.setFieldName(name);
 
 		thingService.setPointInfo(thingID,point);
 
