@@ -35,11 +35,12 @@ function global_onThingRemoved(params,context,done){
 }
 
 
-function global_onThingCommandResponse(params,context,done){
+function global_onThingCmdResponse(params,context,done){
 
 
+	var thingID=params.objectScope.thingID;
 
-	var bucket=context.getAppAdminContext().bucketWithName("_commands");
+	var bucket=context.getAppAdminContext().thingWithID(thingID).bucketWithName("_commands");
 
 	var obj=bucket.createObjectWithID(params.objectID);
 

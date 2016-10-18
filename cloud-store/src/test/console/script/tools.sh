@@ -111,11 +111,25 @@ if [ "$2" == "maintain" ]
 then
 	
 	node $exec get-hook-config \
-	  --code-version fof0dzp306heojvoof931hx13 \
+	  --code-version $3 \
 	  $site_param \
 	  --app-id $id \
 	  --app-key $key \
 	  --client-id $clientID \
 	  --client-secret $secret 
 	
+fi
+
+
+if [ "$2" == "dump" ]
+then
+
+	node $exec get \
+	  --code-version $3 \
+	  $site_param \
+	  --app-id $id \
+	  --app-key $key \
+	  --client-id $clientID \
+	  --client-secret $secret
+
 fi

@@ -9,7 +9,7 @@ public class EndPointNameConstant {
 
 	static final String OnThingRemoved="global_onThingRemoved";
 
-	static final String OnThingCmdResponse="global_onThingCommandResponse";
+	static final String OnThingCmdResponse="global_onThingCmdResponse";
 
 
 

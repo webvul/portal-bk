@@ -118,7 +118,7 @@ public class ListenerEnvInitService {
 	}
 
 	private EventTriggerConfig thingCmdResponse() {
-		EventTriggerConfig trigger3= TriggerFactory.getBucketInstance("_commands",BucketWhenType.DATA_OBJECT_UPDATED,TriggerScopeType.Thing);
+		EventTriggerConfig trigger3= TriggerFactory.getBucketInstance("_commands",BucketWhenType.DATA_OBJECT_UPDATED,TriggerScopeType.Things);
 		trigger3.setEndpoint(EndPointNameConstant.OnThingCmdResponse);
 		return trigger3;
 	}
@@ -174,7 +174,6 @@ public class ListenerEnvInitService {
 
 		});
 
-		log.info("deployTriggerToAll end");
 	}
 
 	public void deployTrigger(AppInfo appInfo,CallbackUrlParameter param){

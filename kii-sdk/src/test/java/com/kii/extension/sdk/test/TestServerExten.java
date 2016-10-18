@@ -84,13 +84,13 @@ public class TestServerExten extends TestTemplate{
 //	}
 //
 
-		EventTriggerConfig trigger1= TriggerFactory.getBucketInstance("lights", BucketWhenType.DATA_OBJECT_CREATED, TriggerScopeType.Thing);
+		EventTriggerConfig trigger1= TriggerFactory.getBucketInstance("lights", BucketWhenType.DATA_OBJECT_CREATED, TriggerScopeType.Things);
 		trigger1.setEndpoint("onLampAdded");
 
-		EventTriggerConfig  trigger2= TriggerFactory.getBucketInstance("schedules", BucketWhenType.DATA_OBJECT_UPDATED,TriggerScopeType.User);
+		EventTriggerConfig  trigger2= TriggerFactory.getBucketInstance("schedules", BucketWhenType.DATA_OBJECT_UPDATED,TriggerScopeType.Users);
 		trigger2.setEndpoint("onScheduleAdd");
 
-		EventTriggerConfig  trigger3= TriggerFactory.getBucketInstance("schedules",BucketWhenType.DATA_OBJECT_CREATED, TriggerScopeType.User);
+		EventTriggerConfig  trigger3= TriggerFactory.getBucketInstance("schedules",BucketWhenType.DATA_OBJECT_CREATED, TriggerScopeType.Users);
 		trigger3.setEndpoint("onScheduleUpdate");
 
 		ScheduleTriggerConfig schedule1=new ScheduleTriggerConfig();

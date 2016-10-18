@@ -173,7 +173,6 @@ public class ServiceExtensionService {
 								checkResponseCode(httpResponse);
 
 								log.info("set server code version completed on app " + appInfo.getAppID());
-								log.info("deployServiceExtension end on app " + appInfo.getAppID());
 
 							}
 
@@ -242,10 +241,6 @@ public class ServiceExtensionService {
 
 		final AppInfo appInfo=bindToolResolver.getAppInfo();
 
-		log.info("deployServiceExtension start on app " + appInfo.getAppID());
-
-		// deploy server code file
-		log.info("deploy server code file on app " + appInfo.getAppID());
 
 		HttpUriRequest request=getBuilder().deployServiceCode(serviceCtx).generRequest(mapper);
 		String response = client.executeRequest(request);
@@ -257,21 +252,13 @@ public class ServiceExtensionService {
 			throw new IllegalArgumentException(e);
 		}
 		String version= (String) result.get("versionID");
-		log.info("deploy server code file on app " + appInfo.getAppID() + " and get version ID " + version);
-
-		// deploy hook file
-		log.info("deploy hook file on app " + appInfo.getAppID());
 
 		HttpUriRequest hookRequest=getBuilder().deployHook(hookDescription,version).generRequest(mapper);
 		client.doRequest(hookRequest);
 
-		// set server code version
-		log.info("set server code version on app " + appInfo.getAppID());
-
 		HttpUriRequest setVerRequest=getBuilder().setCurrentVersion(version).generRequest(mapper);
 		client.doRequest(setVerRequest);
 
-		log.info("deployServiceExtension end on app " + appInfo.getAppID());
 
 	}
 }

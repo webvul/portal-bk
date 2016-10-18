@@ -67,6 +67,8 @@ public class TestInit {
 
 		param.setBaseUrl("localhost");
 
+		envInitService.initExtensionCodeScript();
+
 		envInitService.deployTrigger(appInfo.getAppInfo(),param);
 
 
