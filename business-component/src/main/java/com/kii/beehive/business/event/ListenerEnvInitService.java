@@ -106,16 +106,22 @@ public class ListenerEnvInitService {
 
 		list.add(stateChange());
 
-		list.add( getStateCreated());
+		list.add(getStateCreated());
 
 		list.add(thingCreated());
 
 		list.add(thingRemoved());
 
+		list.add(thingCmdResponse());
+
 		return list;
 	}
 
-
+	private EventTriggerConfig thingCmdResponse() {
+		EventTriggerConfig trigger3= TriggerFactory.getBucketInstance("_commands",BucketWhenType.DATA_OBJECT_UPDATED,TriggerScopeType.Thing);
+		trigger3.setEndpoint(EndPointNameConstant.OnThingCmdResponse);
+		return trigger3;
+	}
 
 	private EventTriggerConfig thingRemoved() {
 		EventTriggerConfig trigger3= TriggerFactory.getThingInstance(ThingWhenType.THING_DELETED);

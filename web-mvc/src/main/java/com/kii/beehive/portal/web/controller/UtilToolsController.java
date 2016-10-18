@@ -49,6 +49,7 @@ import com.kii.extension.sdk.entity.FederatedAuthResult;
 public class UtilToolsController {
 
 	private static final String SYS_APPINIT = "/sys/appinit";
+	//	private static final String SYS_APPINIT = "/sys/appinit";
 	@Autowired
 	private TagThingManager tagThingManager;
 
@@ -91,7 +92,7 @@ public class UtilToolsController {
 	 *
 	 * @param paramMap
 	 */
-	@RequestMapping(value = SYS_APPINIT, method = {RequestMethod.POST}, consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+	@RequestMapping(value =  "/sys/appinit", method = {RequestMethod.POST}, consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
 	public void initAppContext(@RequestBody Map<String, Object> paramMap, HttpServletRequest request) {
 
 		String userName = (String) paramMap.getOrDefault("portal.username", portalUserName);
@@ -100,32 +101,41 @@ public class UtilToolsController {
 		String masterID = (String) paramMap.getOrDefault("portal.masterApp", masterAppID);
 
 
-		CallbackUrlParameter param = new CallbackUrlParameter();
-		param.setStateChange(CallbackNames.STATE_CHANGED);
-		param.setThingCreated(CallbackNames.THING_CREATED);
-
-		String url = request.getRequestURL().toString();
-		String subUrl = url.substring(0, url.indexOf(SYS_APPINIT)) + CallbackNames.CALLBACK_URL;
-		param.setBaseUrl(subUrl);
+		CallbackUrlParameter param = getCallbackUrlParameter(request);
 
 		appInfoManager.initAllAppInfo(userName, pwd, masterID, param);
 
 		return;
 	}
 
+	private CallbackUrlParameter getCallbackUrlParameter(HttpServletRequest request) {
+		CallbackUrlParameter param = new CallbackUrlParameter();
+		param.setStateChange(CallbackNames.STATE_CHANGED);
+		param.setThingCreated(CallbackNames.THING_CREATED);
+		param.setCommandResponse(CallbackNames.THING_CMD_RESPONSE);
 
+		String url = request.getRequestURL().toString();
+		String subUrl = url.substring(0, url.indexOf(SYS_APPINIT)) + CallbackNames.CALLBACK_URL;
+		param.setBaseUrl(subUrl);
+		return param;
+	}
+
+
+	@RequestMapping(value = SYS_APPINIT+"/serviceExt", method = {RequestMethod.POST}, consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+	public void deployServiceExtensionCallback(HttpServletRequest request) {
+
+		CallbackUrlParameter param = getCallbackUrlParameter(request);
+
+		appInfoManager.updateServiceExtension(param);
+
+		return;
+	}
 
 
 	@RequestMapping(value = "/sys/appRegist/{appID}", method = {RequestMethod.POST}, consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
 	public void initAppContext(@PathVariable("appID") String appID, HttpServletRequest request) {
 
-		CallbackUrlParameter param = new CallbackUrlParameter();
-		param.setStateChange(CallbackNames.STATE_CHANGED);
-		param.setThingCreated(CallbackNames.THING_CREATED);
-
-		String url = request.getRequestURL().toString();
-		String subUrl = url.substring(0, url.indexOf("/appRegist")) + CallbackNames.CALLBACK_URL;
-		param.setBaseUrl(subUrl);
+		CallbackUrlParameter param = getCallbackUrlParameter(request);
 
 		appInfoManager.addAppInfo(appID, param);
 		return;
@@ -173,10 +183,6 @@ public class UtilToolsController {
 			throw new PortalException(ErrorCode.NOT_FOUND, "type", "global thing", "objectID", vendorThingID);
 		}
 		GlobalThingInfo globalThingInfo = thingInfos.get(0);
-
-//		if (!tagThingManager.isThingCreator(globalThingInfo) && tagThingManager.isThingOwner(globalThingInfo)) {
-//			throw new BeehiveUnAuthorizedException("not creator or owner");
-//		}
 
 		KiiAppInfo appInfo = appInfoDao.getAppInfoByID(globalThingInfo.getKiiAppID());
 

@@ -44,7 +44,7 @@
 
     <import resource="classpath:com/kii/extension/sdk/sdkTestContext.xml" />
 
-    <import resource="classpath:com/kii/beehive/portal/jdbc/portaljdbcContext.xml" />
+    <import resource="classpath:com/kii/beehive/portal/jdbc/jdbcTestContext.xml" />
 
     <import resource="classpath:com/kii/beehive/store/testKiiStoreContext.xml" />
 

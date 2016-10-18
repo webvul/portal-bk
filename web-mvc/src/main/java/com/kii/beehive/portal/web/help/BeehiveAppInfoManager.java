@@ -37,13 +37,17 @@ public class BeehiveAppInfoManager {
 	@Async
 	public void initAllAppInfo(String userName,String pwd,String masterID,CallbackUrlParameter param){
 
-		log.info("initAllAppInfo start");
-
 		appManager.initAppInfos(userName,pwd,masterID);
 
 		eventInitService.deployTriggerToAll(param);
 
-		log.info("initAllAppInfo end");
+	}
+
+
+	@Async
+	public void updateServiceExtension(CallbackUrlParameter param){
+
+		eventInitService.deployTriggerToAll(param);
 
 	}
 

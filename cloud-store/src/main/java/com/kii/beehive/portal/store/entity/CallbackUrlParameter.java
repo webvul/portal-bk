@@ -12,6 +12,16 @@ public class CallbackUrlParameter extends KiiEntity {
 
 	private String thingCreated;
 
+	private String commandResponse;
+
+	public String getCommandResponse() {
+		return commandResponse;
+	}
+
+	public void setCommandResponse(String commandResponse) {
+		this.commandResponse = commandResponse;
+	}
+
 	public String getThingCreated() {
 		return thingCreated;
 	}
