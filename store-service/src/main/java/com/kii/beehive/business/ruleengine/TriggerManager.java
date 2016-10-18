@@ -36,6 +36,7 @@ import com.kii.extension.ruleengine.store.trigger.SummarySource;
 import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TagSelector;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.WhenType;
 import com.kii.extension.ruleengine.store.trigger.condition.AndLogic;
 import com.kii.extension.ruleengine.store.trigger.condition.OrLogic;
 import com.kii.extension.sdk.entity.thingif.Action;
@@ -146,7 +147,7 @@ public class TriggerManager {
 	private boolean checkLocalRule(TriggerRecord record) {
 
 		if( ! (record instanceof SummaryTriggerRecord
-//				&& record.getPredicate().getTriggersWhen().equals(WhenType.CONDITION_TRUE)
+				&& record.getPredicate().getTriggersWhen().equals(WhenType.CONDITION_TRUE)
 				&& record.getPredicate().getSchedule() == null
 				&& ( record.getPredicate().getCondition()  instanceof AndLogic || record.getPredicate().getCondition() instanceof OrLogic)
 //				&& ( (AndLogic) record.getPredicate().getCondition() ).getClauses().size() <= 2
