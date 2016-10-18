@@ -19,6 +19,7 @@ import com.kii.beehive.business.ruleengine.ThingStatusChangeCallback;
 import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.jedis.dao.MessageQueueDao;
 import com.kii.beehive.portal.web.constant.CallbackNames;
+import com.kii.beehive.portal.web.entity.CmdResponseUpload;
 import com.kii.beehive.portal.web.entity.CreatedThing;
 import com.kii.beehive.portal.web.entity.StateUpload;
 import com.kii.beehive.portal.web.help.InternalEventListenerRegistry;
@@ -62,9 +63,7 @@ public class ExtensionCallbackController {
 
 		String fullThingID = ThingIDTools.joinFullKiiThingID(appID, status.getThingID());
 
-		statusChangeCallback.onEventFire(status.getState(), fullThingID, status.getTimestamp());
-
-		statusChangeCallback.pushStatusUpload(appID, status.getThingID(), status.getState(), status.getTimestamp());
+		statusChangeCallback.onEventFire(appID,status.getState(), fullThingID, status.getTimestamp());
 
 		eventBus.onStatusUploadFire(fullThingID, status.getState(), status.getTimestamp());
 
@@ -80,5 +79,18 @@ public class ExtensionCallbackController {
 		tagManager.updateKiicloudRelation(thing.getVendorThingID(), appID + "-" + thing.getThingID());
 	}
 
+
+	@RequestMapping(value = "/" + CallbackNames.THING_CMD_RESPONSE, method = {RequestMethod.POST})
+	public void onThingCmdResponse(@RequestHeader("x-kii-appid") String appID,
+								   @RequestHeader("Authorization") String token,
+								   @RequestBody CmdResponseUpload cmd) {
+
+
+		log.info("cmdResponse  " + cmd.getCommand().getTarget());
+
+
+
+
+	}
 
 }

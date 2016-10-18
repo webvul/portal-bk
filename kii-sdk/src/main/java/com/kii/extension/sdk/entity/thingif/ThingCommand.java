@@ -15,9 +15,15 @@ public class ThingCommand {
 	{"issuer":"USER:92803ea00022-a488-4e11-d7c1-018317e4","actions":[{"power":true}],"schema":"threaddemo","schemaVersion":0,"metadata":{"foo":"bar"}}
 	 */
 
+	private String commandID;
+
 	private String issuer;
 
+	private String target;
+
 	private List<Map<String,Action>> actions=new ArrayList<>();
+
+	private  List<Map<String,ActionResult>> actionResults=new ArrayList<>();
 
 	private String schema;
 
@@ -28,6 +34,32 @@ public class ThingCommand {
 	private String description;
 
 	private Map<String,Object> metadata=new HashMap<>();
+
+	private CommandStateType  commandState;
+
+	public String getCommandID() {
+		return commandID;
+	}
+
+	public void setCommandID(String commandID) {
+		this.commandID = commandID;
+	}
+
+	public String getTarget() {
+		return target;
+	}
+
+	public void setTarget(String target) {
+		this.target = target;
+	}
+
+	public CommandStateType getCommandState() {
+		return commandState;
+	}
+
+	public void setCommandState(CommandStateType commandState) {
+		this.commandState = commandState;
+	}
 
 	public String getIssuer() {
 		return issuer;
@@ -50,6 +82,14 @@ public class ThingCommand {
 	public void addAction(String name,Action action){
 		Map<String,Action> map= Collections.singletonMap(name,action);
 		this.actions.add(map);
+	}
+
+	public List<Map<String, ActionResult>> getActionResults() {
+		return actionResults;
+	}
+
+	public void setActionResults(List<Map<String, ActionResult>> actionResults) {
+		this.actionResults = actionResults;
 	}
 
 	public String getSchema() {

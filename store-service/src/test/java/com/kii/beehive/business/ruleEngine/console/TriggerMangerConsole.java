@@ -73,7 +73,7 @@ public class TriggerMangerConsole {
 
 					ThingStatus status=getStatus(params);
 
-					callback.onEventFire(status,arrays[1],new Date());
+					callback.onEventFire("",status,arrays[1],new Date());
 
 				}
 				if(cmd.equals("enable")){

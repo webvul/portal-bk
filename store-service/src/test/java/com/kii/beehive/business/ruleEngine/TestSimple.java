@@ -81,7 +81,7 @@ public class TestSimple {
 
 	private void sendThingStatus(String id, ThingStatus status){
 
-		statusChangeCallback.onEventFire(status,id,new Date());
+		statusChangeCallback.onEventFire("",status,id,new Date());
 
 	}
 
@@ -94,7 +94,7 @@ public class TestSimple {
 //		statusChangeCallback.onEventFire(status,id,new Date());
 
 		status.setField("power","true");
-		statusChangeCallback.onEventFire(status,id,new Date());
+		statusChangeCallback.onEventFire("",status,id,new Date());
 
 		System.in.read();
 	}

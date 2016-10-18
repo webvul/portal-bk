@@ -49,7 +49,7 @@ public class TestTrigger extends StoreServiceTestInit {
 
 		ThingIDTools.ThingIDCombine combine=ThingIDTools.splitFullKiiThingID(id);
 
-		stateNotifyService.onEventFire(status,id,new Date());
+		stateNotifyService.onEventFire("",status,id,new Date());
 
 	}
 	
