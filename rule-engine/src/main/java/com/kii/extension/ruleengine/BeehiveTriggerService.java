@@ -368,7 +368,7 @@ public class BeehiveTriggerService {
 		List<CommandParam> list=record.getTargetParamList();
 
 		int i=0;
-		for(ExecuteTarget target:record.getTargets()){
+		for(ExecuteTarget target:record.getTarget()){
 
 			String delay=target.getDelay();
 

@@ -66,7 +66,7 @@ public class TriggerValidate {
 		validatePredicate(predicate);
 
 
-		List<ExecuteTarget> executeTargets = triggerRecord.getTargets();
+		List<ExecuteTarget> executeTargets = triggerRecord.getTarget();
 
 		boolean isDelay=executeTargets.stream().filter(e-> StringUtils.isNotBlank(e.getDelay())).count()>0;
 

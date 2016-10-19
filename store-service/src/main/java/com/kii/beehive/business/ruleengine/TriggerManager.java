@@ -230,7 +230,7 @@ public class TriggerManager {
 		});
 
 		//command target
-		List<ExecuteTarget> targets = summaryRecord.getTargets();
+		List<ExecuteTarget> targets = summaryRecord.getTarget();
 		for(ExecuteTarget target:targets)
 			switch (target.getType()) {
 
