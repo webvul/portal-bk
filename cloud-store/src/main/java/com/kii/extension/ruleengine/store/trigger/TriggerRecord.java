@@ -2,7 +2,9 @@ package com.kii.extension.ruleengine.store.trigger;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -26,6 +28,7 @@ import com.kii.extension.sdk.entity.KiiEntity;
 })
 public abstract class TriggerRecord extends KiiEntity {
 
+	private Map<String,Object> customProperty=new HashMap<>();
 
 	private Long userID;
 
@@ -45,8 +48,6 @@ public abstract class TriggerRecord extends KiiEntity {
 
 	private String description;
 
-//	private boolean inDrools=true;
-
 	public String getDeletedReason() {
 		return deletedReason;
 	}
@@ -54,14 +55,6 @@ public abstract class TriggerRecord extends KiiEntity {
 	public void setDeletedReason(String deletedReason) {
 		this.deletedReason = deletedReason;
 	}
-
-//	public boolean isInDrools() {
-//		return inDrools;
-//	}
-//
-//	public void setInDrools(boolean drools) {
-//		inDrools = drools;
-//	}
 
 	public String getTriggerID() {
 		return super.getId();
@@ -116,7 +109,7 @@ public abstract class TriggerRecord extends KiiEntity {
 		this.predicate = predicate;
 	}
 
-	public List<ExecuteTarget> getTargets() {
+	public List<ExecuteTarget> getTarget() {
 		return targets;
 	}
 
@@ -128,10 +121,6 @@ public abstract class TriggerRecord extends KiiEntity {
 	public void addTarget(ExecuteTarget target) {
 		this.targets.add(target);
 	}
-
-//	public List<ExecuteTarget>  getTarget(){
-//		return targets;
-//	}
 
 	private BeehiveTriggerType type;
 
@@ -168,13 +157,12 @@ public abstract class TriggerRecord extends KiiEntity {
 		return super.getCreated();
 	}
 
-//	public TriggerPosition getTriggerPosition() {
-//		return triggerPosition;
-//	}
-//
-//	public void setTriggerPosition(TriggerPosition triggerPosition) {
-//		this.triggerPosition = triggerPosition;
-//	}
 
+	public Map<String, Object> getCustomProperty() {
+		return customProperty;
+	}
 
+	public void setCustomProperty(Map<String, Object> customProperty) {
+		this.customProperty = customProperty;
+	}
 }
