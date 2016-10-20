@@ -31,9 +31,9 @@ import com.kii.extension.sdk.exception.ObjectNotFoundException;
 @Component
 public class AuthInterceptor extends HandlerInterceptorAdapter {
 
-	/**
-	 * @deprecated only for testing, so should not appear in any source code except for junit
-	 */
+//	/**
+//	 * @deprecated only for testing, so should not appear in any source code except for junit
+//	 */
 
 	private Logger log = LoggerFactory.getLogger(AuthInterceptor.class);
 
