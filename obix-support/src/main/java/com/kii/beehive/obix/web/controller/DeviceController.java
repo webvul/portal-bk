@@ -2,7 +2,9 @@ package com.kii.beehive.obix.web.controller;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,6 +14,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.kii.beehive.obix.service.ObixContainConvertService;
 import com.kii.beehive.obix.service.ThingService;
+import com.kii.beehive.obix.store.ObixPointDetail;
 import com.kii.beehive.obix.store.PointInfo;
 import com.kii.beehive.obix.store.ThingInfo;
 import com.kii.beehive.obix.web.entity.ObixContain;
@@ -59,9 +62,17 @@ public class DeviceController {
 	}
 
 	@RequestMapping(path="/{thingID}/{pointName}",method=RequestMethod.PUT )
-	public void  setPointDetail(@PathVariable("thingID") String thingID ,
-									   @PathVariable("pointName") String name,
-								@RequestBody ObixContain  input){
+	public ResponseEntity setPointDetail(@PathVariable("thingID") String thingID ,
+										 @PathVariable("pointName") String name,
+										 @RequestBody ObixContain  input){
+
+		ObixPointDetail schema=thingService.getPointInfo(thingID,name).getSchema();
+
+		if(!schema.isWritable()){
+
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+
+		}
 
 
 		PointInfo point=new PointInfo();
@@ -71,6 +82,7 @@ public class DeviceController {
 		thingService.setPointInfo(thingID,point);
 
 
+		return ResponseEntity.ok().build();
 	}
 
 

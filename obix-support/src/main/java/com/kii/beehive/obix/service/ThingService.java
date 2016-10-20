@@ -67,6 +67,7 @@ public class ThingService {
 	public  void setPointInfo(String thingID,PointInfo point){
 
 
+
 		thingService.setThingStatus(thingID,point.getFieldName(),point.getValue());
 	}
 
