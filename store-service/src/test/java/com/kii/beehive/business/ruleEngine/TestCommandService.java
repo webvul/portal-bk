@@ -101,7 +101,7 @@
 //		List<ExecuteTarget> targets=new ArrayList<>();
 //		targets.add(target);
 //
-//		trigger.setTarget(targets);
+//		trigger.setTargets(targets);
 //
 //		cmdService.doCommand(trigger,new HashMap<>());
 //
@@ -182,7 +182,7 @@
 //		List<ExecuteTarget> targets=new ArrayList<>();
 //		targets.add(target);
 //
-//		trigger.setTarget(targets);
+//		trigger.setTargets(targets);
 //
 //		CallHttpApi api=new CallHttpApi();
 //

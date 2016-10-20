@@ -117,7 +117,7 @@ public class TriggerMangerConsole {
 					record.setSource(new SimpleTriggerRecord.ThingID());
 					record.getSource().setThingID(Long.parseLong(thingID));
 					List<ExecuteTarget> targets = getTargets();
-					record.setTarget(targets);
+					record.setTargets(targets);
 
 					engine.createTrigger(record);
 				}

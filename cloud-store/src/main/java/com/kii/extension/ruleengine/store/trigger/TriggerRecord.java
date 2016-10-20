@@ -113,7 +113,7 @@ public abstract class TriggerRecord extends KiiEntity {
 		return targets;
 	}
 
-	public void setTarget(List<ExecuteTarget> target) {
+	public void setTargets(List<ExecuteTarget> target) {
 		this.targets = target;
 	}
 
