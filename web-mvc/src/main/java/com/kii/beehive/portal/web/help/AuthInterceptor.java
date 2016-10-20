@@ -3,12 +3,10 @@ package com.kii.beehive.portal.web.help;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
-
 import com.kii.beehive.business.helper.OpLogTools;
 import com.kii.beehive.business.manager.AppInfoManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
@@ -107,7 +104,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 				|| subUrl.contains("/debug/")) {
 
 			list.set(1, subUrl);
-			logTool.write(list);
+//			logTool.write(list);
 
 			return super.preHandle(request, response, handler);
 
@@ -116,7 +113,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
 		if(subUrl.startsWith("/gatewayServer")){
 			list.set(1, subUrl);
-			logTool.write(list);
+//			logTool.write(list);
 
 			return super.preHandle(request, response, handler);
 
@@ -139,7 +136,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 				AuthInfoStore.setAuthInfo(Constants.ADMIN_ID);
 				AuthInfoStore.setTeamID(null);
 				list.set(1, String.valueOf(Constants.ADMIN_ID));
-				logTool.write(list);
+//				logTool.write(list);
 
 				return super.preHandle(request, response, handler);
 			}
@@ -185,11 +182,11 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 			list.add("authSuccess");
 		} catch (PortalException e) {
 			list.add("UnauthorizedAccess");
-			logTool.write(list);
+//			logTool.write(list);
 			throw e;
 		}
 		list.set(1, AuthInfoStore.getUserIDStr());
-		logTool.write(list);
+//		logTool.write(list);
 
 		return super.preHandle(request, response, handler);
 
@@ -198,6 +195,24 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 	@Override
 	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
 //        authManager.unbindUserToken();
+		// api log
+		String url = request.getRequestURI();
+		int idx = url.indexOf(Constants.URL_PREFIX);
+		String subUrl = url.substring(idx + 4).trim();
+		List<String> list = new LinkedList<>();
+		list.add(subUrl);
+		list.add(request.getMethod());
+		list.add(String.valueOf(response.getStatus()));
+		list.add(AuthInfoStore.getUserIDStr());
+		list.add(request.getHeader(Constants.ACCESS_TOKEN));
+		if (subUrl.startsWith(Constants.URL_OAUTH2)
+				|| subUrl.startsWith("/onboardinghelper")
+				|| subUrl.contains("/debug/")) {
+			list.set(1, subUrl);
+		}
+		logTool.write(list);
+		//
+
 		AuthInfoStore.clear();
 		appInfoResolver.clearAll();
 		super.afterCompletion(request, response, handler, ex);

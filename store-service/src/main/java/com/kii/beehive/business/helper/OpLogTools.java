@@ -63,6 +63,14 @@ public class OpLogTools {
 	}
 
 
+	@Scheduled(cron = "0 0/10 * * * ?")
+	public void doFlush() {
+		try {
+			writerRef.get().flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	@Scheduled(cron = "0 0 0 * * ?")
 	public void doDailySwitch() {
 
