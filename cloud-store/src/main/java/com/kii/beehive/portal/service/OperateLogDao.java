@@ -2,7 +2,6 @@ package com.kii.beehive.portal.service;
 
 import org.springframework.stereotype.Component;
 
-import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.store.entity.OperateLog;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.sdk.annotation.BindAppByName;
@@ -25,10 +24,10 @@ public class OperateLogDao extends AbstractDataAccess{
 	}
 
 
-	private OperateLog getLogInstance(String triggerID){
+	private OperateLog getLogInstance(TriggerRecord record){
 		OperateLog log=new OperateLog();
 
-		log.setSource(triggerID);
+		log.setSource(record.getTriggerID());
 
 		log.setSourceType(OperateLog.OperateType.trigger);
 
@@ -38,9 +37,12 @@ public class OperateLogDao extends AbstractDataAccess{
           triggerId:”230c77e0-47f8-11e6-9c73-00163e007aba”
 		 */
 
-		log.addField("triggerId",triggerID);
-		log.addField("userId", AuthInfoStore.getUserID());
+		log.addField("triggerId",record.getTriggerID());
+		log.addField("userId", record.getOwner());
 		log.addField("time",log.getTimestamp());
+		log.addField("type",record.getType().name());
+		log.addField("withPeriod",record.getPreparedCondition()!=null);
+		log.addField("withSchedule",record.getPredicate().getSchedule()!=null);
 
 		return log;
 
@@ -48,10 +50,8 @@ public class OperateLogDao extends AbstractDataAccess{
 
 	public void triggerLog(TriggerRecord record,OperateLog.ActionType  type){
 
-		OperateLog  log=getLogInstance(record.getTriggerID());
+		OperateLog  log=getLogInstance(record);
 		log.setAction(type);
-
-		log.addField("type",record.getType().name());
 
 		super.addEntity(log);
 

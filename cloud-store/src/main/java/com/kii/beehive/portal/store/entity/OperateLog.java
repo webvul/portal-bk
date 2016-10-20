@@ -1,6 +1,7 @@
 package com.kii.beehive.portal.store.entity;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.kii.extension.sdk.entity.KiiEntity;
@@ -15,7 +16,7 @@ public class   OperateLog extends KiiEntity{
 
 	private String actionType;
 
-	private Map<String,Object> object;
+	private Map<String,Object> object=new HashMap<>();
 
 	private Date timestamp=new Date();
 

@@ -1,7 +1,5 @@
 package com.kii.beehive.business.ruleengine;
 
-import javax.annotation.PostConstruct;
-
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
@@ -17,6 +15,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.business.helper.TriggerCreator;
+import com.kii.beehive.portal.service.OperateLogDao;
+import com.kii.beehive.portal.store.entity.OperateLog;
 import com.kii.extension.ruleengine.EventCallback;
 import com.kii.extension.ruleengine.ExecuteParam;
 import com.kii.extension.ruleengine.service.TriggerRecordDao;
@@ -50,14 +50,12 @@ public class CommandExecuteService implements EventCallback {
 	private TriggerCreator creator;
 
 
+	@Autowired
+	private OperateLogDao logTool;
+
+
 	private ScheduledExecutorService executeService=new ScheduledThreadPoolExecutor(10);
 
-
-	@PostConstruct
-	public  void init(){
-
-
-	}
 
 
 	@Async
@@ -66,11 +64,15 @@ public class CommandExecuteService implements EventCallback {
 
 
 
+
 		TriggerRecord record=triggerDao.getEnableTriggerRecord(triggerID);
 
 		if(record==null){
 			return;
 		}
+
+
+		logTool.triggerLog(record, OperateLog.ActionType.fire);
 
 		List<ExecuteTarget> targets=record.getTarget();
 
