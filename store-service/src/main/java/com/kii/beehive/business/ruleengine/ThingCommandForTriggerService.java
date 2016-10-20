@@ -47,6 +47,16 @@ public class ThingCommandForTriggerService {
 	@Autowired
 	private ResponseBuilder  builder;
 
+	public void saveComandResponse(ThingCommand  command){
+
+
+
+		CommandResponse  resp=resultDao.getCommandResultByID(command.getCommandID());
+
+		resultDao.updateCommandResult(command,resp.getId());
+
+	}
+
 
 	public void executeCommand(String triggerID,CommandToThing command,ExecuteParam params){
 

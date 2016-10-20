@@ -24,6 +24,8 @@ import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
+import com.kii.beehive.portal.service.OperateLogDao;
+import com.kii.beehive.portal.store.entity.OperateLog;
 import com.kii.extension.ruleengine.service.TriggerRecordDao;
 import com.kii.extension.ruleengine.store.trigger.BeehiveTriggerType;
 import com.kii.extension.ruleengine.store.trigger.CommandToThing;
@@ -70,6 +72,8 @@ public class TriggerManager {
 	@Autowired
 	private TriggerCreator creator;
 
+	@Autowired
+	private OperateLogDao logTool;
 
 	@PostConstruct
 	public void init() {
@@ -97,7 +101,13 @@ public class TriggerManager {
 
 		triggerDao.addKiiEntity(record);
 
+		logTool.triggerLog(record, OperateLog.ActionType.create);
+
 		if(record.getRecordStatus()== TriggerRecord.StatusType.enable) {
+
+			logTool.triggerLog(record, OperateLog.ActionType.enable);
+
+
 			creator.createTrigger(record);
 		}
 		return record;
@@ -109,6 +119,9 @@ public class TriggerManager {
 	public TriggerRecord updateTrigger(TriggerRecord record) {
 
 		TriggerRecord oldRecord = this.getTriggerByID(record.getId());
+
+		logTool.triggerLog(record, OperateLog.ActionType.update);
+
 
 		if(oldRecord.getType().equals(BeehiveTriggerType.Gateway)){
 
@@ -275,6 +288,9 @@ public class TriggerManager {
 
 		triggerDao.disableTrigger(triggerID);
 
+		logTool.triggerLog(record, OperateLog.ActionType.disable);
+
+
 		if(record.getType()==BeehiveTriggerType.Gateway){
 
 			sendGatewayCommand((GatewayTriggerRecord) record, GatewayCommand.disableTrigger);
@@ -293,6 +309,9 @@ public class TriggerManager {
 		TriggerRecord  record= triggerDao.getTriggerRecord(triggerID);
 
 		triggerDao.enableTrigger(triggerID);
+
+		logTool.triggerLog(record, OperateLog.ActionType.enable);
+
 
 		if(record.getType()==BeehiveTriggerType.Gateway){
 
@@ -350,6 +369,8 @@ public class TriggerManager {
 
 
 		TriggerRecord  record= triggerDao.getTriggerRecord(triggerID);
+
+		logTool.triggerLog(record, OperateLog.ActionType.delete);
 
 		if(record.getType()==BeehiveTriggerType.Gateway){
 

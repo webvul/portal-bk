@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.beehive.business.event.BusinessEventBus;
 import com.kii.beehive.business.manager.ThingTagManager;
+import com.kii.beehive.business.ruleengine.ThingCommandForTriggerService;
 import com.kii.beehive.business.ruleengine.ThingStatusChangeCallback;
 import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.jedis.dao.MessageQueueDao;
@@ -46,6 +47,9 @@ public class ExtensionCallbackController {
 
 	@Autowired
 	private MessageQueueDao messageQueueDao;
+
+	@Autowired
+	private ThingCommandForTriggerService  commandService;
 
 	@Autowired
 	private ObjectMapper objectMapper;
@@ -89,6 +93,7 @@ public class ExtensionCallbackController {
 		log.info("cmdResponse  " + cmd.getCommand().getTarget());
 
 
+		commandService.saveComandResponse(cmd.getCommand());
 
 
 	}

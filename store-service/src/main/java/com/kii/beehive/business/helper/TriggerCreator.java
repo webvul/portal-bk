@@ -51,6 +51,7 @@ public class TriggerCreator {
 
 
 
+
 	public List<String> init(List<TriggerRecord> list){
 
 
@@ -62,7 +63,9 @@ public class TriggerCreator {
 		for(TriggerRecord  trigger:list){
 
 			try {
-				createTrigger(trigger);
+				Map<String,Set<String>>   map=getTriggerDataMap(trigger);
+				general.addTriggerToEngine(trigger,map);
+
 			}catch(TriggerCreateException ex){
 				errList.add(trigger.getTriggerID());
 			}
@@ -88,10 +91,6 @@ public class TriggerCreator {
 
 	}
 
-//
-//	public void saveTrigger(TriggerRecord record){
-//		triggerDao.addKiiEntity(record);
-//	}
 
 	public void createTrigger(TriggerRecord record) throws TriggerCreateException {
 
@@ -99,6 +98,7 @@ public class TriggerCreator {
 		Map<String,Set<String>>   map=getTriggerDataMap(record);
 
 		general.addTriggerToEngine(record,map);
+
 
 		return;
 
@@ -168,9 +168,12 @@ public class TriggerCreator {
 
 	public void removeTrigger(TriggerRecord  record){
 
+
 		String triggerID=record.getTriggerID();
 
+
 		if(record.getRecordStatus()== TriggerRecord.StatusType.enable) {
+
 
 
 			general.removeTrigger(record.getTriggerID());
@@ -188,6 +191,8 @@ public class TriggerCreator {
 		String triggerID=record.getTriggerID();
 
 		if(record.getRecordStatus()== TriggerRecord.StatusType.enable) {
+
+
 
 			general.removeTrigger(record.getTriggerID());
 		}
