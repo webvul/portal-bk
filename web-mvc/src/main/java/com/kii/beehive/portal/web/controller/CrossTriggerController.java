@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kii.beehive.business.helper.OpLogTools;
 import com.kii.beehive.business.ruleengine.TriggerManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.web.exception.ErrorCode;
@@ -30,9 +29,6 @@ public class CrossTriggerController {
 
 	@Autowired
 	private TriggerManager mang;
-
-	@Autowired
-	private OpLogTools logTool;
 
 	@Autowired
 	private TriggerValidate triggerValidate;
