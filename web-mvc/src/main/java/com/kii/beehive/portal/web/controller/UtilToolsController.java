@@ -49,7 +49,7 @@ import com.kii.extension.sdk.entity.FederatedAuthResult;
 public class UtilToolsController {
 
 	private static final String SYS_APPINIT = "/sys/appinit";
-	//	private static final String SYS_APPINIT = "/sys/appinit";
+
 	@Autowired
 	private TagThingManager tagThingManager;
 
@@ -92,7 +92,7 @@ public class UtilToolsController {
 	 *
 	 * @param paramMap
 	 */
-	@RequestMapping(value =  "/sys/appinit", method = {RequestMethod.POST}, consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+	@RequestMapping(value =  SYS_APPINIT, method = {RequestMethod.POST}, consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
 	public void initAppContext(@RequestBody Map<String, Object> paramMap, HttpServletRequest request) {
 
 		String userName = (String) paramMap.getOrDefault("portal.username", portalUserName);
