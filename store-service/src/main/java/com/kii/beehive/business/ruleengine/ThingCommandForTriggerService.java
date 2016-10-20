@@ -53,8 +53,9 @@ public class ThingCommandForTriggerService {
 
 		CommandResponse  resp=resultDao.getCommandResultByID(command.getCommandID());
 
-		resultDao.updateCommandResult(command,resp.getId());
-
+		if(resp!=null) {
+			resultDao.updateCommandResult(command, resp.getId());
+		}
 	}
 
 

@@ -20,10 +20,10 @@ import com.kii.beehive.business.ruleengine.ThingStatusChangeCallback;
 import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.jedis.dao.MessageQueueDao;
 import com.kii.beehive.portal.web.constant.CallbackNames;
-import com.kii.beehive.portal.web.entity.CmdResponseUpload;
 import com.kii.beehive.portal.web.entity.CreatedThing;
 import com.kii.beehive.portal.web.entity.StateUpload;
 import com.kii.beehive.portal.web.help.InternalEventListenerRegistry;
+import com.kii.extension.sdk.entity.thingif.ThingCommand;
 
 @RestController(value = "extensionCallbackController")
 @RequestMapping(value = CallbackNames.CALLBACK_URL, consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {
@@ -87,13 +87,13 @@ public class ExtensionCallbackController {
 	@RequestMapping(value = "/" + CallbackNames.THING_CMD_RESPONSE, method = {RequestMethod.POST})
 	public void onThingCmdResponse(@RequestHeader("x-kii-appid") String appID,
 								   @RequestHeader("Authorization") String token,
-								   @RequestBody CmdResponseUpload cmd) {
+								   @RequestBody ThingCommand cmd) {
 
 
-		log.info("cmdResponse  " + cmd.getCommand().getTarget());
+		log.info("cmdResponse  " + cmd.getTarget());
 
 
-		commandService.saveComandResponse(cmd.getCommand());
+		commandService.saveComandResponse(cmd);
 
 
 	}
