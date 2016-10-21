@@ -69,6 +69,8 @@ public class RuleEngineFactory {
 
 		droolsService.bindWithInstance("exec",exec);
 
+		droolsService.bindWithGlobal("ExtFun",extFun);
+
 
 		return droolsService;
 

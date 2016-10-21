@@ -60,6 +60,10 @@ public abstract class TriggerRecord extends KiiEntity {
 		return super.getId();
 	}
 
+	public void setTriggerID(String triggerID){
+		this.setId(triggerID);
+	}
+
 	@JsonProperty("prepareCondition")
 	public TriggerValidPeriod getPreparedCondition() {
 		return period;

@@ -1,5 +1,7 @@
 package com.kii.extension.ruleengine;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -16,7 +18,7 @@ public class ExtendFunAdapter {
 	private ApplicationContext applicationCtx;
 
 
-	public Object fun(String funName, String triggerID) {
+	public Object callFun(String funName, String triggerID,Map<String,Object> status) {
 
 		System.out.println("extfun:"+triggerID+" funName:"+funName);
 		return 0;
