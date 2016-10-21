@@ -10,6 +10,9 @@ public class CommandResponse extends  TriggerResult {
 
 	private ThingCommand command;
 
+	private String fullKiiThingID;
+
+	private long thingID;
 
 
 	public CommandResponse(){
@@ -39,4 +42,23 @@ public class CommandResponse extends  TriggerResult {
 	public void setResult(String result) {
 		this.result = result;
 	}
+
+
+	public String getFullKiiThingID() {
+		return fullKiiThingID;
+	}
+
+	public void setFullKiiThingID(String thingID) {
+		this.fullKiiThingID = thingID;
+	}
+
+	public long getThingID() {
+		return thingID;
+	}
+
+	public void setThingID(long thingID) {
+		this.thingID = thingID;
+	}
+
+
 }

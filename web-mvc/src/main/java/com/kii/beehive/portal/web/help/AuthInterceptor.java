@@ -89,6 +89,9 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
 		int idx = url.indexOf(Constants.URL_PREFIX);
 		String subUrl = url.substring(idx + 4).trim();
+		if(subUrl.startsWith("/")){
+			subUrl=StringUtils.removeStart(subUrl,"/");
+		}
 
 		List<String> list = new LinkedList<>();
 
@@ -126,6 +129,8 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 			throw new PortalException(ErrorCode.INVALID_TOKEN);
 		}
 		list.set(1, token);
+
+
 
 		try {
 			// TODO this checking is for testing only, must remove after testing complete

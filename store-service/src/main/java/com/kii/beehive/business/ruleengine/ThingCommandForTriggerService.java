@@ -90,6 +90,10 @@ public class ThingCommandForTriggerService {
 			cmd.setSchema(thing.getSchemaName());
 
 			CommandResponse resp =  builder.getCmdResponse(triggerID,params);
+
+			resp.setThingID(thing.getId());
+			resp.setFullKiiThingID(thing.getFullKiiThingID());
+
 			resp.setCommand(cmd);
 
 			try {
