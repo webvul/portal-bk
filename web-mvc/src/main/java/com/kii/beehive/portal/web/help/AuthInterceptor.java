@@ -89,9 +89,6 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
 		int idx = url.indexOf(Constants.URL_PREFIX);
 		String subUrl = url.substring(idx + 4).trim();
-		if(subUrl.startsWith("/")){
-			subUrl=StringUtils.removeStart(subUrl,"/");
-		}
 
 		List<String> list = new LinkedList<>();
 
