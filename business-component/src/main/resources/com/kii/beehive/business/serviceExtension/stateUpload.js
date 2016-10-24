@@ -44,10 +44,13 @@ function global_onThingCmdResponse(params,context,done){
 
 	var obj=bucket.createObjectWithID(params.objectID);
 
+
 	obj.refresh({
 
 	      		success: function(theObject) {
 
+					var val=theObject._customInfo;
+					var.put("commandID",theObject.getID());
                 	doRemoteCall(context,"commandResponse",theObject._customInfo,done);
 
  		         },

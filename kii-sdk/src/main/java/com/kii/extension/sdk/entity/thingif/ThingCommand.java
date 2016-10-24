@@ -37,6 +37,7 @@ public class ThingCommand {
 
 	private CommandStateType  commandState;
 
+
 	public String getCommandID() {
 		return commandID;
 	}

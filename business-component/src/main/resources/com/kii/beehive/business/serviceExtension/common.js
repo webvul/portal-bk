@@ -72,6 +72,8 @@ Global_RemoteKiiRequest = (function(){
 
 		object.set("param",param);
 		object.set("endpoint",this.path);
+		object.set("type",this.method);
+        object.set("headers",this.headers);
 
 
 		var _this=this;
