@@ -133,3 +133,16 @@ then
 	  --client-secret $secret
 
 fi
+
+
+if [ "$2" == "version" ]
+then
+
+	node $exec list \
+	  $site_param \
+	  --app-id $id \
+	  --app-key $key \
+	  --client-id $clientID \
+	  --client-secret $secret
+
+fi
