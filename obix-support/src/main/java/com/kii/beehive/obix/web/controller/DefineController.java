@@ -31,7 +31,7 @@ public class DefineController {
 
 		String fullPath=StringUtils.substringAfter(request.getDescription(false),"=");
 
-		String baseUrl=StringUtils.substringBefore(fullPath,"/def/contract/");
+		String baseUrl=StringUtils.substringBefore(fullPath,"/"+name);
 
 		define.setIs(getExpendUrl(define.getIs(),baseUrl));
 

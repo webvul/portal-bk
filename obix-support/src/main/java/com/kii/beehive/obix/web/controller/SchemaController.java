@@ -142,7 +142,7 @@ public class SchemaController {
 		obix.setUnit(unitService.getObixUnitRef(point.getUnitRef()));
 
 		if(obix.getObixType()==ObixType.ENUM){
-			obix.setRange(fullPath+"/~range");
+			obix.setRange(fullPath+"/"+point.getFieldName()+"/~range");
 		}
 		obix.setHref(fullPath);
 

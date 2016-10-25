@@ -60,6 +60,7 @@ public class DeviceController {
 		ThingInfo  thing=thingService.getFullThingInfo(thingID);
 
 		PointInfo p=thing.getPointCollect().stream().filter(pp->pp.getFieldName().equals(name)).findFirst().get();
+		p.setLocation(thing.getLocation());
 
 		return convertService.getFullObix(p,thing.getSchema(),baseUrl);
 

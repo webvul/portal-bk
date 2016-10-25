@@ -91,7 +91,7 @@ public class ObixContainConvertService {
 
 		obix.setObixType(ObixType.OBJ);
 
-
+		obix.addToIs(baseUrl+"/def/contract/location");
 		LocationInfo loc=view.getLocation();
 
 
@@ -159,11 +159,10 @@ public class ObixContainConvertService {
 		}
 
 
-		obix.setHref(fullLoc.toString());
+		obix.setHref(baseUrl+"/"+fullLoc.toString());
 		obix.setDisplay(loc);
 		obix.setName("siteRef");
-		obix.setIs(baseUrl+"/def/contract/location");
-
+		obix.addToIs(baseUrl+"/def/contract/location");
 		return obix;
 	}
 
