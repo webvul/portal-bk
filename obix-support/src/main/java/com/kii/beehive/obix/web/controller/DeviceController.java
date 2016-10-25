@@ -1,6 +1,7 @@
 package com.kii.beehive.obix.web.controller;
 
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.kii.beehive.obix.service.ObixContainConvertService;
@@ -33,10 +35,12 @@ public class DeviceController {
 	private ObixContainConvertService  convertService;
 
 	@RequestMapping(path="/{thingID}",method=RequestMethod.GET )
-	public ObixContain  getThingDetail(@PathVariable("thingID") String thingID,UriComponentsBuilder builder){
+	public ObixContain  getThingDetail(@PathVariable("thingID") String thingID,WebRequest request){
 
 
-		String baseUrl=builder.toUriString();
+		String fullPath= StringUtils.substringAfter(request.getDescription(false),"=");
+
+		String baseUrl=StringUtils.substringBefore(fullPath,"/things/");
 
 		ThingInfo  thing=thingService.getFullThingInfo(thingID);
 

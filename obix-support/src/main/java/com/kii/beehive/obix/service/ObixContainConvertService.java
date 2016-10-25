@@ -38,7 +38,7 @@ public class ObixContainConvertService {
 
 		});
 
-		ObixContain  obixL=getEmbeddedObix(thing.getLocation(),baseUrl);
+		ObixContain  obixL=getEmbeddedObix(thing.getLocation(),baseUrl+"/site/");
 		obix.addChild(obixL);
 
 		return obix;
@@ -69,7 +69,7 @@ public class ObixContainConvertService {
 			obixP.addToIs("obix:point");
 		}
 
-		ObixContain  loc=getEmbeddedObix(point.getLocation(),baseUrl);
+		ObixContain  loc=getEmbeddedObix(point.getLocation(),baseUrl+"/site/");
 
 		loc.setName("siteRef");
 
@@ -107,7 +107,7 @@ public class ObixContainConvertService {
 		ObixContain  eList=new ObixContain();
 		eList.setName("entityList");
 		eList.setObixType(ObixType.LIST);
-		eList.setOf(baseUrl+"def/contract/commEntity");
+		eList.setOf(baseUrl+"/def/contract/commEntity");
 
 		view.getEntityCollect().forEach(e->{
 			eList.addChild(getEmbeddedObix(e,baseUrl));
@@ -120,7 +120,7 @@ public class ObixContainConvertService {
 	public ObixContain getLocList(LocationView view, String baseUrl) {
 		ObixContain list=new ObixContain();
 		list.setObixType(ObixType.LIST);
-		list.setOf(baseUrl+"def/contract/location");
+		list.setOf(baseUrl+"/def/contract/location");
 
 
 		view.getLocation().getSubLocations().keySet().forEach(l-> {
@@ -158,9 +158,8 @@ public class ObixContainConvertService {
 			fullLoc.append(loc.substring(7, 9)).append("/");
 		}
 
-		loc=fullLoc.toString();
 
-		obix.setHref(baseUrl+"/site/"+loc);
+		obix.setHref(fullLoc.toString());
 		obix.setDisplay(loc);
 		obix.setName("siteRef");
 		obix.setIs(baseUrl+"/def/contract/location");
@@ -251,9 +250,7 @@ public class ObixContainConvertService {
 		if(obix.getObixType()==ObixType.ENUM){
 			obix.setRange(baseUrl+"/def/schema/"+thingSchemaName+"/"+p.getFieldName()+"/~range");
 		}
-		obix.setHref(p.getFieldName()+"/");
-		obix.setDisplay(p.getFieldName());
-		obix.setName(p.getFieldName());
+
 		obix.setVal(p.getValue());
 		obix.addToIs(baseUrl+"/def/schema/"+thingSchemaName+"/"+p.getFieldName());
 		obix.addToIs(baseUrl+"/def/contract/commPoint");

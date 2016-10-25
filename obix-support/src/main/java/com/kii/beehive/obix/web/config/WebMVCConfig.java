@@ -5,7 +5,6 @@ import javax.annotation.PostConstruct;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
@@ -16,16 +15,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-
-import com.kii.beehive.obix.web.interceptor.DefineIntercepter;
-import com.kii.beehive.obix.web.interceptor.NavigateIntercepter;
 
 @EnableWebMvc
 @Configuration
@@ -35,12 +30,6 @@ public class WebMVCConfig extends WebMvcConfigurerAdapter {
 
 	private ObjectMapper mapper;
 
-
-	@Autowired
-	private DefineIntercepter defineIntercepter;
-
-	@Autowired
-	private NavigateIntercepter  navIntercepter;
 
 	@PostConstruct
 	public void init(){
@@ -80,15 +69,7 @@ public class WebMVCConfig extends WebMvcConfigurerAdapter {
 		return jsonMarshaller;
 	}
 
-	@Override
-	public void addInterceptors(InterceptorRegistry registry) {
 
-		registry.addInterceptor(defineIntercepter).addPathPatterns("/def");
-
-		registry.addInterceptor(navIntercepter).addPathPatterns("/nav");
-
-
-	}
 
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {

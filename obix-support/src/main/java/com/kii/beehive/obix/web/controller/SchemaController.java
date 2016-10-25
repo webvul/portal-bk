@@ -7,9 +7,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.web.context.request.WebRequest;
 
-import com.kii.beehive.obix.common.UrlInfo;
 import com.kii.beehive.obix.service.ObixUnitIndexService;
 import com.kii.beehive.obix.service.ThingSchemaService;
 import com.kii.beehive.obix.store.EnumRange;
@@ -33,20 +32,24 @@ public class SchemaController {
 
 
 	@RequestMapping(path="/{schemaName}" )
-	public ObixContain getSchemaDefine(@PathVariable("schemaName") String schemaName,UriComponentsBuilder builder){
+	public ObixContain getSchemaDefine(@PathVariable("schemaName") String schemaName,WebRequest request){
 
 
 		ObixThingSchema schema= schemaService.getThingSchema(schemaName);
 
+		String fullPath = getPath(request);
 
-		builder.pathSegment("def","schema",schemaName);
+		return convertSchema(schema,fullPath);
+	}
 
-		return convertSchema(schema,new UrlInfo(builder));
+	public String getPath(WebRequest request) {
+		String fullPath= StringUtils.substringAfter(request.getDescription(false),"=");
+		fullPath=StringUtils.substringBeforeLast(fullPath,"/");
+		return fullPath;
 	}
 
 
-
-	private ObixContain convertSchema(ObixThingSchema schema, UrlInfo url){
+	private ObixContain convertSchema(ObixThingSchema schema, String fullPath){
 
 
 		ObixContain obix=new ObixContain();
@@ -56,16 +59,14 @@ public class SchemaController {
 
 		obix.setObixType(ObixType.OBJ);
 
-		obix.setHref(url.getFullUrl());
-
 		if(StringUtils.isNotBlank(schema.getSuperRef())) {
-			obix.setIs(url.addToRootUrl(schema.getSuperRef()));
+			obix.setIs(fullPath+"/"+schema.getSuperRef());
 		}
 
 		schema.getFieldCollect().values().forEach(p-> {
-					ObixContain point=getEmbedPoint(p, url);
+					ObixContain point=getEmbedPoint(p, fullPath);
 					if(point.getObixType()==ObixType.ENUM){
-						point.setRange(url.addToFullPath(point.getHref()+"~range"));
+						point.setRange(fullPath+"/"+point.getHref()+"~range");
 					}
 					obix.addChild(point);
 				}
@@ -76,7 +77,7 @@ public class SchemaController {
 	}
 
 
-	private ObixContain getEmbedPoint(ObixPointDetail point, UrlInfo baseUrl){
+	private ObixContain getEmbedPoint(ObixPointDetail point, String baseUrl){
 		ObixContain obix=new ObixContain();
 
 		obix.setName(point.getFieldName());
@@ -85,7 +86,7 @@ public class SchemaController {
 		obix.setHref(point.getFieldName()+"/");
 
 		if(StringUtils.isNotBlank(point.getSuperRef())) {
-			obix.setIs(baseUrl.addToRootUrl(point.getSuperRef()));
+			obix.setIs(baseUrl+"/"+point.getSuperRef());
 		}
 		obix.setObixType(ObixType.getInstance(point.getType()));
 		obix.setWritable(point.isWritable());
@@ -97,7 +98,7 @@ public class SchemaController {
 
 		if(point.getRange().isExist()){
 
-			obix.setRange(baseUrl+"/"+point.getFieldName()+"/~range");
+			obix.setRange(baseUrl+"/"+point.getFieldName()+"~range");
 		}
 		obix.setUnit(unitService.getObixUnitRef(point.getUnitRef()));
 
@@ -108,17 +109,18 @@ public class SchemaController {
 	@RequestMapping(path="/{schemaName}/{fieldName}" )
 	public ObixContain getPointDefine(@PathVariable("schemaName") String schemaName,
 									  @PathVariable("fieldName") String fieldName,
-									  UriComponentsBuilder builder){
+									  WebRequest request){
 
-		builder.pathSegment("def","schema",schemaName,fieldName);
+
+		String fullPath = getPath(request);
 
 
 		ObixPointDetail point= schemaService.getPointSchema(schemaName,fieldName);
 
-		return initPointContain(point,builder);
+		return initPointContain(point,fullPath);
 	}
 
-	private ObixContain initPointContain(ObixPointDetail point, UriComponentsBuilder builder){
+	private ObixContain initPointContain(ObixPointDetail point, String fullPath){
 		ObixContain obix=new ObixContain();
 
 		obix.setName(point.getFieldName());
@@ -127,7 +129,7 @@ public class SchemaController {
 		obix.setHref(point.getFieldName()+"/");
 
 		if(StringUtils.isNotBlank(point.getSuperRef())) {
-			obix.setIs(builder.path(point.getSuperRef()).toUriString());
+			obix.setIs(fullPath+"/"+point.getSuperRef());
 		}
 		obix.setObixType(ObixType.getInstance(point.getType()));
 		obix.setWritable(point.isWritable());
@@ -140,9 +142,9 @@ public class SchemaController {
 		obix.setUnit(unitService.getObixUnitRef(point.getUnitRef()));
 
 		if(obix.getObixType()==ObixType.ENUM){
-			obix.setRange(builder.path("~range").toUriString());
+			obix.setRange(fullPath+"/~range");
 		}
-		obix.setHref(builder.toUriString());
+		obix.setHref(fullPath);
 
 		if(point.isWritable()){
 			obix.addToIs("h:op");
@@ -158,18 +160,16 @@ public class SchemaController {
 
 
 	@RequestMapping(path="/{schemaName}/{fieldName}/~range" )
-	public ObixContain getPointRangeDefine(@PathVariable("schemaName") String schemaName, @PathVariable("fieldName") String fieldName,UriComponentsBuilder builder){
+	public ObixContain getPointRangeDefine(@PathVariable("schemaName") String schemaName, @PathVariable("fieldName") String fieldName,WebRequest request){
 
-
-		builder.pathSegment("def","schema",schemaName,fieldName,"~range");
 
 		EnumRange range= schemaService.getEnumRange(schemaName,fieldName);
 
-		return convertRange(range,builder);
+		return convertRange(range);
 	}
 
 
-	private ObixContain convertRange(EnumRange range,UriComponentsBuilder builder){
+	private ObixContain convertRange(EnumRange range){
 		ObixContain obix=new ObixContain();
 
 		range.getValueMap().forEach((k,v)->{
@@ -184,7 +184,6 @@ public class SchemaController {
 
 		});
 
-		obix.setHref(builder.toUriString());
 
 		return obix;
 	}

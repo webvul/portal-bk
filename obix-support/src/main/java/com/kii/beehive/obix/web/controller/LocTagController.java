@@ -32,11 +32,13 @@ public class LocTagController {
 	@RequestMapping(path="/site/**")
 	public ObixContain getRootLoc(WebRequest request){
 
+
 		String url= StringUtils.substringAfter(request.getDescription(false),"=");
 
 		if(!url.endsWith("/")){
 			url+="/";
 		}
+
 
 		String baseUrl=StringUtils.substringBefore(url,"/site/");
 
