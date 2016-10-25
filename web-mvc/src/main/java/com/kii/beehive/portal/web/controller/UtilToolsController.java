@@ -115,7 +115,12 @@ public class UtilToolsController {
 		param.setCommandResponse(CallbackNames.THING_CMD_RESPONSE);
 
 		String url = request.getRequestURL().toString();
-		String subUrl = url.substring(0, url.indexOf(SYS_APPINIT)) + CallbackNames.CALLBACK_URL;
+		String subUrl=null;
+		if(url.contains("Regist")){
+			subUrl= url.substring(0, url.indexOf("/sys/appRegist")) + CallbackNames.CALLBACK_URL;
+		}else {
+			subUrl = url.substring(0, url.indexOf(SYS_APPINIT)) + CallbackNames.CALLBACK_URL;
+		}
 		param.setBaseUrl(subUrl);
 		return param;
 	}

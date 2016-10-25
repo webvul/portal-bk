@@ -50,8 +50,8 @@ function global_onThingCmdResponse(params,context,done){
 	      		success: function(theObject) {
 
 					var val=theObject._customInfo;
-					var.put("commandID",theObject.getID());
-                	doRemoteCall(context,"commandResponse",theObject._customInfo,done);
+					val["commandID"]=theObject.getID();
+                	doRemoteCall(context,"commandResponse",val,done);
 
  		         },
 
