@@ -11,7 +11,7 @@ dependencies {
     compile("org.apache.httpcomponents:httpcore-nio:4.4.5")
     compile("org.apache.httpcomponents:httpasyncclient:4.1.2")
     compile("org.slf4j:slf4j-api:1.7.12")
-    compile   fileTree(include: ['*.jar'], dir: 'libs')
+    compile("com.kii.dataanalytic:beehive-client:1.0.0-SNAPSHOT")
 }
 
 ant.propertyfile(file: "src/plugin-metadata/plugin-descriptor.properties") {
