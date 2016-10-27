@@ -29,16 +29,15 @@ public class ThingStatusChangeCallback {
 	@Value("${thing.state.queue:thing_state_queue}")
 	private String thingStateQueue;
 
-	@Async
+
 	public void onEventFire(String appID, ThingStatus status, String thingID,Date timestamp) {
 
 		engine.updateThingStatus(thingID,status.getFields(),timestamp);
 
-		pushStatusUpload(appID, thingID, status, timestamp);
 	}
 
-
-	private void pushStatusUpload(String appID, String thingID, ThingStatus status, Date timestamp){
+	@Async
+	public void pushStatusUpload(String appID, String thingID, ThingStatus status, Date timestamp){
 		ThingStateUpload thingStateUpload = new ThingStateUpload();
 		thingStateUpload.setAppID(appID);
 		thingStateUpload.setThingID(thingID);

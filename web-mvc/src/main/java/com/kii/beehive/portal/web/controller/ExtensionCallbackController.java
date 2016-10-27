@@ -69,6 +69,8 @@ public class ExtensionCallbackController {
 
 		statusChangeCallback.onEventFire(appID,status.getState(), fullThingID, status.getTimestamp());
 
+		statusChangeCallback.pushStatusUpload(appID,status.getThingID(), status.getState(), status.getTimestamp());
+
 		eventBus.onStatusUploadFire(fullThingID, status.getState(), status.getTimestamp());
 
 		internalEventListenerRegistry.onStateChange(appID, status);
