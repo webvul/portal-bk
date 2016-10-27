@@ -7,7 +7,3 @@ general:
   branches:
     only:
       - develop
-
-test:
-  override:
-    - ./gradlew build -x test
