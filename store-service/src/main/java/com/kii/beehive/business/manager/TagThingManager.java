@@ -671,7 +671,7 @@ public class TagThingManager {
 		GlobalThingInfo thingInfo = globalThingDao.findByID(thingId);
 		if (thingInfo == null) {
 			throw EntryNotFoundException.thingNotFound(thingId);
-		}g
+		}
 		if (!isThingOwner(thingInfo, userId)) {
 			throw new UnauthorizedException(UnauthorizedException.NOT_THING_CREATOR_OR_OWNER);
 		}
