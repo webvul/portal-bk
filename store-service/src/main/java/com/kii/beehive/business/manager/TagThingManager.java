@@ -12,14 +12,12 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
 import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.CollectUtils;
@@ -382,11 +380,15 @@ public class TagThingManager {
 	}
 
 	public boolean isThingOwner(GlobalThingInfo thing) {
-		ThingUserRelation tur = thingUserRelationDao.find(thing.getId(), AuthInfoStore.getUserID());
+		return isThingOwner(thing, AuthInfoStore.getUserID());
+	}
+
+	public boolean isThingOwner(GlobalThingInfo thing, Long userId) {
+		ThingUserRelation tur = thingUserRelationDao.find(thing.getId(), userId);
 		if (tur != null) {
 			return true;
 		}
-		List<UserGroup> userGroupList = userGroupDao.findUserGroup(AuthInfoStore.getUserID(), null, null);
+		List<UserGroup> userGroupList = userGroupDao.findUserGroup(userId, null, null);
 		for (UserGroup ug : userGroupList) {
 			ThingUserGroupRelation tgr = thingUserGroupRelationDao.find(thing.getId(), ug.getId());
 			if (tgr != null) return true;
@@ -399,7 +401,7 @@ public class TagThingManager {
 			}
 		}
 		for (Long tagId : tagThingRelationDao.findTagIds(thing.getId()).orElse(Collections.emptyList())) {
-			if (null != tagUserRelationDao.find(tagId, AuthInfoStore.getUserID())) return true;
+			if (null != tagUserRelationDao.find(tagId, userId)) return true;
 		}
 		return false;
 
@@ -666,18 +668,14 @@ public class TagThingManager {
 	}
 
 	public GlobalThingInfo getAccessibleThingById(Long userId, Long thingId) throws ObjectNotFoundException {
-
-		GlobalThingInfo thing = globalThingDao.findThingByUserIDThingID(userId, thingId);
-
-		if (thing == null) {
-			thing = globalThingDao.findThingByGroupIDRelUserIDWithThingID(userId, thingId);
-		}
-
-		if (thing == null) {
-
+		GlobalThingInfo thingInfo = globalThingDao.findByID(thingId);
+		if (thingInfo == null) {
 			throw EntryNotFoundException.thingNotFound(thingId);
+		}g
+		if (!isThingOwner(thingInfo, userId)) {
+			throw new UnauthorizedException(UnauthorizedException.NOT_THING_CREATOR_OR_OWNER);
 		}
-		return thing;
+		return thingInfo;
 	}
 
 
