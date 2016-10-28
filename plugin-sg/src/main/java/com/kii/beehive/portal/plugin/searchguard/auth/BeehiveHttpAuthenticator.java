@@ -75,7 +75,8 @@ public class BeehiveHttpAuthenticator implements HTTPAuthenticator {
 
 	@Override
 	public boolean reRequestAuthentication(RestChannel channel, AuthCredentials credentials) {
-		final BytesRestResponse wwwAuthenticateResponse = new BytesRestResponse(RestStatus.UNAUTHORIZED);
+		final BytesRestResponse wwwAuthenticateResponse =
+				new BytesRestResponse(RestStatus.UNAUTHORIZED, "UNAUTHORIZED");
 		wwwAuthenticateResponse.addHeader("WWW-Authenticate", "Basic realm=\"Search Guard\"");
 		channel.sendResponse(wwwAuthenticateResponse);
 		return true;
