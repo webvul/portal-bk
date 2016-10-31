@@ -63,7 +63,7 @@ public class OpLogTools {
 	}
 
 
-	@Scheduled(cron = "0 0/10 * * * ?")
+	@Scheduled(cron = "0/3 * * * * ?")
 	public void doFlush() {
 		try {
 			writerRef.get().flush();

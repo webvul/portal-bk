@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
-import com.kii.beehive.business.helper.OpLogTools;
 import com.kii.beehive.business.manager.AppInfoManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.entitys.AuthInfo;
@@ -43,8 +42,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 	@Autowired
 	private AuthManager authManager;
 
-	@Autowired
-	private OpLogTools logTool;
+
 
 
 	@Autowired
@@ -197,23 +195,6 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 	@Override
 	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
 //        authManager.unbindUserToken();
-		// api log
-		String url = request.getRequestURI();
-		int idx = url.indexOf(Constants.URL_PREFIX);
-		String subUrl = url.substring(idx + 4).trim();
-		List<String> list = new LinkedList<>();
-		list.add(subUrl);
-		list.add(request.getMethod());
-		list.add(String.valueOf(response.getStatus()));
-		list.add(AuthInfoStore.getUserIDStr());
-		list.add(request.getHeader(Constants.ACCESS_TOKEN));
-		if (subUrl.startsWith(Constants.URL_OAUTH2)
-				|| subUrl.startsWith("/onboardinghelper")
-				|| subUrl.contains("/debug/")) {
-			list.set(1, subUrl);
-		}
-		logTool.write(list);
-		//
 
 		AuthInfoStore.clear();
 		appInfoResolver.clearAll();

@@ -23,7 +23,7 @@
     <servlet>
         <servlet-name>SpringMVC</servlet-name>
         <servlet-class>
-            org.springframework.web.servlet.DispatcherServlet
+            com.kii.beehive.portal.web.help.KiiDispatcherServlet
         </servlet-class>
         <init-param>
             <param-name>contextClass</param-name>
