@@ -9,7 +9,11 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.StrTemplate;
+import com.kii.beehive.portal.jdbc.entity.BusinessEntity;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.ThingLocationRelation;
 
@@ -196,7 +200,77 @@ Group by   thing.type, substring(loc.location ,？,？ )
 		return result;
 
 	}
-	
+
+
+	/*
+	select group_concat(th.id_global_thing),count(th.id_global_thing)
+from global_thing th join rel_thing_location loc on (loc.thing_id = th.`id_global_thing`)
+where th.`id_global_thing` in (select thing_id from view_thing_user_ownership v where v.user_id = 0)
+and  loc.location like "0807%"
+group by th.`thing_type`;
+	 */
+	private static final String typeGroupSql="select th.${8} as type ,count(th.${0}) as num " +
+			"from ${1} th join ${2} loc on (loc.${3} = th.${0} ) " +
+			"where th.${0} in (select ${4} from ${5} v where v.${6} = ?) " +
+			"and  loc.${7} like  ? " +
+			"and  th.${9} = false  " +
+			"group by th.${8}  ";
+
+
+	public List<TypeWithCount> getCountGroupInTypeByLoc(String loc){
+
+		String fullSql=StrTemplate.gener(typeGroupSql,
+				GlobalThingInfo.ID_GLOBAL_THING,GlobalThingSpringDao.TABLE_NAME,ThingLocationRelDao.TABLE_NAME,ThingLocationRelation.THING_ID,
+				GlobalThingInfo.VIEW_THING_ID,GlobalThingInfo.VIEW_THING_OWNER,GlobalThingInfo.VIEW_USER_ID,ThingLocationRelation.LOCATION,
+				GlobalThingInfo.THING_TYPE, BusinessEntity.IS_DELETED);
+
+		List<Map<String,Object>>  result=this.jdbcTemplate.queryForList(fullSql,new Object[]{AuthInfoStore.getUserID(),loc+"%"});
+
+
+		List<TypeWithCount>  list=new ArrayList<>();
+
+		result.forEach(m->{
+			list.add(new TypeWithCount(m));
+		});
+
+		return list;
+	}
+
+	public static class TypeWithCount{
+
+		private String type;
+
+		private int count;
+
+		public TypeWithCount(){
+
+		}
+
+		public TypeWithCount(Map<String,Object> val){
+			type= (String) val.get("type");
+
+			count=((Number) val.get("num")).intValue();
+		}
+
+		public String getType() {
+			return type;
+		}
+
+		public void setType(String type) {
+			this.type = type;
+		}
+
+		@JsonProperty("thingNumber")
+		public int getCount() {
+			return count;
+		}
+
+		public void setCount(int count) {
+			this.count = count;
+		}
+	}
+
+
 
 	
 	public static class  ThingIDs{

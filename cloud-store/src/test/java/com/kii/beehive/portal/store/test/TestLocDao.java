@@ -9,11 +9,13 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.beehive.portal.service.LocationDao;
 import com.kii.beehive.portal.service.SubLocInfo;
 import com.kii.beehive.portal.store.entity.LocationInfo;
+import com.kii.beehive.portal.store.entity.LocationTree;
 import com.kii.beehive.portal.store.entity.LocationType;
 
 public class TestLocDao extends TestTemplate {
@@ -213,4 +215,12 @@ public class TestLocDao extends TestTemplate {
 	}
 
 
+
+	@Test
+	public void getTree() throws JsonProcessingException {
+
+		LocationTree tree=locDao.getFullLocationTree();
+
+		System.out.println(mapper.writeValueAsString(tree));
+	}
 }

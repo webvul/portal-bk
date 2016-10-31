@@ -4,6 +4,7 @@ package com.kii.extension.sdk.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -142,6 +143,19 @@ public abstract class AbstractDataAccess<T> {
 
 	}
 
+
+	public void iterateEntitys(QueryParam queryParam, Consumer<T>  callback){
+
+
+		do {
+
+			List<T> list=service.query(queryParam, typeCls, bucketInfo);
+			list.forEach(callback);
+
+		}while(queryParam.getPaginationKey()!=null);
+
+
+	}
 	public List<T> fullQuery(QueryParam queryParam){
 
 		List<T>  result=new ArrayList<T>();

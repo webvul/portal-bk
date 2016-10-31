@@ -2,6 +2,7 @@ package com.kii.beehive.portal.service;
 
 import org.springframework.stereotype.Component;
 
+import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.store.entity.OperateLog;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.sdk.annotation.BindAppByName;
@@ -38,7 +39,8 @@ public class OperateLogDao extends AbstractDataAccess{
 		 */
 
 		log.addField("triggerId",record.getTriggerID());
-		log.addField("userId", record.getOwner());
+		log.addField("userId", AuthInfoStore.getUserID());
+
 		log.addField("time",log.getTimestamp());
 		log.addField("type",record.getType().name());
 		log.addField("withPeriod",record.getPreparedCondition()!=null);

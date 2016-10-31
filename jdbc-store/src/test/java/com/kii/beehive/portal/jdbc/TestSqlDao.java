@@ -106,6 +106,8 @@ public void testTemplate(){
 
 		}
 
+		thingLocDao.getCountGroupInTypeByLoc("abc");
+
 	}
 
 

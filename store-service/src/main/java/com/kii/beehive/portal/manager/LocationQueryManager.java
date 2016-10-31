@@ -66,6 +66,12 @@ public class LocationQueryManager {
 		return thingLocDao.getThingsByLocation(query, AuthInfoStore.getUserID());
 	}
 
+	public List<ThingLocationDao.TypeWithCount> getCountInType(String location){
+		return thingLocDao.getCountGroupInTypeByLoc(location);
+	}
+
+	//===================================
+
 	private void verifyThingID(Long thingID){
 
 		try {

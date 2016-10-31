@@ -11,11 +11,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.portal.jdbc.dao.ThingLocQuery;
+import com.kii.beehive.portal.jdbc.dao.ThingLocationDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.manager.LocationManager;
 import com.kii.beehive.portal.manager.LocationQueryManager;
 import com.kii.beehive.portal.service.SubLocInfo;
 import com.kii.beehive.portal.store.entity.LocationInfo;
+import com.kii.beehive.portal.store.entity.LocationTree;
 
 
 @RestController
@@ -31,6 +33,12 @@ public class LocationController {
 
 	@Autowired
 	private LocationQueryManager locationQueryManager;
+
+	@RequestMapping(value="/fullTree",method = RequestMethod.GET,consumes = {MediaType.ALL_VALUE})
+	public LocationTree getFullTree(){
+
+		return manager.getFullTree();
+	}
 
 	@RequestMapping(value="/{location}/subLevel",method = RequestMethod.GET,consumes = {MediaType.ALL_VALUE})
 	public List<LocationInfo> getLowLevelLocations(@PathVariable("location") String location){
@@ -92,6 +100,13 @@ public class LocationController {
 		query.setType(null);
 
 		return locationQueryManager.getThingsByLocation(query);
+
+	}
+
+	@RequestMapping(value="/{location}/types",method = RequestMethod.GET,consumes = {MediaType.ALL_VALUE})
+	public List<ThingLocationDao.TypeWithCount> getTypeGroupByLocation(@PathVariable("location") String location){
+
+		return locationQueryManager.getCountInType(location);
 
 	}
 

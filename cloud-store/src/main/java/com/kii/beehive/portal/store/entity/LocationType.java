@@ -34,7 +34,7 @@ public enum LocationType {
 			case 7:return area;
 			case 9:return site;
 			default:
-				throw new IllegalArgumentException("invalid location format");
+				throw new IllegalArgumentException("invalid location format:"+location);
 		}
 
 	}

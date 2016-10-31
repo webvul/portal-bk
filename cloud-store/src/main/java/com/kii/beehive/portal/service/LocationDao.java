@@ -9,6 +9,7 @@ import java.util.Map;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.store.entity.LocationInfo;
+import com.kii.beehive.portal.store.entity.LocationTree;
 import com.kii.beehive.portal.store.entity.LocationType;
 import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.entity.BucketInfo;
@@ -32,6 +33,7 @@ public class LocationDao extends AbstractDataAccess<LocationInfo> {
 	protected BucketInfo getBucketInfo() {
 		return new BucketInfo("locationInfo");
 	}
+
 
 
 	public List<LocationInfo>  getLowLocation(String location){
@@ -166,12 +168,32 @@ public class LocationDao extends AbstractDataAccess<LocationInfo> {
 	}
 
 	private void deleteByUpperLevel(String upperLevel){
-		QueryParam query= ConditionBuilder.newCondition().prefixLike("parent",upperLevel).getFinalQueryParam();
+		QueryParam query= ConditionBuilder.newCondition().prefixLike("parent",upperLevel)
+				.getFinalQueryParam();
 
 		super.fullQuery(query).forEach((rec)->{
 			super.removeEntity(rec.getId());
 		});
 	}
-	
+
+	public LocationTree getFullLocationTree(){
+
+		QueryParam query=ConditionBuilder.getAll().getFinalCondition().orderBy("location").build();
+
+		LocationTree tree=new LocationTree();
+		super.iterateEntitys(query,(loc -> {
+
+			try {
+				LocationType.getTypeByLocation(loc.getLocation());
+			}catch(IllegalArgumentException e){
+				return;
+			}
+
+			tree.addSubLocation(loc);
+		}));
+
+		return tree;
+
+	}
 
 }

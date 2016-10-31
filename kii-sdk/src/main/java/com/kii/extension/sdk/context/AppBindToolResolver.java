@@ -10,6 +10,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import com.kii.beehive.portal.common.utils.SafeThreadLocal;
+import com.kii.beehive.portal.common.utils.SafeThreadTool;
 import com.kii.extension.sdk.entity.AppChoice;
 import com.kii.extension.sdk.entity.AppInfo;
 
@@ -23,15 +25,15 @@ public class AppBindToolResolver {
 	@Autowired
 	private TokenBindToolResolver tokenResolver;
 
-	private ThreadLocal<AppChoice> appChoiceLocal;
+	private SafeThreadLocal<AppChoice> appChoiceLocal;
 
-	private ThreadLocal<String> tokenDirectLocal = new ThreadLocal<>();
+	private SafeThreadLocal<String> tokenDirectLocal = SafeThreadLocal.getInstance();
 
 
 
-	private ThreadLocal<AppInfo> appInfoDirectly = new ThreadLocal<>();
+	private SafeThreadLocal<AppInfo> appInfoDirectly =SafeThreadLocal.getInstance();
 
-	private ThreadLocal<LinkedList<OldInfos>>  oldInfosThreadLocal;
+	private SafeThreadLocal<LinkedList<OldInfos>>  oldInfosThreadLocal;
 
 
 	private String[] getBeanNameArray() {
@@ -41,14 +43,14 @@ public class AppBindToolResolver {
 
 	@PostConstruct
 	public void initBindList() {
-		appChoiceLocal = ThreadLocal.withInitial(() -> {
+		appChoiceLocal = SafeThreadLocal.withInitial(() -> {
 
 			AppChoice choice = new AppChoice();
 			choice.setAppName(null);
 			return choice;
 		});
 
-		oldInfosThreadLocal=ThreadLocal.withInitial(()->{
+		oldInfosThreadLocal=SafeThreadLocal.withInitial(()->{
 			LinkedList<OldInfos> infos=new LinkedList<>();
 			return infos;
 		});
@@ -201,7 +203,6 @@ public class AppBindToolResolver {
 
 		LinkedList<OldInfos> infosQueue=oldInfosThreadLocal.get();
 		if(infosQueue.isEmpty()){
-			clearAll();
 			return;
 		}
 
@@ -219,12 +220,14 @@ public class AppBindToolResolver {
 	public void clearAll(){
 
 
-		appInfoDirectly.remove();
-		appChoiceLocal.remove();
-		tokenDirectLocal.remove();
-		oldInfosThreadLocal.remove();
+		SafeThreadTool.removeLocalInfo();
 
-		tokenResolver.clean();
+//		appInfoDirectly.remove();
+//		appChoiceLocal.remove();
+//		tokenDirectLocal.remove();
+//		oldInfosThreadLocal.remove();
+//
+//		tokenResolver.clean();
 	}
 
 

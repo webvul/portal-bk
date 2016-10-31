@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
+import com.kii.beehive.portal.common.utils.SafeThreadLocal;
+
 
 @Component
 public class TokenBindToolResolver {
@@ -18,7 +20,7 @@ public class TokenBindToolResolver {
 	private ApplicationContext context;
 
 
-	private ThreadLocal<Boolean>  appChoiceLocal= ThreadLocal.withInitial(()->true);
+	private SafeThreadLocal<Boolean> appChoiceLocal= SafeThreadLocal.withInitial(()->true);
 
 	public void bindAdmin(){
 

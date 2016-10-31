@@ -17,6 +17,7 @@ import com.kii.beehive.portal.jdbc.dao.ThingLocationRelDao;
 import com.kii.beehive.portal.service.LocationDao;
 import com.kii.beehive.portal.service.SubLocInfo;
 import com.kii.beehive.portal.store.entity.LocationInfo;
+import com.kii.beehive.portal.store.entity.LocationTree;
 import com.kii.beehive.portal.store.entity.LocationType;
 
 @Component
@@ -132,6 +133,9 @@ public class LocationManager {
 			throw new EntryNotFoundException(String.valueOf(thingID),"thing");
 		}
 	}
-	
+
+	public LocationTree getFullTree(){
+		return  locDao.getFullLocationTree();
+	}
 
 }

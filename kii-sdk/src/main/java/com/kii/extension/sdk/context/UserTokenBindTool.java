@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import com.kii.beehive.portal.common.utils.SafeThreadLocal;
 import com.kii.extension.sdk.entity.AppInfo;
 import com.kii.extension.sdk.service.UserService;
 
@@ -22,7 +23,7 @@ public class UserTokenBindTool implements TokenBindTool {
 	private AppBindToolResolver bindToolResolver;
 
 
-	private ThreadLocal<Map<String,UserInfo>> userLocal=ThreadLocal.withInitial(()->new ConcurrentHashMap<>());
+	private SafeThreadLocal<Map<String,UserInfo>> userLocal=SafeThreadLocal.withInitial(()->new ConcurrentHashMap<>());
 
 
 	private void setUserInfo(UserInfo userInfo){

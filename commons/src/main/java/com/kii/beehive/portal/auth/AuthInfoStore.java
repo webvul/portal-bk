@@ -1,11 +1,13 @@
 package com.kii.beehive.portal.auth;
 
 
+import com.kii.beehive.portal.common.utils.SafeThreadLocal;
+
 public class AuthInfoStore {
 
-	private static ThreadLocal<Long> user = ThreadLocal.withInitial(() -> 0L);
+	private static SafeThreadLocal<Long> user = SafeThreadLocal.withInitial(() -> 0L);
 
-	private static ThreadLocal<Long> team = ThreadLocal.withInitial(() -> null);
+	private static SafeThreadLocal<Long> team = SafeThreadLocal.withInitial(() -> null);
 
 
 	public static void setAuthInfo(Long userID) {
