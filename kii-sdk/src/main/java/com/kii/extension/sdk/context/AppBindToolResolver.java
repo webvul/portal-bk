@@ -176,8 +176,6 @@ public class AppBindToolResolver {
 		if(appChoiceLocal.get().isBindAdmin()){
 
 			tokenResolver.bindAdmin();
-		}else{
-			tokenResolver.bindUser();
 		}
 
 	}

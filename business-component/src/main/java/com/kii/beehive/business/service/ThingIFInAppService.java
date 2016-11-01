@@ -26,6 +26,7 @@ import com.kii.extension.sdk.entity.thingif.ThingCommand;
 import com.kii.extension.sdk.entity.thingif.ThingOfKiiCloud;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 import com.kii.extension.sdk.entity.thingif.ThingTrigger;
+import com.kii.extension.sdk.service.GatewayService;
 import com.kii.extension.sdk.service.ThingIFService;
 import com.kii.extension.sdk.service.TriggerService;
 
@@ -34,6 +35,9 @@ public class ThingIFInAppService {
 
 	@Autowired
 	private ThingIFService  service;
+
+	@Autowired
+	private GatewayService  gwService;
 
 
 	@Autowired
@@ -167,7 +171,7 @@ public class ThingIFInAppService {
 	 */
 	public List<EndNodeOfGateway> getAllEndNodesOfGateway(String fullThingID) {
 
-		return doExecWithRealThingID(fullThingID,(th)-> service.getAllEndNodesOfGateway(th));
+		return doExecWithRealThingID(fullThingID,(th)-> gwService.getAllEndNodesOfGateway(th));
 	}
 
 
@@ -176,7 +180,7 @@ public class ThingIFInAppService {
 	public List<GatewayOfKiiCloud> getAllEGateway() {
 		List<GatewayOfKiiCloud> result = new ArrayList<>();
 		appInfoDao.getSlaveAppList().forEach(appInfo->{
-			List<GatewayOfKiiCloud> list = doExecWithRealThingID(appInfo.getAppID(),()-> service.getAllGateway());
+			List<GatewayOfKiiCloud> list = doExecWithRealThingID(appInfo.getAppID(),()-> gwService.getAllGateway());
 			list.forEach(gatewayOfKiiCloud -> {
 				gatewayOfKiiCloud.setKiiAppID(appInfo.getAppID());
 				gatewayOfKiiCloud.setFullKiiThingID(ThingIDTools.joinFullKiiThingID(appInfo.getAppID(), gatewayOfKiiCloud.getThingID()));

@@ -1,34 +1,34 @@
 package com.kii.extension.sdk.service;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.http.client.methods.HttpUriRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import com.fasterxml.jackson.core.JsonParser;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.CollectionType;
+
+import com.kii.extension.sdk.context.AdminTokenBindTool;
 import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.entity.AppInfo;
 import com.kii.extension.sdk.entity.thingif.ActionResult;
 import com.kii.extension.sdk.entity.thingif.CommandDetail;
 import com.kii.extension.sdk.entity.thingif.CommandQuery;
-import com.kii.extension.sdk.entity.thingif.EndNodeOfGateway;
-import com.kii.extension.sdk.entity.thingif.GatewayOfKiiCloud;
-import com.kii.extension.sdk.entity.thingif.LayoutPosition;
+import com.kii.extension.sdk.entity.thingif.InstallationID;
+import com.kii.extension.sdk.entity.thingif.InstallationInfo;
+import com.kii.extension.sdk.entity.thingif.MqttEndPoint;
 import com.kii.extension.sdk.entity.thingif.OnBoardingParam;
 import com.kii.extension.sdk.entity.thingif.OnBoardingResult;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
 import com.kii.extension.sdk.entity.thingif.ThingOfKiiCloud;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
+import com.kii.extension.sdk.exception.MQTTNotReadyException;
 import com.kii.extension.sdk.impl.ApiAccessBuilder;
 import com.kii.extension.sdk.impl.KiiCloudClient;
-import com.kii.extension.sdk.query.ConditionBuilder;
-import com.kii.extension.sdk.query.QueryParam;
-import com.kii.extension.sdk.query.ThingQueryParam;
 
 @Component
 public class ThingIFService {
@@ -43,6 +43,8 @@ public class ThingIFService {
 	private AppBindToolResolver bindToolResolver;
 
 
+	@Autowired
+	private AdminTokenBindTool  adminTokenTool;
 
 
 	private ApiAccessBuilder getBuilder(){
@@ -124,7 +126,7 @@ public class ThingIFService {
 
 	public OnBoardingResult onBoarding(OnBoardingParam param){
 
-		HttpUriRequest request=	getBuilder().thingOnboarding(param).generRequest(mapper);
+		HttpUriRequest request=	getBuilder().thingOnboardingByOwner(param).generRequest(mapper);
 
 		OnBoardingResult result=client.executeRequestWithCls(request,OnBoardingResult.class);
 
@@ -132,12 +134,30 @@ public class ThingIFService {
 
 	}
 
+	public OnBoardingResult thingOnBoarding(OnBoardingParam param){
+
+		AppInfo info= bindToolResolver.getAppInfo();
+
+		ApiAccessBuilder builder= new ApiAccessBuilder(info);
+
+		HttpUriRequest request=	builder.thingOnboarding(param).generRequest(mapper);
+
+		OnBoardingResult result=client.executeRequestWithCls(request,OnBoardingResult.class);
+
+		return result;
+
+	}
+
+
+
+
 	public void submitActionResult(String thingID,String commandID,List<Map<String,ActionResult>> resultList){
 
 		HttpUriRequest request=	getBuilder().submitCommand(thingID,commandID,resultList).generRequest(mapper);
 
 		client.executeRequest(request);
 	}
+
 
 	public void putStatus(String thingID,ThingStatus status){
 
@@ -160,121 +180,91 @@ public class ThingIFService {
 
 	}
 
-	/**
-	 * get all endnodes of gateway
-	 *
-	 * @param thingID
-	 * @return example
-	 * 	[ {"thingID": "121323","vendorThingID":"e4746a0b"},
-	 *	{"thingID": "134434","vendorThingID":"f4746a0b"} ]
-	 */
-	public List<EndNodeOfGateway> getAllEndNodesOfGateway(String thingID) {
-		List<EndNodeOfGateway>  result=new ArrayList<>();
+	public InstallationID registerInstallactionByAdmin(String thingID){
 
-		QueryParam param = ConditionBuilder.newCondition().getFinalQueryParam();
+		AppInfo info= bindToolResolver.getAppInfo();
 
-		do {
 
-			List<EndNodeOfGateway> list= this.getEndNodesOfGateway(thingID, param);
-			result.addAll(list);
+		HttpUriRequest  request=new ApiAccessBuilder(info).bindToken(adminTokenTool.getToken())
+				.getThingInstallationByAdmin(thingID)
+				.generRequest(mapper);
 
-		}while(param.getPaginationKey()!=null);
 
-		return result;
+		return client.executeRequestWithCls(request,InstallationID.class);
+
 	}
 
-	/**
-	 * get endnodes of gateway by page
-	 *
-	 * @param thingID
-	 * @param query
-     * @return example
-	 * 	[ {"thingID": "121323","vendorThingID":"e4746a0b"},
-	 *	{"thingID": "134434","vendorThingID":"f4746a0b"} ]
-	 */
-	private List<EndNodeOfGateway> getEndNodesOfGateway(String thingID, QueryParam query) {
+	public InstallationID registerInstallaction(){
 
-		int bestEffortLimit = query.getBestEffortLimit();
-		String paginationKey = query.getPaginationKey();
 
-		HttpUriRequest request=	getBuilder().getEndNodesOfGateway(thingID, bestEffortLimit, paginationKey).generRequest(mapper);
+		HttpUriRequest  request=this.getBuilder()
+				.getThingInstallation()
+				.generRequest(mapper);
 
-		String result=client.executeRequest(request);
+		return client.executeRequestWithCls(request,InstallationID.class);
 
-		try{
-			JsonNode node=mapper.readValue(result,JsonNode.class);
+	}
 
-			JsonNode pageKey=node.get("nextPaginationKey");
-			if (pageKey != null) {
-				query.setPaginationKey(pageKey.asText());
-			}else{
-				query.setPaginationKey(null);
+
+	public InstallationInfo getInstallationInfoByID(String installationID){
+
+		HttpUriRequest  request=this.getBuilder()
+				.getInstallationByID(installationID)
+				.generRequest(mapper);
+
+		return client.executeRequestWithCls(request,InstallationInfo.class);
+
+	}
+
+	public List<InstallationInfo> getInstallationInfosByThingID(String thingID){
+
+		HttpUriRequest  request=this.getBuilder()
+				.getInstallationsByThingID(thingID)
+				.generRequest(mapper);
+
+		InstallationInfos infos= client.executeRequestWithCls(request,InstallationInfos.class);
+
+		return Arrays.asList(infos.getInstallations());
+	}
+
+
+	public MqttEndPoint getMQTTByInstallationID(String installationID){
+
+		HttpUriRequest request=this.getBuilder().getMQTTEndPointByInstallationID(installationID).generRequest(mapper);
+
+		int i=10;
+		while(i>0) {
+			try {
+
+				return client.executeRequestWithCls(request, MqttEndPoint.class);
+			} catch (MQTTNotReadyException ex){
+
+				try {
+					Thread.sleep(10000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
-
-			JsonParser jsonParser = node.get("results").traverse();
-			CollectionType collectionType = mapper.getTypeFactory().constructCollectionType(List.class, EndNodeOfGateway.class);
-			List<EndNodeOfGateway> list=mapper.readValue(jsonParser, collectionType);
-
-			return list;
-
-		}catch(IOException e){
-			throw new IllegalArgumentException(e);
+			i--;
 		}
 
+		return null;
 
 	}
 
 
 
+	private  static class InstallationInfos{
 
+		private InstallationInfo[] installations=new InstallationInfo[0];
 
-	/**
-	 * query all gateway things
-	 * @return
-	 */
-	public List<GatewayOfKiiCloud> getAllGateway() {
-		return queryThingByLayoutPosition(LayoutPosition.GATEWAY.name());
-	}
-	public List<GatewayOfKiiCloud> queryThingByLayoutPosition(String layoutPosition) {
-		List<GatewayOfKiiCloud>  result=new ArrayList<>();
-		QueryParam param = ConditionBuilder.newCondition().equal("_layoutPosition", layoutPosition).getFinalQueryParam();
-		ThingQueryParam thingQueryParam = new ThingQueryParam(param.getBestEffortLimit(), param.getPaginationKey(), param.getBucketQuery());
-		do {
-			List<GatewayOfKiiCloud> list= this.queryThing(thingQueryParam);
-			result.addAll(list);
-		}while(param.getPaginationKey()!=null);
-
-		return result;
-	}
-
-	private List<GatewayOfKiiCloud> queryThing(ThingQueryParam query) {
-
-
-		HttpUriRequest request=	getBuilder().getThings(query).generRequest(mapper);
-
-		String result=client.executeRequest(request);
-
-		try{
-			JsonNode node=mapper.readValue(result,JsonNode.class);
-
-			JsonNode pageKey=node.get("nextPaginationKey");
-			if (pageKey != null) {
-				query.setPaginationKey(pageKey.asText());
-			}else{
-				query.setPaginationKey(null);
-			}
-
-			JsonParser jsonParser = node.get("results").traverse();
-			CollectionType collectionType = mapper.getTypeFactory().constructCollectionType(List.class, GatewayOfKiiCloud.class);
-			List<GatewayOfKiiCloud> list=mapper.readValue(jsonParser, collectionType);
-
-			return list;
-
-		}catch(IOException e){
-			throw new IllegalArgumentException(e);
+		public InstallationInfo[] getInstallations() {
+			return installations;
 		}
 
-
+		public void setInstallations(InstallationInfo[] installations) {
+			this.installations = installations;
+		}
 	}
 
 }

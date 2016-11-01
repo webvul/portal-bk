@@ -98,6 +98,7 @@ public class AppInfo {
 		return  siteUrl+"/api/apps/"+appID;
 	}
 
+
 	public String getThingIfSubUrl(){
 		return siteUrl+"/thing-if/apps/"+appID;
 	}

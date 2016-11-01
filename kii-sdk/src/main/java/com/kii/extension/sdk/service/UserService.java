@@ -41,15 +41,15 @@ public class UserService {
 		return login;
 	}
 
-	public  LoginInfo loginWithCode(String code,String clientID){
-
-
-		HttpUriRequest request= getNonTokenBuilder().loginWithCode(code, clientID).setContentType("application/x-www-form-urlencoded").generRequest(mapper);
-
-		LoginInfo login= client.executeRequestWithCls(request, LoginInfo.class);
-
-		return login;
-	}
+//	public  LoginInfo loginWithCode(String code,String clientID){
+//
+//
+//		HttpUriRequest request= getNonTokenBuilder().loginWithCode(code, clientID).setContentType().generRequest(mapper);
+//
+//		LoginInfo login= client.executeRequestWithCls(request, LoginInfo.class);
+//
+//		return login;
+//	}
 
 	private ApiAccessBuilder getBuilder() {
 		AppInfo info= bindToolResolver.getAppInfo();

@@ -1,14 +1,11 @@
 package com.kii.extension.sdk.impl;
 
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.codec.Charsets;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
@@ -18,7 +15,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.message.BasicNameValuePair;
 import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -54,6 +50,14 @@ public class ApiAccessBuilder {
 	}
 
 	private String token;
+
+	private void setBasicToken(){
+
+		String str=appInfo.getAppID()+":"+appInfo.getAppKey();
+		String basicToken= "Basic "+ Base64.getEncoder().encodeToString(str.getBytes());
+
+		setConsumeHeader("Authorization",basicToken);
+	}
 
 	public ApiAccessBuilder bindToken(String token) {
 		this.token = token;
@@ -324,37 +328,34 @@ public class ApiAccessBuilder {
 		return this;
 	}
 
-	public ApiAccessBuilder loginWithCode(String code, String clientID) {
-
-		request = new HttpPost(appInfo.getSiteUrl() + ("/api/oauth2/token"));
-
-		List<NameValuePair> postParameters = new ArrayList<>();
-		postParameters.add(new BasicNameValuePair("grant_type", "code"));
-		postParameters.add(new BasicNameValuePair("code", code));
-		postParameters.add(new BasicNameValuePair("client_id", clientID));
-//		postParameters.add(new BasicNameValuePair("grant_type","code"));
-
-		/*
-		Map<String,String> map=new HashMap<>();
-		map.put("grant_type","code");
-		map.put("code", code);
-		map.put("client_id",clientID);
-		map.put("redirect_uri","foo");
-		*/
-		try {
-			((HttpEntityEnclosingRequestBase) request).setEntity(new UrlEncodedFormEntity(postParameters));
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
-		ctxObj = null;
-		return this;
-	}
+//	public ApiAccessBuilder loginWithCode(String code, String clientID) {
+//
+//		request = new HttpPost(appInfo.getSiteUrl() + ("/api/oauth2/token"));
+//
+//		List<NameValuePair> postParameters = new ArrayList<>();
+//		postParameters.add(new BasicNameValuePair("grant_type", "code"));
+//		postParameters.add(new BasicNameValuePair("code", code));
+//		postParameters.add(new BasicNameValuePair("client_id", clientID));
+//
+//		try {
+//			((HttpEntityEnclosingRequestBase) request).setEntity(new UrlEncodedFormEntity(postParameters));
+//		} catch (UnsupportedEncodingException e) {
+//			e.printStackTrace();
+//		}
+//		ctxObj = null;
+//		return this;
+//	}
 
 
 	public ApiAccessBuilder login(String user, String pwd) {
 		request = new HttpPost(appInfo.getSiteUrl() + ("/api/oauth2/token"));
 
+		setBasicToken();
+
+		setContentType("application/x-www-form-urlencoded");
+
 		Map<String, String> map = new HashMap<>();
+		map.put("grant_type","password");
 		map.put("username", user);
 		map.put("password", pwd);
 
@@ -366,7 +367,10 @@ public class ApiAccessBuilder {
 	public ApiAccessBuilder adminLogin(String user, String pwd) {
 		request = new HttpPost(appInfo.getSiteUrl() + ("/api/oauth2/token"));
 
+		setBasicToken();
+
 		Map<String, String> map = new HashMap<>();
+		map.put("grant_type","client_credentials");
 		map.put("client_id", user);
 		map.put("client_secret", pwd);
 
@@ -408,6 +412,35 @@ public class ApiAccessBuilder {
 	}
 
 	public ApiAccessBuilder thingOnboarding(OnBoardingParam onboardParam){
+
+		/*
+		> POST /apps/<appid>/onboardings
+"Content-Type:application/vnd.kii.onboardingWithThingIDByOwner+json"
+
+{
+
+		 */
+		request=new HttpPost(appInfo.getThingIfSubUrl()+"/onboardings");
+
+		this.ctxObj=onboardParam;
+
+		setBasicToken();
+
+		if(!StringUtils.isEmpty(onboardParam.getThingID())){
+
+			this.setContentType("application/vnd.kii.OnboardingWithThingIDByThing+json");
+
+		}else if(!StringUtils.isEmpty(onboardParam.getVendorThingID())){
+			this.setContentType("application/vnd.kii.OnboardingWithVendorThingIDByThing+json");
+
+		}else{
+			throw new KiiCloudException();
+		}
+
+		return this;
+	}
+
+	public ApiAccessBuilder thingOnboardingByOwner(OnBoardingParam onboardParam){
 
 		/*
 		> POST /apps/<appid>/onboardings
@@ -496,6 +529,75 @@ public class ApiAccessBuilder {
 
 	}
 
+	//===============================
+	//installation relation
+	//===============================
+	/*
+
+curl -v -X POST -H "content-type:application/vnd.kii.InstallationCreationRequest+json"
+-H "Authorization:bearer KzGQrYhWgxqsYFLhwNWoj6456PaVQ3YWxG6Aq0G-AA"
+-H 'x-kii-appid:sandbox' -H 'x-kii-appkey:dummy'
+ "https://api-development-jp.kii.com/api/apps/sandbox/installations" -d '{"installationType":"MQTT", "development":false}'
+	 */
+	public ApiAccessBuilder  getThingInstallation(){
+
+		request=new HttpPost(appInfo.getAppSubUrl()+"/installations");
+
+		setContentType("application/vnd.kii.InstallationCreationRequest+json");
+
+		Map<String,Object> params=new HashMap<>();
+
+		params.put("installationType","MQTT");
+		params.put("development",false);
+
+		ctxObj=params;
+
+		return this;
+
+	}
+
+	public ApiAccessBuilder  getThingInstallationByAdmin(String thingID){
+
+		request=new HttpPost(appInfo.getAppSubUrl()+"/installations");
+
+		setContentType("application/vnd.kii.InstallationCreationRequest+json");
+
+		Map<String,Object> params=new HashMap<>();
+
+		params.put("installationType","MQTT");
+		params.put("development",false);
+		params.put("thingID",thingID);
+
+		ctxObj=params;
+
+		return this;
+
+	}
+
+	public ApiAccessBuilder getInstallationByID(String installationID){
+//GET /apps/<appID>/installations/<installationID>
+		request=new HttpGet(appInfo.getAppSubUrl()+"/installations/"+installationID);
+
+		return this;
+	}
+
+	public ApiAccessBuilder getInstallationsByThingID(String thingID){
+		// GET /apps/<appID>/installations?thingID=<thingID>
+		request=new HttpGet(appInfo.getAppSubUrl()+"/installations?thingID="+thingID);
+
+		return this;
+	}
+
+	public ApiAccessBuilder getMQTTEndPointByInstallationID(String installationID){
+
+
+		//GET /api/apps/{appid}/installations/{installationID}/mqtt-endpoint
+
+		request=new HttpGet(appInfo.getAppSubUrl()+"/installations/"+installationID+"/mqtt-endpoint");
+
+		return this;
+	}
+
 	//================================
 	//gateway relation
 	//================================
@@ -516,7 +618,7 @@ public class ApiAccessBuilder {
 	}
 
 	//================================
-	//business relation
+	//business trigger relation
 	//================================
 
 	public ApiAccessBuilder createTrigger(String thingID,ThingTrigger trigger){

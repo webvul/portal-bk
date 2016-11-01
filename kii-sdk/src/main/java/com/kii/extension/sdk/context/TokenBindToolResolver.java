@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
-import com.kii.beehive.portal.common.utils.SafeThreadLocal;
-
 
 @Component
 public class TokenBindToolResolver {
@@ -20,29 +18,35 @@ public class TokenBindToolResolver {
 	private ApplicationContext context;
 
 
-	private SafeThreadLocal<Boolean> appChoiceLocal= SafeThreadLocal.withInitial(()->true);
+
+	private ThreadLocal<Integer>  appChoiceLocal= ThreadLocal.withInitial(()->0);
 
 	public void bindAdmin(){
 
-		appChoiceLocal.set(true);
+		appChoiceLocal.set(0);
 	}
 
 	public void bindUser(){
 
-		appChoiceLocal.set(false);
+		appChoiceLocal.set(1);
+	}
+
+	public void bindThing(){
+
+		appChoiceLocal.set(2);
+
 	}
 
 	String getToken(){
 
 
-		if(appChoiceLocal.get()){
+		switch(appChoiceLocal.get()){
 
-			return context.getBean(AdminTokenBindTool.class).getToken();
-		}else{
+			case 1:return context.getBean(UserTokenBindTool.class).getToken();
+			case 2:return context.getBean(ThingTokenBindTool.class).getToken();
+			default:return context.getBean(AdminTokenBindTool.class).getToken();
 
-			return context.getBean(UserTokenBindTool.class).getToken();
 		}
-
 
 	}
 

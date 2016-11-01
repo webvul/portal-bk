@@ -50,6 +50,21 @@ public class ExceptionFactory {
 			AppParameterCodeNotFoundException.class
 	};
 
+
+	Class[] thingArray={
+
+
+	};
+
+	Class[] thingIFArray={
+
+
+	};
+
+	Class[] installationArray={
+			MQTTNotReadyException.class
+	};
+
 	private void initExceptionMap(Class[] exceptionClassArray, OperateType operateType) {
 		Map map = new HashMap<>();
 
@@ -69,30 +84,44 @@ public class ExceptionFactory {
 
 		this.initExceptionMap(bucketArray, OperateType.bucket);
 
-
 		this.initExceptionMap(userArray, OperateType.user);
 
 		this.initExceptionMap(appArray, OperateType.app);
 
+		this.initExceptionMap(installationArray,OperateType.installation);
+
+		this.initExceptionMap(thingArray, OperateType.thing);
+
+		this.initExceptionMap(thingIFArray, OperateType.thingif);
+
+
 	}
 
 	public enum OperateType{
-		bucket,user,app;
-	}
+		bucket,user,app,thing,thingif,installation;
 
-	public OperateType getOperateType(URI url){
+		public static  OperateType getInstance(URI url){
 
-		if(url.getPath().contains("/buckets/")){
-			return OperateType.bucket;
-		}else if(url.getPath().contains("/users") || url.getPath().contains("/oauth2")){
-			return OperateType.user;
-		}else if(url.getPath().contains("/configuration/")){
-			return OperateType.app;
-		}else{
-			return OperateType.bucket;
+			if(url.getPath().contains("/buckets/")){
+				return OperateType.bucket;
+			}else if(url.getPath().contains("/users") || url.getPath().contains("/oauth2")){
+				return OperateType.user;
+			}else if(url.getPath().contains("/configuration/")){
+				return OperateType.app;
+			}else if(url.getPath().contains("/installation/")){
+				return OperateType.installation;
+			}else if(url.getPath().contains("/things/")){
+				return OperateType.thing;
+			}else if(url.getPath().contains("/thing-if/")){
+				return OperateType.thingif;
+			}else{
+				return OperateType.bucket;
+			}
+
 		}
-
 	}
+
+
 
 	public void checkResponse(HttpResponse response,URI uri)throws KiiCloudException{
 
@@ -101,7 +130,7 @@ public class ExceptionFactory {
 			return;
 		}
 
-		OperateType type=getOperateType(uri);
+		OperateType type=OperateType.getInstance(uri);
 
 		Map<Integer,Class<? extends KiiCloudException>> map=exceptionMap.getOrDefault(type,new HashMap<>());
 

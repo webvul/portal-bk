@@ -3,9 +3,9 @@ package com.kii.extension.sdk.context;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import com.kii.beehive.portal.common.utils.SafeThreadLocal;
 import com.kii.extension.sdk.entity.AppInfo;
@@ -61,7 +61,7 @@ public class UserTokenBindTool implements TokenBindTool {
 			return null;
 		}
 
-		if(StringUtils.isEmpty(info.getToken())){
+		if(StringUtils.isBlank(info.getToken())&& StringUtils.isNotBlank(info.getUserName())){
 
 			String token=userService.login(info.userName,info.password).getToken();
 			info.setToken(token);
