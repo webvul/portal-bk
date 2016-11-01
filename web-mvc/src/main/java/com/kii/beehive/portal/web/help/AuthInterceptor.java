@@ -20,11 +20,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.kii.beehive.business.manager.AppInfoManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
-<<<<<<< e8b2d947d7176d7caa3fbcb991a57b4f35547459
 import com.kii.beehive.portal.common.utils.SafeThreadTool;
-=======
-import com.kii.beehive.portal.common.utils.SafeThreadLocal;
->>>>>>> modify dev-portal data pull
 import com.kii.beehive.portal.entitys.AuthInfo;
 import com.kii.beehive.portal.manager.AuthManager;
 import com.kii.beehive.portal.service.DeviceSupplierDao;
@@ -205,13 +201,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
 //        authManager.unbindUserToken();
 
-<<<<<<< e8b2d947d7176d7caa3fbcb991a57b4f35547459
 		SafeThreadTool.removeLocalInfo();
-
-=======
-		SafeThreadLocal.removeLocalInfo();
-		appInfoResolver.clearAll();
->>>>>>> modify dev-portal data pull
 		super.afterCompletion(request, response, handler, ex);
 	}
 
