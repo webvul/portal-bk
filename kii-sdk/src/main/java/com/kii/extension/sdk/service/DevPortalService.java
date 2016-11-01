@@ -121,7 +121,7 @@ public class DevPortalService {
 
 	private Pattern tokenPat=Pattern.compile("(?:authenticity_token)\\\"\\ (?:value)\\=\\\"([^\\\"]*)",Pattern.MULTILINE);
 
-	private SafeThreadLocal<String> cookieLocal=SafeThreadLocal.getInstance();
+//	private SafeThreadLocal<String> cookieLocal=SafeThreadLocal.getInstance();
 
 	public void login(String user,String pwd){
 
@@ -148,29 +148,30 @@ public class DevPortalService {
 
 		HttpUriRequest request=getBuilder().buildLogin(user,pwd,token).generRequest();
 
-		cookieLocal.set(header.getValue());
 
 		request.setHeader("Cookie",header.getValue());
 
 		HttpResponse respRedir=doRequest(request);
 
 		Header cookHeader=respRedir.getFirstHeader("Set-Cookie");
-//
-		if(cookHeader!=null){
-			cookieLocal.set(cookHeader.getValue());
-		}
-//
-//		String cookieStr=cookHeader.getValue();
-//
-//		String cookie=StringUtils.substringBefore(cookieStr,"=");
-//		cookieStr=StringUtils.substringAfter(cookieStr,"=");
-//		String value=StringUtils.substringBefore(cookieStr,";");
-//
-//		BasicClientCookie cookieInst=new BasicClientCookie(cookie,value);
-//		cookieInst.setPath("/");
-//		cookieStore.addCookie(cookieInst);
+
+		CookieHandler handler=new CookieHandler(cookHeader.getValue());
+
+		cookieLocal.set(handler);
+		return ;
+
 	}
 
+	private SafeThreadLocal<CookieHandler>  cookieLocal=SafeThreadLocal.getInstance();
+
+
+	public  static  class CookieHandler{
+		private final String cookies;
+
+		private CookieHandler(String str){
+			this.cookies=str;
+		}
+	}
 
 
 
@@ -252,9 +253,11 @@ public class DevPortalService {
 
 	public List<AppInfoEntity> getAppList(){
 
+		CookieHandler  handler=cookieLocal.get();
+
 		HttpUriRequest request= getBuilder().buildAppList().generRequest();
 
-		request.setHeader("Set-Cookie",cookieLocal.get());
+		request.setHeader("Cookie",handler.cookies);
 
 		String result= executeRequest(request);
 
