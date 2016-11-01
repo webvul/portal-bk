@@ -28,7 +28,7 @@ import com.kii.extension.sdk.entity.thingif.ActionResult;
 import com.kii.extension.sdk.entity.thingif.OnBoardingParam;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
-import com.kii.extension.sdk.entity.thingif.ThingTrigger;
+import com.kii.extension.sdk.entity.trigger.ThingTrigger;
 import com.kii.extension.sdk.exception.KiiCloudException;
 import com.kii.extension.sdk.query.QueryParam;
 import com.kii.extension.sdk.query.ThingQueryParam;

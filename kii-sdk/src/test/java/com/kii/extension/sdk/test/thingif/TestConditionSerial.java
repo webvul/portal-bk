@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.kii.extension.sdk.entity.thingif.StatePredicate;
+import com.kii.extension.sdk.entity.trigger.StatePredicate;
 import com.kii.extension.sdk.query.Condition;
 import com.kii.extension.sdk.query.ConditionBuilder;
 import com.kii.extension.sdk.service.ObjectMapperFactory;

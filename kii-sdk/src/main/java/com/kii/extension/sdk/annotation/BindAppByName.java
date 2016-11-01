@@ -19,4 +19,6 @@ public @interface BindAppByName {
 
 	public boolean bindAdmin()  default true;
 
+	public boolean bindThing()  default false;
+
 }

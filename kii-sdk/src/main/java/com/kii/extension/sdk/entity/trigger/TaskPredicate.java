@@ -1,6 +1,6 @@
-package com.kii.extension.sdk.entity.thingif;
+package com.kii.extension.sdk.entity.trigger;
 
-public class TaskPredicate extends Predicate{
+public class TaskPredicate extends Predicate {
 
 	private long timestamp;
 

@@ -17,7 +17,6 @@ import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
 import com.kii.extension.sdk.annotation.AppBindParam;
 import com.kii.extension.sdk.context.AppBindToolResolver;
-import com.kii.extension.sdk.entity.thingif.CommandDetail;
 import com.kii.extension.sdk.entity.thingif.EndNodeOfGateway;
 import com.kii.extension.sdk.entity.thingif.GatewayOfKiiCloud;
 import com.kii.extension.sdk.entity.thingif.OnBoardingParam;
@@ -25,7 +24,7 @@ import com.kii.extension.sdk.entity.thingif.OnBoardingResult;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
 import com.kii.extension.sdk.entity.thingif.ThingOfKiiCloud;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
-import com.kii.extension.sdk.entity.thingif.ThingTrigger;
+import com.kii.extension.sdk.entity.trigger.ThingTrigger;
 import com.kii.extension.sdk.service.GatewayService;
 import com.kii.extension.sdk.service.ThingIFService;
 import com.kii.extension.sdk.service.TriggerService;
@@ -129,7 +128,7 @@ public class ThingIFInAppService {
 
 	}
 
-	public CommandDetail readCommand(String fullThingID, String commandID) {
+	public ThingCommand readCommand(String fullThingID, String commandID) {
 
 		return doExecWithRealThingID(fullThingID, (th) -> service.readCommand(th, commandID));
 

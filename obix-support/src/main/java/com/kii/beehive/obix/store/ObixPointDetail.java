@@ -4,7 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.kii.beehive.obix.store.beehive.PointDetail;
+import com.kii.beehive.industrytemplate.PointDetail;
+
 
 public class ObixPointDetail {
 
@@ -42,7 +43,7 @@ public class ObixPointDetail {
 
 	}
 
-	public ObixPointDetail(String thingSchemaName,String fieldName,PointDetail  detail){
+	public ObixPointDetail(String thingSchemaName,String fieldName,PointDetail detail){
 		setFieldName(fieldName);
 
 		this.thingSchema=thingSchemaName;

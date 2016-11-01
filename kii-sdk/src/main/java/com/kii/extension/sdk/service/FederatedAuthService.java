@@ -12,7 +12,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpCoreContext;
 import org.slf4j.Logger;
@@ -74,9 +73,10 @@ GET https://<slaveAppId>.<kiiapps-domain>/api/apps/<slaveAppId>/integration/weba
 		HttpUriRequest request=new HttpGet(fullUrl);
 
 
-		HttpContext context=new BasicHttpContext();
 
-		HttpResponse response=client.doRequest(request,context);
+		HttpResponse response=client.doRequest(request);
+
+		HttpContext  context=client.getContext();
 
 		HttpUriRequest currentReq = (HttpUriRequest) context.getAttribute(
 				HttpCoreContext.HTTP_REQUEST);
@@ -140,13 +140,14 @@ GET https://<slaveAppId>.<kiiapps-domain>/api/apps/<slaveAppId>/integration/weba
 			throw new IllegalArgumentException(e);
 		}
 
-		HttpContext context=new BasicHttpContext();
 
-		HttpResponse response=client.doRequest(post,context);
+		HttpResponse response=client.doRequest(post);
 
 		if(response.getStatusLine().getStatusCode()!=200){
 			throw new IllegalArgumentException();
 		}
+
+		HttpContext  context=client.getContext();
 
 		HttpUriRequest currentReq = (HttpUriRequest) context.getAttribute(
 				HttpCoreContext.HTTP_REQUEST);

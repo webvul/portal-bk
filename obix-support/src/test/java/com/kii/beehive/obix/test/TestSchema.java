@@ -10,7 +10,8 @@ import org.springframework.util.StreamUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Charsets;
 
-import com.kii.beehive.obix.store.beehive.ThingSchema;
+import com.kii.beehive.industrytemplate.ThingSchema;
+
 
 public class TestSchema extends TestTemplate{
 
@@ -30,7 +31,7 @@ public class TestSchema extends TestTemplate{
 		String json= StreamUtils.copyToString(loader.getResource("classpath:com/kii/beehive/obix/demodata/aircondition.schema.json").getInputStream(), Charsets.UTF_8);
 
 
-		ThingSchema  schema=mapper.readValue(json,ThingSchema.class);
+		ThingSchema schema=mapper.readValue(json,ThingSchema.class);
 
 
 		System.out.println(schema.getStatesSchema().getProperties());

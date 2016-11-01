@@ -8,7 +8,9 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class ThingCommand {
+import com.kii.extension.sdk.entity.KiiEntity;
+
+public class ThingCommand extends KiiEntity {
 
 	/*
 
@@ -91,6 +93,12 @@ public class ThingCommand {
 
 	public void setActionResults(List<Map<String, ActionResult>> actionResults) {
 		this.actionResults = actionResults;
+	}
+
+	@JsonIgnore
+	public void addActionResult(String name,ActionResult action){
+		Map<String,ActionResult> map= Collections.singletonMap(name,action);
+		this.actionResults.add(map);
 	}
 
 	public String getSchema() {

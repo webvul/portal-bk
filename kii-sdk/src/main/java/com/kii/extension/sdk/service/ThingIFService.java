@@ -1,6 +1,5 @@
 package com.kii.extension.sdk.service;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -9,15 +8,12 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.extension.sdk.context.AdminTokenBindTool;
 import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.entity.AppInfo;
 import com.kii.extension.sdk.entity.thingif.ActionResult;
-import com.kii.extension.sdk.entity.thingif.CommandDetail;
-import com.kii.extension.sdk.entity.thingif.CommandQuery;
 import com.kii.extension.sdk.entity.thingif.InstallationID;
 import com.kii.extension.sdk.entity.thingif.InstallationInfo;
 import com.kii.extension.sdk.entity.thingif.MqttEndPoint;
@@ -65,41 +61,41 @@ public class ThingIFService {
 		return (String)result.get("commandID");
 	}
 
-	public CommandDetail readCommand(String thingID, String commandID){
+	public ThingCommand readCommand(String thingID, String commandID){
 
 
 		HttpUriRequest request=	getBuilder().getCommand(thingID,commandID).generRequest(mapper);
 
-		CommandDetail result=client.executeRequestWithCls(request,CommandDetail.class);
+		ThingCommand result=client.executeRequestWithCls(request,ThingCommand.class);
 
 		return result;
 	}
 
-	public List<CommandDetail> queryCommand(String thingID, CommandQuery query){
-
-		HttpUriRequest request=	getBuilder().queryCommands(thingID,query.getBestLimit(),query.getNextPaginationKey()).generRequest(mapper);
-
-		String result=client.executeRequest(request);
-
-		try{
-			JsonNode node=mapper.readValue(result,JsonNode.class);
-
-			JsonNode pageKey=node.get("nextPaginationKey");
-			if (pageKey != null) {
-				query.setNextPaginationKey(pageKey.asText());
-			}else{
-				query.setNextPaginationKey(null);
-			}
-
-			List<CommandDetail> list=mapper.readValue(node.get("commands").traverse(),mapper.getTypeFactory().constructCollectionType(List.class, CommandDetail.class));
-
-			return list;
-
-		}catch(IOException e){
-			throw new IllegalArgumentException(e);
-		}
-
-	}
+//	public List<ThingCommand> queryCommand(String thingID, CommandQuery query){
+//
+//		HttpUriRequest request=	getBuilder().queryCommands(thingID,query.getBestLimit(),query.getNextPaginationKey()).generRequest(mapper);
+//
+//		String result=client.executeRequest(request);
+//
+//		try{
+//			JsonNode node=mapper.readValue(result,JsonNode.class);
+//
+//			JsonNode pageKey=node.get("nextPaginationKey");
+//			if (pageKey != null) {
+//				query.setNextPaginationKey(pageKey.asText());
+//			}else{
+//				query.setNextPaginationKey(null);
+//			}
+//
+//			List<ThingCommand> list=mapper.readValue(node.get("commands").traverse(),mapper.getTypeFactory().constructCollectionType(List.class, ThingCommand.class));
+//
+//			return list;
+//
+//		}catch(IOException e){
+//			throw new IllegalArgumentException(e);
+//		}
+//
+//	}
 
 	public ThingStatus getStatus(String thingID){
 

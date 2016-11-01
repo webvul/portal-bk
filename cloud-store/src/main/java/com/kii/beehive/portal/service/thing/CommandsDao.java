@@ -1,20 +1,22 @@
 package com.kii.beehive.portal.service.thing;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import com.kii.beehive.portal.store.entity.thing.Commands;
+
 import com.kii.extension.sdk.annotation.AppBindParam;
 import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.entity.BucketInfo;
 import com.kii.extension.sdk.entity.ScopeType;
+import com.kii.extension.sdk.entity.thingif.ThingCommand;
 import com.kii.extension.sdk.query.Condition;
 import com.kii.extension.sdk.query.ConditionBuilder;
 import com.kii.extension.sdk.query.QueryParam;
 import com.kii.extension.sdk.service.AbstractDataAccess;
 
 @Component
-public class CommandsDao extends AbstractDataAccess<Commands>{
+public class CommandsDao extends AbstractDataAccess<ThingCommand>{
 
 	@Autowired
 	private AppBindToolResolver resolver;
@@ -29,7 +31,7 @@ public class CommandsDao extends AbstractDataAccess<Commands>{
 	 * @param endDateTime if null, query all commands sent after startDateTime
 	 * @return
 	 */
-	public List<Commands> queryCommand(@AppBindParam String appID, String thingID, Long startDateTime, Long
+	public List<ThingCommand> queryCommand(@AppBindParam String appID, String thingID, Long startDateTime, Long
 			endDateTime) {
 
 		ConditionBuilder conditionBuilder = ConditionBuilder.andCondition();
@@ -42,7 +44,7 @@ public class CommandsDao extends AbstractDataAccess<Commands>{
 		Condition condition = conditionBuilder.getConditionInstance();
 		QueryParam queryParam = QueryParam.generQueryParam(condition, CREATED_AT, true);
 
-		List<Commands> result = null;
+		List<ThingCommand> result = null;
 
 		BucketInfo bucketInfo = super.getBucketInfoInstance();
 		// Important:
@@ -67,8 +69,8 @@ public class CommandsDao extends AbstractDataAccess<Commands>{
 	}
 
 	@Override
-	protected Class<Commands> getTypeCls() {
-		return Commands.class;
+	protected Class<ThingCommand> getTypeCls() {
+		return ThingCommand.class;
 	}
 
 	@Override

@@ -12,6 +12,8 @@ public class AppChoice implements Serializable{
 
 	private boolean bindAdmin=true;
 
+	private boolean bindThing=false;
+
 
 	public boolean isBindAdmin() {
 		return bindAdmin;
@@ -19,6 +21,14 @@ public class AppChoice implements Serializable{
 
 	public void setBindAdmin(boolean bindAdmin) {
 		this.bindAdmin = bindAdmin;
+	}
+
+	public boolean isBindThing() {
+		return bindThing;
+	}
+
+	public void setBindThing(boolean bindThing) {
+		this.bindThing = bindThing;
 	}
 
 	public String getBindName() {

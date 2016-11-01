@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.kii.beehive.obix.store.beehive.ActionInput;
-import com.kii.beehive.obix.store.beehive.PointDetail;
-import com.kii.beehive.obix.store.beehive.ThingSchema;
+import com.kii.beehive.industrytemplate.ActionInput;
+import com.kii.beehive.industrytemplate.PointDetail;
+import com.kii.beehive.industrytemplate.ThingSchema;
 import com.kii.extension.sdk.entity.KiiEntity;
 
 public class ObixThingSchema extends KiiEntity{

@@ -7,12 +7,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+
 import com.kii.beehive.business.entity.ExecuteTarget;
 import com.kii.beehive.business.entity.TagSelector;
 import com.kii.beehive.business.entity.TargetAction;
@@ -20,8 +22,6 @@ import com.kii.beehive.business.manager.AppInfoManager;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.service.thing.CommandsDao;
-import com.kii.beehive.portal.store.entity.thing.Commands;
-import com.kii.extension.sdk.entity.thingif.CommandDetail;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
 
 
@@ -117,18 +117,18 @@ public class ThingIFCommandService {
         return thingIFService.sendCommand(command,thingInfo.getFullKiiThingID());
     }
 
-    public List<CommandDetail> queryCommand(GlobalThingInfo thingInfo, Long startDateTime, Long endDateTime) {
+    public List<ThingCommand> queryCommand(GlobalThingInfo thingInfo, Long startDateTime, Long endDateTime) {
 
         String kiiAppID = thingInfo.getKiiAppID();
         String kiiThingID = thingInfo.getKiiThingID();
 
-        List<Commands> list = commandDetailDao.queryCommand(kiiAppID, kiiThingID, startDateTime, endDateTime);
+        List<ThingCommand> list = commandDetailDao.queryCommand(kiiAppID, kiiThingID, startDateTime, endDateTime);
 
-        return list.stream().map((e) -> (CommandDetail)e).collect(Collectors.toList());
+        return list.stream().map((e) -> (ThingCommand)e).collect(Collectors.toList());
 
     }
 
-    public CommandDetail readCommand(GlobalThingInfo thingInfo, String commandID) {
+    public ThingCommand readCommand(GlobalThingInfo thingInfo, String commandID) {
 
         return thingIFService.readCommand(thingInfo.getFullKiiThingID(), commandID);
 

@@ -14,7 +14,7 @@ public class IndustryTemplateDao extends SpringBaseDao<IndustryTemplate> {
 	
 	public static final String TABLE_NAME = "industry_template";
 	public static final String KEY = "id";
-	
+
 	@Override
 	public String getTableName() {
 		return TABLE_NAME;

@@ -65,6 +65,9 @@ public class UtilToolsController {
 	@Value("${beehive.kiicloud.dev-portal.masterApp}")
 	private String masterAppID;
 
+	@Value("${spring.profile}")
+	private String profile;
+
 	@Autowired
 	private BeehiveAppInfoManager appInfoManager;
 
@@ -230,6 +233,7 @@ public class UtilToolsController {
 			map.put("Version", impVersion);
 			map.put("Title", impTitle);
 			map.put("Date", impTimestamp);
+			map.put("profile",profile);
 		} catch (IOException ex) {
 			//log.warn("Error while reading version: " + ex.getMessage());
 		}

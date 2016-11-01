@@ -3,7 +3,9 @@ package com.kii.extension.sdk.impl;
 import java.io.IOException;
 import java.util.concurrent.Future;
 
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.CookieStore;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.concurrent.FutureCallback;
 import org.apache.http.protocol.HttpContext;
@@ -34,16 +36,25 @@ public class KiiCloudClient {
 	private HttpTool httpTool;
 
 
-	public <T> T executeRequestWithCls(HttpUriRequest request,Class<T> cls) {
-
-		return executeRequestWithCls(request,cls,null);
+	public HttpContext getContext(){
+		return httpTool.getContext();
 
 	}
 
-	public <T> T executeRequestWithCls(HttpUriRequest request,Class<T> cls,HttpContext context){
+
+	public CookieStore getCookieStore(){
+		return httpTool.getCookieStore();
+	}
+
+	public <T> T executeRequestWithCls(HttpUriRequest request,Class<T> cls){
+		return executeRequestWithCls(request,cls,false);
+	}
 
 
-		String result=executeRequest(request,context);
+	public <T> T executeRequestWithCls(HttpUriRequest request,Class<T> cls,boolean withCookie){
+
+
+		String result=executeRequest(request,withCookie);
 
 		try {
 			return  mapper.readValue(result, cls);
@@ -53,49 +64,57 @@ public class KiiCloudClient {
 		}
 
 	}
+	public HttpResponse doRequest(HttpUriRequest request) {
+		return doRequest(request,false);
+	}
+
+	public HttpResponse doRequest(HttpUriRequest request,boolean withCookie) {
 
 
+		HttpResponse response= httpTool.doRequest(request,withCookie);
 
-	public HttpResponse doRequest(HttpUriRequest request,HttpContext context){
-		HttpResponse response=httpTool.doRequest(request,context);
 
-		factory.checkResponse(response, request.getURI());
+		for(Header header:response.getAllHeaders()){
+
+			System.out.println(header.getName()+header.getValue());
+		};
+
 		return response;
 
 	}
 
-	public HttpResponse doRequest(HttpUriRequest request) {
-
-
-		return doRequest(request, null);
-
+	public  String executeRequest(HttpUriRequest request){
+		return executeRequest(request,false);
 	}
 
 
-	public String executeRequest(HttpUriRequest request) {
-		return executeRequest(request, null);
+	public  String executeRequest(HttpUriRequest request,boolean withCookie){
+
+
+		HttpResponse response=doRequest(request,withCookie);
+
+
+		if(request.getMethod().equals("DELETE")){
+			return "";
+		}
+
+		return HttpUtils.getResponseBody(response);
+	}
+	public Future<HttpResponse> asyncExecuteRequest(HttpUriRequest request,FutureCallback<HttpResponse>  callback){
+
+		return asyncExecuteRequest(request,false,callback);
 	}
 
 
-	private String executeRequest(HttpUriRequest request,HttpContext context){
 
-
-			HttpResponse response=doRequest(request, context);
-
-
-			if(request.getMethod().equals("DELETE")){
-				return "";
-			}
-
-			return HttpUtils.getResponseBody(response);
-	}
-
-
-	public Future<HttpResponse> asyncExecuteRequest(HttpUriRequest request, FutureCallback<HttpResponse>  callback){
+	public Future<HttpResponse> asyncExecuteRequest(HttpUriRequest request, boolean withCookie,FutureCallback<HttpResponse>  callback){
 
 		return  httpTool.asyncExecuteRequest(request,callback);
 
 	}
+
+
+
 
 
 

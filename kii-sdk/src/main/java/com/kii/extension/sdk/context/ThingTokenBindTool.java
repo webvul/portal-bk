@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.kii.beehive.portal.common.utils.SafeThreadLocal;
 import com.kii.extension.sdk.entity.AppInfo;
 import com.kii.extension.sdk.entity.thingif.OnBoardingParam;
 import com.kii.extension.sdk.entity.thingif.OnBoardingResult;
@@ -24,7 +25,7 @@ public class ThingTokenBindTool implements TokenBindTool{
 	private AppBindToolResolver bindToolResolver;
 
 
-	private ThreadLocal<Map<String,ThingInfo>> userLocal=ThreadLocal.withInitial(()->new ConcurrentHashMap<>());
+	private SafeThreadLocal<Map<String,ThingInfo>> userLocal=SafeThreadLocal.withInitial(()->new ConcurrentHashMap<>());
 
 
 	private void setResult(ThingInfo result){
@@ -54,7 +55,7 @@ public class ThingTokenBindTool implements TokenBindTool{
 		setResult(param);
 	}
 
-	public void bindToken(String token){
+	void bindToken(String token){
 		ThingInfo param=new ThingInfo();
 		param.setToken(token);
 

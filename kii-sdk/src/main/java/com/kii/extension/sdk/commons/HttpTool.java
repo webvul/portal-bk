@@ -12,8 +12,13 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.client.CookieStore;
+import org.apache.http.client.config.CookieSpecs;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.concurrent.FutureCallback;
+import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
 import org.apache.http.impl.nio.client.HttpAsyncClients;
@@ -59,6 +64,11 @@ public class HttpTool implements Closeable {
 	};
 
 
+	private HttpClientContext context;
+
+	private CookieStore cookieStore=new BasicCookieStore();
+
+
 	private ScheduledExecutorService executorService= Executors.newSingleThreadScheduledExecutor();
 
 	@PostConstruct
@@ -77,6 +87,14 @@ public class HttpTool implements Closeable {
 			connManager.closeExpiredConnections();
 			connManager.closeIdleConnections(60, TimeUnit.SECONDS);
 		}, 0, 30, TimeUnit.SECONDS);
+
+		context = HttpClientContext.create();
+		context.setCookieStore(cookieStore);
+
+		RequestConfig globalConfig = RequestConfig.custom()
+				.setCookieSpec(CookieSpecs.STANDARD)
+				.build();
+		context.setRequestConfig(globalConfig);
 
 
 		httpClient = HttpAsyncClients.custom()
@@ -97,17 +115,29 @@ public class HttpTool implements Closeable {
 	}
 
 
+	public HttpContext getContext(){
+		return context;
+	}
 
-	public HttpResponse doRequest(HttpUriRequest request,HttpContext context){
+	public CookieStore getCookieStore(){
+		return cookieStore;
+	}
+
+	public HttpResponse doRequest(HttpUriRequest request){
+		return doRequest(request,false);
+
+	}
+
+
+	public HttpResponse doRequest(HttpUriRequest request,boolean withCookie){
 		try{
 			Future<HttpResponse> future=null;
 			log.debug("start do request to " + request.getMethod()  + " " + request.getURI().toASCIIString());
-			if(context==null){
+			if(withCookie) {
+				future = httpClient.execute(request, context, callback);
+			}else{
 				future = httpClient.execute(request,callback);
-			}else {
-				future = httpClient.execute(request, context,callback);
 			}
-
 			HttpResponse response=future.get();
 
 			return response;
@@ -116,12 +146,7 @@ public class HttpTool implements Closeable {
 		}
 	}
 
-	public HttpResponse doRequest(HttpUriRequest request) {
 
-
-		return doRequest(request, null);
-
-	}
 
 	public Future<HttpResponse> asyncExecuteRequest(HttpUriRequest request, FutureCallback<HttpResponse>  callback){
 

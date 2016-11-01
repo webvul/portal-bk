@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.kii.beehive.business.entity.ExecuteTarget;
 import com.kii.beehive.business.entity.TagSelector;
 import com.kii.beehive.business.service.ThingIFCommandService;
@@ -27,7 +29,7 @@ import com.kii.beehive.portal.web.entity.ThingCommandDetailRestBean;
 import com.kii.beehive.portal.web.entity.ThingCommandRestBean;
 import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
-import com.kii.extension.sdk.entity.thingif.CommandDetail;
+import com.kii.extension.sdk.entity.thingif.ThingCommand;
 
 
 @RestController
@@ -208,8 +210,8 @@ public class ThingIFController extends AbstractThingTagController {
 		}
 
 		// get command details
-		List<CommandDetail> commandDetailList = thingIFCommandService.queryCommand(thing, startDateTime, endDateTime);
-		for (CommandDetail commandDetail : commandDetailList) {
+		List<ThingCommand> commandDetailList = thingIFCommandService.queryCommand(thing, startDateTime, endDateTime);
+		for (ThingCommand commandDetail : commandDetailList) {
 			ThingCommandDetailRestBean restBean = new ThingCommandDetailRestBean(thing, commandDetail);
 			responseList.add(restBean);
 		}
@@ -259,7 +261,7 @@ public class ThingIFController extends AbstractThingTagController {
 			String commandID = (String) searchList.stream().filter((search) -> this.safeToLong(search.get
 					(GLOBAL_THING_ID)).longValue() == globalThingID).findFirst().get().get(COMMAND_ID);
 
-			CommandDetail commandDetail = thingIFCommandService.readCommand(thing, commandID);
+			ThingCommand commandDetail = thingIFCommandService.readCommand(thing, commandID);
 			ThingCommandDetailRestBean restBean = new ThingCommandDetailRestBean(thing, commandDetail);
 			responseList.add(restBean);
 		}

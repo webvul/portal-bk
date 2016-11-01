@@ -4,14 +4,10 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
+
+
 public class SafeThreadLocal<T> {
 
-
-
-	private SafeThreadLocal(Supplier<? extends T> initFunction){
-
-		this.initFunction=initFunction;
-	}
 
 	public static <T> SafeThreadLocal<T>  withInitial(Supplier<? extends T> supplier){
 
@@ -22,16 +18,19 @@ public class SafeThreadLocal<T> {
 		return inst;
 	}
 
-	public static <T>  SafeThreadLocal<T> getInstance(){
+	public static <T>  SafeThreadLocal<T> getInstance() {
 
 		return withInitial(null);
 	}
 
+	private  SafeThreadLocal(Supplier<? extends T> initFunction){
+
+		this.initFunction=initFunction;
+	}
+
 	private final Supplier<? extends T> initFunction;
 
-
 	Map<Integer,T>  entityMap=new ConcurrentHashMap<>();
-
 
 	public T get(){
 
@@ -48,6 +47,7 @@ public class SafeThreadLocal<T> {
 		if(obj==null){
 			return;
 		}
+
 		entityMap.put(SafeThreadTool.getUuid(),obj);
 	}
 
@@ -56,11 +56,6 @@ public class SafeThreadLocal<T> {
 		return entityMap.remove(SafeThreadTool.getUuid());
 
 	}
-
-
-
-
-
 
 
 

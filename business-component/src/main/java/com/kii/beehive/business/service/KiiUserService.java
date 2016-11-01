@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 import com.kii.extension.sdk.annotation.BindAppByName;
-import com.kii.extension.sdk.context.UserTokenBindTool;
+import com.kii.extension.sdk.context.TokenBindToolResolver;
 import com.kii.extension.sdk.entity.KiiUser;
 import com.kii.extension.sdk.entity.LoginInfo;
 import com.kii.extension.sdk.exception.BadUserNameException;
@@ -28,7 +28,7 @@ public class KiiUserService {
 	private UserService userService;
 
 	@Autowired
-	private UserTokenBindTool  tokenBind;
+	private TokenBindToolResolver tokenBind;
 
 	/**
 	 * important:
@@ -82,7 +82,7 @@ public class KiiUserService {
 
 		LoginInfo loginInfo=userService.login(user.getKiiCloudLoginName(),pwd);
 
-		tokenBind.bindToken(loginInfo.getToken());
+		tokenBind.bindUser(loginInfo.getToken());
 
 		return loginInfo.getToken();
 	}
@@ -96,7 +96,7 @@ public class KiiUserService {
 
 
 	public KiiUser getKiiUser(String token) {
-		tokenBind.bindToken(token);
+		tokenBind.bindUser(token);
 		return userService.getUserDetail();
 	}
 
@@ -105,15 +105,11 @@ public class KiiUserService {
 	public void removeBeehiveUser(BeehiveJdbcUser  user) {
 		LoginInfo loginInfo=userService.login(user.getKiiCloudLoginName(),user.getUserPassword());
 
-		tokenBind.bindToken(loginInfo.getToken());
+		tokenBind.bindUser(loginInfo.getToken());
 
 
 		userService.removeUserByID(user.getKiiUserID());
 	}
 
 
-
-//	public KiiUser getKiiUser() {
-//		return userService.getUserDetail();
-//	}
 }

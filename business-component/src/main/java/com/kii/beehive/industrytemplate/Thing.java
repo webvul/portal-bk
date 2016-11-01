@@ -1,4 +1,4 @@
-package com.kii.beehive.obix.store.beehive;
+package com.kii.beehive.industrytemplate;
 
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;

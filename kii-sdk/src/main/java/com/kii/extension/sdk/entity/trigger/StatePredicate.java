@@ -1,4 +1,4 @@
-package com.kii.extension.sdk.entity.thingif;
+package com.kii.extension.sdk.entity.trigger;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

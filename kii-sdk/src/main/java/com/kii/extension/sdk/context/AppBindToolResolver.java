@@ -1,7 +1,6 @@
 package com.kii.extension.sdk.context;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 
 import java.util.LinkedList;
 
@@ -25,15 +24,15 @@ public class AppBindToolResolver {
 	@Autowired
 	private TokenBindToolResolver tokenResolver;
 
-	private SafeThreadLocal<AppChoice> appChoiceLocal;
+	private SafeThreadLocal<AppChoice> appChoiceLocal=SafeThreadLocal.getInstance();
 
 	private SafeThreadLocal<String> tokenDirectLocal = SafeThreadLocal.getInstance();
 
 
 
-	private SafeThreadLocal<AppInfo> appInfoDirectly =SafeThreadLocal.getInstance();
+	private SafeThreadLocal<AppInfo> appInfoDirectly = SafeThreadLocal.getInstance();
 
-	private SafeThreadLocal<LinkedList<OldInfos>>  oldInfosThreadLocal;
+	private SafeThreadLocal<LinkedList<OldInfos>>  oldInfosThreadLocal=SafeThreadLocal.getInstance();
 
 
 	private String[] getBeanNameArray() {
@@ -57,14 +56,6 @@ public class AppBindToolResolver {
 
 	}
 
-	@PreDestroy
-	public void afterClose(){
-
-
-		oldInfosThreadLocal=null;
-		appChoiceLocal=null;
-		tokenDirectLocal=null;
-	}
 
 	private void offerInfo(OldInfos infos){
 
@@ -176,6 +167,10 @@ public class AppBindToolResolver {
 		if(appChoiceLocal.get().isBindAdmin()){
 
 			tokenResolver.bindAdmin();
+		}else if(appChoiceLocal.get().isBindThing()){
+			tokenResolver.bindThing();
+		}else{
+			tokenResolver.bindUser();
 		}
 
 	}
@@ -217,15 +212,8 @@ public class AppBindToolResolver {
 
 	public void clearAll(){
 
-
 		SafeThreadTool.removeLocalInfo();
 
-//		appInfoDirectly.remove();
-//		appChoiceLocal.remove();
-//		tokenDirectLocal.remove();
-//		oldInfosThreadLocal.remove();
-//
-//		tokenResolver.clean();
 	}
 
 

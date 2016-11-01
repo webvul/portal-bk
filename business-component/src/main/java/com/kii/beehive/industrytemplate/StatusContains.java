@@ -1,4 +1,4 @@
-package com.kii.beehive.obix.store.beehive;
+package com.kii.beehive.industrytemplate;
 
 import java.util.HashMap;
 import java.util.Map;

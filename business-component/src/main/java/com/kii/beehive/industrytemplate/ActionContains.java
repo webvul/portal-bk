@@ -1,4 +1,4 @@
-package com.kii.beehive.obix.store.beehive;
+package com.kii.beehive.industrytemplate;
 
 public class ActionContains {
 

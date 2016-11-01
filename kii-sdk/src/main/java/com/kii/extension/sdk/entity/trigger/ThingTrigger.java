@@ -1,4 +1,4 @@
-package com.kii.extension.sdk.entity.thingif;
+package com.kii.extension.sdk.entity.trigger;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,11 +13,11 @@ public class ThingTrigger {
 
 	private TriggerTarget target;
 
-	private Predicate  predicate;
+	private Predicate predicate;
 
 	private TargetCommand command;
 
-	private ServiceCode  serviceCode;
+	private ServiceCode serviceCode;
 
 	private String title;
 

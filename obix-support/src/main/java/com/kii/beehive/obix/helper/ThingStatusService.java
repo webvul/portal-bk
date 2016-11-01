@@ -8,11 +8,11 @@ import org.springframework.stereotype.Component;
 
 import com.kii.beehive.business.manager.AppInfoManager;
 import com.kii.beehive.business.service.ThingIFInAppService;
+import com.kii.beehive.industrytemplate.Thing;
+import com.kii.beehive.industrytemplate.ThingSchema;
 import com.kii.beehive.obix.dao.ThingSchemaDao;
 import com.kii.beehive.obix.store.PointInfo;
 import com.kii.beehive.obix.store.ThingInfo;
-import com.kii.beehive.obix.store.beehive.Thing;
-import com.kii.beehive.obix.store.beehive.ThingSchema;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.ThingLocQuery;
 import com.kii.beehive.portal.jdbc.dao.ThingLocationDao;

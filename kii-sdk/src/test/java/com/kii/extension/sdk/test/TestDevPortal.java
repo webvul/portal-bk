@@ -24,7 +24,7 @@ public class TestDevPortal extends TestTemplate {
 
 
 
-		service.login("steven.jiang@kii.com","qwerty");
+		service.login("steven.jiang@kii.com","1qaz2wsx");
 
 		List<AppInfoEntity> list=service.getAppList();
 

@@ -3,7 +3,7 @@ package com.kii.beehive.obix.store;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.kii.beehive.obix.store.beehive.ThingSchema;
+import com.kii.beehive.industrytemplate.ThingSchema;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
 public class ThingInfo   implements  EntityInfo{

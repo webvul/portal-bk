@@ -1,6 +1,8 @@
-package com.kii.extension.sdk.entity.thingif;
+package com.kii.extension.sdk.entity.trigger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import com.kii.extension.sdk.entity.thingif.ThingCommand;
 
 public class TargetCommand extends ThingCommand {
 

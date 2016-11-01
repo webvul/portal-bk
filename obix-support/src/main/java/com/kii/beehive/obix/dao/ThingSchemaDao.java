@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.kii.beehive.industrytemplate.ThingSchema;
 import com.kii.beehive.obix.store.ObixThingSchema;
-import com.kii.beehive.obix.store.beehive.ThingSchema;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.IndustryTemplateDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;

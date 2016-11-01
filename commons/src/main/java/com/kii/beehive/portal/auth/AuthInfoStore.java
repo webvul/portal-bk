@@ -40,8 +40,4 @@ public class AuthInfoStore {
 	}
 
 
-	public static void clear() {
-		user.remove();
-		team.remove();
-	}
 }

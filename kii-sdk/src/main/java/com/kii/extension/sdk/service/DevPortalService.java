@@ -7,19 +7,26 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.apache.http.Header;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.CookieStore;
-import org.apache.http.client.config.CookieSpecs;
-import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.BasicCookieStore;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.nio.reactor.IOReactorException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.kii.beehive.portal.common.utils.SafeThreadLocal;
+import com.kii.extension.sdk.commons.HttpUtils;
 import com.kii.extension.sdk.entity.AppDetail;
 import com.kii.extension.sdk.entity.AppInfo;
 import com.kii.extension.sdk.entity.AppInfoEntity;
@@ -34,11 +41,35 @@ public class DevPortalService {
 	private KiiCloudClient client;
 
 
+
+	private HttpClient httpClient;
+
+	private HttpClientContext context=HttpClientContext.create();
+
+	private CookieStore cookieStore=new BasicCookieStore();
+
 	@Autowired
 	private ObjectMapper mapper;
 
 	private String devPortalUrl;
 
+
+
+
+
+	@PostConstruct
+	public void init() throws IOReactorException {
+
+//			context.setCookieStore(cookieStore);
+//			RequestConfig globalConfig = RequestConfig.custom()
+//					.setCookieSpec(CookieSpecs.DEFAULT)
+//					.build();
+//			context.setRequestConfig(globalConfig);
+
+
+			httpClient = HttpClientBuilder.create().setConnectionTimeToLive(120, TimeUnit.SECONDS).build();
+
+	}
 
 
 	public void setDevPortalUrl(String portalUrl){
@@ -47,22 +78,6 @@ public class DevPortalService {
 
 	}
 
-	HttpClientContext context;
-
-	CookieStore cookieStore=new BasicCookieStore();
-
-	@PostConstruct
-	public void init(){
-
-
-		context = HttpClientContext.create();
-		context.setCookieStore(cookieStore);
-
-		RequestConfig globalConfig = RequestConfig.custom()
-				.setCookieSpec(CookieSpecs.STANDARD)
-				.build();
-		context.setRequestConfig(globalConfig);
-	}
 
 
 	private PortalApiAccessBuilder getBuilder(){
@@ -70,21 +85,43 @@ public class DevPortalService {
 
 	}
 
-	private void bindCookies(HttpUriRequest  request){
 
-		String session=null;
-		for(Cookie cookie:cookieStore.getCookies()){
-			if(cookie.getName().equals("devportal_session")){
-				session=cookie.getValue();
-				break;
-			}
+
+	private  String executeRequest(HttpUriRequest request){
+
+
+		HttpResponse response=doRequest(request);
+
+		if(request.getMethod().equals("DELETE")){
+			return "";
 		}
 
-		request.setHeader("Cookie", "devportal_session="+session);
+		return HttpUtils.getResponseBody(response);
+	}
+
+	private  HttpResponse doRequest(HttpUriRequest request){
+
+
+		HttpResponse response= null;
+		try {
+			response = httpClient.execute(request);
+
+
+			for(Header h:response.getAllHeaders()){
+
+				System.out.println(h.getName()+":"+h.getValue());
+			};
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new IllegalArgumentException(e);
+		}
+		return response;
 
 	}
 
+	private Pattern tokenPat=Pattern.compile("(?:authenticity_token)\\\"\\ (?:value)\\=\\\"([^\\\"]*)",Pattern.MULTILINE);
 
+	private SafeThreadLocal<String> cookieLocal=SafeThreadLocal.getInstance();
 
 	public void login(String user,String pwd){
 
@@ -95,10 +132,43 @@ public class DevPortalService {
 			throw new IllegalArgumentException(e);
 		}
 
-		HttpUriRequest request=getBuilder().buildLogin(user,pwd).generRequest();
+		HttpUriRequest loginRequest=getBuilder().buildLoginPrepare().generRequest();
 
-		client.doRequest(request, context);
 
+		HttpResponse response=doRequest(loginRequest);
+
+		String loginPage=HttpUtils.getResponseBody(response);
+
+		Header header=response.getFirstHeader("Set-Cookie");
+
+		Matcher match=tokenPat.matcher(loginPage);
+
+		match.find();
+		String token=match.group(1);
+
+		HttpUriRequest request=getBuilder().buildLogin(user,pwd,token).generRequest();
+
+		cookieLocal.set(header.getValue());
+
+		request.setHeader("Cookie",header.getValue());
+
+		HttpResponse respRedir=doRequest(request);
+
+		Header cookHeader=respRedir.getFirstHeader("Set-Cookie");
+//
+		if(cookHeader!=null){
+			cookieLocal.set(cookHeader.getValue());
+		}
+//
+//		String cookieStr=cookHeader.getValue();
+//
+//		String cookie=StringUtils.substringBefore(cookieStr,"=");
+//		cookieStr=StringUtils.substringAfter(cookieStr,"=");
+//		String value=StringUtils.substringBefore(cookieStr,";");
+//
+//		BasicClientCookie cookieInst=new BasicClientCookie(cookie,value);
+//		cookieInst.setPath("/");
+//		cookieStore.addCookie(cookieInst);
 	}
 
 
@@ -108,9 +178,8 @@ public class DevPortalService {
 
 		HttpUriRequest request= getBuilder().buildAppDetail(appInfoID).generRequest();
 
-		bindCookies(request);
 
-		String result= client.executeRequest(request);
+		String result= executeRequest(request);
 
 
 		try {
@@ -127,9 +196,8 @@ public class DevPortalService {
 
 		HttpUriRequest request= getBuilder().buildAppSecret(appInfoID).generRequest();
 
-		bindCookies(request);
 
-		String result= client.executeRequest(request);
+		String result= executeRequest(request);
 
 
 		try {
@@ -186,9 +254,9 @@ public class DevPortalService {
 
 		HttpUriRequest request= getBuilder().buildAppList().generRequest();
 
-		bindCookies(request);
+		request.setHeader("Set-Cookie",cookieLocal.get());
 
-		String result= client.executeRequest(request);
+		String result= executeRequest(request);
 
 
 		try {

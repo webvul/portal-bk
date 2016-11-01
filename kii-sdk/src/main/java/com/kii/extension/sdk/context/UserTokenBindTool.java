@@ -43,7 +43,7 @@ public class UserTokenBindTool implements TokenBindTool {
 		setUserInfo(user);
 	}
 
-	public void bindToken(String token){
+	void bindToken(String token){
 		UserInfo user=new UserInfo();
 		user.setToken(token);
 
