@@ -109,7 +109,7 @@ public abstract class TriggerRecord extends KiiEntity {
 		this.predicate = predicate;
 	}
 
-	public List<ExecuteTarget> getTarget() {
+	public List<ExecuteTarget> getTargets() {
 		return targets;
 	}
 
