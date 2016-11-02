@@ -28,6 +28,7 @@
             <mvc:exclude-mapping path="/stomp/**"/>
             <mvc:exclude-mapping path="/stompSockJS/**"/>
             <mvc:exclude-mapping path="/echo/**"/>
+            <mvc:exclude-mapping path="/info/**"/>
             <bean class="com.kii.beehive.portal.web.help.AuthInterceptor"/>
         </mvc:interceptor>
     </mvc:interceptors>
