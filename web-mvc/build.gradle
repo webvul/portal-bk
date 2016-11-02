@@ -7,7 +7,7 @@ dependencies {
 
     compile project(":commons")
     compile project(":store-service")
-	compile project(":obix-support")
+    compile project(":obix-support")
 
     compile "org.springframework:spring-webmvc:${springVersion}"
     compile "org.springframework:spring-websocket:${springVersion}"
@@ -37,7 +37,7 @@ war {
         manifest {
             attributes(
                     "Implementation-Title": project.name,
-                    "Implementation-Version": version,
+                    "Implementation-Version": "git rev-parse --short HEAD".execute().text.trim(),
                     "Implementation-Timestamp": new Date().format("yyyy-MM-dd HH:mm:ss")
             )
         }
