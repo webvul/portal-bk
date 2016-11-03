@@ -74,7 +74,7 @@ public class CommandExecuteService implements EventCallback {
 
 		logTool.triggerLog(record, OperateLog.ActionType.fire);
 
-		List<ExecuteTarget> targets=record.getTarget();
+		List<ExecuteTarget> targets=record.getTargets();
 
 		int idx=0;
 
@@ -128,7 +128,7 @@ public class CommandExecuteService implements EventCallback {
 	private void  addNewTrigger(TriggerRecord  record,int delay,int idx){
 
 
-		ExecuteTarget  target=record.getTarget().get(idx);
+		ExecuteTarget  target=record.getTargets().get(idx);
 
 		if(target.isDoubleCheck()){
 			TriggerRecord newRec=BeanUtils.instantiate(record.getClass());
