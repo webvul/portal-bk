@@ -333,7 +333,7 @@ public class UserController {
 	@RequestMapping(value = "/user/photo", method = RequestMethod.POST, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
 	public
 	@ResponseBody
-	BeehiveJdbcUser uploadFacePhoto(
+	UserRestBean uploadFacePhoto(
 			@RequestParam(value = "userId") String userId,
 			@RequestParam(value = "clearOldPhoto", defaultValue = "false") Boolean clearOldPhoto,
 			@RequestParam(value = "photos") CommonsMultipartFile[] photos) throws IOException {
@@ -355,19 +355,15 @@ public class UserController {
 		}
 
 		BeehiveJdbcUser user = service.updateUserWithFace(userId, clearOldPhoto, photoFiles);
-		user.setUserPassword(null);
-		user.setRoleName(null);
-		return user;
+		UserRestBean bean = new UserRestBean(user);
+		return bean;
 	}
 
 	@RequestMapping(value = "/users/face/{faceUserID}", method = {RequestMethod.GET}, consumes = {MediaType.ALL_VALUE})
 	public UserRestBean getUserByFaceUserID(@PathVariable("faceUserID") String faceUserID) {
 
-		UserRestBean bean = new UserRestBean();
 		BeehiveJdbcUser user = userManager.getUserByFaceUserID(faceUserID);
-//		user.setUserPassword(null);
-//		user.setRoleName(null);
-		bean.setBeehiveUser(user);
+		UserRestBean bean = new UserRestBean(user);
 
 		return bean;
 	}
