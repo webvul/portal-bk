@@ -31,7 +31,6 @@ public class ThingInfo   implements  EntityInfo{
 
 			PointInfo  point=new PointInfo(v,k,status.getField(k),name);
 
-
 			pointCollect.add(point);
 
 		});

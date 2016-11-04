@@ -17,7 +17,7 @@
     </cache>
 
     <!--for auth info-->
-    <cache name="auth_into_cache"
+    <cache name="industry_template_cache"
            maxEntriesLocalHeap="10000"
            maxEntriesLocalDisk="10000000"
            timeToLiveSeconds="3600">

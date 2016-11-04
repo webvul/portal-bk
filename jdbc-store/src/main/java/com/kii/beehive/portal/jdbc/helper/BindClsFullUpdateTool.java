@@ -78,7 +78,6 @@ public class BindClsFullUpdateTool extends SqlUpdate {
 		return inst;
 	}
 
-
 	public BindClsFullUpdateTool cloneInstance(Map<String, Object> paramMap, String key) {
 
 		BindClsFullUpdateTool inst = new BindClsFullUpdateTool(super.getJdbcTemplate().getDataSource(), tableName, wrapper, pkFieldName,objectMapper);

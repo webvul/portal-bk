@@ -3,6 +3,7 @@ package com.kii.beehive.industrytemplate;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class PointDetail {
@@ -20,6 +21,8 @@ public class PointDetail {
 	private String displayNameCN;
 
 	private Map<String,Object> enumMap=new HashMap<>();
+
+	private Map<Object,String> valueMap=new HashMap<>();
 
 	private Number  maximum;
 
@@ -50,7 +53,20 @@ public class PointDetail {
 	}
 
 	public void setEnumMap(Map<String, Object> enumMap) {
+
 		this.enumMap = enumMap;
+
+		if(enumMap!=null){
+			enumMap.forEach((k,v)->{
+				valueMap.put(v,k);
+			});
+		}
+	}
+
+	@JsonIgnore
+	public Map<Object,String> getValueMap(){
+
+		return valueMap;
 	}
 
 	public Number getMaximum() {

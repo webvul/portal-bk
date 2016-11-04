@@ -2,9 +2,12 @@ package com.kii.beehive.business.manager;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.kii.beehive.business.service.IndustryTemplateService;
 import com.kii.beehive.portal.jdbc.dao.IndustryTemplateDao;
 import com.kii.beehive.portal.jdbc.entity.IndustryTemplate;
 
@@ -15,9 +18,14 @@ import com.kii.beehive.portal.jdbc.entity.IndustryTemplate;
 public class IndustryTemplateManager {
 
     @Autowired
-    private IndustryTemplateDao dao;
+    private IndustryTemplateService  service;
 
-    /**
+
+	@Autowired
+	private IndustryTemplateDao dao;
+
+
+	/**
      * get industry template
      *
      */
@@ -56,7 +64,7 @@ public class IndustryTemplateManager {
     }
 
     public void updateIndustryTemplate(IndustryTemplate industryTemplate) {
-        dao.updateEntityAllByID(industryTemplate);
+        service.updateEntityAllByID(industryTemplate);
     }
     /**
      * add industry template
@@ -64,7 +72,7 @@ public class IndustryTemplateManager {
      */
     public void insertIndustryTemplate(IndustryTemplate industryTemplate) {
 
-        dao.insert(industryTemplate);
+		service.insert(industryTemplate);
 
     }
 

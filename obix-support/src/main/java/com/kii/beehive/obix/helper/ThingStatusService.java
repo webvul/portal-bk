@@ -7,10 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.business.manager.AppInfoManager;
+import com.kii.beehive.business.service.IndustryTemplateService;
 import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.industrytemplate.Thing;
 import com.kii.beehive.industrytemplate.ThingSchema;
-import com.kii.beehive.obix.dao.ThingSchemaDao;
 import com.kii.beehive.obix.store.PointInfo;
 import com.kii.beehive.obix.store.ThingInfo;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
@@ -37,7 +37,7 @@ public class ThingStatusService {
 	private LocationDao locDao;
 
 	@Autowired
-	private ThingSchemaDao schemaDao;
+	private IndustryTemplateService schemaDao;
 
 	@Autowired
 	private ThingIFInAppService thingIFService;
@@ -69,7 +69,7 @@ public class ThingStatusService {
 	private ThingInfo getFullThingInfo(Thing thing){
 
 
-		ThingSchema  schema=schemaDao.getThingSchemaByThingVendorID(thing.getThingID());
+		ThingSchema  schema=schemaDao.getTemplateByVendorThingID(thing.getThingID());
 
 		ThingInfo info=new ThingInfo(schema,thing.getStatus());
 
@@ -89,7 +89,6 @@ public class ThingStatusService {
 
 		}).collect(Collectors.toSet()));
 
-//		info.setLocation(thing.getLocation());
 
 		return info;
 
@@ -120,7 +119,7 @@ public class ThingStatusService {
 
 		ThingCommand cmd=new ThingCommand();
 
-		ThingSchema schema=schemaDao.getThingSchemaByThingVendorID(thingID);
+		ThingSchema schema=schemaDao.getTemplateByVendorThingID(thingID);
 
 		String actionDef=schema.getActions().entrySet().stream().filter((a)->a.getValue().getIn().getProperties().containsKey(name)).findFirst().get().getKey();
 

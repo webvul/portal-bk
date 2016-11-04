@@ -57,7 +57,6 @@ public class AppInfoDao extends AbstractDataAccess<KiiAppInfo> {
 	@CachePut(cacheNames={CacheConfig.LONGLIVE_CACHE},key="#appInfo.id")
 	public KiiAppInfo addAppInfo(KiiAppInfo appInfo) {
 
-		log.debug("addAppInfo(cache): " + appInfo.getId());
 
 		super.addEntity(appInfo, appInfo.getAppInfo().getAppID());
 
@@ -67,7 +66,6 @@ public class AppInfoDao extends AbstractDataAccess<KiiAppInfo> {
 	@Cacheable(cacheNames={CacheConfig.LONGLIVE_CACHE})
 	public KiiAppInfo getAppInfoByID(String id){
 
-		log.debug("getAppInfoByID(cache): " + id);
 
 		try {
 			return super.getObjectByID(id);
@@ -80,7 +78,6 @@ public class AppInfoDao extends AbstractDataAccess<KiiAppInfo> {
 	@Cacheable(cacheNames={CacheConfig.LONGLIVE_CACHE},key=APP_LIST_CACHE)
 	public List<AppInfo> getSlaveAppList(){
 
-		log.debug("getSalveAppList(cache)");
 
 		QueryParam query=ConditionBuilder.notCondition().equal("masterApp",true).getFinalQueryParam();
 
@@ -92,7 +89,6 @@ public class AppInfoDao extends AbstractDataAccess<KiiAppInfo> {
 	@Cacheable(cacheNames= CacheConfig.LONGLIVE_CACHE,key=MASTER_CACHE)
 	public KiiAppInfo getMasterAppInfo(){
 
-		log.debug("getMasterAppInfo(cache)");
 
 		List<KiiAppInfo>  infoList=super.query(ConditionBuilder.newCondition().equal("masterApp", true).getFinalCondition().build());
 		if(infoList.size()==0){
@@ -106,7 +102,6 @@ public class AppInfoDao extends AbstractDataAccess<KiiAppInfo> {
 	@CacheEvict(cacheNames=CacheConfig.LONGLIVE_CACHE,key=MASTER_CACHE)
 	public void setMasterAppInfo(KiiAppInfo appInfo){
 
-		log.debug("setMasterAppInfo(cache): " + appInfo.getId());
 
 		appInfo.setMasterApp(true);
 		super.addEntity(appInfo, appInfo.getAppInfo().getAppID());

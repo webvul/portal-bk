@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kii.beehive.obix.dao.ThingSchemaDao;
+import com.kii.beehive.business.service.IndustryTemplateService;
 import com.kii.beehive.obix.helper.ThingStatusService;
 import com.kii.beehive.obix.store.PointInfo;
 import com.kii.beehive.obix.store.ThingInfo;
@@ -24,21 +24,14 @@ public class ThingService {
 
 
 	@Autowired
-	private ThingSchemaDao schemaDao;
+	private IndustryTemplateService schemaDao;
 
 
 
 
 	public ThingInfo getFullThingInfo(String thingID){
 
-//
-//		Thing thing=thingService.getThingByID(thingID);
-//
-//		ThingSchema schema=schemaDao.getThingSchemaByName(thing.getSchema());
-//
-//		ThingInfo info=new ThingInfo(schema,thing.getStatus());
-//
-//		info.setName(thing.getThingID());
+
 
 		return thingService.getThingByID(thingID);
 

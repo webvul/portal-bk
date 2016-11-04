@@ -54,12 +54,37 @@ public class IndustryTemplateDao extends SpringBaseDao<IndustryTemplate> {
 			"from ${0} t inner join ${1} th on ( th.${2} = t.${3} and th.${4}=t.${5} ) " +
 			"where  t.${6} = ? and th.${7} = ?  ";
 
+	private static final String[] params=new String[]{IndustryTemplateDao.TABLE_NAME,GlobalThingSpringDao.TABLE_NAME,
+			GlobalThingInfo.SCHEMA_VERSION,IndustryTemplate.VERSION,
+			GlobalThingInfo.SCHEMA_NAME,IndustryTemplate.THING_TYPE,
+			IndustryTemplate.SCHEMA_TYPE,GlobalThingInfo.FULL_KII_THING_ID};
+
+
 	public IndustryTemplate getTemplateByThingID(Long thingID){
 
-		String[] params=new String[]{IndustryTemplateDao.TABLE_NAME,GlobalThingSpringDao.TABLE_NAME,
-				GlobalThingInfo.SCHEMA_VERSION,IndustryTemplate.VERSION,
-			    GlobalThingInfo.SCHEMA_NAME,IndustryTemplate.THING_TYPE,
-				IndustryTemplate.SCHEMA_TYPE,GlobalThingInfo.ID_GLOBAL_THING};
+		params[params.length-1]=GlobalThingInfo.ID_GLOBAL_THING;
+
+		String fullSql= StrTemplate.gener(sqlQueryByThingID,params);
+
+		return super.queryForObject(fullSql,new Object[]{"industrytemplate",thingID});
+
+	}
+
+	public IndustryTemplate getTemplateByVendorThingID(String thingID){
+
+		params[params.length-1]=GlobalThingInfo.VANDOR_THING_ID;
+
+
+		String fullSql= StrTemplate.gener(sqlQueryByThingID,params);
+
+		return super.queryForObject(fullSql,new Object[]{"industrytemplate",thingID});
+
+	}
+
+
+	public IndustryTemplate getTemplateByKiiThingID(String thingID){
+
+		params[params.length-1]=GlobalThingInfo.FULL_KII_THING_ID;
 
 		String fullSql= StrTemplate.gener(sqlQueryByThingID,params);
 

@@ -1200,7 +1200,7 @@ public class TestThingIFController extends WebTestTemplate {
 
 		String stateString1 = mapper.writeValueAsString(states1);
 
-		globalThingDao.updateState(stateString1, thingInfo1.getFullKiiThingID());
+		globalThingDao.updateState(states1, thingInfo1.getFullKiiThingID());
 
 
 		// update state for thing2
@@ -1212,7 +1212,7 @@ public class TestThingIFController extends WebTestTemplate {
 
 		String stateString2 = mapper.writeValueAsString(states2);
 
-		globalThingDao.updateState(stateString2, thingInfo2.getFullKiiThingID());
+		globalThingDao.updateState(states2, thingInfo2.getFullKiiThingID());
 
 
 		// update state for thing3
@@ -1225,7 +1225,7 @@ public class TestThingIFController extends WebTestTemplate {
 
 		String stateString3 = mapper.writeValueAsString(states3);
 
-		globalThingDao.updateState(stateString3, thingInfo3.getFullKiiThingID());
+		globalThingDao.updateState(states3, thingInfo3.getFullKiiThingID());
 
 
 		// search thing state Bri/Power in thing1/thing2

@@ -142,9 +142,16 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 
 	}
 
-	public void updateState(String state, String fullKiiThingID) {
 
-		super.doUpdate("update global_thing set status = ? where full_kii_thing_id = ? ", state, fullKiiThingID);
+
+
+	public void updateState(Map<String,Object> state, String fullKiiThingID) {
+
+		GlobalThingInfo info=new GlobalThingInfo();
+		info.setStatus(state);
+		info.setFullKiiThingID(fullKiiThingID);
+
+		super.updateEntityByField(info,"fullKiiThingID");
 
 	}
 
@@ -156,9 +163,15 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 			return null;
 		}
 	}
-
+//
 	public void updateKiiThingID(String vendorID, String fullKiiThingID) {
-		super.doUpdate("update global_thing set full_kii_thing_id = ? where vendor_thing_id = ? ", fullKiiThingID, vendorID);
+
+		GlobalThingInfo info=new GlobalThingInfo();
+		info.setVendorThingID(vendorID);
+		info.setFullKiiThingID(fullKiiThingID);
+
+		super.updateEntityByField(info,"vendorThingID");
+
 	}
 
 	public List<String> findAllThingTypes() {

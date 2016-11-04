@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -310,6 +311,16 @@ public abstract class SpringBaseDao<T extends BusinessEntity> {
 		return tool.execute(paramMap);
 	}
 
+	public int updateFieldByID(String field,Object obj, long id) {
+
+		Map<String,Object> paramMap=new HashMap<>();
+		paramMap.put(field,obj);
+
+		return updateEntityByID(paramMap,id);
+
+	}
+
+
 
 	public int updateEntityByID(T entity, long id) {
 
@@ -320,6 +331,13 @@ public abstract class SpringBaseDao<T extends BusinessEntity> {
 		return tool.execute(entity);
 	}
 
+	public int updateEntityByField(Map<String,Object> paramMap, String conditionField) {
+
+		paramMap.put(conditionField, paramMap.get(conditionField));
+		BindClsFullUpdateTool tool = updateTool.cloneInstance(paramMap, conditionField);
+
+		return tool.execute(paramMap);
+	}
 
 	public int updateEntityByField(T entity, String conditionField) {
 
@@ -335,7 +353,7 @@ public abstract class SpringBaseDao<T extends BusinessEntity> {
 		return tool.execute(entity);
 	}
 
-	protected int doUpdate(String updateSql, Object... params) {
+	private int doUpdate(String updateSql, Object... params) {
 
 		int start = updateSql.indexOf("set") + 3;
 

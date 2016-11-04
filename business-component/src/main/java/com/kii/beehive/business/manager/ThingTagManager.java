@@ -1,7 +1,23 @@
 package com.kii.beehive.business.manager;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import com.kii.beehive.business.service.IndustryTemplateService;
+import com.kii.beehive.industrytemplate.PointDetail;
+import com.kii.beehive.industrytemplate.ThingSchema;
 import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.exception.InvalidTriggerFormatException;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
@@ -11,17 +27,6 @@ import com.kii.beehive.portal.jdbc.dao.ThingLocationRelDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.extension.ruleengine.store.trigger.TagSelector;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 @Component
 @Transactional
@@ -40,6 +45,9 @@ public class ThingTagManager {
 	@Autowired
 	private ObjectMapper mapper;
 
+	@Autowired
+	private IndustryTemplateService  templateService;
+
 	public Set<String> getTagNamesByIDs(List<Long> tagIDs) {
 
 
@@ -52,24 +60,46 @@ public class ThingTagManager {
 		if (thing != null) {
 			globalThingDao.updateKiiThingID(vendorID, fullKiiThingID);
 
-			/*List<String> locList = new ArrayList<>();
-			locList.add(thing.getFullKiiThingID());
-			relDao.clearAllRelation(thing.getId());
-			relDao.addRelation(thing.getId(), locList);*/
 		}
+	}
+
+	public  Map<String,Object> bindTemplate(Map<String,Object> input,String fullThingID){
+
+		Map<String,Object> status=new HashMap<>(input);
+
+		ThingSchema  schema=templateService.getTemplateByKiiThingID(fullThingID);
+
+		Map<String,PointDetail>  propMap=schema.getStatesSchema().getProperties();
+
+		status.replaceAll((k,v)->{
+
+			PointDetail detail=propMap.get(k);
+
+			if(detail==null){
+				return v;
+			}
+
+			Object val=detail.getValueMap().get(v);
+			if(val==null){
+				return v;
+			}
+			return val;
+
+		});
+
+		return status;
+
+
 	}
 
 	public void updateState(ThingStatus status, String thingID, String appID) {
 
 		String fullThingID = ThingIDTools.joinFullKiiThingID(appID, thingID);
 
-		try {
-			String stateJson = mapper.writeValueAsString(status);
-			globalThingDao.updateState(stateJson, fullThingID);
+			Map<String,Object>  values=status.getFields();
 
-		} catch (JsonProcessingException e) {
-			throw new IllegalArgumentException(e);
-		}
+			globalThingDao.updateState(bindTemplate(values,fullThingID), fullThingID);
+
 
 	}
 
