@@ -19,10 +19,13 @@ public class KiiDispatcherServlet extends DispatcherServlet {
 
 	private OpLogTools logTool;
 
+	private ApiLogUploadTools apiLogUploadTools;
+
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
 		ApplicationContext applicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(config.getServletContext());
 		logTool = applicationContext.getBean(OpLogTools.class);
+		apiLogUploadTools = applicationContext.getBean(ApiLogUploadTools.class);
 	}
 
 	public void doService(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -43,6 +46,11 @@ public class KiiDispatcherServlet extends DispatcherServlet {
 		list.add(AuthInfoStore.getUserIDStr());
 		list.add(request.getHeader(Constants.ACCESS_TOKEN));
 		logTool.write(list);
+
+		// upload api log to ES
+		apiLogUploadTools.upload(url.substring(idx + 4).trim(), request.getMethod(), response.getStatus(),
+				AuthInfoStore.getUserID(), request.getHeader(Constants.ACCESS_TOKEN));
+
 	}
 
 
