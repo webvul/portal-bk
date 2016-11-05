@@ -68,8 +68,8 @@ public class ApiLogUploadTools {
 
 		ObjectNode document = mapper.createObjectNode();
 
-		document.put("timestampe", System.currentTimeMillis());
-		document.put("apiUrl", apiUrl);
+		document.put("timestamp", System.currentTimeMillis());
+		document.put("apiurl", apiUrl);
 		document.put("apimethod", apimethod);
 		document.put("apihttpcode", apihttpcode);
 		document.put("userid", userid);
