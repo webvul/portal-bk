@@ -1,6 +1,7 @@
 package com.kii.extension.sdk.service;
 
 
+import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +22,12 @@ import com.kii.extension.sdk.query.QueryParam;
 public abstract class AbstractDataAccess<T> {
 
 
-	protected abstract Class<T>  getTypeCls();
+	protected  Class<T>  getTypeCls(){
+
+		ParameterizedType type = (ParameterizedType) getClass().getGenericSuperclass();
+		return  (Class<T>) type.getActualTypeArguments()[0];
+
+	};
 
 	protected abstract BucketInfo getBucketInfo();
 
