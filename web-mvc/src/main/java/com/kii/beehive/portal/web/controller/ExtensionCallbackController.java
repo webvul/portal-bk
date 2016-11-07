@@ -1,5 +1,7 @@
 package com.kii.beehive.portal.web.controller;
 
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,16 +65,17 @@ public class ExtensionCallbackController {
 								  @RequestHeader("Authorization") String token,
 								  @RequestBody StateUpload status) {
 
-		tagManager.updateState(status.getState(), status.getThingID(), appID);
+		Map<String,Object> values=tagManager.updateState(status.getState(), status.getThingID(), appID);
 
 		String fullThingID = ThingIDTools.joinFullKiiThingID(appID, status.getThingID());
 
 		statusChangeCallback.onEventFire(appID,status.getState(), fullThingID, status.getTimestamp());
-
-		statusChangeCallback.pushStatusUpload(appID,status.getThingID(), status.getState(), status.getTimestamp());
-
 		eventBus.onStatusUploadFire(fullThingID, status.getState(), status.getTimestamp());
 
+
+		status.getState().setFields(values);
+
+		statusChangeCallback.pushStatusUpload(appID,status.getThingID(), status.getState(), status.getTimestamp());
 		internalEventListenerRegistry.onStateChange(appID, status);
 	}
 

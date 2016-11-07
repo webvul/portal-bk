@@ -92,7 +92,7 @@ public class ThingTagManager {
 
 	}
 
-	public void updateState(ThingStatus status, String thingID, String appID) {
+	public Map<String,Object> updateState(ThingStatus status, String thingID, String appID) {
 
 		String fullThingID = ThingIDTools.joinFullKiiThingID(appID, thingID);
 
@@ -100,6 +100,7 @@ public class ThingTagManager {
 
 			globalThingDao.updateState(bindTemplate(values,fullThingID), fullThingID);
 
+		return values;
 
 	}
 
