@@ -250,6 +250,8 @@ public class AuthManager {
 	private AuthInfo saveToken(BeehiveJdbcUser user, String token, Team team, boolean is3rdParty) {
 		AuthInfo entity = new AuthInfo();
 		entity.setUserID(user.getId());
+		entity.setUserIDStr(user.getUserID());
+
 		if (team != null) {
 			entity.setTeamID(team.getId());
 		}

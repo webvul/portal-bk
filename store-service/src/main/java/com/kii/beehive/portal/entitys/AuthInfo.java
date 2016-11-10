@@ -5,6 +5,7 @@ import java.util.Date;
 public class AuthInfo {
 
 	private Long userID;
+	private String userIDStr;
 	private Long teamID;
 	private Date expireTime;
 	private boolean is3Party;
@@ -42,5 +43,11 @@ public class AuthInfo {
 		this.teamID = teamID;
 	}
 
+	public String getUserIDStr() {
+		return userIDStr;
+	}
 
+	public void setUserIDStr(String userIDStr) {
+		this.userIDStr = userIDStr;
+	}
 }

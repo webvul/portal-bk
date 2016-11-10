@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.servlet.DispatcherServlet;
 import com.kii.beehive.business.helper.OpLogTools;
-import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.web.constant.Constants;
 
 @Component
@@ -39,17 +38,19 @@ public class KiiDispatcherServlet extends DispatcherServlet {
 		String url = request.getRequestURI();
 		int idx = url.indexOf(Constants.URL_PREFIX);
 		String subUrl = url.substring(idx + 4).trim().replaceAll(",","`");
+		Object userIDStrObject = request.getAttribute("userIDStr");
+		String userIDStr = userIDStrObject == null ? "" : (String)userIDStrObject;
 		List<String> list = new LinkedList<>();
 		list.add(subUrl);
 		list.add(request.getMethod());
 		list.add(String.valueOf(response.getStatus()));
-		list.add(AuthInfoStore.getUserIDStr());
+		list.add(userIDStr);
 		list.add(request.getHeader(Constants.ACCESS_TOKEN));
 		logTool.write(list);
 
 		// upload api log to ES
 		apiLogUploadTools.upload(url.substring(idx + 4).trim(), request.getMethod(), response.getStatus(),
-				AuthInfoStore.getUserID(), request.getHeader(Constants.ACCESS_TOKEN));
+				userIDStr, request.getHeader(Constants.ACCESS_TOKEN));
 
 	}
 

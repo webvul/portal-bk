@@ -64,7 +64,7 @@ public class ApiLogUploadTools {
 	 * {"timestamp":{0}, "apiurl":"{1}", "apimethod":"{2}", "apihttpcode":{3}, "userid":{4}, "token":"{5}"}
 	 */
 	@Async
-	public void upload(String apiUrl, String apimethod, int apihttpcode, long userid, String token) {
+	public void upload(String apiUrl, String apimethod, int apihttpcode, String userid, String token) {
 
 		ObjectNode document = mapper.createObjectNode();
 
