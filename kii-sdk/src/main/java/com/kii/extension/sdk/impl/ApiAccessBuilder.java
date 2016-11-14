@@ -1,6 +1,7 @@
 package com.kii.extension.sdk.impl;
 
 import java.util.Base64;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -348,11 +349,11 @@ public class ApiAccessBuilder {
 
 
 	public ApiAccessBuilder login(String user, String pwd) {
-		request = new HttpPost(appInfo.getSiteUrl() + ("/api/oauth2/token"));
+		request = new HttpPost(appInfo.getAppSubUrl() + ("/oauth2/token"));
 
 		setBasicToken();
 
-		setContentType("application/x-www-form-urlencoded");
+//		setContentType("application/x-www-form-urlencoded");
 
 		Map<String, String> map = new HashMap<>();
 		map.put("grant_type","password");
@@ -365,7 +366,7 @@ public class ApiAccessBuilder {
 	}
 
 	public ApiAccessBuilder adminLogin(String user, String pwd) {
-		request = new HttpPost(appInfo.getSiteUrl() + ("/api/oauth2/token"));
+		request = new HttpPost(appInfo.getAppSubUrl() + ("/oauth2/token"));
 
 		setBasicToken();
 
@@ -373,6 +374,10 @@ public class ApiAccessBuilder {
 		map.put("grant_type","client_credentials");
 		map.put("client_id", user);
 		map.put("client_secret", pwd);
+		Calendar cal=Calendar.getInstance();
+		cal.add(Calendar.HOUR,1);
+
+		map.put("expiresAt",String.valueOf(cal.getTime().getTime()));
 
 		ctxObj = map;
 

@@ -3,7 +3,6 @@ package com.kii.extension.sdk.impl;
 import java.io.IOException;
 import java.util.concurrent.Future;
 
-import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -74,10 +73,8 @@ public class KiiCloudClient {
 		HttpResponse response= httpTool.doRequest(request,withCookie);
 
 
-		for(Header header:response.getAllHeaders()){
+		factory.checkResponse(response, request.getURI());
 
-			System.out.println(header.getName()+header.getValue());
-		};
 
 		return response;
 
