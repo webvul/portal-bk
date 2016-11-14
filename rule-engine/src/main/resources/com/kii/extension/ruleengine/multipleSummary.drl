@@ -48,6 +48,7 @@ when
 	accumulate( $status : MemberMatchResult(thingID memberOf $things , name==$name);
                     $val : max($status.getNumValue($summary.getFieldName()))
                   )
+    MemberMatchResult(numValue($summary.fieldName) == $val,$choiceTh:thingID)
 then
 	System.out.println("max summary result:"+$summary);
 	insert(new SummaryResult($triggerID,$name,$val));
