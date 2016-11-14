@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.beehive.portal.auth.UrlTemplateVerify;
 import com.kii.extension.tools.CronGeneral;
+import com.kii.extension.tools.IDConvertTool;
 import com.kii.extension.tools.JsonToFlat;
 
 public class UtilTest {
@@ -211,6 +212,22 @@ public class UtilTest {
 
 		assertEquals(null,map.get("key1"));
 
+	}
+
+	@Test
+	public void testConvert(){
+
+
+		long[] i=new long[]{Long.MAX_VALUE,0,2,3,4,20,30,40,1000,10000,11000,11100,11111,11112,11111110L,11111111L,11111112L,10000000};
+
+		for(long v:i){
+			String id= IDConvertTool.encode(v);
+
+			System.out.println("val:"+v+" id:"+id);
+			long val=IDConvertTool.decode(id);
+
+			assertEquals(val,v);
+		}
 	}
 
 
