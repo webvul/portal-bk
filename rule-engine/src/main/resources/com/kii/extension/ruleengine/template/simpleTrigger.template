@@ -14,6 +14,7 @@ when
     $ext:ExternalCollect()
     Trigger( $triggerID:triggerID,$enable:enable, (triggerID=="${triggerID}" && enable==true &&  type ==TriggerType.simple ) )
     SingleThing($thingID:thingID,$triggerID==$triggerID)
+    $inst:TriggerValues(triggerID==$triggerID)
     $curr:CurrThing(init == false)
     $status:ThingStatusInRule(thingID == $thingID,${express}  )
 then

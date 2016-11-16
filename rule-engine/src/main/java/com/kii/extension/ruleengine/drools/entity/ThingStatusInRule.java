@@ -4,7 +4,15 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.kii.extension.ruleengine.ExpressTool;
+
 public class ThingStatusInRule implements RuntimeEntry,CanUpdate<ThingStatusInRule>{
+
+	private Logger log= LoggerFactory.getLogger(ThingStatusInRule.class);
 
 	private final String thingID;
 
@@ -37,14 +45,31 @@ public class ThingStatusInRule implements RuntimeEntry,CanUpdate<ThingStatusInRu
 	}
 
 
+	private String  getFullFieldPath(String field){
+
+		int idx=field.indexOf(".");
+		if(idx==-1){
+			idx=field.length();
+		}
+		String prefix= StringUtils.substring(field,0,idx);
+		String fullField="values['"+prefix+"']"+StringUtils.substring(field,idx);
+
+		log.debug("fullField:"+fullField);
+		return fullField;
+	}
 
 	public Object getNumValue(String field){
-		Object value = this.values.get(field);
+
+
+		Object value= ExpressTool.getValue(this,getFullFieldPath(field));
 		return value == null ? 0 : value;
 	}
 
 	public Object getValue(String field){
-		Object value = this.values.get(field);
+
+		Object value= ExpressTool.getValue(this,getFullFieldPath(field));
+
+//		Object value = this.values.get(field);
 		if(value==null){
 			return null;
 		}

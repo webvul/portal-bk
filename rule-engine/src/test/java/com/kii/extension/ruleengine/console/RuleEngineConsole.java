@@ -83,28 +83,55 @@ public class RuleEngineConsole {
 
 	}
 
+	public static class Entry{
+
+		private String v;
+
+		private Map<String,Object> map=new HashMap<>();
+
+		private String[] a;
+
+		private int n;
+
+		public int getN() {
+			return n;
+		}
+
+		public void setN(int n) {
+			this.n = n;
+		}
+
+		public String getV() {
+			return v;
+		}
+
+		public void setV(String v) {
+			this.v = v;
+		}
+
+		public Map<String, Object> getMap() {
+			return map;
+		}
+
+		public void setMap(Map<String, Object> map) {
+			this.map = map;
+		}
+
+		public String[] getA() {
+			return a;
+		}
+
+		public void setA(String[] a) {
+			this.a = a;
+		}
+	}
 
 	public void init() throws IOException, SchedulerException {
 
 
 		service.enterInit();
 
-//		service.updateExternalValue("demo","one",111);
-//
-//		service.updateExternalValue("demo","two",222);
-
-
-
-
-
-//		String[] init={"test3","test1","test2"};
-//
-//		for(String name:init) {
-//			String jsonTrigger = getFileContext(name);
-//
-//			addTrigger(jsonTrigger, name);
-//		}
-//		loadAll();
+		initExternal();
 
 
 		List<ThingStatusInRule> statusList=new ArrayList<>();
@@ -125,6 +152,24 @@ public class RuleEngineConsole {
 
 		},3, 30,TimeUnit.SECONDS);
 
+	}
+
+	public void initExternal() {
+		service.updateExternalValue("demo","one",111);
+
+		service.updateExternalValue("demo","two",222);
+
+//       "express":"ml.score('one',$p{1},$p{2})>$e{demo.map[c].d} "
+
+		Entry entry=new Entry();
+		entry.setV("value");
+		entry.setN(100);
+
+
+		Map<String,Object> map=new HashMap<>();
+		map.put("c",entry);
+
+		service.updateExternalValue("demo","map",map);
 	}
 
 	public void loadAll(){

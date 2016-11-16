@@ -9,13 +9,25 @@ public class SummaryResult implements  WithTrigger {
 
 	private final Object value;
 
+	private final String relID;
+
 
 
 	public SummaryResult(String triggerID,String summaryField,Number value){
 		this.triggerID=triggerID;
 		this.name=summaryField;
 		this.value=value;
+		this.relID=null;
 	}
+
+
+	public SummaryResult(String triggerID,String summaryField,Number value,String relID){
+		this.triggerID=triggerID;
+		this.name=summaryField;
+		this.value=value;
+		this.relID=relID;
+	}
+
 
 
 	public String getTriggerID() {
@@ -30,7 +42,9 @@ public class SummaryResult implements  WithTrigger {
 		return name;
 	}
 
-
+	public String getRelID() {
+		return relID;
+	}
 
 	@Override
 	public String toString() {

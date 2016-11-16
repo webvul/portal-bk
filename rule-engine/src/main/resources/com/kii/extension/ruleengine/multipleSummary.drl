@@ -1,6 +1,10 @@
 package com.kii.extension.ruleengine.drools.rule
 
 import com.kii.extension.ruleengine.drools.entity.*;
+import com.kii.extension.ruleengine.ExtendFunAdapter;
+
+global com.kii.extension.ruleengine.ExtendFunAdapter ExtFun;
+
 
 rule "copy  all multiples's unit summary value to multipleMap"
   no-loop true
@@ -44,25 +48,35 @@ end
 rule "in unit,compute the  max of  fieldName value: funName"
 when
 	$trigger:Trigger(type==TriggerType.multiple,$triggerID:triggerID)
+	$inst:TriggerValues(triggerID==$triggerID)
 	$summary:Summary(triggerID==$triggerID, funName=="max" ,$name:name,$things:things)
 	accumulate( $status : MemberMatchResult(thingID memberOf $things , name==$name);
                     $val : max($status.getNumValue($summary.getFieldName()))
                   )
-    MemberMatchResult(numValue($summary.fieldName) == $val,$choiceTh:thingID)
+    MemberMatchResult( getNumValue($summary.fieldName) == $val,$choiceTh:thingID)
 then
 	System.out.println("max summary result:"+$summary);
+	ExternalValues entity=new ExternalValues($name);
+    entity.addValue("choiceTh",$choiceTh);
+	$inst.updateEntity(entity);
+
 	insert(new SummaryResult($triggerID,$name,$val));
 end
 
 rule "in unit,compute the  min of  fieldName value: funName"
 when
 	$trigger:Trigger(type==TriggerType.multiple,$triggerID:triggerID)
+	$inst:TriggerValues(triggerID==$triggerID)
 	$summary:Summary(triggerID==$triggerID, funName=="min" ,$name:name,$things:things)
 	accumulate( $status : MemberMatchResult(thingID memberOf $things , name==$name);
                     $val : min($status.getNumValue($summary.getFieldName()))
                   )
+    MemberMatchResult(getNumValue($summary.fieldName) == $val,$choiceTh:thingID)
 then
 	System.out.println("min summary result:"+$val);
+	ExternalValues entity=new ExternalValues($name);
+    entity.addValue("choiceTh",$choiceTh);
+	$inst.updateEntity(entity);
 	insert(new SummaryResult($triggerID,$name,$val));
 end
 

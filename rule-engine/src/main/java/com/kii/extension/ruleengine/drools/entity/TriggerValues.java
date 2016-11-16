@@ -1,10 +1,17 @@
 package com.kii.extension.ruleengine.drools.entity;
 
-import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ExternalCollect implements Serializable{
+public class TriggerValues implements  RuntimeEntry,WithTrigger {
+
+
+
+	private String triggerID;
+
+	public TriggerValues(String triggerID){
+		this.triggerID=triggerID;
+	}
 
 	private Map<String,ExternalValues> externalValuesMap=new ConcurrentHashMap<>();
 
@@ -74,5 +81,20 @@ public class ExternalCollect implements Serializable{
 		return "ExternalCollect{" +
 				"externalValuesMap=" + externalValuesMap +
 				'}';
+	}
+
+
+	@Override
+	public String getID() {
+		return triggerID;
+	}
+
+	@Override
+	public String getTriggerID() {
+		return triggerID;
+	}
+
+	public void setTriggerID(String triggerID){
+		this.triggerID=triggerID;
 	}
 }

@@ -12,6 +12,7 @@ when
     $curr:CurrThing(init == false)
     $ext:ExternalCollect()
     Trigger( $triggerID:triggerID, $enable:enable, triggerID=="${triggerID}" && enable == true )
+    $inst:TriggerValues(triggerID==$triggerID)
     $fire:ScheduleFire(triggerID==$triggerID,enable==true)
 
 then

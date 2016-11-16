@@ -17,6 +17,7 @@ import com.kii.extension.ruleengine.drools.entity.ThingResult;
 import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
 import com.kii.extension.ruleengine.drools.entity.Trigger;
 import com.kii.extension.ruleengine.drools.entity.TriggerData;
+import com.kii.extension.ruleengine.drools.entity.TriggerValues;
 import com.kii.extension.ruleengine.drools.entity.WithTrigger;
 
 @Component
@@ -61,6 +62,9 @@ public class DroolsTriggerService {
 
 		getService(trigger.getTriggerID()).addOrUpdateData(trigger,true);
 
+		TriggerValues  value=new TriggerValues(trigger.getTriggerID());
+		getService(trigger.getTriggerID()).addOrUpdateData(value,true);
+
 	}
 
 	public void addMultipleTrigger(Trigger triggerInput,String ruleContent){
@@ -78,6 +82,9 @@ public class DroolsTriggerService {
 		ThingResult  result=new ThingResult(trigger.getTriggerID());
 		getService(trigger.getTriggerID()).addOrUpdateData(result,true);
 
+
+		TriggerValues  value=new TriggerValues(trigger.getTriggerID());
+		getService(trigger.getTriggerID()).addOrUpdateData(value,true);
 	}
 
 	public void addTriggerData(TriggerData data) {

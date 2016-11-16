@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class ExternalValues implements Serializable {
 
 
@@ -39,7 +41,16 @@ public class ExternalValues implements Serializable {
 		return this;
 	}
 	
-	public Object getValue(String name) {
+	public Object getValue(String field) {
+
+
+		int idx=field.indexOf(".");
+		if(idx==-1){
+			idx=field.length();
+		}
+		String prefix= StringUtils.substring(field,0,idx);
+		String fullField="values['"+prefix+"']"+StringUtils.substring(field,idx);
+
 
 		return values.get(name);
 	}

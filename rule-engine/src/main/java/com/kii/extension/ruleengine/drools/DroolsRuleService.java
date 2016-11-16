@@ -105,10 +105,12 @@ public class DroolsRuleService {
 
 
 	public void inThing(String thingID){
+
 		settingCurrThing(thingID, CurrThing.Status.inThing);
 	}
 
-	public void inExt(){
+	public void inExt(String extName){
+
 		settingCurrThing(CurrThing.NONE, CurrThing.Status.inExt);
 	}
 
@@ -155,6 +157,14 @@ public class DroolsRuleService {
 				List<MatchResult> lists = doQuery("get Match Result by TriggerID");
 				consumer.accept(lists);
 			}
+
+
+			ExternalValues entity=new ExternalValues("sys");
+			entity.addValue("currThing",currThing);
+			external.updateEntity(entity);
+
+			kieSession.update(externalHandler,external);
+			kieSession.fireAllRules();
 		}
 	}
 
@@ -340,14 +350,16 @@ public class DroolsRuleService {
 	}
 
 
+
+
 	public void addOrUpdateExternal(ExternalValues entity){
 
 
-		external.putEntity(entity.getName(),entity);
+		external.updateEntity(entity);
 
 		kieSession.update(externalHandler,external);
 
-		inExt();
+		inExt(entity.getName());
 
 	}
 
