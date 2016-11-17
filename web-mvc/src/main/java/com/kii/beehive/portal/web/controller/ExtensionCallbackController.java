@@ -1,7 +1,6 @@
 package com.kii.beehive.portal.web.controller;
 
 import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,15 +11,12 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.kii.beehive.business.event.BusinessEventBus;
 import com.kii.beehive.business.manager.ThingTagManager;
 import com.kii.beehive.business.ruleengine.ThingCommandForTriggerService;
 import com.kii.beehive.business.ruleengine.ThingStatusChangeCallback;
 import com.kii.beehive.portal.common.utils.ThingIDTools;
-import com.kii.beehive.portal.jedis.dao.MessageQueueDao;
 import com.kii.beehive.portal.web.constant.CallbackNames;
 import com.kii.beehive.portal.web.entity.CreatedThing;
 import com.kii.beehive.portal.web.entity.StateUpload;
@@ -45,10 +41,6 @@ public class ExtensionCallbackController {
 
 	@Autowired
 	private InternalEventListenerRegistry internalEventListenerRegistry;
-
-
-	@Autowired
-	private MessageQueueDao messageQueueDao;
 
 	@Autowired
 	private ThingCommandForTriggerService  commandService;

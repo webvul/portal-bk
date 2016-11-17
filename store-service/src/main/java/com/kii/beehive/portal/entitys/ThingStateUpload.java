@@ -5,6 +5,7 @@ import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
 public class ThingStateUpload {
 
+	private Long globalThingID;
 	private String appID;
 	private String thingID;;
 	private ThingStatus state;
@@ -42,5 +43,13 @@ public class ThingStateUpload {
 
 	public void setThingID(String thingID) {
 		this.thingID = thingID;
+	}
+
+	public Long getGlobalThingID() {
+		return globalThingID;
+	}
+
+	public void setGlobalThingID(Long globalThingID) {
+		this.globalThingID = globalThingID;
 	}
 }
