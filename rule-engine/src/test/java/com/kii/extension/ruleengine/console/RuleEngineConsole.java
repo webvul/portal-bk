@@ -23,17 +23,18 @@ import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import com.kii.extension.ruleengine.BeehiveTriggerService;
 import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
-import com.kii.extension.ruleengine.store.trigger.groups.GroupTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.groups.SummaryTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.TagSelector;
-import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.GroupSummarySource;
 import com.kii.extension.ruleengine.store.trigger.MultipleSrcTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.TagSelector;
 import com.kii.extension.ruleengine.store.trigger.ThingSource;
+import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.groups.GroupTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.groups.SummaryTriggerRecord;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
 
@@ -58,6 +59,8 @@ public class RuleEngineConsole {
 	public RuleEngineConsole(ClassPathXmlApplicationContext context){
 
 		 mapper=context.getBean(ObjectMapper.class);
+
+		mapper.configure(SerializationFeature.INDENT_OUTPUT,true);
 
 
 		service=context.getBean(BeehiveTriggerService.class);
@@ -93,19 +96,19 @@ public class RuleEngineConsole {
 
 		private int n;
 
-		public int getN() {
+		public int getNum() {
 			return n;
 		}
 
-		public void setN(int n) {
+		public void setNum(int n) {
 			this.n = n;
 		}
 
-		public String getV() {
+		public String getVal() {
 			return v;
 		}
 
-		public void setV(String v) {
+		public void setVal(String v) {
 			this.v = v;
 		}
 
@@ -117,11 +120,11 @@ public class RuleEngineConsole {
 			this.map = map;
 		}
 
-		public String[] getA() {
+		public String[] getArr() {
 			return a;
 		}
 
-		public void setA(String[] a) {
+		public void setArr(String[] a) {
 			this.a = a;
 		}
 	}
@@ -162,8 +165,8 @@ public class RuleEngineConsole {
 //       "express":"ml.score('one',$p{1},$p{2})>$e{demo.map[c].d} "
 
 		Entry entry=new Entry();
-		entry.setV("value");
-		entry.setN(100);
+		entry.setVal("value");
+		entry.setNum(-100);
 
 
 		Map<String,Object> map=new HashMap<>();
@@ -265,6 +268,7 @@ public class RuleEngineConsole {
 			case "dump":
 
 				Map<String, Object> result = service.getRuleEngingDump(null);
+
 
 				try {
 					String json = mapper.writeValueAsString(result);

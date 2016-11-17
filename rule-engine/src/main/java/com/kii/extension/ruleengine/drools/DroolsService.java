@@ -46,9 +46,9 @@ import com.kii.extension.ruleengine.drools.entity.WithTrigger;
 
 @Component
 @Scope(scopeName= ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class DroolsRuleService {
+public class DroolsService {
 
-	private Logger log= LoggerFactory.getLogger(DroolsRuleService.class);
+	private Logger log= LoggerFactory.getLogger(DroolsService.class);
 
 
 	private final KieSession kieSession;
@@ -222,7 +222,7 @@ public class DroolsRuleService {
 
 
 
-	public DroolsRuleService(Consumer<List<MatchResult>>  consumer , boolean isStream,String...  rules){
+	public DroolsService(Consumer<List<MatchResult>>  consumer , boolean isStream, String...  rules){
 
 		this.consumer=consumer;
 

@@ -1,7 +1,5 @@
 package com.kii.extension.ruleengine.drools.entity;
 
-import java.util.Objects;
-
 public class ScheduleFire implements WithTrigger{
 
 	private String triggerID;
@@ -28,16 +26,16 @@ public class ScheduleFire implements WithTrigger{
 		this.triggerID = triggerID;
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		ScheduleFire that = (ScheduleFire) o;
-		return Objects.equals(triggerID, that.triggerID);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(triggerID);
-	}
+//	@Override
+//	public boolean equals(Object o) {
+//		if (this == o) return true;
+//		if (o == null || getClass() != o.getClass()) return false;
+//		ScheduleFire that = (ScheduleFire) o;
+//		return Objects.equals(triggerID, that.triggerID);
+//	}
+//
+//	@Override
+//	public int hashCode() {
+//		return Objects.hash(triggerID);
+//	}
 }

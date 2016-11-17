@@ -56,6 +56,8 @@ public class TestUtil {
 
 		map.put("val","val");
 
+		map.put("map",subMap);
+
 		ThingStatusInRule status=new ThingStatusInRule("abc");
 		status.setValues(map);
 
@@ -65,6 +67,7 @@ public class TestUtil {
 		assertEquals("val",status.getValue("val"));
 		assertEquals("item",status.getValue("entry.array[0].val"));
 		assertEquals("two",status.getValue("entry.map['item'].array[1]"));
+		assertEquals("two",status.getValue("map['item'].array[1]"));
 
 	}
 

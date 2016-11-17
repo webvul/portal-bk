@@ -16,7 +16,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.StreamUtils;
 
 import com.kii.extension.ruleengine.drools.CommandExec;
-import com.kii.extension.ruleengine.drools.DroolsRuleService;
+import com.kii.extension.ruleengine.drools.DroolsService;
 import com.kii.extension.ruleengine.drools.entity.CurrThing;
 import com.kii.extension.ruleengine.drools.entity.SingleThing;
 import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
@@ -30,7 +30,7 @@ public class InitTest {
 
 	@Autowired
 	@Qualifier("cloudDroolsService")
-	protected DroolsRuleService ruleLoader;
+	protected DroolsService ruleLoader;
 
 	@Autowired
 	protected CommandExec exec;

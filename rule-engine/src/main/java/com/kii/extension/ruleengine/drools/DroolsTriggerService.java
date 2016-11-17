@@ -25,7 +25,7 @@ public class DroolsTriggerService {
 
 	@Autowired
 	@Qualifier("cloudDroolsService")
-	private DroolsRuleService cloudService;
+	private DroolsService cloudService;
 
 
 	private final Map<String, Boolean> triggerMap=new ConcurrentHashMap<>();
@@ -42,7 +42,7 @@ public class DroolsTriggerService {
 
 	}
 
-	private DroolsRuleService getService(String triggerID){
+	private DroolsService getService(String triggerID){
 
 		if(triggerMap.get(triggerID)){
 			return null;

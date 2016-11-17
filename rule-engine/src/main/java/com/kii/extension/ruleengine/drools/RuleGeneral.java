@@ -212,7 +212,7 @@ end
 		return fullDrl;
 	}
 
-	private static String ParamBindTemplate="target.setParam(\"${0}\",${1}); \n";
+	private static String ParamBindTemplate="result.setParam(\"${0}\",${1}); \n";
 
 	private String getParamMappingList(List<CommandParam>  paramList,boolean isSimpleTrigger){
 

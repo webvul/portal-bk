@@ -27,7 +27,7 @@
   "predicate": {
 
     "triggersWhen": "CONDITION_TRUE",
-    "express":"ml.score('one',$p{1},$p{2})>$e{demo.map[c].n} "
+    "express":"ml.score('one',$p{1},$p{2})>$e{demo.map[c].num} "
   },
   "targetParamList": [
     {"name":"maxid",

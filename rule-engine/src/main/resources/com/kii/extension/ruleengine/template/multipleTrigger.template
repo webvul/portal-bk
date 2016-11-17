@@ -11,7 +11,7 @@ global com.kii.extension.ruleengine.ExtendFunAdapter ExtFun;
 
 
 rule "${triggerID} user custom segment:multiple "
-
+ no-loop true
 when
 
 	$ext:ExternalCollect()
@@ -20,6 +20,7 @@ when
     $curr:CurrThing(init == false)
     $muiMap:MultiplesValueMap( triggerID==$triggerID, ${express}  )
 then
+    System.out.println("output match result");
 	MatchResult result=new MatchResult($triggerID);
     result.setFireSource($curr);
 

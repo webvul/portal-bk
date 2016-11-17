@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,29 +44,17 @@ public class ThingStatusInRule implements RuntimeEntry,CanUpdate<ThingStatusInRu
 	}
 
 
-	private String  getFullFieldPath(String field){
-
-		int idx=field.indexOf(".");
-		if(idx==-1){
-			idx=field.length();
-		}
-		String prefix= StringUtils.substring(field,0,idx);
-		String fullField="values['"+prefix+"']"+StringUtils.substring(field,idx);
-
-		log.debug("fullField:"+fullField);
-		return fullField;
-	}
 
 	public Object getNumValue(String field){
 
 
-		Object value= ExpressTool.getValue(this,getFullFieldPath(field));
+		Object value= ExpressTool.getValue(this,field);
 		return value == null ? 0 : value;
 	}
 
 	public Object getValue(String field){
 
-		Object value= ExpressTool.getValue(this,getFullFieldPath(field));
+		Object value= ExpressTool.getValue(this,field);
 
 //		Object value = this.values.get(field);
 		if(value==null){

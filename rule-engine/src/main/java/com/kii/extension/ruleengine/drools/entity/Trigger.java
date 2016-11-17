@@ -1,7 +1,6 @@
 package com.kii.extension.ruleengine.drools.entity;
 
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 import org.springframework.beans.BeanUtils;
@@ -88,16 +87,16 @@ public class Trigger implements WithTrigger{
 				'}';
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-		Trigger trigger = (Trigger) o;
-		return Objects.equals(triggerID, trigger.triggerID);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(triggerID);
-	}
+//	@Override
+//	public boolean equals(Object o) {
+//		if (this == o) return true;
+//		if (o == null || getClass() != o.getClass()) return false;
+//		Trigger trigger = (Trigger) o;
+//		return Objects.equals(triggerID, trigger.triggerID);
+//	}
+//
+//	@Override
+//	public int hashCode() {
+//		return Objects.hash(triggerID);
+//	}
 }

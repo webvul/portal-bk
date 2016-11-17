@@ -9,23 +9,31 @@ public class SummaryResult implements  WithTrigger {
 
 	private final Object value;
 
-	private final String relID;
+//	private final String relID;
+
+	private final String funName;
 
 
 
-	public SummaryResult(String triggerID,String summaryField,Number value){
-		this.triggerID=triggerID;
-		this.name=summaryField;
+//	public SummaryResult(String triggerID,String summaryField,Number value){
+//		this.triggerID=triggerID;
+//		this.name=summaryField;
+//		this.value=value;
+//		this.relID=null;
+//	}
+
+	public SummaryResult(Summary summary,Number value){
+		this.funName=summary.getFunName();
+		this.triggerID=summary.getTriggerID();
+		this.name=summary.getName();
 		this.value=value;
-		this.relID=null;
 	}
 
-
-	public SummaryResult(String triggerID,String summaryField,Number value,String relID){
+	public SummaryResult(String triggerID,String summaryField,Number value,String funName){
 		this.triggerID=triggerID;
 		this.name=summaryField;
 		this.value=value;
-		this.relID=relID;
+		this.funName=funName;
 	}
 
 
@@ -42,9 +50,9 @@ public class SummaryResult implements  WithTrigger {
 		return name;
 	}
 
-	public String getRelID() {
-		return relID;
-	}
+	public String getFunName(){return funName;}
+
+
 
 	@Override
 	public String toString() {
