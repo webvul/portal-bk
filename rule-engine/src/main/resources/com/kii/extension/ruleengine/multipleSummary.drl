@@ -21,21 +21,6 @@ then
 end
 
 
-//rule "in unit,fill trigger value with max and min"
-//  no-loop true
-//when
-//	$trigger:Trigger(type==TriggerType.multiple,$triggerID:triggerID)
-//	$inst:TriggerValues(triggerID==$triggerID)
-//	SummaryResult(triggerID==$triggerID,$name:name, $val:value,funName=="max" || funName=="min" )
-//	Summary(triggerID==$triggerID,name==$name,$fieldName:fieldName)
-//  MemberMatchResult(triggerID==$triggerID,name==$name, getNumValue($fieldName) == $val,$choiceTh:thingID)
-//then
-//	System.out.println("setting trigger result:"+$val);
-//	ExternalValues entity=new ExternalValues($name);
-//    entity.addValue("choiceTh",$choiceTh);
-//	$inst.updateEntity(entity);
-//end
-
 rule "in unit,compute the  summary of  fieldName value: funName"
   no-loop true
 when
@@ -72,7 +57,6 @@ when
                   )
     MemberMatchResult(triggerID==$triggerID,name==$name, getNumValue($summary.getFieldName()) == $val,$choiceTh:thingID)
 then
-	System.out.println("max summary result:"+$val);
 	insertLogical(new SummaryResult($summary,$val));
 
 	ExternalValues entity=new ExternalValues($name);
@@ -93,7 +77,6 @@ when
                   )
     MemberMatchResult(triggerID==$triggerID,name==$name, getNumValue($summary.getFieldName()) == $val,$choiceTh:thingID)
 then
-	System.out.println("min summary result:"+$val);
 	insertLogical(new SummaryResult($summary,$val));
 
 	ExternalValues entity=new ExternalValues($name);
@@ -115,3 +98,14 @@ then
 end
 
 
+rule "in unit,compute the  collect of  fieldName value: funName"
+  no-loop true
+when
+	$trigger:Trigger(type==TriggerType.multiple,$triggerID:triggerID)
+	$summary:Summary(triggerID==$triggerID, funName=="objCol" ,$name:name,$things:things)
+	accumulate( $status : MemberMatchResult(thingID memberOf $things , name ==$name );
+                    $val : collectSet($status.getThingID())
+                  )
+then
+	insertLogical(new SummaryResult($summary,$val));
+end

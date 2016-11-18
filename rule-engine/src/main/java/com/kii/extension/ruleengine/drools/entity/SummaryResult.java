@@ -1,5 +1,7 @@
 package com.kii.extension.ruleengine.drools.entity;
 
+import java.util.Set;
+
 public class SummaryResult implements  WithTrigger {
 
 	private final String triggerID;
@@ -29,11 +31,11 @@ public class SummaryResult implements  WithTrigger {
 		this.value=value;
 	}
 
-	public SummaryResult(String triggerID,String summaryField,Number value,String funName){
-		this.triggerID=triggerID;
-		this.name=summaryField;
+	public SummaryResult(Summary summary,Set value){
+		this.funName=summary.getFunName();
+		this.triggerID=summary.getTriggerID();
+		this.name=summary.getName();
 		this.value=value;
-		this.funName=funName;
 	}
 
 

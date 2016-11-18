@@ -1,6 +1,6 @@
 {
   "predicate" : {
-    "express" :"$p{power}!=0  && ExtFun.getExtendFun(\"foo\",$triggerID) == 0 ",
+    "express" :"$p{power}!=0  ",
     "triggersWhen":"CONDITION_CHANGED"
   },
   "targets" : [ {
