@@ -206,7 +206,7 @@ public class TriggerManager {
 
 	private GatewayTriggerRecord convertToGatewayTriggerRecord(SummaryTriggerRecord summaryRecord) {
 		GatewayTriggerRecord gatewayTriggerRecord = new GatewayTriggerRecord();
-		BeanUtils.copyProperties(summaryRecord, gatewayTriggerRecord, "targets");
+		BeanUtils.copyProperties(summaryRecord, gatewayTriggerRecord, "summarySource", "targets");
 		gatewayTriggerRecord.setRecordStatus(TriggerRecord.StatusType.enable);
 
 		Collection<SummarySource> sourceCollection = summaryRecord.getSummarySource().values();
