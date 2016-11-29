@@ -96,9 +96,11 @@ public class ThingTagManager {
 
 		String fullThingID = ThingIDTools.joinFullKiiThingID(appID, thingID);
 
-			Map<String,Object>  values=status.getFields();
-
-			globalThingDao.updateState(bindTemplate(values,fullThingID), fullThingID);
+		Map<String,Object>  values=status.getFields();
+		
+		Map<String,Object> valuesWithSchema=bindTemplate(values,fullThingID);
+		
+		globalThingDao.updateState(values, fullThingID);
 
 		return values;
 
