@@ -6,6 +6,12 @@ import com.kii.extension.ruleengine.ExtendFunAdapter;
 global com.kii.extension.ruleengine.ExtendFunAdapter ExtFun;
 
 
+query "get multiples Result by TriggerID" ()
+	Trigger($triggerID:triggerID,$thingSet:thingSet,enable==true)
+	CurrThing( valid ($thingSet) )
+    results : MultiplesValueMap( triggerID == $triggerID )
+end
+
 rule "copy  all multiples's unit summary value to multipleMap"
   no-loop true
 when
@@ -13,9 +19,9 @@ when
 	$summary:SummaryResult(triggerID==$triggerID)
 	$thing:ThingResult(triggerID==$triggerID)
 	$multiplesMap:MultiplesValueMap(triggerID==$triggerID)
+	$record:MemberMatchResult(triggerID==$triggerID)
 then
 
-	$multiplesMap.init();
 	modify($multiplesMap){
     	setSummaryValue($summary),
     	setThingValue($thing)

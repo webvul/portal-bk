@@ -49,7 +49,22 @@ public abstract class TriggerRecord extends KiiEntity {
 	private String name;
 
 	private String description;
-
+	
+	private UsedByType usedByWho=UsedByType.User;
+	
+	public enum UsedByType{
+		
+		User,Sys_monitor;
+	}
+	
+	public UsedByType getUsedByWho() {
+		return usedByWho;
+	}
+	
+	public void setUsedByWho(UsedByType usedByWho) {
+		this.usedByWho = usedByWho;
+	}
+	
 	public String getDeletedReason() {
 		return deletedReason;
 	}

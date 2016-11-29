@@ -4,10 +4,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.kii.extension.ruleengine.ExpressTool;
 
-public class MultiplesValueMap implements RuntimeEntry,WithTrigger{
+public class MultiplesValueMap implements RuntimeEntry,WithTrigger,WithHistory{
 
 	private String triggerID;
 
@@ -15,9 +16,32 @@ public class MultiplesValueMap implements RuntimeEntry,WithTrigger{
 	
 	private Map<String,Object> previousMap=new HashMap<>();
 	
+	private AtomicBoolean sign=new AtomicBoolean(false);
 	
-	public void init(){
-		previousMap=new HashMap(valueMap);
+	public boolean copyToHistory(){
+//		if(sign.get()){
+//			return true;
+//		}
+		
+		previousMap.clear();
+		
+		valueMap.forEach((k,v)->{
+			
+			if(v instanceof Set){
+				
+				previousMap.put(k,new HashSet<>((Set)v));
+			}else if(v instanceof Map){
+				previousMap.put(k,new HashMap<>((Map)v));
+			}else{
+				previousMap.put(k,v);
+			}
+			
+		});
+//		previousMap.putAll(valueMap);
+		
+//		sign.set(true);
+//		return sign.get();
+		return true;
 	}
 	
 	public void setSummaryValue(SummaryResult result){
@@ -28,7 +52,7 @@ public class MultiplesValueMap implements RuntimeEntry,WithTrigger{
 			value=((Number)value).doubleValue();
 		}
 		valueMap.put(name,value);
-
+//		sign.set(false);
 	}
 
 	public void setThingValue(ThingResult result){
@@ -42,7 +66,7 @@ public class MultiplesValueMap implements RuntimeEntry,WithTrigger{
 		Map<String,Object> map=result.getValue();
 		
 		valueMap.put(name,map);
-		
+//		sign.set(false);
 //		map.forEach((k,v)->{
 //			valueMap.put(name+"."+k,v);
 //		});

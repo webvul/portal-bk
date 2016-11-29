@@ -217,12 +217,6 @@ end
 	private String getParamMappingList(List<CommandParam>  paramList,boolean isSimpleTrigger){
 
 
-		/*
-			MatchResult target=new MatchResult($thingID);
-	target.setParam("a",$status.getValue("foo"));
-	target.setParam("b",$status.getValue("bar"));
-	target.setDelay($status.getValue("delay"));
-		 */
 		StringBuilder sb=new StringBuilder();
 
 		paramList.forEach((param)->{

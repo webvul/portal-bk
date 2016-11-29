@@ -164,44 +164,113 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 		return param;
 	}
 	
+	public static class Pager{
+		
+		private int start=0;
+		
+		private int size=0;
+		
+		public int getStart() {
+			return start;
+		}
+		
+		public void setStart(int start) {
+			this.start = start;
+		}
+		
+		public int getSize() {
+			return size;
+		}
+		
+		public void setSize(int size) {
+			this.size = size;
+		}
+	}
+	
 	public class SqlParam {
 		
 		private StringBuilder fullSql=new StringBuilder();
 		
 		private List<Object> list=new ArrayList<>();
 		
-		public void addEqCondition(String fieldName,Object val){
+		public void addEq(String fieldName,Object val){
+			
+			String field=getFieldStr(fieldName);
 			if(val!=null){
-				fullSql.append(" and ").append(getValueStr(val,beanWrapper.getPropertyType(fieldName),sqlTypeMapper.get(fieldName))).append(" = ? ");
-				list.add(val);
+				fullSql.append(" and ").append(field).append(" = ? ");
+				list.add(getValue(val,fieldName));
 			}
 		}
 		
-		public void addPageEnd(int from){
+		public void addLike(String fieldName,String val){
+			String field=getFieldStr(fieldName);
 			
-			fullSql.append(" LIMIT ? , 50 ");
-			list.add(from);
+			if(val!=null){
+				fullSql.append(" and ").append(field).append(" like ? ");
+				list.add("%"+val+"%");
+			}
 		}
 		
-		private String getValueStr(Object val,Class propCls,JdbcFieldType type){
+		public <T> void addBetween(String fieldName, T start, T end) {
 			
+			if(start==null&&end==null){
+				return;
+			}
+			
+			String field=getFieldStr(fieldName);
+			
+			
+			if(start!=null&&end!=null){
+				fullSql.append(" and ").append(field).append(" between ? and ? ");
+				list.add(getValue(start,fieldName));
+				list.add(getValue(end,fieldName));
+				return;
+			}
+			
+			if(start!=null){
+				fullSql.append(" and ").append(field).append(" > ? ");
+				list.add(getValue(start,fieldName));
+			}else{
+				fullSql.append(" and ").append(field).append(" < ? ");
+				list.add(getValue(end,fieldName));
+			}
+			return;
+		}
+		
+		
+		
+		public void addPager(Pager page){
+			
+			fullSql.append(" LIMIT ? , ? ");
+			list.add(page.getStart());
+			list.add(page.getSize());
+		}
+		
+		private String getFieldStr(String field){
+			
+			return fieldMapper.get(field);
+			
+		}
+		
+		private Object getValue(Object val,String fieldName){
+			Class propCls=beanWrapper.getPropertyType(fieldName);
+			JdbcFieldType type=sqlTypeMapper.get(fieldName);
 			
 			if(type == JdbcFieldType.EnumInt){
 				
-				return String.valueOf(((Enum)val).ordinal());
+				return ((Enum)val).ordinal();
 				
 			}else if(propCls.equals(String.class)&&type==JdbcFieldType.Auto){
 				
-				return "'"+String.valueOf(val)+"'";
+				return  String.valueOf(val);
 				
 			}else if(type == JdbcFieldType.EnumStr){
 				
 				return ((Enum)val).name();
 				
 			}else {
-				return String.valueOf(val);
+				return val;
 			}
-			
 		}
 		
 		public String getFullSql(){
@@ -213,5 +282,6 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 		}
 		
 		
+	
 	}
 }

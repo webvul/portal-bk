@@ -10,20 +10,24 @@ import com.kii.beehive.portal.jdbc.annotation.JdbcFieldType;
 public class UserNotice extends DBEntity {
 	
 	
-	public  static final String NOTICE_ID ="notice_id";
-	public  static final String USER_ID="user_id";
+	public  static final String NOTICE_ID ="user_notice_id";
+	public  static final String USER_ID="beehive_user_id";
 	public  static final String READED_TIME="readed_time";
+	public  static final String CREATE_TIME="create_time";
 	public  static final String DATA="data";
 	public  static final String MESSAGE="msg_in_text";
 	public  static final String TITLE="title";
 	public  static final String FROM="from";
 	public  static final String TYPE="notice_type";
 	public  static final String READED="readed";
+	public  static final String ACTION_TYPE="action_type";
 	
 	
 	private boolean readed=false;
 
 	private Date readTime;
+	
+	private Date createTime;
 
 	private Map<String,Object> data;
 	
@@ -36,6 +40,26 @@ public class UserNotice extends DBEntity {
 	private MsgType type;
 	
 	private Long userID;
+	private String actionType;
+	
+	@JdbcField(column = CREATE_TIME)
+	public Date getCreateTime() {
+		return createTime;
+	}
+	
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
+	}
+	
+	@JdbcField(column = ACTION_TYPE)
+	public String getActionType() {
+		return actionType;
+	}
+	
+	public void setActionType(String actionType) {
+		
+		this.actionType = actionType;
+	}
 	
 	@JdbcField(column = USER_ID)
 	public Long getUserID() {
@@ -97,8 +121,9 @@ public class UserNotice extends DBEntity {
 	public void setFrom(String from) {
 		this.from = from;
 	}
-
-	@JdbcField(column = TYPE)
+	
+	
+	@JdbcField(column=TYPE,type = JdbcFieldType.EnumStr)
 	public MsgType getType() {
 		return type;
 	}

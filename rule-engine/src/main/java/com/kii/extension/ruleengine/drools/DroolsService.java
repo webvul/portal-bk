@@ -39,6 +39,7 @@ import com.kii.extension.ruleengine.drools.entity.CurrThing;
 import com.kii.extension.ruleengine.drools.entity.ExternalCollect;
 import com.kii.extension.ruleengine.drools.entity.ExternalValues;
 import com.kii.extension.ruleengine.drools.entity.MatchResult;
+import com.kii.extension.ruleengine.drools.entity.MultiplesValueMap;
 import com.kii.extension.ruleengine.drools.entity.RuntimeEntry;
 import com.kii.extension.ruleengine.drools.entity.ScheduleFire;
 import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
@@ -59,7 +60,8 @@ public class DroolsService {
 
 	private final KieFileSystem kfs;
 
-	private final Map<String,FactHandle> handleMap=new ConcurrentHashMap<>();
+	private final Map<String,Object> handleMap=new ConcurrentHashMap<>();
+	
 	private final Set<String> pathSet=new HashSet<>();
 
 	private final FactHandle  currThingHandler;
@@ -149,12 +151,18 @@ public class DroolsService {
 
 			this.currThing.setStatus(status);
 			this.currThing.setCurrThing(thingID);
+			
+			List<MultiplesValueMap>  mapResult=doQuery("get multiples Result by TriggerID",MultiplesValueMap.class);
+			mapResult.forEach((result)->{
+				result.copyToHistory();
+			});
 
 			kieSession.update(currThingHandler, currThing);
+			
 
 			kieSession.fireAllRules();
 			if(status== CurrThing.Status.inThing||status== CurrThing.Status.inExt) {
-				List<MatchResult> lists = doQuery("get Match Result by TriggerID");
+				List<MatchResult> lists = doQuery("get Match Result by TriggerID",MatchResult.class);
 				consumer.accept(lists);
 			}
 
@@ -307,14 +315,14 @@ public class DroolsService {
 
 		kieContainer.updateToVersion(kb.getKieModule().getReleaseId());
 
-		handleMap.clear();
-		kieSession.getFactHandles().forEach((handle)->{
-
-			Object obj=kieSession.getObject(handle);
-
-			handleMap.put(getEntityKey(obj),handle);
-
-		});
+//		handleMap.clear();
+//		kieSession.getFactHandles().forEach((handle)->{
+//
+//			Object obj=kieSession.getObject(handle);
+//
+//			handleMap.put(getEntityKey(obj),handle);
+//
+//		});
 
 
 		toIdle();
@@ -336,13 +344,13 @@ public class DroolsService {
 
 		kieContainer.updateToVersion(kb.getKieModule().getReleaseId());
 		pathSet.remove(path);
-		kieSession.getObjects().forEach((obj)->{
-
-			FactHandle handle=kieSession.getFactHandle(obj);
-
-			handleMap.put(getEntityKey(obj),handle);
-
-		});
+//		kieSession.getObjects().forEach((obj)->{
+//
+//			FactHandle handle=kieSession.getFactHandle(obj);
+//
+//			handleMap.put(getEntityKey(obj),handle);
+//
+//		});
 
 		toIdle();
 
@@ -369,16 +377,29 @@ public class DroolsService {
 
 		handleMap.compute(getEntityKey(entity),(k,v)->{
 			    if(v==null) {
-					return kieSession.insert(entity);
+					kieSession.insert(entity);
+					return entity;
 				}else{
-					if(!replace&&entity instanceof CanUpdate){
-						CanUpdate  oldEntity=(CanUpdate)kieSession.getObject(v);
-						oldEntity.update(entity);
-						kieSession.update(v,oldEntity);
+					if(!replace&&v instanceof CanUpdate){
+						
+						FactHandle handle=kieSession.getFactHandle(v);
+//
+//						CanUpdate  oldEntity=(CanUpdate)kieSession.getObject(handle);
+//						oldEntity.update(entity);
+						
+//						kieSession.update(handle,oldEntity);
+				
+						((CanUpdate)v).update(entity);
+						kieSession.update(handle,v);
+						
+						return v;
 					}else {
-						kieSession.update(v, entity);
+						
+						FactHandle handle=kieSession.getFactHandle(v);
+						kieSession.delete(handle);
+						kieSession.insert(entity);
+						return entity;
 					}
-					return v;
 				}
 			}
 		);
@@ -396,7 +417,7 @@ public class DroolsService {
 		}
 	}
 
-	private <T extends MatchResult> List<T> doQuery(String queryName, Object... params){
+	private <T> List<T> doQuery(String queryName, Class<T> cls,Object... params){
 
 
 
@@ -416,7 +437,9 @@ public class DroolsService {
 	
 	public void removeData(Object obj) {
 		String entityKey = getEntityKey(obj);
-		FactHandle handler=handleMap.get(entityKey);
+		
+		FactHandle handler=getHandle(entityKey);
+		
 		if(handler!=null) {
 			kieSession.delete(handler);
 			handleMap.remove(entityKey);
@@ -432,5 +455,11 @@ public class DroolsService {
 			kieSession.delete(handle);
 		});
 
+	}
+	
+	private FactHandle getHandle(String key){
+		Object obj=handleMap.get(key);
+		
+		return kieSession.getFactHandle(obj);
 	}
 }

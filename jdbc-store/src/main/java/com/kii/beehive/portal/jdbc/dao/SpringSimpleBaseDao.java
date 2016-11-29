@@ -123,10 +123,12 @@ public abstract  class SpringSimpleBaseDao<T extends DBEntity> {
 
 	public int updateEntityByID(Map<String, Object> paramMap, Long id) {
 
-		paramMap.put("id", id);
-		BindClsFullUpdateTool tool = updateTool.cloneInstance(paramMap, "id");
+		Map<String,Object> map=new HashMap<>(paramMap);
+		
+		map.put("id", id);
+		BindClsFullUpdateTool tool = updateTool.cloneInstance(map, "id");
 
-		return tool.execute(paramMap);
+		return tool.executeSimple(map);
 	}
 
 	public <E> List<E> findSingleFieldBySingleField(String returnField, String matchField, Collection<?> value,

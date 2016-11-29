@@ -4,7 +4,7 @@
   "summarySource": {
     "one": {
       "stateName": "",
-      "function": "collect",
+      "function": "objCol",
       "source": {
         "thingList": [
           0,1,2,3
@@ -19,7 +19,7 @@
   "predicate": {
 
     "triggersWhen": "CONDITION_TRUE",
-    "express": "$p_s{comm}.contains($e{sys.curr.currThing})"
+    "express": "  $p{one}!=$h{one} "
   },
   "recordStatus": "enable",
   "targetParamList": [
@@ -34,6 +34,10 @@
     {
       "name": "thingStatus",
       "express": "$e{sys.curr.status}"
+    },
+    {
+      "name":"sign",
+      "express":"$p:c{comm}.contains($e{sys.curr.currThing})"
     }
   ],
   "name": "test"

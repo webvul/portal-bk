@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.quartz.SchedulerException;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -55,6 +56,8 @@ public class RuleEngineConsole {
 
 
 	private ScheduledExecutorService executeService=new ScheduledThreadPoolExecutor(10);
+	
+	private AtomicBoolean  taskSign=new AtomicBoolean(false);
 
 	public RuleEngineConsole(ClassPathXmlApplicationContext context){
 
@@ -148,10 +151,11 @@ public class RuleEngineConsole {
 
 		executeService.scheduleAtFixedRate(()->{
 
-			Map<String,Object> map=new HashMap<>();
-			map.put("time",System.currentTimeMillis()%100);
-			service.updateThingStatus("e", map);
-
+			if(taskSign.get()) {
+				Map<String, Object> map = new HashMap<>();
+				map.put("time", System.currentTimeMillis() % 100);
+				service.updateThingStatus("e", map);
+			}
 
 		},3, 30,TimeUnit.SECONDS);
 
@@ -210,8 +214,15 @@ public class RuleEngineConsole {
 
 			case "exit":
 				System.exit(0);
-
-
+				
+			case "stop":
+				taskSign.set(false);
+				break;
+				
+			case "restore":
+				taskSign.set(true);
+				break;
+			
 			case "setStatus":
 				String params = arrays[2];
 

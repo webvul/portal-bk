@@ -3,6 +3,8 @@ package com.kii.beehive.portal.jdbc;
 import javax.annotation.PostConstruct;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Test;
@@ -16,6 +18,8 @@ import com.kii.beehive.portal.jdbc.dao.ThingLocQuery;
 import com.kii.beehive.portal.jdbc.dao.ThingLocationDao;
 import com.kii.beehive.portal.jdbc.dao.ThingLocationRelDao;
 import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
+import com.kii.beehive.portal.jdbc.dao.UserNoticeDao;
+import com.kii.beehive.portal.jdbc.helper.BindClsRowMapper;
 
 public class TestSqlDao extends TestTemplate {
 
@@ -41,6 +45,9 @@ public class TestSqlDao extends TestTemplate {
 
 	@Autowired
 	private IndustryTemplateDao  templateDao;
+	
+	@Autowired
+	private UserNoticeDao noticeDao;
 
 	List<Long> ids=new ArrayList<>();
 
@@ -232,6 +239,30 @@ public void testTemplate(){
 		thingDao.findAllThingTypesWithThingCount();
 
 
+	}
+	
+	@Test
+	public void testNotice(){
+		
+		noticeDao.readed(100l);
+		BindClsRowMapper.Pager page=new BindClsRowMapper.Pager();
+		page.setSize(10);
+		page.setStart(0);
+		
+		UserNoticeDao.NoticeQuery query=new UserNoticeDao.NoticeQuery();
+		query.setActionType("false2true");
+		query.setTitle("abc");
+		query.setReaded(false);
+		Date date=new Date();
+		Calendar cal= Calendar.getInstance();
+		cal.add(Calendar.DAY_OF_WEEK,1);
+		
+		query.setCreateTimeEnd(cal.getTime());
+		query.setCreateTimeFrom(date);
+		
+		query.setReadedTimeFrom(date);
+		
+		noticeDao.queryNoticeList(query,page);
 	}
 
 

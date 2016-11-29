@@ -26,7 +26,11 @@ public class ThingStatusMonitor extends KiiEntity {
 	
 	private List<Long> noticeList;
 	
-	private boolean enable;
+	private MonitorStatus status;
+	
+	public enum MonitorStatus{
+		enable,disable,deleted;
+	}
 	
 	public Set<String> getRelationFields() {
 		return relationFields;
@@ -83,13 +87,14 @@ public class ThingStatusMonitor extends KiiEntity {
 	public void setCreator(String creator) {
 		this.creator = creator;
 	}
-
-	public boolean isEnable() {
-		return enable;
+	
+	
+	public MonitorStatus getStatus() {
+		return status;
 	}
-
-	public void setEnable(boolean enable) {
-		this.enable = enable;
+	
+	public void setStatus(MonitorStatus status) {
+		this.status = status;
 	}
 	
 	public List<Long> getNoticeList() {

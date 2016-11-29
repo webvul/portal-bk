@@ -9,7 +9,6 @@ public class CurrThing {
 	private Status status=Status.inInit;
 
 
-
 	public  enum Status{
 
 		inInit,inExt,inThing,inIdle;

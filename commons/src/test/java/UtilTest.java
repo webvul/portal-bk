@@ -35,6 +35,18 @@ public class UtilTest {
 
 
 	private ObjectMapper mapper=new ObjectMapper();
+	
+	
+	@Test
+	public void testClone(){
+		
+		Set<Integer> setb=new HashSet<>();
+		setb.add(1);
+		setb.add(2);
+		setb.add(3);
+		
+		
+	}
 
 
 	@Test
