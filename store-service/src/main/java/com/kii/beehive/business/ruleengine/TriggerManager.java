@@ -342,16 +342,18 @@ public class TriggerManager {
 	public List<SimpleTriggerRecord> getTriggerListByUserIdAndThingId(Long userId, String thingId) {
 		List<SimpleTriggerRecord> resultTriggerList = new ArrayList<SimpleTriggerRecord>();
 		List<TriggerRecord> triggerList = triggerDao.getTriggerListByUserId(userId);
-		for (TriggerRecord trigger : triggerList) {
-			if (trigger instanceof SimpleTriggerRecord) {
-				SimpleTriggerRecord simpleTriggerRecord = (SimpleTriggerRecord) trigger;
+		if (triggerList != null) {
+			for (TriggerRecord trigger : triggerList) {
+				if (trigger instanceof SimpleTriggerRecord) {
+					SimpleTriggerRecord simpleTriggerRecord = (SimpleTriggerRecord) trigger;
 
-				if (simpleTriggerRecord.getSource() == null) {
-					continue;
-				}
-				String currThingId = simpleTriggerRecord.getSource().getThingID() + "";
-				if (thingId.equals(currThingId)) {
-					resultTriggerList.add(simpleTriggerRecord);
+					if (simpleTriggerRecord.getSource() == null) {
+						continue;
+					}
+					String currThingId = simpleTriggerRecord.getSource().getThingID() + "";
+					if (thingId.equals(currThingId)) {
+						resultTriggerList.add(simpleTriggerRecord);
+					}
 				}
 			}
 		}
