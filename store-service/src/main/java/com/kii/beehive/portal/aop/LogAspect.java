@@ -63,7 +63,7 @@ public class LogAspect {
 		return method;
 	}
 
-	@AfterReturning(pointcut = "bindManager()",   returning = "target" )
+	@AfterReturning(pointcut = "bindManager()",   returning = "result" )
 	public void afterCallBusinessFun(JoinPoint joinPoint,Object result){
 
 		try {

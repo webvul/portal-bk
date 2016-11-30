@@ -23,6 +23,7 @@ import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.schedule.CronPrefix;
+import com.kii.extension.ruleengine.store.trigger.target.CallBusinessFunction;
 import com.kii.extension.ruleengine.store.trigger.target.CallHttpApi;
 import com.kii.extension.ruleengine.store.trigger.target.CommandToThing;
 import com.kii.extension.tools.CronGeneral;
@@ -103,6 +104,14 @@ public class CommandExecuteService implements EventCallback {
 						httpCallService.doHttpApiCall(call,record.getTriggerID(),params);
 
 						break;
+					case "CallBusinessFunction":
+						
+						CallBusinessFunction fun=(CallBusinessFunction)target;
+						
+						funService.doBusinessFunCall(fun,record.getTriggerID(),params);
+						break;
+						
+						
 				}
 			};
 

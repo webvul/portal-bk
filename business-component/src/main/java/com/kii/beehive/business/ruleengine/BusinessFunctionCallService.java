@@ -32,7 +32,7 @@ public class BusinessFunctionCallService {
 	@Autowired
 	private ResponseBuilder  builder;
 	
-	public void doHttpApiCall(CallBusinessFunction function, String triggerID, ExecuteParam params) {
+	public void doBusinessFunCall(CallBusinessFunction function, String triggerID, ExecuteParam params) {
 		
 		BusinessFunResponse result=builder.getBusinessFunResponse(triggerID,params);
 		

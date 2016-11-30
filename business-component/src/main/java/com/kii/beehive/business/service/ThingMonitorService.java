@@ -8,10 +8,11 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.kii.beehive.business.manager.ThingTagManager;
 import com.kii.beehive.business.ruleengine.TriggerManager;
 import com.kii.beehive.portal.common.utils.ThingIDTools;
+import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.UserNoticeDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.NoticeActionType;
@@ -40,9 +41,10 @@ public class ThingMonitorService {
 	private ThingStatusMonitorDao  monitorDao;
 	
 	@Autowired
-	private ThingTagManager thingTagService;
+	private GlobalThingSpringDao thingTagService;
 
 
+	@Transactional
 	public void addNotifiction(String monitorID, String thingID, Map<String,Object> status, Boolean sign){
 		ThingStatusMonitor monitor=monitorDao.getObjectByID(monitorID);
 

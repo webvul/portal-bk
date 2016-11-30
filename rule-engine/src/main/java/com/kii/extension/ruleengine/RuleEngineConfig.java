@@ -2,11 +2,9 @@ package com.kii.extension.ruleengine;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.FilterType;
 
 @Configuration
-@ComponentScan(basePackages="com.kii.extension.ruleengine",excludeFilters={
-		@ComponentScan.Filter(type = FilterType.REGEX, pattern ="com.kii.extension.ruleengine.service.*" )})
+@ComponentScan(basePackages="com.kii.extension.ruleengine")
 public class RuleEngineConfig {
 
 
