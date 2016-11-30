@@ -93,7 +93,10 @@ public class TriggerManager {
 
 		if(checkLocalRule(record)){
 			try {
-				return createGatewayRecord((SummaryTriggerRecord) record);
+				GatewayTriggerRecord rec= createGatewayRecord((SummaryTriggerRecord) record);
+				logTool.triggerLog(rec, OperateLog.ActionType.create);
+				
+				return rec;
 			}catch(IllegalStateException e){
 				log.warn("invalid gateway trigger param");
 			}
