@@ -14,7 +14,13 @@ dependencies {
     compile("com.kii.dataanalytic:beehive-client:1.0.0-SNAPSHOT")
 }
 
-ant.propertyfile(file: "src/plugin-metadata/plugin-descriptor.properties") {
+copy {
+	from 'src/plugin-metadata'
+	into 'build/plugin-metadata'
+	include '**/plugin-*'
+}
+
+ant.propertyfile(file: "build/plugin-metadata/plugin-descriptor.properties") {
     entry(key: "version", value: "$project.version")
     entry(key: "elasticsearch.version", value: "${elasticsearchVersion}")
     entry(key: "java.version", value: "1.7")
@@ -42,7 +48,7 @@ task buildPluginZip(type: Zip, dependsOn: [":plugin-sg:jar"]) {
     from configurations.compile.find { it.name.startsWith("slf4j-api") }
     from configurations.compile.find { it.name.startsWith("beehive-client") }
     from configurations.compile.find { it.name.startsWith("commons-logging") }
-    from 'src/plugin-metadata'
+    from 'build/plugin-metadata'
 }
 
 buildPluginZip.shouldRunAfter(":plugin-sg:jar")

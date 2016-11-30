@@ -11,6 +11,7 @@ bin/
 build/
 tomcat.*/
 target/
+out/
 .DS_Store
 tmp/
 .removed
