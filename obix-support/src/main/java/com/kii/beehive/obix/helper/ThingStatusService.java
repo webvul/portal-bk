@@ -3,6 +3,7 @@ package com.kii.beehive.obix.helper;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -100,7 +101,7 @@ public class ThingStatusService {
 		ThingLocQuery query=new ThingLocQuery();
 		query.setLocation(loc);
 
-		return thingLocDao.getThingsByLocation(query,0).stream().map(Thing::new).collect(Collectors.toList());
+		return thingLocDao.getThingsByLocation(query,0).stream().filter((th)->!"gateway".equals(StringUtils.lowerCase(th.getType()))).map(Thing::new).collect(Collectors.toList());
 
 
 	}
