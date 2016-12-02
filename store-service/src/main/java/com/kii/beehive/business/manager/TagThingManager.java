@@ -378,6 +378,11 @@ public class TagThingManager {
 		}
 		return true;
 	}
+	
+	public boolean isKiiThingOwner(List<String> fullKiiThingId) {
+		
+		return globalThingDao.checkExistsThingID(fullKiiThingId);
+	}
 
 	public boolean isThingOwner(GlobalThingInfo thing) {
 		return isThingOwner(thing, AuthInfoStore.getUserID());

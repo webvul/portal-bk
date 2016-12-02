@@ -11,6 +11,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -164,11 +166,40 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 		return param;
 	}
 	
+	private static Pattern pagerPat=Pattern.compile("^(\\d+\\/)?(\\d+)$");
+	
 	public static class Pager{
 		
 		private int start=0;
 		
 		private int size=0;
+		
+		
+		public static Pager getInstance(String sign){
+			
+			if(StringUtils.isBlank(sign)){
+				return null;
+			}
+			
+			Matcher matcher=pagerPat.matcher(sign);
+			
+			if(matcher.find()){
+			
+				Pager pager=new Pager();
+				String a=matcher.group(1);
+				String b=matcher.group(2);
+				
+				pager.size=Integer.parseInt(b);
+				
+				if(StringUtils.isNotBlank(a)){
+					pager.start=Integer.parseInt(a);
+				}
+				
+				return pager;
+			}else{
+				return null;
+			}
+		}
 		
 		public int getStart() {
 			return start;
@@ -195,20 +226,22 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 		
 		public void addEq(String fieldName,Object val){
 			
+		
 			String field=getFieldStr(fieldName);
-			if(val!=null){
-				fullSql.append(" and ").append(field).append(" = ? ");
-				list.add(getValue(val,fieldName));
-			}
+			fullSql.append(" and ").append(field).append(" = ? ");
+			list.add(getValue(val,fieldName));
+			
 		}
 		
 		public void addLike(String fieldName,String val){
+			if(val==null){
+				return;
+			}
 			String field=getFieldStr(fieldName);
 			
-			if(val!=null){
-				fullSql.append(" and ").append(field).append(" like ? ");
-				list.add("%"+val+"%");
-			}
+			fullSql.append(" and ").append(field).append(" like ? ");
+			list.add("%"+val+"%");
+			
 		}
 		
 		public <T> void addBetween(String fieldName, T start, T end) {
@@ -241,9 +274,12 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 		
 		public void addPager(Pager page){
 			
-			fullSql.append(" LIMIT ? , ? ");
-			list.add(page.getStart());
-			list.add(page.getSize());
+			if(page!=null) {
+				
+				fullSql.append(" LIMIT ? , ? ");
+				list.add(page.getStart());
+				list.add(page.getSize());
+			}
 		}
 		
 		private String getFieldStr(String field){

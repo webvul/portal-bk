@@ -31,13 +31,9 @@ import com.kii.beehive.portal.web.help.AuthInterceptor;
 @EnableWebMvc
 @Configuration
 @Import(PropertySourcesPlaceholderConfig.class)
-//@ImportResource("classpath:com/kii/beehive/portal/web/portalContext.xml")
 @ComponentScan(basePackages = {"com.kii.beehive.portal.web.controller"}, excludeFilters = {
 		@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = STOMPMessageController.class)})
 public class WebMvcConfig extends WebMvcConfigurerAdapter {
-
-//	@Autowired
-//	private ObjectMapper mapper;
 
 	@Autowired
 	private AuthInterceptor authInterceptor;

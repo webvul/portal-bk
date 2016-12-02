@@ -43,6 +43,8 @@ public class ThingMonitorService {
 	@Autowired
 	private GlobalThingSpringDao thingTagService;
 
+	@Autowired
+	private NoticeMsgQueue queue;
 
 	@Transactional
 	public void addNotifiction(String monitorID, String thingID, Map<String,Object> status, Boolean sign){
@@ -66,8 +68,10 @@ public class ThingMonitorService {
 		monitor.getNoticeList().forEach(id->{
 			notice.setUserID(id);
 			noticificationDao.insert(notice);
+			
+			queue.addNotice(notice);
 		});
-
+		
 	}
 
 	public void addMonitor(ThingStatusMonitor  monitor){
@@ -170,6 +174,11 @@ public class ThingMonitorService {
 		record.addTargetParam("sign","$p:c{one}.contains($e{sys.curr.currThing})");
 		
 		return record;
+	}
+	
+	public ThingStatusMonitor getMonitor(String monitorID) {
+		
+		return monitorDao.getObjectByID(monitorID);
 	}
 
 /*

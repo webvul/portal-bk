@@ -69,6 +69,10 @@
         "queryInfo":{
           "method": "GET",
           "url": "/users/*"
+        },
+        "userPrivate":{
+          "method": "*",
+          "url": "/users/me/*"
         }
       }
     },

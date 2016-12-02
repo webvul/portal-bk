@@ -418,6 +418,18 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 	public List<GlobalThingInfo> findByKiiThingId(String kiiThingId) {
 		return super.findBySingleField(GlobalThingInfo.FULL_KII_THING_ID, kiiThingId);
 	}
+	
+	private static String existIDsSql="select count(1) from ${0} th where th.${1} in (:ids) ";
+	
+	public boolean checkExistsThingID(List<String> kiiThingIDs){
+		
+		String fullSql=StrTemplate.gener(existIDsSql,GlobalThingSpringDao.TABLE_NAME,GlobalThingInfo.FULL_KII_THING_ID);
+		
+		String sql=super.addDelSignPrefix(fullSql);
+		Integer  num=super.namedJdbcTemplate.queryForObject(sql,Collections.singletonMap("ids",kiiThingIDs),Integer.class);
+		
+		return num==kiiThingIDs.size();
+	}
 
 
 	private static String  getDetailByIDs=

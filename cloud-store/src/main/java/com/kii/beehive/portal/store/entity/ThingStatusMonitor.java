@@ -20,7 +20,7 @@ public class ThingStatusMonitor extends KiiEntity {
 
 	private String relationTriggerID;
 
-	private String creator;
+	private Long creator;
 	
 	private Set<String> relationFields=new HashSet<>();
 	
@@ -80,11 +80,11 @@ public class ThingStatusMonitor extends KiiEntity {
 		this.relationTriggerID = relationTriggerID;
 	}
 
-	public String getCreator() {
+	public Long getCreator() {
 		return creator;
 	}
 
-	public void setCreator(String creator) {
+	public void setCreator(Long creator) {
 		this.creator = creator;
 	}
 	

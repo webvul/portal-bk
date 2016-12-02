@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Repository;
 
+import com.kii.beehive.portal.common.utils.StrTemplate;
 import com.kii.beehive.portal.jdbc.entity.UserNotice;
 import com.kii.beehive.portal.jdbc.helper.BindClsRowMapper;
 
@@ -39,7 +40,7 @@ public class UserNoticeDao extends SpringSimpleBaseDao<UserNotice> {
 		sqlParam.addLike("title",query.title);
 		sqlParam.addLike("from",query.from);
 		sqlParam.addEq("actionType",query.actionType);
-		
+		sqlParam.addEq("userID",query.userID);
 		
 		sqlParam.addPager(pager);
 		
@@ -57,7 +58,37 @@ public class UserNoticeDao extends SpringSimpleBaseDao<UserNotice> {
 		return super.updateEntityByID(paramMap,id);
 	}
 	
-
+	private static final String sqlByID= StrTemplate.gener("select * from ${0} where ${1} = ? and ${2} = ? ",TABLE_NAME,UserNotice.USER_ID,UserNotice.NOTICE_ID);
+	
+	public UserNotice getNoticeByID(Long noticeID, Long userID) {
+	
+		List<UserNotice>  list=super.jdbcTemplate.query(sqlByID,new Object[]{userID,noticeID},super.getRowMapper());
+		
+		if(list.isEmpty()){
+			return null;
+		}else{
+			return list.get(0);
+		}
+	}
+	
+	private static final String updateUnRead= StrTemplate.gener("update ${0} set ${1} = ?  where ${2} = ? and ${3} = ? ",TABLE_NAME,UserNotice.READED,UserNotice.USER_ID,UserNotice.NOTICE_ID);
+	
+	public int updateSign(Long noticeID, Long userID) {
+		
+		return super.jdbcTemplate.update(updateUnRead,true,userID,noticeID);
+	
+	}
+	
+	
+	private static final String updateAllUnRead= StrTemplate.gener("update ${0} set ${1} = ?  where ${2} = ?  ",TABLE_NAME,UserNotice.READED,UserNotice.USER_ID);
+	
+	public void updateAllSign(Long userID) {
+		
+		super.jdbcTemplate.update(updateUnRead,true,userID);
+		
+	}
+	
+	
 	public static class NoticeQuery{
 		
 		/*
@@ -76,6 +107,7 @@ public class UserNoticeDao extends SpringSimpleBaseDao<UserNotice> {
 	public  static final String ACTION_TYPE="action_type";
 	
 		 */
+		private Long userID;
 		
 		private String actionType;
 		
@@ -95,6 +127,9 @@ public class UserNoticeDao extends SpringSimpleBaseDao<UserNotice> {
 		
 		private Boolean readed;
 
+		public void setUserID(Long userID){
+			this.userID=userID;
+		}
 		
 		public void setActionType(String actionType) {
 			this.actionType = actionType;

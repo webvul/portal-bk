@@ -26,6 +26,16 @@ import com.kii.beehive.portal.web.constant.Constants;
 public class AuthenticationFactory {
 	
 	
+	//		StompHeaderAccessor headerAccessor =
+//				MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+//		if (StompCommand.CONNECT.equals(headerAccessor.getCommand())) {
+//			return message;
+//		}
+//		List<String> headers = headerAccessor.getNativeHeader(HttpHeaders.AUTHORIZATION);
+//		if (headers == null) {
+//			throw new MessagingException("Can't authenticate the current user. Missing authorization header");
+//		}
+	
 	@Autowired
 	private AuthManager authManager;
 	
