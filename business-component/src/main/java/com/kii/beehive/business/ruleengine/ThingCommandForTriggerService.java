@@ -16,6 +16,8 @@ import com.kii.beehive.portal.common.utils.StrTemplate;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.extension.ruleengine.ExecuteParam;
 import com.kii.extension.ruleengine.service.ExecuteResultDao;
+import com.kii.extension.ruleengine.store.trigger.target.CommandResponse;
+import com.kii.extension.ruleengine.store.trigger.target.CommandToThing;
 import com.kii.extension.sdk.entity.thingif.Action;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
 
@@ -49,7 +51,7 @@ public class ThingCommandForTriggerService {
 
 
 
-		CommandResponse  resp=resultDao.getCommandResultByID(command.getCommandID());
+		CommandResponse resp=resultDao.getCommandResultByID(command.getCommandID());
 
 		if(resp!=null) {
 			resultDao.updateCommandResult(command, resp.getId());
@@ -57,7 +59,7 @@ public class ThingCommandForTriggerService {
 	}
 
 
-	public void executeCommand(String triggerID,CommandToThing command,ExecuteParam params){
+	public void executeCommand(String triggerID, CommandToThing command, ExecuteParam params){
 
 		for (Map<String, Action> actionMap : command.getCommand().getActions()) {
 
@@ -90,7 +92,7 @@ public class ThingCommandForTriggerService {
 			CommandResponse resp =  builder.getCmdResponse(triggerID,params);
 
 			resp.setThingID(thing.getId());
-			resp.setFullKiiThingID(thing.getFullKiiThingID());
+			resp.setKiiThingID(thing.getFullKiiThingID());
 
 			resp.setCommand(cmd);
 

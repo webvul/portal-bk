@@ -221,7 +221,7 @@ group by th.`thing_type`;
 
 		String fullSql=StrTemplate.gener(typeGroupSql,
 				GlobalThingInfo.ID_GLOBAL_THING,GlobalThingSpringDao.TABLE_NAME,ThingLocationRelDao.TABLE_NAME,ThingLocationRelation.THING_ID,
-				GlobalThingInfo.VIEW_THING_ID,GlobalThingInfo.VIEW_THING_OWNER,GlobalThingInfo.VIEW_USER_ID,ThingLocationRelation.LOCATION,
+				GlobalThingInfo.VIEW_THING_ID,GlobalThingInfo.VIEW_NAME,GlobalThingInfo.VIEW_USER_ID,ThingLocationRelation.LOCATION,
 				GlobalThingInfo.THING_TYPE, BusinessEntity.IS_DELETED);
 
 		List<Map<String,Object>>  result=this.jdbcTemplate.queryForList(fullSql,new Object[]{AuthInfoStore.getUserID(),loc+"%"});

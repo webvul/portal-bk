@@ -2,7 +2,8 @@ package com.kii.beehive.portal.web.entity;
 
 import java.util.Set;
 
-import com.kii.extension.sdk.entity.thingif.TriggerConditionEntry;
+import com.kii.extension.sdk.entity.trigger.TriggerConditionEntry;
+
 
 public class ThingMonitorInput {
 
@@ -12,7 +13,7 @@ public class ThingMonitorInput {
 
 	private String express;
 
-	private TriggerConditionEntry  condition;
+	private TriggerConditionEntry condition;
 
 	private boolean enable;
 	
