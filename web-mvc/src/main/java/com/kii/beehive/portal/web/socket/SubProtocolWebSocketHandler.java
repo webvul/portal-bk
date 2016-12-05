@@ -29,6 +29,7 @@ import com.kii.beehive.portal.web.stomp.StompDecoderDecorator;
  * Created by hdchen on 7/18/16.
  */
 public class SubProtocolWebSocketHandler extends org.springframework.web.socket.messaging.SubProtocolWebSocketHandler {
+
 	private final StompDecoderDecorator stompDecoder;
 
 	private ConcurrentWebSocketSessionHolder sessionHolder = ConcurrentWebSocketSessionHolder.getInstance();
@@ -104,7 +105,7 @@ public class SubProtocolWebSocketHandler extends org.springframework.web.socket.
 		final Long userId = AuthInfoStore.getUserID();
 		final Long teamId = AuthInfoStore.getTeamID();
 		try {
-			WebSocketSessionDecorator wrapped = sessionHolder.get(session.getId());
+			WebSocketSession wrapped = sessionHolder.get(session.getId());
 			SecurityContext context = SecurityContextHolder.createEmptyContext();
 			context.setAuthentication((Authentication) wrapped.getPrincipal());
 			SecurityContextHolder.setContext(context);
@@ -138,7 +139,7 @@ public class SubProtocolWebSocketHandler extends org.springframework.web.socket.
 	@Override
 	public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
 		LOG.info("WebSocketSession id = " + session.getId() + ", thread id = " + Thread.currentThread().getId());
-		super.afterConnectionClosed(sessionHolder.remove(session.getId()), closeStatus);
+		super.afterConnectionClosed(sessionHolder.get(session.getId()), closeStatus);
 	}
 
 	private void replaceStompDecoder(SubProtocolHandler handler) {

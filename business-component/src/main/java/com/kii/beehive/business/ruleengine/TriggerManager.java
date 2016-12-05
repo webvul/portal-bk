@@ -1,6 +1,7 @@
 package com.kii.beehive.business.ruleengine;
 
 import javax.annotation.PostConstruct;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -10,11 +11,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.beehive.business.manager.AppInfoManager;
@@ -22,7 +25,6 @@ import com.kii.beehive.business.manager.ThingTagManager;
 import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.exception.EntryNotFoundException;
-import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.service.OperateLogDao;
 import com.kii.beehive.portal.store.entity.OperateLog;
@@ -30,19 +32,19 @@ import com.kii.extension.ruleengine.service.BusinessObjDao;
 import com.kii.extension.ruleengine.service.TriggerRecordDao;
 import com.kii.extension.ruleengine.store.trigger.BeehiveTriggerType;
 import com.kii.extension.ruleengine.store.trigger.BusinessObject;
-import com.kii.extension.ruleengine.store.trigger.target.CommandToThing;
-import com.kii.extension.ruleengine.store.trigger.target.CommandToThingInGW;
 import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
 import com.kii.extension.ruleengine.store.trigger.GatewaySummarySource;
 import com.kii.extension.ruleengine.store.trigger.GatewayTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.groups.SummarySource;
-import com.kii.extension.ruleengine.store.trigger.groups.SummaryTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TagSelector;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.WhenType;
 import com.kii.extension.ruleengine.store.trigger.condition.AndLogic;
 import com.kii.extension.ruleengine.store.trigger.condition.OrLogic;
+import com.kii.extension.ruleengine.store.trigger.groups.SummarySource;
+import com.kii.extension.ruleengine.store.trigger.groups.SummaryTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.target.CommandToThing;
+import com.kii.extension.ruleengine.store.trigger.target.CommandToThingInGW;
 import com.kii.extension.sdk.entity.thingif.Action;
 import com.kii.extension.sdk.entity.thingif.EndNodeOfGateway;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
@@ -61,10 +63,6 @@ public class TriggerManager {
 
 	@Autowired
 	private TriggerRecordDao triggerDao;
-
-	@Autowired
-	private GlobalThingSpringDao globalThingDao;
-
 
 	@Autowired
 	private BusinessObjDao  businessObjDao;
@@ -223,7 +221,7 @@ public class TriggerManager {
 		Collection<SummarySource> sourceCollection = summaryRecord.getSummarySource().values();
 		Iterator<SummarySource> sourceIterator = sourceCollection.iterator();
 		TagSelector sourceSelector = sourceIterator.next().getSource();
-		GlobalThingInfo sourceThing = globalThingDao.findByID(sourceSelector.getThingList().get(0));
+		GlobalThingInfo sourceThing = thingTagService.findByID(sourceSelector.getThingList().get(0));
 		//
 		ThingOfKiiCloud gatewayOfKiiCloud = null;
 		try {
@@ -242,7 +240,7 @@ public class TriggerManager {
 		summaryRecord.getSummarySource().forEach( (key , summarySource )-> {
 			//每个SummarySource只有 单个 thing
 			TagSelector selector = summarySource.getSource();
-			GlobalThingInfo sourceThingTemp = globalThingDao.findByID(selector.getThingList().get(0));
+			GlobalThingInfo sourceThingTemp = thingTagService.findByID(selector.getThingList().get(0));
 			if (allEndNodesOfGatewayMap.get(sourceThingTemp.getVendorThingID()) == null) {
 				throw new IllegalStateException();
 			}
@@ -278,7 +276,7 @@ public class TriggerManager {
 
 			}
 
-		String vendorThingID=globalThingDao.getThingByFullKiiThingID(sourceThing.getKiiAppID(), thingID).getVendorThingID();
+		String vendorThingID=thingTagService.getThingByFullKiiThingID(sourceThing.getKiiAppID(), thingID).getVendorThingID();
 		gatewayTriggerRecord.setGatewayVendorThingID(vendorThingID);
 		gatewayTriggerRecord.setGatewayFullKiiThingID(fullKiiThingID);
 		return gatewayTriggerRecord;

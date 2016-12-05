@@ -8,11 +8,10 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
+import com.kii.beehive.business.manager.ThingTagManager;
 import com.kii.beehive.business.ruleengine.TriggerManager;
 import com.kii.beehive.portal.common.utils.ThingIDTools;
-import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.UserNoticeDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.NoticeActionType;
@@ -39,12 +38,11 @@ public class ThingMonitorService {
 	
 	@Autowired
 	private ThingStatusMonitorDao  monitorDao;
-
+	
 	@Autowired
-	private GlobalThingSpringDao thingDao;
+	private ThingTagManager thingTagService;
 
 
-	@Transactional
 	public void addNotifiction(String monitorID, String thingID, Map<String,Object> status, Boolean sign){
 		ThingStatusMonitor monitor=monitorDao.getObjectByID(monitorID);
 
@@ -60,7 +58,7 @@ public class ThingMonitorService {
 		
 		ThingIDTools.ThingIDCombine ids=ThingIDTools.splitFullKiiThingID(thingID);
 
-		GlobalThingInfo th=thingDao.getThingByFullKiiThingID(ids.kiiAppID,ids.kiiThingID);
+		GlobalThingInfo th=thingTagService.getThingByFullKiiThingID(ids.kiiAppID,ids.kiiThingID);
 		notice.setTitle(th.getVendorThingID());
 		
 		monitor.getNoticeList().forEach(id->{

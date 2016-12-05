@@ -1,10 +1,12 @@
 package com.kii.beehive.portal.web.stomp;
 
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
+
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
@@ -17,6 +19,7 @@ import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
+
 import com.kii.beehive.portal.web.security.AccessController;
 
 /**
@@ -40,6 +43,8 @@ public class StompDecoderDecorator extends StompDecoder {
 	public List<Message<byte[]>> decode(ByteBuffer buffer, MultiValueMap<String, String> partialMessageHeaders) {
 		return postProcessing(super.decode(buffer, partialMessageHeaders));
 	}
+
+
 
 	private List<Message<byte[]>> postProcessing(List<Message<byte[]>> messages) {
 		List<Message<byte[]>> list = new ArrayList();

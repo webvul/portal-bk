@@ -44,6 +44,14 @@ public class ThingTagManager {
 
 	@Autowired
 	private ObjectMapper mapper;
+	
+	public GlobalThingInfo findByID(Long id){
+		return globalThingDao.findByID(id);
+	}
+	
+	public GlobalThingInfo getThingByFullKiiThingID(String kiiApp,String thingID){
+		return globalThingDao.getThingByFullKiiThingID(kiiApp,thingID);
+	}
 
 	@Autowired
 	private IndustryTemplateService  templateService;
