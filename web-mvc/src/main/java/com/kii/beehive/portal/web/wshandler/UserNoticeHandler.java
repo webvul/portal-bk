@@ -1,8 +1,6 @@
 package com.kii.beehive.portal.web.wshandler;
 
 import java.io.IOException;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -33,11 +31,11 @@ public class UserNoticeHandler extends TextWebSocketHandler {
 	@Override
 	public void handleTextMessage(WebSocketSession session, TextMessage message) {
 		
+//		Long userID=599l;
 		AuthUser user= (AuthUser) ((Authentication)session.getPrincipal()).getDetails();
-//
-//
 		Long userID=user.getUser().getId();
-
+		
+		
 		
 		queue.regist(userID, notice -> {
 			
@@ -47,6 +45,8 @@ public class UserNoticeHandler extends TextWebSocketHandler {
 			}
 			
 			try {
+				notice.setReaded(null);
+				
 				TextMessage msg = new TextMessage(mapper.writeValueAsString(notice));
 				
 				session.sendMessage(msg);
@@ -59,16 +59,7 @@ public class UserNoticeHandler extends TextWebSocketHandler {
 			}
 		});
 		
-//		executorService.scheduleAtFixedRate(() -> {
-//
-//			TextMessage msg=new TextMessage("user: time:"+System.currentTimeMillis()+ " req:"+message.getPayload());
-//			try {
-//				session.sendMessage(msg);
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
-//		},0, 1l,TimeUnit.MINUTES);
+
 	}
 	
-	private ScheduledExecutorService  executorService=new ScheduledThreadPoolExecutor(10);
 }

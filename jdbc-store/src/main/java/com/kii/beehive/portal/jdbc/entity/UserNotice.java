@@ -23,7 +23,7 @@ public class UserNotice extends DBEntity {
 	public  static final String ACTION_TYPE="action_type";
 	
 	
-	private boolean readed=false;
+	private Boolean readed=false;
 
 	private Date readTime;
 	
@@ -80,11 +80,11 @@ public class UserNotice extends DBEntity {
 	
 	
 	@JdbcField(column = READED)
-	public boolean isReaded() {
+	public Boolean isReaded() {
 		return readed;
 	}
 
-	public void setReaded(boolean readed) {
+	public void setReaded(Boolean readed) {
 		this.readed = readed;
 	}
 
