@@ -17,6 +17,7 @@ import com.kii.beehive.portal.web.socket.UserNoticeHandler;
  */
 @Configuration
 @EnableWebSocket
+//@ImportResource("classpath:com/kii/beehive/portal/web/portalContext.xml")
 @Import({WebSocketMessageBrokerConfig.class, PropertySourcesPlaceholderConfig.class})
 @ComponentScan(basePackages = {
 		"com.kii.beehive.portal.web.socket"})
@@ -33,7 +34,9 @@ public class WebSocketConfig implements WebSocketConfigurer {
 	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
 		registry.addHandler(new EchoHandler(), "/echo").setAllowedOrigins("*");
 		
-		registry.addHandler(handler,"/users/notice").setHandshakeHandler(factory.getHandshakeHandler()).setAllowedOrigins("*");
+		registry.addHandler(handler,"/users/notice")
+//				.setHandshakeHandler(factory.getHandshakeHandler())
+				.setAllowedOrigins("*");
 	
 		
 	}

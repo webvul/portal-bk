@@ -17,7 +17,7 @@
 
     <context-param>
         <param-name>contextConfigLocation</param-name>
-        <param-value>/WEB-INF/portalWebContext.xml</param-value>
+        <param-value>classpath:com/kii/beehive/portal/web/portalContext.xml</param-value>
     </context-param>
 
     <servlet>
