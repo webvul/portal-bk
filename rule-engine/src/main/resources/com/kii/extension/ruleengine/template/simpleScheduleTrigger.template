@@ -2,6 +2,9 @@ package com.kii.extension.ruleengine.drools.rule
 
 import com.kii.extension.ruleengine.drools.entity.*;
 import com.kii.extension.ruleengine.drools.CommandExec;
+import com.kii.extension.ruleengine.ExtendFunAdapter;
+
+global com.kii.extension.ruleengine.ExtendFunAdapter ExtFun;
 
 /////////////////////////////////////
 //schedule trigger custom segment
@@ -12,6 +15,7 @@ when
     $curr:CurrThing(init == false)
     $ext:ExternalCollect()
     Trigger( $triggerID:triggerID =="${triggerID}" && enable == true  ,$enable:enable )
+    $inst:TriggerValues(triggerID==$triggerID)
     SingleThing($thingID:thingID,triggerID==$triggerID)
     $status:ThingStatusInRule( thingID == $thingID,${express}  )
     ScheduleFire(triggerID==$triggerID,enable==true)

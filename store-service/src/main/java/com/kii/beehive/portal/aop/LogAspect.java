@@ -69,7 +69,7 @@ public class LogAspect {
 		try {
 		logMethod(joinPoint,"execute finish ");
 
-		log.debug(" result:"+ safeToString(result));
+		log.debug(" target:"+ safeToString(result));
 
 		}catch(Throwable ex){
 			log.error("Exception in afterCallBusinessFun", ex);

@@ -188,7 +188,7 @@ public class ThingIFController extends AbstractThingTagController {
 
 		List<ThingCommandDetailRestBean> responseList = new ArrayList<>();
 
-		// if no search body, return empty result
+		// if no search body, return empty target
 		if (search == null || search.isEmpty()) {
 			return responseList;
 		}
@@ -233,7 +233,7 @@ public class ThingIFController extends AbstractThingTagController {
 
 		List<ThingCommandDetailRestBean> responseList = new ArrayList<>();
 
-		// if no search list, return empty result
+		// if no search list, return empty target
 		if (!CollectUtils.hasElement(searchList)) {
 			return responseList;
 		}

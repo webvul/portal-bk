@@ -1,0 +1,6 @@
+title=${monitorName}:thing {vendorThingID}'s status had changed
+
+#msgBegin
+
+
+#msgEnd

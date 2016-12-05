@@ -1,6 +1,15 @@
 package com.kii.extension.ruleengine.drools.rule
 
 import com.kii.extension.ruleengine.drools.entity.*;
+import com.kii.extension.ruleengine.ExtendFunAdapter;
+
+global com.kii.extension.ruleengine.ExtendFunAdapter ExtFun;
+
+
+query "get multiples Result by TriggerID" (String thingID)
+	Trigger($triggerID:triggerID,thingSet.contains(thingID),enable==true)
+    results : MultiplesValueMap( triggerID == $triggerID )
+end
 
 rule "copy  all multiples's unit summary value to multipleMap"
   no-loop true
@@ -9,7 +18,9 @@ when
 	$summary:SummaryResult(triggerID==$triggerID)
 	$thing:ThingResult(triggerID==$triggerID)
 	$multiplesMap:MultiplesValueMap(triggerID==$triggerID)
+	$record:MemberMatchResult(triggerID==$triggerID)
 then
+
 	modify($multiplesMap){
     	setSummaryValue($summary),
     	setThingValue($thing)
@@ -17,62 +28,91 @@ then
 end
 
 
-
 rule "in unit,compute the  summary of  fieldName value: funName"
+  no-loop true
 when
 	$trigger:Trigger(type==TriggerType.multiple,$triggerID:triggerID)
-	$summary:Summary(triggerID==$triggerID, funName=="sum" ,$name:name,$things:things)
-	accumulate( $status : MemberMatchResult(thingID memberOf $things , name==$name);
+	$summary:Summary(triggerID==$triggerID, funName=="sum" ,$name:name,$thingIDs:thingIDs)
+	accumulate( $status : MemberMatchResult(thingID memberOf $thingIDs , name==$name);
                     $sum : sum($status.getNumValue($summary.getFieldName()))
                   )
 then
-	insert(new SummaryResult($triggerID,$name,$sum));
+	insertLogical(new SummaryResult($summary,$sum));
 end
 
 
 rule "in unit,compute the  count of  fieldName value: funName"
+  no-loop true
 when
 	$trigger:Trigger(type==TriggerType.multiple,$triggerID:triggerID)
-	$summary:Summary(triggerID==$triggerID, funName=="count" ,$name:name,$things:things)
-	accumulate( $status : MemberMatchResult(thingID memberOf $things ,name==$name);
+	$summary:Summary(triggerID==$triggerID, funName=="count" ,$name:name,$thingIDs:thingIDs)
+	accumulate( $status : MemberMatchResult(thingID memberOf $thingIDs ,name==$name);
                     $val : count($status)
                   )
 then
-	insert(new SummaryResult($triggerID,$name,$val));
+	insertLogical(new SummaryResult($summary,$val));
 end
 
 rule "in unit,compute the  max of  fieldName value: funName"
+  no-loop true
 when
 	$trigger:Trigger(type==TriggerType.multiple,$triggerID:triggerID)
-	$summary:Summary(triggerID==$triggerID, funName=="max" ,$name:name,$things:things)
-	accumulate( $status : MemberMatchResult(thingID memberOf $things , name==$name);
+	$inst:TriggerValues(triggerID==$triggerID)
+	$summary:Summary(triggerID==$triggerID, funName=="max" ,$name:name,$thingIDs:thingIDs)
+	accumulate( $status : MemberMatchResult(thingID memberOf $thingIDs , name==$name);
                     $val : max($status.getNumValue($summary.getFieldName()))
                   )
+    MemberMatchResult(triggerID==$triggerID,name==$name, getNumValue($summary.getFieldName()) == $val,$choiceTh:thingID)
 then
-	System.out.println("max summary result:"+$summary);
-	insert(new SummaryResult($triggerID,$name,$val));
+	insertLogical(new SummaryResult($summary,$val));
+
+	ExternalValues entity=new ExternalValues($name);
+    entity.addValue("choiceTh",$choiceTh);
+    $inst.updateEntity(entity);
 end
 
+
+
 rule "in unit,compute the  min of  fieldName value: funName"
+  no-loop true
 when
 	$trigger:Trigger(type==TriggerType.multiple,$triggerID:triggerID)
-	$summary:Summary(triggerID==$triggerID, funName=="min" ,$name:name,$things:things)
-	accumulate( $status : MemberMatchResult(thingID memberOf $things , name==$name);
+	$inst:TriggerValues(triggerID==$triggerID)
+	$summary:Summary(triggerID==$triggerID, funName=="min" ,$name:name,$thingIDs:thingIDs)
+	accumulate( $status : MemberMatchResult(thingID memberOf $thingIDs , name==$name);
                     $val : min($status.getNumValue($summary.getFieldName()))
                   )
+    MemberMatchResult(triggerID==$triggerID,name==$name, getNumValue($summary.getFieldName()) == $val,$choiceTh:thingID)
 then
-	System.out.println("min summary result:"+$val);
-	insert(new SummaryResult($triggerID,$name,$val));
+	insertLogical(new SummaryResult($summary,$val));
+
+	ExternalValues entity=new ExternalValues($name);
+    entity.addValue("choiceTh",$choiceTh);
+    $inst.updateEntity(entity);
 end
 
 
 rule "in unit,compute the  avg of  fieldName value: funName"
+  no-loop true
 when
 	$trigger:Trigger(type==TriggerType.multiple,$triggerID:triggerID)
-	$summary:Summary(triggerID==$triggerID, funName=="average" ,$name:name,$things:things)
-	accumulate( $status : MemberMatchResult(thingID memberOf $things , name ==$name );
+	$summary:Summary(triggerID==$triggerID, funName=="average" ,$name:name,$thingIDs:thingIDs)
+	accumulate( $status : MemberMatchResult(thingID memberOf $thingIDs , name ==$name );
                     $val : average($status.getNumValue($summary.getFieldName()))
                   )
 then
-	insert(new SummaryResult($triggerID,$name,$val));
+	insertLogical(new SummaryResult($summary,$val));
+end
+
+
+rule "in unit,compute the  collect of  fieldName value: funName"
+  no-loop true
+when
+	$trigger:Trigger(type==TriggerType.multiple,$triggerID:triggerID)
+	$summary:Summary(triggerID==$triggerID, funName=="objCol" ,$name:name,$thingIDs:thingIDs)
+	accumulate( $status : MemberMatchResult(thingID memberOf $thingIDs , name ==$name );
+                    $val : collectSet($status.getThingID())
+                  )
+then
+	insertLogical(new SummaryResult($summary,$val));
 end

@@ -21,7 +21,12 @@ public class ExternalCollect implements Serializable{
 		return externalValuesMap.getOrDefault(name,new ExternalValues(name));
 	}
 
-	public void putEntity(String name,ExternalValues  values){
+
+	public void updateEntity(ExternalValues values){
+		putEntity(values.getName(),values);
+	}
+
+	private void putEntity(String name,ExternalValues  values){
 
 		externalValuesMap.merge(name,values,(oldV,newV)-> {
 			oldV.merge(newV);

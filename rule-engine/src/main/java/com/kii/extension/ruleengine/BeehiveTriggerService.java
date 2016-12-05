@@ -29,18 +29,18 @@ import com.kii.extension.ruleengine.store.trigger.CommandParam;
 import com.kii.extension.ruleengine.store.trigger.Condition;
 import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
 import com.kii.extension.ruleengine.store.trigger.Express;
-import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.GroupSummarySource;
+import com.kii.extension.ruleengine.store.trigger.MultipleSrcTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
-import com.kii.extension.ruleengine.store.trigger.SimplePeriod;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.SummaryFunctionType;
-import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TagSelector;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.TriggerValidPeriod;
 import com.kii.extension.ruleengine.store.trigger.condition.All;
-import com.kii.extension.ruleengine.store.trigger.multiple.GroupSummarySource;
-import com.kii.extension.ruleengine.store.trigger.multiple.MultipleSrcTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.groups.GroupTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.groups.SummaryFunctionType;
+import com.kii.extension.ruleengine.store.trigger.groups.SummaryTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.schedule.SimplePeriod;
+import com.kii.extension.ruleengine.store.trigger.schedule.TriggerValidPeriod;
 
 
 @Component
@@ -81,6 +81,25 @@ public class BeehiveTriggerService {
 		return map;
 	}
 
+//	public void updateBusinessObject(String name,String key,Object value){
+//
+//
+//		ThingStatusInRule status=new ThingStatusInRule("b."+name);
+//		status(key,value);
+//
+//		droolsTriggerService.addThingStatus(status);
+//
+//	}
+//
+//	public void updateBusinessObject(String name,Map<String,Object> valueMap){
+//
+//
+//		ThingStatusInRule status=new ThingStatusInRule("b."+name);
+//		status.setValues(valueMap);
+//
+//		droolsTriggerService.addThingStatus(status);
+//
+//	}
 
 
 	public void updateExternalValue(String name,String key,Object value){

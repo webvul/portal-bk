@@ -5,7 +5,9 @@ import java.util.Set;
 public class CurrThing {
 
 	public  static final String NONE = "NONE";
+
 	private Status status=Status.inInit;
+
 
 	public  enum Status{
 
@@ -25,6 +27,7 @@ public class CurrThing {
 	}
 
 
+
 	public CurrThing.Status getStatus(){
 		return status;
 	}
@@ -33,12 +36,27 @@ public class CurrThing {
 		return currThing;
 	}
 
+
 	private String currThing= NONE;
 
+	private String currExt=NONE;
+
+	public String getCurrExt() {
+		return currExt;
+	}
+
+	public void setCurrExt(String currExt) {
+		this.currExt = currExt;
+		status=Status.inExt;
+		this.currThing=NONE;
+
+	}
 
 	public void setCurrThing(String curr){
 
 		this.currThing=curr;
+		this.status=Status.inThing;
+		this.currExt=NONE;
 	}
 
 	public boolean valid(Set<String> th){
@@ -58,6 +76,7 @@ public class CurrThing {
 		return "CurrThing{" +
 				" status =" + status.name() +
 				", currThing='" + currThing + '\'' +
+				", currExt='"+currExt+'\''+
 				'}';
 	}
 }

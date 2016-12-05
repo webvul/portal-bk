@@ -5,10 +5,14 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -32,29 +36,34 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 	private final Map<String,String> fieldMapper;
 
 	private final Map<String,JdbcFieldType> sqlTypeMapper;
+	
+	private final Map<String,String> propertyMap;
 
 	private final  ObjectMapper  objectMapper;
-
-//	private final BeanWrapper beanWrapper;
-
+	
+	private final BeanWrapper beanWrapper;
 
 	private final Class<T> cls;
+	
 	public BindClsRowMapper(Class<T> cls,ObjectMapper objectMapper){
 
 		this.cls=cls;
 
-		BeanWrapper beanWrapper=PropertyAccessorFactory.forBeanPropertyAccess(BeanUtils.instantiate(cls));
+		this.beanWrapper=PropertyAccessorFactory.forBeanPropertyAccess(BeanUtils.instantiate(cls));
 
 		Map<String,String> searchMap=new HashMap<>();
 
 		Map<String,JdbcFieldType> typeMap=new HashMap<>();
-
+		
+		Map<String,String> propMap=new HashMap<>();
 		for(PropertyDescriptor descriptor: beanWrapper.getPropertyDescriptors()){
 			Method method = descriptor.getReadMethod();
 			if(method.isAnnotationPresent(JdbcField.class)){
 				JdbcField fieldDesc=method.getDeclaredAnnotation(JdbcField.class);
 				searchMap.put(fieldDesc.column(),descriptor.getDisplayName());
 				typeMap.put(fieldDesc.column(),fieldDesc.type());
+				propMap.put(descriptor.getDisplayName(),fieldDesc.column());
+				
 			}else if(method.isAnnotationPresent(DisplayField.class)){
 				DisplayField fieldDesc=method.getDeclaredAnnotation(DisplayField.class);
 				searchMap.put(fieldDesc.column(),descriptor.getDisplayName());
@@ -66,6 +75,8 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 
 		sqlTypeMapper=Collections.unmodifiableMap(typeMap);
 
+		propertyMap=Collections.unmodifiableMap(propMap);
+		
 		this.objectMapper=objectMapper;
 	}
 
@@ -74,9 +85,8 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 	public T mapRow(ResultSet rs, int rowNum) throws SQLException {
 
 //		T inst=BeanUtils.instantiate(cls);
-
-		BeanWrapper beanWrapper=PropertyAccessorFactory.forBeanPropertyAccess(BeanUtils.instantiate(cls));
-
+		
+		BeanWrapper  beanWrapperInst=PropertyAccessorFactory.forBeanPropertyAccess(BeanUtils.instantiate(cls));
 
 		for(String field:fieldMapper.keySet()){
 
@@ -118,13 +128,13 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 
 			}
 
-			log.debug(" fill row result "+fieldInst+" to field "+field);
-
-			beanWrapper.setPropertyValue(fieldMapper.get(field), fieldInst);
+			log.debug(" fill row target "+fieldInst+" to field "+field);
+			
+			beanWrapperInst.setPropertyValue(fieldMapper.get(field), fieldInst);
 		}
 
 
-		return (T)beanWrapper.getWrappedInstance();
+		return (T)beanWrapperInst.getWrappedInstance();
 	}
 
 	private Object autoConvert(ResultSet rs,String key,Class target) throws SQLException {
@@ -153,5 +163,181 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 			result = null;
 		}
 		return result;
+	}
+	
+	
+	public  SqlParam getSqlParamInstance(String tableName){
+		SqlParam param=new SqlParam();
+		
+		param.fullSql.append("select * from "+tableName+" where 1=1 ");
+		return param;
+	}
+	
+	
+	public static class Pager{
+		
+		private static Pattern pagerPat=Pattern.compile("^(\\d+\\/)?(\\d+)$");
+		
+		
+		private int start=0;
+		
+		private int size=0;
+		
+		
+		public static Pager getInstance(String sign){
+			
+			if(StringUtils.isBlank(sign)){
+				return null;
+			}
+			
+			Matcher matcher=pagerPat.matcher(sign);
+			
+			if(matcher.find()){
+			
+				Pager pager=new Pager();
+				String a=matcher.group(1);
+				String b=matcher.group(2);
+				
+				pager.size=Integer.parseInt(b);
+				
+				if(StringUtils.isNotBlank(a)){
+					pager.start=Integer.parseInt(a);
+				}
+				
+				return pager;
+			}else{
+				return null;
+			}
+		}
+		
+		public int getStart() {
+			return start;
+		}
+		
+		public void setStart(int start) {
+			this.start = start;
+		}
+		
+		public int getSize() {
+			return size;
+		}
+		
+		public void setSize(int size) {
+			this.size = size;
+		}
+	}
+	
+	public class SqlParam {
+		
+		private StringBuilder fullSql=new StringBuilder();
+		
+		private List<Object> list=new ArrayList<>();
+		
+		public void addIsNull(String fieldName){
+			
+			String field = getFieldStr(fieldName);
+			fullSql.append(" and ").append(field).append(" is null ");
+			
+			
+		}
+		
+		public void addEq(String fieldName,Object val){
+			
+			if(val==null) {
+				return;
+			}
+			String field = getFieldStr(fieldName);
+			fullSql.append(" and ").append(field).append(" = ? ");
+			list.add(getValue(val, fieldName));
+			
+		}
+		
+		public void addLike(String fieldName,String val){
+			if(val==null){
+				return;
+			}
+			String field=getFieldStr(fieldName);
+			
+			fullSql.append(" and ").append(field).append(" like ? ");
+			list.add("%"+val+"%");
+			
+		}
+		
+		public <T> void addBetween(String fieldName, T start, T end) {
+			
+			if(start==null&&end==null){
+				return;
+			}
+			
+			String field=getFieldStr(fieldName);
+			
+			
+			if(start!=null&&end!=null){
+				fullSql.append(" and ").append(field).append(" between ? and ? ");
+				list.add(getValue(start,fieldName));
+				list.add(getValue(end,fieldName));
+				return;
+			}
+			
+			if(start!=null){
+				fullSql.append(" and ").append(field).append(" > ? ");
+				list.add(getValue(start,fieldName));
+			}else{
+				fullSql.append(" and ").append(field).append(" < ? ");
+				list.add(getValue(end,fieldName));
+			}
+			return;
+		}
+		
+		
+		
+		public void addPager(Pager page){
+			
+			if(page!=null) {
+				
+				fullSql.append(" LIMIT ? , ? ");
+				list.add(page.getStart());
+				list.add(page.getSize());
+			}
+		}
+		
+		private String getFieldStr(String field){
+			
+			return propertyMap.get(field);
+			
+		}
+		
+		private Object getValue(Object val,String field){
+			String fieldName=propertyMap.get(field);
+			Class propCls=beanWrapper.getPropertyType(field);
+			JdbcFieldType type=sqlTypeMapper.get(fieldName);
+			
+			if(type == JdbcFieldType.EnumInt){
+				
+				return ((Enum)val).ordinal();
+				
+			}else if(propCls.equals(String.class)&&type==JdbcFieldType.Auto){
+				
+				return  String.valueOf(val);
+				
+			}else if(type == JdbcFieldType.EnumStr){
+				
+				return ((Enum)val).name();
+				
+			}else {
+				return val;
+			}
+		}
+		
+		public String getFullSql(){
+			return fullSql.toString();
+		}
+		
+		public Object[] getParamArray(){
+			return list.toArray();
+		}
+		
+		
+	
 	}
 }

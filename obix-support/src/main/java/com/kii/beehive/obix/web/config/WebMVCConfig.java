@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 @EnableWebMvc
 @Configuration
+//@ImportResource("classpath:com/kii/beehive/portal/web/portalContext.xml")
 @ComponentScan(basePackages = {"com.kii.beehive.obix"},includeFilters = {
 		@ComponentScan.Filter(type = FilterType.ANNOTATION, value =  {Component.class, Controller.class} )})
 public class WebMVCConfig extends WebMvcConfigurerAdapter {

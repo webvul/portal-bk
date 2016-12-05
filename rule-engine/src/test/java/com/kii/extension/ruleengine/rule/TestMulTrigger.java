@@ -17,12 +17,12 @@ import com.kii.extension.ruleengine.BeehiveTriggerService;
 import com.kii.extension.ruleengine.TriggerConditionBuilder;
 import com.kii.extension.ruleengine.store.trigger.Condition;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
-import com.kii.extension.ruleengine.store.trigger.SummaryFunctionType;
+import com.kii.extension.ruleengine.store.trigger.groups.SummaryFunctionType;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.WhenType;
-import com.kii.extension.ruleengine.store.trigger.multiple.GroupSummarySource;
-import com.kii.extension.ruleengine.store.trigger.multiple.MultipleSrcTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.multiple.ThingSource;
+import com.kii.extension.ruleengine.store.trigger.GroupSummarySource;
+import com.kii.extension.ruleengine.store.trigger.MultipleSrcTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.ThingSource;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
 public class TestMulTrigger extends TestInit {

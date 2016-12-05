@@ -1,0 +1,41 @@
+{
+  "description": "aef",
+  "type": "Multiple",
+  "summarySource":{
+    "2":{
+      "stateName":"foo",
+      "function":"min",
+      "source":{
+        "thingList":["2","3"],
+        "tagList":[],
+        "andExpress":false
+      },
+      "type":"summary"
+    },
+    "1":{
+      "stateName":"bar",
+      "function":"max",
+      "source":{
+        "thingList":["3","2"],
+        "tagList":[],
+        "andExpress":false
+      },
+      "type":"summary"}
+  },
+  "targets": [
+  ],
+  "predicate": {
+
+    "triggersWhen": "CONDITION_TRUE",
+    "express":"ml.score('one',$p{1},$p{2})>$e{demo.map[c].num} "
+  },
+  "targetParamList": [
+    {"name":"maxid",
+     "express":"$t{1.choiceTh}"},
+    {"name":"minid",
+      "express":"$t{2.choiceTh}"},
+    {"name":"currThingID",
+      "express":"$e{sys.currThing.currThing}"}
+  ],
+  "name": "ddfaf"
+}

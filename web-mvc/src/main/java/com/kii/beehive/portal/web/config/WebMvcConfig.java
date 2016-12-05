@@ -1,9 +1,8 @@
 package com.kii.beehive.portal.web.config;
 
 
-import javax.annotation.PostConstruct;
-
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -16,6 +15,7 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
@@ -35,16 +35,12 @@ import com.kii.beehive.portal.web.help.AuthInterceptor;
 		@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = STOMPMessageController.class)})
 public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
-//	@Autowired
-	private ObjectMapper mapper;
-
 	@Autowired
 	private AuthInterceptor authInterceptor;
 
-	@PostConstruct
-	public void init(){
+	private  ObjectMapper getMapperInstance(){
 
-		mapper=new ObjectMapper();
+		ObjectMapper mapper=new ObjectMapper();
 		mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 		mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
 
@@ -55,7 +51,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,true);
 
 
-
+		return mapper;
 	}
 
 	@Override
@@ -83,7 +79,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 	private HttpMessageConverter<Object> createJsonMessageConverter() {
 
 		MappingJackson2HttpMessageConverter jsonMarshaller = new MappingJackson2HttpMessageConverter();
-		jsonMarshaller.setObjectMapper(mapper);
+		jsonMarshaller.setObjectMapper(getMapperInstance());
 
 		return jsonMarshaller;
 	}
@@ -95,6 +91,12 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 		MappingJackson2JsonView view = new MappingJackson2JsonView();
 		view.setUpdateContentLength(true);
 		return view;
+	}
+	
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
+		
+		registry.addInterceptor(authInterceptor).addPathPatterns("/**");
 	}
 
 }

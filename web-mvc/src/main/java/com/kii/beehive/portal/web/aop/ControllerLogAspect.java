@@ -67,7 +67,7 @@ public class ControllerLogAspect {
         return method;
     }
 
-    @AfterReturning(pointcut = "bindController()",   returning = "result" )
+    @AfterReturning(pointcut = "execution(* com.kii.beehive.portal.web.controller.*.*(..))",   returning = "result" )
     public void afterCallBusinessFun(JoinPoint joinPoint,Object result){
 
         try {

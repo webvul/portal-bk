@@ -36,7 +36,7 @@ public class GlobalThingInfo extends BusinessEntity {
 	public final static String SCHEMA_VERSION = "schema_version";
 
 
-	public final static String VIEW_THING_OWNER="view_thing_user_ownership";
+	public final static String VIEW_NAME ="view_thing_user_ownership";
 	public final static String VIEW_THING_ID="thing_id";
 	public final static String VIEW_USER_ID="user_id";
 

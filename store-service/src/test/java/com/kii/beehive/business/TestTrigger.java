@@ -4,24 +4,22 @@ import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.fail;
 
 import java.io.IOException;
-import java.util.Date;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.kii.beehive.business.ruleengine.ThingStatusChangeCallback;
 import com.kii.beehive.business.ruleengine.TriggerManager;
 import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.beehive.portal.store.StoreServiceTestInit;
 import com.kii.extension.ruleengine.TriggerConditionBuilder;
-import com.kii.extension.ruleengine.store.trigger.CommandToThing;
 import com.kii.extension.ruleengine.store.trigger.Condition;
 import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.WhenType;
+import com.kii.extension.ruleengine.store.trigger.target.CommandToThing;
 import com.kii.extension.sdk.entity.thingif.Action;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
@@ -33,8 +31,8 @@ public class TestTrigger extends StoreServiceTestInit {
 	private TriggerManager  manager;
 
 
-	@Autowired
-	private ThingStatusChangeCallback stateNotifyService;
+//	@Autowired
+//	private RuleEngineInputCallback stateNotifyService;
 
 	public void sendGoodThingStatus(String id){
 		ThingStatus status=new ThingStatus();
@@ -49,7 +47,7 @@ public class TestTrigger extends StoreServiceTestInit {
 
 		ThingIDTools.ThingIDCombine combine=ThingIDTools.splitFullKiiThingID(id);
 
-		stateNotifyService.onEventFire("",status,id,new Date());
+//		stateNotifyService.onEventFire("",status,id,new Date());
 
 	}
 	

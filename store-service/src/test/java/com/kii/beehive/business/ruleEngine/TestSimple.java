@@ -4,7 +4,6 @@ package com.kii.beehive.business.ruleEngine;
 import static junit.framework.TestCase.assertEquals;
 
 import java.io.IOException;
-import java.util.Date;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,19 +11,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.kii.beehive.business.ruleengine.ThingStatusChangeCallback;
 import com.kii.beehive.business.ruleengine.TriggerManager;
 import com.kii.extension.ruleengine.TriggerConditionBuilder;
 import com.kii.extension.ruleengine.drools.CommandExec;
-import com.kii.extension.ruleengine.store.trigger.CommandToThing;
 import com.kii.extension.ruleengine.store.trigger.Condition;
 import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
-import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.IntervalPrefix;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.TimerUnitType;
 import com.kii.extension.ruleengine.store.trigger.WhenType;
+import com.kii.extension.ruleengine.store.trigger.groups.GroupTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.schedule.IntervalPrefix;
+import com.kii.extension.ruleengine.store.trigger.schedule.TimerUnitType;
+import com.kii.extension.ruleengine.store.trigger.target.CommandToThing;
 import com.kii.extension.sdk.entity.thingif.Action;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
@@ -43,8 +41,8 @@ public class TestSimple {
 	protected CommandExec exec;
 
 
-	@Autowired
-	private ThingStatusChangeCallback statusChangeCallback;
+//	@Autowired
+//	private RuleEngineInputCallback statusChangeCallback;
 
 
 	public ExecuteTarget getTarget(){
@@ -81,7 +79,7 @@ public class TestSimple {
 
 	private void sendThingStatus(String id, ThingStatus status){
 
-		statusChangeCallback.onEventFire("",status,id,new Date());
+//		statusChangeCallback.onEventFire("",status,id,new Date());
 
 	}
 
@@ -94,7 +92,7 @@ public class TestSimple {
 //		statusChangeCallback.onEventFire(status,id,new Date());
 
 		status.setField("power","true");
-		statusChangeCallback.onEventFire("",status,id,new Date());
+//		statusChangeCallback.onEventFire("",status,id,new Date());
 
 		System.in.read();
 	}

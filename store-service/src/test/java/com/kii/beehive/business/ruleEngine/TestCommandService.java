@@ -26,7 +26,7 @@
 //import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
 //import com.kii.extension.ruleengine.store.trigger.TagSelector;
 //import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
-//import com.kii.extension.ruleengine.store.trigger.result.ExceptionResponse;
+//import com.kii.extension.ruleengine.store.trigger.target.ExceptionResponse;
 //import com.kii.extension.sdk.entity.thingif.Action;
 //import com.kii.extension.sdk.entity.thingif.ThingCommand;
 //

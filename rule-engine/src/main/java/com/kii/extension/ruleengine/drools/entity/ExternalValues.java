@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.kii.extension.ruleengine.ExpressTool;
+
 public class ExternalValues implements Serializable {
 
 
@@ -39,8 +41,10 @@ public class ExternalValues implements Serializable {
 		return this;
 	}
 	
-	public Object getValue(String name) {
+	public Object getValue(String field) {
 
-		return values.get(name);
+
+
+		return  ExpressTool.getValue(this,field,Object.class);
 	}
 }

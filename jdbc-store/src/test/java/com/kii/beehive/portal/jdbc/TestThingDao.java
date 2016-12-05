@@ -110,17 +110,17 @@ public class TestThingDao extends TestTemplate {
 //		thingInfo2.setKiiAppID("WhatsApp");
 //		Long thingId2 = globalThingDao.saveOrUpdate(thingInfo2);
 //
-//		Optional<List<GlobalThingInfo>> result = globalThingDao.findByIDsAndType(Arrays.asList(thingId1, thingId2).stream().
+//		Optional<List<GlobalThingInfo>> target = globalThingDao.findByIDsAndType(Arrays.asList(thingId1, thingId2).stream().
 //				collect(Collectors.toSet()), "LED");
-//		assertNotNull("Should have a thing", result.get());
-//		assertEquals("Number of things is incorrect", 1, result.get().size());
-//		assertEquals("Thing id doesn't match", thingId1, result.get().get(0).getId());
+//		assertNotNull("Should have a thing", target.get());
+//		assertEquals("Number of things is incorrect", 1, target.get().size());
+//		assertEquals("Thing id doesn't match", thingId1, target.get().get(0).getId());
 //
-//		result = globalThingDao.findByIDsAndType(Arrays.asList(thingId1, thingId2).stream().
+//		target = globalThingDao.findByIDsAndType(Arrays.asList(thingId1, thingId2).stream().
 //				collect(Collectors.toSet()), "TV");
-//		assertNotNull("Should have a thing", result.get());
-//		assertEquals("Number of things is incorrect", 1, result.get().size());
-//		assertEquals("Thing id doesn't match", thingId2, result.get().get(0).getId());
+//		assertNotNull("Should have a thing", target.get());
+//		assertEquals("Number of things is incorrect", 1, target.get().size());
+//		assertEquals("Thing id doesn't match", thingId2, target.get().get(0).getId());
 //
 //		List<GlobalThingInfo> emptyResult = globalThingDao.findByIDsAndType(Collections.emptySet(), "TV").
 //				orElse(Collections.emptyList());
@@ -148,10 +148,10 @@ public class TestThingDao extends TestTemplate {
 //			thingIds.add(globalThingDao.saveOrUpdate(thingInfo2));
 //		}
 //
-//		List<Map<String, Object>> result = globalThingDao.findThingTypesWithThingCount(thingIds).orElseThrow(() ->
+//		List<Map<String, Object>> target = globalThingDao.findThingTypesWithThingCount(thingIds).orElseThrow(() ->
 //				new RuntimeException("Test fail. Can't get thingTypesWithThingCount"));
-//		assertEquals("There should be two objects", 2, result.size());
-//		result.forEach(data -> {
+//		assertEquals("There should be two objects", 2, target.size());
+//		target.forEach(data -> {
 //			if (data.get("type").equals("LED")) {
 //				assertEquals("Should have 3 LEDs", "3", data.get("count").toString());
 //			} else if (data.get("type").equals("TV")) {
@@ -161,8 +161,8 @@ public class TestThingDao extends TestTemplate {
 //			}
 //		});
 //
-//		result = globalThingDao.findThingTypesWithThingCount(Collections.emptySet()).orElse(Collections.emptyList());
-//		assertTrue(result.isEmpty());
+//		target = globalThingDao.findThingTypesWithThingCount(Collections.emptySet()).orElse(Collections.emptyList());
+//		assertTrue(target.isEmpty());
 //	}
 
 	@Test

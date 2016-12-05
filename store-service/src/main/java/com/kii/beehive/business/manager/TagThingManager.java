@@ -379,6 +379,7 @@ public class TagThingManager {
 		return true;
 	}
 
+
 	public boolean isThingOwner(GlobalThingInfo thing) {
 		return isThingOwner(thing, AuthInfoStore.getUserID());
 	}

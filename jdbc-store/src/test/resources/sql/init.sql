@@ -252,3 +252,19 @@ from global_thing th
  in ( rtu.beehive_user_id , rttu.beehive_user_id , rgu.beehive_user_id ,
  convert(th.create_by , SIGNED),convert (tag.create_by , SIGNED ),convert(g.create_by , SIGNED),convert(gg.create_by,SIGNED))
   )
+
+
+  CREATE OR REPLACE  TABLE `user_notice` (
+    `user_notice_id` int(11) NOT NULL AUTO_INCREMENT,
+    `beehive_user_id` int(11) NOT NULL,
+    `readed_time` datetime DEFAULT NULL,
+    `create_time` datetime NOT NULL,
+    `data` text,
+    `msg_in_text` text,
+    `title` varchar(128) NOT NULL,
+    `notice_type` varchar(45) NOT NULL,
+    `readed` tinyint(4) DEFAULT '0',
+    `action_type` varchar(11) DEFAULT NULL,
+    `from_where` varchar(45) NOT NULL DEFAULT '',
+    PRIMARY KEY (`user_notice_id`)
+  ) ENGINE=InnoDB AUTO_INCREMENT=1072 DEFAULT CHARSET=utf8;

@@ -1,0 +1,44 @@
+{
+
+  "type": "Multiple",
+  "summarySource": {
+    "one": {
+      "stateName": "",
+      "function": "objCol",
+      "source": {
+        "thingList": [
+          0,1,2,3
+        ]
+      },
+      "express":"$p{foo}>$p{bar}",
+      "type": "summary"
+    }
+  },
+  "userID": 0,
+  "targets": [],
+  "predicate": {
+
+    "triggersWhen": "CONDITION_TRUE",
+    "express": "  $p{one}!=$h{one} "
+  },
+  "recordStatus": "enable",
+  "targetParamList": [
+    {
+      "name": "currThing",
+      "express": "$e{sys.curr.currThing}"
+    },
+    {
+      "name": "monitorID",
+      "express": "'aaaaaaaa'"
+    },
+    {
+      "name": "thingStatus",
+      "express": "$e{sys.curr.status}"
+    },
+    {
+      "name":"sign",
+      "express":"$p:c{comm}.contains($e{sys.curr.currThing})"
+    }
+  ],
+  "name": "test"
+}

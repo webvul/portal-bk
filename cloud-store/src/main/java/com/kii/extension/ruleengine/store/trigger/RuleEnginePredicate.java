@@ -2,10 +2,12 @@ package com.kii.extension.ruleengine.store.trigger;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import com.kii.extension.ruleengine.store.trigger.schedule.SchedulePrefix;
+
 
 public class RuleEnginePredicate {
 
-	private SchedulePrefix  schedule;
+	private SchedulePrefix schedule;
 
 	private String  express;
 

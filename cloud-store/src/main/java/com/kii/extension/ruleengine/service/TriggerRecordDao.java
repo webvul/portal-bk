@@ -13,6 +13,7 @@ import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.entity.BucketInfo;
 import com.kii.extension.sdk.exception.ObjectNotFoundException;
 import com.kii.extension.sdk.query.ConditionBuilder;
+import com.kii.extension.sdk.query.FieldType;
 import com.kii.extension.sdk.query.QueryParam;
 import com.kii.extension.sdk.service.AbstractDataAccess;
 
@@ -46,7 +47,9 @@ public class TriggerRecordDao extends AbstractDataAccess<TriggerRecord> {
 
 	public TriggerRecord getEnableTriggerRecord(String id) {
 
-		QueryParam query = ConditionBuilder.andCondition().equal("_id", id).equal("recordStatus", TriggerRecord.StatusType.enable).getFinalQueryParam();
+		QueryParam query = ConditionBuilder.andCondition().equal("_id", id)
+				.equal("recordStatus", TriggerRecord.StatusType.enable)
+				.getFinalQueryParam();
 
 		List<TriggerRecord> list = super.fullQuery(query);
 
@@ -62,7 +65,9 @@ public class TriggerRecordDao extends AbstractDataAccess<TriggerRecord> {
 		String[] params = new String[2];
 		params[0] = TriggerRecord.StatusType.enable.name();
 		params[1] = TriggerRecord.StatusType.disable.name();
-		QueryParam query = ConditionBuilder.andCondition().equal("userID", userId).In("recordStatus", params).getFinalQueryParam();
+		QueryParam query = ConditionBuilder.andCondition()
+				.equal("userID", userId).In("recordStatus", params)
+				.getFinalQueryParam();
 
 		List<TriggerRecord> list = super.fullQuery(query);
 
@@ -75,7 +80,10 @@ public class TriggerRecordDao extends AbstractDataAccess<TriggerRecord> {
 
 	public List<TriggerRecord> getDeleteTriggerListByUserId(Long userId) {
 
-		QueryParam query = ConditionBuilder.andCondition().equal("userID", userId).equal("recordStatus", TriggerRecord.StatusType.deleted).getFinalQueryParam();
+		QueryParam query = ConditionBuilder.andCondition()
+				.equal("userID", userId)
+				.equal("recordStatus", TriggerRecord.StatusType.deleted)
+				.getFinalQueryParam();
 
 		List<TriggerRecord> list = super.fullQuery(query);
 
@@ -120,19 +128,20 @@ public class TriggerRecordDao extends AbstractDataAccess<TriggerRecord> {
 		super.updateEntity(Collections.singletonMap("recordStatus", TriggerRecord.StatusType.disable), triggerID);
 
 	}
-
-	public List<TriggerRecord> getAllTrigger() {
-
-		QueryParam query = ConditionBuilder.orCondition().equal("recordStatus", TriggerRecord.StatusType.disable).equal("recordStatus", TriggerRecord.StatusType.enable).getFinalQueryParam();
-
-		List<TriggerRecord> list = super.fullQuery(query);
-
-		return list;
-	}
+//
+//	public List<TriggerRecord> getAllTrigger() {
+//
+//		QueryParam query = ConditionBuilder.orCondition().equal("recordStatus", TriggerRecord.StatusType.disable).equal("recordStatus", TriggerRecord.StatusType.enable).getFinalQueryParam();
+//
+//		List<TriggerRecord> list = super.fullQuery(query);
+//
+//		return list;
+//	}
 
 	public List<TriggerRecord> getAllEnableTrigger() {
 
-		QueryParam query = ConditionBuilder.newCondition().equal("recordStatus", TriggerRecord.StatusType.enable).getFinalQueryParam();
+		QueryParam query = ConditionBuilder.newCondition().equal("recordStatus", TriggerRecord.StatusType.enable)
+				.getFinalQueryParam();
 
 		List<TriggerRecord> list = super.fullQuery(query);
 
@@ -161,8 +170,14 @@ public class TriggerRecordDao extends AbstractDataAccess<TriggerRecord> {
 		String[] params= new String[2];
 		params[0] = TriggerRecord.StatusType.enable.name();
 		params[1] = TriggerRecord.StatusType.disable.name();
-		QueryParam query= ConditionBuilder.andCondition().equal("type",beehiveTriggerType)
-				.In("recordStatus",params).getFinalQueryParam();
+		QueryParam query= ConditionBuilder.andCondition()
+				.equal("type",beehiveTriggerType)
+				.In("recordStatus",params)
+				.addSubClause(
+						ConditionBuilder.orCondition()
+								.equal("usedByWho", TriggerRecord.UsedByType.User.name())
+								.addSubClause(ConditionBuilder.notCondition().fieldExist("usedByWho", FieldType.STRING))
+				).getFinalQueryParam();
 
 		List<TriggerRecord> list=super.query(query);
 
@@ -173,8 +188,5 @@ public class TriggerRecordDao extends AbstractDataAccess<TriggerRecord> {
 
 	}
 
-	public void setQuartzSign(String triggerID) {
 
-		super.updateEntity(Collections.singletonMap("inDrools",false),triggerID);
-	}
 }

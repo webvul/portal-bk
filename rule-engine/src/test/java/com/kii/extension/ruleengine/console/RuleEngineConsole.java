@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.quartz.SchedulerException;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -23,17 +24,18 @@ import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import com.kii.extension.ruleengine.BeehiveTriggerService;
 import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
-import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.GroupSummarySource;
+import com.kii.extension.ruleengine.store.trigger.MultipleSrcTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TagSelector;
+import com.kii.extension.ruleengine.store.trigger.ThingSource;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.multiple.GroupSummarySource;
-import com.kii.extension.ruleengine.store.trigger.multiple.MultipleSrcTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.multiple.ThingSource;
+import com.kii.extension.ruleengine.store.trigger.groups.GroupTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.groups.SummaryTriggerRecord;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
 
@@ -54,10 +56,14 @@ public class RuleEngineConsole {
 
 
 	private ScheduledExecutorService executeService=new ScheduledThreadPoolExecutor(10);
+	
+	private AtomicBoolean  taskSign=new AtomicBoolean(false);
 
 	public RuleEngineConsole(ClassPathXmlApplicationContext context){
 
 		 mapper=context.getBean(ObjectMapper.class);
+
+		mapper.configure(SerializationFeature.INDENT_OUTPUT,true);
 
 
 		service=context.getBean(BeehiveTriggerService.class);
@@ -83,28 +89,55 @@ public class RuleEngineConsole {
 
 	}
 
+	public static class Entry{
+
+		private String v;
+
+		private Map<String,Object> map=new HashMap<>();
+
+		private String[] a;
+
+		private int n;
+
+		public int getNum() {
+			return n;
+		}
+
+		public void setNum(int n) {
+			this.n = n;
+		}
+
+		public String getVal() {
+			return v;
+		}
+
+		public void setVal(String v) {
+			this.v = v;
+		}
+
+		public Map<String, Object> getMap() {
+			return map;
+		}
+
+		public void setMap(Map<String, Object> map) {
+			this.map = map;
+		}
+
+		public String[] getArr() {
+			return a;
+		}
+
+		public void setArr(String[] a) {
+			this.a = a;
+		}
+	}
 
 	public void init() throws IOException, SchedulerException {
 
 
 		service.enterInit();
 
-//		service.updateExternalValue("demo","one",111);
-//
-//		service.updateExternalValue("demo","two",222);
-
-
-
-
-
-//		String[] init={"test3","test1","test2"};
-//
-//		for(String name:init) {
-//			String jsonTrigger = getFileContext(name);
-//
-//			addTrigger(jsonTrigger, name);
-//		}
-//		loadAll();
+		initExternal();
 
 
 		List<ThingStatusInRule> statusList=new ArrayList<>();
@@ -118,13 +151,32 @@ public class RuleEngineConsole {
 
 		executeService.scheduleAtFixedRate(()->{
 
-			Map<String,Object> map=new HashMap<>();
-			map.put("time",System.currentTimeMillis()%100);
-			service.updateThingStatus("e", map);
-
+			if(taskSign.get()) {
+				Map<String, Object> map = new HashMap<>();
+				map.put("time", System.currentTimeMillis() % 100);
+				service.updateThingStatus("e", map);
+			}
 
 		},3, 30,TimeUnit.SECONDS);
 
+	}
+
+	public void initExternal() {
+		service.updateExternalValue("demo","one",111);
+
+		service.updateExternalValue("demo","two",222);
+
+//       "express":"ml.score('one',$p{1},$p{2})>$e{demo.map[c].d} "
+
+		Entry entry=new Entry();
+		entry.setVal("value");
+		entry.setNum(-100);
+
+
+		Map<String,Object> map=new HashMap<>();
+		map.put("c",entry);
+
+		service.updateExternalValue("demo","map",map);
 	}
 
 	public void loadAll(){
@@ -162,8 +214,15 @@ public class RuleEngineConsole {
 
 			case "exit":
 				System.exit(0);
-
-
+				
+			case "stop":
+				taskSign.set(false);
+				break;
+				
+			case "restore":
+				taskSign.set(true);
+				break;
+			
 			case "setStatus":
 				String params = arrays[2];
 
@@ -221,6 +280,7 @@ public class RuleEngineConsole {
 
 				Map<String, Object> result = service.getRuleEngingDump(null);
 
+
 				try {
 					String json = mapper.writeValueAsString(result);
 
@@ -240,7 +300,7 @@ public class RuleEngineConsole {
 
 	public static void main(String[] argc){
 
-		ClassPathXmlApplicationContext  context=new ClassPathXmlApplicationContext("classpath:ruleTestContext.xml");
+		ClassPathXmlApplicationContext  context=new ClassPathXmlApplicationContext("classpath:ruleConsoleCtx.xml");
 
 		RuleEngineConsole console=new RuleEngineConsole(context);
 

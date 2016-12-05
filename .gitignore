@@ -7,10 +7,10 @@
 .gradle
 ObjectStore/
 .settings/
+out/
 bin/
 build/
 tomcat.*/
-target/
 out/
 .DS_Store
 tmp/

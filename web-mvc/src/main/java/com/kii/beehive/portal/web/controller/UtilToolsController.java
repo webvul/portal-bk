@@ -219,6 +219,7 @@ public class UtilToolsController {
 
 		return permissionTreeService.getFullPermissionTree();
 	}
+	
 
 	@RequestMapping(value = "/info", method = {RequestMethod.GET}, consumes = {"*"})
 	public Map<String, String> info(HttpServletRequest httpRequest) {
@@ -235,7 +236,7 @@ public class UtilToolsController {
 			map.put("Date", impTimestamp);
 			map.put("profile",profile);
 		} catch (IOException ex) {
-			//log.warn("Error while reading version: " + ex.getMessage());
+			//log.warn("Error while reading version: " + ex.getMsgInText());
 		}
 		return map;
 	}

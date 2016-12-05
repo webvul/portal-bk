@@ -10,9 +10,9 @@ import com.kii.extension.ruleengine.drools.entity.*;
 rule "add trigger 200's  express "
 when
     Trigger( $triggerID:triggerID=="200" )
-    $group:Group(triggerID==$triggerID,$thingIDs:things)
-    CurrThing(thing memberOf $thingIDs)
-    $status:ThingStatusInRule( $thingID:thingID memberOf $thingIDs ,values["foo"]>10&&values["bar"]<0  )
+    $group:Group(triggerID==$triggerID,$vendorThingIDs:thingIDs)
+    CurrThing(thing memberOf $vendorThingIDs)
+    $status:ThingStatusInRule( $thingID:thingID memberOf $vendorThingIDs ,values["foo"]>10&&values["bar"]<0  )
 then
 	insertLogical(new MemberMatchResult($group,$status));
 end
@@ -24,9 +24,9 @@ end
 rule "add trigger 201's  express :true"
 when
     Trigger( $triggerID:triggerID=="201" )
-    $group:Group(triggerID==$triggerID,$thingIDs:things)
-    CurrThing(thing memberOf $thingIDs)
-    $status:ThingStatusInRule( $thingID:thingID memberOf $thingIDs,values["foo"]>10&&values["bar"]<0  )
+    $group:Group(triggerID==$triggerID,$vendorThingIDs:thingIDs)
+    CurrThing(thing memberOf $vendorThingIDs)
+    $status:ThingStatusInRule( $thingID:thingID memberOf $vendorThingIDs,values["foo"]>10&&values["bar"]<0  )
 then
 	System.out.println("add match result:"+$thingID);
 	insertLogical(new MemberMatchResult($group,$status));
@@ -39,9 +39,9 @@ end
 rule "add trigger 202's  express "
 when
     Trigger( $triggerID:triggerID=="202" )
-    $group:Group(triggerID==$triggerID,$thingIDs:things)
-    CurrThing(thing memberOf $thingIDs)
-    $status:ThingStatusInRule( $thingID:thingID memberOf $thingIDs,values["foo"]>10&&values["bar"]<0  )
+    $group:Group(triggerID==$triggerID,$vendorThingIDs:thingIDs)
+    CurrThing(thing memberOf $vendorThingIDs)
+    $status:ThingStatusInRule( $thingID:thingID memberOf $vendorThingIDs,values["foo"]>10&&values["bar"]<0  )
 then
 	insertLogical(new MemberMatchResult($group,$status));
 end

@@ -16,21 +16,21 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.StreamUtils;
 
 import com.kii.extension.ruleengine.drools.CommandExec;
-import com.kii.extension.ruleengine.drools.DroolsRuleService;
+import com.kii.extension.ruleengine.drools.DroolsService;
 import com.kii.extension.ruleengine.drools.entity.CurrThing;
 import com.kii.extension.ruleengine.drools.entity.SingleThing;
 import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
-		"classpath:./ruleTestContext.xml"})
+		"classpath:./ruleConsoleCtx.xml"})
 @Ignore
 public class InitTest {
 
 
 	@Autowired
 	@Qualifier("cloudDroolsService")
-	protected DroolsRuleService ruleLoader;
+	protected DroolsService ruleLoader;
 
 	@Autowired
 	protected CommandExec exec;
@@ -75,7 +75,7 @@ public class InitTest {
 	protected void initGlobal() throws IOException {
 
 
-		ruleLoader.addOrUpdateData(curr);
+		ruleLoader.addOrUpdateData(curr,true);
 
 		ruleLoader.bindWithInstance("exec",exec);
 
@@ -108,10 +108,10 @@ public class InitTest {
 	private void addThingStatus(String thingID, ThingStatusInRule status) {
 
 
-		ruleLoader.addOrUpdateData(status);
+		ruleLoader.addOrUpdateData(status,true);
 
 
-		ruleLoader.addOrUpdateData(curr);
+		ruleLoader.addOrUpdateData(curr,true);
 
 	}
 
@@ -120,9 +120,12 @@ public class InitTest {
 		ThingStatusInRule status=new ThingStatusInRule(thingID);
 //		status.setThingID(thingID);
 
-		status.addValue("foo",Math.random()*100-50);
-		status.addValue("bar",Math.random()*10-5);
-
+		Map<String,Object> val=new HashMap<>();
+		val.put("foo",Math.random()*100-50);
+		val.put("bar",Math.random()*10-5);
+		
+		status.setValues(val);
+		
 		addThingStatus(thingID, status);
 
 	}
@@ -132,6 +135,6 @@ public class InitTest {
 		thing.setThingID(thingID);
 		thing.setTriggerID(id);
 
-		ruleLoader.addOrUpdateData(thing);
+		ruleLoader.addOrUpdateData(thing,true);
 	}
 }

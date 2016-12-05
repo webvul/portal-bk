@@ -14,7 +14,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.StreamUtils;
 
 import com.kii.extension.ruleengine.drools.CommandExec;
-import com.kii.extension.ruleengine.drools.DroolsRuleService;
+import com.kii.extension.ruleengine.drools.DroolsService;
 import com.kii.extension.ruleengine.drools.entity.MatchResult;
 
 @Configuration
@@ -25,6 +25,9 @@ public class RuleEngineFactory {
 //
 	@Autowired
 	private CommandExec exec;
+
+	@Autowired
+	private ExtendFunAdapter  extFun;
 
 
 	@Autowired
@@ -56,15 +59,18 @@ public class RuleEngineFactory {
 
 
 	@Bean(name="cloudDroolsService")
-	public DroolsRuleService getCloudService(){
+	public DroolsService getCloudService(){
 
 
-		DroolsRuleService droolsService= new DroolsRuleService(consumer,false,
+		DroolsService droolsService= new DroolsService(consumer,false,
 				getDrlContent("triggerComm"),
 				getDrlContent("multipleSummary")
 		);
 
 		droolsService.bindWithInstance("exec",exec);
+
+		droolsService.bindWithGlobal("ExtFun",extFun);
+
 
 		return droolsService;
 

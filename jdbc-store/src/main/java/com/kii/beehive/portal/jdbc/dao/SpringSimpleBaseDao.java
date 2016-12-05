@@ -48,7 +48,7 @@ public abstract  class SpringSimpleBaseDao<T extends DBEntity> {
 
 	private BindClsFullUpdateTool updateTool;
 
-	private RowMapper<T> rowMapper;
+	private BindClsRowMapper<T> rowMapper;
 
 	private Class<T> entityClass;
 
@@ -76,6 +76,10 @@ public abstract  class SpringSimpleBaseDao<T extends DBEntity> {
 		this.beanWrapper= PropertyAccessorFactory.forBeanPropertyAccess(BeanUtils.instantiate(entityClass));
 	}
 
+	
+	protected BindClsRowMapper.SqlParam getSqlParam(){
+		return rowMapper.getSqlParamInstance(getTableName());
+	}
 
 	protected RowMapper<T> getRowMapper() {
 		return rowMapper;
@@ -117,12 +121,14 @@ public abstract  class SpringSimpleBaseDao<T extends DBEntity> {
 		return updateTool.executeSimple(entity);
 	}
 
-	public int updateEntityByID(Map<String, Object> paramMap, long id) {
+	public int updateEntityByID(Map<String, Object> paramMap, Long id) {
 
-		paramMap.put("id", id);
-		BindClsFullUpdateTool tool = updateTool.cloneInstance(paramMap, "id");
+		Map<String,Object> map=new HashMap<>(paramMap);
+		
+		map.put("id", id);
+		BindClsFullUpdateTool tool = updateTool.cloneInstance(map, "id");
 
-		return tool.execute(paramMap);
+		return tool.executeSimple(map);
 	}
 
 	public <E> List<E> findSingleFieldBySingleField(String returnField, String matchField, Collection<?> value,

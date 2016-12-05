@@ -5,9 +5,9 @@ rule "${triggerID} multiple segment:group express ${name}"
 when
     $ext:ExternalCollect()
 	Trigger($triggerID:triggerID=="${triggerID}" , enable == true)
-    $summary:Summary( triggerID==$triggerID , $things:things ,name=="${name}" )
-    $status:ThingStatusInRule( $thingID:thingID memberOf $things,${express}  )
+	$inst:TriggerValues(triggerID==$triggerID)
+    $summary:Summary( triggerID==$triggerID , $thingIDs:thingIDs ,name=="${name}" )
+    $status:ThingStatusInRule( $thingID:thingID memberOf $thingIDs,${express}  )
 then
-	System.out.println("gener member match result"+$summary+" "+$thingID);
 	insertLogical(new MemberMatchResult($summary,$status));
 end

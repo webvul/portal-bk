@@ -28,7 +28,7 @@ ant.propertyfile(file: "build/plugin-metadata/plugin-descriptor.properties") {
     entry(key: "build", value: "git rev-parse --short HEAD".execute().text.trim())
 }
 
-task buildPluginZip(type: Zip, dependsOn: [":plugin-sg:jar"]) {
+task buildPluginZip(type: Zip, dependsOn: [":plugin-sg:jar","copyPropeties"]) {
     classifier = 'plugin'
     from getBuildDir().absolutePath + '/libs'
     from parent.project(":kii-sdk").getBuildDir().absolutePath + '/libs'

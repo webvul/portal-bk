@@ -4,27 +4,22 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-//@Role(Role.Type.EVENT)
-//@Timestamp("createAt")
-public class ThingStatusInRule implements RuntimeEntry{
-//	@Override
-//	public boolean equals(Object o) {
-//		if (this == o) return true;
-//		if (o == null || getClass() != o.getClass()) return false;
-//		ThingStatusInRule that = (ThingStatusInRule) o;
-//		return Objects.equal(thingID, that.thingID);
-//	}
-//
-//	@Override
-//	public int hashCode() {
-//		return Objects.hashCode(thingID);
-//	}
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.kii.extension.ruleengine.ExpressTool;
+
+public class ThingStatusInRule implements RuntimeEntry,CanUpdate<ThingStatusInRule>{
+
+	private Logger log= LoggerFactory.getLogger(ThingStatusInRule.class);
 
 	private final String thingID;
 
 	private Date createAt;
 
 	private Map<String,Object> values=new HashMap<>();
+	
+	private Map<String,Object> previousValues=new HashMap<>();
 
 	public ThingStatusInRule(String thingID){
 		this.thingID=thingID;
@@ -41,29 +36,46 @@ public class ThingStatusInRule implements RuntimeEntry{
 	public Map<String, Object> getValues() {
 		return values;
 	}
+	
+	public Map<String,Object> getPrevious(){
+		return previousValues;
+	}
 
 	public void setValues(Map<String, Object> values) {
-		this.values = values;
+		
+		previousValues=new HashMap<>(this.values);
+		this.values = new HashMap<>(values);
 	}
 
-	public void addValue(String field,Object value){
-		this.values.put(field,value);
-	}
+//	public void addValue(String field,Object value){
+//		this.values.put(field,value);
+//	}
 
 
 
 	public Object getNumValue(String field){
-		Object value = this.values.get(field);
-		return value == null ? 0 : value;
+
+		return  ExpressTool.getNumValue(this,field);
 	}
 
 	public Object getValue(String field){
-		Object value = this.values.get(field);
-		if(value==null){
-			return null;
-		}
+
+		Object value= ExpressTool.getObjValue(this,field);
+
 		return value;
 	}
+	
+//	public Object getPreviousNumValue(String field){
+//
+//		return  ExpressTool.getNumValue(this,field);
+//	}
+//
+//	public String getPreviousValue(String field){
+//
+//		String value= ExpressTool.getValue(this,field,String.class);
+//
+//		return value;
+//	}
 
 	public String getThingID() {
 		return thingID;
@@ -81,5 +93,18 @@ public class ThingStatusInRule implements RuntimeEntry{
 	@Override
 	public String getID() {
 		return thingID;
+	}
+
+	@Override
+	public void update(ThingStatusInRule update) {
+
+		Map<String,Object>  vals=update.getValues();
+		
+		if(vals!=null){
+			this.previousValues=new HashMap<>(values);
+			
+			this.values.putAll(vals);
+		}
+
 	}
 }

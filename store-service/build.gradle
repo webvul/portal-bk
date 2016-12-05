@@ -4,7 +4,7 @@ dependencies {
     compile project(":jdbc-store")
 
     compile project(":cloud-store")
-    compile project(":rule-engine")
+
 
     compile "org.elasticsearch:elasticsearch:${elasticsearchVersion}"
     compile "com.floragunn:search-guard-2:${searchGuardVersion}"

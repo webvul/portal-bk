@@ -2,6 +2,9 @@ package com.kii.beehive.portal.web.stomp;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
@@ -10,8 +13,10 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionSubscribeEvent;
 import org.springframework.web.socket.messaging.SessionUnsubscribeEvent;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.kii.beehive.portal.web.entity.StateUpload;
 import com.kii.beehive.portal.web.help.InternalEventListenerRegistry;
 
@@ -21,6 +26,9 @@ import com.kii.beehive.portal.web.help.InternalEventListenerRegistry;
 @Component
 public class MessageManager implements ApplicationListener,
 		InternalEventListenerRegistry.ExtensionCallbackEventListener {
+	
+	private Logger log= LoggerFactory.getLogger(MessageManager.class);
+	
 	@Autowired
 	private InternalEventListenerRegistry internalEventListenerRegistry;
 
@@ -56,10 +64,10 @@ public class MessageManager implements ApplicationListener,
 	public void onApplicationEvent(ApplicationEvent event) {
 		if (event instanceof SessionSubscribeEvent) {
 			SessionSubscribeEvent subscribeEvent = (SessionSubscribeEvent) event;
-			System.out.println(subscribeEvent);
+			log.debug(subscribeEvent.toString());
 		} else if (event instanceof SessionUnsubscribeEvent) {
 			SessionUnsubscribeEvent unsubscribeEvent = (SessionUnsubscribeEvent) event;
-			System.out.println(unsubscribeEvent);
+			log.debug(unsubscribeEvent.toString());
 		}
 	}
 }

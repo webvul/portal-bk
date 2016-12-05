@@ -35,6 +35,18 @@ public class UtilTest {
 
 
 	private ObjectMapper mapper=new ObjectMapper();
+	
+	
+	@Test
+	public void testClone(){
+		
+		Set<Integer> setb=new HashSet<>();
+		setb.add(1);
+		setb.add(2);
+		setb.add(3);
+		
+		
+	}
 
 
 	@Test
@@ -230,5 +242,23 @@ public class UtilTest {
 		}
 	}
 
+	
+	@Test
+	public void testSetCompare(){
+		
+		Set<String> a=new HashSet<>();
+		
+		a.add("a");
+		a.add("b");
+		a.add("c");
+		
+		Set<String> b=new HashSet<>();
+		
+		b.add("a");
+		b.add("b");
+		b.add("c");
+		
+		assertTrue(a.equals(b));
+	}
 
 }

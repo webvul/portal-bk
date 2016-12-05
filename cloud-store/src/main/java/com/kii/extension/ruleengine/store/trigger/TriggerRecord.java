@@ -12,7 +12,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
-import com.kii.extension.ruleengine.store.trigger.multiple.MultipleSrcTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.groups.GroupTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.groups.SummaryTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.schedule.TriggerValidPeriod;
 import com.kii.extension.sdk.entity.KiiEntity;
 
 
@@ -31,6 +33,8 @@ public abstract class TriggerRecord extends KiiEntity {
 	private Map<String,Object> customProperty=new HashMap<>();
 
 	private Long userID;
+	
+	private String creator;
 
 	private TriggerValidPeriod period;
 
@@ -47,7 +51,40 @@ public abstract class TriggerRecord extends KiiEntity {
 	private String name;
 
 	private String description;
-
+	
+	private UsedByType usedByWho=UsedByType.User;
+	
+	public enum UsedByType{
+		
+		User,Sys_monitor,User_monitor;
+	}
+	
+	public String getCreator() {
+		return creator;
+	}
+	
+	public void setCreator(String creator) {
+		this.creator = creator;
+	}
+	
+	public void fillCreator(Object val){
+		
+		UsedByType type=usedByWho;
+		if(type==null){
+			type=UsedByType.User;
+		}
+		setCreator(type.name()+":"+String.valueOf(val));
+		
+	}
+	
+	public UsedByType getUsedByWho() {
+		return usedByWho;
+	}
+	
+	public void setUsedByWho(UsedByType usedByWho) {
+		this.usedByWho = usedByWho;
+	}
+	
 	public String getDeletedReason() {
 		return deletedReason;
 	}
@@ -58,6 +95,10 @@ public abstract class TriggerRecord extends KiiEntity {
 
 	public String getTriggerID() {
 		return super.getId();
+	}
+
+	public void setTriggerID(String triggerID){
+		this.setId(triggerID);
 	}
 
 	@JsonProperty("prepareCondition")

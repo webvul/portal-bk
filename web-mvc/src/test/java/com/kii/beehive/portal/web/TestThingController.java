@@ -720,8 +720,8 @@ public class TestThingController extends WebTestTemplate {
 //
 //		doReturn(100L).when(thingTagManager).createThing(any(GlobalThingInfo.class), anyString(), anyCollectionOf
 //				(String.class));
-//		Map<String, Long> result = thingController.createThing(thingRestBean);
-//		assertTrue("Unexpected result", result.containsKey("globalThingID") && result.get("globalThingID").equals
+//		Map<String, Long> target = thingController.createThing(thingRestBean);
+//		assertTrue("Unexpected target", target.containsKey("globalThingID") && target.get("globalThingID").equals
 //				(100L));
 
 

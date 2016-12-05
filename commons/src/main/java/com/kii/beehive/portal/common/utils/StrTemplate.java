@@ -49,18 +49,19 @@ public class StrTemplate {
 
 	public static final String generByMap(String template, Map<String, String> params) {
 		String result = template;
-
+		
 		for (Map.Entry<String, String> entry : params.entrySet()) {
 			String key = entry.getKey();
-
+			
 			String token = "\\$\\{" + key + "\\}";
-
-
+			
+			
 			result = result.replaceAll(token,  getSafeVal(entry.getValue()));
 		}
-
+		
 		return result;
 	}
+	
 
 
 	public static final String gener(String template, String... params) {

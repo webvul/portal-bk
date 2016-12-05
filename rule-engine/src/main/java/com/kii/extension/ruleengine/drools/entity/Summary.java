@@ -14,11 +14,11 @@ public class Summary  extends  TriggerData{
 	protected Set<String> things=new HashSet<>();
 
 
-	public Set<String> getThings() {
+	public Set<String> getThingIDs() {
 		return things;
 	}
 
-	public void setThings(Set<String> things) {
+	public void setThingIDs(Set<String> things) {
 		this.things=things;
 	}
 

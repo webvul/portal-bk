@@ -1,7 +1,9 @@
 package com.kii.extension.ruleengine.drools.rule
 
 import com.kii.extension.ruleengine.drools.entity.*;
+import com.kii.extension.ruleengine.ExtendFunAdapter;
 
+global com.kii.extension.ruleengine.ExtendFunAdapter ExtFun;
 
 /////////////////////////////////////
 //multiple trigger custom segment
@@ -9,14 +11,16 @@ import com.kii.extension.ruleengine.drools.entity.*;
 
 
 rule "${triggerID} user custom segment:multiple "
-
+ no-loop true
 when
 
 	$ext:ExternalCollect()
     Trigger( $triggerID:triggerID,$thingSet:thingSet,$enable:enable, ( triggerID=="${triggerID}" &&  enable == true && type ==TriggerType.multiple) )
+    $inst:TriggerValues(triggerID==$triggerID)
     $curr:CurrThing(init == false)
     $muiMap:MultiplesValueMap( triggerID==$triggerID, ${express}  )
 then
+    System.out.println("output match result");
 	MatchResult result=new MatchResult($triggerID);
     result.setFireSource($curr);
 

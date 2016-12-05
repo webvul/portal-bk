@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.InvalidPropertyException;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.object.SqlUpdate;
@@ -36,8 +37,20 @@ public class BindClsFullUpdateTool extends SqlUpdate {
 
 	private Logger log = LoggerFactory.getLogger(BindClsFullUpdateTool.class);
 
-	private static final String updateSqlTemplate = "update ${0} set  ${1} where ${2}  =  :${3} and is_deleted =  false ";
-
+	private static final String updateSqlTemplateForBusiness = "update ${0} set  ${1} where ${2}  =  :${3} and is_deleted =  false ";
+	
+	private static final String updateSqlTemplateForSimple = "update ${0} set  ${1} where ${2}  =  :${3} ";
+	
+	private String getUpdateSqlTemplate(){
+		if(wrapper.getWrappedClass().isAssignableFrom(BusinessEntity.class)){
+			return updateSqlTemplateForBusiness;
+		}else if(wrapper.getWrappedClass().isAssignableFrom(DBEntity.class)){
+			return updateSqlTemplateForSimple;
+		}else{
+			return updateSqlTemplateForSimple;
+		}
+	}
+	
 	private final String tableName;
 
 	private final BeanWrapper wrapper;
@@ -128,7 +141,7 @@ public class BindClsFullUpdateTool extends SqlUpdate {
 		}
 
 		//in default,always using pk as condition
-		String fullSql = StrTemplate.gener(updateSqlTemplate, tableName, removeDot(fields), pkName, "id");
+		String fullSql = StrTemplate.gener(getUpdateSqlTemplate(), tableName, removeDot(fields), pkName, "id");
 		super.setSql(fullSql);
 
 		paramList.add(new SqlParameter(key, pkType));
@@ -193,7 +206,7 @@ public class BindClsFullUpdateTool extends SqlUpdate {
 			throw new IllegalArgumentException("special condition field not exist or is null");
 		}
 
-		String fullSql = StrTemplate.gener(updateSqlTemplate, tableName, removeDot(fields), conditionField.column(), key);
+		String fullSql = StrTemplate.gener(getUpdateSqlTemplate(), tableName, removeDot(fields), conditionField.column(), key);
 		setSql(fullSql);
 
 		paramList.add(new SqlParameter(key, conditionField.type().getSqlType()));
@@ -204,6 +217,7 @@ public class BindClsFullUpdateTool extends SqlUpdate {
 
 	private List<SqlParameter> compileWithFieldSet(Set<String> inputSet, String key) {
 
+//		if(this.ent)
 		inputSet.add("modifyBy");
 		inputSet.add("modifyDate");
 
@@ -214,9 +228,11 @@ public class BindClsFullUpdateTool extends SqlUpdate {
 		inputSet.remove(key);
 
 		inputSet.forEach(fieldName -> {
-
-			PropertyDescriptor descriptor = wrapper.getPropertyDescriptor(fieldName);
-			if (descriptor == null) {
+			
+			PropertyDescriptor descriptor;
+			try {
+				descriptor = wrapper.getPropertyDescriptor(fieldName);
+			}catch(InvalidPropertyException ex){
 				return;
 			}
 
@@ -244,7 +260,7 @@ public class BindClsFullUpdateTool extends SqlUpdate {
 		PropertyDescriptor pkDesc = wrapper.getPropertyDescriptor(key);
 		JdbcField conditionField = pkDesc.getReadMethod().getDeclaredAnnotation(JdbcField.class);
 
-		String fullSql = StrTemplate.gener(updateSqlTemplate, tableName, removeDot(fields), conditionField.column(), key);
+		String fullSql = StrTemplate.gener(getUpdateSqlTemplate(), tableName, removeDot(fields), conditionField.column(), key);
 		setSql(fullSql);
 
 		paramList.add(new SqlParameter(key, conditionField.type().getSqlType()));
@@ -259,6 +275,11 @@ public class BindClsFullUpdateTool extends SqlUpdate {
 
 		fillParamMap(paramMap);
 
+		return updateByNamedParam(paramMap);
+	}
+	
+	public  int executeSimple(Map<String, Object> paramMap) {
+		
 		return updateByNamedParam(paramMap);
 	}
 
