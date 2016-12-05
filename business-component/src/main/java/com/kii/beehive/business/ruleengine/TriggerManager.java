@@ -107,7 +107,7 @@ public class TriggerManager {
 				log.warn("invalid gateway trigger param");
 			}
 		}
-
+		
 		triggerDao.addKiiEntity(record);
 
 		logTool.triggerLog(record, OperateLog.ActionType.create);
@@ -154,8 +154,9 @@ public class TriggerManager {
 
 			record.setRecordStatus(TriggerRecord.StatusType.enable);
 
-			this.deleteTrigger(record.getTriggerID());
-
+			creator.removeTrigger(record);
+			
+			record.fillCreator(record.getUserID());
 			creator.createTrigger(record);
 
 			triggerDao.updateEntity(record, record.getId());

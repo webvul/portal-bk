@@ -15,7 +15,6 @@ public class BusinessObjDao extends AbstractDataAccess<BusinessObject> {
 	@Override
 	protected BucketInfo getBucketInfo() {
 		return new BucketInfo("triggerBusinessObj");
-
 	}
 
 

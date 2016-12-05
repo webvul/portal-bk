@@ -84,7 +84,7 @@ public class UserNoticeDao extends SpringSimpleBaseDao<UserNotice> {
 	
 	public void updateAllSign(Long userID) {
 		
-		super.jdbcTemplate.update(updateUnRead,true,userID);
+		super.jdbcTemplate.update(updateAllUnRead,true,userID);
 		
 	}
 	

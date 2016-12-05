@@ -419,16 +419,21 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 		return super.findBySingleField(GlobalThingInfo.FULL_KII_THING_ID, kiiThingId);
 	}
 	
-	private static String existIDsSql="select count(1) from ${0} th where th.${1} in (:ids) ";
 	
-	public boolean checkExistsThingID(List<String> kiiThingIDs){
+	private static final String getThingsByVendorSql=StrTemplate.gener(
+			"select distinct th.* from ${0} th inner join ${1} v on v.${2} = th.${3} where th.${4} in (:vendors) and v.${5} = :userID ",
+			TABLE_NAME,GlobalThingInfo.VIEW_NAME,GlobalThingInfo.VIEW_THING_ID,GlobalThingInfo.ID_GLOBAL_THING,
+			GlobalThingInfo.VANDOR_THING_ID,GlobalThingInfo.VIEW_USER_ID);
+	
+	public List<GlobalThingInfo> getThingsByVendorThings(Collection<String> vendorThings){
 		
-		String fullSql=StrTemplate.gener(existIDsSql,GlobalThingSpringDao.TABLE_NAME,GlobalThingInfo.FULL_KII_THING_ID);
+		Map<String,Object> map=new HashMap<>();
+		map.put("userID",AuthInfoStore.getUserID());
+		map.put("vendors",vendorThings);
 		
-		String sql=super.addDelSignPrefix(fullSql);
-		Integer  num=super.namedJdbcTemplate.queryForObject(sql,Collections.singletonMap("ids",kiiThingIDs),Integer.class);
+		return super.queryByNamedParam(getThingsByVendorSql,map);
 		
-		return num==kiiThingIDs.size();
+		
 	}
 
 
@@ -436,17 +441,18 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 			"select th.* ," +
 			"  (select group_concat(loc.${0}) from ${1} loc where th.${2} = loc.${3} group by loc.${3} )  as loc " +
 			" from ${4} th where  ${2} in (:idList)  ";
+	
+	private static String getDetailByIDsFullSql=StrTemplate.gener(getDetailByIDs,
+			ThingLocationRelation.LOCATION,ThingLocationRelDao.TABLE_NAME,GlobalThingInfo.ID_GLOBAL_THING,
+			ThingLocationRelation.THING_ID,GlobalThingSpringDao.TABLE_NAME);
+	
 	public List<Map<String, Object>> getFullThingDetailByThingIDs(List<Long>  thingIDs ){
 
-
-		String fullSql=StrTemplate.gener(getDetailByIDs,
-				ThingLocationRelation.LOCATION,ThingLocationRelDao.TABLE_NAME,GlobalThingInfo.ID_GLOBAL_THING,
-				ThingLocationRelation.THING_ID,GlobalThingSpringDao.TABLE_NAME);
 
 
 		RowMapper<GlobalThingInfo>  thingRowMap=super.getRowMapper();
 
-		return super.namedJdbcTemplate.query(fullSql,  Collections.singletonMap("idList", thingIDs), new RowMapper<Map<String,Object>>() {
+		return super.namedJdbcTemplate.query(getDetailByIDsFullSql,  Collections.singletonMap("idList", thingIDs), new RowMapper<Map<String,Object>>() {
 			@Override
 			public Map<String,Object> mapRow(ResultSet rs, int rowNum) throws SQLException {
 

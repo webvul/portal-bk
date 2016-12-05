@@ -39,7 +39,7 @@ then
     System.out.println( "Cancel the alarm" );
 end
 
-rule "Status output when things are ok"
+rule "Status output when thingIDs are ok"
 when
     not Alarm()
     not Sprinkler( on == true )

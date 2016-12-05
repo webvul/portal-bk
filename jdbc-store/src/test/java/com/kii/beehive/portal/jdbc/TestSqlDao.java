@@ -237,6 +237,8 @@ public void testTemplate(){
 
 		thingDao.findAllThingTypes();
 		thingDao.findAllThingTypesWithThingCount();
+		
+		thingDao.getThingsByVendorThings(tags);
 
 
 	}

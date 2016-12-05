@@ -7,9 +7,9 @@ import com.kii.extension.ruleengine.drools.entity.*;
 rule "${triggerID} summary unit:slide windows ${summaryField}"
 when
 	Trigger($triggerID:triggerID,(triggerID=="${triggerID}" && enable=true &&  type ==TriggerType.summary)  )
-	$summary:Summary(triggerID==$triggerID ,$things:things, funName=="${funName}-${sum-suffix}" )
+	$summary:Summary(triggerID==$triggerID ,$thingIDs:thingIDs, funName=="${funName}-${sum-suffix}" )
     CurrThing(init == false)
-	accumulate( $thingStatusInRule : ThingStatusInRule(thingID memberOf $things) over window:${sum-suffix}( ${windowSize}) ;
+	accumulate( $thingStatusInRule : ThingStatusInRule(thingID memberOf $thingIDs) over window:${sum-suffix}( ${windowSize}) ;
                     $sum : ${funName}($thingStatusInRule.getNumValue($summary.getFieldName()))
                   )
 then

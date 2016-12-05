@@ -8,11 +8,11 @@ import com.kii.extension.ruleengine.store.trigger.groups.TriggerGroupPolicyType;
 rule "summary of  true  result:all"
 when
 	$trigger:Trigger($triggerID:triggerID,type==TriggerType.group)
-	Group($things:things, policy ==TriggerGroupPolicyType.All,triggerID==$triggerID )
-    CurrThing(thing memberOf $things ||  init==true )
+	Group($thingIDs:thingIDs, policy ==TriggerGroupPolicyType.All,triggerID==$triggerID )
+    CurrThing(thing memberOf $thingIDs ||  init==true )
 	accumulate(MemberMatchResult(triggerID==$triggerID);
                         $thingCount : count(1);
-                        $thingCount==$things.size()
+                        $thingCount==$thingIDs.size()
               )
 then
 	System.out.println("group all trigger all "+$trigger.getTriggerID()+" been fire");
@@ -23,9 +23,9 @@ end
 rule "summary of  true  result:any "
 when
 	$trigger:Trigger($triggerID:triggerID,type==TriggerType.group)
-	Group(triggerID==$triggerID,$things:things,policy ==TriggerGroupPolicyType.Any )
-    CurrThing(thing memberOf $things || init == true)
-	accumulate( MemberMatchResult(triggerID==$triggerID,thingID memberOf  $things );
+	Group(triggerID==$triggerID,$thingIDs:thingIDs,policy ==TriggerGroupPolicyType.Any )
+    CurrThing(thing memberOf $thingIDs || init == true)
+	accumulate( MemberMatchResult(triggerID==$triggerID,thingID memberOf  $thingIDs );
                       $thingCount : count(1);
 					  $thingCount>0
                   )
@@ -37,9 +37,9 @@ end
 rule "summary of  true  result:number"
 when
 	$trigger:Trigger($triggerID:triggerID,type==TriggerType.group)
-	Group(triggerID==$triggerID,$things:things,policy ==TriggerGroupPolicyType.Some,$number:number )
-    CurrThing(thing memberOf $things|| init == true)
-	accumulate( MemberMatchResult(triggerID==$triggerID,thingID memberOf $things);
+	Group(triggerID==$triggerID,$thingIDs:thingIDs,policy ==TriggerGroupPolicyType.Some,$number:number )
+    CurrThing(thing memberOf $thingIDs|| init == true)
+	accumulate( MemberMatchResult(triggerID==$triggerID,thingID memberOf $thingIDs);
                     $thingCount : count(1);
                     $thingCount>=$number
                     )
@@ -52,11 +52,11 @@ end
 rule "summary of  true  result:percent"
 when
 	$trigger:Trigger($triggerID:triggerID,type==TriggerType.group)
-	Group(triggerID==$triggerID,$things:things,policy ==TriggerGroupPolicyType.Percent,$number:number )
-    CurrThing(thing memberOf $things|| init == true)
-	accumulate( MemberMatchResult(triggerID==$triggerID,thingID memberOf $things );
+	Group(triggerID==$triggerID,$thingIDs:thingIDs,policy ==TriggerGroupPolicyType.Percent,$number:number )
+    CurrThing(thing memberOf $thingIDs|| init == true)
+	accumulate( MemberMatchResult(triggerID==$triggerID,thingID memberOf $thingIDs );
                     $thingCount : count(1);
-                    $thingCount>=$number*$things.size()/100
+                    $thingCount>=$number*$thingIDs.size()/100
                     )
 then
 	System.out.println("group trigger percent  "+$trigger.getTriggerID()+" been fire:"+$thingCount);

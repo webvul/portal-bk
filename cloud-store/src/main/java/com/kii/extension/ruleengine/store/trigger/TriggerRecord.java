@@ -33,6 +33,8 @@ public abstract class TriggerRecord extends KiiEntity {
 	private Map<String,Object> customProperty=new HashMap<>();
 
 	private Long userID;
+	
+	private String creator;
 
 	private TriggerValidPeriod period;
 
@@ -54,7 +56,25 @@ public abstract class TriggerRecord extends KiiEntity {
 	
 	public enum UsedByType{
 		
-		User,Sys_monitor;
+		User,Sys_monitor,User_monitor;
+	}
+	
+	public String getCreator() {
+		return creator;
+	}
+	
+	public void setCreator(String creator) {
+		this.creator = creator;
+	}
+	
+	public void fillCreator(Object val){
+		
+		UsedByType type=usedByWho;
+		if(type==null){
+			type=UsedByType.User;
+		}
+		setCreator(type.name()+":"+String.valueOf(val));
+		
 	}
 	
 	public UsedByType getUsedByWho() {

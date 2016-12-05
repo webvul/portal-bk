@@ -20,9 +20,9 @@ end
 rule "compute the summary of  fieldName value: funName"
 when
 	$trigger:Trigger(type ==TriggerType.summary,$triggerID:triggerID)
-	$summary:Summary(triggerID==$triggerID ,$things:things, funName=="sum" ,$name:name)
-	CurrThing(thing memberOf $things|| init == true)
-	accumulate( $thingStatusInRule : ThingStatusInRule(thingID memberOf $things);
+	$summary:Summary(triggerID==$triggerID ,$thingIDs:thingIDs, funName=="sum" ,$name:name)
+	CurrThing(thing memberOf $thingIDs|| init == true)
+	accumulate( $thingStatusInRule : ThingStatusInRule(thingID memberOf $thingIDs);
                     $sum : sum($thingStatusInRule.getNumValue($summary.getFieldName()))
                   )
 then
@@ -34,9 +34,9 @@ end
 rule "compute the count of  fieldName value: funName"
 when
 	$trigger:Trigger(type ==TriggerType.summary,$triggerID:triggerID)
-	$summary:Summary(triggerID==$triggerID ,$things:things, funName=="count" ,$name:name )
-	CurrThing(thing memberOf $things|| init == true)
-	accumulate( $thingStatusInRule : ThingStatusInRule(thingID memberOf $things);
+	$summary:Summary(triggerID==$triggerID ,$thingIDs:thingIDs, funName=="count" ,$name:name )
+	CurrThing(thing memberOf $thingIDs|| init == true)
+	accumulate( $thingStatusInRule : ThingStatusInRule(thingID memberOf $thingIDs);
                     $value : count(1)
                     )
 then
@@ -48,9 +48,9 @@ end
 rule "compute the max of  fieldName value: funName"
 when
 	$trigger:Trigger(type ==TriggerType.summary,$triggerID:triggerID)
-	$summary:Summary(triggerID==$triggerID ,$things:things, funName=="max",$name:name )
-	CurrThing(thing memberOf $things|| init == true)
-	accumulate( $thingStatusInRule : ThingStatusInRule(thingID memberOf $things);
+	$summary:Summary(triggerID==$triggerID ,$thingIDs:thingIDs, funName=="max",$name:name )
+	CurrThing(thing memberOf $thingIDs|| init == true)
+	accumulate( $thingStatusInRule : ThingStatusInRule(thingID memberOf $thingIDs);
                     $value : max($thingStatusInRule.getNumValue($summary.getFieldName()))
                     )
 then
@@ -62,9 +62,9 @@ end
 rule "compute the min of  fieldName value: funName"
 when
 	$trigger:Trigger(type ==TriggerType.summary,$triggerID:triggerID)
-	$summary:Summary(triggerID==$triggerID ,$things:things, funName=="min" ,$name:name )
-	CurrThing(thing memberOf $things|| init == true)
-	accumulate( $thingStatusInRule : ThingStatusInRule(thingID memberOf $things);
+	$summary:Summary(triggerID==$triggerID ,$thingIDs:thingIDs, funName=="min" ,$name:name )
+	CurrThing(thing memberOf $thingIDs|| init == true)
+	accumulate( $thingStatusInRule : ThingStatusInRule(thingID memberOf $thingIDs);
                     $value : min($thingStatusInRule.getNumValue($summary.getFieldName()))
                     )
 then
@@ -76,9 +76,9 @@ end
 rule "compute the average of  fieldName value: funName"
 when
 	$trigger:Trigger(type ==TriggerType.summary,$triggerID:triggerID)
-	$summary:Summary(triggerID==$triggerID ,$things:things, funName=="average"  ,$name:name)
-	CurrThing(thing memberOf $things|| init == true)
-	accumulate( $thingStatusInRule : ThingStatusInRule(thingID memberOf $things);
+	$summary:Summary(triggerID==$triggerID ,$thingIDs:thingIDs, funName=="average"  ,$name:name)
+	CurrThing(thing memberOf $thingIDs|| init == true)
+	accumulate( $thingStatusInRule : ThingStatusInRule(thingID memberOf $thingIDs);
                     $value : average($thingStatusInRule.getNumValue($summary.getFieldName()))
                     )
 then

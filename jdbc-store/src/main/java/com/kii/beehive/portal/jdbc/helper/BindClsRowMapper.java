@@ -36,6 +36,8 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 	private final Map<String,String> fieldMapper;
 
 	private final Map<String,JdbcFieldType> sqlTypeMapper;
+	
+	private final Map<String,String> propertyMap;
 
 	private final  ObjectMapper  objectMapper;
 	
@@ -52,13 +54,16 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 		Map<String,String> searchMap=new HashMap<>();
 
 		Map<String,JdbcFieldType> typeMap=new HashMap<>();
-
+		
+		Map<String,String> propMap=new HashMap<>();
 		for(PropertyDescriptor descriptor: beanWrapper.getPropertyDescriptors()){
 			Method method = descriptor.getReadMethod();
 			if(method.isAnnotationPresent(JdbcField.class)){
 				JdbcField fieldDesc=method.getDeclaredAnnotation(JdbcField.class);
 				searchMap.put(fieldDesc.column(),descriptor.getDisplayName());
 				typeMap.put(fieldDesc.column(),fieldDesc.type());
+				propMap.put(descriptor.getDisplayName(),fieldDesc.column());
+				
 			}else if(method.isAnnotationPresent(DisplayField.class)){
 				DisplayField fieldDesc=method.getDeclaredAnnotation(DisplayField.class);
 				searchMap.put(fieldDesc.column(),descriptor.getDisplayName());
@@ -70,6 +75,8 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 
 		sqlTypeMapper=Collections.unmodifiableMap(typeMap);
 
+		propertyMap=Collections.unmodifiableMap(propMap);
+		
 		this.objectMapper=objectMapper;
 	}
 
@@ -166,9 +173,11 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 		return param;
 	}
 	
-	private static Pattern pagerPat=Pattern.compile("^(\\d+\\/)?(\\d+)$");
 	
 	public static class Pager{
+		
+		private static Pattern pagerPat=Pattern.compile("^(\\d+\\/)?(\\d+)$");
+		
 		
 		private int start=0;
 		
@@ -224,12 +233,22 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 		
 		private List<Object> list=new ArrayList<>();
 		
+		public void addIsNull(String fieldName){
+			
+			String field = getFieldStr(fieldName);
+			fullSql.append(" and ").append(field).append(" is null ");
+			
+			
+		}
+		
 		public void addEq(String fieldName,Object val){
 			
-		
-			String field=getFieldStr(fieldName);
+			if(val==null) {
+				return;
+			}
+			String field = getFieldStr(fieldName);
 			fullSql.append(" and ").append(field).append(" = ? ");
-			list.add(getValue(val,fieldName));
+			list.add(getValue(val, fieldName));
 			
 		}
 		
@@ -284,12 +303,13 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 		
 		private String getFieldStr(String field){
 			
-			return fieldMapper.get(field);
+			return propertyMap.get(field);
 			
 		}
 		
-		private Object getValue(Object val,String fieldName){
-			Class propCls=beanWrapper.getPropertyType(fieldName);
+		private Object getValue(Object val,String field){
+			String fieldName=propertyMap.get(field);
+			Class propCls=beanWrapper.getPropertyType(field);
 			JdbcFieldType type=sqlTypeMapper.get(fieldName);
 			
 			if(type == JdbcFieldType.EnumInt){

@@ -1,8 +1,11 @@
 package com.kii.beehive.portal.store.entity;
 
-import java.util.HashSet;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.kii.extension.ruleengine.store.trigger.Condition;
 import com.kii.extension.sdk.entity.KiiEntity;
@@ -12,8 +15,10 @@ public class ThingStatusMonitor extends KiiEntity {
 
 	private String name;
 	
-	private Set<Long> things;
-
+//	private List<Long> thingIDs;
+	
+	private Map<String,Boolean> vendorThingIDs=new HashMap<>();
+	
 	private Condition condition;
 
 	private String express;
@@ -22,8 +27,6 @@ public class ThingStatusMonitor extends KiiEntity {
 
 	private Long creator;
 	
-	private Set<String> relationFields=new HashSet<>();
-	
 	private List<Long> noticeList;
 	
 	private MonitorStatus status;
@@ -31,14 +34,7 @@ public class ThingStatusMonitor extends KiiEntity {
 	public enum MonitorStatus{
 		enable,disable,deleted;
 	}
-	
-	public Set<String> getRelationFields() {
-		return relationFields;
-	}
-	
-	public void setRelationFields(Set<String> relationFields) {
-		this.relationFields = relationFields;
-	}
+
 	
 	public String getName() {
 		return name;
@@ -48,13 +44,13 @@ public class ThingStatusMonitor extends KiiEntity {
 		this.name = name;
 	}
 	
-	public Set<Long> getThings() {
-		return things;
-	}
-
-	public void setThings(Set<Long> things) {
-		this.things = things;
-	}
+//	public List<Long> getThingIDs() {
+//		return thingIDs;
+//	}
+//
+//	public void setThingIDs(List<Long> thingIDs) {
+//		this.thingIDs = thingIDs;
+//	}
 
 	public Condition getCondition() {
 		return condition;
@@ -88,6 +84,27 @@ public class ThingStatusMonitor extends KiiEntity {
 		this.creator = creator;
 	}
 	
+	public Map<String, Boolean> getVendorThingIDs() {
+		return vendorThingIDs;
+	}
+	
+	public void setVendorThingIDs(Map<String, Boolean> vendorThingIDs) {
+		this.vendorThingIDs = vendorThingIDs;
+	}
+	
+	public void setVendorThingIDList(Collection<String> idList){
+		
+		for(String id:idList){
+			vendorThingIDs.put(id,true);
+		}
+	}
+	
+	
+	@JsonIgnore
+	public Collection<String> getVendorThingIDList(){
+		
+		return vendorThingIDs.keySet();
+	}
 	
 	public MonitorStatus getStatus() {
 		return status;

@@ -25,7 +25,7 @@ public class RedisHelper {
 			shardedJedis = shardedJedisPool.getResource();
 			return shardedJedis.lpush(key, value);
 		} catch (Exception ex) {
-			ex.printStackTrace();
+//			ex.printStackTrace();
 		} finally {
 			shardedJedis.close();
 		}
@@ -42,7 +42,7 @@ public class RedisHelper {
 			shardedJedis = shardedJedisPool.getResource();
 			return shardedJedis.brpop(timeout, key).get(1);
 		} catch (Exception ex) {
-			ex.printStackTrace();
+//			ex.printStackTrace();
 		} finally {
 			shardedJedis.close();
 		}

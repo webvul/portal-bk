@@ -17,7 +17,7 @@ public class UserNotice extends DBEntity {
 	public  static final String DATA="data";
 	public  static final String MESSAGE="msg_in_text";
 	public  static final String TITLE="title";
-	public  static final String FROM="from";
+	public  static final String FROM="from_where";
 	public  static final String TYPE="notice_type";
 	public  static final String READED="readed";
 	public  static final String ACTION_TYPE="action_type";
@@ -41,6 +41,8 @@ public class UserNotice extends DBEntity {
 	
 	private Long userID;
 	private String actionType;
+	
+
 	
 	@JdbcField(column = CREATE_TIME)
 	public Date getCreateTime() {

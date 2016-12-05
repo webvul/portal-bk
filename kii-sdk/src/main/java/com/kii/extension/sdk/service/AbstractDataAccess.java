@@ -7,7 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.kii.extension.sdk.entity.BucketInfo;
@@ -176,6 +179,25 @@ public abstract class AbstractDataAccess<T> {
 		return result;
 
 	}
+	
+	public List<T> pagerQuery(QueryParam queryParam,KiiBucketPager pager){
+		
+		if(pager==null){
+			return fullQuery(queryParam);
+		}
+		
+		List<T>  result=new ArrayList<T>();
+		int sum=pager.getSum();
+		do {
+			
+			List<T> list=service.query(queryParam, typeCls, bucketInfo);
+			result.addAll(list);
+			
+		}while(queryParam.getPaginationKey()!=null&&result.size()<sum);
+		
+		return result.subList(pager.getStart(),sum);
+		
+	}
 
 	public List<T> getEntitys(String[] ids){
 
@@ -233,6 +255,64 @@ public abstract class AbstractDataAccess<T> {
 		return result;
 
 	}
-
-
+	
+	
+	public static class KiiBucketPager{
+		
+		private static Pattern pagerPat=Pattern.compile("^(\\d+\\/)?(\\d+)$");
+		
+		
+		private int start=0;
+		
+		private int size=0;
+		
+		
+		public static KiiBucketPager getInstance(String sign){
+			
+			if(StringUtils.isBlank(sign)){
+				return null;
+			}
+			
+			Matcher matcher=pagerPat.matcher(sign);
+			
+			if(matcher.find()){
+				
+				KiiBucketPager pager=new KiiBucketPager();
+				String a=matcher.group(1);
+				String b=matcher.group(2);
+				
+				pager.size=Integer.parseInt(b);
+				
+				if(StringUtils.isNotBlank(a)){
+					pager.start=Integer.parseInt(a);
+				}
+				
+				return pager;
+			}else{
+				return null;
+			}
+		}
+		
+		public int getStart() {
+			return start;
+		}
+		
+		public void setStart(int start) {
+			this.start = start;
+		}
+		
+		public int getSize() {
+			return size;
+		}
+		
+		public void setSize(int size) {
+			this.size = size;
+		}
+		
+		public int getSum() {
+			return start+size;
+		}
+	}
+	
+	
 }

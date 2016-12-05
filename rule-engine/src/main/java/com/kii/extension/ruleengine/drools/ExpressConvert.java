@@ -140,7 +140,7 @@ public class ExpressConvert {
 			String template= EXP_ARRAY[idx][idx2];
 			
 			
-			String valueName="value";
+			String valueName;
 			if(type==null){
 				type="s";
 			}else{
@@ -157,6 +157,7 @@ public class ExpressConvert {
 					valueName= "mapValue";
 					break;
 				default:
+					valueName="numValue";
 			}
 			
 			if(sign.equals("h")){

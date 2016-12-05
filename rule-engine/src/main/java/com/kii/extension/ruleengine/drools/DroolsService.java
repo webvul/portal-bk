@@ -148,21 +148,17 @@ public class DroolsService {
 
 				return;
 			}
-
+	
+			
 			this.currThing.setStatus(status);
 			this.currThing.setCurrThing(thingID);
 			
-			List<MultiplesValueMap>  mapResult=doQuery("get multiples Result by TriggerID",MultiplesValueMap.class);
-			mapResult.forEach((result)->{
-				result.copyToHistory();
-			});
-
 			kieSession.update(currThingHandler, currThing);
 			
 
 			kieSession.fireAllRules();
 			if(status== CurrThing.Status.inThing||status== CurrThing.Status.inExt) {
-				List<MatchResult> lists = doQuery("get Match Result by TriggerID",MatchResult.class);
+				List<MatchResult> lists = doQuery("get Match Result by TriggerID");
 				consumer.accept(lists);
 			}
 
@@ -176,6 +172,13 @@ public class DroolsService {
 		}
 	}
 
+	
+	public void moveHistory(String thingID){
+		List<MultiplesValueMap>  mapResult=doQuery("get multiples Result by TriggerID",thingID);
+		mapResult.forEach((result)->{
+			result.copyToHistory();
+		});
+	}
 
 	public Map<String,Object>  getEngineEntitys(String triggerID){
 
@@ -417,7 +420,7 @@ public class DroolsService {
 		}
 	}
 
-	private <T> List<T> doQuery(String queryName, Class<T> cls,Object... params){
+	private <T> List<T> doQuery(String queryName,Object... params){
 
 
 

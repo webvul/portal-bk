@@ -117,7 +117,7 @@ public class CommandExecuteService implements EventCallback {
 
 			String delay=params.getDelayParam(idx);
 
-			if(StringUtils.isBlank(delay)) {
+			if(StringUtils.isBlank(delay)||"null".equals(delay)) {
 				executeService.submit(run);
 			}else{
 				long delayInt=Long.parseLong(delay);

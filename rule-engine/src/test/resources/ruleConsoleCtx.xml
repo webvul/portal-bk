@@ -13,11 +13,12 @@
 
     <bean:annotation-config />
 
-    <bean class="com.fasterxml.jackson.databind.ObjectMapper" />
 
 
     <bean class="com.kii.extension.ruleengine.console.MockEventCallback" />
 
     <bean class="com.kii.extension.ruleengine.RuleEngineConfig" />
+
+    <bean class="com.kii.extension.factory.KiiCloudSDKConfig" />
 
 </beans>

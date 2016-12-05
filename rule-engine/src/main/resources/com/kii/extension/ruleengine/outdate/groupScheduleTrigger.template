@@ -11,8 +11,8 @@ rule "${triggerID}  group segment:schedule"
    ${timer}
 when
     $trigger:Trigger( $triggerID:triggerID,  triggerID =="${triggerID}" && enable == true  )
-    Group(triggerID=$triggerID,$things:things )
-    accumulate( ThingStatusInRule($thingID:thingID memberOf  $things,${express} );
+    Group(triggerID=$triggerID,$thingIDs:thingIDs )
+    accumulate( ThingStatusInRule($thingID:thingID memberOf  $thingIDs,${express} );
                               $thingCount : count($thingID);
         					  $thingCount${groupPolicy}
     )

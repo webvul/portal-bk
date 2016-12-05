@@ -182,7 +182,9 @@ public class DroolsTriggerService {
 
 
 	public void addThingStatus(ThingStatusInRule newStatus){
-
+		
+		cloudService.moveHistory(newStatus.getThingID());
+		
 		cloudService.addOrUpdateData(newStatus,false);
 		
 		ExternalValues newValues=new ExternalValues("runtime");

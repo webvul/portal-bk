@@ -57,7 +57,7 @@ Where    loc.location like “locationPrefix%” [and th.type = ?]
 		String fullSql= StrTemplate.gener(sqlTmpQueryThing,
 				GlobalThingInfo.ID_GLOBAL_THING,GlobalThingSpringDao.TABLE_NAME,ThingLocationRelDao.TABLE_NAME,
 				ThingLocationRelation.THING_ID,subLocQuery,subQuery,
-				GlobalThingInfo.VIEW_THING_OWNER,GlobalThingInfo.VIEW_THING_ID,GlobalThingInfo.VIEW_USER_ID);
+				GlobalThingInfo.VIEW_NAME,GlobalThingInfo.VIEW_THING_ID,GlobalThingInfo.VIEW_USER_ID);
 
 		paramMap.put("user_id",userID);
 
@@ -97,7 +97,7 @@ Where thing_id  in
 		String fullSql=StrTemplate.gener(sqlTmpRelThing,
 				GlobalThingSpringDao.TABLE_NAME,GlobalThingInfo.ID_GLOBAL_THING,ThingLocationRelation.THING_ID,
 				ThingLocationRelDao.TABLE_NAME, ThingLocationRelation.LOCATION,subQuery1,
-				subQuery2,GlobalThingInfo.VIEW_THING_OWNER,GlobalThingInfo.VIEW_THING_ID,
+				subQuery2,GlobalThingInfo.VIEW_NAME,GlobalThingInfo.VIEW_THING_ID,
 				GlobalThingInfo.VIEW_USER_ID);
 
 		return super.queryByNamedParam(fullSql,paramMap);
@@ -135,7 +135,7 @@ Group by   thing.type, substring(loc.location ,？,？ )
 		String fullSql=StrTemplate.gener(sqlTmpWithGroup,
 				GlobalThingInfo.ID_GLOBAL_THING,subGroup,GlobalThingSpringDao.TABLE_NAME,
 				ThingLocationRelDao.TABLE_NAME, GlobalThingInfo.ID_GLOBAL_THING,ThingLocationRelation.THING_ID,
-				subQuery,GlobalThingInfo.VIEW_THING_OWNER,GlobalThingInfo.VIEW_THING_ID,
+				subQuery,GlobalThingInfo.VIEW_NAME,GlobalThingInfo.VIEW_THING_ID,
 				GlobalThingInfo.VIEW_USER_ID);
 
 		paramMap.put("user_id",userID);
@@ -172,7 +172,7 @@ Group by   thing.type, substring(loc.location ,？,？ )
 		String fullSql=StrTemplate.gener(SqlTmpWithTwoGroup,
 				GlobalThingInfo.ID_GLOBAL_THING,GlobalThingInfo.THING_TYPE,ThingLocationRelation.LOCATION,
 				GlobalThingSpringDao.TABLE_NAME,ThingLocationRelDao.TABLE_NAME,GlobalThingInfo.ID_GLOBAL_THING,
-				ThingLocationRelation.THING_ID,subQuery,GlobalThingInfo.VIEW_THING_OWNER,
+				ThingLocationRelation.THING_ID,subQuery,GlobalThingInfo.VIEW_NAME,
 				GlobalThingInfo.VIEW_THING_ID,GlobalThingInfo.VIEW_USER_ID);
 
 		paramMap.put("user_id",userID);

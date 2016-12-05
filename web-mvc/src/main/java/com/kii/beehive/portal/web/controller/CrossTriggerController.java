@@ -1,6 +1,8 @@
 package com.kii.beehive.portal.web.controller;
 
 
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,14 +15,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kii.beehive.business.manager.TagThingManager;
 import com.kii.beehive.business.ruleengine.TriggerManager;
+import com.kii.beehive.business.ruleengine.TriggerValidate;
 import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
-import com.kii.beehive.business.ruleengine.TriggerValidate;
+import com.kii.extension.ruleengine.BeehiveTriggerService;
 import com.kii.extension.ruleengine.store.trigger.BeehiveTriggerType;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
+import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
 @RestController
 @RequestMapping(path = "/triggers", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {
@@ -32,6 +38,9 @@ public class CrossTriggerController {
 
 	@Autowired
 	private TriggerValidate triggerValidate;
+	
+	@Autowired
+	private TagThingManager  manager;
 
 
 	/**
@@ -46,10 +55,11 @@ public class CrossTriggerController {
 
 		triggerValidate.validateTrigger(record);
 
-		String triggerID = null;
 
 		record.setRecordStatus(TriggerRecord.StatusType.enable);
 
+		record.setUsedByWho(TriggerRecord.UsedByType.User);
+		
 		TriggerRecord trigger = mang.createTrigger(record);
 
 		Map<String, Object> result = new HashMap<>();
@@ -179,6 +189,21 @@ public class CrossTriggerController {
 	public Map<String, Object> getRuleEngineDumpByID(@PathVariable("triggerID") String triggerID) {
 
 		return mang.getRuleEngingDump(triggerID);
+	}
+	
+	
+	@Autowired
+	private BeehiveTriggerService engine;
+	
+	@RequestMapping(path="/debug/pushThStatus/{thingID}",method={RequestMethod.PUT})
+	public  void  setThingStatus(@PathVariable("thingID") Long thingID, @RequestBody ThingStatus status){
+		
+		
+		GlobalThingInfo info=manager.getThingsByIds(Collections.singletonList(thingID)).get(0);
+		
+		
+		engine.updateThingStatus(info.getFullKiiThingID(),status.getFields(),new Date());
+		
 	}
 
 //	@RequestMapping(path = "/debug/reinit", method = {RequestMethod.POST}, consumes = {MediaType.ALL_VALUE})
