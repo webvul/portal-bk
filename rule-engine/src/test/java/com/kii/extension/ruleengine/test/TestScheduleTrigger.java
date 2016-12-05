@@ -47,7 +47,7 @@ public class TestScheduleTrigger extends InitTest {
 //		addThing(id,String.valueOf(10));
 
 
-		ruleLoader.addOrUpdateData(trigger);
+		ruleLoader.addOrUpdateData(trigger,true);
 
 		updateThingState("10", paramOk);
 
@@ -72,7 +72,7 @@ public class TestScheduleTrigger extends InitTest {
 
 //		trigger.setTriggerID(id);
 
-		ruleLoader.addOrUpdateData(trigger);
+		ruleLoader.addOrUpdateData(trigger,true);
 
 		addThing(id,String.valueOf(11));
 
@@ -105,7 +105,7 @@ public class TestScheduleTrigger extends InitTest {
 		addThing(id,String.valueOf(11));
 
 
-		ruleLoader.addOrUpdateData(trigger);
+		ruleLoader.addOrUpdateData(trigger,true);
 
 		updateThingState("11", paramOk);
 

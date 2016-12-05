@@ -1,6 +1,6 @@
-package com.kii.extension.ruleengine.store.trigger;
+package com.kii.extension.ruleengine.store.trigger.schedule;
 
-public class CronPrefix implements  SchedulePrefix{
+public class CronPrefix implements SchedulePrefix {
 
 	private String cron;
 

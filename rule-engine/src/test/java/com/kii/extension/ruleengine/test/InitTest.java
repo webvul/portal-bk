@@ -75,7 +75,7 @@ public class InitTest {
 	protected void initGlobal() throws IOException {
 
 
-		ruleLoader.addOrUpdateData(curr);
+		ruleLoader.addOrUpdateData(curr,true);
 
 		ruleLoader.bindWithInstance("exec",exec);
 
@@ -108,10 +108,10 @@ public class InitTest {
 	private void addThingStatus(String thingID, ThingStatusInRule status) {
 
 
-		ruleLoader.addOrUpdateData(status);
+		ruleLoader.addOrUpdateData(status,true);
 
 
-		ruleLoader.addOrUpdateData(curr);
+		ruleLoader.addOrUpdateData(curr,true);
 
 	}
 
@@ -132,6 +132,6 @@ public class InitTest {
 		thing.setThingID(thingID);
 		thing.setTriggerID(id);
 
-		ruleLoader.addOrUpdateData(thing);
+		ruleLoader.addOrUpdateData(thing,true);
 	}
 }

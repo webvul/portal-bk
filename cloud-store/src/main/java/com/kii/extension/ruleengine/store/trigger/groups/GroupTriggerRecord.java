@@ -1,10 +1,14 @@
-package com.kii.extension.ruleengine.store.trigger;
+package com.kii.extension.ruleengine.store.trigger.groups;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class GroupTriggerRecord extends TriggerRecord{
+import com.kii.extension.ruleengine.store.trigger.BeehiveTriggerType;
+import com.kii.extension.ruleengine.store.trigger.TagSelector;
+import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 
-	private TagSelector  source;
+public class GroupTriggerRecord extends TriggerRecord {
+
+	private TagSelector source;
 
 	private TriggerGroupPolicy  policy;
 

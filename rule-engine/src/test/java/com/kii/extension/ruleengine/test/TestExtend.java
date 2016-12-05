@@ -26,7 +26,7 @@ public class TestExtend extends InitTest{
 
 		ruleLoader.addCondition("ruleResult",getDrlContent("ruleResult"));
 //		ruleLoader.fireCondition();
-		ruleLoader.addOrUpdateData(status);
+		ruleLoader.addOrUpdateData(status,true);
 
 		ExternalValues  ext=new ExternalValues("name");
 		ext.addValue("abc",3);

@@ -1,7 +1,10 @@
-package com.kii.extension.ruleengine.store.trigger;
+package com.kii.extension.ruleengine.store.trigger.schedule;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
+import com.kii.extension.ruleengine.store.trigger.schedule.SchedulePeriod;
+import com.kii.extension.ruleengine.store.trigger.schedule.SimplePeriod;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME,
 		include = JsonTypeInfo.As.EXISTING_PROPERTY,

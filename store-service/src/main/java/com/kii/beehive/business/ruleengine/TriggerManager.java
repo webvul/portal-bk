@@ -26,16 +26,18 @@ import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.service.OperateLogDao;
 import com.kii.beehive.portal.store.entity.OperateLog;
+import com.kii.extension.ruleengine.service.BusinessObjDao;
 import com.kii.extension.ruleengine.service.TriggerRecordDao;
 import com.kii.extension.ruleengine.store.trigger.BeehiveTriggerType;
-import com.kii.extension.ruleengine.store.trigger.CommandToThing;
-import com.kii.extension.ruleengine.store.trigger.CommandToThingInGW;
+import com.kii.extension.ruleengine.store.trigger.BusinessObject;
+import com.kii.extension.ruleengine.store.trigger.target.CommandToThing;
+import com.kii.extension.ruleengine.store.trigger.target.CommandToThingInGW;
 import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
 import com.kii.extension.ruleengine.store.trigger.GatewaySummarySource;
 import com.kii.extension.ruleengine.store.trigger.GatewayTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.SummarySource;
-import com.kii.extension.ruleengine.store.trigger.SummaryTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.groups.SummarySource;
+import com.kii.extension.ruleengine.store.trigger.groups.SummaryTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TagSelector;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.WhenType;
@@ -63,6 +65,10 @@ public class TriggerManager {
 	@Autowired
 	private GlobalThingSpringDao globalThingDao;
 
+
+	@Autowired
+	private BusinessObjDao  businessObjDao;
+
 	@Autowired
 	private ThingTagManager thingTagService;
 
@@ -83,7 +89,9 @@ public class TriggerManager {
 
 		List<TriggerRecord>  list=recordList.stream().filter((r)->r.getType()!= BeehiveTriggerType.Gateway).collect(Collectors.toList());
 
-		List<String> errList=creator.init(list);
+		List<BusinessObject>  objList=businessObjDao.getAll();
+
+		List<String> errList=creator.init(list,objList);
 
 		errList.forEach(err->triggerDao.deleteTriggerRecord(err,"create trigger fail in system init "));
 	}

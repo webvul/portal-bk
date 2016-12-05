@@ -63,13 +63,13 @@ public class LogAspect {
 		return method;
 	}
 
-	@AfterReturning(pointcut = "bindManager()",   returning = "result" )
+	@AfterReturning(pointcut = "bindManager()",   returning = "target" )
 	public void afterCallBusinessFun(JoinPoint joinPoint,Object result){
 
 		try {
 		logMethod(joinPoint,"execute finish ");
 
-		log.debug(" result:"+ safeToString(result));
+		log.debug(" target:"+ safeToString(result));
 
 		}catch(Throwable ex){
 			log.error("Exception in afterCallBusinessFun", ex);

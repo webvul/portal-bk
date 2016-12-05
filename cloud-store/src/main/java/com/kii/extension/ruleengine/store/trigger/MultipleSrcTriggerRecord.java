@@ -1,10 +1,7 @@
-package com.kii.extension.ruleengine.store.trigger.multiple;
+package com.kii.extension.ruleengine.store.trigger;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import com.kii.extension.ruleengine.store.trigger.BeehiveTriggerType;
-import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 
 public class MultipleSrcTriggerRecord extends TriggerRecord {
 

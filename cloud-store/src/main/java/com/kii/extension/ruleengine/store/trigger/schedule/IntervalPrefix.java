@@ -1,4 +1,7 @@
-package com.kii.extension.ruleengine.store.trigger;
+package com.kii.extension.ruleengine.store.trigger.schedule;
+
+import com.kii.extension.ruleengine.store.trigger.schedule.SchedulePrefix;
+import com.kii.extension.ruleengine.store.trigger.schedule.TimerUnitType;
 
 public class IntervalPrefix implements SchedulePrefix {
 

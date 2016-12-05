@@ -1,8 +1,6 @@
-package com.kii.extension.ruleengine.store.trigger.multiple;
+package com.kii.extension.ruleengine.store.trigger;
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
-
-import com.kii.extension.ruleengine.store.trigger.Express;
 
 public class ThingSource implements SourceElement {
 

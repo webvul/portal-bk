@@ -1,9 +1,11 @@
-package com.kii.extension.ruleengine.store.trigger;
+package com.kii.extension.ruleengine.store.trigger.groups;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import com.kii.extension.ruleengine.store.trigger.TagSelector;
 
 public class SummarySource  {
 

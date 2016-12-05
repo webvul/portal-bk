@@ -1,4 +1,4 @@
-package com.kii.extension.ruleengine.store.trigger;
+package com.kii.extension.ruleengine.store.trigger.schedule;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

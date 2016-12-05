@@ -67,7 +67,7 @@ public class ControllerLogAspect {
         return method;
     }
 
-    @AfterReturning(pointcut = "bindController()",   returning = "result" )
+    @AfterReturning(pointcut = "bindController()",   returning = "target" )
     public void afterCallBusinessFun(JoinPoint joinPoint,Object result){
 
         try {

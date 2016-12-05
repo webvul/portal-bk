@@ -18,13 +18,13 @@ import com.kii.beehive.portal.common.utils.StrTemplate;
 import com.kii.extension.ruleengine.drools.entity.TriggerType;
 import com.kii.extension.ruleengine.store.trigger.CommandParam;
 import com.kii.extension.ruleengine.store.trigger.Condition;
-import com.kii.extension.ruleengine.store.trigger.CronPrefix;
+import com.kii.extension.ruleengine.store.trigger.schedule.CronPrefix;
 import com.kii.extension.ruleengine.store.trigger.Express;
-import com.kii.extension.ruleengine.store.trigger.IntervalPrefix;
+import com.kii.extension.ruleengine.store.trigger.schedule.IntervalPrefix;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
-import com.kii.extension.ruleengine.store.trigger.SchedulePrefix;
-import com.kii.extension.ruleengine.store.trigger.SummaryExpress;
-import com.kii.extension.ruleengine.store.trigger.TimerUnitType;
+import com.kii.extension.ruleengine.store.trigger.schedule.SchedulePrefix;
+import com.kii.extension.ruleengine.store.trigger.groups.SummaryExpress;
+import com.kii.extension.ruleengine.store.trigger.schedule.TimerUnitType;
 import com.kii.extension.ruleengine.store.trigger.condition.AndLogic;
 import com.kii.extension.ruleengine.store.trigger.condition.Equal;
 import com.kii.extension.ruleengine.store.trigger.condition.ExpressCondition;
@@ -35,9 +35,9 @@ import com.kii.extension.ruleengine.store.trigger.condition.NotLogic;
 import com.kii.extension.ruleengine.store.trigger.condition.OrLogic;
 import com.kii.extension.ruleengine.store.trigger.condition.Range;
 import com.kii.extension.ruleengine.store.trigger.condition.SimpleCondition;
-import com.kii.extension.ruleengine.store.trigger.multiple.GroupSummarySource;
-import com.kii.extension.ruleengine.store.trigger.multiple.MultipleSrcTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.multiple.ThingSource;
+import com.kii.extension.ruleengine.store.trigger.GroupSummarySource;
+import com.kii.extension.ruleengine.store.trigger.MultipleSrcTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.ThingSource;
 
 @Component
 public class RuleGeneral {
@@ -212,16 +212,16 @@ end
 		return fullDrl;
 	}
 
-	private static String ParamBindTemplate="result.setParam(\"${0}\",${1}); \n";
+	private static String ParamBindTemplate="target.setParam(\"${0}\",${1}); \n";
 
 	private String getParamMappingList(List<CommandParam>  paramList,boolean isSimpleTrigger){
 
 
 		/*
-			MatchResult result=new MatchResult($thingID);
-	result.setParam("a",$status.getValue("foo"));
-	result.setParam("b",$status.getValue("bar"));
-	result.setDelay($status.getValue("delay"));
+			MatchResult target=new MatchResult($thingID);
+	target.setParam("a",$status.getValue("foo"));
+	target.setParam("b",$status.getValue("bar"));
+	target.setDelay($status.getValue("delay"));
 		 */
 		StringBuilder sb=new StringBuilder();
 

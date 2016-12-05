@@ -42,7 +42,7 @@ public class TestRuleLoader extends InitTest {
 
 //		trigger.setTriggerID(i);
 
-		ruleLoader.addOrUpdateData(trigger);
+		ruleLoader.addOrUpdateData(trigger,true);
 
 		addThing(i,String.valueOf(0));
 

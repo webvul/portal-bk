@@ -9,19 +9,19 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.kii.extension.ruleengine.store.trigger.CallHttpApi;
-import com.kii.extension.ruleengine.store.trigger.CommandToThing;
+import com.kii.extension.ruleengine.store.trigger.target.CallHttpApi;
+import com.kii.extension.ruleengine.store.trigger.target.CommandToThing;
 import com.kii.extension.ruleengine.store.trigger.Condition;
-import com.kii.extension.ruleengine.store.trigger.CronPrefix;
+import com.kii.extension.ruleengine.store.trigger.schedule.CronPrefix;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
-import com.kii.extension.ruleengine.store.trigger.SimplePeriod;
+import com.kii.extension.ruleengine.store.trigger.schedule.SimplePeriod;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.SummaryFunctionType;
+import com.kii.extension.ruleengine.store.trigger.groups.SummaryFunctionType;
 import com.kii.extension.ruleengine.store.trigger.TagSelector;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.condition.Equal;
-import com.kii.extension.ruleengine.store.trigger.multiple.GroupSummarySource;
-import com.kii.extension.ruleengine.store.trigger.multiple.MultipleSrcTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.GroupSummarySource;
+import com.kii.extension.ruleengine.store.trigger.MultipleSrcTriggerRecord;
 import com.kii.extension.sdk.entity.thingif.Action;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
 

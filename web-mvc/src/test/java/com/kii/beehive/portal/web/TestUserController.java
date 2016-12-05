@@ -3,7 +3,7 @@
 //import static junit.framework.TestCase.assertEquals;
 //import static junit.framework.TestCase.assertTrue;
 //import static junit.framework.TestCase.fail;
-//import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+//import static org.springframework.test.web.servlet.target.MockMvcResultMatchers.status;
 //
 //import java.util.HashMap;
 //import java.util.List;
@@ -133,7 +133,7 @@
 //		map.put("value", "力士");
 //
 //
-//		String result=this.mockMvc.perform(
+//		String target=this.mockMvc.perform(
 //				post("/echo")
 //				.content(mapper.writeValueAsString(map))
 //				.contentType(MediaType.APPLICATION_JSON_UTF8)
@@ -141,7 +141,7 @@
 //				.andExpect(status().isOk())
 //		.andReturn().getResponse().getContentAsString();
 //
-//		Map<String,Object> newMap=mapper.readValue(result,Map.class);
+//		Map<String,Object> newMap=mapper.readValue(target,Map.class);
 //
 //		assertEquals(map.get("name"),newMap.get("name"));
 //	}
@@ -164,7 +164,7 @@
 //
 //		String ctx = mapper.writeValueAsString(request);
 //
-//		String result=this.mockMvc.perform(
+//		String target=this.mockMvc.perform(
 //				post("/users/").content(ctx)
 //				.contentType(MediaType.APPLICATION_JSON)
 //				.characterEncoding("UTF-8")
@@ -173,7 +173,7 @@
 //				.andExpect(status().isOk())
 //				.andReturn().getResponse().getContentAsString();
 //
-//		Map<String,Object> map=mapper.readValue(result, Map.class);
+//		Map<String,Object> map=mapper.readValue(target, Map.class);
 //
 //		assertEquals(map.get("userID"), userIDForTest);
 //		assertEquals(map.get("userName"),"张三");
@@ -209,7 +209,7 @@
 //
 //		String ctx = mapper.writeValueAsString(request);
 //
-//		String result=this.mockMvc.perform(
+//		String target=this.mockMvc.perform(
 //				post("/users/").content(ctx)
 //						.contentType(MediaType.APPLICATION_JSON)
 //						.characterEncoding("UTF-8")
@@ -218,13 +218,13 @@
 //				.andExpect(status().isOk())
 //				.andReturn().getResponse().getContentAsString();
 //
-//		Map<String,Object> map=mapper.readValue(result, Map.class);
+//		Map<String,Object> map=mapper.readValue(target, Map.class);
 //
 //		assertEquals(map.get("userID"), userIDForTest);
 //		assertEquals(map.get("userName"),"张三");
 //
 //		// test 409
-//		result=this.mockMvc.perform(
+//		target=this.mockMvc.perform(
 //				post("/users/").content(ctx)
 //						.contentType(MediaType.APPLICATION_JSON)
 //						.characterEncoding("UTF-8")
@@ -234,12 +234,12 @@
 //				.andReturn().getResponse().getContentAsString();
 //
 //		System.out.println();
-//		System.out.println("Http Response: " + result);
+//		System.out.println("Http Response: " + target);
 //		System.out.println();
 //
 //		// test 400
 //		// no userName/userID/role
-//		result=this.mockMvc.perform(
+//		target=this.mockMvc.perform(
 //				post("/users/").content("{}")
 //						.contentType(MediaType.APPLICATION_JSON)
 //						.characterEncoding("UTF-8")
@@ -249,7 +249,7 @@
 //				.andReturn().getResponse().getContentAsString();
 //
 //		System.out.println();
-//		System.out.println("Http Response: " + result);
+//		System.out.println("Http Response: " + target);
 //		System.out.println();
 //
 //		// test 400
@@ -260,7 +260,7 @@
 //
 //		ctx = mapper.writeValueAsString(request);
 //
-//		result=this.mockMvc.perform(
+//		target=this.mockMvc.perform(
 //				post("/users/").content(ctx)
 //						.contentType(MediaType.APPLICATION_JSON)
 //						.characterEncoding("UTF-8")
@@ -270,7 +270,7 @@
 //				.andReturn().getResponse().getContentAsString();
 //
 //		System.out.println();
-//		System.out.println("Http Response: " + result);
+//		System.out.println("Http Response: " + target);
 //		System.out.println();
 //
 //		// test 400
@@ -281,7 +281,7 @@
 //
 //		ctx = mapper.writeValueAsString(request);
 //
-//		result=this.mockMvc.perform(
+//		target=this.mockMvc.perform(
 //				post("/users/").content(ctx)
 //						.contentType(MediaType.APPLICATION_JSON)
 //						.characterEncoding("UTF-8")
@@ -291,7 +291,7 @@
 //				.andReturn().getResponse().getContentAsString();
 //
 //		System.out.println();
-//		System.out.println("Http Response: " + result);
+//		System.out.println("Http Response: " + target);
 //		System.out.println();
 //
 //		// test 400
@@ -302,7 +302,7 @@
 //
 //		ctx = mapper.writeValueAsString(request);
 //
-//		result=this.mockMvc.perform(
+//		target=this.mockMvc.perform(
 //				post("/users/").content(ctx)
 //						.contentType(MediaType.APPLICATION_JSON)
 //						.characterEncoding("UTF-8")
@@ -312,7 +312,7 @@
 //				.andReturn().getResponse().getContentAsString();
 //
 //		System.out.println();
-//		System.out.println("Http Response: " + result);
+//		System.out.println("Http Response: " + target);
 //		System.out.println();
 //
 //	}
@@ -338,7 +338,7 @@
 //
 //		String ctx= mapper.writeValueAsString(request);
 //
-//		String result=this.mockMvc.perform(
+//		String target=this.mockMvc.perform(
 //				patch("/users/" + userIDForTest).content(ctx)
 //						.contentType(MediaType.APPLICATION_JSON)
 //						.characterEncoding("UTF-8")
@@ -347,7 +347,7 @@
 //				.andExpect(status().isOk())
 //				.andReturn().getResponse().getContentAsString();
 //
-//		Map<String,Object> map=mapper.readValue(result, Map.class);
+//		Map<String,Object> map=mapper.readValue(target, Map.class);
 //
 //		// assert http return
 //		String resultUserID = (String)map.get("userID");
@@ -368,7 +368,7 @@
 //
 //		String ctx= mapper.writeValueAsString(request);
 //
-//		String result=this.mockMvc.perform(
+//		String target=this.mockMvc.perform(
 //				patch("/users/" + userIDForTest).content(ctx)
 //						.contentType(MediaType.APPLICATION_JSON)
 //						.characterEncoding("UTF-8")
@@ -377,7 +377,7 @@
 //				.andExpect(status().isOk())
 //				.andReturn().getResponse().getContentAsString();
 //
-//		Map<String,Object> map=mapper.readValue(result, Map.class);
+//		Map<String,Object> map=mapper.readValue(target, Map.class);
 //
 //		// assert http return
 //		String resultUserID = (String)map.get("userID");
@@ -385,7 +385,7 @@
 //		assertEquals(userIDForTest, resultUserID);
 //
 //		// query
-//		result=this.mockMvc.perform(
+//		target=this.mockMvc.perform(
 //				get("/users/" + userIDForTest).content(ctx)
 //						.contentType(MediaType.APPLICATION_JSON)
 //						.characterEncoding("UTF-8")
@@ -394,10 +394,10 @@
 //				.andExpect(status().isOk())
 //				.andReturn().getResponse().getContentAsString();
 //
-//		map=mapper.readValue(result, Map.class);
+//		map=mapper.readValue(target, Map.class);
 //		resultUserID = (String)map.get("userID");
 //
-//		System.out.println("Response: " + result);
+//		System.out.println("Response: " + target);
 //
 //		assertEquals(userIDForTest, resultUserID);
 //
@@ -421,7 +421,7 @@
 //
 //		String ctx= mapper.writeValueAsString(request);
 //
-//		String result=this.mockMvc.perform(
+//		String target=this.mockMvc.perform(
 //				patch("/users/" + "some_non_existing_userid").content(ctx)
 //						.contentType(MediaType.APPLICATION_JSON)
 //						.characterEncoding("UTF-8")
@@ -431,7 +431,7 @@
 //				.andReturn().getResponse().getContentAsString();
 //
 //		System.out.println();
-//		System.out.println("Http Response: " + result);
+//		System.out.println("Http Response: " + target);
 //		System.out.println();
 //
 //	}
@@ -448,7 +448,7 @@
 //
 //		String ctx= mapper.writeValueAsString(request);
 //
-//		String result=this.mockMvc.perform(
+//		String target=this.mockMvc.perform(
 //				patch("/users/" + userIDForTest + "/custom").content(ctx)
 //						.contentType(MediaType.APPLICATION_JSON)
 //						.characterEncoding("UTF-8")
@@ -458,10 +458,10 @@
 //				.andReturn().getResponse().getContentAsString();
 //
 //		System.out.println();
-//		System.out.println("Http Response: " + result);
+//		System.out.println("Http Response: " + target);
 //		System.out.println();
 //
-//		Map<String,Object> map=mapper.readValue(result, Map.class);
+//		Map<String,Object> map=mapper.readValue(target, Map.class);
 //
 //		// assert http return
 //		String resultUserID = (String)map.get("userID");
@@ -474,7 +474,7 @@
 //
 //		ctx = mapper.writeValueAsString(request);
 //
-//		result=this.mockMvc.perform(
+//		target=this.mockMvc.perform(
 //				post("/users/simplequery").content(ctx)
 //						.contentType("application/json")
 //						.header(AUTH_HEADER, tokenForTest)
@@ -483,10 +483,10 @@
 //				.andReturn().getResponse().getContentAsString();
 //
 //		System.out.println();
-//		System.out.println("Http Response: " + result);
+//		System.out.println("Http Response: " + target);
 //		System.out.println();
 //
-//		List<Map<String, Object>> mapList=mapper.readValue(result, List.class);
+//		List<Map<String, Object>> mapList=mapper.readValue(target, List.class);
 //		assertEquals(1, mapList.size());
 //
 //		map = mapList.get(0);
@@ -515,7 +515,7 @@
 //
 //		String ctx= mapper.writeValueAsString(request);
 //
-//		String result=this.mockMvc.perform(
+//		String target=this.mockMvc.perform(
 //				patch("/users/" + "some_non_existing_userid" + "/custom").content(ctx)
 //						.contentType(MediaType.APPLICATION_JSON)
 //						.characterEncoding("UTF-8")
@@ -525,7 +525,7 @@
 //				.andReturn().getResponse().getContentAsString();
 //
 //		System.out.println();
-//		System.out.println("Http Response: " + result);
+//		System.out.println("Http Response: " + target);
 //		System.out.println();
 //
 //	}
@@ -541,7 +541,7 @@
 //
 //		String ctx = mapper.writeValueAsString(request);
 //
-//		String result=this.mockMvc.perform(
+//		String target=this.mockMvc.perform(
 //				post("/users/simplequery").content(ctx)
 //						.contentType("application/json")
 //						.header(AUTH_HEADER, tokenForTest)
@@ -550,14 +550,14 @@
 //				.andReturn().getResponse().getContentAsString();
 //
 //		System.out.println();
-//		System.out.println("Http Response: " + result);
+//		System.out.println("Http Response: " + target);
 //		System.out.println();
 //
-//		List<Map<String, Object>> mapList=mapper.readValue(result, List.class);
+//		List<Map<String, Object>> mapList=mapper.readValue(target, List.class);
 //		assertEquals(1, mapList.size());
 //
 //		// delete
-//		result=this.mockMvc.perform(
+//		target=this.mockMvc.perform(
 //				delete("/users/" + userIDForTest)
 //						.header(AUTH_HEADER, tokenForTest)
 //		)
@@ -565,7 +565,7 @@
 //				.andReturn().getResponse().getContentAsString();
 //
 //		System.out.println();
-//		System.out.println("Http Response: " + result);
+//		System.out.println("Http Response: " + target);
 //		System.out.println();
 //
 //		// query
@@ -574,7 +574,7 @@
 //
 //		ctx = mapper.writeValueAsString(request);
 //
-//		result=this.mockMvc.perform(
+//		target=this.mockMvc.perform(
 //				post("/users/simplequery").content(ctx)
 //						.contentType("application/json")
 //						.header(AUTH_HEADER, tokenForTest)
@@ -582,7 +582,7 @@
 //				.andExpect(status().isOk())
 //				.andReturn().getResponse().getContentAsString();
 //
-//		mapList=mapper.readValue(result, List.class);
+//		mapList=mapper.readValue(target, List.class);
 //		assertEquals(0, mapList.size());
 //
 //	}
@@ -598,7 +598,7 @@
 //
 //		String ctx = mapper.writeValueAsString(request);
 //
-//		String result=this.mockMvc.perform(
+//		String target=this.mockMvc.perform(
 //				post("/users/simplequery").content(ctx)
 //						.contentType("application/json")
 //						.header(AUTH_HEADER, tokenForTest)
@@ -607,14 +607,14 @@
 //				.andReturn().getResponse().getContentAsString();
 //
 //		System.out.println();
-//		System.out.println("Http Response: " + result);
+//		System.out.println("Http Response: " + target);
 //		System.out.println();
 //
-//		List<Map<String, Object>> mapList=mapper.readValue(result, List.class);
+//		List<Map<String, Object>> mapList=mapper.readValue(target, List.class);
 //		assertEquals(1, mapList.size());
 //
 //		// delete
-//		result=this.mockMvc.perform(
+//		target=this.mockMvc.perform(
 //				delete("/users/" + "some_non_existing_userid")
 //						.header(AUTH_HEADER, tokenForTest)
 //		)
@@ -622,7 +622,7 @@
 //				.andReturn().getResponse().getContentAsString();
 //
 //		System.out.println();
-//		System.out.println("Http Response: " + result);
+//		System.out.println("Http Response: " + target);
 //		System.out.println();
 //
 //		// query
@@ -631,7 +631,7 @@
 //
 //		ctx = mapper.writeValueAsString(request);
 //
-//		result=this.mockMvc.perform(
+//		target=this.mockMvc.perform(
 //				post("/users/simplequery").content(ctx)
 //						.contentType("application/json")
 //						.header(AUTH_HEADER, tokenForTest)
@@ -639,7 +639,7 @@
 //				.andExpect(status().isOk())
 //				.andReturn().getResponse().getContentAsString();
 //
-//		mapList=mapper.readValue(result, List.class);
+//		mapList=mapper.readValue(target, List.class);
 //		assertEquals(1, mapList.size());
 //
 //	}
@@ -656,7 +656,7 @@
 //
 //		String ctx = mapper.writeValueAsString(request);
 //
-//		String result=this.mockMvc.perform(
+//		String target=this.mockMvc.perform(
 //				post("/users/simplequery").content(ctx)
 //						.contentType("application/json")
 //						.header(AUTH_HEADER, tokenForTest)
@@ -664,7 +664,7 @@
 //				.andExpect(status().isOk())
 //				.andReturn().getResponse().getContentAsString();
 //
-//		List<Map<String,Object>> response = mapper.readValue(result, List.class);
+//		List<Map<String,Object>> response = mapper.readValue(target, List.class);
 //		assertEquals(1, response.size());
 //
 //		this.assertUserInfoForTestUserQuery(response.get(0));
@@ -676,7 +676,7 @@
 //
 //		ctx = mapper.writeValueAsString(request);
 //
-//		result=this.mockMvc.perform(
+//		target=this.mockMvc.perform(
 //				post("/users/simplequery").content(ctx)
 //						.contentType("application/json")
 //						.header(AUTH_HEADER, tokenForTest)
@@ -684,7 +684,7 @@
 //				.andExpect(status().isOk())
 //				.andReturn().getResponse().getContentAsString();
 //
-//		response = mapper.readValue(result, List.class);
+//		response = mapper.readValue(target, List.class);
 //		assertEquals(1, response.size());
 //
 //		this.assertUserInfoForTestUserQuery(response.get(0));
@@ -696,7 +696,7 @@
 //
 //		ctx = mapper.writeValueAsString(request);
 //
-//		result=this.mockMvc.perform(
+//		target=this.mockMvc.perform(
 //				post("/users/simplequery").content(ctx)
 //						.contentType("application/json")
 //						.header(AUTH_HEADER, tokenForTest)
@@ -704,18 +704,18 @@
 //				.andExpect(status().isOk())
 //				.andReturn().getResponse().getContentAsString();
 //
-//		response = mapper.readValue(result, List.class);
+//		response = mapper.readValue(target, List.class);
 //		assertEquals(1, response.size());
 //
 //		this.assertUserInfoForTestUserQuery(response.get(0));
 //
-//		// query and get no result
+//		// query and get no target
 //		request = new HashMap<>();
 //		request.put("role", "non-exist-role");
 //
 //		ctx = mapper.writeValueAsString(request);
 //
-//		result=this.mockMvc.perform(
+//		target=this.mockMvc.perform(
 //				post("/users/simplequery").content(ctx)
 //						.contentType("application/json")
 //						.header(AUTH_HEADER, tokenForTest)
@@ -723,16 +723,16 @@
 //				.andExpect(status().isOk())
 //				.andReturn().getResponse().getContentAsString();
 //
-//		response = mapper.readValue(result, List.class);
+//		response = mapper.readValue(target, List.class);
 //		assertTrue(response.size() == 0);
 //
-//		// query and get multiple result
+//		// query and get multiple target
 //		request = new HashMap<>();
 //		request.put("role", "2");
 //
 //		ctx = mapper.writeValueAsString(request);
 //
-//		result=this.mockMvc.perform(
+//		target=this.mockMvc.perform(
 //				post("/users/simplequery").content(ctx)
 //						.contentType("application/json")
 //						.header(AUTH_HEADER, tokenForTest)
@@ -740,7 +740,7 @@
 //				.andExpect(status().isOk())
 //				.andReturn().getResponse().getContentAsString();
 //
-//		response = mapper.readValue(result, List.class);
+//		response = mapper.readValue(target, List.class);
 //		assertTrue(response.size() > 1);
 //
 //
@@ -774,7 +774,7 @@
 //	public void testUserQueryAll() throws Exception{
 //
 //
-//		String result=this.mockMvc.perform(
+//		String target=this.mockMvc.perform(
 //				post("/users/simplequery").content("{}")
 //						.contentType("application/json")
 //						.header(AUTH_HEADER, tokenForTest)
@@ -782,7 +782,7 @@
 //				.andExpect(status().isOk())
 //				.andReturn().getResponse().getContentAsString();
 //
-//		List<Map<String,Object>> map=mapper.readValue(result, List.class);
+//		List<Map<String,Object>> map=mapper.readValue(target, List.class);
 //
 //
 //	}

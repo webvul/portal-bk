@@ -4,9 +4,9 @@ package com.kii.beehive.business.ruleengine;
 import org.springframework.stereotype.Component;
 
 import com.kii.extension.ruleengine.ExecuteParam;
-import com.kii.extension.ruleengine.store.trigger.result.CommandResponse;
-import com.kii.extension.ruleengine.store.trigger.result.HttpCallResponse;
-import com.kii.extension.ruleengine.store.trigger.result.TriggerResult;
+import com.kii.extension.ruleengine.store.trigger.target.CommandResponse;
+import com.kii.extension.ruleengine.store.trigger.target.HttpCallResponse;
+import com.kii.extension.ruleengine.store.trigger.target.TriggerResult;
 
 @Component
 public class ResponseBuilder {

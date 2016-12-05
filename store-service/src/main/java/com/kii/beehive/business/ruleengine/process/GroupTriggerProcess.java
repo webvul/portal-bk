@@ -11,7 +11,7 @@ import com.kii.beehive.business.manager.ThingTagManager;
 import com.kii.beehive.portal.event.EventListener;
 import com.kii.extension.ruleengine.BeehiveTriggerService;
 import com.kii.extension.ruleengine.service.TriggerRecordDao;
-import com.kii.extension.ruleengine.store.trigger.GroupTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.groups.GroupTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 
 @Component(BusinessEventListenerService.REFRESH_THING_GROUP)

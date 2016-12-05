@@ -1,6 +1,8 @@
-package com.kii.extension.ruleengine.store.trigger;
+package com.kii.extension.ruleengine.store.trigger.groups;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import com.kii.extension.ruleengine.store.trigger.schedule.TimerUnitType;
 
 public class SlideFuntion {
 

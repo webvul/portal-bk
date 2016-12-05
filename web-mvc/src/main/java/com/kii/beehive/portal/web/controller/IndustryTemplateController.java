@@ -53,7 +53,7 @@ public class IndustryTemplateController {
     public Map<String, Object> insert(@PathVariable IndustryTemplate.SchemaType schemaType,
                                       @RequestBody IndustryTemplateRestBean industryTemplateRestBean) throws JsonProcessingException {
         Map<String, Object> result = new HashMap<>();
-        result.put("result", "success");
+        result.put("target", "success");
         industryTemplateRestBean.getIndustryTemplate().setSchemaType( schemaType );
         industryTemplateRestBean.verifyInput();
         // check DUPLICATE_OBJECT
@@ -80,7 +80,7 @@ public class IndustryTemplateController {
                                       @PathVariable Long id,
                                       @RequestBody IndustryTemplateRestBean industryTemplateRestBean) throws JsonProcessingException {
         Map<String, Object> result = new HashMap<>();
-        result.put("result", "success");
+        result.put("target", "success");
         IndustryTemplate oldIndustryTemplate = industryTemplateManager.findByID(id);
         if( oldIndustryTemplate == null) {
             throw new PortalException(ErrorCode.NOT_FOUND,"type","schema","objectID",String.valueOf(id));

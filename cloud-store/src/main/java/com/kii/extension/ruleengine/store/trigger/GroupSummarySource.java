@@ -1,11 +1,8 @@
-package com.kii.extension.ruleengine.store.trigger.multiple;
+package com.kii.extension.ruleengine.store.trigger;
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
-import com.kii.extension.ruleengine.store.trigger.Condition;
-import com.kii.extension.ruleengine.store.trigger.Express;
-import com.kii.extension.ruleengine.store.trigger.SummaryFunctionType;
-import com.kii.extension.ruleengine.store.trigger.TagSelector;
+import com.kii.extension.ruleengine.store.trigger.groups.SummaryFunctionType;
 
 public class GroupSummarySource implements SourceElement{
 

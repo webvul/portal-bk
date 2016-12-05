@@ -34,6 +34,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.kii.extension.ruleengine.drools.entity.CanUpdate;
 import com.kii.extension.ruleengine.drools.entity.CurrThing;
 import com.kii.extension.ruleengine.drools.entity.ExternalCollect;
 import com.kii.extension.ruleengine.drools.entity.ExternalValues;
@@ -128,7 +129,7 @@ public class DroolsRuleService {
 			FactHandle  handler=kieSession.insert(fire);
 			kieSession.fireAllRules();
 			kieSession.delete(handler);
-
+			kieSession.fireAllRules();
 		}
 	}
 
@@ -339,12 +340,6 @@ public class DroolsRuleService {
 	}
 
 
-
-
-//	public void setGlobal(String name,Object key){
-//		kieSession.setGlobal(name,key);
-//	}
-
 	public void addOrUpdateExternal(ExternalValues entity){
 
 
@@ -354,18 +349,23 @@ public class DroolsRuleService {
 
 		inExt();
 
-
 	}
 
 
-	public void addOrUpdateData(Object entity){
+	public void addOrUpdateData(Object entity,boolean replace){
 
 
 		handleMap.compute(getEntityKey(entity),(k,v)->{
 			    if(v==null) {
 					return kieSession.insert(entity);
 				}else{
-					kieSession.update(v,entity);
+					if(!replace&&entity instanceof CanUpdate){
+						CanUpdate  oldEntity=(CanUpdate)kieSession.getObject(v);
+						oldEntity.update(entity);
+						kieSession.update(v,oldEntity);
+					}else {
+						kieSession.update(v, entity);
+					}
 					return v;
 				}
 			}

@@ -828,12 +828,12 @@ public class TestThingIFController extends WebTestTemplate {
 	}
 
 	/**
-	 * this test case is based on the result of test case "testSendCommandToThingListAndTagList",
+	 * this test case is based on the target of test case "testSendCommandToThingListAndTagList",
 	 * will query the command details sent from test case "testSendCommandToThingListAndTagList"
 	 *
 	 * 1. the number of command details is expected to be the same with the commands sent in test case
 	 * "testSendCommandToThingListAndTagList"
-	 * 2. actions and command result of each command are expected to be returned
+	 * 2. actions and command target of each command are expected to be returned
 	 *
 	 */
 	@Test
@@ -869,7 +869,7 @@ public class TestThingIFController extends WebTestTemplate {
 		// "testSendCommandToThingListAndTagList"
 		assertTrue(list.size() == request.size());
 
-		// 2. actions and command result of each command are expected to be returned
+		// 2. actions and command target of each command are expected to be returned
 		for(Map<String, Object> commandDetail : list) {
 
 			int globalThingID = (int)commandDetail.get("globalThingID");

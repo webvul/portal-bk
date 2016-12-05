@@ -49,7 +49,7 @@ public class TestSimpleTrigger extends InitTest {
 
 //		trigger.setTriggerID(id);
 
-		ruleLoader.addOrUpdateData(trigger);
+		ruleLoader.addOrUpdateData(trigger,true);
 
 		addThing(id,String.valueOf(0));
 
@@ -101,7 +101,7 @@ public class TestSimpleTrigger extends InitTest {
 
 //		trigger.setTriggerID(triggerID);
 
-		ruleLoader.addOrUpdateData(trigger);
+		ruleLoader.addOrUpdateData(trigger,true);
 
 		String thingID = "1";
 
@@ -148,7 +148,7 @@ public class TestSimpleTrigger extends InitTest {
 
 //		trigger.setTriggerID(triggerID);
 
-		ruleLoader.addOrUpdateData(trigger);
+		ruleLoader.addOrUpdateData(trigger,true);
 
 		updateThingState("2");
 
@@ -197,7 +197,7 @@ public class TestSimpleTrigger extends InitTest {
 
 //		trigger.setTriggerID(triggerID);
 
-		ruleLoader.addOrUpdateData(trigger);
+		ruleLoader.addOrUpdateData(trigger,true);
 
 		updateThingState("2");
 

@@ -1,6 +1,8 @@
 package com.kii.extension.ruleengine.store.trigger;
 
-public class GatewaySummarySource extends SummarySource{
+import com.kii.extension.ruleengine.store.trigger.groups.SummarySource;
+
+public class GatewaySummarySource extends SummarySource {
 
 	private VendorThingList sourceVendorThing = new VendorThingList();
 

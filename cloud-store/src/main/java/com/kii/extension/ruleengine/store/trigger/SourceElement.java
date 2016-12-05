@@ -1,4 +1,4 @@
-package com.kii.extension.ruleengine.store.trigger.multiple;
+package com.kii.extension.ruleengine.store.trigger;
 
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;

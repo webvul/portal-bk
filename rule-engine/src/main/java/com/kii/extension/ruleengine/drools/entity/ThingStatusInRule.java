@@ -4,21 +4,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-//@Role(Role.Type.EVENT)
-//@Timestamp("createAt")
-public class ThingStatusInRule implements RuntimeEntry{
-//	@Override
-//	public boolean equals(Object o) {
-//		if (this == o) return true;
-//		if (o == null || getClass() != o.getClass()) return false;
-//		ThingStatusInRule that = (ThingStatusInRule) o;
-//		return Objects.equal(thingID, that.thingID);
-//	}
-//
-//	@Override
-//	public int hashCode() {
-//		return Objects.hashCode(thingID);
-//	}
+public class ThingStatusInRule implements RuntimeEntry,CanUpdate<ThingStatusInRule>{
 
 	private final String thingID;
 
@@ -81,5 +67,15 @@ public class ThingStatusInRule implements RuntimeEntry{
 	@Override
 	public String getID() {
 		return thingID;
+	}
+
+	@Override
+	public void update(ThingStatusInRule update) {
+
+		Map<String,Object>  vals=update.getValues();
+		if(vals!=null){
+			this.values.putAll(vals);
+		}
+
 	}
 }

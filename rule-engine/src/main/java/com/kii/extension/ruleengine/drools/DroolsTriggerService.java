@@ -27,7 +27,7 @@ public class DroolsTriggerService {
 	private DroolsRuleService cloudService;
 
 
-	private final Map<String, Trigger> triggerMap=new ConcurrentHashMap<>();
+	private final Map<String, Boolean> triggerMap=new ConcurrentHashMap<>();
 
 
 
@@ -41,9 +41,9 @@ public class DroolsTriggerService {
 
 	}
 
-	private DroolsRuleService getService(Trigger trigger){
+	private DroolsRuleService getService(String triggerID){
 
-		if(trigger.isStream()){
+		if(triggerMap.get(triggerID)){
 			return null;
 		}else{
 			return cloudService;
@@ -55,101 +55,100 @@ public class DroolsTriggerService {
 
 
 		Trigger trigger=new Trigger(triggerInput);
-		triggerMap.put(trigger.getTriggerID(),trigger);
+		triggerMap.put(trigger.getTriggerID(),trigger.isStream());
 
-		getService(trigger).addCondition("rule"+trigger.getTriggerID(),ruleContent);
+		getService(trigger.getTriggerID()).addCondition("rule"+trigger.getTriggerID(),ruleContent);
 
-		getService(trigger).addOrUpdateData(trigger);
+		getService(trigger.getTriggerID()).addOrUpdateData(trigger,true);
 
 	}
 
 	public void addMultipleTrigger(Trigger triggerInput,String ruleContent){
 		Trigger trigger=new Trigger(triggerInput);
-		triggerMap.put(trigger.getTriggerID(),trigger);
+		triggerMap.put(trigger.getTriggerID(),trigger.isStream());
 
-		getService(trigger).addCondition("rule"+trigger.getTriggerID(),ruleContent);
+		getService(trigger.getTriggerID()).addCondition("rule"+trigger.getTriggerID(),ruleContent);
 
-		getService(trigger).addOrUpdateData(trigger);
+		getService(trigger.getTriggerID()).addOrUpdateData(trigger,true);
 
 		MultiplesValueMap map=new MultiplesValueMap();
 		map.setTriggerID(trigger.getTriggerID());
-		getService(trigger).addOrUpdateData(map);
+		getService(trigger.getTriggerID()).addOrUpdateData(map,true);
 
 		ThingResult  result=new ThingResult(trigger.getTriggerID());
-		getService(trigger).addOrUpdateData(result);
+		getService(trigger.getTriggerID()).addOrUpdateData(result,true);
 
 	}
 
 	public void addTriggerData(TriggerData data) {
 
-		Trigger trigger=triggerMap.get(data.getTriggerID());
 
-		getService(trigger).addOrUpdateData(data);
-
-	}
-
-
-	public void addSlideSummary(Summary summary,String drl) {
-
-		Trigger trigger=triggerMap.get(summary.getTriggerID());
-
-		getService(trigger).addOrUpdateData(summary);
-
-		getService(trigger).addCondition("slide-rule"+summary.getTriggerID()+summary.getName(),drl);
-
+		getService(data.getTriggerID()).addOrUpdateData(data,false);
 
 	}
+
+
+//	public void addSlideSummary(Summary summary,String drl) {
+//
+////		Trigger trigger=triggerMap.get(summary.getTriggerID());
+//
+//
+//		getService(summary.getTriggerID()).addOrUpdateData(summary,true);
+//
+////		getService(summary.getTriggerID()).addCondition("slide-rule"+summary.getTriggerID()+summary.getName(),drl);
+//
+//
+//	}
 
 	public void updateThingsWithName(String triggerID,String name,Set<String> newThings){
 
-		Trigger trigger=triggerMap.get(triggerID);
 
 		Summary data= new Summary();
 		data.setTriggerID(triggerID);
 		data.setName(name);
 		data.setThingCol(newThings);
 
-		getService(trigger).addOrUpdateData(data);
+		getService(triggerID).addOrUpdateData(data,false);
 
 	}
 
 	public void removeTrigger(String triggerID){
 
 
-		Trigger trigger=triggerMap.get(triggerID);
+		Trigger trigger=new Trigger(triggerID);
 
-		getService(trigger).removeData(trigger);
+		getService(triggerID).removeData(trigger);
 
-		getService(trigger).removeFact(	(o)->{
+		getService(triggerID).removeFact(	(o)->{
 			if(o instanceof WithTrigger){
 				return ((WithTrigger)o).getTriggerID().equals(triggerID);
 			}
 			return false;
 		});
 
-		getService(trigger).removeCondition("rule"+triggerID);
+		getService(triggerID).removeCondition("rule"+triggerID);
 
 	}
 
 	public void enableTrigger(String triggerID) {
 
 
-		Trigger trigger=triggerMap.get(triggerID);
+		Trigger trigger=new Trigger(triggerID);
 
 		trigger.setEnable(true);
 
-		getService(trigger).addOrUpdateData(trigger);
+		getService(triggerID).addOrUpdateData(trigger,false);
 
 
 	}
 
 	public void disableTrigger(String triggerID) {
 
-		Trigger trigger=triggerMap.get(triggerID);
+		Trigger trigger=new Trigger(triggerID);
 
 		trigger.setEnable(false);
 
-		getService(trigger).addOrUpdateData(trigger);
+		getService(triggerID).addOrUpdateData(trigger,false);
 
 	}
 
@@ -165,11 +164,6 @@ public class DroolsTriggerService {
 
 	public void updateScheduleSign(String triggerID){
 
-		Trigger trigger=triggerMap.get(triggerID);
-		if(trigger==null||!trigger.isEnable()){
-			return;
-		}
-
 		ScheduleFire fire=new ScheduleFire();
 		fire.setTriggerID(triggerID);
 		fire.setEnable(true);
@@ -182,8 +176,7 @@ public class DroolsTriggerService {
 
 	public void addThingStatus(ThingStatusInRule newStatus){
 
-
-		cloudService.addOrUpdateData(newStatus);
+		cloudService.addOrUpdateData(newStatus,false);
 		cloudService.inThing(newStatus.getThingID());
 
 	}

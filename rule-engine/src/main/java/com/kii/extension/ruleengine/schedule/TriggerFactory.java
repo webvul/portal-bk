@@ -20,12 +20,12 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.kii.extension.ruleengine.store.trigger.CronPrefix;
-import com.kii.extension.ruleengine.store.trigger.IntervalPrefix;
-import com.kii.extension.ruleengine.store.trigger.SchedulePeriod;
-import com.kii.extension.ruleengine.store.trigger.SchedulePrefix;
-import com.kii.extension.ruleengine.store.trigger.SimplePeriod;
-import com.kii.extension.ruleengine.store.trigger.TriggerValidPeriod;
+import com.kii.extension.ruleengine.store.trigger.schedule.CronPrefix;
+import com.kii.extension.ruleengine.store.trigger.schedule.IntervalPrefix;
+import com.kii.extension.ruleengine.store.trigger.schedule.SchedulePeriod;
+import com.kii.extension.ruleengine.store.trigger.schedule.SchedulePrefix;
+import com.kii.extension.ruleengine.store.trigger.schedule.SimplePeriod;
+import com.kii.extension.ruleengine.store.trigger.schedule.TriggerValidPeriod;
 
 @Component
 public class TriggerFactory {

@@ -15,7 +15,7 @@ import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.beehive.portal.store.StoreServiceTestInit;
 import com.kii.extension.ruleengine.TriggerConditionBuilder;
-import com.kii.extension.ruleengine.store.trigger.CommandToThing;
+import com.kii.extension.ruleengine.store.trigger.target.CommandToThing;
 import com.kii.extension.ruleengine.store.trigger.Condition;
 import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;

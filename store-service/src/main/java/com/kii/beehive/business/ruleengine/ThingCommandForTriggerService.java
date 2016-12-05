@@ -16,8 +16,6 @@ import com.kii.beehive.portal.common.utils.StrTemplate;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.extension.ruleengine.ExecuteParam;
 import com.kii.extension.ruleengine.service.ExecuteResultDao;
-import com.kii.extension.ruleengine.store.trigger.CommandToThing;
-import com.kii.extension.ruleengine.store.trigger.result.CommandResponse;
 import com.kii.extension.sdk.entity.thingif.Action;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
 

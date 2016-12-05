@@ -10,7 +10,7 @@ import com.kii.extension.sdk.service.AbstractDataAccess;
 
 @Component
 @BindAppByName(appName = "portal", appBindSource = "propAppBindTool")
-public class TriggerDataDao extends AbstractDataAccess<TriggerRuntimeData> {
+public class TriggerParameterDao extends AbstractDataAccess<TriggerRuntimeData> {
 
 
 	@Override

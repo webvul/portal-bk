@@ -1,4 +1,4 @@
-package com.kii.extension.ruleengine.store.trigger;
+package com.kii.extension.ruleengine.store.trigger.groups;
 
 public class TriggerGroupPolicy {
 

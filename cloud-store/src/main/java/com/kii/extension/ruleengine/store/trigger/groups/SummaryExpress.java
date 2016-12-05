@@ -1,4 +1,4 @@
-package com.kii.extension.ruleengine.store.trigger;
+package com.kii.extension.ruleengine.store.trigger.groups;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -10,7 +10,7 @@ public class SummaryExpress {
 
 	private String summaryAlias;
 
-	private SlideFuntion  slideFuntion;
+	private SlideFuntion slideFuntion;
 
 	@JsonIgnore
 	public String getFullSlideFunName(){
