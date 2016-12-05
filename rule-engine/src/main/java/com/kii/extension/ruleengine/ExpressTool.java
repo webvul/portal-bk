@@ -56,9 +56,13 @@ public class ExpressTool {
 		
 		StandardEvaluationContext context = new StandardEvaluationContext(store);
 		
-		return   parser.parseExpression(express).getValue(
+		Object value=   parser.parseExpression(express).getValue(
 				context, Object.class);
-		
+		if(value==null){
+			return 0.0f;
+		}else{
+			return value;
+		}
 	}
 
 

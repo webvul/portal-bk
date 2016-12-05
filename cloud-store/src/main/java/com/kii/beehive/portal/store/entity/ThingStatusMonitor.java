@@ -1,5 +1,6 @@
 package com.kii.beehive.portal.store.entity;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -27,7 +28,7 @@ public class ThingStatusMonitor extends KiiEntity {
 
 	private Long creator;
 	
-	private List<Long> noticeList;
+	private List<Long> noticeList=new ArrayList<>();
 	
 	private MonitorStatus status;
 	

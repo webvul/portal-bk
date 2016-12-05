@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kii.beehive.business.ruleengine.TriggerManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.ThingIDTools;
+import com.kii.beehive.portal.exception.UnauthorizedException;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.UserNoticeDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
@@ -21,12 +22,14 @@ import com.kii.beehive.portal.jdbc.entity.NoticeActionType;
 import com.kii.beehive.portal.jdbc.entity.UserNotice;
 import com.kii.beehive.portal.service.ThingStatusMonitorDao;
 import com.kii.beehive.portal.store.entity.ThingStatusMonitor;
+import com.kii.extension.ruleengine.TriggerCreateException;
 import com.kii.extension.ruleengine.store.trigger.Express;
 import com.kii.extension.ruleengine.store.trigger.GroupSummarySource;
 import com.kii.extension.ruleengine.store.trigger.MultipleSrcTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.TagSelector;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.WhenType;
 import com.kii.extension.ruleengine.store.trigger.groups.SummaryFunctionType;
 import com.kii.extension.ruleengine.store.trigger.target.CallBusinessFunction;
 import com.kii.extension.sdk.service.AbstractDataAccess;
@@ -85,15 +88,23 @@ public class ThingMonitorService {
 		String monitorID=monitorDao.addEntity(monitor).getObjectID();
 		
 		List<Long> ids=thingDao.getThingsByVendorThings(monitor.getVendorThingIDList()).stream().map(GlobalThingInfo::getId).collect(Collectors.toList());
-		
+		if(ids.size()<monitor.getVendorThingIDList().size()){
+			
+			throw new UnauthorizedException(UnauthorizedException.NOT_THING_CREATOR,"user",AuthInfoStore.getUserIDStr());
+		}
 		monitor.setId(monitorID);
 		TriggerRecord trigger=getTrigger(monitor,ids);
 		
-		String triggerID=creator.createTrigger(trigger).getTriggerID();
-		
-		monitor.setRelationTriggerID(triggerID);
-		
-		monitorDao.updateEntity(Collections.singletonMap("relationTriggerID",triggerID),monitorID);
+		try {
+			String triggerID = creator.createTrigger(trigger).getTriggerID();
+			
+			monitor.setRelationTriggerID(triggerID);
+			
+			monitorDao.updateEntity(Collections.singletonMap("relationTriggerID", triggerID), monitorID);
+		}catch(TriggerCreateException ex){
+			monitorDao.removeEntity(monitorID);
+			throw ex;
+		}
 		
 		return monitorID;
 	}
@@ -163,7 +174,7 @@ public class ThingMonitorService {
 
 		record.fillCreator(monitor.getId());
 		
-		record.setName("mon"+monitor.getCreator()+"_"+monitor.getName());
+		record.setName("mon"+monitor.getId());
 		GroupSummarySource source=new GroupSummarySource();
 		source.setFunction(SummaryFunctionType.objCol);
 		TagSelector src=new TagSelector();
@@ -181,6 +192,7 @@ public class ThingMonitorService {
 		
 		RuleEnginePredicate predicate=new RuleEnginePredicate();
 		predicate.setExpress("$p:c{one}!=$h:c{one}");
+		predicate.setTriggersWhen(WhenType.CONDITION_TRUE);
 		record.setPredicate(predicate);
 		
 		

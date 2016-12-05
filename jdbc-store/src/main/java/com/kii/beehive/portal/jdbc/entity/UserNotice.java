@@ -80,7 +80,7 @@ public class UserNotice extends DBEntity {
 	
 	
 	@JdbcField(column = READED)
-	public Boolean isReaded() {
+	public Boolean getReaded() {
 		return readed;
 	}
 

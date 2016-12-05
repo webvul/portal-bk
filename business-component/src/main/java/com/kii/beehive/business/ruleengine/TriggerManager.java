@@ -28,6 +28,7 @@ import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.service.OperateLogDao;
 import com.kii.beehive.portal.store.entity.OperateLog;
+import com.kii.extension.ruleengine.TriggerCreateException;
 import com.kii.extension.ruleengine.service.BusinessObjDao;
 import com.kii.extension.ruleengine.service.TriggerRecordDao;
 import com.kii.extension.ruleengine.store.trigger.BeehiveTriggerType;
@@ -112,12 +113,18 @@ public class TriggerManager {
 
 		logTool.triggerLog(record, OperateLog.ActionType.create);
 
-		if(record.getRecordStatus()== TriggerRecord.StatusType.enable) {
-
-			logTool.triggerLog(record, OperateLog.ActionType.enable);
-
-
-			creator.createTrigger(record);
+		try {
+			if (record.getRecordStatus() == TriggerRecord.StatusType.enable) {
+				
+				logTool.triggerLog(record, OperateLog.ActionType.enable);
+				
+				creator.createTrigger(record);
+			}
+		}catch(TriggerCreateException ex){
+			logTool.triggerLog(record, OperateLog.ActionType.delete);
+			
+			triggerDao.removeEntity(record.getId());
+			throw ex;
 		}
 		return record;
 
