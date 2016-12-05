@@ -19,7 +19,7 @@ import com.kii.extension.ruleengine.store.trigger.target.SettingParameter;
 		@JsonSubTypes.Type(value = CallHttpApi.class,name="HttpApiCall"),
 		@JsonSubTypes.Type(value=CommandToThingInGW.class,name="ThingCommandInGW"),
 		@JsonSubTypes.Type(value=SettingParameter.class,name="SettingParameter"),
-		@JsonSubTypes.Type(value=CallBusinessFunction.class,name="callBusinessFunction")
+		@JsonSubTypes.Type(value=CallBusinessFunction.class,name="CallBusinessFunction")
 })
 public abstract class ExecuteTarget {
 

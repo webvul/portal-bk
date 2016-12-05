@@ -65,7 +65,7 @@ public class ThingCommandForTriggerService {
 				act.getFields().forEach((n, v) -> {
 
 					if(v instanceof  String){
-						act.setField(n, StrTemplate.generByMap((String)v, params.getBusinessParams()));
+						act.setField(n, StrTemplate.generByMap((String)v, params.getBusinessParamsInStr()));
 					}
 
 				});

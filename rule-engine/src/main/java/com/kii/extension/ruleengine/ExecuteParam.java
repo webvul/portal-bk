@@ -16,7 +16,7 @@ public class ExecuteParam {
 
 	private final  String relationThing;
 
-	private Map<String,String> businessParams=new HashMap<>();
+	private Map<String,Object> businessParams=new HashMap<>();
 
 
 	public ExecuteParam(){
@@ -71,14 +71,24 @@ public class ExecuteParam {
 	}
 
 
-	public Map<String, String> getBusinessParams() {
+	public Map<String, Object> getBusinessParams() {
 		return businessParams;
+	}
+	
+	public Map<String,String> getBusinessParamsInStr(){
+		Map<String,String> paramMap=new HashMap<>();
+		
+		businessParams.forEach((k,v)->{
+			paramMap.put(k,String.valueOf(v));
+		});
+		
+		return paramMap;
 	}
 
 
 	public String getDelayParam(int idx) {
 
-		return businessParams.get("delay_"+idx);
+		return String.valueOf(businessParams.get("delay_"+idx));
 
 	}
 }

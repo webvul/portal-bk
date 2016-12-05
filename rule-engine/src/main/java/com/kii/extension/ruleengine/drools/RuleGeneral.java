@@ -291,7 +291,7 @@ end
 			if(express.getCondition()!=null){
 				return generExpress(express.getCondition());
 			}else if(express.getExpress()!=null){
-				return express.getExpress();
+				return convert.convertExpress(express.getExpress());
 			}else{
 				return  EVAL_TRUE;
 			}

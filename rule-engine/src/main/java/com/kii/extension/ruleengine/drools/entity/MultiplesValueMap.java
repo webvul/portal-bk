@@ -1,7 +1,11 @@
 package com.kii.extension.ruleengine.drools.entity;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+
+import com.kii.extension.ruleengine.ExpressTool;
 
 public class MultiplesValueMap implements RuntimeEntry,WithTrigger{
 
@@ -39,30 +43,24 @@ public class MultiplesValueMap implements RuntimeEntry,WithTrigger{
 	}
 
 	public Object getValue(String key){
+		
+		Object value= ExpressTool.getValue(this,key);
 
-		if(!valueMap.containsKey(key)){
-			return 0.0d;
-		}
-		Object obj=  valueMap.get(key);
-
-		if(obj instanceof Long ||obj instanceof Integer){
-			return ((Number)obj).doubleValue();
-		}
-
-		return obj;
-
+		return value;
+	}
+	
+	public Set<?> getSetValue(String key){
+		
+		Object value= ExpressTool.getValue(this,key);
+		
+		return value==null?new HashSet<>():(Set)value;
 	}
 
 
 	public Object getNumValue(String key){
-		Object val= valueMap.get(key);
-		if(val==null){
-			return 0.0d;
-		}else if(val instanceof  String) {
-			return Double.parseDouble((String)val);
-		}else{
-			return val;
-		}
+		
+		Object value= ExpressTool.getValue(this,key);
+		return value == null ? 0 : value;
 	}
 
 	public String getTriggerID() {

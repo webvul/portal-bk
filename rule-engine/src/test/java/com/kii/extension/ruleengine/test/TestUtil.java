@@ -20,7 +20,7 @@ public class TestUtil {
 
 		ExpressConvert  convert=new ExpressConvert();
 
-		String express="$p{foo.bar}+ml.score($p{one},$e{one.two})*$p{a['b']}>$e{a.b.c} ";
+		String express="$p{foo.bar+$p_s{bar.foo}}+ml.score($p{one},$e{one.two})*$p{a['b']}>$e{a.b.c} ";
 
 		String output=convert.convertExpress(express);
 

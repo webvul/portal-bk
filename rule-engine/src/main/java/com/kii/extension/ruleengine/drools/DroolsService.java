@@ -160,7 +160,7 @@ public class DroolsService {
 
 
 			ExternalValues entity=new ExternalValues("sys");
-			entity.addValue("currThing",currThing);
+			entity.addValue("curr",currThing);
 			external.updateEntity(entity);
 
 			kieSession.update(externalHandler,external);

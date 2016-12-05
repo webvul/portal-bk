@@ -47,7 +47,7 @@ public class HttpCallService {
 
 		try {
 
-			call.fillParam(params.getBusinessParams());
+			call.fillParam(params.getBusinessParamsInStr());
 
 			HttpResponse response = tool.doRequest(getRequest(call));
 

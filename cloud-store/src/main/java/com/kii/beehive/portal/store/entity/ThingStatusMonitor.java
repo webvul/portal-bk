@@ -1,12 +1,17 @@
 package com.kii.beehive.portal.store.entity;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.kii.extension.ruleengine.store.trigger.Condition;
+import com.kii.extension.sdk.entity.KiiEntity;
 
 
-public class ThingStatusMonitor {
+public class ThingStatusMonitor extends KiiEntity {
 
+	private String name;
+	
 	private Set<Long> things;
 
 	private Condition condition;
@@ -16,9 +21,29 @@ public class ThingStatusMonitor {
 	private String relationTriggerID;
 
 	private String creator;
-
+	
+	private Set<String> relationFields=new HashSet<>();
+	
+	private List<Long> noticeList;
+	
 	private boolean enable;
-
+	
+	public Set<String> getRelationFields() {
+		return relationFields;
+	}
+	
+	public void setRelationFields(Set<String> relationFields) {
+		this.relationFields = relationFields;
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public void setName(String name) {
+		this.name = name;
+	}
+	
 	public Set<Long> getThings() {
 		return things;
 	}
@@ -65,5 +90,13 @@ public class ThingStatusMonitor {
 
 	public void setEnable(boolean enable) {
 		this.enable = enable;
+	}
+	
+	public List<Long> getNoticeList() {
+		return noticeList;
+	}
+	
+	public void setNoticeList(List<Long> noticeList) {
+		this.noticeList = noticeList;
 	}
 }

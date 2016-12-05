@@ -5,9 +5,11 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -34,16 +36,16 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 	private final Map<String,JdbcFieldType> sqlTypeMapper;
 
 	private final  ObjectMapper  objectMapper;
-
-//	private final BeanWrapper beanWrapper;
-
+	
+	private final BeanWrapper beanWrapper;
 
 	private final Class<T> cls;
+	
 	public BindClsRowMapper(Class<T> cls,ObjectMapper objectMapper){
 
 		this.cls=cls;
 
-		BeanWrapper beanWrapper=PropertyAccessorFactory.forBeanPropertyAccess(BeanUtils.instantiate(cls));
+		this.beanWrapper=PropertyAccessorFactory.forBeanPropertyAccess(BeanUtils.instantiate(cls));
 
 		Map<String,String> searchMap=new HashMap<>();
 
@@ -74,9 +76,8 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 	public T mapRow(ResultSet rs, int rowNum) throws SQLException {
 
 //		T inst=BeanUtils.instantiate(cls);
-
-		BeanWrapper beanWrapper=PropertyAccessorFactory.forBeanPropertyAccess(BeanUtils.instantiate(cls));
-
+		
+		BeanWrapper  beanWrapperInst=PropertyAccessorFactory.forBeanPropertyAccess(BeanUtils.instantiate(cls));
 
 		for(String field:fieldMapper.keySet()){
 
@@ -119,12 +120,12 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 			}
 
 			log.debug(" fill row target "+fieldInst+" to field "+field);
-
-			beanWrapper.setPropertyValue(fieldMapper.get(field), fieldInst);
+			
+			beanWrapperInst.setPropertyValue(fieldMapper.get(field), fieldInst);
 		}
 
 
-		return (T)beanWrapper.getWrappedInstance();
+		return (T)beanWrapperInst.getWrappedInstance();
 	}
 
 	private Object autoConvert(ResultSet rs,String key,Class target) throws SQLException {
@@ -153,5 +154,64 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 			result = null;
 		}
 		return result;
+	}
+	
+	
+	public  SqlParam getSqlParamInstance(String tableName){
+		SqlParam param=new SqlParam();
+		
+		param.fullSql.append("select * from "+tableName+" where 1=1 ");
+		return param;
+	}
+	
+	public class SqlParam {
+		
+		private StringBuilder fullSql=new StringBuilder();
+		
+		private List<Object> list=new ArrayList<>();
+		
+		public void addEqCondition(String fieldName,Object val){
+			if(val!=null){
+				fullSql.append(" and ").append(getValueStr(val,beanWrapper.getPropertyType(fieldName),sqlTypeMapper.get(fieldName))).append(" = ? ");
+				list.add(val);
+			}
+		}
+		
+		public void addPageEnd(int from){
+			
+			fullSql.append(" LIMIT ? , 50 ");
+			list.add(from);
+		}
+		
+		private String getValueStr(Object val,Class propCls,JdbcFieldType type){
+			
+			
+			if(type == JdbcFieldType.EnumInt){
+				
+				return String.valueOf(((Enum)val).ordinal());
+				
+			}else if(propCls.equals(String.class)&&type==JdbcFieldType.Auto){
+				
+				return "'"+String.valueOf(val)+"'";
+				
+			}else if(type == JdbcFieldType.EnumStr){
+				
+				return ((Enum)val).name();
+				
+			}else {
+				return String.valueOf(val);
+			}
+			
+		}
+		
+		public String getFullSql(){
+			return fullSql.toString();
+		}
+		
+		public Object[] getParamArray(){
+			return list.toArray();
+		}
+		
+		
 	}
 }

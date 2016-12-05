@@ -56,10 +56,6 @@ public class ThingStatusInRule implements RuntimeEntry,CanUpdate<ThingStatusInRu
 
 		Object value= ExpressTool.getValue(this,field);
 
-//		Object value = this.values.get(field);
-		if(value==null){
-			return null;
-		}
 		return value;
 	}
 

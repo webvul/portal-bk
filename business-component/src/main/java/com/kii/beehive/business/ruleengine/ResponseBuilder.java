@@ -4,6 +4,7 @@ package com.kii.beehive.business.ruleengine;
 import org.springframework.stereotype.Component;
 
 import com.kii.extension.ruleengine.ExecuteParam;
+import com.kii.extension.ruleengine.store.trigger.target.BusinessFunResponse;
 import com.kii.extension.ruleengine.store.trigger.target.CommandResponse;
 import com.kii.extension.ruleengine.store.trigger.target.HttpCallResponse;
 import com.kii.extension.ruleengine.store.trigger.target.TriggerResult;
@@ -13,6 +14,15 @@ public class ResponseBuilder {
 
 
 
+	public BusinessFunResponse getBusinessFunResponse(String triggerID, ExecuteParam param){
+		
+		BusinessFunResponse resp=new BusinessFunResponse();
+		fillResult(resp,param);
+		
+		return resp;
+		
+	}
+	
 	public CommandResponse getCmdResponse(String triggerID,ExecuteParam param){
 
 		CommandResponse resp = new CommandResponse();

@@ -66,4 +66,6 @@ public class ExecuteResultDao extends AbstractDataAccess<TriggerResult> {
 
 		super.updateEntity(params,id);
 	}
+	
+	
 }

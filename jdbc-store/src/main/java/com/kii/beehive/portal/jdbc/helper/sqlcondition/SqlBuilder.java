@@ -1,4 +1,4 @@
-package com.kii.beehive.portal.jdbc.helper;
+package com.kii.beehive.portal.jdbc.helper.sqlcondition;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -56,12 +56,7 @@ public class SqlBuilder {
 		return builder;
 	}
 
-	public SqlBuilder add( ){
-
-		return this;
-
-	}
-
+	
 	public SqlBuilder addLeftJoin(String tableName,String keyName){
 		return addJoin(tableName,keyName," left ");
 	}

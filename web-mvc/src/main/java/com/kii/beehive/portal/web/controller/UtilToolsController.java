@@ -235,7 +235,7 @@ public class UtilToolsController {
 			map.put("Date", impTimestamp);
 			map.put("profile",profile);
 		} catch (IOException ex) {
-			//log.warn("Error while reading version: " + ex.getMessage());
+			//log.warn("Error while reading version: " + ex.getMsgInText());
 		}
 		return map;
 	}

@@ -44,6 +44,10 @@ public class CommandExecuteService implements EventCallback {
 	@Autowired
 	private HttpCallService  httpCallService;
 
+	
+	@Autowired
+	private BusinessFunctionCallService funService;
+	
 	@Lazy
 	@Autowired
 	private TriggerCreator creator;
@@ -93,7 +97,8 @@ public class CommandExecuteService implements EventCallback {
 					case "HttpApiCall":
 						CallHttpApi call=(CallHttpApi)target;
 
-						call.fillParam(params.getBusinessParams());
+					
+						call.fillParam(params.getBusinessParamsInStr());
 
 						httpCallService.doHttpApiCall(call,record.getTriggerID(),params);
 
