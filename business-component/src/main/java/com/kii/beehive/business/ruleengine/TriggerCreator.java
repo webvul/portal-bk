@@ -169,6 +169,8 @@ public class TriggerCreator {
 		} catch (TriggerCreateException e) {
 //			triggerDao.deleteTriggerRecord(triggerID,e.getReason());
 			throw e;
+		}catch(RuntimeException ex){
+			throw new TriggerCreateException("unknown exception",ex);
 		}
 
 	}

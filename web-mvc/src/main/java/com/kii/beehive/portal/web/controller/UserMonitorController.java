@@ -1,7 +1,9 @@
 package com.kii.beehive.portal.web.controller;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
@@ -29,10 +31,12 @@ public class UserMonitorController {
 	private ThingMonitorService  service;
 	
 
-	@RequestMapping(path="/addMonitor",method = {RequestMethod.POST})
-	public String addMonitor(@RequestBody ThingMonitorInput monitor){
+	@RequestMapping(path="/addMonitor",method = {RequestMethod.POST},consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+	public Map<String,String> addMonitor(@RequestBody ThingMonitorInput monitor){
 		
-		return service.addMonitor(getInputEntity(monitor));
+		String id= service.addMonitor(getInputEntity(monitor));
+		
+		return Collections.singletonMap("monitorID",id);
 	}
 	
 	@RequestMapping(path="/{monitorID}",method = {RequestMethod.GET})
@@ -40,7 +44,7 @@ public class UserMonitorController {
 		return getOutputView(service.getMonitor(monitorID));
 	}
 	
-	@RequestMapping(path="/{monitorID}",method = {RequestMethod.PUT})
+	@RequestMapping(path="/{monitorID}",method = {RequestMethod.PUT},consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE})
 	public void updateMonitor(@PathVariable("monitorID")String monitorID,@RequestBody ThingMonitorInput input){
 		
 		ThingStatusMonitor monitor=getInputEntity(input);
@@ -72,7 +76,7 @@ public class UserMonitorController {
 		}
 	}
 	
-	@RequestMapping(path="/query",method = {RequestMethod.POST})
+	@RequestMapping(path="/query",method = {RequestMethod.POST},consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE})
 	public List<ThingMonitorInput> queryMonitor(@RequestBody ThingStatusMonitorDao.MonitorQuery query,@Header(name="b-pager-sign")String sign){
 	
 		
