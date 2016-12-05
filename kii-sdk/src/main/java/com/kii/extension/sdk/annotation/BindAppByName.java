@@ -21,4 +21,6 @@ public @interface BindAppByName {
 
 	public boolean bindThing()  default false;
 
+	public boolean bindUser() default  false;
+
 }

@@ -3,7 +3,6 @@ package com.kii.beehive.business.ruleEngine.console;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -14,16 +13,15 @@ import org.springframework.util.StringUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.beehive.business.ruleengine.CommandExecuteService;
-import com.kii.beehive.business.ruleengine.ThingStatusChangeCallback;
 import com.kii.beehive.business.ruleengine.TriggerManager;
-import com.kii.extension.ruleengine.store.trigger.target.CommandToThing;
 import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
-import com.kii.extension.ruleengine.store.trigger.groups.GroupTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.groups.GroupTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.groups.TriggerGroupPolicy;
 import com.kii.extension.ruleengine.store.trigger.groups.TriggerGroupPolicyType;
-import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.target.CommandToThing;
 import com.kii.extension.sdk.entity.thingif.Action;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
@@ -37,7 +35,7 @@ public class TriggerMangerConsole {
 
 		TriggerManager engine=context.getBean(TriggerManager.class);
 
-		ThingStatusChangeCallback callback=context.getBean(ThingStatusChangeCallback.class);
+//		RuleEngineInputCallback callback=context.getBean(RuleEngineInputCallback.class);
 
 		CommandExecuteService execService=context.getBean(CommandExecuteService.class);
 
@@ -73,7 +71,7 @@ public class TriggerMangerConsole {
 
 					ThingStatus status=getStatus(params);
 
-					callback.onEventFire("",status,arrays[1],new Date());
+//					callback.onEventFire("",status,arrays[1],new Date());
 
 				}
 				if(cmd.equals("enable")){

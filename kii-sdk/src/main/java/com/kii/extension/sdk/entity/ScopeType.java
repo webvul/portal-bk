@@ -5,6 +5,7 @@ public enum ScopeType {
 	App(null),
 	Group("groups"),
 	LoginName("users","LOGIN_NAME"),UserID("users"),Email("users","EMAIL"),Phone("users","PHONE"),
+	Me("users"),
 	VenderThing("things","VENDOR_THING_ID"),Thing("things");
 
 	private String prefix;

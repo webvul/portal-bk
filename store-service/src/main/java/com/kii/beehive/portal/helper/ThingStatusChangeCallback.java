@@ -1,4 +1,4 @@
-package com.kii.beehive.business.ruleengine;
+package com.kii.beehive.portal.helper;
 
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +17,6 @@ import com.kii.extension.sdk.entity.thingif.ThingStatus;
 @Component
 public class ThingStatusChangeCallback {
 
-	@Autowired
-	private BeehiveTriggerService engine;
 
 	@Autowired
 	private MessageQueueDao messageQueueDao;
@@ -30,10 +28,18 @@ public class ThingStatusChangeCallback {
 	@Autowired
 	private GlobalThingSpringDao globalThingDao;
 
+
+	@Autowired
+	private BeehiveTriggerService engine;
+
+	@Async
 	public void onEventFire(String appID, ThingStatus status, String thingID,Date timestamp) {
+
 
 		engine.updateThingStatus(thingID,status.getFields(),timestamp);
 
+
+		pushStatusUpload(appID, thingID, status, timestamp);
 	}
 
 	@Async

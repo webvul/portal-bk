@@ -15,8 +15,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kii.beehive.business.event.BusinessEventBus;
 import com.kii.beehive.business.manager.ThingTagManager;
 import com.kii.beehive.business.ruleengine.ThingCommandForTriggerService;
-import com.kii.beehive.business.ruleengine.ThingStatusChangeCallback;
 import com.kii.beehive.portal.common.utils.ThingIDTools;
+import com.kii.beehive.portal.helper.ThingStatusChangeCallback;
+import com.kii.beehive.portal.jedis.dao.MessageQueueDao;
 import com.kii.beehive.portal.web.constant.CallbackNames;
 import com.kii.beehive.portal.web.entity.CreatedThing;
 import com.kii.beehive.portal.web.entity.StateUpload;
@@ -33,8 +34,9 @@ public class ExtensionCallbackController {
 	@Autowired
 	private ThingTagManager tagManager;
 
+
 	@Autowired
-	private ThingStatusChangeCallback statusChangeCallback;
+	private ThingStatusChangeCallback pushCallback;
 
 	@Autowired
 	private BusinessEventBus eventBus;
@@ -61,7 +63,8 @@ public class ExtensionCallbackController {
 
 		String fullThingID = ThingIDTools.joinFullKiiThingID(appID, status.getThingID());
 
-		statusChangeCallback.onEventFire(appID,status.getState(), fullThingID, status.getTimestamp());
+		pushCallback.onEventFire(appID,status.getState(),fullThingID,status.getTimestamp());
+
 		eventBus.onStatusUploadFire(fullThingID, status.getState(), status.getTimestamp());
 
 

@@ -18,6 +18,7 @@ public class BucketInfo {
 		this.scopeName=scopeName;
 	}
 
+
 	public BucketInfo(String bucketName){
 
 		this.bucketName=bucketName;
