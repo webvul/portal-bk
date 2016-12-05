@@ -13,7 +13,8 @@
 
     <bean:annotation-config />
 
-    <import resource="classpath:com/kii/beehive/business/testComponentContext.xml" />
+    <bean class="com.fasterxml.jackson.databind.ObjectMapper" />
+
 
     <bean class="com.kii.extension.ruleengine.console.MockEventCallback" />
 

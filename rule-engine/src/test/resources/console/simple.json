@@ -1,9 +1,9 @@
 {
   "predicate" : {
-    "express" :"$p{power}!=0",
+    "express" :"$p{power}!=0  && extFun.fun(\"foo\",${triggerID}) == 0 ",
     "triggersWhen":"CONDITION_CHANGED"
   },
-  "targets" : [ {
+  "target" : [ {
     "delay":"$p{delay}",
     "command" : {
       "actions" : [ {

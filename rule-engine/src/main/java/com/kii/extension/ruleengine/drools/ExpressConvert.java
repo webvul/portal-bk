@@ -61,7 +61,6 @@ public class ExpressConvert {
 	}
 
 	private static final String S_FIELD=" get${1}(\"${0}\") ";
-//	private static final String P_FIELD=" ${1}(\"${0}\") ";
 	private static final String E_FIELD=" $ext.get${1}(\"${0}\") ";
 
 	private static final String S_EXP=" $status.get${1}(\"${0}\") ";
@@ -87,23 +86,5 @@ public class ExpressConvert {
 
 		}
 	}
-
-//	private static final Map<String,String> patternMap=new HashMap<>();
-//	private static final Map<String,String> expMap=new HashMap<>();
-//
-//	static{
-//
-//		patternMap.put("s",S_FIELD);
-//		patternMap.put("p",P_FIELD);
-//		patternMap.put("e",E_FIELD);
-//
-//		expMap.put("s",S_EXP);
-//		expMap.put("p",P_EXP);
-//		expMap.put("e",E_EXP);
-//
-//	}
-
-
-
 
 }

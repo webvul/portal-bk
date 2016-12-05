@@ -26,6 +26,9 @@ public class RuleEngineFactory {
 	@Autowired
 	private CommandExec exec;
 
+	@Autowired
+	private ExtendFunAdapter  extFun;
+
 
 	@Autowired
 	protected ResourceLoader loader;
@@ -65,6 +68,7 @@ public class RuleEngineFactory {
 		);
 
 		droolsService.bindWithInstance("exec",exec);
+
 
 		return droolsService;
 

@@ -5,6 +5,9 @@ import com.kii.extension.ruleengine.drools.CommandExec;
 import com.kii.extension.ruleengine.store.trigger.WhenType;
 
 
+global com.kii.extension.ruleengine.ExtendFunAdapter extFun;
+
+
 query "get Match Result by TriggerID" ()
 	Trigger($triggerID:triggerID,$thingSet:thingSet,when==WhenType.CONDITION_TRUE,enable==true)
 	CurrThing( valid ($thingSet) )

@@ -240,7 +240,7 @@ public class RuleEngineConsole {
 
 	public static void main(String[] argc){
 
-		ClassPathXmlApplicationContext  context=new ClassPathXmlApplicationContext("classpath:ruleTestContext.xml");
+		ClassPathXmlApplicationContext  context=new ClassPathXmlApplicationContext("classpath:ruleConsoleCtx.xml");
 
 		RuleEngineConsole console=new RuleEngineConsole(context);
 

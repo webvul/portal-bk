@@ -23,7 +23,7 @@ import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
-		"classpath:./ruleTestContext.xml"})
+		"classpath:./ruleConsoleCtx.xml"})
 @Ignore
 public class InitTest {
 

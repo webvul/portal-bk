@@ -267,30 +267,9 @@ public class DroolsRuleService {
 	}
 
 
-//	public void clear(){
-//
-//		boolean isDeletedRule = false;
-//		Set<String> deletePathSet=new HashSet<>();
-//		for(String drlPath:pathSet){
-//			String name=drlPath.substring(drlPath.lastIndexOf("/"),drlPath.length());
-//			if(name.startsWith("/comm")){
-//				continue;
-//			}
-//			kfs.delete(drlPath);
-//			deletePathSet.add(drlPath);
-//			isDeletedRule = true;
-//		}
-//		pathSet.removeAll(deletePathSet);
-//		if(isDeletedRule){
-//			KieBuilder kb=ks.newKieBuilder(kfs);
-//			kb.buildAll();
-//			kieContainer.updateToVersion(kb.getKieModule().getReleaseId());
-//		}
-//		handleMap.keySet().forEach( key -> kieSession.delete(handleMap.get(key)) );
-//		handleMap.clear();
-//	}
-
-
+	public void bindWithGlobal(String name,Object instance){
+		kieSession.setGlobal(name,instance);
+	}
 
 	public void bindWithInstance(String name,Object instance){
 
