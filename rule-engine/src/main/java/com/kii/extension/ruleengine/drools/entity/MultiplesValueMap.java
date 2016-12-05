@@ -12,7 +12,14 @@ public class MultiplesValueMap implements RuntimeEntry,WithTrigger{
 	private String triggerID;
 
 	private Map<String,Object> valueMap=new HashMap<>();
-
+	
+	private Map<String,Object> previousMap=new HashMap<>();
+	
+	
+	public void init(){
+		previousMap=new HashMap(valueMap);
+	}
+	
 	public void setSummaryValue(SummaryResult result){
 
 		String name=result.getName();
@@ -33,35 +40,52 @@ public class MultiplesValueMap implements RuntimeEntry,WithTrigger{
 		}
 
 		Map<String,Object> map=result.getValue();
-		map.forEach((k,v)->{
-			valueMap.put(name+"."+k,v);
-		});
+		
+		valueMap.put(name,map);
+		
+//		map.forEach((k,v)->{
+//			valueMap.put(name+"."+k,v);
+//		});
 	}
 
 	public Map<String,Object> getValues(){
 		return valueMap;
 	}
-
+	
+	public Map<String,Object> getPrevious(){
+		return previousMap;
+	}
+	
+	
 	public Object getValue(String key){
 		
-		Object value= ExpressTool.getValue(this,key);
+		Object value= ExpressTool.getObjValue(this,key);
 
 		return value;
 	}
 	
+	
 	public Set<?> getSetValue(String key){
 		
-		Object value= ExpressTool.getValue(this,key);
+		Set<?> value= ExpressTool.getValue(this,key,Set.class);
 		
 		return value==null?new HashSet<>():(Set)value;
 	}
-
-
-	public Object getNumValue(String key){
+	
+	public Map<String,?> getMapValue(String key){
 		
-		Object value= ExpressTool.getValue(this,key);
-		return value == null ? 0 : value;
+		Map<String,?> value= ExpressTool.getValue(this,key,Map.class);
+		
+		return value==null?new HashMap<>():(HashMap)value;
 	}
+	
+	
+	public Number getNumValue(String key){
+		
+		Number value= ExpressTool.getNumValue(this,key);
+		return value;
+	}
+	
 
 	public String getTriggerID() {
 		return triggerID;

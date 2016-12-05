@@ -81,25 +81,25 @@ public class BeehiveTriggerService {
 		return map;
 	}
 
-	public void updateBusinessObject(String name,String key,Object value){
-
-
-		ThingStatusInRule status=new ThingStatusInRule("b."+name);
-		status.addValue(key,value);
-
-		droolsTriggerService.addThingStatus(status);
-
-	}
-
-	public void updateBusinessObject(String name,Map<String,Object> valueMap){
-
-
-		ThingStatusInRule status=new ThingStatusInRule("b."+name);
-		status.setValues(valueMap);
-
-		droolsTriggerService.addThingStatus(status);
-
-	}
+//	public void updateBusinessObject(String name,String key,Object value){
+//
+//
+//		ThingStatusInRule status=new ThingStatusInRule("b."+name);
+//		status(key,value);
+//
+//		droolsTriggerService.addThingStatus(status);
+//
+//	}
+//
+//	public void updateBusinessObject(String name,Map<String,Object> valueMap){
+//
+//
+//		ThingStatusInRule status=new ThingStatusInRule("b."+name);
+//		status.setValues(valueMap);
+//
+//		droolsTriggerService.addThingStatus(status);
+//
+//	}
 
 
 	public void updateExternalValue(String name,String key,Object value){

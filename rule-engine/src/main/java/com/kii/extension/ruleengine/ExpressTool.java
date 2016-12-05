@@ -21,31 +21,54 @@ public class ExpressTool {
 
 		StandardEvaluationContext context = new StandardEvaluationContext(store);
 
-		 return   parser.parseExpression(express).getValue(
+		Number val=parser.parseExpression(express).getValue(
 				 context, Number.class);
 
+		if(val==null){
+			return 0.0f;
+		}
+		return val;
 	}
 
-	public static Object  getValue(Object store,String field){
+	public static <T>  T  getValue(Object store,String field,Class<T> cls){
 
 		String express=getFullFieldPath(field);
 
 		StandardEvaluationContext context = new StandardEvaluationContext(store);
 
 		return   parser.parseExpression(express).getValue(
-				context, Object.class);
+				context, cls);
 
+	}
+	
+	public static Object getObjValue(Object store,String field){
+		
+		String express=getFullFieldPath(field);
+		
+		StandardEvaluationContext context = new StandardEvaluationContext(store);
+		
+		return   parser.parseExpression(express).getValue(
+				context, Object.class);
+		
 	}
 
 
 	private  static  String  getFullFieldPath(String field){
 
+		boolean isHistory=false;
+		if(field.startsWith("previous.")){
+			isHistory=true;
+			field=StringUtils.substring(field,9);
+		}
+		
 		int idx=StringUtils.indexOfAny(field,".","[");
 		if(idx==-1){
 			idx=field.length();
 		}
 		String prefix= StringUtils.substring(field,0,idx);
-		String fullField="values['"+prefix+"']"+StringUtils.substring(field,idx);
+		String header=isHistory?"previous":"values";
+		
+		String fullField=header+"['"+prefix+"']"+StringUtils.substring(field,idx);
 
 		log.debug("fullField:"+fullField);
 		return fullField;

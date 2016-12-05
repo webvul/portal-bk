@@ -230,5 +230,23 @@ public class UtilTest {
 		}
 	}
 
+	
+	@Test
+	public void testSetCompare(){
+		
+		Set<String> a=new HashSet<>();
+		
+		a.add("a");
+		a.add("b");
+		a.add("c");
+		
+		Set<String> b=new HashSet<>();
+		
+		b.add("a");
+		b.add("b");
+		b.add("c");
+		
+		assertTrue(a.equals(b));
+	}
 
 }

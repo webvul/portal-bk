@@ -86,12 +86,12 @@ public class TriggerCreator {
 			general.updateThingStatus(s.getFullKiiThingID(),s.getStatus(),s.getModifyDate());
 		});
 
-		objList.forEach((obj)->{
-
-
-			general.updateBusinessObject(obj.getBusinessObjID(),obj.getData());
-
-		});
+//		objList.forEach((obj)->{
+//
+//
+//			general.updateBusinessObject(obj.getBusinessObjID(),obj.getData());
+//
+//		});
 
 		general.leaveInit();
 

@@ -1,6 +1,8 @@
 package com.kii.extension.ruleengine.test;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -20,10 +22,15 @@ public class TestExtend extends InitTest{
 
 
 		ThingStatusInRule status=new ThingStatusInRule("aaa");
-		status.addValue("foo",33);
-		status.addValue("bar",-100);
-		status.addValue("delay",2);
-
+		
+		Map<String,Object> val=new HashMap<>();
+		
+		val.put("foo",33);
+		val.put("bar",-100);
+		val.put("delay",2);
+		
+		status.setValues(val);
+		
 		ruleLoader.addCondition("ruleResult",getDrlContent("ruleResult"));
 //		ruleLoader.fireCondition();
 		ruleLoader.addOrUpdateData(status,true);

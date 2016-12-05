@@ -45,6 +45,6 @@ public class ExternalValues implements Serializable {
 
 
 
-		return  ExpressTool.getValue(this,field);
+		return  ExpressTool.getValue(this,field,Object.class);
 	}
 }

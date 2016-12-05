@@ -18,6 +18,8 @@ public class ThingStatusInRule implements RuntimeEntry,CanUpdate<ThingStatusInRu
 	private Date createAt;
 
 	private Map<String,Object> values=new HashMap<>();
+	
+	private Map<String,Object> previousValues=new HashMap<>();
 
 	public ThingStatusInRule(String thingID){
 		this.thingID=thingID;
@@ -34,30 +36,46 @@ public class ThingStatusInRule implements RuntimeEntry,CanUpdate<ThingStatusInRu
 	public Map<String, Object> getValues() {
 		return values;
 	}
+	
+	public Map<String,Object> getPrevious(){
+		return previousValues;
+	}
 
 	public void setValues(Map<String, Object> values) {
-		this.values = values;
+		
+		previousValues=new HashMap<>(this.values);
+		this.values = new HashMap<>(values);
 	}
 
-	public void addValue(String field,Object value){
-		this.values.put(field,value);
-	}
+//	public void addValue(String field,Object value){
+//		this.values.put(field,value);
+//	}
 
 
 
 	public Object getNumValue(String field){
 
-
-		Object value= ExpressTool.getValue(this,field);
-		return value == null ? 0 : value;
+		return  ExpressTool.getNumValue(this,field);
 	}
 
 	public Object getValue(String field){
 
-		Object value= ExpressTool.getValue(this,field);
+		Object value= ExpressTool.getObjValue(this,field);
 
 		return value;
 	}
+	
+//	public Object getPreviousNumValue(String field){
+//
+//		return  ExpressTool.getNumValue(this,field);
+//	}
+//
+//	public String getPreviousValue(String field){
+//
+//		String value= ExpressTool.getValue(this,field,String.class);
+//
+//		return value;
+//	}
 
 	public String getThingID() {
 		return thingID;
@@ -81,7 +99,10 @@ public class ThingStatusInRule implements RuntimeEntry,CanUpdate<ThingStatusInRu
 	public void update(ThingStatusInRule update) {
 
 		Map<String,Object>  vals=update.getValues();
+		
 		if(vals!=null){
+			this.previousValues=new HashMap<>(values);
+			
 			this.values.putAll(vals);
 		}
 

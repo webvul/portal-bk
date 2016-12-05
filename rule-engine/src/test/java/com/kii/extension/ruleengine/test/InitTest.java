@@ -120,9 +120,12 @@ public class InitTest {
 		ThingStatusInRule status=new ThingStatusInRule(thingID);
 //		status.setThingID(thingID);
 
-		status.addValue("foo",Math.random()*100-50);
-		status.addValue("bar",Math.random()*10-5);
-
+		Map<String,Object> val=new HashMap<>();
+		val.put("foo",Math.random()*100-50);
+		val.put("bar",Math.random()*10-5);
+		
+		status.setValues(val);
+		
 		addThingStatus(thingID, status);
 
 	}
