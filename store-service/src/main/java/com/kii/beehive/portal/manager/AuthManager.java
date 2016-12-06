@@ -371,6 +371,22 @@ public class AuthManager {
 			String userID = kiiUser.getUserID();
 
 			BeehiveJdbcUser beehiveUser = userDao.getUserByKiiUserID(userID);
+			
+			if(beehiveUser==null){
+				
+				beehiveUser=new BeehiveJdbcUser();
+				beehiveUser.setUserName(kiiUser.getUserID());
+				beehiveUser.setKiiUserID(kiiUser.getUserID());
+				beehiveUser.setUserID(kiiUser.getUserID());
+				beehiveUser.setEnable(true);
+				beehiveUser.setUserPassword("null_password");
+				beehiveUser.setRoleName("commUser");
+				
+				Long id=userDao.insert(beehiveUser);
+				
+				beehiveUser.setId(id);
+				
+			}
 
 			if (!beehiveUser.getEnable()) {
 
