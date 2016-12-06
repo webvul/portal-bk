@@ -7,6 +7,7 @@ import org.drools.core.time.impl.CronExpression;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.exception.InvalidTriggerFormatException;
+import com.kii.extension.ruleengine.store.trigger.GatewayTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.target.CallHttpApi;
 import com.kii.extension.ruleengine.store.trigger.target.CommandToThing;
 import com.kii.extension.ruleengine.store.trigger.Condition;
@@ -53,6 +54,7 @@ public class TriggerValidate {
 					validateTagSelector(((GroupSummarySource)s).getSource());
 				}
 			}
+		}else if(triggerRecord instanceof GatewayTriggerRecord) {
 		}else{
             throw new InvalidTriggerFormatException("Unsupported trigger type !");
         }
