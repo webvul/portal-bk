@@ -125,6 +125,29 @@ public class UserController {
 		return map;
 
 	}
+	
+	@RequestMapping(path = "/usermanager/{userid}/resetActivate", method = {RequestMethod.POST})
+	public Map<String, Object> resetActivate(@PathVariable("userid") String userID) {
+		
+		
+		Map<String, Object> newUser = adminManager.resetActivate(userID);
+		
+		BeehiveJdbcUser userInfo = (BeehiveJdbcUser) newUser.get("user");
+		
+		String token = (String) newUser.get("activityToken");
+		
+		smsService.sendActivitySms(userInfo, token);
+		
+		
+		Map<String, Object> map = new HashMap<>();
+		
+		map.put("userID", userID);
+		map.put("activityToken", token);
+		
+		
+		return map;
+		
+	}
 
 
 	/**

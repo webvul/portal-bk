@@ -71,10 +71,10 @@ public class AuthManager {
 	public Map<String, String> createUserDirectly(BeehiveJdbcUser user, String password) {
 
 
-		BeehiveJdbcUser existsUser = userDao.getUserByLoginId(user);
+		List<BeehiveJdbcUser> existsUser = userDao.getUserByLoginId(user);
 
-		if (existsUser != null) {
-			throw new UserExistException(user, existsUser);
+		if (existsUser.size()>0) {
+			throw new UserExistException(user, existsUser.get(0));
 		}
 
 		user.setEnable(true);
