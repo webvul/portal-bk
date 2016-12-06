@@ -142,7 +142,7 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 		Object result=null;
 		try{
 			if(target.equals(Date.class)){
-					java.sql.Date date=rs.getDate(key);
+					java.sql.Timestamp date=rs.getTimestamp(key);
 					if(date!=null) {
 						result = new Date(date.getTime());
 					}

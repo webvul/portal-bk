@@ -77,7 +77,7 @@ public class UserMonitorController {
 	}
 	
 	@RequestMapping(path="/query",method = {RequestMethod.POST},consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE})
-	public List<ThingMonitorInput> queryMonitor(@RequestBody ThingStatusMonitorDao.MonitorQuery query,@RequestParam(name="pager")String sign){
+	public List<ThingMonitorInput> queryMonitor(@RequestBody ThingStatusMonitorDao.MonitorQuery query,@RequestParam(name="pager",required=false)String sign){
 	
 		
 		return service.queryMonitor(query, AbstractDataAccess.KiiBucketPager.getInstance(sign)).stream().map(UserMonitorController::getOutputView).collect(Collectors.toList());

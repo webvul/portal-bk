@@ -71,11 +71,12 @@ public class UserNoticeDao extends SpringSimpleBaseDao<UserNotice> {
 		}
 	}
 	
-	private static final String updateUnRead= StrTemplate.gener("update ${0} set ${1} = ?  where ${2} = ? and ${3} = ? ",TABLE_NAME,UserNotice.READED,UserNotice.USER_ID,UserNotice.NOTICE_ID);
+	private static final String updateUnRead= StrTemplate.gener("update ${0} set ${1} = ?,${4}= ?  where ${2} = ? and ${3} = ? ",TABLE_NAME,UserNotice.READED,UserNotice.USER_ID,UserNotice.NOTICE_ID,UserNotice.READED_TIME);
 	
 	public int updateSign(Long noticeID, Long userID) {
 		
-		return super.jdbcTemplate.update(updateUnRead,true,userID,noticeID);
+		
+		return super.jdbcTemplate.update(updateUnRead,true,userID,noticeID,new Date());
 	
 	}
 	

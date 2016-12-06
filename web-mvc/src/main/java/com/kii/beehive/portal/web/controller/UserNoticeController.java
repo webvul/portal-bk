@@ -27,7 +27,7 @@ public class UserNoticeController {
 	
 	
 	@RequestMapping(path="/unread",method = {RequestMethod.GET})
-	public List<UserNotice> getAllUnReadNotice(@RequestParam(name="pager")String pagerSign){
+	public List<UserNotice> getAllUnReadNotice(@RequestParam(name="pager",required=false)String pagerSign){
 		
 		BindClsRowMapper.Pager pager= BindClsRowMapper.Pager.getInstance(pagerSign);
 		
@@ -36,7 +36,7 @@ public class UserNoticeController {
 	}
 	
 	@RequestMapping(path="/all",method = {RequestMethod.GET})
-	public List<UserNotice> getAllNotice(@RequestParam(name="pager")String sign){
+	public List<UserNotice> getAllNotice(@RequestParam(name="pager",required=false)String sign){
 		
 		BindClsRowMapper.Pager pager= BindClsRowMapper.Pager.getInstance(sign);
 
@@ -68,7 +68,7 @@ public class UserNoticeController {
 	}
 	
 	@RequestMapping(path="/query",method = {RequestMethod.POST})
-	public List<UserNotice> queryNotice(@RequestBody UserNoticeDao.NoticeQuery query,@RequestParam(name="pager") String pagerSign){
+	public List<UserNotice> queryNotice(@RequestBody UserNoticeDao.NoticeQuery query,@RequestParam(name="pager",required=false) String pagerSign){
 		
 		return manager.queryNotice(query, BindClsRowMapper.Pager.getInstance(pagerSign));
 		
