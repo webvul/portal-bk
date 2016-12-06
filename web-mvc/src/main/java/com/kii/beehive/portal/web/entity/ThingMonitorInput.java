@@ -2,10 +2,12 @@ package com.kii.beehive.portal.web.entity;
 
 import java.util.Set;
 
-import com.kii.extension.sdk.entity.trigger.TriggerConditionEntry;
+import com.kii.extension.ruleengine.store.trigger.Condition;
 
 
 public class ThingMonitorInput {
+	
+	private String monitorID;
 
 	private String name;
 
@@ -13,9 +15,17 @@ public class ThingMonitorInput {
 
 	private String express;
 
-	private TriggerConditionEntry condition;
+	private Condition condition;
 
 	private boolean enable;
+	
+	public String getMonitorID() {
+		return monitorID;
+	}
+	
+	public void setMonitorID(String monitorID) {
+		this.monitorID = monitorID;
+	}
 	
 	public boolean isEnable() {
 		return enable;
@@ -49,11 +59,11 @@ public class ThingMonitorInput {
 		this.express = express;
 	}
 
-	public TriggerConditionEntry getCondition() {
+	public Condition getCondition() {
 		return condition;
 	}
 
-	public void setCondition(TriggerConditionEntry condition) {
+	public void setCondition(Condition condition) {
 		this.condition = condition;
 	}
 }

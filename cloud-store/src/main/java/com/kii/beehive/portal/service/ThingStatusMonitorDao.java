@@ -89,7 +89,7 @@ public class ThingStatusMonitorDao extends AbstractDataAccess<ThingStatusMonitor
 				builder.prefixLike("name",name);
 			}
 			if(enable!=null){
-				builder.equal("enable",enable);
+				builder.equal("enable", enable?ThingStatusMonitor.MonitorStatus.enable: ThingStatusMonitor.MonitorStatus.disable);
 			}
 			if(!things.isEmpty()){
 				ConditionBuilder sub=ConditionBuilder.orCondition();

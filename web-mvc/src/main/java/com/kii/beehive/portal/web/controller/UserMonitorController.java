@@ -105,6 +105,7 @@ public class UserMonitorController {
 		BeanUtils.copyProperties(monitor,view);
 		
 		view.setThings(new HashSet<>(monitor.getVendorThingIDList()));
+		view.setMonitorID(monitor.getId());
 		
 		return view;
 	}

@@ -114,6 +114,8 @@ public class ThingMonitorService {
 		
 		monitor.getNoticeList().add(AuthInfoStore.getUserID());
 		
+		monitor.setStatus(ThingStatusMonitor.MonitorStatus.enable);
+		
 		String monitorID=monitorDao.addEntity(monitor).getObjectID();
 		
 		List<Long> ids=thingDao.getThingsByVendorThings(monitor.getVendorThingIDList()).stream().map(GlobalThingInfo::getId).collect(Collectors.toList());
@@ -251,6 +253,7 @@ public class ThingMonitorService {
 	
 	
 	public List<ThingStatusMonitor> queryMonitor(ThingStatusMonitorDao.MonitorQuery query,AbstractDataAccess.KiiBucketPager pager){
+		
 		
 		return monitorDao.getMonitorsByQuery(query,pager);
 		

@@ -35,8 +35,8 @@ public class UserNoticeDao extends SpringSimpleBaseDao<UserNotice> {
 		
 		sqlParam.addEq("type",query.type);
 		sqlParam.addEq("readed",query.readed);
-		sqlParam.addBetween("readTime",query.readedTimeFrom,query.readedTimeEnd);
-		sqlParam.addBetween("createTime",query.createTimeFrom,query.createTimeEnd);
+		sqlParam.addBetween("readTime",query.readedTimeStart,query.readedTimeEnd);
+		sqlParam.addBetween("createTime",query.createTimeStart,query.createTimeEnd);
 		sqlParam.addLike("title",query.title);
 		sqlParam.addLike("from",query.from);
 		sqlParam.addEq("actionType",query.actionType);
@@ -116,11 +116,11 @@ public class UserNoticeDao extends SpringSimpleBaseDao<UserNotice> {
 		
 		private String title;
 		
-		private Date createTimeFrom;
+		private Date createTimeStart;
 		
 		private Date createTimeEnd;
 		
-		private Date readedTimeFrom;
+		private Date readedTimeStart;
 		
 		private Date readedTimeEnd;
 		
@@ -144,16 +144,16 @@ public class UserNoticeDao extends SpringSimpleBaseDao<UserNotice> {
 			this.title = title;
 		}
 		
-		public void setCreateTimeFrom(Date createTimeFrom) {
-			this.createTimeFrom = createTimeFrom;
+		public void setCreateTimeStart(Date createTimeStart) {
+			this.createTimeStart = createTimeStart;
 		}
 		
 		public void setCreateTimeEnd(Date createTimeEnd) {
 			this.createTimeEnd = createTimeEnd;
 		}
 		
-		public void setReadedTimeFrom(Date readedTimeFrom) {
-			this.readedTimeFrom = readedTimeFrom;
+		public void setReadedTimeStart(Date readedTimeStart) {
+			this.readedTimeStart = readedTimeStart;
 		}
 		
 		public void setReadedTimeEnd(Date readedTimeEnd) {
