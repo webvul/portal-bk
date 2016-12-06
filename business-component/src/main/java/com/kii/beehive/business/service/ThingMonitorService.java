@@ -5,12 +5,17 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import com.kii.beehive.business.entity.ThingStatusNoticeEntry;
 import com.kii.beehive.business.ruleengine.TriggerManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.ThingIDTools;
@@ -36,6 +41,9 @@ import com.kii.extension.sdk.service.AbstractDataAccess;
 
 @Component("thingMonitorService")
 public class ThingMonitorService {
+	
+	@Autowired
+	private ObjectMapper mapper;
 
 	@Autowired
 	private UserNoticeDao noticificationDao;
@@ -53,14 +61,15 @@ public class ThingMonitorService {
 	private NoticeMsgQueue queue;
 
 	@Transactional
-	public void addNotifiction(String monitorID, String thingID, Map<String,Object> status, Boolean sign){
+	public void addNotifiction(String monitorID, String thingID, Map<String,Object> status, Boolean sign,Set<String> currMatcher){
 		ThingStatusMonitor monitor=monitorDao.getObjectByID(monitorID);
 
 
 		UserNotice notice=new UserNotice();
 		
 		notice.setFrom(monitor.getName());
-		notice.setData(status);
+		
+
 		notice.setActionType(sign?NoticeActionType.ThingMonitorType.false2true.name():NoticeActionType.ThingMonitorType.true2false.name());
 		notice.setReaded(false);
 		notice.setCreateTime(new Date());
@@ -71,6 +80,24 @@ public class ThingMonitorService {
 		GlobalThingInfo th=thingDao.getThingByFullKiiThingID(ids.kiiAppID,ids.kiiThingID);
 		notice.setTitle(th.getVendorThingID());
 		
+		ThingStatusNoticeEntry entry=new ThingStatusNoticeEntry();
+		entry.setActionType(sign?NoticeActionType.ThingMonitorType.false2true:NoticeActionType.ThingMonitorType.true2false);
+		entry.setCurrThing(th.getVendorThingID());
+		entry.setCurrStatus(status);
+		entry.setMonitorID(monitorID);
+		
+		Set<String> matcher=thingDao.getThingListByFullKiiThingIDs(currMatcher).stream().map(GlobalThingInfo::getVendorThingID).collect(Collectors.toSet());
+		entry.setCurrMatchers(matcher);
+		
+		String json= "{}";
+		try {
+			json = mapper.writeValueAsString(entry);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		
+		notice.setData(json);
+		
 		monitor.getNoticeList().forEach(id->{
 			notice.setUserID(id);
 			noticificationDao.insert(notice);
@@ -79,6 +106,8 @@ public class ThingMonitorService {
 		});
 		
 	}
+	
+	
 
 	public String addMonitor(ThingStatusMonitor  monitor){
 		
@@ -199,7 +228,7 @@ public class ThingMonitorService {
 		CallBusinessFunction target  =new CallBusinessFunction();
 		target.setBeanName("thingMonitorService");
 		target.setFunctionName("addNotifiction");
-		target.setParamArrays("monitorID","currThing","thingStatus","sign");
+		target.setParamArrays("monitorID","currThing","thingStatus","sign","matcher");
 		
 		
 		record.addTarget(target);
@@ -208,6 +237,7 @@ public class ThingMonitorService {
 		record.addTargetParam("monitorID","'"+monitor.getId()+"'");
 		record.addTargetParam("thingStatus","$e{runtime.currStatus}");
 		record.addTargetParam("sign","$p:c{one}.contains($e{sys.curr.currThing})");
+		record.addTargetParam("matcher","$p:c{one}");
 		
 		record.setRecordStatus(TriggerRecord.StatusType.enable);
 		

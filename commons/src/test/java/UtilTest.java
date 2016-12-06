@@ -17,6 +17,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
+import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.beehive.portal.auth.UrlTemplateVerify;
@@ -35,6 +36,57 @@ public class UtilTest {
 
 
 	private ObjectMapper mapper=new ObjectMapper();
+	
+	
+	
+	@Test
+	public void testRawJson() throws IOException {
+	
+		Entry entry=new Entry();
+		entry.setName("name1");
+		
+		Map<String,Object> val=new HashMap<>();
+		val.put("one",1);
+		val.put("two","2");
+		String json=mapper.writeValueAsString(val);
+		
+		entry.setValue(json);
+		
+		String json2=mapper.writeValueAsString(entry);
+		
+		entry=mapper.readValue(json2,Entry.class);
+		
+		String json3=entry.getValue();
+		
+		val=mapper.readValue(json3,Map.class);
+		
+		assertEquals("2",val.get("two"));
+	}
+	
+	public static class Entry{
+		
+		private String name;
+		
+		private String value;
+		
+		public String getName() {
+			return name;
+		}
+		
+		public void setName(String name) {
+			this.name = name;
+		}
+		
+		
+		@JsonRawValue
+		public String getValue() {
+			return value;
+		}
+		
+		public void setValue(String value) {
+			this.value = value;
+		}
+	}
 	
 	
 	@Test

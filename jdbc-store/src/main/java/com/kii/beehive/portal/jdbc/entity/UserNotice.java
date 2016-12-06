@@ -2,7 +2,8 @@ package com.kii.beehive.portal.jdbc.entity;
 
 
 import java.util.Date;
-import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonRawValue;
 
 import com.kii.beehive.portal.jdbc.annotation.JdbcField;
 import com.kii.beehive.portal.jdbc.annotation.JdbcFieldType;
@@ -29,7 +30,7 @@ public class UserNotice extends DBEntity {
 	
 	private Date createTime;
 
-	private Map<String,Object> data;
+	private String  data;
 	
 	private String msgInText;
 
@@ -134,17 +135,20 @@ public class UserNotice extends DBEntity {
 		this.type = type;
 	}
 	
-	@JdbcField(column = DATA,type = JdbcFieldType.Json)
-	public Map<String, Object> getData() {
+	@JsonRawValue
+	@JdbcField(column = DATA)
+	public String getData() {
 		return data;
 	}
 	
-	public void setData(Map<String, Object> data) {
+	public void setData(String  data) {
 		this.data = data;
 	}
 	
 	public enum MsgType{
 		ThingStatus;
 	}
+	
+
 
 }

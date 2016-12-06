@@ -39,6 +39,9 @@ public class UserNoticeHandler extends TextWebSocketHandler {
 		
 		queue.regist(userID, notice -> {
 			
+			if(notice==null){
+				return true;
+			}
 			
 			if(!session.isOpen()){
 				return false;
