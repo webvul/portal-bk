@@ -96,13 +96,13 @@ public abstract class SpringBaseDao<T extends BusinessEntity> {
 		return jdbcTemplate.query(sql, queryParams, getRowMapper());
 
 	}
-
-	protected <E> List<E> queryForList(String sql, Class<E> cls, Object... queryParams) {
-
-		sql = addDelSignPrefix(sql);
-		return jdbcTemplate.queryForList(sql, queryParams, cls);
-
-	}
+//
+//	protected  List<T> queryForList(String sql, Object... queryParams) {
+//
+//		sql = addDelSignPrefix(sql);
+//		return jdbcTemplate.queryForList(sql, queryParams, entityClass);
+//
+//	}
 
 	protected StringBuilder addDelSignPrefix(StringBuilder sb) {
 

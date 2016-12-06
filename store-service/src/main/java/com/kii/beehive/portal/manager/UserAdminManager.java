@@ -2,6 +2,7 @@ package com.kii.beehive.portal.manager;
 
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -42,16 +43,34 @@ public class UserAdminManager {
 
 	@Autowired
 	private BeehiveArchiveUserDao archiveUserDao;
-
+	
+	
+	public Map<String,Object> resetActivate(String userID) {
+		
+		BeehiveJdbcUser user = userDao.getUserByUserID(userID);
+		
+		String token = StringRandomTools.getRandomStr(6);
+		
+		user.setActivityToken(user.getHashedPwd(token));
+		
+		userDao.updateEntityAllByID(user);
+		
+		Map<String, Object> result = new HashMap<>();
+		
+		result.put("user", user);
+		result.put("activityToken", token);
+		
+		return result;
+	}
 
 
 	public Map<String, Object> addUser(BeehiveJdbcUser user) {
 
 
-		BeehiveJdbcUser existsUser = userDao.getUserByLoginId(user);
+		List<BeehiveJdbcUser> existsUser = userDao.getUserByLoginId(user);
 
-		if (existsUser != null) {
-			throw new UserExistException(user, existsUser);
+		if (existsUser.size()>0) {
+			throw new UserExistException(user, existsUser.get(0));
 		}
 
 		if (StringUtils.isBlank(user.getRoleName())) {
@@ -147,6 +166,7 @@ public class UserAdminManager {
 		}
 		return user;
 	}
-
+	
+	
 
 }

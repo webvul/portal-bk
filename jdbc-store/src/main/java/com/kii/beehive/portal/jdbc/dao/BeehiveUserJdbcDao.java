@@ -183,7 +183,7 @@ public class BeehiveUserJdbcDao extends SpringBaseDao<BeehiveJdbcUser> {
 	 * @param user
 	 * @return
 	 */
-	public BeehiveJdbcUser getUserByLoginId(BeehiveJdbcUser user) {
+	public List<BeehiveJdbcUser> getUserByLoginId(BeehiveJdbcUser user) {
 
 
 		String sql = "select * from ${0} where user_name =  ? ";
@@ -203,7 +203,7 @@ public class BeehiveUserJdbcDao extends SpringBaseDao<BeehiveJdbcUser> {
 		String fullSql = StrTemplate.gener(sql, TABLE_NAME);
 
 
-		return queryForObject(fullSql, params.toArray());
+		return query(fullSql, params.toArray());
 
 
 	}

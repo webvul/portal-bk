@@ -30,6 +30,7 @@ import org.kie.api.runtime.rule.QueryResults;
 import org.kie.api.runtime.rule.QueryResultsRow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -52,6 +53,9 @@ public class DroolsService {
 	private Logger log= LoggerFactory.getLogger(DroolsService.class);
 
 
+	@Value("${spring.profile}")
+	private String profile;
+	
 	private final KieSession kieSession;
 
 	private final KieContainer kieContainer;
@@ -277,7 +281,7 @@ public class DroolsService {
 		kieSession = kieBase.newKieSession(ksconf,null);
 
 
-		if(!isStream) {
+		if(!isStream&&"local".equals(profile)) {
 			kieSession.addEventListener(new DebugAgendaEventListener());
 			kieSession.addEventListener(new DebugRuleRuntimeEventListener());
 		}
