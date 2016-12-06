@@ -260,9 +260,9 @@ public void testTemplate(){
 		cal.add(Calendar.DAY_OF_WEEK,1);
 		
 		query.setCreateTimeEnd(cal.getTime());
-		query.setCreateTimeFrom(date);
+		query.setCreateTimeStart(date);
 		
-		query.setReadedTimeFrom(date);
+		query.setReadedTimeStart(date);
 		
 		noticeDao.queryNoticeList(query,page);
 	}

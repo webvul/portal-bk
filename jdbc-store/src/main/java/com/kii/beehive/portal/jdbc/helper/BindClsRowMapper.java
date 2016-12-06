@@ -142,7 +142,7 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 		Object result=null;
 		try{
 			if(target.equals(Date.class)){
-					java.sql.Date date=rs.getDate(key);
+					java.sql.Timestamp date=rs.getTimestamp(key);
 					if(date!=null) {
 						result = new Date(date.getTime());
 					}
@@ -176,7 +176,7 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 	
 	public static class Pager{
 		
-		private static Pattern pagerPat=Pattern.compile("^(\\d+\\/)?(\\d+)$");
+		private static Pattern pagerPat=Pattern.compile("^((\\d+)\\/)?(\\d+)$");
 		
 		
 		private int start=0;
@@ -195,8 +195,8 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 			if(matcher.find()){
 			
 				Pager pager=new Pager();
-				String a=matcher.group(1);
-				String b=matcher.group(2);
+				String a=matcher.group(2);
+				String b=matcher.group(3);
 				
 				pager.size=Integer.parseInt(b);
 				

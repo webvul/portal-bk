@@ -406,7 +406,7 @@ end
 						}else {
 							sb.append(">");
 						}
-						if (range.isLowerIncluded()^isNot) {
+						if (range.isLowerIncluded()!=null&& (range.isLowerIncluded()^isNot)) {
 							sb.append("=");
 						}
 						sb.append(getFinalValue(range.getLowerExpress(), range.getLowerLimit()));
@@ -417,7 +417,7 @@ end
 						}else {
 							sb.append("<");
 						}
-						if (range.isUpperIncluded()^isNot) {
+						if (range.isUpperIncluded()!=null && (range.isUpperIncluded()^isNot)) {
 							sb.append("=");
 						}
 						sb.append(getFinalValue(range.getUpperExpress(),range.getUpperLimit()));
