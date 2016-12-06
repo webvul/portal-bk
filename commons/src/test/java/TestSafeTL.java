@@ -2,8 +2,10 @@ import static junit.framework.TestCase.assertEquals;
 
 import java.io.IOException;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedTransferQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TransferQueue;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
@@ -12,6 +14,22 @@ public class TestSafeTL {
 
 	ScheduledExecutorService executeService= Executors.newScheduledThreadPool(10);
 
+	
+	
+	
+	@Test
+	public void testQueue() throws InterruptedException {
+		
+		TransferQueue<String> queue=new LinkedTransferQueue<String>();
+		
+		queue.tryTransfer("abc");
+		queue.tryTransfer("bcd");
+		
+		assertEquals("abc",queue.take());
+		
+		
+	}
+	
 	@Test
 	public void test() throws IOException {
 

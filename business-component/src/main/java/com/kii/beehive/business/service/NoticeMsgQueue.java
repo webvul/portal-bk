@@ -19,7 +19,12 @@ public class NoticeMsgQueue {
 
 	private Map<Long,TransferQueue<UserNotice>> queueMap=new ConcurrentHashMap<>();
 	
+	private Map<Long,UserNotice>  currMsgMap=new ConcurrentHashMap<>();
+	
+	
 	public void addNotice(UserNotice notice){
+		
+		currMsgMap.put(notice.getUserID(),notice);
 		
 		TransferQueue<UserNotice> queue=queueMap.putIfAbsent(notice.getUserID(),new LinkedTransferQueue<>());
 		
@@ -32,6 +37,8 @@ public class NoticeMsgQueue {
 	
 	public void regist(long userID, Function<UserNotice,Boolean> function){
 		
+		
+		function.apply(currMsgMap.get(userID));
 		
 		executorService.submit(() -> {
 			
@@ -57,25 +64,5 @@ public class NoticeMsgQueue {
 	}
 	
 	
-//	private Map<Long,Consumer<UserNotice>> funMap=new ConcurrentHashMap<>();
-//
-//	public void regist(long userID, Consumer<UserNotice>  consumer){
-//
-//		funMap.put(userID,consumer);
-//	}
-//
-//	private static final Consumer<UserNotice> defaultFun=new Consumer<UserNotice>() {
-//		@Override
-//		public void accept(UserNotice notice) {
-//			return;
-//		}
-//	};
-//
-//	public void fireNotice(UserNotice notice){
-//
-//		Consumer<UserNotice>  consumer=funMap.putIfAbsent(notice.getUserID(),defaultFun);
-//
-//		consumer.accept(notice);
-//	}
 
 }
