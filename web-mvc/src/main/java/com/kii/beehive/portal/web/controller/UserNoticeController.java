@@ -5,11 +5,11 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.business.manager.UserNoticeManager;
@@ -27,7 +27,7 @@ public class UserNoticeController {
 	
 	
 	@RequestMapping(path="/unread",method = {RequestMethod.GET})
-	public List<UserNotice> getAllUnReadNotice(@Header(name="b-pager-sign")String pagerSign){
+	public List<UserNotice> getAllUnReadNotice(@RequestParam(name="pager")String pagerSign){
 		
 		BindClsRowMapper.Pager pager= BindClsRowMapper.Pager.getInstance(pagerSign);
 		
@@ -36,7 +36,7 @@ public class UserNoticeController {
 	}
 	
 	@RequestMapping(path="/all",method = {RequestMethod.GET})
-	public List<UserNotice> getAllNotice(@Header(name="b-pager-sign")String sign){
+	public List<UserNotice> getAllNotice(@RequestParam(name="pager")String sign){
 		
 		BindClsRowMapper.Pager pager= BindClsRowMapper.Pager.getInstance(sign);
 
@@ -68,7 +68,7 @@ public class UserNoticeController {
 	}
 	
 	@RequestMapping(path="/query",method = {RequestMethod.POST})
-	public List<UserNotice> queryNotice(@RequestBody UserNoticeDao.NoticeQuery query,@Header(name="b-pager-sign")String pagerSign){
+	public List<UserNotice> queryNotice(@RequestBody UserNoticeDao.NoticeQuery query,@RequestParam(name="pager") String pagerSign){
 		
 		return manager.queryNotice(query, BindClsRowMapper.Pager.getInstance(pagerSign));
 		
