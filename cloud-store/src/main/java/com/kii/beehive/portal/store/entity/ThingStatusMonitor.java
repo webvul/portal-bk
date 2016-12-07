@@ -3,8 +3,11 @@ package com.kii.beehive.portal.store.entity;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -15,6 +18,8 @@ import com.kii.extension.sdk.entity.KiiEntity;
 public class ThingStatusMonitor extends KiiEntity {
 
 	private String name;
+	
+	private String  description;
 	
 	private Map<String,Boolean> vendorThingIDs=new HashMap<>();
 	
@@ -30,11 +35,27 @@ public class ThingStatusMonitor extends KiiEntity {
 	
 	private MonitorStatus status;
 	
+	public void updateThingIDs(Collection<String> vendorThingIDList) {
+		
+		Set<String> ids=new HashSet<>(vendorThingIDList);
+		
+		for(String id:ids){
+			vendorThingIDs.putIfAbsent(id,false);
+		}
+	}
+	
 	
 	public enum MonitorStatus{
 		enable,disable,deleted;
 	}
-
+	
+	public String getDescription() {
+		return description;
+	}
+	
+	public void setDescription(String description) {
+		this.description = description;
+	}
 	
 	public String getName() {
 		return name;
@@ -96,7 +117,7 @@ public class ThingStatusMonitor extends KiiEntity {
 	@JsonIgnore
 	public Collection<String> getVendorThingIDList(){
 		
-		return vendorThingIDs.keySet();
+		return vendorThingIDs.entrySet().stream().filter(entry->entry.getValue().booleanValue()).map(entry->entry.getKey()).collect(Collectors.toSet());
 	}
 	
 	public MonitorStatus getStatus() {

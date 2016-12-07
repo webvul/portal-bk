@@ -77,6 +77,7 @@ public class ThingMonitorService {
 		notice.setReaded(false);
 		notice.setCreateTime(new Date());
 		notice.setType(UserNotice.MsgType.ThingStatus);
+		notice.setMsgInText(monitor.getDescription());
 		
 		ThingIDTools.ThingIDCombine ids=ThingIDTools.splitFullKiiThingID(thingID);
 
@@ -189,10 +190,12 @@ public class ThingMonitorService {
 		
 		
 		ThingStatusMonitor oldMonitor=monitorDao.getObjectByID(monitor.getId());
-		
-		if(!oldMonitor.getVendorThingIDs().equals(monitor.getVendorThingIDs())||
-				!CommLangsUtils.safeEquals(oldMonitor.getExpress(),monitor.getExpress())||
-				!CommLangsUtils.safeEquals(oldMonitor.getCondition(),monitor.getCondition())) {
+		if(oldMonitor.getStatus()== ThingStatusMonitor.MonitorStatus.deleted){
+			throw new InvalidEntryStatusException("ThingStatusMonitor","status",ThingStatusMonitor.MonitorStatus.deleted.name());
+		}
+		if(!oldMonitor.getVendorThingIDList().equals(monitor.getVendorThingIDList())||
+				(monitor.getExpress()!=null &&!CommLangsUtils.safeEquals(oldMonitor.getExpress(),monitor.getExpress()) )||
+				(monitor.getCondition()!=null && !CommLangsUtils.safeEquals(oldMonitor.getCondition(),monitor.getCondition()))) {
 			
 			Collection<String> things=monitor.getVendorThingIDList();
 			if(things.isEmpty()){
@@ -210,6 +213,11 @@ public class ThingMonitorService {
 			creator.updateTrigger(newTrigger);
 			
 		}
+		
+		if(monitor.getNoticeList().isEmpty()){
+			monitor.setNoticeList(oldMonitor.getNoticeList());
+		}
+		monitor.updateThingIDs(oldMonitor.getVendorThingIDList());
 		
 		monitorDao.updateEntity(monitor,oldMonitor.getId());
 	}
