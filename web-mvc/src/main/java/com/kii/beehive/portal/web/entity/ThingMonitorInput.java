@@ -16,8 +16,18 @@ public class ThingMonitorInput {
 	private String express;
 
 	private Condition condition;
+	
+	private String description;
 
 	private boolean enable;
+	
+	public String getDescription() {
+		return description;
+	}
+	
+	public void setDescription(String description) {
+		this.description = description;
+	}
 	
 	public String getMonitorID() {
 		return monitorID;
