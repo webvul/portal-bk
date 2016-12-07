@@ -3,6 +3,8 @@ package com.kii.beehive.portal.jdbc.entity;
 
 import java.util.Date;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.fasterxml.jackson.annotation.JsonRawValue;
 
 import com.kii.beehive.portal.jdbc.annotation.JdbcField;
@@ -23,6 +25,9 @@ public class UserNotice extends DBEntity {
 	public  static final String READED="readed";
 	public  static final String ACTION_TYPE="action_type";
 	
+	public static final String ADDITIION_STRING="addition_str";
+	public static final String ADDITIION_INT="addition_int";
+	
 	
 	private Boolean readed=false;
 
@@ -41,9 +46,42 @@ public class UserNotice extends DBEntity {
 	private MsgType type;
 	
 	private Long userID;
+	
 	private String actionType;
 	
 
+	private String additionString;
+	
+	private String additionInteger;
+	
+	public void addAdditionString(String[] values){
+		
+		StringBuilder sb=new StringBuilder("^");
+		
+		for(int i=0;i<values.length;i++){
+			sb.append("str").append(i).append(":").append(values[i]).append("^");
+		}
+		additionString=sb.toString();
+	}
+	
+	private String MASK= StringUtils.repeat("0",20);
+	
+	public void addAdditionInteger(int[] values){
+		
+		StringBuilder sb=new StringBuilder();
+		
+		for(int i=0;i<values.length;i++){
+			int val=values[i];
+			String strVal=String.valueOf(val);
+			String fullStrVal=StringUtils.substring(MASK+strVal,-10);
+			
+			sb.append(fullStrVal).append(".");
+		}
+		additionInteger=sb.toString();
+	}
+	
+	
+	
 	
 	@JdbcField(column = CREATE_TIME)
 	public Date getCreateTime() {

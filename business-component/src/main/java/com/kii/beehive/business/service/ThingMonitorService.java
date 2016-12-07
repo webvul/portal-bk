@@ -1,6 +1,7 @@
 package com.kii.beehive.business.service;
 
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -18,7 +19,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kii.beehive.business.entity.ThingStatusNoticeEntry;
 import com.kii.beehive.business.ruleengine.TriggerManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.common.utils.CommLangsUtils;
 import com.kii.beehive.portal.common.utils.ThingIDTools;
+import com.kii.beehive.portal.exception.InvalidEntryStatusException;
 import com.kii.beehive.portal.exception.UnauthorizedException;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.UserNoticeDao;
@@ -149,28 +152,37 @@ public class ThingMonitorService {
 			creator.deleteTrigger(monitor.getRelationTriggerID());
 			
 			monitorDao.updateEntity(Collections.singletonMap("status", ThingStatusMonitor.MonitorStatus.deleted), id);
+		}else{
+			throw new InvalidEntryStatusException("ThingStatusMonitor","status",monitor.getStatus().name());
+			
 		}
 	}
 	
 	public void enableMonitor(String id){
 		
 		ThingStatusMonitor monitor=monitorDao.getObjectByID(id);
-		if(monitor.getStatus()!= ThingStatusMonitor.MonitorStatus.disable) {
+		if(monitor.getStatus()== ThingStatusMonitor.MonitorStatus.disable) {
 			creator.enableTrigger(monitor.getRelationTriggerID());
 			monitorDao.updateEntity(Collections.singletonMap("status", ThingStatusMonitor.MonitorStatus.enable), id);
+		}else{
+			throw new InvalidEntryStatusException("ThingStatusMonitor","status",monitor.getStatus().name());
 		}
 	}
 	
 	public void disableMonitor(String id){
 		ThingStatusMonitor monitor=monitorDao.getObjectByID(id);
 		
-		if(monitor.getStatus()!= ThingStatusMonitor.MonitorStatus.enable) {
+		if(monitor.getStatus()== ThingStatusMonitor.MonitorStatus.enable) {
 			
 			creator.disableTrigger(monitor.getRelationTriggerID());
 			
 			monitorDao.updateEntity(Collections.singletonMap("status", ThingStatusMonitor.MonitorStatus.disable), id);
+		}else{
+			throw new InvalidEntryStatusException("ThingStatusMonitor","status",monitor.getStatus().name());
 		}
 	}
+	
+	
 	
 	@Transactional
 	public void updateMonitor(ThingStatusMonitor monitor){
@@ -179,10 +191,19 @@ public class ThingMonitorService {
 		ThingStatusMonitor oldMonitor=monitorDao.getObjectByID(monitor.getId());
 		
 		if(!oldMonitor.getVendorThingIDs().equals(monitor.getVendorThingIDs())||
-			!oldMonitor.getExpress().equals(monitor.getExpress())||
-			!oldMonitor.getCondition().equals(monitor.getCondition())) {
+				!CommLangsUtils.safeEquals(oldMonitor.getExpress(),monitor.getExpress())||
+				!CommLangsUtils.safeEquals(oldMonitor.getCondition(),monitor.getCondition())) {
 			
-			List<Long> ids=thingDao.getThingsByVendorThings(monitor.getVendorThingIDList()).stream().map(GlobalThingInfo::getId).collect(Collectors.toList());
+			Collection<String> things=monitor.getVendorThingIDList();
+			if(things.isEmpty()){
+				things=oldMonitor.getVendorThingIDList();
+			}
+			List<Long> ids=thingDao.getThingsByVendorThings(things).stream().map(GlobalThingInfo::getId).collect(Collectors.toList());
+			
+			if(monitor.getExpress()==null&&monitor.getCondition()==null){
+				monitor.setExpress(oldMonitor.getExpress());
+				monitor.setCondition(oldMonitor.getCondition());
+			}
 			
 			TriggerRecord newTrigger=getTrigger(monitor,ids);
 			newTrigger.setTriggerID(oldMonitor.getRelationTriggerID());
