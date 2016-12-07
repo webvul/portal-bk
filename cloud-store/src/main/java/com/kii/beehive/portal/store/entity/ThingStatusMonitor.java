@@ -16,8 +16,6 @@ public class ThingStatusMonitor extends KiiEntity {
 
 	private String name;
 	
-//	private List<Long> thingIDs;
-	
 	private Map<String,Boolean> vendorThingIDs=new HashMap<>();
 	
 	private Condition condition;
@@ -32,6 +30,7 @@ public class ThingStatusMonitor extends KiiEntity {
 	
 	private MonitorStatus status;
 	
+	
 	public enum MonitorStatus{
 		enable,disable,deleted;
 	}
@@ -44,14 +43,7 @@ public class ThingStatusMonitor extends KiiEntity {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
-//	public List<Long> getThingIDs() {
-//		return thingIDs;
-//	}
-//
-//	public void setThingIDs(List<Long> thingIDs) {
-//		this.thingIDs = thingIDs;
-//	}
+
 
 	public Condition getCondition() {
 		return condition;

@@ -106,6 +106,7 @@ public class UserMonitorController {
 		
 		view.setThings(new HashSet<>(monitor.getVendorThingIDList()));
 		view.setMonitorID(monitor.getId());
+		view.setEnable(monitor.getStatus()== ThingStatusMonitor.MonitorStatus.enable);
 		
 		return view;
 	}

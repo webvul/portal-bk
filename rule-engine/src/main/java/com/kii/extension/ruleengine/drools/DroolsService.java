@@ -390,20 +390,19 @@ public class DroolsService {
 					if(!replace&&v instanceof CanUpdate){
 						
 						FactHandle handle=kieSession.getFactHandle(v);
-//
-//						CanUpdate  oldEntity=(CanUpdate)kieSession.getObject(handle);
-//						oldEntity.update(entity);
-						
-//						kieSession.update(handle,oldEntity);
-				
-						((CanUpdate)v).update(entity);
-						kieSession.update(handle,v);
-						
+						if(handle!=null) {
+							((CanUpdate) v).update(entity);
+							kieSession.update(handle, v);
+						}else{
+							kieSession.insert(entity);
+						}
 						return v;
 					}else {
 						
 						FactHandle handle=kieSession.getFactHandle(v);
-						kieSession.delete(handle);
+						if(handle!=null) {
+							kieSession.delete(handle);
+						}
 						kieSession.insert(entity);
 						return entity;
 					}

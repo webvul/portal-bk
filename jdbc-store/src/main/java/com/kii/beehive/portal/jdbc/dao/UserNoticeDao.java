@@ -127,6 +127,11 @@ public class UserNoticeDao extends SpringSimpleBaseDao<UserNotice> {
 		private UserNotice.MsgType type;
 		
 		private Boolean readed;
+		
+		private Map<Integer,String> strQuery;
+		
+		private Map<Integer,Integer> intQuery;
+		
 
 		public void setUserID(Long userID){
 			this.userID=userID;

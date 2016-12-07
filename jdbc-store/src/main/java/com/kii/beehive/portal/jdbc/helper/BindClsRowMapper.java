@@ -24,6 +24,7 @@ import org.springframework.jdbc.core.RowMapper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.kii.beehive.portal.common.utils.StrTemplate;
 import com.kii.beehive.portal.jdbc.annotation.DisplayField;
 import com.kii.beehive.portal.jdbc.annotation.JdbcField;
 import com.kii.beehive.portal.jdbc.annotation.JdbcFieldType;
@@ -227,6 +228,10 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 		}
 	}
 	
+	private static String REG_LIKE_TMP="\\^str${0}:([^\\^]*)\\${1}([^\\^]*)\\^";
+	private static String REG_EQ_TMP="\\^str${0}:${1}\\^";
+	
+	private static String NUM_TMP="substring(${0},${1},${2})";
 	public class SqlParam {
 		
 		private StringBuilder fullSql=new StringBuilder();
@@ -239,6 +244,44 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 			fullSql.append(" and ").append(field).append(" is null ");
 			
 			
+		}
+		
+		
+		public void addStrCustomLike(String field,int idx,String value){
+			
+			String fullRegExp= StrTemplate.gener(REG_LIKE_TMP,String.valueOf(idx),value);
+			
+			list.add(fullRegExp);
+			
+			fullSql.append(" and ").append(field).append(" REGEXP ? ");
+		}
+		
+		public void addStrCustomEq(String field,int idx,String value){
+			
+			String fullRegExp= StrTemplate.gener(REG_EQ_TMP,String.valueOf(idx),value);
+			
+			list.add(fullRegExp);
+			
+			fullSql.append(" and ").append(field).append(" REGEXP ? ");
+		}
+		
+		public void addNumCustomEq(String field,int idx,Integer value) {
+			String fullField = generCustomNumField(field, idx);
+			addEq(fullField,value);
+		}
+			
+		public void addNumCustomRange(String field,int idx,Integer start,Integer end){
+			
+			String fullField = generCustomNumField(field, idx);
+			
+			addBetween(fullField,start,end);
+		}
+		
+		private String generCustomNumField(String field, int idx) {
+			int begin=idx*11;
+			int offset=11;
+			
+			return StrTemplate.gener(NUM_TMP,field,String.valueOf(begin),String.valueOf(offset));
 		}
 		
 		public void addEq(String fieldName,Object val){
