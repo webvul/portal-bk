@@ -1,4 +1,4 @@
-package com.kii.beehive.portal.faceplusplus;
+package com.kii.beehive.portal.face.faceplusplus;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterThrowing;
@@ -21,7 +21,7 @@ public class FacePlusPlusAspect {
 
 	private Logger log= LoggerFactory.getLogger(FacePlusPlusAspect.class);
 
-	@Pointcut("execution (* com.kii.beehive.portal.faceplusplus.FacePlusPlusService.build*(..)  ) ")
+	@Pointcut("execution (* com.kii.beehive.portal.face.faceplusplus.FacePlusPlusService.build*(..)  ) ")
 	private void bindFaceApi(){
 	}
 

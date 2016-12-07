@@ -1,4 +1,4 @@
-package com.kii.beehive.portal.faceplusplus;
+package com.kii.beehive.portal.face.faceplusplus;
 
 import java.io.File;
 import java.util.HashMap;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.kii.beehive.portal.faceplusplus.entitys.FaceUser;
+import com.kii.beehive.portal.face.faceplusplus.entitys.FacePlusPlusUser;
 import com.kii.beehive.portal.helper.HttpInvokeBuilder;
 
 @Component
@@ -76,7 +76,7 @@ public class FacePlusPlusApiAccessBuilder {
 	 * register
 	 * @return
 	 */
-	public HttpUriRequest buildSubject(FaceUser faceUser) {
+	public HttpUriRequest buildSubject(FacePlusPlusUser faceUser) {
 
 		String fullUrl = baseUrl + "/subject";
 
@@ -95,7 +95,7 @@ public class FacePlusPlusApiAccessBuilder {
 	 * update user
 	 * @return
 	 */
-	public HttpUriRequest buildUpdateSubject(FaceUser faceUser) {
+	public HttpUriRequest buildUpdateSubject(FacePlusPlusUser faceUser) {
 
 		String fullUrl = baseUrl + "/subject/" + faceUser.getId();
 

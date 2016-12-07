@@ -16,7 +16,7 @@
     </logger>
 
     <logger name="org.apache.http.wire">
-        <level value="debug" />
+        <level value="info" />
     </logger>
 
 

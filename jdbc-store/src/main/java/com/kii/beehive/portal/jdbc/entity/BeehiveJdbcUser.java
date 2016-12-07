@@ -32,6 +32,9 @@ public class BeehiveJdbcUser extends BusinessEntity {
 
 
 	private Integer faceSubjectId; // face++
+	private String yituFaceImageId; // yitu face
+
+
 
 	private Boolean enable;
 
@@ -62,6 +65,14 @@ public class BeehiveJdbcUser extends BusinessEntity {
 		this.faceSubjectId = faceSubjectId;
 	}
 
+	@JdbcField(column = "yitu_face_image_id")
+	public String getYituFaceImageId() {
+		return yituFaceImageId;
+	}
+
+	public void setYituFaceImageId(String yituFaceImageId) {
+		this.yituFaceImageId = yituFaceImageId;
+	}
 
 	@JdbcField(column = "beehive_user_id")
 	@Override

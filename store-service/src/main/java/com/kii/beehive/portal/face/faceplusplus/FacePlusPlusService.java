@@ -1,4 +1,4 @@
-package com.kii.beehive.portal.faceplusplus;
+package com.kii.beehive.portal.face.faceplusplus;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
@@ -23,7 +23,7 @@ import org.springframework.util.StringUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kii.beehive.portal.faceplusplus.entitys.FaceUser;
+import com.kii.beehive.portal.face.faceplusplus.entitys.FacePlusPlusUser;
 import com.kii.beehive.portal.helper.HttpClient;
 import com.kii.beehive.portal.jdbc.dao.BeehiveUserJdbcDao;
 import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
@@ -63,8 +63,7 @@ public class FacePlusPlusService {
 
     private Logger log = LoggerFactory.getLogger(FacePlusPlusService.class);
 
-    List<String> cookieList = new ArrayList<String>();
-//    Cookie cookie;
+    private List<String> cookieList = new ArrayList<>();
 
     @PostConstruct
     public void init() throws JsonProcessingException, URISyntaxException {
@@ -73,7 +72,6 @@ public class FacePlusPlusService {
         startConnection();
 
     }
-
 
     public Map<String, Object> buildUploadPhoto(File photoFile) {
         if(photoFile == null)
@@ -102,7 +100,7 @@ public class FacePlusPlusService {
     }
 
     //register
-    public Map<String, Object> buildSubject(FaceUser faceUser) {
+    public Map<String, Object> buildSubject(FacePlusPlusUser faceUser) {
 
         HttpUriRequest faceRequest = facePlusPlusApiAccessBuilder.buildSubject(faceUser);
         faceRequest.setHeader("cookie", cookieList.get(0));//*
@@ -120,7 +118,7 @@ public class FacePlusPlusService {
         return result;
     }
     //update
-    public Map<String, Object> buildUpdateSubject(FaceUser faceUser) {
+    public Map<String, Object> buildUpdateSubject(FacePlusPlusUser faceUser) {
 
         HttpUriRequest faceRequest = facePlusPlusApiAccessBuilder.buildUpdateSubject(faceUser);
         faceRequest.setHeader("cookie", cookieList.get(0));//*
@@ -172,7 +170,6 @@ public class FacePlusPlusService {
         log.debug("buildGetSubjects: \n" + responseBody);
 
     }
-
 
 
 

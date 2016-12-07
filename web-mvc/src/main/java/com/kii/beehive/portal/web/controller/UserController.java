@@ -1,7 +1,5 @@
 package com.kii.beehive.portal.web.controller;
 
-import javax.annotation.PostConstruct;
-
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -10,12 +8,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
-
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,11 +22,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
-
 import com.kii.beehive.business.service.sms.SmsSendService;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.entitys.PermissionTree;
-import com.kii.beehive.portal.faceplusplus.BeehiveFacePlusPlusService;
+import com.kii.beehive.portal.face.BeehiveFaceService;
 import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 import com.kii.beehive.portal.manager.AuthManager;
 import com.kii.beehive.portal.manager.BeehiveUserManager;
@@ -56,7 +52,7 @@ public class UserController {
 	private AuthManager authManager;
 
 	@Autowired
-	private BeehiveFacePlusPlusService service;
+	private BeehiveFaceService service;
 
 	@Autowired
 	private SmsSendService smsService;
@@ -64,21 +60,6 @@ public class UserController {
 	@Autowired
 	private UserCustomDataDao dataDao;
 
-
-	@Value("${face.photo.dir:${user.home}/data/beehive/face/photo/}")
-	private String facePhotoDir;
-
-	private File photoDir;
-
-	@PostConstruct
-	public void init() {
-
-		photoDir = new File(facePhotoDir);
-		if (!photoDir.exists()) {
-
-			photoDir.mkdirs();
-		}
-	}
 
 	/**
 	 * 创建用户
@@ -125,28 +106,28 @@ public class UserController {
 		return map;
 
 	}
-	
+
 	@RequestMapping(path = "/usermanager/{userid}/resetActivate", method = {RequestMethod.POST})
 	public Map<String, Object> resetActivate(@PathVariable("userid") String userID) {
-		
-		
+
+
 		Map<String, Object> newUser = adminManager.resetActivate(userID);
-		
+
 		BeehiveJdbcUser userInfo = (BeehiveJdbcUser) newUser.get("user");
-		
+
 		String token = (String) newUser.get("activityToken");
-		
+
 		smsService.sendActivitySms(userInfo, token);
-		
-		
+
+
 		Map<String, Object> map = new HashMap<>();
-		
+
 		map.put("userID", userID);
 		map.put("activityToken", token);
-		
-		
+
+
 		return map;
-		
+
 	}
 
 
@@ -353,31 +334,26 @@ public class UserController {
 	}
 
 
+
+
 	@RequestMapping(value = "/user/photo", method = RequestMethod.POST, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
 	public
 	@ResponseBody
 	UserRestBean uploadFacePhoto(
 			@RequestParam(value = "userId") String userId,
-			@RequestParam(value = "clearOldPhoto", defaultValue = "false") Boolean clearOldPhoto,
-			@RequestParam(value = "photos") CommonsMultipartFile[] photos) throws IOException {
+			@RequestParam(value = "photo") CommonsMultipartFile photo) throws IOException {
 
-
-		if (photos.length == 0) {
+		if (photo == null) {
 			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "field", "phone");
 		}
-		List<File> photoFiles = new ArrayList<>();
 
-		for (CommonsMultipartFile photo : photos) {
+		File photoFile = File.createTempFile(userId + "-" + UUID.randomUUID() + "-", photo.getOriginalFilename(), service.getPhotoTempDir());
+		byte[] bytes = photo.getBytes();
+		BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(photoFile));
+		stream.write(bytes);
+		stream.close();
 
-			File photoFile = File.createTempFile("photo-" + userId + "-", photo.getOriginalFilename(), photoDir);
-			byte[] bytes = photo.getBytes();
-			BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(photoFile));
-			stream.write(bytes);
-			stream.close();
-			photoFiles.add(photoFile);
-		}
-
-		BeehiveJdbcUser user = service.updateUserWithFace(userId, clearOldPhoto, photoFiles);
+		BeehiveJdbcUser user = service.updateUserWithFace(userId, photoFile);
 		UserRestBean bean = new UserRestBean(user);
 		return bean;
 	}

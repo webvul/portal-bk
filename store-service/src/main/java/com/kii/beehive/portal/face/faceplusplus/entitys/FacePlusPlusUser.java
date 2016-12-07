@@ -1,11 +1,11 @@
-package com.kii.beehive.portal.faceplusplus.entitys;
+package com.kii.beehive.portal.face.faceplusplus.entitys;
 
 import java.util.List;
 
 /**
  * Created by user on 16/6/21.
  */
-public class FaceUser {
+public class FacePlusPlusUser {
 	//用户类型 {0:员工, 1:访客, 2: VIP访客}
 	public static int SUBJECT_TYPE_EMPLOYEE = 0;
 	public static int SUBJECT_TYPE_VISITOR = 1;
