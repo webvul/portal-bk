@@ -1,7 +1,9 @@
 package com.kii.beehive.portal.jdbc.dao;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -86,6 +88,19 @@ public class UserNoticeDao extends SpringSimpleBaseDao<UserNotice> {
 	public void updateAllSign(Long userID) {
 		
 		super.jdbcTemplate.update(updateAllUnRead,true,userID);
+		
+	}
+	
+	private static final String updateAllUnReadByIds= StrTemplate.gener("update ${0} set ${1} = :readed  where ${2} = :user_id and ${3} in (:ids) ",TABLE_NAME,UserNotice.READED,UserNotice.USER_ID,UserNotice.NOTICE_ID);
+	
+	public void updateAllSign(Long userID,Collection<Long> ids) {
+		
+		Map<String,Object> params=new HashMap();
+		params.put("user_id",userID);
+		params.put("ids",ids);
+		params.put("readed",true);
+		
+		super.namedJdbcTemplate.update(updateAllUnReadByIds,params);
 		
 	}
 	

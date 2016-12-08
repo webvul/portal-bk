@@ -3,7 +3,10 @@ package com.kii.beehive.business.entity;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.beans.BeanUtils;
+
 import com.kii.beehive.portal.jdbc.entity.NoticeActionType;
+import com.kii.beehive.portal.store.entity.ThingStatusMonitor;
 
 public class ThingStatusNoticeEntry {
 	
@@ -16,7 +19,7 @@ public class ThingStatusNoticeEntry {
 	
 	private Set<String> currMatchers;
 	
-	private String monitorID;
+	private ThingStatusMonitor monitor;
 	
 	public Map<String, Object> getCurrStatus() {
 		return currStatus;
@@ -50,11 +53,15 @@ public class ThingStatusNoticeEntry {
 		this.currMatchers = currMatchers;
 	}
 	
-	public String getMonitorID() {
-		return monitorID;
+	public ThingStatusMonitor getMonitor() {
+		return monitor;
 	}
 	
-	public void setMonitorID(String monitorID) {
-		this.monitorID = monitorID;
+	public void setMonitor(ThingStatusMonitor monitor) {
+		
+		this.monitor = new ThingStatusMonitor();
+		
+		BeanUtils.copyProperties(monitor,this.monitor,"relationTriggerID","noticeList","status");
+		
 	}
 }

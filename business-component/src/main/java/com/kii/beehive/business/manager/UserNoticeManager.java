@@ -1,6 +1,7 @@
 package com.kii.beehive.business.manager;
 
 
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +57,12 @@ public class UserNoticeManager {
 	public void setAllReadSign(){
 		
 		noticeDao.updateAllSign(AuthInfoStore.getUserID());
+		
+	}
+	
+	public void setAllReadSign(Collection<Long> ids){
+		
+		noticeDao.updateAllSign(AuthInfoStore.getUserID(),ids);
 		
 	}
 	

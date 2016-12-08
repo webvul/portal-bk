@@ -40,7 +40,7 @@ public class ThingStatusMonitor extends KiiEntity {
 		Set<String> ids=new HashSet<>(vendorThingIDList);
 		
 		for(String id:ids){
-			vendorThingIDs.putIfAbsent(id,false);
+			vendorThingIDs.putIfAbsent(id,null);
 		}
 	}
 	

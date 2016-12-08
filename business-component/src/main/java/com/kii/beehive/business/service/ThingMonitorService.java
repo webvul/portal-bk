@@ -88,7 +88,7 @@ public class ThingMonitorService {
 		entry.setActionType(sign?NoticeActionType.ThingMonitorType.false2true:NoticeActionType.ThingMonitorType.true2false);
 		entry.setCurrThing(th.getVendorThingID());
 		entry.setCurrStatus(status);
-		entry.setMonitorID(monitorID);
+		entry.setMonitor(monitor);
 		
 		Set<String> matcher=thingDao.getThingListByFullKiiThingIDs(currMatcher).stream().map(GlobalThingInfo::getVendorThingID).collect(Collectors.toSet());
 		entry.setCurrMatchers(matcher);
