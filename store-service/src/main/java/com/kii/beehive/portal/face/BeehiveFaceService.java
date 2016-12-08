@@ -104,7 +104,7 @@ public class BeehiveFaceService implements ApplicationContextAware{
 			e.printStackTrace();
 		}
 		yituFaceImage.setPicture_image_content_base64(Base64.encodeBase64String(data));
-		FaceImage faceImage = yituFaceService.uploadImage(yituFaceImage);
+		FaceImage faceImage = yituFaceService.doUploadImage(yituFaceImage);
 		if(faceImage == null) {
 			throw new RuntimeException("upload yitu photo error ! ");
 		}
@@ -116,12 +116,12 @@ public class BeehiveFaceService implements ApplicationContextAware{
 			throw new RuntimeException("store photo error ! ");
 		}
 		//yitu
-		if (! StringUtils.isEmpty(user.getYituFaceImageId())) { //
-			yituFaceService.deleteImage(user.getYituFaceImageId());
+		if (! StringUtils.isEmpty(user.getYituFaceImageId())) {
+			yituFaceService.doDeleteImage(user.getYituFaceImageId());
 		}
 		user.setYituFaceImageId(String.valueOf(faceImage.getFace_image_id()));
 		//face++
-		if (StringUtils.isEmpty(user.getFaceSubjectId())) { //
+		if (StringUtils.isEmpty(user.getFaceSubjectId())) {
 			//register
 			FacePlusPlusUser faceUser = new FacePlusPlusUser();
 			faceUser.setSubject_type(FacePlusPlusUser.SUBJECT_TYPE_EMPLOYEE);

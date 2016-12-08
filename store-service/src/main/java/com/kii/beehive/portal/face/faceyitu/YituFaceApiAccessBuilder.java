@@ -41,12 +41,12 @@ public class YituFaceApiAccessBuilder {
 			json.put("name", faceUsername);
 			json.put("password", facePassword);
 			body = objectMapper.writeValueAsString(json);
-		} catch (Exception e1) {
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
 		}
 		HttpUriRequest invoke = new HttpInvokeBuilder().setUrl(fullUrl)
 				.buildCustomCall("post", body).generRequest(objectMapper);
 
-//		invoke.setHeader("user-agent", "Koala Admin");
 		invoke.setHeader("Content-Type", "application/json");
 
 		return invoke;

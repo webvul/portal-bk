@@ -5,7 +5,7 @@ package com.kii.beehive.portal.face;
  */
 public interface FaceServiceInf {
 
-//    public FaceImage uploadImage(File imageFile);
+//    public FaceImage doUploadImage(File imageFile);
 //
-//    public boolean deleteImage(String id);
+//    public boolean doDeleteImage(String id);
 }

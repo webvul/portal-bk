@@ -50,13 +50,11 @@ public class YituFaceService implements FaceServiceInf {
 
 	private Logger log = LoggerFactory.getLogger(YituFaceService.class);
 
-	List<String> cookieList = new ArrayList<String>();
+	private List<String> cookieList = new ArrayList<>();
 
 	@PostConstruct
 	public void init() throws JsonProcessingException, URISyntaxException {
-
 		loginServer();
-//		buildGetRepository();
 	}
 
 
@@ -70,10 +68,9 @@ public class YituFaceService implements FaceServiceInf {
 
 			responseBody = httpClient.executeRequest(faceRequest);
 
-			Map<String, Object> result = objectMapper.readValue(responseBody, new TypeReference<HashMap>() {
-			});
+			Map<String, Object> result = objectMapper.readValue(responseBody, new TypeReference<HashMap>() {});
 			if (result != null && result.get("rtn") != null && !result.get("rtn").toString().equals("0")) {
-				log.error("Login to face yitu failed, result:" + result);
+				log.error("login to face yitu failed, result:" + result);
 				return;
 			}
 
@@ -87,7 +84,7 @@ public class YituFaceService implements FaceServiceInf {
 
 	}
 
-	public FaceImage uploadImage(File imageFile) {
+	public FaceImage doUploadImage(File imageFile) {
 
 		YituFaceImage yituFaceImage = new YituFaceImage();
 
@@ -103,10 +100,10 @@ public class YituFaceService implements FaceServiceInf {
 		}
 
 		yituFaceImage.setPicture_image_content_base64(Base64.encodeBase64String(data));
-		return uploadImage(yituFaceImage);
+		return doUploadImage(yituFaceImage);
 	}
 
-	public FaceImage uploadImage(YituFaceImage yituFaceImage) {
+	public FaceImage doUploadImage(YituFaceImage yituFaceImage) {
 
 		String responseBody = null;
 
@@ -136,33 +133,36 @@ public class YituFaceService implements FaceServiceInf {
 	}
 
 	//register
-	public boolean deleteImage(String id) {
+	public boolean doDeleteImage(String id) {
 		boolean rtn = false;
 		FaceImage faceImage = new FaceImage();
 		faceImage.setFace_image_id(Long.valueOf(id));
 		HttpUriRequest faceRequest = yituFaceApiAccessBuilder.buildDeleteImage(faceImage);
 		faceRequest.setHeader("cookie", cookieList.get(0));
-		log.debug("deleteImage :" + faceRequest.getURI());
+		log.debug("doDeleteImage :" + faceRequest.getURI());
 		String responseBody = null;
 		responseBody = httpClient.executeRequest(faceRequest);
-		log.debug("deleteImage \n" + responseBody);
+		log.debug("doDeleteImage \n" + responseBody);
 		Map<String, Object> result = null;
 		try {
 			result = objectMapper.readValue(responseBody, new TypeReference<HashMap>() {});
 		} catch (IOException e) {
 			e.printStackTrace();
 			log.error(responseBody);
-			throw new FaceYituException();
+
 		}
 		if(result.get("rtn").toString().equals("0")){
 			rtn = true;
+		}
+		else if(result.get("rtn").toString().equals("-10037")){
+			throw new FaceYituException();
 		}
 		return rtn;
 	}
 
 
 
-	public void buildGetRepository() {
+	public void doGetRepository() {
 
 		HttpUriRequest faceRequest = yituFaceApiAccessBuilder.buildGetRepository();
 		faceRequest.setHeader("cookie", cookieList.get(0));
