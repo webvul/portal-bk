@@ -15,14 +15,35 @@ public class ThingStatusNoticeEntry {
 	
 	private String currThing;
 	
+	private Long currThingInThID;
+	
 	private NoticeActionType.ThingMonitorType actionType;
 	
 	private Set<String> currMatchers;
+	
+	private Set<Long> currMatchersInThID;
+	
 	
 	private ThingStatusMonitor monitor;
 	
 	public Map<String, Object> getCurrStatus() {
 		return currStatus;
+	}
+	
+	public Long getCurrThingInThID() {
+		return currThingInThID;
+	}
+	
+	public void setCurrThingInThID(Long currThingWithThID) {
+		this.currThingInThID = currThingWithThID;
+	}
+	
+	public Set<Long> getCurrMatchersInThID() {
+		return currMatchersInThID;
+	}
+	
+	public void setCurrMatchersInThID(Set<Long> currMatchersWithThID) {
+		this.currMatchersInThID = currMatchersWithThID;
 	}
 	
 	public void setCurrStatus(Map<String, Object> currStatus) {

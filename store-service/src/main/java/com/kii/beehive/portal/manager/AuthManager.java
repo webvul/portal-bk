@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,6 +64,7 @@ public class AuthManager {
 
 	@Autowired
 	protected TeamUserRelationDao teamUserRelationDao;
+
 
 
 	private Map<String, String> oneTimeTokenMap = new ConcurrentHashMap<>();
@@ -201,6 +203,7 @@ public class AuthManager {
 	}
 
 	public AuthUser validateLoginAccessToken(String token) {
+		
 		AuthInfo authInfo = authService.getAuthInfoByToken(token);
 
 		// if auth info not found in both cache and DB, throw Exception

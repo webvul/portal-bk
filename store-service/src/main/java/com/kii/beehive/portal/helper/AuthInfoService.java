@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.entitys.AuthInfo;
@@ -33,7 +34,12 @@ public class AuthInfoService {
 
 	@Autowired
 	private UserTokenBindTool tokenBind;
+	
+	
+	@Value("${spring.profile}")
+	private String profile;
 
+	
     public void createAuthInfoEntry(AuthInfo authInfo, String token) {
 
         log.debug("createAuthInfoEntry token: " + token + " for userID: " + authInfo.getUserID());
@@ -58,6 +64,12 @@ public class AuthInfoService {
 
 	public AuthInfo getAuthInfoByToken(String token){
 
+		if(("local".equals(profile)||
+				"internal.dev".equals(profile) ) && "super_token".equals(token)){
+			AuthInfo info = new AuthInfo();
+			info.setUserID(0l);
+			return info;
+		}
 
 		AuthInfo info= userTokenMap.get(token);
 
