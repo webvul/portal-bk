@@ -6,7 +6,7 @@
 
     <script language="javascript" >
 
-        funName doCall(url,data,type,callback){
+        function doCall(url,data,type,callback){
             var ajaxParam={};
 
             var headers={};
@@ -49,7 +49,7 @@
 			    ajaxParam["data"]=JSON.stringify(data);
 		    }
 
-            var local="http://114.215.196.178:8080/beehive-portal/api/";
+            var local="http://localhost:9090/beehive-portal/api/";
 
 		    $.ajax(local+url,ajaxParam);
 
@@ -57,9 +57,22 @@
         }
 
 
-        funName hello(){
+        function hello(){
 
             doCall("/echo",{"foo":"bar"});
+
+        }
+
+        function openWS(){
+            var exampleSocket = new WebSocket("ws://localhost:9090/beehive-portal/socket/users/notices");
+
+            exampleSocket.send("super_token");
+
+            exampleSocket.onmessage = function (event) {
+              console.log(event.data);
+            }
+
+
 
         }
 
@@ -71,6 +84,9 @@
 <body>
 
 <li><button onclick="hello();"  >hello</button></li>
+
+<li><button onclick="openWS();" >login</button></li>
+
 
 
 </body>

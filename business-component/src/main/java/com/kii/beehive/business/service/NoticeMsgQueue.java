@@ -45,7 +45,9 @@ public class NoticeMsgQueue {
 			boolean sign=true;
 			while(sign) {
 				TransferQueue<UserNotice> queue = queueMap.putIfAbsent(userID, new LinkedTransferQueue<>());
-				
+				if(queue==null){
+					continue;
+				}
 				try {
 					UserNotice notice = queue.take();
 				

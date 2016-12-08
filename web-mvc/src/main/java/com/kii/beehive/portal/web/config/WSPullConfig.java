@@ -33,7 +33,7 @@ public class WSPullConfig implements WebSocketConfigurer {
 		registry.addHandler(new EchoHandler(), "/echo").setAllowedOrigins("*");
 		
 		registry.addHandler(handler, "/users/notices")
-				.setHandshakeHandler(factory.getHandshakeHandler())
+//				.setHandshakeHandler(factory.getHandshakeHandler())
 				.setAllowedOrigins("*");
 	}
 	

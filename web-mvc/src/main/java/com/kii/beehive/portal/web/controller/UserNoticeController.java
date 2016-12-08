@@ -61,11 +61,15 @@ public class UserNoticeController {
 	}
 	
 	@RequestMapping(path="/all/readed",method = {RequestMethod.PUT})
-	public void setAllNoticeReaded(){
+	public void setAllNoticeReaded(@RequestBody List<Long> ids){
 		
-		manager.setAllReadSign();
-		
+		if(ids.isEmpty()) {
+			manager.setAllReadSign();
+		}else{
+			manager.setAllReadSign(ids);
+		}
 	}
+	
 	
 	@RequestMapping(path="/query",method = {RequestMethod.POST})
 	public List<UserNotice> queryNotice(@RequestBody UserNoticeDao.NoticeQuery query,@RequestParam(name="pager",required=false) String pagerSign){

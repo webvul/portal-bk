@@ -442,7 +442,9 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 			GlobalThingInfo.FULL_KII_THING_ID,GlobalThingInfo.VIEW_USER_ID);
 	public List<GlobalThingInfo>  getThingListByFullKiiThingIDs(Collection<String> kiiThingIDs) {
 		
-		
+		if(kiiThingIDs.isEmpty()){
+			return new ArrayList<>();
+		}
 		
 		Map<String,Object> map=new HashMap<>();
 		map.put("userID",AuthInfoStore.getUserID());

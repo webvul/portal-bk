@@ -1,7 +1,9 @@
 package com.kii.beehive.portal.jdbc.dao;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -81,11 +83,25 @@ public class UserNoticeDao extends SpringSimpleBaseDao<UserNotice> {
 	}
 	
 	
-	private static final String updateAllUnRead= StrTemplate.gener("update ${0} set ${1} = ?  where ${2} = ?  ",TABLE_NAME,UserNotice.READED,UserNotice.USER_ID);
+	private static final String updateAllUnRead= StrTemplate.gener("update ${0} set ${1} = ? ,${4}= ?  where ${2} = ?  ",TABLE_NAME,UserNotice.READED,UserNotice.USER_ID,UserNotice.READED_TIME);
 	
 	public void updateAllSign(Long userID) {
 		
-		super.jdbcTemplate.update(updateAllUnRead,true,userID);
+		super.jdbcTemplate.update(updateAllUnRead,true,new Date(),userID);
+		
+	}
+	
+	private static final String updateAllUnReadByIds= StrTemplate.gener("update ${0} set ${1} = :readed ,${4}= :date  where ${2} = :user_id and ${3} in (:ids) ",TABLE_NAME,UserNotice.READED,UserNotice.USER_ID,UserNotice.NOTICE_ID,UserNotice.READED_TIME);
+	
+	public int updateAllSign(Long userID,Collection<Long> ids) {
+		
+		Map<String,Object> params=new HashMap();
+		params.put("user_id",userID);
+		params.put("ids",ids);
+		params.put("readed",true);
+		params.put("date",new Date());
+		
+		return super.namedJdbcTemplate.update(updateAllUnReadByIds,params);
 		
 	}
 	

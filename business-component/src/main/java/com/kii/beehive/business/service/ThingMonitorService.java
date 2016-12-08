@@ -87,11 +87,17 @@ public class ThingMonitorService {
 		ThingStatusNoticeEntry entry=new ThingStatusNoticeEntry();
 		entry.setActionType(sign?NoticeActionType.ThingMonitorType.false2true:NoticeActionType.ThingMonitorType.true2false);
 		entry.setCurrThing(th.getVendorThingID());
-		entry.setCurrStatus(status);
-		entry.setMonitorID(monitorID);
+		entry.setCurrThingInThID(th.getId());
 		
-		Set<String> matcher=thingDao.getThingListByFullKiiThingIDs(currMatcher).stream().map(GlobalThingInfo::getVendorThingID).collect(Collectors.toSet());
+		
+		entry.setCurrStatus(status);
+		entry.setMonitor(monitor);
+		
+		List<GlobalThingInfo>  thList=thingDao.getThingListByFullKiiThingIDs(currMatcher);
+		
+		Set<String> matcher=thList.stream().map(GlobalThingInfo::getVendorThingID).collect(Collectors.toSet());
 		entry.setCurrMatchers(matcher);
+		entry.setCurrMatchersInThID(thList.stream().map(GlobalThingInfo::getId).collect(Collectors.toSet()));
 		
 		String json= "{}";
 		try {
