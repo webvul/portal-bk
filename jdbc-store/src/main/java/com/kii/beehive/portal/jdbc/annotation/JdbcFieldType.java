@@ -7,7 +7,7 @@ import java.sql.Types;
 
 public enum JdbcFieldType {
 
-	Auto,Json,EnumInt,EnumStr;
+	Auto,Json,EnumInt,EnumStr,AdditionStr,AdditionInt;
 
 	public int getSqlType() {
 
@@ -17,7 +17,10 @@ public enum JdbcFieldType {
 			case EnumInt:
 				return Types.INTEGER;
 			case EnumStr:
+			case AdditionInt:
+			case AdditionStr:
 				return Types.VARCHAR;
+			
 			default:
 				return TYPE_UNKNOWN;
 		}

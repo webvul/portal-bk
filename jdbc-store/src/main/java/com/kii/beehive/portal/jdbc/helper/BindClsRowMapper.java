@@ -1,13 +1,13 @@
 package com.kii.beehive.portal.jdbc.helper;
 
+import static com.kii.beehive.portal.jdbc.helper.JdbcConvertTool.NUMBER_LEN;
+
 import java.beans.PropertyDescriptor;
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,8 +21,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.jdbc.core.RowMapper;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.beehive.portal.common.utils.StrTemplate;
 import com.kii.beehive.portal.jdbc.annotation.DisplayField;
@@ -40,13 +38,12 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 	
 	private final Map<String,String> propertyMap;
 
-	private final  ObjectMapper  objectMapper;
 	
 	private final BeanWrapper beanWrapper;
 
 	private final Class<T> cls;
 	
-	public BindClsRowMapper(Class<T> cls,ObjectMapper objectMapper){
+	public BindClsRowMapper(Class<T> cls){
 
 		this.cls=cls;
 
@@ -78,7 +75,6 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 
 		propertyMap=Collections.unmodifiableMap(propMap);
 		
-		this.objectMapper=objectMapper;
 	}
 
 
@@ -97,38 +93,8 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 
 			Class propCls=beanWrapper.getPropertyDescriptor(propName).getPropertyType();
 
-			Object fieldInst=null;
-			switch (type){
-				case Auto:
-					fieldInst=autoConvert(rs,field,propCls);
-					break;
-				case EnumInt:
-					int val=rs.getInt(field);
-					fieldInst=propCls.getEnumConstants()[val];
-					break;
-				case EnumStr:
-					String strVal=rs.getString(field);
-					fieldInst=Enum.valueOf(propCls,strVal);
-					break;
-				case Json:
-
-					String json=rs.getString(field);
-					try {
-						if(StringUtils.isBlank(json)){
-							fieldInst=null;
-							break;
-						}
-						Map<String,Object>  map = objectMapper.readValue(json,Map.class);
-						fieldInst=map;
-					} catch (IOException e) {
-						log.error("get json field fail",e);
-					}
-					break;
-				default:
-					fieldInst=rs.getObject(field);
-
-			}
-
+			Object fieldInst=JdbcConvertTool.getEntityValue(rs,field,propCls,type);
+			
 			log.debug(" fill row target "+fieldInst+" to field "+field);
 			
 			beanWrapperInst.setPropertyValue(fieldMapper.get(field), fieldInst);
@@ -138,33 +104,7 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 		return (T)beanWrapperInst.getWrappedInstance();
 	}
 
-	private Object autoConvert(ResultSet rs,String key,Class target) throws SQLException {
-
-		Object result=null;
-		try{
-			if(target.equals(Date.class)){
-					java.sql.Timestamp date=rs.getTimestamp(key);
-					if(date!=null) {
-						result = new Date(date.getTime());
-					}
-			}else if(target.isPrimitive()){
-				result=rs.getObject(key,target);
-			}else if(target.equals(String.class)){
-				
-					result=rs.getString(key);
-				
-			}else if(target.equals(Boolean.class)){
-				result=rs.getBoolean(key);
-			}else if( Number.class.isAssignableFrom(target)){
-				result=rs.getObject(key);
-			}else{
-				result=rs.getObject(key,target);
-			}
-		} catch (SQLException sqlex){
-			result = null;
-		}
-		return result;
-	}
+	
 	
 	
 	public  SqlParam getSqlParamInstance(String tableName){
@@ -232,6 +172,12 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 	private static String REG_EQ_TMP="\\^str${0}:${1}\\^";
 	
 	private static String NUM_TMP="substring(${0},${1},${2})";
+	
+	
+	public static final String ADDITIION_STRING="addition_strprop";
+	
+	public static final String ADDITIION_INT="addition_intprop";
+	
 	public class SqlParam {
 		
 		private StringBuilder fullSql=new StringBuilder();
@@ -246,8 +192,18 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 			
 		}
 		
+		public void addStrCustom(SqlCondition query){
+			
+			if(query.getExpress()== SqlCondition.SqlExpress.Eq){
+				addStrCustomEq(ADDITIION_STRING,query.getAdditionIdx(),String.valueOf(query.getValue()));
+			}else{
+				addStrCustomLike(ADDITIION_STRING,query.getAdditionIdx(),String.valueOf(query.getValue()));
+			}
+			
+		}
+
 		
-		public void addStrCustomLike(String field,int idx,String value){
+		private  void addStrCustomLike(String field,int idx,String value){
 			
 			String fullRegExp= StrTemplate.gener(REG_LIKE_TMP,String.valueOf(idx),value);
 			
@@ -256,7 +212,7 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 			fullSql.append(" and ").append(field).append(" REGEXP ? ");
 		}
 		
-		public void addStrCustomEq(String field,int idx,String value){
+		private  void addStrCustomEq(String field,int idx,String value){
 			
 			String fullRegExp= StrTemplate.gener(REG_EQ_TMP,String.valueOf(idx),value);
 			
@@ -265,12 +221,26 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 			fullSql.append(" and ").append(field).append(" REGEXP ? ");
 		}
 		
-		public void addNumCustomEq(String field,int idx,Integer value) {
+		
+		
+		
+		public void addIntCustom(SqlCondition query){
+			
+			if(query.getExpress()== SqlCondition.SqlExpress.Eq){
+				addNumCustomEq(ADDITIION_INT,query.getAdditionIdx(),(Integer)query.getValue());
+			}else{
+				addNumCustomRange(ADDITIION_INT,query.getAdditionIdx(),(Integer)query.getStart(),(Integer)query.getEnd());
+			}
+			
+			
+		}
+		
+		private void addNumCustomEq(String field,int idx,Integer value) {
 			String fullField = generCustomNumField(field, idx);
 			addEq(fullField,value);
 		}
 			
-		public void addNumCustomRange(String field,int idx,Integer start,Integer end){
+		private void addNumCustomRange(String field,int idx,Integer start,Integer end){
 			
 			String fullField = generCustomNumField(field, idx);
 			
@@ -278,8 +248,8 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 		}
 		
 		private String generCustomNumField(String field, int idx) {
-			int begin=idx*11;
-			int offset=11;
+			int begin=idx*(NUMBER_LEN+1)+1;
+			int offset=NUMBER_LEN;
 			
 			return StrTemplate.gener(NUM_TMP,field,String.valueOf(begin),String.valueOf(offset));
 		}
@@ -355,21 +325,14 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 			Class propCls=beanWrapper.getPropertyType(field);
 			JdbcFieldType type=sqlTypeMapper.get(fieldName);
 			
-			if(type == JdbcFieldType.EnumInt){
+			switch (type){
 				
-				return ((Enum)val).ordinal();
-				
-			}else if(propCls.equals(String.class)&&type==JdbcFieldType.Auto){
-				
-				return  String.valueOf(val);
-				
-			}else if(type == JdbcFieldType.EnumStr){
-				
-				return ((Enum)val).name();
-				
-			}else {
-				return val;
+				case EnumInt:return ((Enum)val).ordinal();
+				case Auto:return  String.valueOf(val);
+				case EnumStr:return ((Enum)val).name();
+				default:return val;
 			}
+			
 		}
 		
 		public String getFullSql(){
@@ -383,4 +346,7 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 		
 	
 	}
+	
+
+	
 }

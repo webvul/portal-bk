@@ -1,9 +1,9 @@
 package com.kii.beehive.portal.jdbc.entity;
 
-import java.util.Date;
-
 public class DBEntity {
+	
 
+	
 	private Long id;
 
 

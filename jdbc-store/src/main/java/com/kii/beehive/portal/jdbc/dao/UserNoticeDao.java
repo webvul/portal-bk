@@ -1,5 +1,6 @@
 package com.kii.beehive.portal.jdbc.dao;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import com.kii.beehive.portal.common.utils.StrTemplate;
 import com.kii.beehive.portal.jdbc.entity.UserNotice;
 import com.kii.beehive.portal.jdbc.helper.BindClsRowMapper;
+import com.kii.beehive.portal.jdbc.helper.SqlCondition;
 
 @Repository
 public class UserNoticeDao extends SpringSimpleBaseDao<UserNotice> {
@@ -43,6 +45,17 @@ public class UserNoticeDao extends SpringSimpleBaseDao<UserNotice> {
 		sqlParam.addLike("from",query.from);
 		sqlParam.addEq("actionType",query.actionType);
 		sqlParam.addEq("userID",query.userID);
+		
+		query.strConditionList.forEach((cond)->{
+			
+			sqlParam.addStrCustom(cond);
+			
+		});
+		
+		query.intConditionList.forEach((cond)->{
+			sqlParam.addIntCustom(cond);
+		});
+		
 		
 		sqlParam.addPager(pager);
 		
@@ -106,6 +119,7 @@ public class UserNoticeDao extends SpringSimpleBaseDao<UserNotice> {
 	}
 	
 	
+	
 	public static class NoticeQuery{
 		
 		/*
@@ -144,11 +158,20 @@ public class UserNoticeDao extends SpringSimpleBaseDao<UserNotice> {
 		
 		private Boolean readed;
 		
-		private Map<Integer,String> strQuery;
-		
-		private Map<Integer,Integer> intQuery;
 		
 
+		private List<SqlCondition>  strConditionList=new ArrayList<>();
+		
+		private List<SqlCondition>  intConditionList=new ArrayList<>();
+		
+		public void setStrConditionList(List<SqlCondition> strConditionList) {
+			this.strConditionList = strConditionList;
+		}
+		
+		public void setIntConditionList(List<SqlCondition> intConditionList) {
+			this.intConditionList = intConditionList;
+		}
+		
 		public void setUserID(Long userID){
 			this.userID=userID;
 		}
@@ -191,6 +214,7 @@ public class UserNoticeDao extends SpringSimpleBaseDao<UserNotice> {
 		}
 
 	
+		
 	}
 	
 	
