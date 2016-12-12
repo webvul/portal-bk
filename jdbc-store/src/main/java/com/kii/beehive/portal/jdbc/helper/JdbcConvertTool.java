@@ -3,9 +3,8 @@ package com.kii.beehive.portal.jdbc.helper;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -16,6 +15,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.beehive.portal.jdbc.annotation.JdbcFieldType;
+import com.kii.extension.tools.AdditionFieldType;
 
 public class JdbcConvertTool {
 	
@@ -50,7 +50,7 @@ public class JdbcConvertTool {
 //				return rs.getObject(field);
 //		}
 //	}
-	
+
 	
 	public static Object getEntityValue(ResultSet rs, String field,Class  propCls,JdbcFieldType type) throws SQLException {
 		
@@ -80,23 +80,32 @@ public class JdbcConvertTool {
 				
 			case AdditionStr:
 				String addStr=rs.getString(field);
+				Map<Integer,String> list=new HashMap<>();
+				if(StringUtils.isBlank(addStr)){
+					return list;
+				}
 				String[] array=StringUtils.split(String.valueOf(addStr),"^");
 				
-				List<String> list=new ArrayList<>(array.length);
 				for(String str:array){
 					String valStr=StringUtils.substringAfter(str,":");
-					list.add(valStr);
+					int idx= AdditionFieldType.getIndex(str);
+					list.put(idx,valStr);
 				}
 				return list;
 			case AdditionInt:
 				String addInt=rs.getString(field);
+				Map<Integer,Integer>  intList=new HashMap<>();
 				
+				if(StringUtils.isBlank(addInt)){
+					return intList;
+				}
 				String[] intArray=StringUtils.split(String.valueOf(addInt),"#");
 				
-				List<Integer> intList=new ArrayList<>();
 				for(int i=0;i<intArray.length;i++){
 					String intStr=StringUtils.trim(intArray[i]);
-					intList.add(Integer.parseInt(intStr));
+					if(StringUtils.isNotBlank(intStr)) {
+						intList.put(i, Integer.parseInt(intStr));
+					}
 				}
 				return intList;
 			default:
@@ -150,19 +159,21 @@ public class JdbcConvertTool {
 			case EnumInt:return ((Enum)value).ordinal();
 			case EnumStr:return ((Enum)value).name();
 			case AdditionStr:
-				return getCombineStr((List<String>) value);
+				return getCombineStr((Map<Integer,String>) value);
 			case AdditionInt:
-				return getCombineInt((List<Integer>) value);
+				return getCombineInt((Map<Integer,Integer>) value);
 			default:return value;
 		}
 	}
 	
-	private static Object getCombineInt(List<Integer> value) {
+	private static Object getCombineInt(Map<Integer,Integer> value) {
 		StringBuilder sbi=new StringBuilder();
 		
-		List<Integer> col= value;
-		for(int i=0;i<col.size();i++){
-			Integer intVal=col.get(i);
+		for(int i=0;i<10;i++){
+			Integer intVal=value.get(i);
+			if(intVal==null){
+				intVal=0;
+			}
 			String strVal=String.valueOf(intVal);
 			String fullStrVal= StringUtils.substring(MASK+strVal, -NUMBER_LEN);
 			
@@ -171,13 +182,16 @@ public class JdbcConvertTool {
 		return  sbi.toString();
 	}
 	
-	private static Object getCombineStr(List<String> value) {
-		StringBuilder sb=new StringBuilder("^");
-		List<String> col= value;
-		
-		for(int i=0;i<col.size();i++){
-			sb.append("str").append(i).append(":").append(col.get(i)).append("^");
+	private static Object getCombineStr(Map<Integer,String> value) {
+		if(value.isEmpty()){
+			return "";
 		}
+		StringBuilder sb=new StringBuilder("^");
+		
+		value.forEach((k,v)->{
+			sb.append(AdditionFieldType.Str.name()).append(k).append(":").append(v).append("^");
+		});
+	
 		return sb.toString();
 	}
 	

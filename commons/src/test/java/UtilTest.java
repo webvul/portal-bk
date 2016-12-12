@@ -38,6 +38,16 @@ public class UtilTest {
 	private ObjectMapper mapper=new ObjectMapper();
 	
 	
+	@Test
+	public void setList(){
+		
+		ArrayList<String> list=new ArrayList<>();
+		list.set(3,"bc");
+		list.set(100,"a");
+		
+		
+	}
+	
 	
 	@Test
 	public void testRawJson() throws IOException {

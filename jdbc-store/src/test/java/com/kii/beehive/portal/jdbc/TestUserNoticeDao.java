@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.kii.beehive.portal.jdbc.dao.UserNoticeDao;
 import com.kii.beehive.portal.jdbc.entity.UserNotice;
+import com.kii.beehive.portal.jdbc.helper.BindClsRowMapper;
 
 public class TestUserNoticeDao extends TestTemplate {
 	
@@ -33,28 +34,33 @@ public class TestUserNoticeDao extends TestTemplate {
 			dao.insert(notice);
 		}
 		
-		UserNoticeDao.NoticeQuery query=new UserNoticeDao.NoticeQuery();
-		query.setUserID(2l);
-		query.setReaded(false);
+		BindClsRowMapper.SqlParam param=dao.getSqlParam();
+
+		param.addEq("userID",2l);
+		param.addEq("readed",false);
 		
-		List<UserNotice> list=dao.queryNoticeList(query,null);
+		
+		List<UserNotice> list=dao.queryNoticeList(param);
 		
 		assertEquals(3,list.size());
 
 		dao.updateSign(list.get(0).getId(),2l);
 		
-		list=dao.queryNoticeList(query,null);
+		list=dao.queryNoticeList(param);
 		
 		assertEquals(2,list.size());
 		
 		dao.updateAllSign(2l);
 		
-		assertEquals(0,dao.queryNoticeList(query,null).size());
+		assertEquals(0,dao.queryNoticeList(param).size());
 		
-		query.setReaded(true);
-		query.setFrom("f");
+		param=dao.getSqlParam();
 		
-		assertEquals(3,dao.queryNoticeList(query,null).size());
+		param.addEq("userID",2l);
+		param.addEq("readed",true);
+		param.addLike("from","f");
+		
+		assertEquals(3,dao.queryNoticeList(param).size());
 		
 		
 	}

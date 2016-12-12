@@ -5,7 +5,7 @@ public class SqlCondition {
 	
 	private String fieldName;
 	
-	private int additionIdx;
+//	private int additionIdx;
 	
 	private Object value;
 	
@@ -14,14 +14,6 @@ public class SqlCondition {
 	private Number end;
 	
 	private SqlExpress express;
-	
-	public int getAdditionIdx() {
-		return additionIdx;
-	}
-	
-	public void setAdditionIdx(int additionIdx) {
-		this.additionIdx = additionIdx;
-	}
 	
 	public String getFieldName() {
 		return fieldName;

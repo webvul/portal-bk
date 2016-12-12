@@ -1,6 +1,5 @@
 package com.kii.beehive.portal.jdbc.dao;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Repository;
 import com.kii.beehive.portal.common.utils.StrTemplate;
 import com.kii.beehive.portal.jdbc.entity.UserNotice;
 import com.kii.beehive.portal.jdbc.helper.BindClsRowMapper;
-import com.kii.beehive.portal.jdbc.helper.SqlCondition;
 
 @Repository
 public class UserNoticeDao extends SpringSimpleBaseDao<UserNotice> {
@@ -32,32 +30,16 @@ public class UserNoticeDao extends SpringSimpleBaseDao<UserNotice> {
 	}
 	
 	
-	public List<UserNotice>  queryNoticeList(NoticeQuery query,BindClsRowMapper.Pager pager){
+	public List<UserNotice>  queryNoticeList(BindClsRowMapper.SqlParam sqlParam){
 		
 		
-		BindClsRowMapper.SqlParam sqlParam=super.getSqlParam();
-		
-		sqlParam.addEq("type",query.type);
-		sqlParam.addEq("readed",query.readed);
-		sqlParam.addBetween("readTime",query.readedTimeStart,query.readedTimeEnd);
-		sqlParam.addBetween("createTime",query.createTimeStart,query.createTimeEnd);
-		sqlParam.addLike("title",query.title);
-		sqlParam.addLike("from",query.from);
-		sqlParam.addEq("actionType",query.actionType);
-		sqlParam.addEq("userID",query.userID);
-		
-		query.strConditionList.forEach((cond)->{
-			
-			sqlParam.addStrCustom(cond);
-			
-		});
-		
-		query.intConditionList.forEach((cond)->{
-			sqlParam.addIntCustom(cond);
-		});
+//		BindClsRowMapper.SqlParam sqlParam=super.getSqlParam();
 		
 		
-		sqlParam.addPager(pager);
+	
+		
+		
+//		sqlParam.addPager(pager);
 		
 		String fullSql=sqlParam.getFullSql();
 		
@@ -117,106 +99,6 @@ public class UserNoticeDao extends SpringSimpleBaseDao<UserNotice> {
 		return super.namedJdbcTemplate.update(updateAllUnReadByIds,params);
 		
 	}
-	
-	
-	
-	public static class NoticeQuery{
-		
-		/*
-			
-	
-	public  static final String NOTICE_ID ="notice_id";
-	public  static final String USER_ID="user_id";
-	public  static final String READED_TIME="readed_time";
-	public  static final String CREATE_TIME="create_time";
-	public  static final String DATA="data";
-	public  static final String MESSAGE="msg_in_text";
-	public  static final String TITLE="title";
-	public  static final String FROM="from";
-	public  static final String TYPE="notice_type";
-	public  static final String READED="readed";
-	public  static final String ACTION_TYPE="action_type";
-	
-		 */
-		private Long userID;
-		
-		private String actionType;
-		
-		private String from;
-		
-		private String title;
-		
-		private Date createTimeStart;
-		
-		private Date createTimeEnd;
-		
-		private Date readedTimeStart;
-		
-		private Date readedTimeEnd;
-		
-		private UserNotice.MsgType type;
-		
-		private Boolean readed;
-		
-		
-
-		private List<SqlCondition>  strConditionList=new ArrayList<>();
-		
-		private List<SqlCondition>  intConditionList=new ArrayList<>();
-		
-		public void setStrConditionList(List<SqlCondition> strConditionList) {
-			this.strConditionList = strConditionList;
-		}
-		
-		public void setIntConditionList(List<SqlCondition> intConditionList) {
-			this.intConditionList = intConditionList;
-		}
-		
-		public void setUserID(Long userID){
-			this.userID=userID;
-		}
-		
-		public void setActionType(String actionType) {
-			this.actionType = actionType;
-		}
-		
-		public void setFrom(String from) {
-			this.from = from;
-		}
-		
-		public void setTitle(String title) {
-			this.title = title;
-		}
-		
-		public void setCreateTimeStart(Date createTimeStart) {
-			this.createTimeStart = createTimeStart;
-		}
-		
-		public void setCreateTimeEnd(Date createTimeEnd) {
-			this.createTimeEnd = createTimeEnd;
-		}
-		
-		public void setReadedTimeStart(Date readedTimeStart) {
-			this.readedTimeStart = readedTimeStart;
-		}
-		
-		public void setReadedTimeEnd(Date readedTimeEnd) {
-			this.readedTimeEnd = readedTimeEnd;
-		}
-		
-		public void setType(UserNotice.MsgType type) {
-			this.type = type;
-		}
-
-		
-		public void setReaded(Boolean readed) {
-			this.readed = readed;
-		}
-
-	
-		
-	}
-	
 	
 	
 }

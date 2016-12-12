@@ -4,9 +4,9 @@ package com.kii.beehive.portal.jdbc.entity;
 import static com.kii.beehive.portal.jdbc.helper.BindClsRowMapper.ADDITIION_INT;
 import static com.kii.beehive.portal.jdbc.helper.BindClsRowMapper.ADDITIION_STRING;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonRawValue;
 
@@ -51,25 +51,25 @@ public class UserNotice extends DBEntity {
 	private String actionType;
 	
 
-	private List<String> additionString=new ArrayList<>();
+	private Map<Integer,String> additionString=new HashMap<>();
 	
-	private List<Integer> additionInteger=new ArrayList<>();
+	private Map<Integer,Integer> additionInteger=new HashMap<>();
 	
 	@JdbcField(column=ADDITIION_STRING,type=JdbcFieldType.AdditionStr)
-	public List<String>  getAdditionString() {
+	public Map<Integer,String>  getAdditionString() {
 		return additionString;
 	}
 	
-	public void setAdditionString(List<String>  additionString) {
+	public void setAdditionString(Map<Integer,String>  additionString) {
 		this.additionString = additionString;
 	}
 	
 	@JdbcField(column = ADDITIION_INT,type=JdbcFieldType.AdditionInt)
-	public List<Integer> getAdditionInteger() {
+	public Map<Integer,Integer> getAdditionInteger() {
 		return additionInteger;
 	}
 	
-	public void setAdditionInteger(List<Integer> additionInteger) {
+	public void setAdditionInteger(Map<Integer,Integer> additionInteger) {
 		this.additionInteger = additionInteger;
 	}
 	

@@ -19,6 +19,7 @@ import com.kii.beehive.portal.jdbc.dao.ThingLocationDao;
 import com.kii.beehive.portal.jdbc.dao.ThingLocationRelDao;
 import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
 import com.kii.beehive.portal.jdbc.dao.UserNoticeDao;
+import com.kii.beehive.portal.jdbc.entity.NoticeActionType;
 import com.kii.beehive.portal.jdbc.helper.BindClsRowMapper;
 
 public class TestSqlDao extends TestTemplate {
@@ -251,20 +252,21 @@ public void testTemplate(){
 		page.setSize(10);
 		page.setStart(0);
 		
-		UserNoticeDao.NoticeQuery query=new UserNoticeDao.NoticeQuery();
-		query.setActionType("false2true");
-		query.setTitle("abc");
-		query.setReaded(false);
+		BindClsRowMapper.SqlParam query=noticeDao.getSqlParam();
+		
+		query.addEq("actionType", NoticeActionType.ThingMonitorType.false2true);
+		query.addLike("title","abc");
+		query.addEq("readed",false);
 		Date date=new Date();
 		Calendar cal= Calendar.getInstance();
 		cal.add(Calendar.DAY_OF_WEEK,1);
 		
-		query.setCreateTimeEnd(cal.getTime());
-		query.setCreateTimeStart(date);
+		query.addBetween("createTime",cal.getTime(),null);
+		query.addBetween("readedTime",cal.getTime(),null);
 		
-		query.setReadedTimeStart(date);
+		query.addPager(page);
 		
-		noticeDao.queryNoticeList(query,page);
+		noticeDao.queryNoticeList(query);
 	}
 
 

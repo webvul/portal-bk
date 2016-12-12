@@ -26,6 +26,7 @@ import com.kii.beehive.portal.common.utils.StrTemplate;
 import com.kii.beehive.portal.jdbc.annotation.DisplayField;
 import com.kii.beehive.portal.jdbc.annotation.JdbcField;
 import com.kii.beehive.portal.jdbc.annotation.JdbcFieldType;
+import com.kii.extension.tools.AdditionFieldType;
 
 public class BindClsRowMapper<T> implements RowMapper<T> {
 
@@ -168,8 +169,8 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 		}
 	}
 	
-	private static String REG_LIKE_TMP="\\^str${0}:([^\\^]*)\\${1}([^\\^]*)\\^";
-	private static String REG_EQ_TMP="\\^str${0}:${1}\\^";
+	private static String REG_LIKE_TMP="\\^Str${0}:([^\\^]*)\\${1}([^\\^]*)\\^";
+	private static String REG_EQ_TMP="\\^Str${0}:${1}\\^";
 	
 	private static String NUM_TMP="substring(${0},${1},${2})";
 	
@@ -195,9 +196,9 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 		public void addStrCustom(SqlCondition query){
 			
 			if(query.getExpress()== SqlCondition.SqlExpress.Eq){
-				addStrCustomEq(ADDITIION_STRING,query.getAdditionIdx(),String.valueOf(query.getValue()));
+				addStrCustomEq(ADDITIION_STRING, AdditionFieldType.getIndex(query.getFieldName()),String.valueOf(query.getValue()));
 			}else{
-				addStrCustomLike(ADDITIION_STRING,query.getAdditionIdx(),String.valueOf(query.getValue()));
+				addStrCustomLike(ADDITIION_STRING, AdditionFieldType.getIndex(query.getFieldName()),String.valueOf(query.getValue()));
 			}
 			
 		}
@@ -227,9 +228,9 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 		public void addIntCustom(SqlCondition query){
 			
 			if(query.getExpress()== SqlCondition.SqlExpress.Eq){
-				addNumCustomEq(ADDITIION_INT,query.getAdditionIdx(),(Integer)query.getValue());
+				addNumCustomEq(ADDITIION_INT, AdditionFieldType.getIndex(query.getFieldName()),(Integer)query.getValue());
 			}else{
-				addNumCustomRange(ADDITIION_INT,query.getAdditionIdx(),(Integer)query.getStart(),(Integer)query.getEnd());
+				addNumCustomRange(ADDITIION_INT, AdditionFieldType.getIndex(query.getFieldName()),(Integer)query.getStart(),(Integer)query.getEnd());
 			}
 			
 			

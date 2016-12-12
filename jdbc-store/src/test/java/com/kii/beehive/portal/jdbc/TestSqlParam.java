@@ -2,16 +2,17 @@ package com.kii.beehive.portal.jdbc;
 
 import static junit.framework.TestCase.assertEquals;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.kii.beehive.portal.jdbc.dao.UserNoticeDao;
 import com.kii.beehive.portal.jdbc.entity.UserNotice;
+import com.kii.beehive.portal.jdbc.helper.BindClsRowMapper;
 import com.kii.beehive.portal.jdbc.helper.SqlCondition;
 
 public class TestSqlParam extends TestTemplate{
@@ -32,9 +33,8 @@ public class TestSqlParam extends TestTemplate{
 		
 		Integer[] array=new Integer[]{100,1000,50,11111111,Integer.MAX_VALUE,Integer.MIN_VALUE};
 		
-		List<Integer> intList=new ArrayList<>();
-		
-		intList.addAll(Arrays.asList(array));
+		Map<Integer, Integer> intList = getIntegerMap(array);
+//		intList.addAll(Arrays.asList(array));
 		
 		notice.setAdditionInteger(intList);
 		
@@ -49,36 +49,49 @@ public class TestSqlParam extends TestTemplate{
 				"terry  10:41:42",
 				"澳洲产税几何？"};
 		
-		List<String> strList=new ArrayList<>(Arrays.asList(strArray));
+		
+		Map<Integer, String> strList = getStringMap(strArray);
 		notice.setAdditionString(strList);
 		
 		long id=userNoticeDao.insert(notice);
 		
 		
-		UserNoticeDao.NoticeQuery query=new UserNoticeDao.NoticeQuery();
+		BindClsRowMapper.SqlParam query=userNoticeDao.getSqlParam();
 		
 		SqlCondition cond=new SqlCondition();
-		cond.setAdditionIdx(2);
+		cond.setFieldName("Str2");
 		cond.setValue("iko");
 		cond.setExpress(SqlCondition.SqlExpress.Like);
-		
-		List<SqlCondition> strCondList=new ArrayList<>();
-		strCondList.add(cond);
-		
-		query.setStrConditionList(strCondList);
 		
 		SqlCondition range=new SqlCondition();
 		range.setStart(0);
 		range.setEnd(100);
-		range.setAdditionIdx(2);
-		List<SqlCondition> intCondList=new ArrayList<>();
-		intCondList.add(cond);
+		range.setFieldName("Int2");
 		
-		query.setIntConditionList(intCondList);
+		query.addIntCustom(range);
+		query.addStrCustom(cond);
 		
-		List<UserNotice>  list=userNoticeDao.queryNoticeList(query,null);
+		List<UserNotice>  list=userNoticeDao.queryNoticeList(query);
 		
 		assertEquals(0,list.size());
+	}
+	
+	private Map<Integer, String> getStringMap(String[] strArray) {
+		Map<Integer,String> strList=new HashMap<>();
+		
+		for(int i=0;i<strArray.length;i++){
+			strList.put(i,strArray[i]);
+		}
+		return strList;
+	}
+	
+	private Map<Integer, Integer> getIntegerMap(Integer[] array) {
+		Map<Integer,Integer> intList=new HashMap<>();
+		
+		for(int i=0;i<array.length;i++){
+			intList.put(i,array[i]);
+		}
+		return intList;
 	}
 	
 	@Test
@@ -93,11 +106,7 @@ public class TestSqlParam extends TestTemplate{
 		
 		Integer[] array=new Integer[]{100,1000,10001,11111111,Integer.MAX_VALUE,Integer.MIN_VALUE};
 		
-		List<Integer> intList=new ArrayList<>();
-		
-		intList.addAll(Arrays.asList(array));
-		
-		notice.setAdditionInteger(intList);
+		notice.setAdditionInteger(getIntegerMap(array));
 		
 		String[] strArray=new String[]{
 				"就一层不需要上下水",
@@ -110,8 +119,7 @@ public class TestSqlParam extends TestTemplate{
 		"terry  10:41:42",
 		"澳洲产税几何？"};
 		
-		List<String> strList=new ArrayList<>(Arrays.asList(strArray));
-		notice.setAdditionString(strList);
+		notice.setAdditionString(getStringMap(strArray));
 		
 		
 		
@@ -119,15 +127,15 @@ public class TestSqlParam extends TestTemplate{
 		
 		UserNotice newNotice=userNoticeDao.findByID(id);
 		
-		assertEquals(strList.size(),newNotice.getAdditionString().size());
+		assertEquals(strArray.length,newNotice.getAdditionString().size());
 		
 		for(int i=0;i<array.length;i++){
-			assertEquals(intList.get(i),newNotice.getAdditionInteger().get(i));
+			assertEquals(array[i],newNotice.getAdditionInteger().get(i));
 		}
 		
 		
 		for(int i=0;i<array.length;i++){
-			assertEquals(strList.get(i),newNotice.getAdditionString().get(i));
+			assertEquals(strArray[i],newNotice.getAdditionString().get(i));
 		}
 		
 		

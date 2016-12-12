@@ -54,6 +54,7 @@ public abstract  class SpringSimpleBaseDao<T extends DBEntity> {
 	private BeanWrapper beanWrapper;
 
 
+
 	@Autowired
 	public void setDataSource(DataSource dataSource) {
 
@@ -73,7 +74,7 @@ public abstract  class SpringSimpleBaseDao<T extends DBEntity> {
 	}
 
 	
-	protected BindClsRowMapper.SqlParam getSqlParam(){
+	public BindClsRowMapper.SqlParam getSqlParam(){
 		return rowMapper.getSqlParamInstance(getTableName());
 	}
 

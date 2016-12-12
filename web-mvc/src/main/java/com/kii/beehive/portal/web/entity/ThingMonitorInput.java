@@ -1,5 +1,7 @@
 package com.kii.beehive.portal.web.entity;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import com.kii.extension.ruleengine.store.trigger.Condition;
@@ -20,6 +22,16 @@ public class ThingMonitorInput {
 	private String description;
 
 	private boolean enable;
+	
+	private Map<String,Object> additions=new HashMap<>();
+	
+	public Map<String, Object> getAdditions() {
+		return additions;
+	}
+	
+	public void setAdditions(Map<String, Object> additions) {
+		this.additions = additions;
+	}
 	
 	public String getDescription() {
 		return description;

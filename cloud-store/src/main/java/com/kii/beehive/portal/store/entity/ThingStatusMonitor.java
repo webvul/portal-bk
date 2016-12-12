@@ -35,6 +35,17 @@ public class ThingStatusMonitor extends KiiEntity {
 	
 	private MonitorStatus status;
 	
+	private Map<String,Object> additions=new HashMap<>();
+	
+	public Map<String, Object> getAdditions() {
+		return additions;
+	}
+	
+	public void setAdditions(Map<String, Object> additions) {
+		this.additions = additions;
+	}
+	
+	
 	public void updateThingIDs(Collection<String> vendorThingIDList) {
 		
 		Set<String> ids=new HashSet<>(vendorThingIDList);
@@ -108,8 +119,11 @@ public class ThingStatusMonitor extends KiiEntity {
 	
 	public void setVendorThingIDList(Collection<String> idList){
 		
-		for(String id:idList){
-			vendorThingIDs.put(id,true);
+		if(idList!=null) {
+			
+			for (String id : idList) {
+				vendorThingIDs.put(id, true);
+			}
 		}
 	}
 	
@@ -135,4 +149,26 @@ public class ThingStatusMonitor extends KiiEntity {
 	public void setNoticeList(List<Long> noticeList) {
 		this.noticeList = noticeList;
 	}
+	
+	
+//	public enum FieldType{
+//
+//
+//		Str,Int;
+//
+//		public String getFullFieldName(int idx){
+//			return "additions."+name()+"idx";
+//		}
+//
+//		static Pattern pattern=Pattern.compile("(Str|Int)(\\d+)");
+//		public static int getIndex(String fieldName){
+//			Matcher matcher=pattern.matcher(fieldName);
+//			if(matcher.find()) {
+//
+//				return Integer.parseInt(matcher.group(2));
+//			}else{
+//				return 99;
+//			}
+//		}
+//	}
 }

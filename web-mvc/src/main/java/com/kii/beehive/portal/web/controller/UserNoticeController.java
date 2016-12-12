@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.business.manager.UserNoticeManager;
-import com.kii.beehive.portal.jdbc.dao.UserNoticeDao;
+import com.kii.beehive.business.entity.NoticeQuery;
 import com.kii.beehive.portal.jdbc.entity.UserNotice;
 import com.kii.beehive.portal.jdbc.helper.BindClsRowMapper;
 
@@ -72,8 +72,8 @@ public class UserNoticeController {
 	
 	
 	@RequestMapping(path="/query",method = {RequestMethod.POST})
-	public List<UserNotice> queryNotice(@RequestBody UserNoticeDao.NoticeQuery query,@RequestParam(name="pager",required=false) String pagerSign){
-		
+	public List<UserNotice> queryNotice(@RequestBody NoticeQuery query, @RequestParam(name="pager",required=false) String pagerSign){
+
 		return manager.queryNotice(query, BindClsRowMapper.Pager.getInstance(pagerSign));
 		
 	}
