@@ -77,7 +77,12 @@ public abstract  class SpringSimpleBaseDao<T extends DBEntity> {
 	public BindClsRowMapper.SqlParam getSqlParam(){
 		return rowMapper.getSqlParamInstance(getTableName());
 	}
-
+	
+	public BindClsRowMapper.SqlParam getSqlParamForCount(){
+		return rowMapper.getSqlParamInstanceForCount(getTableName());
+	}
+	
+	
 	protected RowMapper<T> getRowMapper() {
 		return rowMapper;
 	}

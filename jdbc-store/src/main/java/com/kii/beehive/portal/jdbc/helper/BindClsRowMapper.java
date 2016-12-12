@@ -115,6 +115,13 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 		return param;
 	}
 	
+	public  SqlParam getSqlParamInstanceForCount(String tableName){
+		SqlParam param=new SqlParam();
+		
+		param.fullSql.append("select count(1) from "+tableName+" where 1=1 ");
+		return param;
+	}
+	
 	
 	public static class Pager{
 		

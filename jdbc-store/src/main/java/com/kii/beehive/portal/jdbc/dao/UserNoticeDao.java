@@ -30,17 +30,18 @@ public class UserNoticeDao extends SpringSimpleBaseDao<UserNotice> {
 	}
 	
 	
+	
+	public int queryByNumber(BindClsRowMapper.SqlParam sqlParam) {
+		
+		String fullSql=sqlParam.getFullSql();
+		
+		return super.jdbcTemplate.queryForObject(fullSql,sqlParam.getParamArray(),Integer.class);
+		
+	}
+	
 	public List<UserNotice>  queryNoticeList(BindClsRowMapper.SqlParam sqlParam){
 		
-		
-//		BindClsRowMapper.SqlParam sqlParam=super.getSqlParam();
-		
-		
-	
-		
-		
-//		sqlParam.addPager(pager);
-		
+
 		String fullSql=sqlParam.getFullSql();
 		
 		List<UserNotice>  list=super.jdbcTemplate.query(fullSql,sqlParam.getParamArray(),super.getRowMapper());

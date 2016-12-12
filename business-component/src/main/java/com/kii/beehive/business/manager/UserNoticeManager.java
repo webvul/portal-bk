@@ -85,4 +85,13 @@ public class UserNoticeManager {
 		return noticeDao.queryNoticeList(param);
 	}
 	
+	public int queryNoticeForNum(NoticeQuery query) {
+		
+		query.setUserID(AuthInfoStore.getUserID());
+		
+		BindClsRowMapper.SqlParam param=noticeDao.getSqlParamForCount();
+		query.fillSqlQuery(param);
+		
+		return noticeDao.queryByNumber(param);
+	}
 }
