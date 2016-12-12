@@ -15,6 +15,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -57,7 +58,7 @@ public class YituFaceService implements FaceServiceInf {
 		loginServer();
 	}
 
-
+	@Scheduled(cron = "0 0/5 * * * ?")
 	public void loginServer() {
 
 		HttpUriRequest faceRequest = yituFaceApiAccessBuilder.buildLogin();
@@ -74,9 +75,10 @@ public class YituFaceService implements FaceServiceInf {
 				return;
 			}
 
+			cookieList.clear();
 			cookieList.add("session_id=" + result.get("session_id"));
 
-			log.error("face cookie :" + result.get("session_id"));
+			log.info("yitu face cookie :" + result.get("session_id"));
 
 		} catch (Exception e) {
 			log.error(e.getMessage());
