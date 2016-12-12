@@ -110,7 +110,7 @@ public class BeehiveFaceService implements ApplicationContextAware{
 		}
 		//store image
 		try {
-			Files.copy(photoFile, new File(facePhotoDir + photoFile.getName()));
+			Files.copy(photoFile, new File(facePhotoDir + user.getUserID() + ".jpg"));
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw new RuntimeException("store photo error ! ");

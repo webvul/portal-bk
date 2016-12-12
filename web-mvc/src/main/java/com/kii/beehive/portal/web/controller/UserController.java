@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.BeanUtils;
@@ -347,7 +346,7 @@ public class UserController {
 			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "field", "phone");
 		}
 
-		File photoFile = File.createTempFile(userId + "-" + UUID.randomUUID() + "-", photo.getOriginalFilename(), service.getPhotoTempDir());
+		File photoFile = File.createTempFile(userId + "-" + "-", photo.getOriginalFilename(), service.getPhotoTempDir());
 		byte[] bytes = photo.getBytes();
 		BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(photoFile));
 		stream.write(bytes);

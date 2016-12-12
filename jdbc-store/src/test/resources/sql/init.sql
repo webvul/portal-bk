@@ -10,6 +10,7 @@ CREATE TABLE `beehive_user` (
   `role_name` varchar(45) DEFAULT NULL,
   `display_name` varchar(45) DEFAULT NULL,
   `face_subject_id` int(11) DEFAULT NULL,
+  `yitu_face_image_id` varchar(50) DEFAULT NULL,
   `create_by` varchar(45) DEFAULT NULL,
   `modify_by` varchar(45) DEFAULT NULL,
   `create_date` varchar(45) DEFAULT NULL,
