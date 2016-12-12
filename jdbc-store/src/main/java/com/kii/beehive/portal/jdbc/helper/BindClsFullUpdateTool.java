@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -20,9 +21,6 @@ import org.springframework.beans.InvalidPropertyException;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.object.SqlUpdate;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.StrTemplate;
@@ -55,7 +53,7 @@ public class BindClsFullUpdateTool extends SqlUpdate {
 
 	private final BeanWrapper wrapper;
 
-	private final ObjectMapper objectMapper;
+//	private final ObjectMapper objectMapper;
 
 	private final String pkFieldName;
 
@@ -64,28 +62,28 @@ public class BindClsFullUpdateTool extends SqlUpdate {
 		return true;
 	}
 
-	private BindClsFullUpdateTool(DataSource ds, String tableName, BeanWrapper wrapper, String pkName,ObjectMapper objectMapper) {
+	private BindClsFullUpdateTool(DataSource ds, String tableName, BeanWrapper wrapper, String pkName) {
 		setDataSource(ds);
 		this.tableName = tableName;
 		this.wrapper = wrapper;
 		this.pkFieldName = pkName;
-		this.objectMapper=objectMapper;
+//		this.objectMapper=objectMapper;
 
 	}
 
-	private <T extends DBEntity> BindClsFullUpdateTool(DataSource ds, String tableName, Class<T> cls, String pkName,ObjectMapper objectMapper) {
-		this(ds, tableName, PropertyAccessorFactory.forBeanPropertyAccess(BeanUtils.instantiate(cls)), pkName, objectMapper);
+	private <T extends DBEntity> BindClsFullUpdateTool(DataSource ds, String tableName, Class<T> cls, String pkName) {
+		this(ds, tableName, PropertyAccessorFactory.forBeanPropertyAccess(BeanUtils.instantiate(cls)), pkName);
 	}
 
-	public static <E extends DBEntity> BindClsFullUpdateTool newInstance(DataSource ds, String tableName, String key, Class<E> cls, String pkName,ObjectMapper objectMapper) {
-		BindClsFullUpdateTool inst = new BindClsFullUpdateTool(ds, tableName, cls, pkName,objectMapper);
+	public static <E extends DBEntity> BindClsFullUpdateTool newInstance(DataSource ds, String tableName, String key, Class<E> cls, String pkName) {
+		BindClsFullUpdateTool inst = new BindClsFullUpdateTool(ds, tableName, cls, pkName);
 		inst.compileWithClass(key);
 		return inst;
 	}
 
 	public BindClsFullUpdateTool cloneInstance(BusinessEntity entity, String key, boolean ignoreNull) {
 
-		BindClsFullUpdateTool inst = new BindClsFullUpdateTool(super.getJdbcTemplate().getDataSource(), tableName, wrapper, pkFieldName,objectMapper);
+		BindClsFullUpdateTool inst = new BindClsFullUpdateTool(super.getJdbcTemplate().getDataSource(), tableName, wrapper, pkFieldName);
 
 		inst.compileWithEntity(entity, key, ignoreNull);
 		return inst;
@@ -93,7 +91,7 @@ public class BindClsFullUpdateTool extends SqlUpdate {
 
 	public BindClsFullUpdateTool cloneInstance(Map<String, Object> paramMap, String key) {
 
-		BindClsFullUpdateTool inst = new BindClsFullUpdateTool(super.getJdbcTemplate().getDataSource(), tableName, wrapper, pkFieldName,objectMapper);
+		BindClsFullUpdateTool inst = new BindClsFullUpdateTool(super.getJdbcTemplate().getDataSource(), tableName, wrapper, pkFieldName);
 
 		inst.compileWithFieldSet(new HashSet<>(paramMap.keySet()), key);
 		return inst;
@@ -297,22 +295,44 @@ public class BindClsFullUpdateTool extends SqlUpdate {
 				continue;
 			}
 			Object val = localWrapper.getPropertyValue(descriptor.getName());
-
-			if(fieldDesc.type()==JdbcFieldType.Json){
-
-				if(val==null){
-					val="{}";
-				}else {
-					try {
-						val = objectMapper.writeValueAsString(val);
-					} catch (JsonProcessingException e) {
-						log.error("json write fail", e);
-						val = "{}";
-					}
-				}
-
-			}
-			paramMap.put(descriptor.getName(), val);
+			
+//			if(fieldDesc.type()==JdbcFieldType.Json){
+//
+//				if(val==null){
+//					val="{}";
+//				}else {
+//					try {
+//						val = objectMapper.writeValueAsString(val);
+//					} catch (JsonProcessingException e) {
+//						log.error("json write fail", e);
+//						val = "{}";
+//					}
+//				}
+//
+//			}else if(fieldDesc.type()==JdbcFieldType.AdditionStr){
+//
+//				StringBuilder sb=new StringBuilder("^");
+//				List<String> col=(List<String>)val;
+//
+//				for(int i=0;i<col.size();i++){
+//					sb.append("str").append(i).append(":").append(col.get(i)).append("^");
+//				}
+//				val=sb.toString();
+//
+//			}else if(fieldDesc.type()==JdbcFieldType.AdditionInt){
+//				StringBuilder sb=new StringBuilder();
+//
+//				List<Integer> col=(List<Integer>)val;
+//				for(int i=0;i<col.size();i++){
+//						Integer intVal=col.get(i);
+//						String strVal=String.valueOf(intVal);
+//						String fullStrVal=StringUtils.substring(MASK+strVal,-10);
+//
+//						sb.append(fullStrVal).append(".");
+//					}
+//				val=sb.toString();
+//			}
+			paramMap.put(descriptor.getName(), JdbcConvertTool.getSqlValue(val,fieldDesc.type()));
 
 			log.debug(" fill update param " + fieldDesc.column() + " with " + val);
 		}
@@ -321,7 +341,10 @@ public class BindClsFullUpdateTool extends SqlUpdate {
 
 		return updateByNamedParam(paramMap);
 	}
-
+	
+	private static  String MASK= StringUtils.repeat("0",20);
+	
+	
 	public <T extends DBEntity> int executeSimple(T entity) {
 
 		BeanWrapper localWrapper = PropertyAccessorFactory.forBeanPropertyAccess(entity);

@@ -1,9 +1,12 @@
 package com.kii.beehive.portal.jdbc.entity;
 
 
-import java.util.Date;
+import static com.kii.beehive.portal.jdbc.helper.BindClsRowMapper.ADDITIION_INT;
+import static com.kii.beehive.portal.jdbc.helper.BindClsRowMapper.ADDITIION_STRING;
 
-import org.apache.commons.lang3.StringUtils;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonRawValue;
 
@@ -25,8 +28,6 @@ public class UserNotice extends DBEntity {
 	public  static final String READED="readed";
 	public  static final String ACTION_TYPE="action_type";
 	
-	public static final String ADDITIION_STRING="addition_str";
-	public static final String ADDITIION_INT="addition_int";
 	
 	
 	private Boolean readed=false;
@@ -50,35 +51,30 @@ public class UserNotice extends DBEntity {
 	private String actionType;
 	
 
-	private String additionString;
+	private Map<Integer,String> additionString=new HashMap<>();
 	
-	private String additionInteger;
+	private Map<Integer,Integer> additionInteger=new HashMap<>();
 	
-	public void addAdditionString(String[] values){
-		
-		StringBuilder sb=new StringBuilder("^");
-		
-		for(int i=0;i<values.length;i++){
-			sb.append("str").append(i).append(":").append(values[i]).append("^");
-		}
-		additionString=sb.toString();
+	@JdbcField(column=ADDITIION_STRING,type=JdbcFieldType.AdditionStr)
+	public Map<Integer,String>  getAdditionString() {
+		return additionString;
 	}
 	
-	private String MASK= StringUtils.repeat("0",20);
-	
-	public void addAdditionInteger(int[] values){
-		
-		StringBuilder sb=new StringBuilder();
-		
-		for(int i=0;i<values.length;i++){
-			int val=values[i];
-			String strVal=String.valueOf(val);
-			String fullStrVal=StringUtils.substring(MASK+strVal,-10);
-			
-			sb.append(fullStrVal).append(".");
-		}
-		additionInteger=sb.toString();
+	public void setAdditionString(Map<Integer,String>  additionString) {
+		this.additionString = additionString;
 	}
+	
+	@JdbcField(column = ADDITIION_INT,type=JdbcFieldType.AdditionInt)
+	public Map<Integer,Integer> getAdditionInteger() {
+		return additionInteger;
+	}
+	
+	public void setAdditionInteger(Map<Integer,Integer> additionInteger) {
+		this.additionInteger = additionInteger;
+	}
+	
+
+
 	
 	
 	

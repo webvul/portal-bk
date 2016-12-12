@@ -22,8 +22,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.kii.beehive.portal.jdbc.entity.DBEntity;
 import com.kii.beehive.portal.jdbc.helper.AnnationBeanSqlParameterSource;
 import com.kii.beehive.portal.jdbc.helper.BindClsFullUpdateTool;
@@ -55,8 +53,7 @@ public abstract  class SpringSimpleBaseDao<T extends DBEntity> {
 
 	private BeanWrapper beanWrapper;
 
-	@Autowired
-	private ObjectMapper objectMapper;
+
 
 	@Autowired
 	public void setDataSource(DataSource dataSource) {
@@ -70,17 +67,22 @@ public abstract  class SpringSimpleBaseDao<T extends DBEntity> {
 
 		ParameterizedType type = (ParameterizedType) getClass().getGenericSuperclass();
 		this.entityClass = (Class<T>) type.getActualTypeArguments()[0];
-		this.updateTool = BindClsFullUpdateTool.newInstance(dataSource, getTableName(), "id", entityClass, getKey(),objectMapper);
-		this.rowMapper = new BindClsRowMapper<T>(entityClass,objectMapper);
+		this.updateTool = BindClsFullUpdateTool.newInstance(dataSource, getTableName(), "id", entityClass, getKey());
+		this.rowMapper = new BindClsRowMapper<T>(entityClass);
 
 		this.beanWrapper= PropertyAccessorFactory.forBeanPropertyAccess(BeanUtils.instantiate(entityClass));
 	}
 
 	
-	protected BindClsRowMapper.SqlParam getSqlParam(){
+	public BindClsRowMapper.SqlParam getSqlParam(){
 		return rowMapper.getSqlParamInstance(getTableName());
 	}
-
+	
+	public BindClsRowMapper.SqlParam getSqlParamForCount(){
+		return rowMapper.getSqlParamInstanceForCount(getTableName());
+	}
+	
+	
 	protected RowMapper<T> getRowMapper() {
 		return rowMapper;
 	}
@@ -89,7 +91,7 @@ public abstract  class SpringSimpleBaseDao<T extends DBEntity> {
 
 	public <T extends DBEntity> long insert(T entity) {
 
-		SqlParameterSource parameters = new AnnationBeanSqlParameterSource(entity,objectMapper);
+		SqlParameterSource parameters = new AnnationBeanSqlParameterSource(entity);
 		Number id = insertTool.executeAndReturnKey(parameters);
 		return id.longValue();
 	}
@@ -167,7 +169,7 @@ public abstract  class SpringSimpleBaseDao<T extends DBEntity> {
 		SqlParameterSource[] sqlParameterSources = new SqlParameterSource[entityList.size()];
 
 		for (int i = 0; i < sqlParameterSources.length; i++) {
-			sqlParameterSources[i] = new AnnationBeanSqlParameterSource(entityList.get(i),objectMapper);
+			sqlParameterSources[i] = new AnnationBeanSqlParameterSource(entityList.get(i));
 		}
 
 		return insertTool.executeBatch(sqlParameterSources);

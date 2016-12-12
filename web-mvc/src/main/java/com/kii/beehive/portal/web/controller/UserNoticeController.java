@@ -1,7 +1,9 @@
 package com.kii.beehive.portal.web.controller;
 
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -12,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kii.beehive.business.entity.NoticeQuery;
 import com.kii.beehive.business.manager.UserNoticeManager;
-import com.kii.beehive.portal.jdbc.dao.UserNoticeDao;
 import com.kii.beehive.portal.jdbc.entity.UserNotice;
 import com.kii.beehive.portal.jdbc.helper.BindClsRowMapper;
 
@@ -72,10 +74,19 @@ public class UserNoticeController {
 	
 	
 	@RequestMapping(path="/query",method = {RequestMethod.POST})
-	public List<UserNotice> queryNotice(@RequestBody UserNoticeDao.NoticeQuery query,@RequestParam(name="pager",required=false) String pagerSign){
-		
+	public List<UserNotice> queryNotice(@RequestBody NoticeQuery query, @RequestParam(name="pager",required=false) String pagerSign){
+
 		return manager.queryNotice(query, BindClsRowMapper.Pager.getInstance(pagerSign));
 		
+	}
+	
+	
+	@RequestMapping(path="/countQuery",method = {RequestMethod.POST})
+	public Map<String,Object> queryNoticeNumber(@RequestBody NoticeQuery query){
+		
+		int count= manager.queryNoticeForNum(query);
+		
+		return Collections.singletonMap("recordCount",count);
 	}
 	
 	

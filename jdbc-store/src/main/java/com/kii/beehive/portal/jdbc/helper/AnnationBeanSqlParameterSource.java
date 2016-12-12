@@ -13,9 +13,6 @@ import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.jdbc.core.StatementCreatorUtils;
 import org.springframework.jdbc.core.namedparam.AbstractSqlParameterSource;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.kii.beehive.portal.jdbc.annotation.JdbcField;
 import com.kii.beehive.portal.jdbc.annotation.JdbcFieldType;
 
@@ -30,10 +27,8 @@ public class AnnationBeanSqlParameterSource extends AbstractSqlParameterSource {
 
 	private final Map<String,JdbcFieldType> sqlTypeMapper;
 
-	private final ObjectMapper mapper;
 
-
-	public AnnationBeanSqlParameterSource(Object object,ObjectMapper mapper) {
+	public AnnationBeanSqlParameterSource(Object object) {
 		this.beanWrapper = PropertyAccessorFactory.forBeanPropertyAccess(object);
 
 		Map<String,String> searchMap=new HashMap<>();
@@ -56,7 +51,6 @@ public class AnnationBeanSqlParameterSource extends AbstractSqlParameterSource {
 
 		sqlTypeMapper=Collections.unmodifiableMap(typeMap);
 
-		this.mapper=mapper;
 	}
 
 
@@ -84,21 +78,42 @@ public class AnnationBeanSqlParameterSource extends AbstractSqlParameterSource {
 			if(value==null){
 				return null;
 			}
-
-
-			switch(sqlTypeMapper.get(paramName)){
-				case Auto:return value;
-				case Json:
-					try {
-						return mapper.writeValueAsString(value);
-					} catch (JsonProcessingException e) {
-						log.error("json write fail",e);
-						return "{}";
-					}
-				case EnumInt:return ((Enum)value).ordinal();
-				case EnumStr:return ((Enum)value).name();
-				default:return value;
-			}
+			
+			return JdbcConvertTool.getSqlValue(value,sqlTypeMapper.get(paramName));
+			
+//			switch(sqlTypeMapper.get(paramName)){
+//				case Auto:return value;
+//				case Json:
+//					try {
+//						return mapper.writeValueAsString(value);
+//					} catch (JsonProcessingException e) {
+//						log.error("json write fail",e);
+//						return "{}";
+//					}
+//				case EnumInt:return ((Enum)value).ordinal();
+//				case EnumStr:return ((Enum)value).name();
+//				case AdditionStr:
+//					StringBuilder sb=new StringBuilder("^");
+//					List<String> col=(List<String>)value;
+//
+//					for(int i=0;i<col.size();i++){
+//						sb.append("str").append(i).append(":").append(col.get(i)).append("^");
+//					}
+//					return sb.toString();
+//				case AdditionInt:
+//					StringBuilder sbi=new StringBuilder();
+//
+//					List<Integer> col=(List<Integer>)value;
+//					for(int i=0;i<col.size();i++){
+//						Integer intVal=col.get(i);
+//						String strVal=String.valueOf(intVal);
+//						String fullStrVal= StringUtils.substring(MASK+strVal,-10);
+//
+//						sbi.append(fullStrVal).append(".");
+//					}
+//					return  sbi.toString();
+//				default:return value;
+//			}
 
 
 		}

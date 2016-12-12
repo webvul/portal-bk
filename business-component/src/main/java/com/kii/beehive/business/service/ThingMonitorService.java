@@ -28,6 +28,7 @@ import com.kii.beehive.portal.jdbc.dao.UserNoticeDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.NoticeActionType;
 import com.kii.beehive.portal.jdbc.entity.UserNotice;
+import com.kii.beehive.business.entity.MonitorQuery;
 import com.kii.beehive.portal.service.ThingStatusMonitorDao;
 import com.kii.beehive.portal.store.entity.ThingStatusMonitor;
 import com.kii.extension.ruleengine.TriggerCreateException;
@@ -41,6 +42,7 @@ import com.kii.extension.ruleengine.store.trigger.WhenType;
 import com.kii.extension.ruleengine.store.trigger.groups.SummaryFunctionType;
 import com.kii.extension.ruleengine.store.trigger.target.CallBusinessFunction;
 import com.kii.extension.sdk.service.AbstractDataAccess;
+import com.kii.extension.tools.AdditionFieldType;
 
 @Component("thingMonitorService")
 public class ThingMonitorService {
@@ -83,15 +85,26 @@ public class ThingMonitorService {
 
 		GlobalThingInfo th=thingDao.getThingByFullKiiThingID(ids.kiiAppID,ids.kiiThingID);
 		notice.setTitle(th.getVendorThingID());
+
 		
+		
+		monitor.getAdditions().forEach( (k,v)->{
+			int idx= AdditionFieldType.getIndex(k);
+			
+			if(k.startsWith(AdditionFieldType.Str.name())){
+				notice.getAdditionString().put(idx,(String)v);
+			}else if(k.startsWith(AdditionFieldType.Int.name())){
+				notice.getAdditionInteger().put(idx,(Integer)v);
+			}
+			
+		});
 		ThingStatusNoticeEntry entry=new ThingStatusNoticeEntry();
 		entry.setActionType(sign?NoticeActionType.ThingMonitorType.false2true:NoticeActionType.ThingMonitorType.true2false);
 		entry.setCurrThing(th.getVendorThingID());
 		entry.setCurrThingInThID(th.getId());
-		
-		
 		entry.setCurrStatus(status);
 		entry.setMonitor(monitor);
+		
 		
 		List<GlobalThingInfo>  thList=thingDao.getThingListByFullKiiThingIDs(currMatcher);
 		
@@ -199,7 +212,7 @@ public class ThingMonitorService {
 		if(oldMonitor.getStatus()== ThingStatusMonitor.MonitorStatus.deleted){
 			throw new InvalidEntryStatusException("ThingStatusMonitor","status",ThingStatusMonitor.MonitorStatus.deleted.name());
 		}
-		if(!oldMonitor.getVendorThingIDList().equals(monitor.getVendorThingIDList())||
+		if((!monitor.getVendorThingIDList().isEmpty()&&!oldMonitor.getVendorThingIDList().equals(monitor.getVendorThingIDList()))||
 				(monitor.getExpress()!=null &&!CommLangsUtils.safeEquals(oldMonitor.getExpress(),monitor.getExpress()) )||
 				(monitor.getCondition()!=null && !CommLangsUtils.safeEquals(oldMonitor.getCondition(),monitor.getCondition()))) {
 			
@@ -220,6 +233,9 @@ public class ThingMonitorService {
 			
 		}
 		
+		if(monitor.getVendorThingIDList().isEmpty()){
+			monitor.setVendorThingIDList(oldMonitor.getVendorThingIDList());
+		}
 		if(monitor.getNoticeList().isEmpty()){
 			monitor.setNoticeList(oldMonitor.getNoticeList());
 		}
@@ -287,10 +303,10 @@ public class ThingMonitorService {
 	}
 	
 	
-	public List<ThingStatusMonitor> queryMonitor(ThingStatusMonitorDao.MonitorQuery query,AbstractDataAccess.KiiBucketPager pager){
+	public List<ThingStatusMonitor> queryMonitor(MonitorQuery query, AbstractDataAccess.KiiBucketPager pager){
 		
 		
-		return monitorDao.getMonitorsByQuery(query,pager);
+		return monitorDao.getMonitorsByQuery(query.generQuery(),pager);
 		
 	}
 	

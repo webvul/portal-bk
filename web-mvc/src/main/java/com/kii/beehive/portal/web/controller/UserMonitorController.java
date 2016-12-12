@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.business.service.ThingMonitorService;
-import com.kii.beehive.portal.service.ThingStatusMonitorDao;
+import com.kii.beehive.business.entity.MonitorQuery;
 import com.kii.beehive.portal.store.entity.ThingStatusMonitor;
 import com.kii.beehive.portal.web.entity.ThingMonitorInput;
 import com.kii.extension.sdk.service.AbstractDataAccess;
@@ -64,7 +64,7 @@ public class UserMonitorController {
 	public ThingMonitorInput getMonitorByName(@PathVariable("name")String name){
 		
 		
-		ThingStatusMonitorDao.MonitorQuery query=new ThingStatusMonitorDao.MonitorQuery();
+		MonitorQuery query=new MonitorQuery();
 		query.setName(name);
 		
 		List<ThingStatusMonitor> list=service.queryMonitor(query,null);
@@ -77,9 +77,11 @@ public class UserMonitorController {
 	}
 	
 	@RequestMapping(path="/query",method = {RequestMethod.POST},consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE})
-	public List<ThingMonitorInput> queryMonitor(@RequestBody ThingStatusMonitorDao.MonitorQuery query,@RequestParam(name="pager",required=false)String sign){
+	public List<ThingMonitorInput> queryMonitor(@RequestBody MonitorQuery query, @RequestParam(name="pager",required=false)String sign){
 	
+//		MonitorQuery query=queryInput.getQuery();
 		
+	
 		return service.queryMonitor(query, AbstractDataAccess.KiiBucketPager.getInstance(sign)).stream().map(UserMonitorController::getOutputView).collect(Collectors.toList());
 	}
 	
