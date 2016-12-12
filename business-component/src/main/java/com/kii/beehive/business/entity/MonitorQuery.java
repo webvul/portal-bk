@@ -13,10 +13,13 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.kii.beehive.portal.store.entity.ThingStatusMonitor;
 import com.kii.extension.sdk.query.ConditionBuilder;
 import com.kii.extension.sdk.query.QueryParam;
+import com.kii.extension.tools.AdditionFieldType;
 
 public class MonitorQuery {
 	
 	private String name;
+	
+	private String  description;
 	
 	private Set<String> things=new HashSet<>();
 	
@@ -34,10 +37,20 @@ public class MonitorQuery {
 		return queryMap;
 	}
 	
+	public String getDescription() {
+		return description;
+	}
+	
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	
 	@JsonAnySetter
 	public void addQueryMap(String name,FieldQuery query) {
-		query.setFieldName(name);
-		this.queryMap.put(name,query);
+		if(AdditionFieldType.verifyFieldName(name)) {
+			query.setFieldName(name);
+			this.queryMap.put(name, query);
+		}
 	}
 	
 	public Boolean getEnable() {
@@ -86,6 +99,10 @@ public class MonitorQuery {
 		if(StringUtils.isNotBlank(name)){
 			builder.prefixLike("name",name);
 		}
+		if(StringUtils.isNotBlank(description)){
+			builder.prefixLike("description",description);
+		}
+		
 		if(enable!=null){
 			builder.equal("status", enable? ThingStatusMonitor.MonitorStatus.enable: ThingStatusMonitor.MonitorStatus.disable);
 		}else{

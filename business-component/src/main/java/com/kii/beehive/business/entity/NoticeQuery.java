@@ -83,8 +83,11 @@ public  static final String ACTION_TYPE="action_type";
 	
 	@JsonAnySetter
 	public void addQueryMap(String name,FieldQuery query) {
-		query.setFieldName(name);
-		this.queryMap.put(name,query);
+		
+		if(AdditionFieldType.verifyFieldName(name)) {
+			query.setFieldName(name);
+			this.queryMap.put(name, query);
+		}
 	}
 
 	

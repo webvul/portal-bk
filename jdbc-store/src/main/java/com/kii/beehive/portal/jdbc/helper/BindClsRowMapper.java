@@ -249,7 +249,7 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 		}
 		
 		private String generCustomNumField(String field, int idx) {
-			int begin=idx*(NUMBER_LEN+1)+1;
+			int begin=(idx-1)*(NUMBER_LEN+1)+1;
 			int offset=NUMBER_LEN;
 			
 			return StrTemplate.gener(NUM_TMP,field,String.valueOf(begin),String.valueOf(offset));
@@ -316,12 +316,21 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 		}
 		
 		private String getFieldStr(String field){
+			if(field.contains("addition_intprop")||
+					field.contains("addition_strprop")){
+				return field;
+			}
 			
 			return propertyMap.get(field);
 			
 		}
 		
 		private Object getValue(Object val,String field){
+			
+			if(field.contains("addition_intprop")||
+					field.contains("addition_strprop")){
+				return val;
+			}
 			String fieldName=propertyMap.get(field);
 			Class propCls=beanWrapper.getPropertyType(field);
 			JdbcFieldType type=sqlTypeMapper.get(fieldName);
