@@ -267,5 +267,7 @@ from global_thing th
     `readed` tinyint(4) DEFAULT '0',
     `action_type` varchar(11) DEFAULT NULL,
     `from_where` varchar(45) NOT NULL DEFAULT '',
+    `addition_strprop` varchar(1024) DEFAULT '',
+    `addition_intprop` varchar(256) DEFAULT NULL
     PRIMARY KEY (`user_notice_id`)
   ) ENGINE=InnoDB AUTO_INCREMENT=1072 DEFAULT CHARSET=utf8;
