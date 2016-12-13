@@ -65,7 +65,7 @@ public class TriggerCreator {
 
 			try {
 				Map<String,Set<String>>   map=getTriggerDataMap(trigger);
-				general.addTriggerToEngine(trigger,map);
+				general.addTriggerToEngine(trigger,map,false);
 
 			}catch(TriggerCreateException ex){
 				errList.add(trigger.getTriggerID());
@@ -105,7 +105,7 @@ public class TriggerCreator {
 
 		Map<String,Set<String>>   map=getTriggerDataMap(record);
 
-		general.addTriggerToEngine(record,map);
+		general.addTriggerToEngine(record,map,true);
 
 
 		return;

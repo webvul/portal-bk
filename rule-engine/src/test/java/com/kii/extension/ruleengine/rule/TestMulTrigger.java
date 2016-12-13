@@ -82,7 +82,7 @@ public class TestMulTrigger extends TestInit {
 		thingSet.put("two",new HashSet<>(thList));
 		thingSet.put("one",new HashSet<>(Arrays.asList("thing-100")));
 
-		engine.addTriggerToEngine(record,thingSet);
+		engine.addTriggerToEngine(record,thingSet,false);
 
 		setFooBarStatus(100,-100,"thing-100");
 

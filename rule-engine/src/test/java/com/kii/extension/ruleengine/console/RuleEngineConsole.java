@@ -392,7 +392,7 @@ public class RuleEngineConsole {
 				break;
 		}
 
-		service.addTriggerToEngine(record,thingMap);
+		service.addTriggerToEngine(record,thingMap,true );
 
 		System.out.println("create trigger "+triggerID);
 

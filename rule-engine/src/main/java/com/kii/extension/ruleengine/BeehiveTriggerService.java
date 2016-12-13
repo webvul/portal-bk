@@ -130,8 +130,8 @@ public class BeehiveTriggerService {
 		droolsTriggerService.addThingStatus(newStatus);
 	}
 
-
-	public void addTriggerToEngine(TriggerRecord record,Map<String,Set<String>>  thingIDsMap) throws TriggerCreateException{
+	
+	public void addTriggerToEngine(TriggerRecord record,Map<String,Set<String>>  thingIDsMap,boolean fireNow) throws TriggerCreateException{
 
 		String triggerID=record.getId();
 
@@ -179,6 +179,11 @@ public class BeehiveTriggerService {
 
 
 			scheduleService.addManagerTask(triggerID, period,record.getPredicate().getSchedule());
+			
+			if(fireNow){
+				
+				droolsTriggerService.fireCurrTrigger(triggerID);
+			}
 
 		} catch (RuntimeException e) {
 

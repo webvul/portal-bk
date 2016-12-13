@@ -201,7 +201,10 @@ public class DroolsTriggerService {
 
 		cloudService.addOrUpdateExternal(newValues);
 	}
-
-
-
+	
+	
+	public void fireCurrTrigger(String triggerID) {
+		
+		cloudService.inFireTrigger(triggerID);
+	}
 }

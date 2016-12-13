@@ -20,7 +20,6 @@ when
     $curr:CurrThing(init == false)
     $muiMap:MultiplesValueMap( triggerID==$triggerID, ${express}  )
 then
-    System.out.println("output match result");
 	MatchResult result=new MatchResult($triggerID);
     result.setFireSource($curr);
 

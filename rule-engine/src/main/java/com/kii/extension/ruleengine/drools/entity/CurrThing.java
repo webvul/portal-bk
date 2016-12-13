@@ -9,9 +9,11 @@ public class CurrThing {
 	private Status status=Status.inInit;
 
 
+	private String triggerID;
+	
 	public  enum Status{
 
-		inInit,inExt,inThing,inIdle;
+		inInit,inExt,inThing,inIdle,singleTrigger;
 
 	}
 
@@ -51,6 +53,11 @@ public class CurrThing {
 		this.currThing=NONE;
 
 	}
+	
+	public void setTriggerID(String triggerID){
+		this.triggerID=triggerID;
+		status=Status.singleTrigger;
+	}
 
 	public void setCurrThing(String curr){
 
@@ -59,16 +66,20 @@ public class CurrThing {
 		this.currExt=NONE;
 	}
 
-	public boolean valid(Set<String> th){
+	public boolean valid(Set<String> th,String triggerID){
 
 
-		return status==Status.inExt|| (status==Status.inThing&&(th.contains(currThing)));
+		return status==Status.inExt
+				|| (status==Status.inThing&&(th.contains(currThing)))
+				|| (status==Status.singleTrigger  &&  this.triggerID.equals(triggerID));
 
 	}
 
-	public boolean valid(String th){
+	public boolean valid(String th,String triggerID){
 
-		return status==Status.inExt|| (status==Status.inThing&&(th.equals(currThing)));
+		return status==Status.inExt
+				|| (status==Status.inThing&&(th.equals(currThing)))
+				|| (status==Status.singleTrigger && this.triggerID.equals(triggerID));
 	}
 
 	@Override
@@ -77,6 +88,7 @@ public class CurrThing {
 				" status =" + status.name() +
 				", currThing='" + currThing + '\'' +
 				", currExt='"+currExt+'\''+
+				", triggerID='"+triggerID+"\'"+
 				'}';
 	}
 }

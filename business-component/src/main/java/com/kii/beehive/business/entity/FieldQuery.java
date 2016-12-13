@@ -1,5 +1,6 @@
 package com.kii.beehive.business.entity;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 
 import com.kii.beehive.portal.jdbc.helper.SqlCondition;
@@ -19,6 +20,28 @@ public class FieldQuery {
 	private Number end;
 	
 	private ConditionExpress express;
+	
+	public boolean  verify(){
+		
+		if(express==null){
+			return false;
+		}
+		
+		if(StringUtils.isBlank(fieldName)){
+			return false;
+		}
+		
+		switch (express){
+			case Eq:
+			case Like:
+				return value!=null;
+			case Range:
+				return start!=null||end!=null;
+			default:
+				return true;
+		}
+				
+	}
 	
 	public String getFieldName() {
 		return fieldName;

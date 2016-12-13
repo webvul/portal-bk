@@ -86,7 +86,9 @@ public  static final String ACTION_TYPE="action_type";
 		
 		if(AdditionFieldType.verifyFieldName(name)) {
 			query.setFieldName(name);
-			this.queryMap.put(name, query);
+			if(query.verify()) {
+				this.queryMap.put(name, query);
+			}
 		}
 	}
 

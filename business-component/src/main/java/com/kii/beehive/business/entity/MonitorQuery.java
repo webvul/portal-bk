@@ -49,7 +49,9 @@ public class MonitorQuery {
 	public void addQueryMap(String name,FieldQuery query) {
 		if(AdditionFieldType.verifyFieldName(name)) {
 			query.setFieldName(name);
-			this.queryMap.put(name, query);
+			if(query.verify()) {
+				this.queryMap.put(name, query);
+			}
 		}
 	}
 	
