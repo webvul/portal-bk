@@ -80,7 +80,6 @@ public class LocationReportAction extends BaseRestHandler {
 							.stream().map(thingInfo -> thingInfo.getKiiThingID())
 							.distinct().collect(Collectors.toList());
 				} catch (IOException e) {
-					e.printStackTrace();
 					return Collections.emptyList();
 				}
 			}

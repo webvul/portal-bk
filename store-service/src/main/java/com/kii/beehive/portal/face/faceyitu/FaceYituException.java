@@ -6,6 +6,10 @@ package com.kii.beehive.portal.face.faceyitu;
 public class FaceYituException extends RuntimeException {
 
 
+	public FaceYituException(Exception e){
+		super("yitu session expire, please try again later",e);
+	}
+	
 	public FaceYituException(){
 		super("yitu session expire, please try again later");
 	}

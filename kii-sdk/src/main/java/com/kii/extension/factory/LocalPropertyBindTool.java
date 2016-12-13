@@ -46,7 +46,6 @@ public class LocalPropertyBindTool implements AppBindTool {
 		try {
 			prop.load(loader.getResource(propName).getInputStream());
 		} catch (IOException e) {
-			e.printStackTrace();
 			throw new IllegalArgumentException(e);
 		}
 

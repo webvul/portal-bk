@@ -112,7 +112,6 @@ public class DataService {
 		try {
 			return mapper.readValue(body, CreateResponse.class);
 		} catch (IOException e) {
-			e.printStackTrace();
 			throw new IllegalArgumentException(e);
 		}
 

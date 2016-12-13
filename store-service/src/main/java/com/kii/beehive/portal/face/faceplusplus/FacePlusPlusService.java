@@ -87,8 +87,7 @@ public class FacePlusPlusService {
         try {
             result = objectMapper.readValue(responseBody, new TypeReference<HashMap>() {});
         } catch (IOException e) {
-            e.printStackTrace();
-            throw new FacePlusPlusException();
+            throw new FacePlusPlusException(e);
         }
         return result;
     }
@@ -112,8 +111,7 @@ public class FacePlusPlusService {
         try {
             result = objectMapper.readValue(responseBody, new TypeReference<HashMap>() {});
         } catch (IOException e) {
-            e.printStackTrace();
-            throw new FacePlusPlusException();
+            throw new FacePlusPlusException(e);
         }
         return result;
     }
@@ -130,8 +128,7 @@ public class FacePlusPlusService {
         try {
             result = objectMapper.readValue(responseBody, new TypeReference<HashMap>() {});
         } catch (IOException e) {
-            e.printStackTrace();
-            throw new FacePlusPlusException();
+            throw new FacePlusPlusException(e);
         }
         return result;
     }
@@ -152,8 +149,7 @@ public class FacePlusPlusService {
         try {
             result = objectMapper.readValue(responseBody, new TypeReference<HashMap>() {});
         } catch (IOException e) {
-            e.printStackTrace();
-            throw new FacePlusPlusException();
+			throw new FacePlusPlusException(e);
         }
         return result;
     }
@@ -244,7 +240,7 @@ public class FacePlusPlusService {
                     obj.put("vip", true);
                     obj.put("stanger", true);
                 } catch (JSONException e) {
-                    e.printStackTrace();
+					log.error(e.getMessage());
                 }
                 socket.emit("subscribe", obj);
                 log.debug("Connected to Face++ WebSocket");
@@ -261,7 +257,7 @@ public class FacePlusPlusService {
                     try {
                         eventResult = objectMapper.readValue(eventJsonStr, new TypeReference<HashMap>() {});
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        log.error(e.getMessage());
                     }
                     String faceUserID = eventResult.get("subject_id") == null ? "" : String.valueOf(eventResult.get("subject_id"));
                     if( ! StringUtils.isEmpty(faceUserID) ){
@@ -271,7 +267,7 @@ public class FacePlusPlusService {
                             try {
                                 postEventJsonStr = objectMapper.writeValueAsString(eventResult);
                             } catch (JsonProcessingException e) {
-                                e.printStackTrace();
+								log.error(e.getMessage());
                             }
                         }
                     }

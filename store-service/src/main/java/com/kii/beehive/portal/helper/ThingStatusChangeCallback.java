@@ -1,12 +1,17 @@
 package com.kii.beehive.portal.helper;
 
 import java.util.Date;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.kii.beehive.portal.entitys.ThingStateUpload;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
@@ -28,6 +33,7 @@ public class ThingStatusChangeCallback {
 	@Autowired
 	private GlobalThingSpringDao globalThingDao;
 
+	private Logger log= LoggerFactory.getLogger(ThingStatusChangeCallback.class);
 
 	@Autowired
 	private BeehiveTriggerService engine;
@@ -55,7 +61,7 @@ public class ThingStatusChangeCallback {
 		try {
 			postEventJsonStr = objectMapper.writeValueAsString(thingStateUpload);
 		} catch (JsonProcessingException e) {
-			e.printStackTrace();
+			log.error(e.getMessage());
 		}
 		//push redis
 		messageQueueDao.lpush(thingStateQueue, postEventJsonStr);

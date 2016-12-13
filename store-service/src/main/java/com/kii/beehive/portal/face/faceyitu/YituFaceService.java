@@ -98,7 +98,7 @@ public class YituFaceService implements FaceServiceInf {
 			in.read(data);
 			in.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.error(e.getMessage());
 		}
 
 		yituFaceImage.setPicture_image_content_base64(Base64.encodeBase64String(data));
@@ -120,9 +120,7 @@ public class YituFaceService implements FaceServiceInf {
 			result = objectMapper.readValue(responseBody, new TypeReference<HashMap>() {
 			});
 		} catch (IOException e) {
-			e.printStackTrace();
-			log.error(responseBody);
-			throw new FaceYituException();
+			throw new FaceYituException(e);
 		}
 		FaceImage faceImage = null;
 		if(result.get("rtn").toString().equals("0")){
@@ -149,7 +147,6 @@ public class YituFaceService implements FaceServiceInf {
 		try {
 			result = objectMapper.readValue(responseBody, new TypeReference<HashMap>() {});
 		} catch (IOException e) {
-			e.printStackTrace();
 			log.error(responseBody);
 
 		}

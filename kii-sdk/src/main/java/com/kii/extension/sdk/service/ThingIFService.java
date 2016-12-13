@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.http.client.methods.HttpUriRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -42,6 +44,8 @@ public class ThingIFService {
 	@Autowired
 	private AdminTokenBindTool  adminTokenTool;
 
+	
+	private Logger log= LoggerFactory.getLogger(ThingIFService.class);
 
 	private ApiAccessBuilder getBuilder(){
 		AppInfo info= bindToolResolver.getAppInfo();
@@ -238,7 +242,7 @@ public class ThingIFService {
 				try {
 					Thread.sleep(10000);
 				} catch (InterruptedException e) {
-					e.printStackTrace();
+					log.error(e.getMessage());
 				}
 			}
 			i--;

@@ -97,14 +97,5 @@ public class GatewayOfKiiCloud {
         this.globalThingID = globalThingID;
     }
 
-//    public static void main(String[] args) throws JsonProcessingException {
-//
-//        ObjectMapper m = new ObjectMapper();
-//
-//        GatewayOfKiiCloud g = new GatewayOfKiiCloud();
-//        g.setGlobalThingID(10012L);
-//
-//        System.out.println(m.writeValueAsString(g));
-//
-//    }
+
 }

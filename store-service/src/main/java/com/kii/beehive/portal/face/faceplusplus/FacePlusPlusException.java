@@ -7,5 +7,9 @@ public class FacePlusPlusException extends RuntimeException {
 	public FacePlusPlusException(){
 		super();
 	}
+	
+	public FacePlusPlusException(Exception e){
+		super(e);
+	}
 
 }

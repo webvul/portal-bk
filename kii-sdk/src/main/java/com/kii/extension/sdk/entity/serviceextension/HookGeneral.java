@@ -87,7 +87,6 @@ public class HookGeneral {
 		try {
 			return mapper.writeValueAsString(getHookContext());
 		} catch (JsonProcessingException e) {
-			e.printStackTrace();
 			throw new IllegalArgumentException(e);
 		}
 	}

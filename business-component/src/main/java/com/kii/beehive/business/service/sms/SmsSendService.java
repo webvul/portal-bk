@@ -116,8 +116,8 @@ http://221.179.180.158:9007/QxtSms/QxtFirewall?OperID=test&OperPass=test&SendTim
 			return StrTemplate.generByMap(template,paramMap);
 
 		} catch (IOException e) {
-			e.printStackTrace();
-			throw new IllegalArgumentException("sms template not found or param combine fail:"+name);
+//			e.printStackTrace();
+			throw new IllegalArgumentException("sms template not found or param combine fail:"+name,e);
 		}
 
 

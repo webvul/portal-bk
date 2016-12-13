@@ -8,6 +8,8 @@ import java.util.concurrent.LinkedTransferQueue;
 import java.util.concurrent.TransferQueue;
 import java.util.function.Function;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.jdbc.entity.UserNotice;
@@ -22,6 +24,7 @@ public class NoticeMsgQueue {
 	private Map<Long,UserNotice>  currMsgMap=new ConcurrentHashMap<>();
 	
 	
+	private Logger log= LoggerFactory.getLogger(NoticeMsgQueue.class);
 	public void addNotice(UserNotice notice){
 		
 		currMsgMap.put(notice.getUserID(),notice);
@@ -57,7 +60,7 @@ public class NoticeMsgQueue {
 				} catch (InterruptedException e) {
 					break;
 				} catch(Exception e){
-					e.printStackTrace();
+					log.error(e.getMessage());
 					break;
 				}
 			}

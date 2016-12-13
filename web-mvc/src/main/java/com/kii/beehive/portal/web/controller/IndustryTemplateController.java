@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,8 +23,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kii.beehive.business.manager.IndustryTemplateManager;
 import com.kii.beehive.portal.common.utils.CollectUtils;
 import com.kii.beehive.portal.jdbc.entity.IndustryTemplate;
-import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.entity.IndustryTemplateRestBean;
+import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
 
 /**
@@ -38,7 +40,8 @@ public class IndustryTemplateController {
     @Autowired
     private IndustryTemplateManager industryTemplateManager;
 
-
+	private Logger log= LoggerFactory.getLogger(IndustryTemplateController.class);
+	
     /**
      * add industry template, below fields are required in the json request body:
      * - thing type
@@ -138,7 +141,7 @@ public class IndustryTemplateController {
             try {
                 content = (Map<String, Object>)objectMapper.readValue(strContent, Map.class);
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error(e.getMessage());
             }
             IndustryTemplateRestBean restBean = new IndustryTemplateRestBean();
             restBean.setIndustryTemplate(industryTemplate);
@@ -181,8 +184,8 @@ public class IndustryTemplateController {
             try {
                 content = (Map<String, Object>)objectMapper.readValue(strContent, Map.class);
             } catch (IOException e) {
-                e.printStackTrace();
-            }
+				log.error(e.getMessage());
+			}
             IndustryTemplateRestBean restBean = new IndustryTemplateRestBean();
             restBean.setIndustryTemplate(industryTemplate);
             restBean.setContent(content);
