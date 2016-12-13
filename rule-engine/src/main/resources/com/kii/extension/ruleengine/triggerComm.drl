@@ -11,7 +11,7 @@ global com.kii.extension.ruleengine.ExtendFunAdapter ExtFun;
 
 query "get Match Result by TriggerID" ()
 	Trigger($triggerID:triggerID,$thingSet:thingSet,when==WhenType.CONDITION_TRUE,enable==true)
-	CurrThing( valid ($thingSet) )
+	CurrThing( valid ($thingSet,$triggerID) )
     results : MatchResult( triggerID == $triggerID )
 end
 
@@ -19,7 +19,7 @@ rule "fire all trigger:when false->true,trigger  fire"
 when
 	$trigger:Trigger($triggerID:triggerID,$thingSet:thingSet,when == WhenType.CONDITION_FALSE_TO_TRUE)
     $result:MatchResult(triggerID==$triggerID)
-    $curr:CurrThing( valid($thingSet) )
+    $curr:CurrThing( valid($thingSet,$triggerID) )
 
     not ( TriggerResult(triggerID==$triggerID) )
 then
@@ -34,21 +34,19 @@ rule "fire all trigger:when false->true,trigger not fire"
 when
 	$trigger:Trigger($triggerID:triggerID,$thingSet:thingSet,when == WhenType.CONDITION_FALSE_TO_TRUE )
     not ( exists MatchResult(triggerID==$triggerID) )
-    $curr:CurrThing( valid($thingSet) )
+    $curr:CurrThing( valid($thingSet,$triggerID) )
     $result:TriggerResult(triggerID==$triggerID)
 then
-	System.out.println("false-true "+$triggerID+" not been fired");
 	delete($result);
 end
 
 rule "fire all trigger:when false->true change,trigger  fire"
 when
 	$trigger:Trigger($triggerID:triggerID,$thingSet:thingSet, when == WhenType.CONDITION_CHANGED)
-	$curr:CurrThing( valid($thingSet) )
+	$curr:CurrThing( valid($thingSet,$triggerID) )
     $result:MatchResult(triggerID==$triggerID)
     not ( TriggerResult(triggerID==$triggerID) )
 then
-	System.out.println("change "+$triggerID+" been fired:false>true");
 	insert(new TriggerResult($result));
 	CommandExec exec=(CommandExec)kcontext.getKieRuntime().getEnvironment().get("exec");
     exec.doExecute($triggerID,$result);
@@ -57,11 +55,10 @@ end
 rule "fire all trigger:when true->false change,trigger  fire"
 when
 	$trigger:Trigger($triggerID:triggerID,$thingSet:thingSet, when == WhenType.CONDITION_CHANGED)
-	$curr:CurrThing( valid($thingSet) )
+	$curr:CurrThing( valid($thingSet,$triggerID) )
     not (MatchResult(triggerID==$triggerID))
     $result:TriggerResult(triggerID==$triggerID)
 then
-	System.out.println("change "+$triggerID+" been fired:true->false");
 	CommandExec exec=(CommandExec)kcontext.getKieRuntime().getEnvironment().get("exec");
     exec.doExecute($triggerID,$result.getMatchResult());
     delete($result);
@@ -72,7 +69,7 @@ end
 rule "fire trigger:when true->false,trigger fire "
 when
 	$trigger:Trigger($triggerID:triggerID ,$thingSet:thingSet,when == WhenType.CONDITION_TRUE_TO_FALSE  )
-	$curr:CurrThing( valid($thingSet) )
+	$curr:CurrThing( valid($thingSet，$triggerID) )
     not( MatchResult(triggerID==$triggerID) )
     $result:TriggerResult(triggerID==$triggerID)
 then
@@ -87,7 +84,7 @@ end
 rule "fire trigger:when true->false,trigger not fire "
 when
 	$trigger:Trigger($triggerID:triggerID,$thingSet:thingSet,when == WhenType.CONDITION_TRUE_TO_FALSE )
-	$curr:CurrThing( valid($thingSet) )
+	$curr:CurrThing( valid($thingSet，$triggerID) )
     $result:MatchResult(triggerID==$triggerID)
     not ( TriggerResult(triggerID==$triggerID) )
 then

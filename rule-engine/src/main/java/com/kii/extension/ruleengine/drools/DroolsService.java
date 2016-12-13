@@ -106,8 +106,29 @@ public class DroolsService {
 	public void toIdle(){
 		settingCurrThing(CurrThing.NONE, CurrThing.Status.inIdle);
 	}
-
-
+	
+	public void inFireTrigger(String triggerID) {
+		
+		synchronized (currThing) {
+			
+			CurrThing.Status oldStatus = currThing.getStatus();
+			if(oldStatus==CurrThing.Status.inInit){
+				kieSession.fireAllRules();
+				return;
+			}
+			
+			this.currThing.setStatus(CurrThing.Status.singleTrigger);
+			this.currThing.setTriggerID(triggerID);
+			
+			kieSession.update(currThingHandler, currThing);
+			
+			kieSession.fireAllRules();
+			
+			this.currThing.setStatus(CurrThing.Status.inIdle);
+			kieSession.update(currThingHandler, currThing);
+			kieSession.fireAllRules();
+		}
+	}
 
 
 	public void inThing(String thingID){
@@ -468,4 +489,6 @@ public class DroolsService {
 		
 		return kieSession.getFactHandle(obj);
 	}
+	
+
 }

@@ -55,7 +55,7 @@ public class TestSimpleTrigger extends TestInit{
 
 		map.put("comm", Collections.singleton(kiiThingID));
 
-		engine.addTriggerToEngine(record,map);
+		engine.addTriggerToEngine(record,map,false);
 
 //		engine.enableTrigger(triggerID);
 
@@ -106,7 +106,7 @@ public class TestSimpleTrigger extends TestInit{
 		record.setRecordStatus(TriggerRecord.StatusType.enable);
 
 
-		engine.addTriggerToEngine(record,new HashMap<>());
+		engine.addTriggerToEngine(record,new HashMap<>(),false );
 
 //		engine.enableTrigger(triggerID);
 
