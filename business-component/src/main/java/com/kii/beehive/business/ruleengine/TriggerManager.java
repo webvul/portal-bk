@@ -1,7 +1,5 @@
 package com.kii.beehive.business.ruleengine;
 
-import javax.annotation.PostConstruct;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -11,15 +9,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.kii.beehive.business.manager.AppInfoManager;
 import com.kii.beehive.business.manager.ThingTagManager;
 import com.kii.beehive.business.service.ThingIFInAppService;
@@ -80,7 +75,7 @@ public class TriggerManager {
 	@Autowired
 	private OperateLogDao logTool;
 
-	@PostConstruct
+	//@PostConstruct
 	public void init() {
 
 		List<TriggerRecord> recordList = triggerDao.getAllEnableTrigger();
@@ -138,31 +133,61 @@ public class TriggerManager {
 
 		logTool.triggerLog(record, OperateLog.ActionType.update);
 
-
 		if(oldRecord.getType().equals(BeehiveTriggerType.Gateway)){
-
-			if( ! checkLocalRule(record) ){
-				//
-				throw new IllegalStateException();
-
-			}else {
-
-				GatewayTriggerRecord gatewayTriggerRecord = convertToGatewayTriggerRecord((SummaryTriggerRecord) record);
-
-				triggerDao.updateEntity(gatewayTriggerRecord, record.getId());
-
-				sendGatewayCommand(gatewayTriggerRecord,GatewayCommand.updateTrigger);
-
-				return gatewayTriggerRecord;
+			SummaryTriggerRecord inSummaryTriggerRecord = new SummaryTriggerRecord();
+			//convert gate trigger to summary
+			GatewayTriggerRecord inGatewayTriggerRecord = (GatewayTriggerRecord) record;
+			BeanUtils.copyProperties(inGatewayTriggerRecord, inSummaryTriggerRecord, "summarySource", "targets");
+			inGatewayTriggerRecord.getSummarySource().forEach((key,gatewaySummarySource) -> {
+				SummarySource summarySource = new SummarySource();
+				BeanUtils.copyProperties(gatewaySummarySource, summarySource);
+				inSummaryTriggerRecord.getSummarySource().put(key, summarySource);
+			});
+			inGatewayTriggerRecord.getTargets().forEach((executeTarget) -> {
+				CommandToThingInGW commandToThingInGW = (CommandToThingInGW)executeTarget;
+				CommandToThing commandToThing = new CommandToThing();
+				BeanUtils.copyProperties(commandToThingInGW, commandToThing);
+				commandToThing.setSelector(new TagSelector());
+				BeanUtils.copyProperties(commandToThingInGW.getSelector(), commandToThing.getSelector());
+				inSummaryTriggerRecord.getTargets().add(commandToThing);
+			});
+			//
+			try {
+				if( ! checkLocalRule(inSummaryTriggerRecord) ){
+					throw new IllegalStateException();
+				}else {
+					GatewayTriggerRecord gatewayTriggerRecord = convertToGatewayTriggerRecord(inSummaryTriggerRecord);
+					triggerDao.updateEntity(gatewayTriggerRecord, gatewayTriggerRecord.getId());
+					sendGatewayCommand(gatewayTriggerRecord,GatewayCommand.updateTrigger);
+					return gatewayTriggerRecord;
+				}
+			} catch (IllegalStateException e) {//change to SummaryTrigger
+				inSummaryTriggerRecord.setRecordStatus(TriggerRecord.StatusType.enable);
+				inSummaryTriggerRecord.fillCreator(inSummaryTriggerRecord.getUserID());
+				creator.createTrigger(inSummaryTriggerRecord);
+				triggerDao.updateEntityAll(inSummaryTriggerRecord, inSummaryTriggerRecord.getId());
+				//delete from gateway
+				sendGatewayCommand((GatewayTriggerRecord) record, GatewayCommand.deleteTrigger);
+				return inSummaryTriggerRecord;
 			}
-
 
 		}else {
 
 			record.setRecordStatus(TriggerRecord.StatusType.enable);
 
 			creator.removeTrigger(record);
-			
+
+			if(checkLocalRule(record)){//change to gate trigger
+				try {
+					GatewayTriggerRecord gatewayTriggerRecord = convertToGatewayTriggerRecord((SummaryTriggerRecord) record);
+					triggerDao.updateEntityAll(gatewayTriggerRecord, gatewayTriggerRecord.getId());
+					sendGatewayCommand(gatewayTriggerRecord,GatewayCommand.updateTrigger);
+					return gatewayTriggerRecord;
+				}catch(IllegalStateException e){
+					log.warn("update gateway trigger param");
+				}
+			}
+
 			record.fillCreator(record.getUserID());
 			creator.createTrigger(record);
 
@@ -176,7 +201,7 @@ public class TriggerManager {
 
 	private boolean checkLocalRule(TriggerRecord record) {
 
-		if( ! (record instanceof SummaryTriggerRecord
+		if( ! ( ( record instanceof SummaryTriggerRecord)
 				&& record.getPredicate().getTriggersWhen().equals(WhenType.CONDITION_TRUE)
 				&& record.getPredicate().getSchedule() == null
 				&& ( record.getPredicate().getCondition()  instanceof AndLogic || record.getPredicate().getCondition() instanceof OrLogic)
@@ -396,8 +421,7 @@ public class TriggerManager {
 			sendGatewayCommand((GatewayTriggerRecord) record, GatewayCommand.deleteTrigger);
 
 		}else {
-
-				creator.removeTrigger(record);
+			creator.removeTrigger(record);
 		}
 
 		triggerDao.deleteTriggerRecord(triggerID,"oper by user");
