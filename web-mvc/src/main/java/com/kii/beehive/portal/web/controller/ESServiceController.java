@@ -1,6 +1,21 @@
 package com.kii.beehive.portal.web.controller;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.apache.logging.log4j.util.Strings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.fasterxml.jackson.databind.JsonNode;
+
 import com.kii.beehive.business.elasticsearch.TaskManager;
 import com.kii.beehive.business.manager.TagThingManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
@@ -10,13 +25,6 @@ import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.beehive.portal.web.entity.SearchRestBean;
 import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
-import org.apache.logging.log4j.util.Strings;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 
 /**
@@ -32,6 +40,8 @@ public class ESServiceController {
 
 	@Autowired
 	protected TagThingManager thingTagManager;
+	
+	private Logger log= LoggerFactory.getLogger(ESServiceController.class);
 
 	/**
 	 * POST /es/bulkUpload/{appId}/{vendorThingId}
@@ -59,7 +69,7 @@ public class ESServiceController {
 				return transportClientManager.getAvgTimeParkingSpaceToGateway(endTime, startTime);
 			return transportClientManager.getAvgTimeParkingSpaceToGateway(startTime, endTime);
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error(e.getMessage());
 			return -1;
 		}
 	}

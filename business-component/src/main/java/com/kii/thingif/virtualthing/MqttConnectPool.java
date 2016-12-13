@@ -31,6 +31,8 @@ public class MqttConnectPool {
 	@Autowired
 	private ObjectMapper mapper;
 
+	
+	
 	public void connectToMQTT(String thingID, MqttEndPoint endPoint) {
 		RunTask task = new RunTask(thingID, endPoint);
 
@@ -104,7 +106,7 @@ public class MqttConnectPool {
 				client.subscribe(info.getMqttTopic());
 
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.error(e.getMessage());
 			}
 
 		}

@@ -21,7 +21,7 @@ public class EchoHandler extends TextWebSocketHandler {
 		try {
 			session.sendMessage(message);
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.error(e.getMessage());
 		}
 	}
 }

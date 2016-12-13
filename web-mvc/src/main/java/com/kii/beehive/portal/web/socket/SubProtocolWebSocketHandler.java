@@ -49,9 +49,9 @@ public class SubProtocolWebSocketHandler extends org.springframework.web.socket.
 					modifiersField.setAccessible(true);
 					modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
 				} catch (NoSuchFieldException e) {
-					e.printStackTrace();
+					LOG.error(e.getMessage());
 				} catch (IllegalAccessException e) {
-					e.printStackTrace();
+					LOG.error(e.getMessage());
 				}
 			}
 		}
@@ -151,7 +151,7 @@ public class SubProtocolWebSocketHandler extends org.springframework.web.socket.
 				}
 				stompDecoderField.set(handler, stompDecoder);
 			} catch (IllegalAccessException e) {
-				e.printStackTrace();
+				LOG.error(e.getMessage());
 			}
 		}
 	}

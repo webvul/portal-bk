@@ -20,6 +20,8 @@ import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.nio.reactor.IOReactorException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -54,7 +56,7 @@ public class DevPortalService {
 	private String devPortalUrl;
 
 
-
+	private Logger log= LoggerFactory.getLogger(DevPortalService.class);
 
 
 	@PostConstruct
@@ -109,10 +111,10 @@ public class DevPortalService {
 
 			for(Header h:response.getAllHeaders()){
 
-				System.out.println(h.getName()+":"+h.getValue());
+				log.debug(h.getName()+":"+h.getValue());
 			};
 		} catch (IOException e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 			throw new IllegalArgumentException(e);
 		}
 		return response;

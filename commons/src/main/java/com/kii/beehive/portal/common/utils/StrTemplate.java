@@ -5,10 +5,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 
 public class StrTemplate {
+	
+	private static Logger log= LoggerFactory.getLogger(StrTemplate.class);
 
 	public static final String generUrl(String template,
 										Map<String, String> params) {
@@ -102,7 +106,8 @@ public class StrTemplate {
 				buf.append(wrapper.getPropertyValue(field));
 
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.error(e.getMessage());
+						
 				buf.append(field);
 			}
 			start=match.end();

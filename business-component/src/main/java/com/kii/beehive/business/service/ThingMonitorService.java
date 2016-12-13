@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.kii.beehive.business.entity.MonitorQuery;
 import com.kii.beehive.business.entity.ThingStatusNoticeEntry;
 import com.kii.beehive.business.ruleengine.TriggerManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
@@ -28,7 +31,6 @@ import com.kii.beehive.portal.jdbc.dao.UserNoticeDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.NoticeActionType;
 import com.kii.beehive.portal.jdbc.entity.UserNotice;
-import com.kii.beehive.business.entity.MonitorQuery;
 import com.kii.beehive.portal.service.ThingStatusMonitorDao;
 import com.kii.beehive.portal.store.entity.ThingStatusMonitor;
 import com.kii.extension.ruleengine.TriggerCreateException;
@@ -64,6 +66,8 @@ public class ThingMonitorService {
 
 	@Autowired
 	private NoticeMsgQueue queue;
+	
+	private Logger log= LoggerFactory.getLogger(ThingMonitorService.class);
 
 	@Transactional
 	public void addNotifiction(String monitorID, String thingID, Map<String,Object> status, Boolean sign,Set<String> currMatcher){
@@ -116,7 +120,7 @@ public class ThingMonitorService {
 		try {
 			json = mapper.writeValueAsString(entry);
 		} catch (JsonProcessingException e) {
-			e.printStackTrace();
+			log.error(e.getMessage());
 		}
 		
 		notice.setData(json);

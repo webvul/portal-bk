@@ -151,10 +151,11 @@ public class ExceptionController {
 		log.error("kiicloud exception ", ex);
 
 		Map<String,Object> error = convertExeptionToJson(ex);
+		error.put("from","KiiCloud");
 
 		HttpStatus status = HttpStatus.valueOf(ex.getStatusCode());
 
-		ResponseEntity<Object> resp = new ResponseEntity(error,headers, status);
+		ResponseEntity<Object> resp = new ResponseEntity(error,headers, HttpStatus.INTERNAL_SERVER_ERROR);
 		return resp;
 	}
 

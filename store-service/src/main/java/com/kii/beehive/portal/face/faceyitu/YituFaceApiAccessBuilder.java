@@ -2,12 +2,17 @@ package com.kii.beehive.portal.face.faceyitu;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import org.apache.http.client.methods.HttpUriRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.kii.beehive.portal.face.entitys.FaceImage;
 import com.kii.beehive.portal.face.faceyitu.entitys.YituFaceImage;
 import com.kii.beehive.portal.helper.HttpInvokeBuilder;
@@ -27,6 +32,8 @@ public class YituFaceApiAccessBuilder {
 	@Value("${yitu.password:21232f297a57a5a743894a0e4a801fc3}")
 	private String facePassword;
 
+	private Logger log= LoggerFactory.getLogger(YituFaceApiAccessBuilder.class);
+	
 	public YituFaceApiAccessBuilder() {
 
 	}
@@ -42,7 +49,7 @@ public class YituFaceApiAccessBuilder {
 			json.put("password", facePassword);
 			body = objectMapper.writeValueAsString(json);
 		} catch (JsonProcessingException e) {
-			e.printStackTrace();
+			log.error(e.getMessage());
 		}
 		HttpUriRequest invoke = new HttpInvokeBuilder().setUrl(fullUrl)
 				.buildCustomCall("post", body).generRequest(objectMapper);
@@ -61,7 +68,7 @@ public class YituFaceApiAccessBuilder {
 		try {
 			body = objectMapper.writeValueAsString(faceImage);
 		} catch (JsonProcessingException e) {
-			e.printStackTrace();
+			log.error(e.getMessage());
 		}
 		HttpUriRequest invoke = new HttpInvokeBuilder().setUrl(fullUrl)
 				.buildCustomCall("post", body).generRequest(objectMapper);
@@ -81,7 +88,7 @@ public class YituFaceApiAccessBuilder {
 		try {
 			body = objectMapper.writeValueAsString(faceImage);
 		} catch (JsonProcessingException e) {
-			e.printStackTrace();
+			log.error(e.getMessage());
 		}
 		HttpUriRequest invoke = new HttpInvokeBuilder().setUrl(fullUrl)
 				.buildCustomCall("post", body).generRequest(objectMapper);

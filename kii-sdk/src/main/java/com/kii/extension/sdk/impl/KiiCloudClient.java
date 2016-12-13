@@ -58,7 +58,6 @@ public class KiiCloudClient {
 		try {
 			return  mapper.readValue(result, cls);
 		} catch (IOException e) {
-			e.printStackTrace();
 			throw new IllegalArgumentException(e);
 		}
 

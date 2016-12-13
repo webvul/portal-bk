@@ -56,7 +56,7 @@ public class MessageManager implements ApplicationListener,
 			simpMessagingTemplate.convertAndSend("/topic/" + appId
 					+ "/" + info.getThingID(), objectMapper.writeValueAsString(info));
 		} catch (JsonProcessingException e) {
-			e.printStackTrace();
+			log.error(e.getMessage());
 		}
 	}
 
