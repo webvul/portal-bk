@@ -8,10 +8,21 @@ public class ActionResult {
 	   	{"turnPower":{"target":true,"errorMessage":"","transaction":{"voltage":"125"}},
 
 	 */
+	
+	private ThingStatus data;
+	
 	private boolean succeeded;
 
 	private String errorMessage;
-
+	
+	public ThingStatus getData() {
+		return data;
+	}
+	
+	public void setData(ThingStatus data) {
+		this.data = data;
+	}
+	
 	public String getErrorMessage() {
 		return errorMessage;
 	}
