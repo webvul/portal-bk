@@ -10,7 +10,7 @@ public class ThingSchema {
 
 	private String name;
 
-	private StatusContains statesSchema;
+	private StatusContains statesSchema=new StatusContains();
 
 	private Map<String,ActionContains>  actions=new HashMap<>();
 

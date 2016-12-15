@@ -66,8 +66,13 @@ public class IndustryTemplateDao extends SpringBaseDao<IndustryTemplate> {
 
 		String fullSql= StrTemplate.gener(sqlQueryByThingID,params);
 
-		return super.queryForObject(fullSql,new Object[]{"industrytemplate",thingID});
+		List<IndustryTemplate> list= super.query(fullSql,new Object[]{"industrytemplate",thingID});
 
+		if(list.isEmpty()){
+			return null;
+		}else{
+			return list.get(0);
+		}
 	}
 
 	public IndustryTemplate getTemplateByVendorThingID(String thingID){
