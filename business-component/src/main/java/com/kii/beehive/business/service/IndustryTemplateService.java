@@ -69,6 +69,9 @@ public class IndustryTemplateService {
 
 		IndustryTemplate template=dao.getTemplateByKiiThingID(kiiThingID);
 
+		if(template==null){
+			return new ThingSchema();
+		}
 		try {
 			ThingSchema schema = mapper.readValue(template.getContent(), ThingSchema.class);
 			schema.setName(template.getName());

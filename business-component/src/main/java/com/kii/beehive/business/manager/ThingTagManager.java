@@ -75,8 +75,9 @@ public class ThingTagManager {
 
 		Map<String,Object> status=new HashMap<>(input);
 
-		ThingSchema  schema=templateService.getTemplateByKiiThingID(fullThingID);
-
+		
+		ThingSchema schema = templateService.getTemplateByKiiThingID(fullThingID);
+		
 		Map<String,PointDetail>  propMap=schema.getStatesSchema().getProperties();
 
 		status.replaceAll((k,v)->{
