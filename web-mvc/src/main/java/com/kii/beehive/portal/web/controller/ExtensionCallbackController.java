@@ -1,5 +1,7 @@
 package com.kii.beehive.portal.web.controller;
 
+import javax.annotation.PostConstruct;
+
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.beehive.business.event.BusinessEventBus;
@@ -49,12 +52,23 @@ public class ExtensionCallbackController {
 	@Autowired
 	private ThingCommandForTriggerService  commandService;
 
-	@Autowired
 	private ObjectMapper objectMapper;
 	@Value("${thing.state.queue:thing_state_queue}")
 	private String thingStateQueue;
 
 
+	
+	@PostConstruct
+	public void init(){
+		
+		objectMapper=new ObjectMapper();
+		
+		objectMapper.configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES,false);
+		objectMapper.configure(DeserializationFeature.FAIL_ON_READING_DUP_TREE_KEY,true);
+		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
+		
+		
+	}
 
 	@RequestMapping(value = "/" + CallbackNames.STATE_CHANGED, method = {RequestMethod.POST})
 	public void onStateChangeFire(@RequestHeader("x-kii-appid") String appID,
