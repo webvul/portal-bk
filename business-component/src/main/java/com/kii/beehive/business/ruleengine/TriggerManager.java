@@ -1,5 +1,6 @@
 package com.kii.beehive.business.ruleengine;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -13,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kii.beehive.business.manager.AppInfoManager;
@@ -75,19 +77,25 @@ public class TriggerManager {
 	@Autowired
 	private OperateLogDao logTool;
 
-	//@PostConstruct
+
+	@Value("${spring.profile}")
+	private String profile;
+
+	@PostConstruct
 	public void init() {
 
-		List<TriggerRecord> recordList = triggerDao.getAllEnableTrigger();
+		if( ! "local".equals(profile) ){
 
+			List<TriggerRecord> recordList = triggerDao.getAllEnableTrigger();
 
-		List<TriggerRecord>  list=recordList.stream().filter((r)->r.getType()!= BeehiveTriggerType.Gateway).collect(Collectors.toList());
+			List<TriggerRecord>  list=recordList.stream().filter((r)->r.getType()!= BeehiveTriggerType.Gateway).collect(Collectors.toList());
 
-		List<BusinessObject>  objList=businessObjDao.getAll();
+			List<BusinessObject>  objList=businessObjDao.getAll();
 
-		List<String> errList=creator.init(list,objList);
+			List<String> errList=creator.init(list,objList);
 
-		errList.forEach(err->triggerDao.deleteTriggerRecord(err,"create trigger fail in system init "));
+			errList.forEach(err->triggerDao.deleteTriggerRecord(err,"create trigger fail in system init "));
+		}
 	}
 
 
