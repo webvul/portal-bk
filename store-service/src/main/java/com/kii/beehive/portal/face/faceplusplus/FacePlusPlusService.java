@@ -273,7 +273,7 @@ public class FacePlusPlusService {
                     }
 
                     //push redis
-                    log.debug("face++ websocket received postEventJsonStr:" + postEventJsonStr);
+                    log.info("face++ websocket received postEventJsonStr:" + postEventJsonStr);
                     messageQueueDao.lpush(faceQueue, postEventJsonStr);
                 }
             }

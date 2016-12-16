@@ -25,11 +25,11 @@ public class YituFaceApiAccessBuilder {
 	@Autowired
 	private ObjectMapper objectMapper;
 
-	@Value("${yitu.uri:http://120.26.7.217}")
+	@Value("${yitu.url}")
 	private String baseUrl;
-	@Value("${yitu.username:admin}")
+	@Value("${yitu.username}")
 	private String faceUsername;
-	@Value("${yitu.password:21232f297a57a5a743894a0e4a801fc3}")
+	@Value("${yitu.password}")
 	private String facePassword;
 
 	private Logger log= LoggerFactory.getLogger(YituFaceApiAccessBuilder.class);
