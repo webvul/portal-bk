@@ -153,8 +153,8 @@ public class ThingMonitorService {
 		}
 		monitor.setId(monitorID);
 		
-		if(StringUtils.isBlank(monitor.getExpress())&&
-				monitor.getCondition()==null) {
+		if(StringUtils.isNotBlank(monitor.getExpress())||
+				monitor.getCondition()!=null) {
 			TriggerRecord trigger = getTrigger(monitor, ids);
 			
 			try {
