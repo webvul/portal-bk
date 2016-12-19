@@ -19,6 +19,7 @@ import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.StrTemplate;
 import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
+import com.kii.beehive.portal.jdbc.entity.ThingGeo;
 import com.kii.beehive.portal.jdbc.entity.ThingLocationRelation;
 import com.kii.beehive.portal.jdbc.entity.ThingUserRelation;
 
@@ -295,6 +296,47 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 		return list;
 
 	}
+	
+	private static final String getAllThingInfo=StrTemplate.gener(
+			"select  (select group_concat(v.${0}) from  ${1} v where v.${2} = th.${3} group by v.${2})"+
+	"as users, geo.${4},geo.${5},geo.${6},geo.${7},geo.${8},"+
+	"loc.${9} ,"+
+	"th.${10},th.${11},th.${12},th.${13},th.${14},th.${15}"+
+	"from ${16} th"+
+	"left join ${17} geo on geo.${18} = th.${11}"+
+	"left join ${19} loc on loc.${20} = th.${11}"+
+	"where th.${21} = 0",
+			GlobalThingInfo.VIEW_USER_ID,GlobalThingInfo.VIEW_NAME,GlobalThingInfo.VIEW_THING_ID,GlobalThingInfo.ID_GLOBAL_THING,
+			ThingGeo.BUILDING_ID,ThingGeo.ALI_THING_ID,ThingGeo.FLOOR,ThingGeo.LAT,ThingGeo.LNG,
+			ThingLocationRelation.LOCATION,
+			GlobalThingInfo.VANDOR_THING_ID,GlobalThingInfo.ID_GLOBAL_THING,GlobalThingInfo.FULL_KII_THING_ID,GlobalThingInfo.SCHEMA_NAME,GlobalThingInfo.SCHEMA_VERSION,GlobalThingInfo.THING_TYPE,
+			GlobalThingSpringDao.TABLE_NAME,ThingGeoDao.TABLE_NAME,ThingGeo.GLOBAL_THING_ID,
+			ThingLocationRelDao.TABLE_NAME,ThingLocationRelation.THING_ID,
+			GlobalThingInfo.IS_DELETED);
+	
+	
+	public List<Map<String,Object>> getAllThingAndRelationData() {
+		
+		
+		
+		
+		List<Map<String,Object>> list = super.jdbcTemplate.query(sql, new RowMapper<Map<String, Object>>() {
+			@Override
+			public Map<String, Object> mapRow(ResultSet rs, int rowNum) throws SQLException {
+				Map<String,Object> map=new HashMap<>();
+				map.put("users",rs.getString("users"));
+				map.put("location",rs.getString("location"));
+				map.put("buildID",rs.getString("buildID"));
+				
+				
+				return ;
+			}
+		});
+		
+		return list;
+		
+	}
+	
 //
 //	public Optional<List<GlobalThingInfo>> findByIDsAndType(Set<Long> thingIds, String thingType) {
 //		if (null == thingIds || thingIds.isEmpty()) {

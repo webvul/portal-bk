@@ -1,4 +1,4 @@
-package com.kii.beehive.business.service;
+package com.kii.beehive.business.elasticsearch;
 
 
 import javax.annotation.PostConstruct;
@@ -6,16 +6,12 @@ import javax.annotation.PreDestroy;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
-import org.apache.http.entity.StringEntity;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.client.ResponseListener;
 import org.elasticsearch.client.RestClient;
@@ -28,9 +24,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Charsets;
@@ -59,7 +52,7 @@ public class ESService {
 	@Autowired
 	private ResourceLoader loader;
 	
-	private Map<ESIndex,Queue> queueMap=new  HashMap<>();
+	private Queue<BulkOperate> queue=new ConcurrentLinkedQueue<>();
 	
 	@PostConstruct
 	public void init(){
@@ -79,21 +72,24 @@ public class ESService {
 		
 	}
 	
-	public void setDataMap(ESIndex index){
+	public void setDataMap(ESIndex index) throws IOException {
 		
 		
 		InputStream stream=loader.getResource("classpath:com/kii/beehive/business/elasticsearch/"+index.getMapperTemplateName()).getInputStream();
 		
 		String json= StreamUtils.copyToString(stream, Charsets.UTF_8);
 		
+		ESRequest request=new ESRequest();
+		request.setContent(json);
+		request.setMethod(ESRequest.MethodType.PUT);
+		request.setUrl("/"+index.getIndex().name());
 		
+		executeCall(request);
 	}
 	
-	public void addData(ESIndex index,Object data){
+	public void addData(BulkOperate operate){
 		
-		Queue queue=queueMap.putIfAbsent(index,new ConcurrentLinkedQueue());
-		
-		queue.add(data);
+		queue.add(operate);
 	}
 	
 	@Scheduled(fixedRate=60*1000*5,initialDelay=60*1000)
@@ -101,45 +97,50 @@ public class ESService {
 		
 		StringBuilder sb=new StringBuilder();
 		
-		queueMap.forEach((k,v)->{
+//		try {
+				
+		BulkOperate entry=queue.poll();
+		while(entry!=null) {
 			
-			Map<String,Object> operate= Collections.singletonMap("create",k);
+			Map<String,Object> map=new HashMap<>();
+			map.put(entry.getOperate().name(),entry);
+			
 			try {
-				String operLine = mapper.writeValueAsString(operate);
+				String operLine = mapper.writeValueAsString(entry);
+				String data = mapper.writeValueAsString(entry.getData());
 				
-				Object entry=v.poll();
-				while(entry!=null) {
-					String data = mapper.writeValueAsString(entry);
-					
-					sb.append(operLine).append("\n");
-					sb.append(data).append("\n");
-					
-					entry=v.poll();
-				}
-				
-			} catch (JsonProcessingException e) {
+				sb.append(operLine).append("\n");
+				sb.append(data).append("\n");
+			}catch(JsonProcessingException e){
 				log.error(e.getMessage());
 			}
-		};
-		
+			entry=queue.poll();
+		}
+
 		sb.append("\n");
 		
-		HttpEntity entity=new StringEntity(sb.toString(), Charsets.UTF_8);
+		ESRequest request=new ESRequest();
+		request.setUrl("/_bulk");
+		request.setContent(sb.toString());
+		request.setMethod(ESRequest.MethodType.POST);
 		
-		executeCall(entity,0);
+		executeCall(request);
 	}
 	
-	private void executeCall(HttpEntity entity,final int retry){
+	
+	
+	private void executeCall(ESRequest  request){
 		
-		if(retry>3){
+		if(request.isLastTry()){
 			return;
 		}
 		
 		Map<String,String> paramMap=new HashMap<>();
 		paramMap.put("Content-Type","application/json");
 		
-		client.performRequestAsync("POST", "/_bulk", paramMap,
-				entity,
+		
+		client.performRequestAsync(request.getMethod().name(),request.getUrl(), paramMap,
+				request.getRequestEntry(),
 				new ResponseListener(){
 					
 					@Override
@@ -154,7 +155,8 @@ public class ESService {
 						
 						try {
 							Thread.sleep(1000*60);
-							executeCall(entity,retry+1);
+							request.sub();
+							executeCall(request);
 							
 						} catch (InterruptedException e) {
 							log.error(e.getMessage());
@@ -164,59 +166,6 @@ public class ESService {
 	}
 	
 	
-	public static class ESIndex {
-		
-		private final IndexEnum index;
-		
-		private final TypeEnum type;
-		
-		
-		public ESIndex(IndexEnum index) {
-			this.index = index;
-			this.type = null;
-		}
-		
-		public ESIndex(IndexEnum index, TypeEnum type) {
-			this.index = index;
-			this.type = type;
-		}
-		
-		
-		@JsonProperty("_index")
-		public IndexEnum getIndex() {
-			return index;
-		}
-		
-		
-		@Override
-		public boolean equals(Object o) {
-			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
-			ESIndex esIndex = (ESIndex) o;
-			return Objects.equals(index, esIndex.index) &&
-					Objects.equals(type, esIndex.type);
-		}
-		
-		@Override
-		public int hashCode() {
-			return Objects.hash(index, type);
-		}
-		
-		@JsonProperty("_type")
-		public TypeEnum getType() {
-			return type;
-		}
-		
-		@JsonIgnore
-		public String getMapperTemplateName(){
-			if(type==null){
-				return index.name()+".mapper.json";
-			}else{
-				return index.name()+"."+type.name()+".mapper.json";
-			}
-		}
-	}
-	
 	public enum IndexEnum{
 		thingstatus;
 	}
@@ -225,19 +174,5 @@ public class ESService {
 		
 	}
 
-	
-	public static class ESMapperEntry{
-		
-		private final String value;
-		
-		public ESMapperEntry(String value){
-			this.value=value;
-		}
-		
-		@JsonRawValue
-		public String getValue() {
-			return value;
-		}
-	
-	}
+
 }

@@ -181,4 +181,5 @@ public class ThingTagManager {
 		list.forEach(consumer);
 
 	}
+	
 }
