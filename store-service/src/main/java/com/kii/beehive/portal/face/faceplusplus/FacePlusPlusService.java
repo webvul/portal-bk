@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -168,7 +169,7 @@ public class FacePlusPlusService {
     }
 
 
-
+    @Scheduled(cron = "0 0/5 * * * ?")
     protected void loginServer() {
 
         HttpUriRequest faceRequest = facePlusPlusApiAccessBuilder.buildLogin();
@@ -211,6 +212,7 @@ public class FacePlusPlusService {
         IO.Options options = new IO.Options();
         options.transports = new String[]{"websocket"};
         Socket socket = IO.socket(faceWebSocketUri + "/event/", options);
+
         socket.io().on(Manager.EVENT_TRANSPORT, new Emitter.Listener() {
             @Override
             public void call(Object... args) {
@@ -282,10 +284,28 @@ public class FacePlusPlusService {
             public void call(Object... args) {
                 log.debug("************* join ****************");
             }
+        }) .on(Socket.EVENT_RECONNECT_FAILED, new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                log.error("face++ websocket EVENT_RECONNECT_FAILED _event");
+                for (Object arg : args) {
+                    log.error("EVENT_RECONNECT_FAILED : " + arg);
+                }
+                loginServer();
+            }
+        }) .on(Socket.EVENT_RECONNECT_ERROR, new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                log.error("face++ websocket EVENT_RECONNECT_ERROR _event");
+                for (Object arg : args) {
+                    log.error("EVENT_RECONNECT_ERROR : " + arg);
+                }
+                loginServer();
+            }
         }).on(Socket.EVENT_DISCONNECT, new Emitter.Listener() {
             @Override
             public void call(Object... args) {
-                log.debug("^^^^^^^^^^^^^ disconnect ^^^^^^^^^^^^^^^");
+                log.error("face++ websocket disconnect");
             }
         });
         socket.connect();
