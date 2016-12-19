@@ -7,24 +7,41 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ESIndex {
 	
-	private final ESService.IndexEnum index;
 	
-	private final ESService.TypeEnum type;
+	public final static ESIndex thingInfo=new ESIndex(IndexEnum.thingstatus, TypeEnum.thinginfo);
 	
 	
-	public ESIndex(ESService.IndexEnum index) {
+	public  final static ESIndex thingStatus=new ESIndex(IndexEnum.thingstatus, TypeEnum.thingstatus);
+	
+	
+	private final IndexEnum index;
+	
+	private final TypeEnum type;
+	
+	
+	private ESIndex(IndexEnum index) {
 		this.index = index;
 		this.type = null;
 	}
 	
-	public ESIndex(ESService.IndexEnum index, ESService.TypeEnum type) {
+	private  ESIndex(IndexEnum index, TypeEnum type) {
 		this.index = index;
 		this.type = type;
 	}
 	
 	
+	
+	public enum IndexEnum{
+		thingstatus;
+	}
+	
+	public  enum TypeEnum{
+		thinginfo,thingstatus;
+	}
+	
+	
 	@JsonProperty("_index")
-	public ESService.IndexEnum getIndex() {
+	public IndexEnum getIndex() {
 		return index;
 	}
 	
@@ -44,7 +61,7 @@ public class ESIndex {
 	}
 	
 	@JsonProperty("_type")
-	public ESService.TypeEnum getType() {
+	public TypeEnum getType() {
 		return type;
 	}
 	

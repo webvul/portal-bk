@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.client.ResponseListener;
@@ -72,7 +73,8 @@ public class ESService {
 		
 	}
 	
-	public void setDataMap(ESIndex index) throws IOException {
+	public void putDataMap(ESIndex index) throws IOException {
+		
 		
 		
 		InputStream stream=loader.getResource("classpath:com/kii/beehive/business/elasticsearch/"+index.getMapperTemplateName()).getInputStream();
@@ -87,6 +89,22 @@ public class ESService {
 		executeCall(request);
 	}
 	
+	public String getDataMap(ESIndex index) throws IOException {
+		
+		
+		InputStream stream=loader.getResource("classpath:com/kii/beehive/business/elasticsearch/"+index.getMapperTemplateName()).getInputStream();
+		
+		String json= StreamUtils.copyToString(stream, Charsets.UTF_8);
+		
+		ESRequest request=new ESRequest();
+		request.setMethod(ESRequest.MethodType.GET);
+		request.setUrl("/"+index.getIndex().name());
+		
+		String response=executeCall(request);
+		
+		return response;
+	}
+	
 	public void addData(BulkOperate operate){
 		
 		queue.add(operate);
@@ -99,8 +117,9 @@ public class ESService {
 		
 //		try {
 				
-		BulkOperate entry=queue.poll();
-		while(entry!=null) {
+		BulkOperate entry=null;
+		int idx=100;
+		while( (entry=queue.poll())!=null) {
 			
 			Map<String,Object> map=new HashMap<>();
 			map.put(entry.getOperate().name(),entry);
@@ -114,7 +133,11 @@ public class ESService {
 			}catch(JsonProcessingException e){
 				log.error(e.getMessage());
 			}
-			entry=queue.poll();
+			
+			idx--;
+			if(idx<0){
+				break;
+			}
 		}
 
 		sb.append("\n");
@@ -124,12 +147,12 @@ public class ESService {
 		request.setContent(sb.toString());
 		request.setMethod(ESRequest.MethodType.POST);
 		
-		executeCall(request);
+		executeRun(request);
 	}
 	
 	
 	
-	private void executeCall(ESRequest  request){
+	private void executeRun(ESRequest  request){
 		
 		if(request.isLastTry()){
 			return;
@@ -137,7 +160,6 @@ public class ESService {
 		
 		Map<String,String> paramMap=new HashMap<>();
 		paramMap.put("Content-Type","application/json");
-		
 		
 		client.performRequestAsync(request.getMethod().name(),request.getUrl(), paramMap,
 				request.getRequestEntry(),
@@ -165,14 +187,31 @@ public class ESService {
 				} );
 	}
 	
-	
-	public enum IndexEnum{
-		thingstatus;
-	}
-	
-	public enum TypeEnum{
+	private String executeCall(ESRequest  request){
 		
+		if(request.isLastTry()){
+			return  null;
+		}
+		
+		Map<String,String> paramMap=new HashMap<>();
+		paramMap.put("Content-Type","application/json");
+//		paramMap.put("","");
+		
+		try {
+			Response response=client.performRequest(request.getMethod().name(),request.getUrl(), paramMap,
+					request.getRequestEntry());
+			
+			HttpEntity  entity=response.getEntity();
+			
+			return StreamUtils.copyToString(entity.getContent(),Charsets.UTF_8);
+			
+		} catch (IOException e) {
+			log.error(e.getMessage());
+			throw new IllegalArgumentException(e);
+		}
 	}
+	
+
 
 
 }

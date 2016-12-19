@@ -13,7 +13,7 @@ import com.kii.beehive.business.service.sms.SmsSendService;
 import com.kii.beehive.business.service.sms.SmsSendTool;
 import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 
-public class TestSmsTool extends TestInit {
+public class BusinessTestSmsTool extends BusinessTestTemplate {
 
 	@Autowired
 	private SmsSendService  service;

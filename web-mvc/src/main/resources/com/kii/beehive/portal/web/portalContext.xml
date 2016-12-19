@@ -43,22 +43,7 @@
 
 
     <!-- cache -->
-    <cache:annotation-driven/>
 
-    <bean id="cacheManager"
-          class="org.springframework.cache.ehcache.EhCacheCacheManager">
-        <property name="cacheManager" ref="ehcache"/>
-    </bean>
-
-    <bean id="ehcache" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
-        <property name="configLocation" value="classpath:com/kii/beehive/config/ehcache.xml"/>
-    </bean>
-
-    <!-- task  -->
-
-    <task:annotation-driven executor="myExecutor" scheduler="myScheduler"/>
-    <task:executor id="myExecutor" pool-size="5"/>
-    <task:scheduler id="myScheduler" pool-size="10"/>
 
 
     <!-- aop -->
@@ -68,22 +53,16 @@
 
     <bean id="controllerLogAspect" class="com.kii.beehive.portal.web.aop.ControllerLogAspect"/>
 
-    <!-- kiicloud connect -->
-    <bean class="com.kii.extension.factory.KiiCloudSDKConfig"/>
-
-    <bean class="com.kii.extension.sdk.service.DevPortalService">
-        <property name="devPortalUrl" value="${beehive.kiicloud.dev-portal.url}"/>
-    </bean>
 
 
-    <bean name="propAppBindTool" class="com.kii.extension.factory.LocalPropertyBindTool">
-        <property name="propFileName"
-                  value="classpath:com/kii/beehive/portal/web/beehive.portal.store.${spring.profile}.properties"/>
-    </bean>
-
-
+    <!-- ruleEngine -->
     <bean class="com.kii.extension.ruleengine.RuleEngineConfig"/>
 
+    <!-- jdbc store -->
+    <import resource="com/kii/beehive/portal/jdbcstore/jdbcStoreContext.xml" />
+
+    <!-- cloud store -->
+    <import resource="com/kii/beehive/cloudstore/config/cloudStoreContext.xml" />
 
     <!-- log4j    -->
 
@@ -97,45 +76,15 @@
         </property>
     </bean>
 
+    <!-- task  -->
 
-    <bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="jdbcUrl" value="${beehive.jdbc.url}"/>
-        <property name="username" value="${beehive.jdbc.username}"/>
-        <property name="password" value="${beehive.jdbc.password}"/>
-    </bean>
+    <task:annotation-driven executor="myExecutor" scheduler="myScheduler"/>
+    <task:executor id="myExecutor" pool-size="5"/>
+    <task:scheduler id="myScheduler" pool-size="10"/>
 
-    <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-        <property name="dataSource" ref="dataSource"/>
-    </bean>
-
-    <tx:annotation-driven transaction-manager="txManager"/>
-
-    <!--redis-->
-    <bean id="shardedJedisPool" class="redis.clients.jedis.ShardedJedisPool">
-        <constructor-arg index="0" ref="jedisPoolConfig"/>
-        <constructor-arg index="1">
-            <list>
-                <!--<bean name="slaver">-->
-                <!--</bean>-->
-                <bean name="master" class="redis.clients.jedis.JedisShardInfo">
-                    <constructor-arg index="0" value="${redis.master.host}"/>
-                    <!--<constructor-arg index="0" value="redis://:redispwd@localhost:6379"/>-->
-                </bean>
-            </list>
-        </constructor-arg>
-    </bean>
-
-    <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
-        <property name="maxTotal" value="${redis.master.maxTotal}" />
-        <property name="maxIdle" value="${redis.master.maxIdle}" />
-    </bean>
-
-
-
-    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+    <!-- bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
         <property name="maxUploadSize" value="3000000"/>
-    </bean>
+    </bean -->
 
 
 </beans>

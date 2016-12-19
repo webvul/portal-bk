@@ -17,7 +17,7 @@ import com.kii.beehive.portal.store.entity.KiiAppInfo;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:com/kii/beehive/business/testComponentContext.xml" })
-public class TestInit {
+public class BusinessTestTemplate {
 
 
 //	@Autowired

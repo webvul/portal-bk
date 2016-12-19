@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.kii.beehive.business.entity.ESThingInfo;
 import com.kii.beehive.business.service.IndustryTemplateService;
 import com.kii.beehive.industrytemplate.PointDetail;
 import com.kii.beehive.industrytemplate.ThingSchema;
@@ -180,6 +181,11 @@ public class ThingTagManager {
 
 		list.forEach(consumer);
 
+	}
+	
+	public List<ESThingInfo> getAllThingFullInfo(){
+		
+		return globalThingDao.getAllThingAndRelationData().stream().map((m)-> new ESThingInfo(m.getThing(),m.getGeo(),m.getUserIDs(),m.getLocs())).collect(Collectors.toList());
 	}
 	
 }

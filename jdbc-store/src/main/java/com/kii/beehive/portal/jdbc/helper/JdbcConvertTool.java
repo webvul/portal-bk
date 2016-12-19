@@ -27,32 +27,10 @@ public class JdbcConvertTool {
 	private static  String MASK= StringUtils.repeat(" ",20);
 	
 	public static final int NUMBER_LEN=12;
-	
-//	private static Object getValueByRS(ResultSet rs, String field,Class  propCls,JdbcFieldType type)throws SQLException{
-//
-//
-//		switch (type){
-//			case Auto:
-//				return autoConvert(rs,field,propCls);
-//			case EnumInt:
-//				return rs.getInt(field);
-//			case EnumStr:
-//				return rs.getString(field);
-//			case Json:
-//
-//				return rs.getString(field);
-//
-//			case AdditionStr:
-//				return rs.getString(field);
-//			case AdditionInt:
-//				return rs.getString(field);
-//			default:
-//				return rs.getObject(field);
-//		}
-//	}
 
 	
-	public static Object getEntityValue(ResultSet rs, String field,Class  propCls,JdbcFieldType type) throws SQLException {
+	
+	public static Object getEntityValue(ResultSet rs, int  field,Class  propCls,JdbcFieldType type) throws SQLException {
 		
 		
 		switch (type){
@@ -114,7 +92,7 @@ public class JdbcConvertTool {
 		
 	}
 	
-	private static Object autoConvert(ResultSet rs, String key, Class target) throws SQLException {
+	private static Object autoConvert(ResultSet rs, int key, Class target) throws SQLException {
 		
 		Object result=null;
 		try{

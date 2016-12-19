@@ -1,11 +1,18 @@
 package com.kii.beehive.business.entity;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.ThingGeo;
 
 public class ESThingInfo {
+	
+	
+	private String kiicloudThingID;
 	
 	private String vendorThingID;
 	
@@ -25,21 +32,24 @@ public class ESThingInfo {
 	
 	private String aliThingNo;
 	
-	private ESLocationTag locationTag;
+	private ESLocationTag locationTag=null;
 	
-	private Set<String> userRights;
+	private Set<String> containLocs=new HashSet<>();
 	
-	public ESThingInfo(){
-		
-	}
+	private Set<String> userRights=new HashSet<>();
+
 	
-	public ESThingInfo(GlobalThingInfo thing, String loc, ThingGeo geo,Set<String> userIDs){
+	public ESThingInfo(GlobalThingInfo thing, ThingGeo geo,String  userIDs,String  locs){
 		vendorThingID=thing.getVendorThingID();
 		globalThingID=String.valueOf(thing.getId());
+		
+		kiicloudThingID=thing.getFullKiiThingID();
+		
 		thingType=thing.getType();
 		schemaName=thing.getSchemaName();
 		schemaVersion=thing.getSchemaVersion();
 		
+		String loc= StringUtils.substring(vendorThingID,0,9);
 		locationTag=new ESLocationTag(loc);
 		
 		geoLocation= String.format("%d10.7,%d10.7", geo.getLat(),geo.getLng());
@@ -49,8 +59,14 @@ public class ESThingInfo {
 		buildID=geo.getBuildingID();
 		
 		aliThingNo=geo.getAliThingID();
+		if(StringUtils.isNotBlank(userIDs)){
+			String[] ids=StringUtils.split(userIDs,",");
+			userRights.addAll(Arrays.asList(ids));
+		}
 		
-		userRights=userIDs;
+		if(StringUtils.isNotBlank(locs)) {
+			String[] ids=StringUtils.split(locs,",");
+			containLocs.addAll(Arrays.asList(ids));		}
 	}
 	
 	public Set<String> getUserRights() {
@@ -133,12 +149,28 @@ public class ESThingInfo {
 		this.aliThingNo = aliThingNo;
 	}
 	
+	public Set<String> getContainLocs() {
+		return containLocs;
+	}
+	
+	public void setContainLocs(Set<String> containLocs) {
+		this.containLocs = containLocs;
+	}
+	
 	public ESLocationTag getLocationTag() {
 		return locationTag;
 	}
 	
 	public void setLocationTag(ESLocationTag locationTag) {
 		this.locationTag = locationTag;
+	}
+	
+	public String getKiicloudThingID() {
+		return kiicloudThingID;
+	}
+	
+	public void setKiicloudThingID(String kiicloudThingID) {
+		this.kiicloudThingID = kiicloudThingID;
 	}
 	
 	/*

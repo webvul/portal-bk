@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 
 import com.kii.beehive.business.manager.AppInfoManager;
 
-public class AppInitTest extends TestInit {
+public class AppInitBusinessTest extends BusinessTestTemplate {
 
 	@Autowired
 	private AppInfoManager appInfoManager;

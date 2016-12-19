@@ -22,6 +22,7 @@ import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.ThingGeo;
 import com.kii.beehive.portal.jdbc.entity.ThingLocationRelation;
 import com.kii.beehive.portal.jdbc.entity.ThingUserRelation;
+import com.kii.beehive.portal.jdbc.helper.BindClsRowMapper;
 
 @Repository
 public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
@@ -63,6 +64,7 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 		return KEY;
 	}
 
+	
 	public Optional<List<GlobalThingInfo>> getThingsByVendorIDArray(Collection<String> vendorIDs) {
 		if (null == vendorIDs || vendorIDs.isEmpty()) {
 			return Optional.ofNullable(null);
@@ -298,43 +300,71 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 	}
 	
 	private static final String getAllThingInfo=StrTemplate.gener(
-			"select  (select group_concat(v.${0}) from  ${1} v where v.${2} = th.${3} group by v.${2})"+
-	"as users, geo.${4},geo.${5},geo.${6},geo.${7},geo.${8},"+
-	"loc.${9} ,"+
-	"th.${10},th.${11},th.${12},th.${13},th.${14},th.${15}"+
-	"from ${16} th"+
-	"left join ${17} geo on geo.${18} = th.${11}"+
-	"left join ${19} loc on loc.${20} = th.${11}"+
-	"where th.${21} = 0",
+			"select  (select group_concat(v.${0}) from  ${1} v where v.${2} = th.${3} group by v.${2}) as users,"+
+					" geo.* ,"+
+	"(select group_concat(l.${5})  from ${6} l where l.${7} = th.${8} group by l.${7} ) as locs ,"+
+	" th.* "+
+	"from ${9} th "+
+	"left join ${10} geo on geo.${11} = th.${8} "+
+	" where th.${12} = 0",
 			GlobalThingInfo.VIEW_USER_ID,GlobalThingInfo.VIEW_NAME,GlobalThingInfo.VIEW_THING_ID,GlobalThingInfo.ID_GLOBAL_THING,
-			ThingGeo.BUILDING_ID,ThingGeo.ALI_THING_ID,ThingGeo.FLOOR,ThingGeo.LAT,ThingGeo.LNG,
-			ThingLocationRelation.LOCATION,
-			GlobalThingInfo.VANDOR_THING_ID,GlobalThingInfo.ID_GLOBAL_THING,GlobalThingInfo.FULL_KII_THING_ID,GlobalThingInfo.SCHEMA_NAME,GlobalThingInfo.SCHEMA_VERSION,GlobalThingInfo.THING_TYPE,
-			GlobalThingSpringDao.TABLE_NAME,ThingGeoDao.TABLE_NAME,ThingGeo.GLOBAL_THING_ID,
-			ThingLocationRelDao.TABLE_NAME,ThingLocationRelation.THING_ID,
+			ThingLocationRelation.LOCATION,ThingLocationRelDao.TABLE_NAME,ThingLocationRelation.THING_ID,GlobalThingInfo.ID_GLOBAL_THING,
+			GlobalThingSpringDao.TABLE_NAME,ThingGeoDao.TABLE_NAME,ThingGeo.GLOBAL_THING_ID,ThingGeo.GLOBAL_THING_ID,
 			GlobalThingInfo.IS_DELETED);
 	
 	
-	public List<Map<String,Object>> getAllThingAndRelationData() {
+	public List<FullThingInfo> getAllThingAndRelationData() {
 		
 		
-		
-		
-		List<Map<String,Object>> list = super.jdbcTemplate.query(sql, new RowMapper<Map<String, Object>>() {
-			@Override
-			public Map<String, Object> mapRow(ResultSet rs, int rowNum) throws SQLException {
-				Map<String,Object> map=new HashMap<>();
-				map.put("users",rs.getString("users"));
-				map.put("location",rs.getString("location"));
-				map.put("buildID",rs.getString("buildID"));
-				
-				
-				return ;
-			}
+		List<FullThingInfo> list = super.jdbcTemplate.query(getAllThingInfo, (rs, rowNum) -> {
+			FullThingInfo info=new FullThingInfo();
+			
+			info.userIDs=rs.getString("users");
+			info.locs=rs.getString("locs");
+			
+			RowMapper<GlobalThingInfo> thMapper=new BindClsRowMapper<>(GlobalThingInfo.class,"th");
+			
+			GlobalThingInfo thing=thMapper.mapRow(rs,rowNum);
+			
+			RowMapper<ThingGeo>  geoMapper=new BindClsRowMapper<>(ThingGeo.class,"geo");
+			
+			ThingGeo geo=geoMapper.mapRow(rs,rowNum);
+			
+			info.geo=geo;
+			info.thing=thing;
+			
+			return info;
 		});
 		
 		return list;
 		
+	}
+	
+	public static class FullThingInfo{
+		
+		private GlobalThingInfo thing;
+		
+		private ThingGeo  geo;
+		
+		private String userIDs;
+		
+		private String locs;
+		
+		public GlobalThingInfo getThing() {
+			return thing;
+		}
+		
+		public ThingGeo getGeo() {
+			return geo;
+		}
+		
+		public String getUserIDs() {
+			return userIDs;
+		}
+		
+		public String getLocs() {
+			return locs;
+		}
 	}
 	
 //

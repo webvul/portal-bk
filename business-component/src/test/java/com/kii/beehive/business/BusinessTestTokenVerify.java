@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.kii.beehive.business.manager.AppInfoManager;
 import com.kii.extension.sdk.service.UserService;
 
-public class TestTokenVerify extends TestInit {
+public class BusinessTestTokenVerify extends BusinessTestTemplate {
 
 
 	@Autowired

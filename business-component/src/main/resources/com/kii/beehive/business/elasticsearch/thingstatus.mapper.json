@@ -11,6 +11,9 @@
         "globalThingID": {
           "type": "keyword"
         },
+        "kiicloudThingID": {
+          "type": "keyword"
+        },
         "thingType": {
           "type": "keyword"
         },
@@ -69,7 +72,7 @@
           "enabled": false
         },
         "properties": {
-          "uploadDate": {
+          "uploadTime": {
             "type": "date",
             "format": "epoch_millis"
           }

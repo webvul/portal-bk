@@ -7,7 +7,6 @@ dependencies {
 
     compile project(":commons")
     compile project(":store-service")
-    compile project(":obix-support")
 
     compile "org.springframework:spring-webmvc:${springVersion}"
     compile "org.springframework:spring-websocket:${springVersion}"

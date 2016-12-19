@@ -53,7 +53,7 @@ public class DroolsService {
 	private Logger log= LoggerFactory.getLogger(DroolsService.class);
 
 
-	@Value("${spring.profile}")
+	@Value("${spring.profile:test}")
 	private String profile;
 	
 	private final KieSession kieSession;
