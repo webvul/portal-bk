@@ -34,36 +34,13 @@
     <task:scheduler id="myScheduler" pool-size="10"/> -->
 
 
-    <cache:annotation-driven />
+    <!-- ruleEngine -->
+    <bean class="com.kii.extension.ruleengine.RuleEngineConfig"/>
 
-    <bean id="cacheManager"
-          class="org.springframework.cache.ehcache.EhCacheCacheManager" >
-        <property name="cacheManager" ref="ehcache" />
-    </bean>
+    <!-- jdbc store -->
+    <import resource="classpath:com/kii/beehive/portal/jdbcstore/config/jdbcStoreContext.xml" />
 
-    <bean id="ehcache" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean" >
-        <property name="configLocation" value="classpath:com/kii/beehive/config/ehcache.xml" />
-    </bean>
+    <!-- cloud store -->
+    <import resource="classpath:com/kii/beehive/cloudstore/config/cloudStoreContext.xml" />
 
-
-    <bean id="propAppBindTool" class="com.kii.extension.factory.LocalPropertyBindTool" >
-        <property name="propFileName" value="classpath:com/kii/beehive/business/beehive.business.store.properties" />
-    </bean>
-
-    <bean class="com.kii.extension.factory.KiiCloudSDKConfig" />
-
-    <bean id="appBindAspect"  class="com.kii.extension.sdk.aop.AppBindAspect" />
-
-    <bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
-        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="jdbcUrl" value="jdbc:mysql://localhost/beehive" />
-        <property name="username" value="root"/>
-        <property name="password" value=""/>
-    </bean>
-
-    <tx:annotation-driven transaction-manager="txManager"/>
-
-    <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-        <property name="dataSource" ref="dataSource"/>
-    </bean>
 </beans>

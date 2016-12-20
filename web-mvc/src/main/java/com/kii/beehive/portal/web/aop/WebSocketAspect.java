@@ -21,7 +21,7 @@ public class WebSocketAspect implements BeanFactoryAware {
 	private BeanFactory beanFactory;
 
 	@Pointcut("execution(* subProtocolWebSocketHandler(..)) && within (org.springframework.web.socket.config" +
-			".annotation.WebSocketMessageBrokerConfigurationSupport+))")
+			".annotation.WebSocketMessageBrokerConfigurationSupport+)")
 	public void subProtocolWebSocketHandler() {
 	}
 

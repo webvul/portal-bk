@@ -19,6 +19,8 @@
 
     </context:component-scan>
 
+    <bean id="appBindAspect" class="com.kii.extension.sdk.aop.AppBindAspect"/>
+
 
     <bean class="com.kii.extension.factory.KiiCloudSDKConfig"/>
 
@@ -29,7 +31,7 @@
 
     <bean name="propAppBindTool" class="com.kii.extension.factory.LocalPropertyBindTool">
         <property name="propFileName"
-                  value="classpath:com/kii/beehive/portal/web/beehive.portal.store.${spring.profile}.properties"/>
+                  value="${beehive.portal.store.prop.path}"/>
     </bean>
 
 
