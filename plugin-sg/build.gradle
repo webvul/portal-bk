@@ -15,9 +15,9 @@ dependencies {
 }
 
 copy {
-	from 'src/plugin-metadata'
-	into 'build/plugin-metadata'
-	include '**/plugin-*'
+    from 'src/plugin-metadata'
+    into 'build/plugin-metadata'
+    include '**/plugin-*'
 }
 
 ant.propertyfile(file: "build/plugin-metadata/plugin-descriptor.properties") {
@@ -30,6 +30,8 @@ ant.propertyfile(file: "build/plugin-metadata/plugin-descriptor.properties") {
 
 task buildPluginZip(type: Zip, dependsOn: [":plugin-sg:jar"]) {
     classifier = 'plugin'
+    archiveName = "${baseName}-${version}-" + "git rev-parse --short HEAD".execute().text.trim() +
+            "-${classifier}.${extension}"
     from getBuildDir().absolutePath + '/libs'
     from parent.project(":kii-sdk").getBuildDir().absolutePath + '/libs'
     from parent.project(":cloud-store").getBuildDir().absolutePath + '/libs'
