@@ -198,10 +198,10 @@ public class FacePlusPlusService {
                 }
             }
 
-            log.error("face++ cookie :" + cookieList);
+            log.info("face++ cookie :" + cookieList);
 
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.error(e.getMessage(),e);
         }
 
 
@@ -242,7 +242,7 @@ public class FacePlusPlusService {
                     obj.put("vip", true);
                     obj.put("stanger", true);
                 } catch (JSONException e) {
-					log.error(e.getMessage());
+					log.error(e.getMessage(),e);
                 }
                 socket.emit("subscribe", obj);
                 log.debug("Connected to Face++ WebSocket");
@@ -259,7 +259,7 @@ public class FacePlusPlusService {
                     try {
                         eventResult = objectMapper.readValue(eventJsonStr, new TypeReference<HashMap>() {});
                     } catch (IOException e) {
-                        log.error(e.getMessage());
+                        log.error(e.getMessage(),e);
                     }
                     String faceUserID = eventResult.get("subject_id") == null ? "" : String.valueOf(eventResult.get("subject_id"));
                     if( ! StringUtils.isEmpty(faceUserID) ){
@@ -269,7 +269,7 @@ public class FacePlusPlusService {
                             try {
                                 postEventJsonStr = objectMapper.writeValueAsString(eventResult);
                             } catch (JsonProcessingException e) {
-								log.error(e.getMessage());
+								log.error(e.getMessage(),e);
                             }
                         }
                     }
