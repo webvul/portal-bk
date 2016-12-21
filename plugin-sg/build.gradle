@@ -14,21 +14,21 @@ dependencies {
     compile("com.kii.dataanalytic:beehive-client:1.0.0-SNAPSHOT")
 }
 
-copy {
-    from 'src/plugin-metadata'
-    into 'build/plugin-metadata'
-    include '**/plugin-*'
-}
-
-ant.propertyfile(file: "build/plugin-metadata/plugin-descriptor.properties") {
-    entry(key: "version", value: "$project.version")
-    entry(key: "elasticsearch.version", value: "${elasticsearchVersion}")
-    entry(key: "java.version", value: "1.7")
-    entry(key: "classname", value: "com.kii.beehive.portal.plugin.searchguard.AuthenticationPlugin")
-    entry(key: "build", value: "git rev-parse --short HEAD".execute().text.trim())
-}
-
 task buildPluginZip(type: Zip, dependsOn: [":plugin-sg:jar"]) {
+    doFirst {
+        copy {
+            from 'src/plugin-metadata'
+            into 'build/plugin-metadata'
+            include '**/plugin-*'
+        }
+        ant.propertyfile(file: "build/plugin-metadata/plugin-descriptor.properties") {
+            entry(key: "version", value: "$project.version")
+            entry(key: "elasticsearch.version", value: "${elasticsearchVersion}")
+            entry(key: "java.version", value: "1.7")
+            entry(key: "classname", value: "com.kii.beehive.portal.plugin.searchguard.AuthenticationPlugin")
+            entry(key: "build", value: "git rev-parse --short HEAD".execute().text.trim())
+        }
+    }
     classifier = 'plugin'
     archiveName = "${baseName}-${version}-" + "git rev-parse --short HEAD".execute().text.trim() +
             "-${classifier}.${extension}"
