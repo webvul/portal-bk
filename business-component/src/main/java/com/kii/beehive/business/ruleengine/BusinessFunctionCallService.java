@@ -51,12 +51,16 @@ public class BusinessFunctionCallService {
 			}
 	
 			result.setParamList(Arrays.asList(paramArray));
+	
+			result.setMethodName(function.getFunctionName());
 			
 			Method method= MethodTools.getMethodByName(bean.getClass(),function.getFunctionName(),paramArray.length);
 		
 			Object returnResult=method.invoke(bean,paramArray);
 			
 			result.setReturnValue(returnResult);
+			
+			resultDao.addEntity(result);
 			
 		} catch (IllegalAccessException|InvocationTargetException e) {
 			

@@ -12,6 +12,8 @@ public class BusinessFunResponse extends  TriggerResult {
 	private Object returnValue;
 
 	private String businessClassName;
+	
+	private String methodName;
 
 	private List<Object> paramList=new ArrayList<>();
 
@@ -38,6 +40,13 @@ public class BusinessFunResponse extends  TriggerResult {
 	public void setReturnValue(Object returnValue) {
 		this.returnValue = returnValue;
 	}
-
-
+	
+	
+	public String getMethodName() {
+		return methodName;
+	}
+	
+	public void setMethodName(String methodName) {
+		this.methodName = methodName;
+	}
 }
