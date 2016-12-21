@@ -64,6 +64,8 @@ public class FacePlusPlusService {
 
     private Logger log = LoggerFactory.getLogger(FacePlusPlusService.class);
 
+    private Socket socket = null;
+
     private List<String> cookieList = new ArrayList<>();
 
     @PostConstruct
@@ -207,11 +209,19 @@ public class FacePlusPlusService {
 
     }
 
+    @Scheduled(cron = "0 0/5 * * * ?")
+    public void reConnectWebSocket(){
+        if( ! socket.connected() ) {
+            log.info("face++ reConnectWebSocket...");
+            socket.connected();
+        }
+    }
+
 
     protected void startConnection() throws URISyntaxException {
         IO.Options options = new IO.Options();
         options.transports = new String[]{"websocket"};
-        Socket socket = IO.socket(faceWebSocketUri + "/event/", options);
+        socket = IO.socket(faceWebSocketUri + "/event/", options);
 
         socket.io().on(Manager.EVENT_TRANSPORT, new Emitter.Listener() {
             @Override
@@ -245,12 +255,12 @@ public class FacePlusPlusService {
 					log.error(e.getMessage(),e);
                 }
                 socket.emit("subscribe", obj);
-                log.debug("Connected to Face++ WebSocket");
+                log.info("face++ websocket Connected to Face++ WebSocket");
             }
         }).on("event", new Emitter.Listener() {
             @Override
             public void call(Object... args) {
-                log.debug("************** event ****************");
+                log.info("face++ websocket event ****************");
                 String eventJsonStr = "";
                 if(args.length > 0 && args[0] != null){
                     eventJsonStr = args[0].toString();
@@ -282,7 +292,7 @@ public class FacePlusPlusService {
         }).on("join", new Emitter.Listener() {
             @Override
             public void call(Object... args) {
-                log.debug("************* join ****************");
+                log.info("face++ websocket join ****************");
             }
         }) .on(Socket.EVENT_RECONNECT_FAILED, new Emitter.Listener() {
             @Override
