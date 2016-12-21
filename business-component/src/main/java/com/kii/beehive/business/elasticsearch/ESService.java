@@ -6,13 +6,17 @@ import javax.annotation.PreDestroy;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHeaders;
 import org.apache.http.HttpHost;
+import org.apache.http.message.BasicHeader;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.client.ResponseListener;
 import org.elasticsearch.client.RestClient;
@@ -25,8 +29,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.base.Charsets;
 
 @Component
@@ -47,8 +53,7 @@ public class ESService {
 	
 	private RestClient client;
 	
-	@Autowired
-	private ObjectMapper mapper;
+	private final ObjectMapper mapper=new ObjectMapper();
 	
 	@Autowired
 	private ResourceLoader loader;
@@ -58,8 +63,17 @@ public class ESService {
 	@PostConstruct
 	public void init(){
 		
+		mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+		mapper.configure(SerializationFeature.WRITE_EMPTY_JSON_ARRAYS,false);
+		mapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES,false);
+		mapper.configure(SerializationFeature.INDENT_OUTPUT, false);
+		
+		Header ctxType=new BasicHeader(HttpHeaders.CONTENT_TYPE,"application/json");
+		Header auth=new BasicHeader(HttpHeaders.AUTHORIZATION,"Bearer super_token");
+		
+		
 		client = RestClient.builder(
-				new HttpHost(address, port, "http")).build();
+				new HttpHost(address, port, "http")).setDefaultHeaders(new Header[]{ctxType,auth}).build();
 	}
 	
 	@PreDestroy
@@ -111,43 +125,49 @@ public class ESService {
 	}
 	
 	@Scheduled(fixedRate=60*1000*5,initialDelay=60*1000)
-	public void doUpload(){
+	public  void doUpload(){
 		
-		StringBuilder sb=new StringBuilder();
-		
-//		try {
-				
-		BulkOperate entry=null;
-		int idx=100;
-		while( (entry=queue.poll())!=null) {
+		synchronized (queue) {
 			
-			Map<String,Object> map=new HashMap<>();
-			map.put(entry.getOperate().name(),entry);
-			
-			try {
-				String operLine = mapper.writeValueAsString(entry);
-				String data = mapper.writeValueAsString(entry.getData());
-				
-				sb.append(operLine).append("\n");
-				sb.append(data).append("\n");
-			}catch(JsonProcessingException e){
-				log.error(e.getMessage());
+			if(queue.isEmpty()){
+				return;
 			}
 			
-			idx--;
-			if(idx<0){
-				break;
-			}
-		}
+			StringBuilder sb = new StringBuilder();
 
-		sb.append("\n");
-		
-		ESRequest request=new ESRequest();
-		request.setUrl("/_bulk");
-		request.setContent(sb.toString());
-		request.setMethod(ESRequest.MethodType.POST);
-		
-		executeRun(request);
+//		try {
+			
+			BulkOperate entry = null;
+			int idx = 100;
+			while ((entry = queue.poll()) != null) {
+				
+				Map<String, Object> map = new HashMap<>();
+				map.put(entry.getOperate().name(), entry);
+				
+				try {
+					String operLine = mapper.writeValueAsString(map);
+					
+					sb.append(operLine).append("\n");
+					sb.append(mapper.writeValueAsString(entry.getData())).append("\n");
+				} catch (JsonProcessingException e) {
+					log.error(e.getMessage());
+				}
+				
+				idx--;
+				if (idx < 0) {
+					break;
+				}
+			}
+			
+			sb.append("\n");
+			
+			ESRequest request = new ESRequest();
+			request.setUrl("/_bulk");
+			request.setContent(sb.toString());
+			request.setMethod(ESRequest.MethodType.POST);
+			
+			executeRun(request);
+		}
 	}
 	
 	
@@ -159,7 +179,7 @@ public class ESService {
 		}
 		
 		Map<String,String> paramMap=new HashMap<>();
-		paramMap.put("Content-Type","application/json");
+//		paramMap.put("Content-Type","application/json");
 		
 		client.performRequestAsync(request.getMethod().name(),request.getUrl(), paramMap,
 				request.getRequestEntry(),
@@ -192,13 +212,10 @@ public class ESService {
 		if(request.isLastTry()){
 			return  null;
 		}
-		
-		Map<String,String> paramMap=new HashMap<>();
-		paramMap.put("Content-Type","application/json");
-//		paramMap.put("","");
+
 		
 		try {
-			Response response=client.performRequest(request.getMethod().name(),request.getUrl(), paramMap,
+			Response response=client.performRequest(request.getMethod().name(),request.getUrl(), Collections.emptyMap(),
 					request.getRequestEntry());
 			
 			HttpEntity  entity=response.getEntity();

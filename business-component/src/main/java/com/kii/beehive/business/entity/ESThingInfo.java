@@ -49,19 +49,27 @@ public class ESThingInfo {
 		schemaName=thing.getSchemaName();
 		schemaVersion=thing.getSchemaVersion();
 		
-		String loc= StringUtils.substring(vendorThingID,0,9);
-		locationTag=new ESLocationTag(loc);
-		
-		geoLocation= String.format("%d10.7,%d10.7", geo.getLat(),geo.getLng());
-		
-		floor=geo.getFloor();
-		
-		buildID=geo.getBuildingID();
-		
-		aliThingNo=geo.getAliThingID();
-		if(StringUtils.isNotBlank(userIDs)){
-			String[] ids=StringUtils.split(userIDs,",");
-			userRights.addAll(Arrays.asList(ids));
+
+		if(GlobalThingInfo.validVendorThingIDPattern.matcher(vendorThingID).find()){
+			String loc= StringUtils.substring(vendorThingID,0,9);
+			locationTag= ESLocationTag.getInstance(loc);
+		};
+	
+		if(geo.getId()!=null) {
+			
+			geoLocation = String.format("%f10,%f10", geo.getLat(), geo.getLng());
+			
+			if(geo.getFloor()!=null) {
+				floor = geo.getFloor();
+			}
+			
+			buildID = geo.getBuildingID();
+			
+			aliThingNo = geo.getAliThingID();
+			if (StringUtils.isNotBlank(userIDs)) {
+				String[] ids = StringUtils.split(userIDs, ",");
+				userRights.addAll(Arrays.asList(ids));
+			}
 		}
 		
 		if(StringUtils.isNotBlank(locs)) {

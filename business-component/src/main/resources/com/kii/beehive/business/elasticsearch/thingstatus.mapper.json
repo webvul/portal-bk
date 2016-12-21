@@ -1,27 +1,33 @@
 {
   "mappings": {
-    "thinginfo": {
+    "thing_info": {
       "_all": {
         "enabled": false
       },
       "properties": {
         "vendorThingID": {
-          "type": "keyword"
+          "type": "string",
+          "index": "not_analyzed"
         },
         "globalThingID": {
-          "type": "keyword"
+          "type": "string",
+          "index": "not_analyzed"
         },
         "kiicloudThingID": {
-          "type": "keyword"
+          "type": "string",
+          "index": "not_analyzed"
         },
         "thingType": {
-          "type": "keyword"
+          "type": "string",
+          "index": "not_analyzed"
         },
         "schemaName": {
-          "type": "keyword"
+          "type": "string",
+          "index": "not_analyzed"
         },
         "schemaVersion": {
-          "type": "integer"
+          "type": "integer",
+          "index": "not_analyzed"
         },
         "geoLocation": {
           "type": "geo_point"
@@ -30,19 +36,21 @@
           "type": "integer"
         },
         "buildID": {
-          "type": "keyword"
+          "type": "string",
+          "index": "not_analyzed"
         },
         "aliThingNo": {
-          "type": "keyword"
+          "type": "string",
+          "index": "not_analyzed"
         },
         "floor": {
           "type": "integer"
         },
         "buildID": {
-          "type": "keyword"
+          "type": "string"
         },
         "aliThingNo": {
-          "type": "keyword"
+          "type": "string"
         },
         "locationTag": {
           "properties": {
@@ -53,32 +61,36 @@
               "type": "integer"
             },
             "partition": {
-              "type": "keyword"
+              "type": "string",
+              "index": "not_analyzed"
             },
             "area": {
-              "type": "keyword"
+              "type": "string",
+              "index": "not_analyzed"
             },
             "site": {
-              "type": "keyword"
+              "type": "string",
+              "index": "not_analyzed"
             }
           }
         }
+      }
+    },
+    "status_data": {
+      "_parent": {
+        "type": "thing_info"
       },
-      "thingstatus": {
-        "_parent": {
-          "type": "thinginfo"
-        },
-        "_all": {
-          "enabled": false
-        },
-        "properties": {
-          "uploadTime": {
-            "type": "date",
-            "format": "epoch_millis"
-          }
+      "_all": {
+        "enabled": false
+      },
+      "properties": {
+        "uploadTime": {
+          "type": "date",
+          "format": "epoch_millis"
         }
       }
     }
   }
+}
 }
 

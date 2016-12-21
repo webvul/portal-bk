@@ -302,14 +302,15 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 	private static final String getAllThingInfo=StrTemplate.gener(
 			"select  (select group_concat(v.${0}) from  ${1} v where v.${2} = th.${3} group by v.${2}) as users,"+
 					" geo.* ,"+
-	"(select group_concat(l.${5})  from ${6} l where l.${7} = th.${8} group by l.${7} ) as locs ,"+
+	"(select group_concat(l.${4})  from ${5} l where l.${6} = th.${7} group by l.${6} ) as locs ,"+
 	" th.* "+
-	"from ${9} th "+
-	"left join ${10} geo on geo.${11} = th.${8} "+
-	" where th.${12} = 0",
+	"from ${8} th "+
+	"left join ${9} geo on geo.${10} = th.${7} "+
+	" where th.${11} = 0",
 			GlobalThingInfo.VIEW_USER_ID,GlobalThingInfo.VIEW_NAME,GlobalThingInfo.VIEW_THING_ID,GlobalThingInfo.ID_GLOBAL_THING,
 			ThingLocationRelation.LOCATION,ThingLocationRelDao.TABLE_NAME,ThingLocationRelation.THING_ID,GlobalThingInfo.ID_GLOBAL_THING,
-			GlobalThingSpringDao.TABLE_NAME,ThingGeoDao.TABLE_NAME,ThingGeo.GLOBAL_THING_ID,ThingGeo.GLOBAL_THING_ID,
+			GlobalThingSpringDao.TABLE_NAME,
+			ThingGeoDao.TABLE_NAME,ThingGeo.GLOBAL_THING_ID,
 			GlobalThingInfo.IS_DELETED);
 	
 	

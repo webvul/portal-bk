@@ -7,9 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.kii.beehive.business.elasticsearch.BulkOperate;
 import com.kii.beehive.business.elasticsearch.ESIndex;
 import com.kii.beehive.business.elasticsearch.ESService;
@@ -27,11 +24,7 @@ public class ESThingStatusService {
 	
 	@Autowired
 	private ESService service;
-	
-	
-	@Autowired
-	private ObjectMapper mapper;
-	
+
 	
 	
 	@Scheduled(fixedRate = 1000*60*60)
@@ -46,14 +39,9 @@ public class ESThingStatusService {
 			operate.setOperate(BulkOperate.OperateType.index);
 			
 			operate.setId(info.getKiicloudThingID());
-			
-			try {
-				operate.setData(mapper.writeValueAsString(info));
-				service.addData(operate);
-				
-			} catch (JsonProcessingException e) {
-				log.error(e.getMessage());
-			}
+			operate.setData(info);
+			service.addData(operate);
+	
 			
 		});
 		
@@ -69,11 +57,7 @@ public class ESThingStatusService {
 		oper.setParent(kiiAppThingID);
 		oper.setIndex(ESIndex.thingStatus);
 		
-		try {
-			oper.setData(mapper.writeValueAsString(esStatus));
-		} catch (JsonProcessingException e) {
-			throw new IllegalArgumentException(e);
-		}
+		oper.setData(esStatus);
 		
 		service.addData(oper);
 		

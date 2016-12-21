@@ -1,9 +1,11 @@
 package com.kii.beehive.portal.web.entity;
 
+import static com.kii.beehive.portal.jdbc.entity.GlobalThingInfo.locationPattern;
+import static com.kii.beehive.portal.jdbc.entity.GlobalThingInfo.validVendorThingIDPattern;
+
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.util.Strings;
@@ -21,9 +23,7 @@ public class ThingRestBean  {
 
 
 	//0807W-F02-A-118
-	private final static Pattern validVendorThingIDPattern = Pattern.compile("^\\d{4}\\w-[A-Z][\\d]{2}-\\w{1}-\\d{3}$");
 
-	private final static Pattern locationPattern = Pattern.compile("^\\d{4}\\w-[A-Z][\\d]{2}$");
 
 
 //	private Logger log = LoggerFactory.getLogger(ThingRestBean.class);

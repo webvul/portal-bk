@@ -114,7 +114,7 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 			
 			Object fieldInst=JdbcConvertTool.getEntityValue(rs,index,propCls,type);
 			
-			log.debug(" fill row target "+fieldInst+" to field "+field);
+//			log.debug(" fill row target "+fieldInst+" to field "+field);
 			
 			beanWrapperInst.setPropertyValue(fieldMapper.get(field), fieldInst);
 		}

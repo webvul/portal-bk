@@ -8,10 +8,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class ESIndex {
 	
 	
-	public final static ESIndex thingInfo=new ESIndex(IndexEnum.thingstatus, TypeEnum.thinginfo);
+	public final static ESIndex thingInfo=new ESIndex(IndexEnum.thingstatus, TypeEnum.thing_info);
 	
 	
-	public  final static ESIndex thingStatus=new ESIndex(IndexEnum.thingstatus, TypeEnum.thingstatus);
+	public  final static ESIndex thingStatus=new ESIndex(IndexEnum.thingstatus, TypeEnum.status_data);
 	
 	
 	private final IndexEnum index;
@@ -36,7 +36,7 @@ public class ESIndex {
 	}
 	
 	public  enum TypeEnum{
-		thinginfo,thingstatus;
+		thing_info,status_data;
 	}
 	
 	

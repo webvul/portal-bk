@@ -1,5 +1,7 @@
 package com.kii.beehive.business.entity;
 
+import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
+
 public class ESLocationTag {
 	
 	
@@ -23,9 +25,9 @@ public class ESLocationTag {
             }
 	 */
 	
-	private int building;
+	private int building=0;
 	
-	private int floor;
+	private int floor=0;
 	
 	private String partition;
 	
@@ -37,27 +39,31 @@ public class ESLocationTag {
 		
 	}
 	
-	public ESLocationTag(String loc){
+	public static ESLocationTag getInstance(String loc){
 		
-		if(loc==null){
-			loc="";
+		if(loc==null||(!GlobalThingInfo.locationPattern.matcher(loc).find())){
+			return null;
 		}
+		
+		ESLocationTag inst=new ESLocationTag();
 		
 		if(loc.length()>=2) {
-			building=Integer.parseInt(loc.substring(0, 2));
+			inst.building=Integer.parseInt(loc.substring(0, 2));
 		}
 		if(loc.length()>=4){
-			floor=Integer.parseInt(loc.substring(2, 4));
+			inst.floor=Integer.parseInt(loc.substring(2, 4));
 		}
 		if(loc.length()>=5){
-			partition=loc.substring(4, 5);
+			inst.partition=loc.substring(4, 5);
 		}
 		if(loc.length()>=7){
-			area=loc.substring(6, 7);
+			inst.area=loc.substring(6, 7);
 		}
 		if(loc.length()==9){
-			site=loc.substring(7, 9);
+			inst.site=loc.substring(7, 9);
 		}
+		
+		return inst;
 	}
 	
 	public int getBuilding() {
