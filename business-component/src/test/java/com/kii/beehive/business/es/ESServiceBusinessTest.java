@@ -1,6 +1,7 @@
 package com.kii.beehive.business.es;
 
 import java.io.IOException;
+import java.util.Calendar;
 
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
@@ -44,7 +45,9 @@ public class ESServiceBusinessTest extends BusinessTestTemplate {
 		
 		manager.getAllThingFullInfo().forEach(info->{
 
-			int count=RandomUtils.nextInt(10,20);
+			int count=RandomUtils.nextInt(30,50);
+			Calendar cal= Calendar.getInstance();
+			
 			for(int i=0;i<count;i++) {
 				ThingStatus status = new ThingStatus();
 				
@@ -55,10 +58,15 @@ public class ESServiceBusinessTest extends BusinessTestTemplate {
 				status.setField("TEP", RandomUtils.nextFloat(0, 40));
 				status.setField("HCHO", RandomUtils.nextFloat(0.001f, 0.01f));
 				
+				cal.add(Calendar.DAY_OF_YEAR,-(RandomUtils.nextInt(3,7)));
+				
+				status.setField("date",cal.getTimeInMillis());
+				
 				service.addThingStatus(status, info.getKiicloudThingID());
 			}
 			es.doUpload();
 		});
+		System.in.read();
 		
 		
 		
