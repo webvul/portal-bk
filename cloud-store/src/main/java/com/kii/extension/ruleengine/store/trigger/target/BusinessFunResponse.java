@@ -10,6 +10,8 @@ public class BusinessFunResponse extends  TriggerResult {
 	}
 
 	private Object returnValue;
+	
+	private String businessBeanName;
 
 	private String businessClassName;
 	
@@ -48,5 +50,13 @@ public class BusinessFunResponse extends  TriggerResult {
 	
 	public void setMethodName(String methodName) {
 		this.methodName = methodName;
+	}
+	
+	public String getBusinessBeanName() {
+		return businessBeanName;
+	}
+	
+	public void setBusinessBeanName(String businessBeanName) {
+		this.businessBeanName = businessBeanName;
 	}
 }

@@ -38,9 +38,7 @@ public class BusinessFunctionCallService {
 		
 		try {
 			Object bean = context.getBean(function.getBeanName());
-			
-			result.setBusinessClassName(bean.getClass().getName());
-			
+	
 			Map<String, Object> triggerParams = params.getBusinessParams();
 			
 			Object[] paramArray = new Object[function.getParamList().size()];
@@ -49,9 +47,10 @@ public class BusinessFunctionCallService {
 				
 				paramArray[i] = triggerParams.get(function.getParamList().get(i));
 			}
-	
+			
+			result.setBusinessClassName(bean.getClass().getName());
+			result.setBusinessBeanName(function.getBeanName());
 			result.setParamList(Arrays.asList(paramArray));
-	
 			result.setMethodName(function.getFunctionName());
 			
 			Method method= MethodTools.getMethodByName(bean.getClass(),function.getFunctionName(),paramArray.length);
