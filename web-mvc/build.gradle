@@ -42,5 +42,7 @@ war {
             )
         }
     }
-    archiveName 'beehive-portal.war'
+
+    archiveName "${rootProject.name}-${version}-${classifier}" + "git rev-parse --short HEAD".execute().text.trim() +
+            ".${extension}"
 }
