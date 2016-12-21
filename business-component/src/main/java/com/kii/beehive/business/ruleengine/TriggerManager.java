@@ -1,6 +1,7 @@
 package com.kii.beehive.business.ruleengine;
 
 import javax.annotation.PostConstruct;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -10,13 +11,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.kii.beehive.business.manager.AppInfoManager;
 import com.kii.beehive.business.manager.ThingTagManager;
 import com.kii.beehive.business.service.ThingIFInAppService;
@@ -76,9 +80,8 @@ public class TriggerManager {
 
 	@Autowired
 	private OperateLogDao logTool;
-
-
-	@Value("${spring.profile}")
+	
+	@Value("${spring.profile:test}")
 	private String profile;
 
 	@PostConstruct
