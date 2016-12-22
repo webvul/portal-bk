@@ -26,11 +26,12 @@ public class TestUserNoticeDao extends TestTemplate {
 		notice.setFrom("from");
 		notice.setTitle("title");
 		
-		notice.setCreateTime(new Date());
 		notice.setType(UserNotice.MsgType.ThingStatus);
 		
 		for(int i=0;i<10;i++) {
 			notice.setUserID((long) (i%3));
+			notice.setCreateTime(new Date());
+			
 			dao.insert(notice);
 		}
 		
@@ -55,6 +56,8 @@ public class TestUserNoticeDao extends TestTemplate {
 		assertEquals(0,dao.queryNoticeList(param).size());
 		
 		param=dao.getSqlParam();
+		
+//		dao.
 		
 		param.addEq("userID",2l);
 		param.addEq("readed",true);

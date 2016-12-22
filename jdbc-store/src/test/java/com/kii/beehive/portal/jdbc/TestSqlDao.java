@@ -262,7 +262,7 @@ public void testTemplate(){
 		cal.add(Calendar.DAY_OF_WEEK,1);
 		
 		query.addBetween("createTime",cal.getTime(),null);
-		query.addBetween("readedTime",cal.getTime(),null);
+		query.addBetween("readTime",cal.getTime(),null);
 		
 		query.addPager(page);
 		

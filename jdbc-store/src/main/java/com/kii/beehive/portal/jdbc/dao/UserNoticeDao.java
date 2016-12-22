@@ -41,7 +41,7 @@ public class UserNoticeDao extends SpringSimpleBaseDao<UserNotice> {
 	
 	public List<UserNotice>  queryNoticeList(BindClsRowMapper.SqlParam sqlParam){
 		
-
+		sqlParam.addDescOrder("createTime");
 		String fullSql=sqlParam.getFullSql();
 		
 		List<UserNotice>  list=super.jdbcTemplate.query(fullSql,sqlParam.getParamArray(),super.getRowMapper());
@@ -79,7 +79,7 @@ public class UserNoticeDao extends SpringSimpleBaseDao<UserNotice> {
 	}
 	
 	
-	private static final String updateAllUnRead= StrTemplate.gener("update ${0} set ${1} = ? ,${4}= ?  where ${2} = ?  ",TABLE_NAME,UserNotice.READED,UserNotice.USER_ID,UserNotice.READED_TIME);
+	private static final String updateAllUnRead= StrTemplate.gener("update ${0} set ${1} = ? ,${3}= ?  where ${2} = ?  ",TABLE_NAME,UserNotice.READED,UserNotice.USER_ID,UserNotice.READED_TIME);
 	
 	public void updateAllSign(Long userID) {
 		
