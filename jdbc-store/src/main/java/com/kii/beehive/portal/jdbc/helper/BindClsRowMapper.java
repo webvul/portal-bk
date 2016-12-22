@@ -310,13 +310,29 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 			return;
 		}
 		
+		private String subOrder=null;
 		
+		public void addAscOrder(String fieldName){
+			String field=getFieldStr(fieldName);
+			
+			subOrder="order by "+field+" asc ";
+		}
+		
+		
+		public void addDescOrder(String fieldName){
+			String field=getFieldStr(fieldName);
+			
+			subOrder="order by "+field+" desc ";
+		}
+		
+		private String subPager=null;
 		
 		public void addPager(Pager page){
 			
 			if(page!=null) {
 				
-				fullSql.append(" LIMIT ? , ? ");
+				subPager=" LIMIT ? , ? ";
+				
 				list.add(page.getStart());
 				list.add(page.getSize());
 			}
@@ -345,15 +361,30 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 			switch (type){
 				
 				case EnumInt:return ((Enum)val).ordinal();
-				case Auto:return  String.valueOf(val);
+				case Auto:return  val;
 				case EnumStr:return ((Enum)val).name();
 				default:return val;
 			}
 			
+//			if(propCls.equals(Boolean.class)||propCls.equals(boolean.class)){
+//				return ((boolean)val)?1:0;
+//			}
+			
+//			return val;
+			
 		}
 		
 		public String getFullSql(){
-			return fullSql.toString();
+			
+			StringBuilder sb=new StringBuilder(fullSql);
+			
+			if(subOrder!=null){
+				sb.append(subOrder);
+			}
+			if(subPager!=null){
+				sb.append(subPager);
+			}
+			return sb.toString();
 		}
 		
 		public Object[] getParamArray(){

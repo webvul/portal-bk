@@ -87,18 +87,20 @@ public class TriggerManager {
 	@PostConstruct
 	public void init() {
 
-		if( ! "local".equals(profile) ){
-
-			List<TriggerRecord> recordList = triggerDao.getAllEnableTrigger();
-
-			List<TriggerRecord>  list=recordList.stream().filter((r)->r.getType()!= BeehiveTriggerType.Gateway).collect(Collectors.toList());
-
-			List<BusinessObject>  objList=businessObjDao.getAll();
-
-			List<String> errList=creator.init(list,objList);
-
-			errList.forEach(err->triggerDao.deleteTriggerRecord(err,"create trigger fail in system init "));
+		if( "local".equals(profile) ) {
+			return ;
 		}
+
+		List<TriggerRecord> recordList = triggerDao.getAllEnableTrigger();
+
+		List<TriggerRecord>  list=recordList.stream().filter((r)->r.getType()!= BeehiveTriggerType.Gateway).collect(Collectors.toList());
+
+		List<BusinessObject>  objList=businessObjDao.getAll();
+
+		List<String> errList=creator.init(list,objList);
+
+		errList.forEach(err->triggerDao.deleteTriggerRecord(err,"create trigger fail in system init "));
+		
 	}
 
 
