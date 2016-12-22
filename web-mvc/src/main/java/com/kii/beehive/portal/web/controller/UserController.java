@@ -8,11 +8,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +28,7 @@ import com.kii.beehive.business.service.sms.SmsSendService;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.entitys.PermissionTree;
 import com.kii.beehive.portal.face.BeehiveFaceService;
+import com.kii.beehive.portal.face.faceyitu.entitys.BeehiveFaceImageInput;
 import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 import com.kii.beehive.portal.manager.AuthManager;
 import com.kii.beehive.portal.manager.BeehiveUserManager;
@@ -335,24 +339,48 @@ public class UserController {
 
 
 
-	@RequestMapping(value = "/user/photo", method = RequestMethod.POST, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+	@RequestMapping(value = "/user/photo/file", method = RequestMethod.POST, consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
 	public
 	@ResponseBody
-	UserRestBean uploadFacePhoto(
+	UserRestBean uploadFacePhotoFile(
 			@RequestParam(value = "userId") String userId,
 			@RequestParam(value = "photo") CommonsMultipartFile photo) throws IOException {
 
 		if (photo == null) {
-			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "field", "phone");
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "field", "photo");
 		}
 
-		File photoFile = File.createTempFile(userId + "-" + "-", photo.getOriginalFilename(), service.getPhotoTempDir());
+		File photoFile = File.createTempFile(userId + "-" + UUID.randomUUID() + "-", photo.getOriginalFilename(), service.getPhotoTempDir());
 		byte[] bytes = photo.getBytes();
 		BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(photoFile));
 		stream.write(bytes);
 		stream.close();
 
 		BeehiveJdbcUser user = service.updateUserWithFace(userId, photoFile);
+		UserRestBean bean = new UserRestBean(user);
+		return bean;
+	}
+
+
+	@RequestMapping(value = "/user/photo", method = RequestMethod.POST)
+	public
+	@ResponseBody
+	UserRestBean uploadFacePhoto(@RequestBody BeehiveFaceImageInput faceImage) throws IOException {
+
+		if (StringUtils.isEmpty(faceImage.getUserId())) {
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "field", "userId");
+		}
+		if (StringUtils.isEmpty(faceImage.getPictureImageContentBase64())) {
+			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "field", "pictureImageContentBase64");
+		}
+
+		File photoFile = File.createTempFile(faceImage.getUserId() + "-" + UUID.randomUUID() + "-", ".jpg", service.getPhotoTempDir());
+		byte[] bytes = Base64.decodeBase64(faceImage.getPictureImageContentBase64());
+		BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(photoFile));
+		stream.write(bytes);
+		stream.close();
+
+		BeehiveJdbcUser user = service.updateUserWithFace(faceImage.getUserId(), photoFile);
 		UserRestBean bean = new UserRestBean(user);
 		return bean;
 	}
