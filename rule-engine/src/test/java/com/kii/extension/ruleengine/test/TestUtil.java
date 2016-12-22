@@ -9,12 +9,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.kii.extension.ruleengine.drools.ExpressConvert;
-import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
+import com.kii.extension.ruleengine.drools.entity.BusinessObjInRule;
 
 public class TestUtil {
 	
 	
-	ThingStatusInRule status=new ThingStatusInRule("abc");
+	BusinessObjInRule status=new BusinessObjInRule("abc");
 	
 	Map<String,Object> map=new HashMap<>();
 	

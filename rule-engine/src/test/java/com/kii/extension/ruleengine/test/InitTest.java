@@ -19,7 +19,7 @@ import com.kii.extension.ruleengine.drools.CommandExec;
 import com.kii.extension.ruleengine.drools.DroolsService;
 import com.kii.extension.ruleengine.drools.entity.CurrThing;
 import com.kii.extension.ruleengine.drools.entity.SingleThing;
-import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
+import com.kii.extension.ruleengine.drools.entity.BusinessObjInRule;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -96,7 +96,7 @@ public class InitTest {
 
 
 	protected  void updateThingState(String thingID,Map<String,Object> values){
-		ThingStatusInRule status=new ThingStatusInRule(thingID);
+		BusinessObjInRule status=new BusinessObjInRule(thingID);
 //		status.setThingID(thingID);
 		status.setCreateAt(new Date());
 		status.setValues(new HashMap<>(values));
@@ -105,7 +105,7 @@ public class InitTest {
 
 	}
 
-	private void addThingStatus(String thingID, ThingStatusInRule status) {
+	private void addThingStatus(String thingID, BusinessObjInRule status) {
 
 
 		ruleLoader.addOrUpdateData(status,true);
@@ -117,7 +117,7 @@ public class InitTest {
 
 	protected void updateThingState(String thingID){
 
-		ThingStatusInRule status=new ThingStatusInRule(thingID);
+		BusinessObjInRule status=new BusinessObjInRule(thingID);
 //		status.setThingID(thingID);
 
 		Map<String,Object> val=new HashMap<>();

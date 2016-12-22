@@ -27,7 +27,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 import com.kii.extension.ruleengine.BeehiveTriggerService;
-import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
+import com.kii.extension.ruleengine.drools.entity.BusinessObjInRule;
 import com.kii.extension.ruleengine.store.trigger.GroupSummarySource;
 import com.kii.extension.ruleengine.store.trigger.MultipleSrcTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
@@ -140,7 +140,7 @@ public class RuleEngineConsole {
 		initExternal();
 
 
-		List<ThingStatusInRule> statusList=new ArrayList<>();
+		List<BusinessObjInRule> statusList=new ArrayList<>();
 		statusList.add(getStatusInRule("a","foo=230,bar=150"));
 		statusList.add(getStatusInRule("b","foo=230,bar=50"));
 		statusList.add(getStatusInRule("c","foo=-10,bar=10"));
@@ -500,9 +500,9 @@ public class RuleEngineConsole {
 		return sb.toString().trim();
 	}
 
-	private  ThingStatusInRule  getStatusInRule(String thingID,String params){
+	private BusinessObjInRule getStatusInRule(String thingID, String params){
 
-		ThingStatusInRule status=new ThingStatusInRule(thingID);
+		BusinessObjInRule status=new BusinessObjInRule(thingID);
 
 		ThingStatus  s=getStatus(params);
 		status.setValues(s.getFields());

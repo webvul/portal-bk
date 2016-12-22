@@ -9,9 +9,9 @@ import org.slf4j.LoggerFactory;
 
 import com.kii.extension.ruleengine.ExpressTool;
 
-public class ThingStatusInRule implements RuntimeEntry,CanUpdate<ThingStatusInRule>{
+public class BusinessObjInRule implements RuntimeEntry,CanUpdate<BusinessObjInRule>{
 
-	private Logger log= LoggerFactory.getLogger(ThingStatusInRule.class);
+	private Logger log= LoggerFactory.getLogger(BusinessObjInRule.class);
 
 	private final String thingID;
 
@@ -21,7 +21,7 @@ public class ThingStatusInRule implements RuntimeEntry,CanUpdate<ThingStatusInRu
 	
 	private Map<String,Object> previousValues=new HashMap<>();
 
-	public ThingStatusInRule(String thingID){
+	public BusinessObjInRule(String thingID){
 		this.thingID=thingID;
 	}
 
@@ -96,7 +96,7 @@ public class ThingStatusInRule implements RuntimeEntry,CanUpdate<ThingStatusInRu
 	}
 
 	@Override
-	public void update(ThingStatusInRule update) {
+	public void update(BusinessObjInRule update) {
 
 		Map<String,Object>  vals=update.getValues();
 		

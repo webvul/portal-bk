@@ -1,7 +1,6 @@
 package com.kii.extension.ruleengine;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -21,10 +20,11 @@ import com.kii.extension.ruleengine.drools.RuleGeneral;
 import com.kii.extension.ruleengine.drools.entity.ExternalValues;
 import com.kii.extension.ruleengine.drools.entity.SingleThing;
 import com.kii.extension.ruleengine.drools.entity.Summary;
-import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
+import com.kii.extension.ruleengine.drools.entity.BusinessObjInRule;
 import com.kii.extension.ruleengine.drools.entity.Trigger;
 import com.kii.extension.ruleengine.drools.entity.TriggerType;
 import com.kii.extension.ruleengine.schedule.ScheduleService;
+import com.kii.extension.ruleengine.store.trigger.BusinessDataObject;
 import com.kii.extension.ruleengine.store.trigger.CommandParam;
 import com.kii.extension.ruleengine.store.trigger.Condition;
 import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
@@ -81,25 +81,6 @@ public class BeehiveTriggerService {
 		return map;
 	}
 
-//	public void updateBusinessObject(String name,String key,Object value){
-//
-//
-//		ThingStatusInRule status=new ThingStatusInRule("b."+name);
-//		status(key,value);
-//
-//		droolsTriggerService.addThingStatus(status);
-//
-//	}
-//
-//	public void updateBusinessObject(String name,Map<String,Object> valueMap){
-//
-//
-//		ThingStatusInRule status=new ThingStatusInRule("b."+name);
-//		status.setValues(valueMap);
-//
-//		droolsTriggerService.addThingStatus(status);
-//
-//	}
 
 
 	public void updateExternalValue(String name,String key,Object value){
@@ -116,16 +97,16 @@ public class BeehiveTriggerService {
 		droolsTriggerService.leaveInit();
 	}
 
-	public void updateThingStatus(String thingID, Map<String,Object> status){
-		updateThingStatus(thingID,status,new Date());
+//	public void updateThingStatus(BusinessDataObject data){
+//		updateThingStatus(thingID,status,new Date());
+//
+//	}
 
-	}
+	public void updateThingStatus(BusinessDataObject data){
 
-	public void updateThingStatus(String thingID,  Map<String,Object> status,Date time){
-
-		ThingStatusInRule newStatus=new ThingStatusInRule(thingID);
-		newStatus.setValues(status);
-		newStatus.setCreateAt(new Date());
+		BusinessObjInRule newStatus=new BusinessObjInRule(data.getFullObjID());
+		newStatus.setValues(data.getData());
+		newStatus.setCreateAt(data.getModified());
 
 		droolsTriggerService.addThingStatus(newStatus);
 	}

@@ -21,8 +21,8 @@ import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.service.EventListenerDao;
 import com.kii.extension.ruleengine.BeehiveTriggerService;
 import com.kii.extension.ruleengine.TriggerCreateException;
-import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
-import com.kii.extension.ruleengine.store.trigger.BusinessObject;
+import com.kii.extension.ruleengine.drools.entity.BusinessObjInRule;
+import com.kii.extension.ruleengine.store.trigger.BusinessDataObject;
 import com.kii.extension.ruleengine.store.trigger.groups.GroupTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.groups.SummaryTriggerRecord;
@@ -62,7 +62,7 @@ public class TriggerOperate {
 		
 	}
 
-	public List<String> init(List<TriggerRecord> list, List<BusinessObject>  objList){
+	public List<String> init(List<TriggerRecord> list, List<BusinessDataObject>  objList){
 
 
 		List<String> errList=new ArrayList<>();
@@ -88,19 +88,25 @@ public class TriggerOperate {
 				return;
 			}
 
-			ThingStatusInRule info = new ThingStatusInRule(s.getFullKiiThingID());
+			BusinessObjInRule info = new BusinessObjInRule(s.getFullKiiThingID());
 			info.setCreateAt(s.getModifyDate());
 			info.setValues(s.getStatus());
+			
+			BusinessDataObject obj=new BusinessDataObject();
+			obj.setBusinessType(BusinessDataObject.BusinessObjType.Thing);
+			obj.setBusinessObjID(s.getFullKiiThingID());
+			obj.setData(s.getStatus());
+			obj.setModified(s.getModifyDate());
 
-			general.updateThingStatus(s.getFullKiiThingID(),s.getStatus(),s.getModifyDate());
+			general.updateThingStatus(obj);
 		});
 
-//		objList.forEach((obj)->{
-//
-//
-//			general.updateBusinessObject(obj.getBusinessObjID(),obj.getData());
-//
-//		});
+		objList.forEach((obj)->{
+			
+			
+			general.updateThingStatus(obj);
+
+		});
 
 		general.leaveInit();
 
@@ -227,7 +233,9 @@ public class TriggerOperate {
 
 	private String  addSimpleToEngine(SimpleTriggerRecord record) {
 		String thingID = null;
-		if (record.getSource() != null) {
+//		if (record.getSource().getThingID() != null) {
+		if(record.getSource().getBusinessType().equals(BusinessDataObject.BusinessObjType.Thing.name())){
+			
 			GlobalThingInfo thingInfo = thingTagService.getThingByID(record.getSource().getThingID());
 			if (thingInfo != null) {
 				thingID = thingInfo.getFullKiiThingID();
@@ -235,6 +243,10 @@ public class TriggerOperate {
 
 				throw EntryNotFoundException.thingNotFound(record.getSource().getThingID());
 			}
+		}else{
+			
+			
+			
 		}
 
 		return thingID;

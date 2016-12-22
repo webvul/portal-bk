@@ -46,7 +46,7 @@ public class MemberMatchResult implements  WithTrigger{
 		this.name = name;
 	}
 
-	public MemberMatchResult(Summary group, ThingStatusInRule status){
+	public MemberMatchResult(Summary group, BusinessObjInRule status){
 
 		this.triggerID=group.getTriggerID();
 		this.name=group.getName();

@@ -24,7 +24,7 @@ import com.kii.extension.ruleengine.TriggerCreateException;
 import com.kii.extension.ruleengine.service.BusinessObjDao;
 import com.kii.extension.ruleengine.service.TriggerRecordDao;
 import com.kii.extension.ruleengine.store.trigger.BeehiveTriggerType;
-import com.kii.extension.ruleengine.store.trigger.BusinessObject;
+import com.kii.extension.ruleengine.store.trigger.BusinessDataObject;
 import com.kii.extension.ruleengine.store.trigger.GatewayTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 
@@ -70,7 +70,7 @@ public class TriggerManager {
 
 		List<TriggerRecord>  list=recordList.stream().filter((r)->r.getType()!= BeehiveTriggerType.Gateway).collect(Collectors.toList());
 
-		List<BusinessObject>  objList=businessObjDao.getAll();
+		List<BusinessDataObject>  objList=businessObjDao.getAll();
 
 		List<String> errList=creator.init(list,objList);
 
