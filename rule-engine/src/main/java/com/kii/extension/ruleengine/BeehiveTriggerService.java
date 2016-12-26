@@ -432,6 +432,10 @@ public class BeehiveTriggerService {
 		droolsTriggerService.updateThingsWithName(triggerID,summaryName,newThings);
 
 	}
+	
+	public Set<String>  getTriggerIDByThingID(String thingID){
+		return relationStore.getTriggerSetByThingID(thingID);
+	}
 
 
 }

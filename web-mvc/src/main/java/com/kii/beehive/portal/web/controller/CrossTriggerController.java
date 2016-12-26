@@ -24,7 +24,6 @@ import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
 import com.kii.extension.ruleengine.BeehiveTriggerService;
 import com.kii.extension.ruleengine.store.trigger.BeehiveTriggerType;
-import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
@@ -156,9 +155,9 @@ public class CrossTriggerController {
 	}
 
 	@RequestMapping(path = "/things/{thingId}", method = {RequestMethod.GET}, consumes = {MediaType.ALL_VALUE})
-	public List<SimpleTriggerRecord> getTriggerListByThingIdAndUserId(@PathVariable("thingId") String thingId) {
-		Long currentUserId = AuthInfoStore.getUserID();
-		return mang.getTriggerListByUserIdAndThingId(currentUserId, thingId);
+	public List<TriggerRecord> getTriggerListByThingIdAndUserId(@PathVariable("thingId") long thingId) {
+		
+		return mang.getTriggerListByUserIdAndThingId(thingId);
 	}
 
 

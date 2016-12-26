@@ -96,7 +96,7 @@ public class RelationStore {
 		maintainThingTriggerIndex(thingSet,triggerID,null);
 	}
 
-		public void maintainThingTriggerIndex(Set<String>  thingSet,String triggerID,String elemID){
+	public void maintainThingTriggerIndex(Set<String>  thingSet,String triggerID,String elemID){
 
 
 		TriggerInfo triggerInfo=new TriggerInfo(triggerID,elemID);

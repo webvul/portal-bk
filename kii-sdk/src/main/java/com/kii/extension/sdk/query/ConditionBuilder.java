@@ -1,7 +1,7 @@
 package com.kii.extension.sdk.query;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
 
 import com.kii.extension.sdk.query.condition.All;
 import com.kii.extension.sdk.query.condition.AndLogic;
@@ -52,7 +52,7 @@ public class ConditionBuilder {
 		return this;
 	}
 
-	public ConditionBuilder In(String field, List<?> objList) {
+	public ConditionBuilder In(String field, Collection<?> objList) {
 		InCollect q = new InCollect();
 		q.setField(field);
 		q.setValues(objList);

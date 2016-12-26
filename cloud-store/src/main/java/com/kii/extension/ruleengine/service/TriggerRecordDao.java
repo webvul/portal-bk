@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.stereotype.Component;
 
@@ -187,6 +188,15 @@ public class TriggerRecordDao extends AbstractDataAccess<TriggerRecord> {
 		return list;
 
 	}
-
-
+	
+	
+	public List<TriggerRecord> queryByIDSetForUser(Set<String> triggerSet, Long userID) {
+		
+		QueryParam query= ConditionBuilder.andCondition()
+				.equal("userID",userID)
+				.In("_id",triggerSet)
+				.getFinalQueryParam();
+		
+		return super.query(query);
+	}
 }

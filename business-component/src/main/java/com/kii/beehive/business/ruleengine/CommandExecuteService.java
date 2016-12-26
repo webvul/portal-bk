@@ -51,7 +51,7 @@ public class CommandExecuteService implements EventCallback {
 	
 	@Lazy
 	@Autowired
-	private TriggerCreator creator;
+	private TriggerOperate creator;
 
 
 	@Autowired

@@ -32,7 +32,7 @@ import com.kii.extension.ruleengine.store.trigger.MultipleSrcTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.ThingSource;
 
 @Component
-public class TriggerCreator {
+public class TriggerOperate {
 
 	@Autowired
 	private BusinessEventListenerService eventService;
@@ -50,8 +50,17 @@ public class TriggerCreator {
 	@Autowired
 	private BeehiveTriggerService general;
 
+	
 
 
+	public Set<String> getTriggerListByThingID(long thingID){
+	
+		String fullKiiThingID=thingTagService.getThingByID(thingID).getFullKiiThingID();
+		
+		return general.getTriggerIDByThingID(fullKiiThingID);
+		
+		
+	}
 
 	public List<String> init(List<TriggerRecord> list, List<BusinessObject>  objList){
 
