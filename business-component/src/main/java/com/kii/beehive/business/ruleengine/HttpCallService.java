@@ -87,7 +87,7 @@ public class HttpCallService {
 			result.bindException(ex);
 		}
 
-		resultDao.addResponse(result);
+		resultDao.addTaskResult(result);
 
 
 

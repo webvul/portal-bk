@@ -61,7 +61,7 @@ public class BusinessFunctionCallService {
 			
 			result.setReturnValue(returnResult);
 			
-			resultDao.addEntity(result);
+			resultDao.addTaskResult(result);
 			
 		} catch (IllegalAccessException|InvocationTargetException e) {
 			

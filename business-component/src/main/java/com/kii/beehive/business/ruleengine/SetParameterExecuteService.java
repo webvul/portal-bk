@@ -59,6 +59,8 @@ public class SetParameterExecuteService {
 			result.setExceptionInfo(new ExceptionInfo(e));
 		}
 		
+		resultDao.addTaskResult(result);
+		
 	}
 
 }

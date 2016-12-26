@@ -111,7 +111,7 @@ public class ThingCommandForTriggerService {
 				resp.bindException(ex);
 			}
 
-			resultDao.addCommandResult(resp);
+			resultDao.addTaskResult(resp);
 
 		});
 
