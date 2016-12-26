@@ -12,7 +12,7 @@ public enum BusinessObjType {
 			sb.append("-").append(name);
 		}
 		
-		sb.append(":").append(id);
+		sb.append(".").append(id);
 		
 		return sb.toString();
 	}

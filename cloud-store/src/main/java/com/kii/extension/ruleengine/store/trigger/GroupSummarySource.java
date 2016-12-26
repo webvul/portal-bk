@@ -16,6 +16,8 @@ public class GroupSummarySource implements SourceElement{
 
 	@JsonUnwrapped
 	private Express express=new Express();
+	
+	
 
 
 	public Express getExpress() {

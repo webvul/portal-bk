@@ -292,7 +292,7 @@ public class TriggerOperate {
 	
 	private Set<String>  getBusinessObjSet(ThingCollectSource source){
 		
-		if(source.getSelector()!=null){
+		if(source.getSelector().notEmpty()){
 			
 			return thingTagService.getBusinessObjs(source.getSelector());
 			
@@ -308,7 +308,7 @@ public class TriggerOperate {
 		
 		MultipleSrcTriggerRecord convertRecord=new MultipleSrcTriggerRecord();
 		
-		BeanUtils.copyProperties(record,convertRecord);
+		BeanUtils.copyProperties(record,convertRecord,"type");
 		
 		record.getSummarySource().forEach((k,v)->{
 			
@@ -335,7 +335,7 @@ public class TriggerOperate {
 		
 		
 		MultipleSrcTriggerRecord convertRecord=new MultipleSrcTriggerRecord();
-		BeanUtils.copyProperties(record,convertRecord);
+		BeanUtils.copyProperties(record,convertRecord,"type");
 		
 		int thingNum=getBusinessObjSet(record.getSource()).size();
 		

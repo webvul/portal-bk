@@ -31,7 +31,7 @@ public class BusinessDataObject extends KiiEntity {
 		setBusinessType(businessType);
 
 	}
-	private static final Pattern pattern=Pattern.compile("(([^\\:\\-]+)(\\-([^:]+))?)\\:([\\S]+)");
+	private static final Pattern pattern=Pattern.compile("(([^\\.\\-]+)(\\-([^.]+))?)\\.([\\S]+)");
 	
 	public static BusinessDataObject getInstance(String fullBuinessID){
 		

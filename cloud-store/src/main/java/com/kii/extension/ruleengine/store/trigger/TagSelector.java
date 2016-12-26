@@ -47,5 +47,9 @@ public class TagSelector {
 		this.tagList.add(tagName);
 	}
 	
-
+	
+	public boolean notEmpty() {
+		
+		return !tagList.isEmpty();
+	}
 }
