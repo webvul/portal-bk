@@ -79,6 +79,13 @@ public class BeehiveTriggerService {
 		val.addValue(key,value);
 		droolsTriggerService.addExternalValue(val);
 	}
+	
+	
+	public void initExternalValues(String name,Map<String,Object> values){
+		ExternalValues val=new ExternalValues(name);
+		val.setValues(values);
+		droolsTriggerService.addExternalValue(val);
+	}
 
 	public void enterInit(){
 		droolsTriggerService.enterInit();

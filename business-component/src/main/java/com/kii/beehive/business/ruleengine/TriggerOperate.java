@@ -23,6 +23,7 @@ import com.kii.extension.ruleengine.BeehiveTriggerService;
 import com.kii.extension.ruleengine.TriggerConditionBuilder;
 import com.kii.extension.ruleengine.TriggerCreateException;
 import com.kii.extension.ruleengine.drools.entity.BusinessObjInRule;
+import com.kii.extension.ruleengine.service.BusinessObjDao;
 import com.kii.extension.ruleengine.store.trigger.BusinessDataObject;
 import com.kii.extension.ruleengine.store.trigger.BusinessObjType;
 import com.kii.extension.ruleengine.store.trigger.Condition;
@@ -57,7 +58,12 @@ public class TriggerOperate {
 
 	@Autowired
 	private BeehiveTriggerService general;
-
+	
+	
+	@Autowired
+	private BusinessObjDao businessObjDao;
+	
+	
 	
 
 
@@ -70,7 +76,7 @@ public class TriggerOperate {
 		
 	}
 
-	public List<String> init(List<TriggerRecord> list, List<BusinessDataObject>  objList){
+	public List<String> init(List<TriggerRecord> list){
 
 
 		List<String> errList=new ArrayList<>();
@@ -108,11 +114,16 @@ public class TriggerOperate {
 			general.updateBusinessData(obj);
 		});
 
-		objList.forEach((obj)->{
+		businessObjDao.getAllBusinessObjs().forEach((obj)->{
 			
 			
 			general.updateBusinessData(obj);
 
+		});
+		
+		businessObjDao.loadAllExtension().forEach((ext)->{
+			
+			general.initExternalValues(ext.getBusinessObjID(),ext.getData());
 		});
 
 		general.leaveInit();
@@ -120,7 +131,30 @@ public class TriggerOperate {
 		return errList;
 
 	}
+	
+	
+	public void addBusinessData(BusinessDataObject data){
+		businessObjDao.addBusinessObj(data);
+		
+		general.updateBusinessData(data);
+	}
 
+	public void addExtensionValue(String name,Map<String,Object> data){
+//		BusinessDataObject obj=new BusinessDataObject(name,BusinessObjType.Global);
+		
+		businessObjDao.saveExtensionValue(name,data);
+		
+		general.initExternalValues(name,data);
+	}
+	
+	
+	public void updateExtensionValue(String name,String key,Object data){
+//		BusinessDataObject obj=new BusinessDataObject(name,BusinessObjType.Global);
+		
+		businessObjDao.updateExtensionValue(name,key,data);
+		
+		general.updateExternalValue(name,key,data);
+	}
 
 	public void createTrigger(TriggerRecord record) throws TriggerCreateException {
 

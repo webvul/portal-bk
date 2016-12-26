@@ -21,10 +21,8 @@ import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.beehive.portal.service.OperateLogDao;
 import com.kii.beehive.portal.store.entity.OperateLog;
 import com.kii.extension.ruleengine.TriggerCreateException;
-import com.kii.extension.ruleengine.service.BusinessObjDao;
 import com.kii.extension.ruleengine.service.TriggerRecordDao;
 import com.kii.extension.ruleengine.store.trigger.BeehiveTriggerType;
-import com.kii.extension.ruleengine.store.trigger.BusinessDataObject;
 import com.kii.extension.ruleengine.store.trigger.GatewayTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 
@@ -41,8 +39,6 @@ public class TriggerManager {
 	@Autowired
 	private TriggerRecordDao triggerDao;
 
-	@Autowired
-	private BusinessObjDao  businessObjDao;
 
 	@Autowired
 	private ThingTagManager thingTagService;
@@ -69,10 +65,8 @@ public class TriggerManager {
 		List<TriggerRecord> recordList = triggerDao.getAllEnableTrigger();
 
 		List<TriggerRecord>  list=recordList.stream().filter((r)->r.getType()!= BeehiveTriggerType.Gateway).collect(Collectors.toList());
-
-		List<BusinessDataObject>  objList=businessObjDao.getAll();
-
-		List<String> errList=creator.init(list,objList);
+		
+		List<String> errList=creator.init(list);
 
 		errList.forEach(err->triggerDao.deleteTriggerRecord(err,"create trigger fail in system init "));
 		
