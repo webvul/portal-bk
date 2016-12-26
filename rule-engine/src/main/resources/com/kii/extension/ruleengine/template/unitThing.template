@@ -5,7 +5,7 @@ when
     Trigger( $triggerID:triggerID,triggerID=="${triggerID}" && enable == true )
     $inst:TriggerValues(triggerID==$triggerID)
     $thing:SingleThing( triggerID==$triggerID &&  name== "${name}" )
-    $status:ThingStatusInRule(thingID==$thing.thingID && ${express} )
+    $status:BusinessObjInRule(thingID==$thing.thingID && ${express} )
 then
 	insertLogical(new ThingResult($triggerID,"${name}",$status));
 end

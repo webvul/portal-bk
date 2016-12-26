@@ -13,9 +13,9 @@ import org.springframework.stereotype.Component;
 import com.kii.beehive.portal.common.utils.MethodTools;
 import com.kii.extension.ruleengine.ExecuteParam;
 import com.kii.extension.ruleengine.service.ExecuteResultDao;
-import com.kii.extension.ruleengine.store.trigger.target.BusinessFunResponse;
-import com.kii.extension.ruleengine.store.trigger.target.CallBusinessFunction;
-import com.kii.extension.ruleengine.store.trigger.target.ExceptionInfo;
+import com.kii.extension.ruleengine.store.trigger.task.BusinessFunResponse;
+import com.kii.extension.ruleengine.store.trigger.task.CallBusinessFunction;
+import com.kii.extension.ruleengine.store.trigger.task.ExceptionInfo;
 
 @Component
 public class BusinessFunctionCallService {
@@ -34,7 +34,7 @@ public class BusinessFunctionCallService {
 	
 	public void doBusinessFunCall(CallBusinessFunction function, String triggerID, ExecuteParam params) {
 		
-		BusinessFunResponse result=builder.getBusinessFunResponse(triggerID,params);
+		BusinessFunResponse result=builder.getBusinessFunResponse(params);
 		
 		try {
 			Object bean = context.getBean(function.getBeanName());
@@ -54,12 +54,14 @@ public class BusinessFunctionCallService {
 			result.setMethodName(function.getFunctionName());
 			
 			Method method= MethodTools.getMethodByName(bean.getClass(),function.getFunctionName(),paramArray.length);
-		
+			
+			result.setMethodName(method.getName());
+			
 			Object returnResult=method.invoke(bean,paramArray);
 			
 			result.setReturnValue(returnResult);
 			
-			resultDao.addEntity(result);
+			resultDao.addTaskResult(result);
 			
 		} catch (IllegalAccessException|InvocationTargetException e) {
 			

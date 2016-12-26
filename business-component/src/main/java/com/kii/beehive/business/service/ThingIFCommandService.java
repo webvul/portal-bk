@@ -81,7 +81,7 @@ public class ThingIFCommandService {
 
         Set<GlobalThingInfo> thingList = this.getThingInfos(target.getSelector());
 
-//        String thingType = target.getThingType();
+//        String thingType = task.getThingType();
 
         for (GlobalThingInfo thing : thingList) {
 

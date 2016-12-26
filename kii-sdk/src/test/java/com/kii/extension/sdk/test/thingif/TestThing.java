@@ -51,7 +51,7 @@ public class TestThing extends TestTemplate {
 
 	private static String appID="test-slave-3";
 
-//	private FederatedAuthResult target;
+//	private FederatedAuthResult task;
 
 
 	private String token="a6l-d5HbfnEHu9FB3MWmgVuBqzldiHZzP77iEc0QY4M";
@@ -97,7 +97,7 @@ public class TestThing extends TestTemplate {
 //
 //		ThingCommand cmd=new ThingCommand();
 //
-//		cmd.setUserID(target.getUserID());
+//		cmd.setUserID(task.getUserID());
 //		cmd.addMetadata("foo","bar");
 //		Action action=new Action();
 //		action.setField("power",true);

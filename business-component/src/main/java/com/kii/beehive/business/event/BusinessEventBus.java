@@ -87,7 +87,7 @@ public class BusinessEventBus {
 
 
 	@Async
-	public void onStatusUploadFire(String thingID, ThingStatus status,Date timestamp){
+	public void onStatusUploadFire(String thingID, ThingStatus status, Date timestamp){
 
 		log.debug("onStatusUploadFire  thingID=" + thingID + ", status=" + status + ", timestamp=" + timestamp);
 

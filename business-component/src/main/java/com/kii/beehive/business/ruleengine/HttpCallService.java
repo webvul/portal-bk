@@ -21,8 +21,8 @@ import com.google.common.base.Charsets;
 
 import com.kii.extension.ruleengine.ExecuteParam;
 import com.kii.extension.ruleengine.service.ExecuteResultDao;
-import com.kii.extension.ruleengine.store.trigger.target.CallHttpApi;
-import com.kii.extension.ruleengine.store.trigger.target.HttpCallResponse;
+import com.kii.extension.ruleengine.store.trigger.task.CallHttpApi;
+import com.kii.extension.ruleengine.store.trigger.task.HttpCallResponse;
 import com.kii.extension.sdk.commons.HttpTool;
 
 @Component
@@ -54,7 +54,7 @@ public class HttpCallService {
 
 			int code=response.getStatusLine().getStatusCode();
 
-			log.info("http call target:"+code);
+			log.info("http call task:"+code);
 
 			result.setHttpRequest(call);
 
@@ -87,7 +87,7 @@ public class HttpCallService {
 			result.bindException(ex);
 		}
 
-		resultDao.addResponse(result);
+		resultDao.addTaskResult(result);
 
 
 

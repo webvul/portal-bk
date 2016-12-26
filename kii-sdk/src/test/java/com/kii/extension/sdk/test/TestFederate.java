@@ -80,13 +80,13 @@
 ////		String url=service.getAuthUrl(salve);
 ////
 ////
-////		FederatedAuthResult target=service.generAuthRequest(url, SiteType.BH01A, "threaddemo", "qwerty");
+////		FederatedAuthResult task=service.generAuthRequest(url, SiteType.BH01A, "threaddemo", "qwerty");
 ////
 ////		resolver.setAppName(slaveApp);
 ////
-////		tokenResolver.bindToken(target.getAppAuthToken());
+////		tokenResolver.bindToken(task.getAppAuthToken());
 //
-//		FederatedAuthResult target=service.loginSalveApp(slaveAppKey,"threaddemo","qwerty");
+//		FederatedAuthResult task=service.loginSalveApp(slaveAppKey,"threaddemo","qwerty");
 //
 //
 //		Map<String,String> obj=new HashMap<>();

@@ -7,11 +7,10 @@ import com.kii.beehive.portal.store.entity.BeehiveConfig;
 import com.kii.beehive.portal.store.entity.es.EsDataSourceCfgEntry;
 import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.entity.BucketInfo;
-import com.kii.extension.sdk.service.AbstractDataAccess;
 
 @BindAppByName(appName="portal",appBindSource="propAppBindTool")
 @Component
-public class BeehiveConfigDao extends AbstractDataAccess<BeehiveConfig> {
+public class BeehiveConfigDao extends BaseKiicloudDao<BeehiveConfig> {
 
 
 

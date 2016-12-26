@@ -24,7 +24,8 @@ import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
 import com.kii.extension.ruleengine.BeehiveTriggerService;
 import com.kii.extension.ruleengine.store.trigger.BeehiveTriggerType;
-import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.BusinessDataObject;
+import com.kii.extension.ruleengine.store.trigger.BusinessObjType;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
@@ -73,7 +74,7 @@ public class CrossTriggerController {
 	@RequestMapping(path = "/{triggerID}", method = {RequestMethod.PUT},consumes={MediaType.ALL_VALUE})
 	public Map<String, Object> updateTrigger(@PathVariable("triggerID") String triggerID, @RequestBody TriggerRecord record) {
 		Map<String, Object> result = new HashMap<>();
-		result.put("target", "success");
+		result.put("task", "success");
 
 		record.setId(triggerID);
 
@@ -89,7 +90,7 @@ public class CrossTriggerController {
 	@RequestMapping(path = "/{triggerID}", method = {RequestMethod.DELETE}, consumes = {"*"})
 	public Map<String, Object> deleteTrigger(@PathVariable("triggerID") String triggerID) {
 		Map<String, Object> result = new HashMap<>();
-		result.put("target", "success");
+		result.put("task", "success");
 
 		mang.deleteTrigger(triggerID);
 
@@ -100,7 +101,7 @@ public class CrossTriggerController {
 	@RequestMapping(path = "/{triggerID}/enable", method = {RequestMethod.PUT},consumes={MediaType.ALL_VALUE})
 	public Map<String, Object> enableTrigger(@PathVariable("triggerID") String triggerID) {
 		Map<String, Object> result = new HashMap<>();
-		result.put("target", "success");
+		result.put("task", "success");
 		TriggerRecord record = mang.getTriggerByID(triggerID);
 		if (!TriggerRecord.StatusType.disable.equals(record.getRecordStatus())) {
 			throw new PortalException(ErrorCode.INVALID_INPUT,"field","enable","data","true");
@@ -116,7 +117,7 @@ public class CrossTriggerController {
 	@RequestMapping(path = "/{triggerID}/disable", method = {RequestMethod.PUT},consumes={MediaType.ALL_VALUE})
 	public Map<String, Object> disableTrigger(@PathVariable("triggerID") String triggerID) {
 		Map<String, Object> result = new HashMap<>();
-		result.put("target", "success");
+		result.put("task", "success");
 		TriggerRecord record = mang.getTriggerByID(triggerID);
 		if (!TriggerRecord.StatusType.enable.equals(record.getRecordStatus())) {
 			throw new PortalException(ErrorCode.INVALID_INPUT,"field","enable","data","false");
@@ -156,9 +157,9 @@ public class CrossTriggerController {
 	}
 
 	@RequestMapping(path = "/things/{thingId}", method = {RequestMethod.GET}, consumes = {MediaType.ALL_VALUE})
-	public List<SimpleTriggerRecord> getTriggerListByThingIdAndUserId(@PathVariable("thingId") String thingId) {
-		Long currentUserId = AuthInfoStore.getUserID();
-		return mang.getTriggerListByUserIdAndThingId(currentUserId, thingId);
+	public List<TriggerRecord> getTriggerListByThingIdAndUserId(@PathVariable("thingId") long thingId) {
+		
+		return mang.getTriggerListByUserIdAndThingId(thingId);
 	}
 
 
@@ -201,14 +202,13 @@ public class CrossTriggerController {
 		
 		GlobalThingInfo info=manager.getThingsByIds(Collections.singletonList(thingID)).get(0);
 		
+		BusinessDataObject obj=new BusinessDataObject(String.valueOf(info.getId()),null, BusinessObjType.Thing);
+		obj.setData(status.getFields());
+		obj.setCreated(new Date());
 		
-		engine.updateThingStatus(info.getFullKiiThingID(),status.getFields(),new Date());
+		engine.updateBusinessData(obj);
 		
 	}
 
-//	@RequestMapping(path = "/debug/reinit", method = {RequestMethod.POST}, consumes = {MediaType.ALL_VALUE})
-//	public void reInit() {
-//
-//		mang.reinit();
-//	}
+
 }

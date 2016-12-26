@@ -44,14 +44,19 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 
 	private final Class<T> cls;
 	
-	public BindClsRowMapper(Class<T> cls){
-
+	
+	private final String prefix;
+	
+	public BindClsRowMapper(Class<T> cls,String prefix){
+		
 		this.cls=cls;
-
+		
+		this.prefix=prefix;
+		
 		this.beanWrapper=PropertyAccessorFactory.forBeanPropertyAccess(BeanUtils.instantiate(cls));
-
+		
 		Map<String,String> searchMap=new HashMap<>();
-
+		
 		Map<String,JdbcFieldType> typeMap=new HashMap<>();
 		
 		Map<String,String> propMap=new HashMap<>();
@@ -69,13 +74,18 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 				typeMap.put(fieldDesc.column(),fieldDesc.type());
 			}
 		}
-
+		
 		fieldMapper= Collections.unmodifiableMap(searchMap);
-
+		
 		sqlTypeMapper=Collections.unmodifiableMap(typeMap);
-
+		
 		propertyMap=Collections.unmodifiableMap(propMap);
 		
+	}
+	
+	public BindClsRowMapper(Class<T> cls){
+
+		this(cls,null);
 	}
 
 
@@ -93,10 +103,18 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 			String propName=fieldMapper.get(field);
 
 			Class propCls=beanWrapper.getPropertyDescriptor(propName).getPropertyType();
-
-			Object fieldInst=JdbcConvertTool.getEntityValue(rs,field,propCls,type);
 			
-			log.debug(" fill row target "+fieldInst+" to field "+field);
+			int index=-1;
+			
+			if(prefix==null){
+				index=rs.findColumn(field);
+			}else{
+				index=rs.findColumn(prefix+"."+field);
+			}
+			
+			Object fieldInst=JdbcConvertTool.getEntityValue(rs,index,propCls,type);
+			
+//			log.debug(" fill row task "+fieldInst+" to field "+field);
 			
 			beanWrapperInst.setPropertyValue(fieldMapper.get(field), fieldInst);
 		}
@@ -105,6 +123,7 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 		return (T)beanWrapperInst.getWrappedInstance();
 	}
 
+	
 	
 	
 	

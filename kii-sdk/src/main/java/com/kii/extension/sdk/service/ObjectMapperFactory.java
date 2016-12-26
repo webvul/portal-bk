@@ -29,7 +29,7 @@ public class ObjectMapperFactory{
 		result.configure(SerializationFeature.INDENT_OUTPUT, true);
 		result.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS,false);
 		result.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
-//		target.configure(DeserializationFeature.,true);
+//		task.configure(DeserializationFeature.,true);
 		return result;
 	}
 

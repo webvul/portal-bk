@@ -12,11 +12,13 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.kii.beehive.business.manager.ThingTagManager;
 import com.kii.beehive.portal.entitys.ThingStateUpload;
-import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jedis.dao.MessageQueueDao;
 import com.kii.extension.ruleengine.BeehiveTriggerService;
+import com.kii.extension.ruleengine.store.trigger.BusinessDataObject;
+import com.kii.extension.ruleengine.store.trigger.BusinessObjType;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
 @Component
@@ -31,30 +33,39 @@ public class ThingStatusChangeCallback {
 	@Value("${thing.state.queue:thing_state_queue}")
 	private String thingStateQueue;
 	@Autowired
-	private GlobalThingSpringDao globalThingDao;
+	private ThingTagManager thingManager;
 
 	private Logger log= LoggerFactory.getLogger(ThingStatusChangeCallback.class);
 
 	@Autowired
 	private BeehiveTriggerService engine;
+	
+	
 
 	@Async
-	public void onEventFire(String appID, ThingStatus status, String thingID,Date timestamp) {
-
-
-		engine.updateThingStatus(thingID,status.getFields(),timestamp);
-
-
-		pushStatusUpload(appID, thingID, status, timestamp);
+	public void onEventFire(GlobalThingInfo thing, ThingStatus status,Date timestamp) {
+		
+//		thingManager.getThingByFull
+		
+		
+		BusinessDataObject data=new BusinessDataObject();
+		data.setBusinessType(BusinessObjType.Thing);
+		data.setBusinessObjID(String.valueOf(thing.getId()));
+		data.setData(status.getFields());
+		data.setCreated(timestamp);
+		
+		engine.updateBusinessData(data);
+		
+		
+		pushStatusUpload(thing,status,timestamp);
 	}
 
-	@Async
-	public void pushStatusUpload(String appID, String thingID, ThingStatus status, Date timestamp){
-		GlobalThingInfo globalThingInfo = globalThingDao.getThingByFullKiiThingID(appID, thingID);
+	private  void pushStatusUpload(GlobalThingInfo globalThingInfo, ThingStatus status, Date timestamp){
+		
 		ThingStateUpload thingStateUpload = new ThingStateUpload();
 		thingStateUpload.setGlobalThingID(globalThingInfo.getId());
-		thingStateUpload.setAppID(appID);
-		thingStateUpload.setThingID(thingID);
+		thingStateUpload.setAppID(globalThingInfo.getKiiAppID());
+		thingStateUpload.setThingID(globalThingInfo.getKiiThingID());
 		thingStateUpload.setState(status);
 		thingStateUpload.setTimestamp(timestamp);
 		String postEventJsonStr = "";

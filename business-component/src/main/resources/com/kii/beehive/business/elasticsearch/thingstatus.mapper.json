@@ -1,0 +1,96 @@
+{
+  "mappings": {
+    "thing_info": {
+      "_all": {
+        "enabled": false
+      },
+      "properties": {
+        "vendorThingID": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "globalThingID": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "kiicloudThingID": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "thingType": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "schemaName": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "schemaVersion": {
+          "type": "integer",
+          "index": "not_analyzed"
+        },
+        "geoLocation": {
+          "type": "geo_point"
+        },
+        "floor": {
+          "type": "integer"
+        },
+        "buildID": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "aliThingNo": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "floor": {
+          "type": "integer"
+        },
+        "buildID": {
+          "type": "string"
+        },
+        "aliThingNo": {
+          "type": "string"
+        },
+        "locationTag": {
+          "properties": {
+            "building": {
+              "type": "integer"
+            },
+            "floor": {
+              "type": "integer"
+            },
+            "partition": {
+              "type": "string",
+              "index": "not_analyzed"
+            },
+            "area": {
+              "type": "string",
+              "index": "not_analyzed"
+            },
+            "site": {
+              "type": "string",
+              "index": "not_analyzed"
+            }
+          }
+        }
+      }
+    },
+    "status_data": {
+      "_parent": {
+        "type": "thing_info"
+      },
+      "_all": {
+        "enabled": false
+      },
+      "properties": {
+        "uploadTime": {
+          "type": "date",
+          "format": "epoch_millis"
+        }
+      }
+    }
+  }
+}
+}
+

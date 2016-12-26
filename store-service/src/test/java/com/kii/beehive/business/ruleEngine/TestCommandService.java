@@ -26,7 +26,7 @@
 //import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
 //import com.kii.extension.ruleengine.store.trigger.TagSelector;
 //import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
-//import com.kii.extension.ruleengine.store.trigger.target.ExceptionResponse;
+//import com.kii.extension.ruleengine.store.trigger.task.ExceptionResponse;
 //import com.kii.extension.sdk.entity.thingif.Action;
 //import com.kii.extension.sdk.entity.thingif.ThingCommand;
 //
@@ -82,24 +82,24 @@
 //	public void doCmd(){
 //
 //		TriggerRecord trigger=new SimpleTriggerRecord();
-//		CommandToThing target=new CommandToThing();
+//		CommandToThing task=new CommandToThing();
 //
 //		TagSelector sele=new TagSelector();
 //		List<Long> things=new ArrayList<>();
 //		things.add(1018l);
 //		sele.setThingList(things);
 //
-//		target.setSelector(sele);
+//		task.setSelector(sele);
 //
 //		ThingCommand cmd=new ThingCommand();
 //		Action power=new Action();
 //		power.setField("foo","bar");
 //
 //		cmd.addAction("foo",power);
-//		target.setCommand(cmd);
+//		task.setCommand(cmd);
 //
 //		List<ExecuteTarget> targets=new ArrayList<>();
-//		targets.add(target);
+//		targets.add(task);
 //
 //		trigger.setTargets(targets);
 //
@@ -160,27 +160,27 @@
 //	public void doDelay(){
 //
 //		SimpleTriggerRecord trigger=new SimpleTriggerRecord();
-//		CommandToThing target=new CommandToThing();
+//		CommandToThing task=new CommandToThing();
 //
 //		TagSelector sele=new TagSelector();
 //		List<Long> things=new ArrayList<>();
 //		things.add(1018l);
 //		sele.setThingList(things);
 //
-//		target.setDelay("1000");
-//		target.setDoubleCheck(true);
+//		task.setDelay("1000");
+//		task.setDoubleCheck(true);
 //
-//		target.setSelector(sele);
+//		task.setSelector(sele);
 //
 //		ThingCommand cmd=new ThingCommand();
 //		Action power=new Action();
 //		power.setField("foo","bar");
 //
 //		cmd.addAction("foo",power);
-//		target.setCommand(cmd);
+//		task.setCommand(cmd);
 //
 //		List<ExecuteTarget> targets=new ArrayList<>();
-//		targets.add(target);
+//		targets.add(task);
 //
 //		trigger.setTargets(targets);
 //

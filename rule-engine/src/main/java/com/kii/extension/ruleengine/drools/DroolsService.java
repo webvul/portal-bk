@@ -43,7 +43,7 @@ import com.kii.extension.ruleengine.drools.entity.MatchResult;
 import com.kii.extension.ruleengine.drools.entity.MultiplesValueMap;
 import com.kii.extension.ruleengine.drools.entity.RuntimeEntry;
 import com.kii.extension.ruleengine.drools.entity.ScheduleFire;
-import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
+import com.kii.extension.ruleengine.drools.entity.BusinessObjInRule;
 import com.kii.extension.ruleengine.drools.entity.WithTrigger;
 
 @Component
@@ -53,7 +53,7 @@ public class DroolsService {
 	private Logger log= LoggerFactory.getLogger(DroolsService.class);
 
 
-	@Value("${spring.profile}")
+	@Value("${spring.profile:test}")
 	private String profile;
 	
 	private final KieSession kieSession;
@@ -218,7 +218,7 @@ public class DroolsService {
 			if(object instanceof WithTrigger){
 					return ((WithTrigger)object).getTriggerID().equals(triggerID);
 			}
-			if(object instanceof ThingStatusInRule){
+			if(object instanceof BusinessObjInRule){
 					return false;
 			}
 			return true;

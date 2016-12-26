@@ -12,10 +12,9 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.kii.extension.ruleengine.store.trigger.Condition;
-import com.kii.extension.sdk.entity.KiiEntity;
 
 
-public class ThingStatusMonitor extends KiiEntity {
+public class ThingStatusMonitor extends PortalEntity {
 
 	private String name;
 	

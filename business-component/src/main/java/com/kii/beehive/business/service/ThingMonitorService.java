@@ -24,7 +24,6 @@ import com.kii.beehive.business.entity.ThingStatusNoticeEntry;
 import com.kii.beehive.business.ruleengine.TriggerManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.CommLangsUtils;
-import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.exception.InvalidEntryStatusException;
 import com.kii.beehive.portal.exception.UnauthorizedException;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
@@ -35,15 +34,16 @@ import com.kii.beehive.portal.jdbc.entity.UserNotice;
 import com.kii.beehive.portal.service.ThingStatusMonitorDao;
 import com.kii.beehive.portal.store.entity.ThingStatusMonitor;
 import com.kii.extension.ruleengine.TriggerCreateException;
+import com.kii.extension.ruleengine.store.trigger.BusinessDataObject;
 import com.kii.extension.ruleengine.store.trigger.Express;
 import com.kii.extension.ruleengine.store.trigger.GroupSummarySource;
 import com.kii.extension.ruleengine.store.trigger.MultipleSrcTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
-import com.kii.extension.ruleengine.store.trigger.TagSelector;
+import com.kii.extension.ruleengine.store.trigger.ThingCollectSource;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.WhenType;
 import com.kii.extension.ruleengine.store.trigger.groups.SummaryFunctionType;
-import com.kii.extension.ruleengine.store.trigger.target.CallBusinessFunction;
+import com.kii.extension.ruleengine.store.trigger.task.CallBusinessFunction;
 import com.kii.extension.sdk.service.AbstractDataAccess;
 import com.kii.extension.tools.AdditionFieldType;
 
@@ -71,10 +71,14 @@ public class ThingMonitorService {
 	private Logger log= LoggerFactory.getLogger(ThingMonitorService.class);
 
 	@Transactional
-	public void addNotifiction(String monitorID, String thingID, Map<String,Object> status, Boolean sign,Set<String> currMatcher){
+	public void addNotifiction(String monitorID, String businessID, Map<String,Object> status, Boolean sign,Set<String> currMatcherIDs){
 		ThingStatusMonitor monitor=monitorDao.getObjectByID(monitorID);
 
 
+		if(monitor.getStatus()!= ThingStatusMonitor.MonitorStatus.enable){
+			return;
+		}
+		
 		UserNotice notice=new UserNotice();
 		
 		notice.setFrom(monitor.getName());
@@ -86,9 +90,9 @@ public class ThingMonitorService {
 		notice.setType(UserNotice.MsgType.ThingStatus);
 		notice.setMsgInText(monitor.getDescription());
 		
-		ThingIDTools.ThingIDCombine ids=ThingIDTools.splitFullKiiThingID(thingID);
-
-		GlobalThingInfo th=thingDao.getThingByFullKiiThingID(ids.kiiAppID,ids.kiiThingID);
+		Long thingID=Long.parseLong(BusinessDataObject.getInstance(businessID).getBusinessObjID());
+		
+		GlobalThingInfo th=thingDao.findByID(thingID);
 		notice.setTitle(th.getVendorThingID());
 
 		
@@ -111,7 +115,9 @@ public class ThingMonitorService {
 		entry.setMonitor(monitor);
 		
 		
-		List<GlobalThingInfo>  thList=thingDao.getThingListByFullKiiThingIDs(currMatcher);
+		List<Long> thingIDs=currMatcherIDs.stream().map(id-> Long.parseLong(BusinessDataObject.getInstance(businessID).getBusinessObjID())).collect(Collectors.toList());
+		
+		List<GlobalThingInfo>  thList=thingDao.findByIDs(thingIDs);
 		
 		Set<String> matcher=thList.stream().map(GlobalThingInfo::getVendorThingID).collect(Collectors.toSet());
 		entry.setCurrMatchers(matcher);
@@ -276,8 +282,8 @@ public class ThingMonitorService {
 		record.setName("mon"+monitor.getId());
 		GroupSummarySource source=new GroupSummarySource();
 		source.setFunction(SummaryFunctionType.objCol);
-		TagSelector src=new TagSelector();
 		
+		ThingCollectSource src=new ThingCollectSource();
 		src.setThingList(ids);
 		source.setSource(src);
 		

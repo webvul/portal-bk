@@ -1,11 +1,10 @@
 package com.kii.extension.factory;
 
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import com.kii.extension.sdk.service.DevPortalService;
 
-@Configuration
+//@Configuration
 public class DevPortalBindFactory {
 
 	private String userName;

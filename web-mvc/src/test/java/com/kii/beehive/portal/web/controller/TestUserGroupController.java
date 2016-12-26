@@ -23,18 +23,18 @@ import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
 import com.kii.beehive.portal.jdbc.dao.UserGroupDao;
 import com.kii.beehive.portal.jdbc.entity.GroupUserRelation;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
-import com.kii.beehive.portal.service.PortalSyncUserDao;
-import com.kii.beehive.portal.store.entity.PortalSyncUser;
 import com.kii.beehive.portal.web.WebTestTemplate;
 import com.kii.beehive.portal.web.constant.Constants;
+
+//import com.kii.beehive.portal.service.PortalSyncUserDao;
 
 public class TestUserGroupController extends WebTestTemplate {
 
 	@Autowired
 	private ObjectMapper mapper;
 
-	@Autowired
-	private PortalSyncUserDao userDao;
+//	@Autowired
+//	private PortalSyncUserDao userDao;
 
 	@Autowired
 	private UserGroupDao userGroupDao;
@@ -52,23 +52,23 @@ public class TestUserGroupController extends WebTestTemplate {
 
 	@Before
 	public void before() {
-		super.before();
-
-		userGroupNameListForTest.add("test_usergroupname");
-		userGroupNameListForTest.add("test_usergroupname_new");
-		userGroupNameListForTest.add("test_usergroupname_withoutuser");
-
-		userIDListForTest.add("test_userid_1");
-		userIDListForTest.add("test_userid_2");
-		userIDListForTest.add("test_userid_3");
-
-		for (String s : userIDListForTest) {
-			PortalSyncUser user = new PortalSyncUser();
-			user.setAliUserID(s);
-			user.setUserName("username_for_" + s);
-
-			userDao.createUser(user);
-		}
+//		super.before();
+//
+//		userGroupNameListForTest.add("test_usergroupname");
+//		userGroupNameListForTest.add("test_usergroupname_new");
+//		userGroupNameListForTest.add("test_usergroupname_withoutuser");
+//
+//		userIDListForTest.add("test_userid_1");
+//		userIDListForTest.add("test_userid_2");
+//		userIDListForTest.add("test_userid_3");
+//
+//		for (String s : userIDListForTest) {
+//			PortalSyncUser user = new PortalSyncUser();
+//			user.setAliUserID(s);
+//			user.setUserName("username_for_" + s);
+//
+//			userDao.createUser(user);
+//		}
 
 	}
 

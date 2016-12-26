@@ -8,8 +8,9 @@ import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.exception.InvalidTriggerFormatException;
 import com.kii.extension.ruleengine.store.trigger.GatewayTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.target.CallHttpApi;
-import com.kii.extension.ruleengine.store.trigger.target.CommandToThing;
+import com.kii.extension.ruleengine.store.trigger.ThingCollectSource;
+import com.kii.extension.ruleengine.store.trigger.task.CallHttpApi;
+import com.kii.extension.ruleengine.store.trigger.task.CommandToThing;
 import com.kii.extension.ruleengine.store.trigger.Condition;
 import com.kii.extension.ruleengine.store.trigger.schedule.CronPrefix;
 import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
@@ -88,7 +89,7 @@ public class TriggerValidate {
 
     private void validateSimpleTrigger(SimpleTriggerRecord simpleTriggerRecord){
         RuleEnginePredicate predicate = simpleTriggerRecord.getPredicate();
-        SimpleTriggerRecord.ThingID thingID = simpleTriggerRecord.getSource();
+        String  thingID = simpleTriggerRecord.getSource().getThingID();
 
         //when condition exist , thingID is not null. And at the same time schedule express can not be null;
         if(thingID == null && predicate.getCondition()!=null){
@@ -103,12 +104,12 @@ public class TriggerValidate {
 
     }
 
-    private void validateTagSelector(TagSelector triggerSource ){
+    private void validateTagSelector(ThingCollectSource triggerSource ){
 
         if(
             triggerSource == null  ||
             (
-                (triggerSource.getTagList() == null || triggerSource.getTagList().size() == 0)
+                (triggerSource.getSelector().getTagList() == null || triggerSource.getSelector().getTagList().size() == 0)
                 &&
                 (triggerSource.getThingList() == null || triggerSource.getThingList().size() == 0)
             )
@@ -118,7 +119,7 @@ public class TriggerValidate {
         }
 
         if (
-                triggerSource.getTagList() != null && triggerSource.getTagList().size()>0
+                triggerSource.getSelector().getTagList() != null && triggerSource.getSelector().getTagList().size()>0
                 &&
                 triggerSource.getThingList() != null && triggerSource.getThingList().size()>0
            ){
@@ -178,11 +179,11 @@ public class TriggerValidate {
 					throw new InvalidTriggerFormatException("TagSelector can not be null !");
 				}
 
-				if (tagSelector.getThingList() == null && tagSelector.getTagList() == null) {
+				if (ctt.getThingList() == null && tagSelector.getTagList() == null) {
 					throw new InvalidTriggerFormatException("Thing can not be null !");
 				}
 
-				if (tagSelector.getThingList() != null && tagSelector.getTagList() != null && tagSelector.getTagList().size() > 0 && tagSelector.getThingList().size() > 0) {
+				if (ctt.getThingList() != null && tagSelector.getTagList() != null && tagSelector.getTagList().size() > 0 && ctt.getThingList().size() > 0) {
 					throw new InvalidTriggerFormatException("ThingList and TagList can not be specified at the same time !");
 				}
 

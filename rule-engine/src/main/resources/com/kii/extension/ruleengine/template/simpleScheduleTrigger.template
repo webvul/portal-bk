@@ -17,7 +17,7 @@ when
     Trigger( $triggerID:triggerID =="${triggerID}" && enable == true  ,$enable:enable )
     $inst:TriggerValues(triggerID==$triggerID)
     SingleThing($thingID:thingID,triggerID==$triggerID)
-    $status:ThingStatusInRule( thingID == $thingID,${express}  )
+    $status:BusinessObjInRule( thingID == $thingID,${express}  )
     ScheduleFire(triggerID==$triggerID,enable==true)
 
 then

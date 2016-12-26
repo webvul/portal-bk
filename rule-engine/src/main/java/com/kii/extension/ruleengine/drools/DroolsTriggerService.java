@@ -14,7 +14,7 @@ import com.kii.extension.ruleengine.drools.entity.MultiplesValueMap;
 import com.kii.extension.ruleengine.drools.entity.ScheduleFire;
 import com.kii.extension.ruleengine.drools.entity.Summary;
 import com.kii.extension.ruleengine.drools.entity.ThingResult;
-import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
+import com.kii.extension.ruleengine.drools.entity.BusinessObjInRule;
 import com.kii.extension.ruleengine.drools.entity.Trigger;
 import com.kii.extension.ruleengine.drools.entity.TriggerData;
 import com.kii.extension.ruleengine.drools.entity.TriggerValues;
@@ -181,7 +181,7 @@ public class DroolsTriggerService {
 	}
 
 
-	public void addThingStatus(ThingStatusInRule newStatus){
+	public void addThingStatus(BusinessObjInRule newStatus){
 		
 		cloudService.moveHistory(newStatus.getThingID());
 		

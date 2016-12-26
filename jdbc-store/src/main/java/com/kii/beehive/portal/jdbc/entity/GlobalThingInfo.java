@@ -1,13 +1,20 @@
 package com.kii.beehive.portal.jdbc.entity;
 
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.jdbc.annotation.JdbcField;
 import com.kii.beehive.portal.jdbc.annotation.JdbcFieldType;
 
 public class GlobalThingInfo extends BusinessEntity {
-
+	
+	public  final static Pattern validVendorThingIDPattern = Pattern.compile("^\\d{4}\\w-[A-Z][\\d]{2}-\\w{1}-\\d{3}$");
+	
+	
+	public  final static Pattern locationPattern = Pattern.compile("^\\d{4}\\w-[A-Z][\\d]{2}$");
+	
+	
 	private String vendorThingID;
 
 	private String kiiAppID;

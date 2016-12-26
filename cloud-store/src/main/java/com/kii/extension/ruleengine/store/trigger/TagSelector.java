@@ -7,8 +7,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class TagSelector {
 
-	private List<Long> thingList=new ArrayList<>();
-
+	
+	public void setTagList(List<String> tagList) {
+		this.tagList = tagList;
+	}
+	
 	private List<String> tagList=new ArrayList<>();
 
 	private boolean isAndExpress=false;
@@ -28,9 +31,6 @@ public class TagSelector {
 		return tagList;
 	}
 
-	public void setTagCollect(List<String> tagCollect) {
-		this.tagList = tagCollect;
-	}
 
 	public boolean isAndExpress() {
 		return isAndExpress;
@@ -41,16 +41,15 @@ public class TagSelector {
 	}
 
 
-	public List<Long> getThingList() {
-		return thingList;
-	}
-
-	public void setThingList(List<Long> thingList) {
-		this.thingList = thingList;
-	}
 
 	@JsonIgnore
 	public void addTag(String tagName) {
 		this.tagList.add(tagName);
+	}
+	
+	
+	public boolean notEmpty() {
+		
+		return !tagList.isEmpty();
 	}
 }

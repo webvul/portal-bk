@@ -10,11 +10,10 @@ import com.kii.beehive.portal.store.entity.UserCustomData;
 import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.entity.BucketInfo;
 import com.kii.extension.sdk.exception.ObjectNotFoundException;
-import com.kii.extension.sdk.service.AbstractDataAccess;
 
 @BindAppByName(appName = "portal", appBindSource = "propAppBindTool")
 @Component
-public class UserCustomDataDao extends AbstractDataAccess<UserCustomData> {
+public class UserCustomDataDao extends BaseKiicloudDao<UserCustomData> {
 
 	@Override
 	protected Class getTypeCls() {

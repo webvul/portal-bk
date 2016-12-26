@@ -3,12 +3,12 @@ package com.kii.extension.ruleengine.store.trigger.groups;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.kii.extension.ruleengine.store.trigger.BeehiveTriggerType;
-import com.kii.extension.ruleengine.store.trigger.TagSelector;
+import com.kii.extension.ruleengine.store.trigger.ThingCollectSource;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 
 public class GroupTriggerRecord extends TriggerRecord {
 
-	private TagSelector source;
+	private ThingCollectSource source;
 
 	private TriggerGroupPolicy  policy;
 
@@ -34,7 +34,7 @@ public class GroupTriggerRecord extends TriggerRecord {
 		this.policy.setCriticalNumber(number);
 	}
 
-	public TagSelector getSource() {
+	public ThingCollectSource getSource() {
 		return source;
 	}
 
@@ -46,7 +46,7 @@ public class GroupTriggerRecord extends TriggerRecord {
 //	}
 
 
-	public void setSource(TagSelector source) {
+	public void setSource(ThingCollectSource source) {
 		this.source = source;
 	}
 

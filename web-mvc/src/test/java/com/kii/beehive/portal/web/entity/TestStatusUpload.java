@@ -17,7 +17,7 @@ public class TestStatusUpload {
 	@Test
 	public void testThingState() throws IOException {
 
-		String json="{\"state\":{\"lightness\":99,\"power\":true},\"target\":\"thing:th.f83120e36100-a269-5e11-e5bb-0bc2e136\"}";
+		String json="{\"state\":{\"lightness\":99,\"power\":true},\"task\":\"thing:th.f83120e36100-a269-5e11-e5bb-0bc2e136\"}";
 
 
 

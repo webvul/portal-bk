@@ -18,11 +18,12 @@ import com.kii.extension.ruleengine.store.trigger.Condition;
 import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.ThingSource;
 import com.kii.extension.ruleengine.store.trigger.WhenType;
 import com.kii.extension.ruleengine.store.trigger.groups.GroupTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.schedule.IntervalPrefix;
 import com.kii.extension.ruleengine.store.trigger.schedule.TimerUnitType;
-import com.kii.extension.ruleengine.store.trigger.target.CommandToThing;
+import com.kii.extension.ruleengine.store.trigger.task.CommandToThing;
 import com.kii.extension.sdk.entity.thingif.Action;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
@@ -103,9 +104,9 @@ public class TestSimple {
 		String kiiThingID="0af7a7e7-th.f83120e36100-a269-5e11-e5bb-0bc2e136";
 
 		SimpleTriggerRecord record=new SimpleTriggerRecord();
-
-		SimpleTriggerRecord.ThingID thingID=new SimpleTriggerRecord.ThingID();
-		thingID.setThingID(1052);
+		
+		ThingSource thingID=new ThingSource();
+		thingID.setThingID(1052l);
 
 		record.setSource(thingID);
 
@@ -170,9 +171,9 @@ public class TestSimple {
 		String kiiThingID="0af7a7e7-th.f83120e36100-a269-5e11-e5bb-0bc2e136";
 
 		SimpleTriggerRecord record=new SimpleTriggerRecord();
-
-		SimpleTriggerRecord.ThingID thingID=new SimpleTriggerRecord.ThingID();
-		thingID.setThingID(1052);
+		
+		ThingSource thingID=new ThingSource();
+		thingID.setThingID(1052l);
 
 		record.setSource(thingID);
 

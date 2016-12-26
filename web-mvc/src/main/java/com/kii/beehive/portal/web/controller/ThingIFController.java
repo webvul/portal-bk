@@ -188,7 +188,7 @@ public class ThingIFController extends AbstractThingTagController {
 
 		List<ThingCommandDetailRestBean> responseList = new ArrayList<>();
 
-		// if no search body, return empty target
+		// if no search body, return empty task
 		if (search == null || search.isEmpty()) {
 			return responseList;
 		}
@@ -233,7 +233,7 @@ public class ThingIFController extends AbstractThingTagController {
 
 		List<ThingCommandDetailRestBean> responseList = new ArrayList<>();
 
-		// if no search list, return empty target
+		// if no search list, return empty task
 		if (!CollectUtils.hasElement(searchList)) {
 			return responseList;
 		}
@@ -374,7 +374,7 @@ public class ThingIFController extends AbstractThingTagController {
 		result.put("globalThingID", thingInfo.getId());
 		result.put("vendorThingID", thingInfo.getVendorThingID());
 
-		// set target states
+		// set task states
 		Map<String, Object> targetStates = new HashMap<>();
 		Map<String, Object> states = thingInfo.getStatus();
 		if(states != null) {

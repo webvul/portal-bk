@@ -76,9 +76,9 @@
 //		SimpleTriggerRecord.ThingID tId = new SimpleTriggerRecord.ThingID();
 //		tId.setThingID(sourceThingId);
 //		tr.setSource(tId);
-//		Map<String, Object> target = crossTriggerController.createTrigger(tr);
+//		Map<String, Object> task = crossTriggerController.createTrigger(tr);
 //
-//		String triggerID = target.get("triggerID").toString();
+//		String triggerID = task.get("triggerID").toString();
 //
 //		System.out.println(triggerID);
 //

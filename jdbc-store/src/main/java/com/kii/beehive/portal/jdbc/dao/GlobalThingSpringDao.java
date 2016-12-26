@@ -19,8 +19,10 @@ import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.StrTemplate;
 import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
+import com.kii.beehive.portal.jdbc.entity.ThingGeo;
 import com.kii.beehive.portal.jdbc.entity.ThingLocationRelation;
 import com.kii.beehive.portal.jdbc.entity.ThingUserRelation;
+import com.kii.beehive.portal.jdbc.helper.BindClsRowMapper;
 
 @Repository
 public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
@@ -62,6 +64,7 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 		return KEY;
 	}
 
+	
 	public Optional<List<GlobalThingInfo>> getThingsByVendorIDArray(Collection<String> vendorIDs) {
 		if (null == vendorIDs || vendorIDs.isEmpty()) {
 			return Optional.ofNullable(null);
@@ -295,6 +298,76 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 		return list;
 
 	}
+	
+	private static final String getAllThingInfo=StrTemplate.gener(
+			"select  (select group_concat(v.${0}) from  ${1} v where v.${2} = th.${3} group by v.${2}) as users,"+
+					" geo.* ,"+
+	"(select group_concat(l.${4})  from ${5} l where l.${6} = th.${7} group by l.${6} ) as locs ,"+
+	" th.* "+
+	"from ${8} th "+
+	"left join ${9} geo on geo.${10} = th.${7} "+
+	" where th.${11} = 0",
+			GlobalThingInfo.VIEW_USER_ID,GlobalThingInfo.VIEW_NAME,GlobalThingInfo.VIEW_THING_ID,GlobalThingInfo.ID_GLOBAL_THING,
+			ThingLocationRelation.LOCATION,ThingLocationRelDao.TABLE_NAME,ThingLocationRelation.THING_ID,GlobalThingInfo.ID_GLOBAL_THING,
+			GlobalThingSpringDao.TABLE_NAME,
+			ThingGeoDao.TABLE_NAME,ThingGeo.GLOBAL_THING_ID,
+			GlobalThingInfo.IS_DELETED);
+	
+	
+	public List<FullThingInfo> getAllThingAndRelationData() {
+		
+		
+		List<FullThingInfo> list = super.jdbcTemplate.query(getAllThingInfo, (rs, rowNum) -> {
+			FullThingInfo info=new FullThingInfo();
+			
+			info.userIDs=rs.getString("users");
+			info.locs=rs.getString("locs");
+			
+			RowMapper<GlobalThingInfo> thMapper=new BindClsRowMapper<>(GlobalThingInfo.class,"th");
+			
+			GlobalThingInfo thing=thMapper.mapRow(rs,rowNum);
+			
+			RowMapper<ThingGeo>  geoMapper=new BindClsRowMapper<>(ThingGeo.class,"geo");
+			
+			ThingGeo geo=geoMapper.mapRow(rs,rowNum);
+			
+			info.geo=geo;
+			info.thing=thing;
+			
+			return info;
+		});
+		
+		return list;
+		
+	}
+	
+	public static class FullThingInfo{
+		
+		private GlobalThingInfo thing;
+		
+		private ThingGeo  geo;
+		
+		private String userIDs;
+		
+		private String locs;
+		
+		public GlobalThingInfo getThing() {
+			return thing;
+		}
+		
+		public ThingGeo getGeo() {
+			return geo;
+		}
+		
+		public String getUserIDs() {
+			return userIDs;
+		}
+		
+		public String getLocs() {
+			return locs;
+		}
+	}
+	
 //
 //	public Optional<List<GlobalThingInfo>> findByIDsAndType(Set<Long> thingIds, String thingType) {
 //		if (null == thingIds || thingIds.isEmpty()) {

@@ -59,23 +59,23 @@
 //		selector2.addTag("Location-2F-room1");
 //		selector2.setAndExpress(false);
 //
-//		SummarySource target=new SummarySource();
-//		target.setSource(selector2);
+//		SummarySource task=new SummarySource();
+//		task.setSource(selector2);
 //		SummaryExpress exp2=new SummaryExpress();
 //		exp2.setSummaryAlias("bar_sum");
 //		exp2.setFunction(SummaryFunctionType.sum);
 //		exp2.setStateName("bar");
-//		target.addExpress(exp2);
+//		task.addExpress(exp2);
 //
-//		record.addSummarySource("target",target);
-//		thingMap.put("target",tagService.getKiiThingIDs(selector2));
+//		record.addSummarySource("task",task);
+//		thingMap.put("task",tagService.getKiiThingIDs(selector2));
 //
 //
 //		record.addTarget(getTarget() );
 //
 //
 //		RuleEnginePredicate perdicate=new RuleEnginePredicate();
-//		Condition condition= TriggerConditionBuilder.andCondition().greatExp("source.foo_sum","$s{target.bar_sum}").getConditionInstance();
+//		Condition condition= TriggerConditionBuilder.andCondition().greatExp("source.foo_sum","$s{task.bar_sum}").getConditionInstance();
 //		perdicate.setCondition(condition);
 //
 //		perdicate.setTriggersWhen(WhenType.CONDITION_TRUE);
@@ -95,7 +95,7 @@
 //		Set<String> thingIDs=new HashSet<>();
 //
 //		thingIDs.addAll(thingMap.get("source"));
-//		thingIDs.addAll(thingMap.get("target"));
+//		thingIDs.addAll(thingMap.get("task"));
 //
 //		thingIDs.forEach(id->sendGoodThingStatus(id));
 //
@@ -135,21 +135,21 @@
 //		selector2.addTag("Location-2F-room1");
 //		selector2.setAndExpress(false);
 //
-//		SummarySource target=new SummarySource();
-//		target.setSource(selector2);
+//		SummarySource task=new SummarySource();
+//		task.setSource(selector2);
 //		SummaryExpress exp2 = getTargetExpress();
 //
-//		target.addExpress(exp2);
+//		task.addExpress(exp2);
 //
-//		record.addSummarySource("target",target);
-//		thingMap.put("target",tagService.getKiiThingIDs(selector2));
+//		record.addSummarySource("task",task);
+//		thingMap.put("task",tagService.getKiiThingIDs(selector2));
 //
 //
 //		record.addTarget(getTarget() );
 //
 //
 //		RuleEnginePredicate perdicate=new RuleEnginePredicate();
-//		Condition condition= TriggerConditionBuilder.andCondition().greatExp("source.foo_sum","$s{target.bar_sum}").getConditionInstance();
+//		Condition condition= TriggerConditionBuilder.andCondition().greatExp("source.foo_sum","$s{task.bar_sum}").getConditionInstance();
 //		perdicate.setCondition(condition);
 //
 //		perdicate.setTriggersWhen(WhenType.CONDITION_TRUE);
@@ -168,7 +168,7 @@
 //		Set<String> thingIDs=new HashSet<>();
 //
 //		thingIDs.addAll(thingMap.get("source"));
-//		thingIDs.addAll(thingMap.get("target"));
+//		thingIDs.addAll(thingMap.get("task"));
 //
 //		thingIDs.forEach(id->sendGoodThingStatus(id));
 //

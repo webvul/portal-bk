@@ -9,7 +9,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.kii.extension.ruleengine.BeehiveTriggerService;
 import com.kii.extension.ruleengine.drools.CommandExec;
-import com.kii.extension.ruleengine.store.trigger.target.CommandToThing;
+import com.kii.extension.ruleengine.store.trigger.BusinessDataObject;
+import com.kii.extension.ruleengine.store.trigger.BusinessObjType;
+import com.kii.extension.ruleengine.store.trigger.task.CommandToThing;
 import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
 import com.kii.extension.sdk.entity.thingif.Action;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
@@ -62,8 +64,12 @@ public class TestInit {
 	}
 
 	private void sendThingStatus(String id, ThingStatus status){
-
-		engine.updateThingStatus(id,status.getFields(),new Date());
+		
+		BusinessDataObject obj=new BusinessDataObject(id,null, BusinessObjType.Thing);
+		obj.setData(status.getFields());
+		obj.setCreated(new Date());
+		
+		engine.updateBusinessData(obj);
 
 	}
 

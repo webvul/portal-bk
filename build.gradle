@@ -19,7 +19,8 @@ allprojects {
         mavenLocal()
         mavenCentral()
         jcenter()
-        maven {
+        
+		maven {
             url('https://maven.kii.com/artifactory/libs-snapshot-local')
             credentials {
                 username = maven_username

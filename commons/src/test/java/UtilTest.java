@@ -34,6 +34,11 @@ public class UtilTest {
 
 
 
+	@Test
+	public void testFormat(){
+		
+		System.out.println(String.format("%f10,%f10",12.344566,151.781233));
+	}
 
 	private ObjectMapper mapper=new ObjectMapper();
 	

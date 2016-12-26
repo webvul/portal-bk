@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.kii.beehive.business.entity.ESThingInfo;
 import com.kii.beehive.business.service.IndustryTemplateService;
 import com.kii.beehive.industrytemplate.PointDetail;
 import com.kii.beehive.industrytemplate.ThingSchema;
@@ -25,6 +26,7 @@ import com.kii.beehive.portal.jdbc.dao.PagerTag;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.dao.ThingLocationRelDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
+import com.kii.extension.ruleengine.store.trigger.BusinessObjType;
 import com.kii.extension.ruleengine.store.trigger.TagSelector;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
@@ -124,10 +126,10 @@ public class ThingTagManager {
 	public Set<GlobalThingInfo> getThingInfos(TagSelector source) {
 		Set<GlobalThingInfo> things = new HashSet<>();
 
-		if (!source.getThingList().isEmpty()) {
-			things.addAll(globalThingDao.findByIDs(source.getThingList()));
-			return things;
-		}
+//		if (!source.getThingList().isEmpty()) {
+//			things.addAll(globalThingDao.findByIDs(source.getThingList()));
+//			return things;
+//		}
 
 		if (!source.getTagList().isEmpty()) {
 			if (StringUtils.isEmpty(source.getType())) {
@@ -155,12 +157,17 @@ public class ThingTagManager {
 	}
 
 
-	public Set<String> getKiiThingIDs(TagSelector source) {
+	public Set<String> getBusinessObjs(TagSelector source) {
 
 		Set<GlobalThingInfo> thingList = getThingInfos(source);
 
-		return thingList.stream().map(thing -> thing.getFullKiiThingID()).collect(Collectors.toSet());
+		return thingList.stream().map(this::getInstance)
+				.collect(Collectors.toSet());
+	}
 
+	
+	private String getInstance(GlobalThingInfo thing){
+		return BusinessObjType.Thing.getFullID(String.valueOf(thing.getId()),null);
 	}
 
 	public void iteratorAllThingsStatus(Consumer<GlobalThingInfo> consumer) {
@@ -181,4 +188,10 @@ public class ThingTagManager {
 		list.forEach(consumer);
 
 	}
+	
+	public List<ESThingInfo> getAllThingFullInfo(){
+		
+		return globalThingDao.getAllThingAndRelationData().stream().map((m)-> new ESThingInfo(m.getThing(),m.getGeo(),m.getUserIDs(),m.getLocs())).collect(Collectors.toList());
+	}
+	
 }

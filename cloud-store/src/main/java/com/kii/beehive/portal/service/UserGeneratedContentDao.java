@@ -10,11 +10,10 @@ import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.entity.BucketInfo;
 import com.kii.extension.sdk.query.ConditionBuilder;
 import com.kii.extension.sdk.query.QueryParam;
-import com.kii.extension.sdk.service.AbstractDataAccess;
 
 @BindAppByName(appName = "portal", appBindSource = "propAppBindTool")
 @Component
-public class UserGeneratedContentDao extends AbstractDataAccess<UserGeneratedContent> {
+public class UserGeneratedContentDao extends BaseKiicloudDao<UserGeneratedContent> {
 
 
 	@Override

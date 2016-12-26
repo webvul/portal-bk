@@ -22,11 +22,10 @@ import org.springframework.test.web.servlet.ResultActions;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.beehive.portal.jdbc.dao.GroupUserRelationDao;
-import com.kii.beehive.portal.service.PortalSyncUserDao;
-import com.kii.beehive.portal.store.entity.PortalSyncUser;
 import com.kii.beehive.portal.web.WebTestTemplate;
 import com.kii.beehive.portal.web.constant.Constants;
-import com.kii.extension.sdk.entity.KiiUser;
+
+//import com.kii.beehive.portal.service.PortalSyncUserDao;
 
 /**
  * the test cases in this class is to test the scenarios of the token stored in auth info cache,
@@ -44,8 +43,8 @@ public class TestAuthController extends WebTestTemplate {
     @Autowired
     private UserServiceForTest userServiceForTest;
 
-    @Autowired
-    private PortalSyncUserDao beehiveUserDao;
+//    @Autowired
+//    private PortalSyncUserDao beehiveUserDao;
 
     @Autowired
     private GroupUserRelationDao groupUserRelationDao;
@@ -146,35 +145,35 @@ public class TestAuthController extends WebTestTemplate {
         super.before();;
 
         this.clean();
-
-        this.createUser(userIDForTest, passwordForTest);
-        this.createUser(userIDForTest + 1, passwordForTest);
+//
+//        this.createUser(userIDForTest, passwordForTest);
+//        this.createUser(userIDForTest + 1, passwordForTest);
 
     }
-
-    private void createUser(String userID, String password) {
-
-        KiiUser kiiUser = new KiiUser();
-        kiiUser.setLoginName(userID);
-        kiiUser.setPassword(password);
-
-        try {
-            String kiiUserID = userServiceForTest.createUser(kiiUser);
-
-			PortalSyncUser user = new PortalSyncUser();
-            user.setAliUserID(userID);
-            user.setUserName("someUserNameForTest");
-            user.setKiiUserID(kiiUserID);
-
-            user.setCompany("someCompanyForTest");
-            user.setPhone("somePhoneNumberForTest");
-            user.setMail("someMailForTest");
-
-            beehiveUserDao.createUser(user);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+//
+//    private void createUser(String userID, String password) {
+//
+//        KiiUser kiiUser = new KiiUser();
+//        kiiUser.setLoginName(userID);
+//        kiiUser.setPassword(password);
+//
+//        try {
+//            String kiiUserID = userServiceForTest.createUser(kiiUser);
+//
+//			PortalSyncUser user = new PortalSyncUser();
+//            user.setAliUserID(userID);
+//            user.setUserName("someUserNameForTest");
+//            user.setKiiUserID(kiiUserID);
+//
+//            user.setCompany("someCompanyForTest");
+//            user.setPhone("somePhoneNumberForTest");
+//            user.setMail("someMailForTest");
+//
+//            beehiveUserDao.createUser(user);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     @After
     public void clean() {
@@ -191,12 +190,12 @@ public class TestAuthController extends WebTestTemplate {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        try {
-            beehiveUserDao.deleteUser(userID);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//
+//        try {
+//            beehiveUserDao.deleteUser(userID);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
     }
 
     private String login(String userID, String password) throws Exception {

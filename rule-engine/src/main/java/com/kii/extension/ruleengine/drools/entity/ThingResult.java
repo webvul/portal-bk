@@ -13,7 +13,7 @@ public class ThingResult implements  RuntimeEntry,WithTrigger{
 
 	private final Map<String,Object> value;
 
-	public ThingResult(String triggerID,String name,ThingStatusInRule status){
+	public ThingResult(String triggerID,String name,BusinessObjInRule status){
 		this.triggerID=triggerID;
 		this.name=name;
 		this.value=status.getValues();

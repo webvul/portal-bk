@@ -240,6 +240,8 @@ public void testTemplate(){
 		thingDao.findAllThingTypesWithThingCount();
 		
 		thingDao.getThingsByVendorThings(tags);
+		
+		thingDao.getAllThingAndRelationData();
 
 
 	}

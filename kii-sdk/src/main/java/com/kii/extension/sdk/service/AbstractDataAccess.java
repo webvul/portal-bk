@@ -55,23 +55,41 @@ public abstract class AbstractDataAccess<T> {
 		}
 	}
 
+	
+	protected  T fillInsertEntity(T entity){
+	
+		return  entity;
+	}
+	
+	
+	protected  T fillUpdateEntity(T entity){
+	
+		return entity;
+	}
+	
+	protected Map<String,Object> fillUpdateMap(Map<String,Object> entity){
+		return entity;
+	}
+	
 	public  T  getObjectByID(String id){
 		return service.getObjectByID(id, bucketInfo, typeCls);
 	}
 
 	public UpdateResponse addEntity(T  entity,String id){
-		return  service.fullUpdateObject(id, entity, bucketInfo);
+		
+		
+		return  service.fullUpdateObject(id, fillInsertEntity(entity), bucketInfo);
 	}
 
 
 	public CreateResponse addEntity(T  entity){
-		return  service.createObject(entity, bucketInfo);
+		return  service.createObject(fillInsertEntity(entity), bucketInfo);
 	}
 
 	public <E extends KiiEntity> String addKiiEntity(E  entity){
 
 		if(entity.getId()==null){
-			CreateResponse resp=service.createObject(entity, bucketInfo);
+			CreateResponse resp=service.createObject(fillInsertEntity((T) entity), bucketInfo);
 
 			entity.setId(resp.getObjectID());
 
@@ -79,7 +97,7 @@ public abstract class AbstractDataAccess<T> {
 
 		}else {
 
-			UpdateResponse resp= service.fullUpdateObject(entity.getId(), entity, bucketInfo);
+			UpdateResponse resp= service.fullUpdateObject(entity.getId(), fillUpdateEntity((T) entity), bucketInfo);
 			return entity.getId();
 		}
 	}
@@ -96,53 +114,53 @@ public abstract class AbstractDataAccess<T> {
 
 	public UpdateResponse updateEntityAll(T entity,String id){
 
-		return service.fullUpdateObject(id, entity, bucketInfo);
+		return service.fullUpdateObject(id, fillUpdateEntity(entity), bucketInfo);
 
 	}
 
 
 	public UpdateResponse updateEntityAllWithVersion(T entity,String id,int version){
 
-		return service.fullUpdateObjectWithVersion(id, entity, bucketInfo, String.valueOf(version));
+		return service.fullUpdateObjectWithVersion(id, fillUpdateEntity(entity), bucketInfo, String.valueOf(version));
 
 	}
 
 	public <E extends KiiEntity> UpdateResponse updateEntityAll(E entity){
 
-		return service.fullUpdateObject(entity.getId(), entity, bucketInfo);
+		return service.fullUpdateObject(entity.getId(), fillUpdateEntity((T) entity), bucketInfo);
 
 	}
 
 
 	public <E extends KiiEntity> UpdateResponse updateEntityAllWithVersion(E entity,int version){
 
-		return service.fullUpdateObjectWithVersion(entity.getId(), entity, bucketInfo, String.valueOf(version));
+		return service.fullUpdateObjectWithVersion(entity.getId(), fillUpdateEntity((T)entity), bucketInfo, String.valueOf(version));
 
 	}
 
 	public String updateEntity(Map<String,Object> entity,String id){
 
-		return service.updateObject(id, entity, bucketInfo);
+		return service.updateObject(id, fillUpdateMap(entity), bucketInfo);
 
 	}
 
 
 	public String updateEntityWithVersion(Map<String,Object> entity, String id, int version){
 
-		return service.updateObjectWithVersion(id, entity, bucketInfo, String.valueOf(version));
+		return service.updateObjectWithVersion(id, fillUpdateMap(entity), bucketInfo, String.valueOf(version));
 
 	}
 
-	public <T> String updateEntity(T entity,String id){
+	public  String updateEntity(T entity,String id){
 
-		return service.updateObjectWithEntity(id, entity, bucketInfo);
+		return service.updateObjectWithEntity(id, fillUpdateEntity(entity), bucketInfo);
 
 	}
 
 
-	public <T> String updateEntityWithVersion(T  entity,String id,int version){
+	public  String updateEntityWithVersion(T  entity,String id,int version){
 
-		return service.updateObjectWithVersionWithEntity(id, entity, bucketInfo, String.valueOf(version));
+		return service.updateObjectWithVersionWithEntity(id, fillUpdateEntity(entity), bucketInfo, String.valueOf(version));
 
 	}
 

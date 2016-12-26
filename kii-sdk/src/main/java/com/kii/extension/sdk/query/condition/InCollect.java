@@ -1,7 +1,7 @@
 package com.kii.extension.sdk.query.condition;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 import com.kii.extension.sdk.query.ConditionType;
 
@@ -16,14 +16,14 @@ public class InCollect extends SimpleCondition {
 		
 	}
 
-	private List<?>  values=new ArrayList<Object>();
+	private Collection<?> values=new ArrayList<Object>();
 
 	
-	public List<?> getValues() {
+	public Collection<?> getValues() {
 		return values;
 	}
 
-	public void setValues(List<?> values) {
+	public void setValues(Collection<?> values) {
 		this.values = values;
 	}
 	

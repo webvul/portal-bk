@@ -11,11 +11,13 @@ public class GroupSummarySource implements SourceElement{
 
 	private SummaryFunctionType function;
 
-	private TagSelector source;
+	private ThingCollectSource source;
 
 
 	@JsonUnwrapped
 	private Express express=new Express();
+	
+	
 
 
 	public Express getExpress() {
@@ -25,11 +27,6 @@ public class GroupSummarySource implements SourceElement{
 	public void setExpress(Express express) {
 		this.express = express;
 	}
-
-//	@JsonIgnore
-//	public Condition getCondition() {
-//		return express.getCondition();
-//	}
 
 	public void setTheCondition(Condition condition) {
 		this.express.setCondition(condition);
@@ -51,11 +48,11 @@ public class GroupSummarySource implements SourceElement{
 		this.function = function;
 	}
 
-	public TagSelector getSource() {
+	public ThingCollectSource getSource() {
 		return source;
 	}
 
-	public void setSource(TagSelector source) {
+	public void setSource(ThingCollectSource source) {
 		this.source = source;
 	}
 

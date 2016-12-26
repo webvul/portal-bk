@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.kii.extension.ruleengine.drools.entity.ExternalValues;
-import com.kii.extension.ruleengine.drools.entity.ThingStatusInRule;
+import com.kii.extension.ruleengine.drools.entity.BusinessObjInRule;
 
 public class TestExtend extends InitTest{
 
@@ -21,7 +21,7 @@ public class TestExtend extends InitTest{
 	public void testParam() throws IOException {
 
 
-		ThingStatusInRule status=new ThingStatusInRule("aaa");
+		BusinessObjInRule status=new BusinessObjInRule("aaa");
 		
 		Map<String,Object> val=new HashMap<>();
 		

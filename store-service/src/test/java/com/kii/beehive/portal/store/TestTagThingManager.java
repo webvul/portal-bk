@@ -587,13 +587,13 @@
 //
 //	@Test
 //	public void testGetThingsByTagIds() throws Exception {
-//		List<GlobalThingInfo> target = tagThingManager.getThingsByTagIds(null);
-//		assertNotNull("Should not be null", target);
-//		assertTrue("Should be empty list", target.isEmpty());
+//		List<GlobalThingInfo> task = tagThingManager.getThingsByTagIds(null);
+//		assertNotNull("Should not be null", task);
+//		assertTrue("Should be empty list", task.isEmpty());
 //
-//		target = tagThingManager.getThingsByTagIds(Collections.emptySet());
-//		assertNotNull("Should not be null", target);
-//		assertTrue("Should be empty list", target.isEmpty());
+//		task = tagThingManager.getThingsByTagIds(Collections.emptySet());
+//		assertNotNull("Should not be null", task);
+//		assertTrue("Should be empty list", task.isEmpty());
 //
 //		doReturn(Optional.ofNullable(Arrays.asList(200L))).when(tagThingRelationDao).findThingIds(
 //				anyCollectionOf(Long.class));
@@ -701,10 +701,10 @@
 //			});
 //			return groups;
 //		}).when(userGroupDao).findByIDs(anyCollectionOf(Long.class));
-//		List<Long> target = tagThingManager.getUserGroupsOfAccessibleThing("someone", 100L).stream().
+//		List<Long> task = tagThingManager.getUserGroupsOfAccessibleThing("someone", 100L).stream().
 //				map(UserGroup::getId).collect(Collectors.toList());
-//		assertEquals(2, target.size());
-//		assertTrue(target.contains(200L) && target.contains(300L));
+//		assertEquals(2, task.size());
+//		assertTrue(task.contains(200L) && task.contains(300L));
 //	}
 //
 //	@Test
