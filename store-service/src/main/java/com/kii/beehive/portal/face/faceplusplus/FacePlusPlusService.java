@@ -213,7 +213,7 @@ public class FacePlusPlusService {
     public void reConnectWebSocket(){
         if( ! socket.connected() ) {
             log.info("face++ reConnectWebSocket...");
-            socket.connected();
+            socket.connect();
         }
     }
 
