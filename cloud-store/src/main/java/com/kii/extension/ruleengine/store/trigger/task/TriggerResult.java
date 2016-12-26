@@ -1,4 +1,4 @@
-package com.kii.extension.ruleengine.store.trigger.target;
+package com.kii.extension.ruleengine.store.trigger.task;
 
 
 import java.util.Date;
@@ -15,7 +15,8 @@ import com.kii.extension.sdk.entity.KiiEntity;
 @JsonSubTypes({
 		@JsonSubTypes.Type(value = HttpCallResponse.class,name="httpResponse"),
 		@JsonSubTypes.Type(value= CommandResponse.class,name="command"),
-		@JsonSubTypes.Type(value=BusinessFunResponse.class,name="businessFun")
+		@JsonSubTypes.Type(value=BusinessFunResponse.class,name="businessFun"),
+		@JsonSubTypes.Type(value=SettingParameterResponse.class,name="settingParameter")
 })
 public abstract class  TriggerResult extends KiiEntity {
 

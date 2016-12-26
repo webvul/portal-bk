@@ -4,11 +4,11 @@ package com.kii.extension.ruleengine.store.trigger;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
-import com.kii.extension.ruleengine.store.trigger.target.CallBusinessFunction;
-import com.kii.extension.ruleengine.store.trigger.target.CallHttpApi;
-import com.kii.extension.ruleengine.store.trigger.target.CommandToThing;
-import com.kii.extension.ruleengine.store.trigger.target.CommandToThingInGW;
-import com.kii.extension.ruleengine.store.trigger.target.SettingParameter;
+import com.kii.extension.ruleengine.store.trigger.task.CallBusinessFunction;
+import com.kii.extension.ruleengine.store.trigger.task.CallHttpApi;
+import com.kii.extension.ruleengine.store.trigger.task.CommandToThing;
+import com.kii.extension.ruleengine.store.trigger.task.CommandToThingInGW;
+import com.kii.extension.ruleengine.store.trigger.task.SettingTriggerGroupParameter;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME,
 		include = JsonTypeInfo.As.EXISTING_PROPERTY,
@@ -18,7 +18,7 @@ import com.kii.extension.ruleengine.store.trigger.target.SettingParameter;
 		@JsonSubTypes.Type(value = CommandToThing.class,name="ThingCommand"),
 		@JsonSubTypes.Type(value = CallHttpApi.class,name="HttpApiCall"),
 		@JsonSubTypes.Type(value=CommandToThingInGW.class,name="ThingCommandInGW"),
-		@JsonSubTypes.Type(value=SettingParameter.class,name="SettingParameter"),
+		@JsonSubTypes.Type(value=SettingTriggerGroupParameter.class,name="SettingParameter"),
 		@JsonSubTypes.Type(value=CallBusinessFunction.class,name="CallBusinessFunction")
 })
 public abstract class ExecuteTarget {

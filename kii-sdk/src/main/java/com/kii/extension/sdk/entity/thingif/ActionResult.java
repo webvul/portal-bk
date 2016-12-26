@@ -5,7 +5,7 @@ public class ActionResult {
 
 
 	/*
-	   	{"turnPower":{"target":true,"errorMessage":"","transaction":{"voltage":"125"}},
+	   	{"turnPower":{"task":true,"errorMessage":"","transaction":{"voltage":"125"}},
 
 	 */
 	

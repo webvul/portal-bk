@@ -1,4 +1,4 @@
-package com.kii.extension.ruleengine.store.trigger.target;
+package com.kii.extension.ruleengine.store.trigger.task;
 
 import java.util.ArrayList;
 import java.util.Arrays;

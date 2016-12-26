@@ -8,8 +8,8 @@ import org.springframework.beans.BeanUtils;
 
 import com.kii.extension.ruleengine.store.trigger.groups.SummarySource;
 import com.kii.extension.ruleengine.store.trigger.groups.SummaryTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.target.CommandToThing;
-import com.kii.extension.ruleengine.store.trigger.target.CommandToThingInGW;
+import com.kii.extension.ruleengine.store.trigger.task.CommandToThing;
+import com.kii.extension.ruleengine.store.trigger.task.CommandToThingInGW;
 
 public class GatewayTriggerRecord extends TriggerRecord {
 

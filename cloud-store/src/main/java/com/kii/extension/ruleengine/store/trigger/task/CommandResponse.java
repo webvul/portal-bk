@@ -1,4 +1,4 @@
-package com.kii.extension.ruleengine.store.trigger.target;
+package com.kii.extension.ruleengine.store.trigger.task;
 
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
 

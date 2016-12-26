@@ -7,9 +7,9 @@ import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
-import com.kii.extension.ruleengine.store.trigger.target.CommandResponse;
-import com.kii.extension.ruleengine.store.trigger.target.HttpCallResponse;
-import com.kii.extension.ruleengine.store.trigger.target.TriggerResult;
+import com.kii.extension.ruleengine.store.trigger.task.CommandResponse;
+import com.kii.extension.ruleengine.store.trigger.task.HttpCallResponse;
+import com.kii.extension.ruleengine.store.trigger.task.TriggerResult;
 import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.entity.BucketInfo;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
@@ -47,7 +47,7 @@ public class ExecuteResultDao extends AbstractDataAccess<TriggerResult> {
 	public CommandResponse getCommandResultByID(String command){
 
 
-		QueryParam param= ConditionBuilder.newCondition().equal("target",command).getFinalQueryParam();
+		QueryParam param= ConditionBuilder.newCondition().equal("task",command).getFinalQueryParam();
 
 		List<TriggerResult>  list=super.fullQuery(param);
 

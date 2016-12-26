@@ -10,7 +10,7 @@
 ////	{
 ////		"schema" : "some schema",
 ////			"schemaVersion" : 1,
-////			"target" : "thing:th.aba700e36100-6698-6e11-ff53-011a1535",
+////			"task" : "thing:th.aba700e36100-6698-6e11-ff53-011a1535",
 ////			"commandState" : "SENDING",
 ////			"issuer" : "user:aba700e36100-4558-5e11-ad5b-07aea12c",
 ////			"actions" : [ {

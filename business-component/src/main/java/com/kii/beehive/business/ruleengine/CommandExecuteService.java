@@ -23,9 +23,10 @@ import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.schedule.CronPrefix;
-import com.kii.extension.ruleengine.store.trigger.target.CallBusinessFunction;
-import com.kii.extension.ruleengine.store.trigger.target.CallHttpApi;
-import com.kii.extension.ruleengine.store.trigger.target.CommandToThing;
+import com.kii.extension.ruleengine.store.trigger.task.CallBusinessFunction;
+import com.kii.extension.ruleengine.store.trigger.task.CallHttpApi;
+import com.kii.extension.ruleengine.store.trigger.task.CommandToThing;
+import com.kii.extension.ruleengine.store.trigger.task.SettingTriggerGroupParameter;
 import com.kii.extension.tools.CronGeneral;
 
 
@@ -48,6 +49,10 @@ public class CommandExecuteService implements EventCallback {
 	
 	@Autowired
 	private BusinessFunctionCallService funService;
+	
+	@Autowired
+	private SetParameterExecuteService settingParamService;
+	
 	
 	@Lazy
 	@Autowired
@@ -111,6 +116,10 @@ public class CommandExecuteService implements EventCallback {
 						funService.doBusinessFunCall(fun,record.getTriggerID(),params);
 						break;
 						
+					case "SettingParameter":
+						SettingTriggerGroupParameter settingParam=(SettingTriggerGroupParameter)target;
+						
+						settingParamService.settingParam(settingParam,params);
 						
 				}
 			};

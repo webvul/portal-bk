@@ -43,7 +43,7 @@ import com.kii.extension.ruleengine.store.trigger.ThingCollectSource;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.WhenType;
 import com.kii.extension.ruleengine.store.trigger.groups.SummaryFunctionType;
-import com.kii.extension.ruleengine.store.trigger.target.CallBusinessFunction;
+import com.kii.extension.ruleengine.store.trigger.task.CallBusinessFunction;
 import com.kii.extension.sdk.service.AbstractDataAccess;
 import com.kii.extension.tools.AdditionFieldType;
 

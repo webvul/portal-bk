@@ -450,7 +450,7 @@ public class TestLocationGeoController extends WebTestTemplate {
 	}
 
 	/**
-	 * the sync target of location geo is all the POI points on building "BuildingIDTest1" and floor 8,
+	 * the sync task of location geo is all the POI points on building "BuildingIDTest1" and floor 8,
 	 * as there are only below thing info in table global_thing, only the globalThingID in table thing_geo of below
 	 * first 3 will be updated
 	 * - "0807W-F02-15-301"

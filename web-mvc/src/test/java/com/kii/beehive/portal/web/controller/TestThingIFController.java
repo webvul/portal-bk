@@ -196,7 +196,7 @@ public class TestThingIFController extends WebTestTemplate {
 	}
 
 	/**
-	 * this method only tries to remove the thing, can't ensure the existence of the target thing
+	 * this method only tries to remove the thing, can't ensure the existence of the task thing
 	 *
 	 * @param globalThingID
 	 * @throws Exception
@@ -247,7 +247,7 @@ public class TestThingIFController extends WebTestTemplate {
 	}
 
 	/**
-	 * this method only tries to remove the tag, can't ensure the existence of the target tag
+	 * this method only tries to remove the tag, can't ensure the existence of the task tag
 	 *
 	 * @param displayName
 	 * @throws Exception
@@ -420,7 +420,7 @@ public class TestThingIFController extends WebTestTemplate {
 	/**
 	 * below scenario will be tested:
 	 * <p>
-	 * 1. try to send one command to below things, and specify the target thing type "type1" in the command
+	 * 1. try to send one command to below things, and specify the task thing type "type1" in the command
 	 * - vendor thing id "0807W-F00-03-001", thing type "type1"
 	 * - vendor thing id "0807W-F00-03-002", thing type "type1"
 	 * - vendor thing id "0807W-F00-03-003", thing type "type2"
@@ -434,7 +434,7 @@ public class TestThingIFController extends WebTestTemplate {
 	@Test
 	public void testSendCommandToThingList() throws Exception {
 
-		// 1. try to send one command to below things in one cluster, and specify the target thing type "type1" in the command
+		// 1. try to send one command to below things in one cluster, and specify the task thing type "type1" in the command
 		//  - vendor thing id "0807W-F00-03-001", thing type "type1"
 		//  - vendor thing id "0807W-F00-03-002", thing type "type1"
 		//  - vendor thing id "0807W-F00-03-003", thing type "type2"
@@ -484,7 +484,7 @@ public class TestThingIFController extends WebTestTemplate {
 	/**
 	 * below scenario will be tested:
 	 * <p>
-	 * 1. try to send one command to below tags with andExpress true, and specify the target thing type "type2"
+	 * 1. try to send one command to below tags with andExpress true, and specify the task thing type "type2"
 	 * - tag "A"
 	 * - vendor thing id "0807W-F00-03-001", thing type "type1"
 	 * - vendor thing id "0807W-F00-03-002", thing type "type1"
@@ -501,7 +501,7 @@ public class TestThingIFController extends WebTestTemplate {
 	@Test
 	public void testSendCommandToTagListWithAndExpress() throws Exception {
 
-		// 1. try to send one command to below tags with andExpress true, and specify the target thing type "type2"
+		// 1. try to send one command to below tags with andExpress true, and specify the task thing type "type2"
 		//  - tag "A"
 		//      - vendor thing id "0807W-F00-03-001", thing type "type1"
 		//      - vendor thing id "0807W-F00-03-002", thing type "type1"
@@ -560,7 +560,7 @@ public class TestThingIFController extends WebTestTemplate {
 	/**
 	 * below scenario will be tested:
 	 * <p>
-	 * 1. try to send one command to below tags with andExpress false, and specify the target thing type "type2"
+	 * 1. try to send one command to below tags with andExpress false, and specify the task thing type "type2"
 	 * - tag "A"
 	 * - vendor thing id "0807W-F00-03-001", thing type "type1"
 	 * - vendor thing id "0807W-F00-03-002", thing type "type1"
@@ -579,7 +579,7 @@ public class TestThingIFController extends WebTestTemplate {
 	@Test
 	public void testSendCommandToTagListWithOrExpress() throws Exception {
 
-		// 1. try to send one command to below tags with andExpress false, and specify the target thing type "type2"
+		// 1. try to send one command to below tags with andExpress false, and specify the task thing type "type2"
 		//  - tag "A"
 		//      - vendor thing id "0807W-F00-03-001", thing type "type1"
 		//      - vendor thing id "0807W-F00-03-002", thing type "type1"
@@ -653,8 +653,8 @@ public class TestThingIFController extends WebTestTemplate {
 	 * - vendor thing id "0807W-F00-03-005", thing type "type2"
 	 * <p>
 	 * 2. send below two commands:
-	 * command a. target: existing in both tag "A" and "B", thing type: "type2"
-	 * command b. target: "0807W-F00-03-001" and "0807W-F00-03-005"
+	 * command a. task: existing in both tag "A" and "B", thing type: "type2"
+	 * command b. task: "0807W-F00-03-001" and "0807W-F00-03-005"
 	 * <p>
 	 * 3. actually the commands will be send to below things:
 	 * command a. "0807W-F00-03-003"
@@ -680,8 +680,8 @@ public class TestThingIFController extends WebTestTemplate {
 		this.bindThingsToTag(globalThingIDListForTests.subList(2, 5), displayNames[1]);
 
 		// 2. send below two commands:
-		//      command a. target: existing in both tag "A" and "B", thing type: "type2"
-		//      command b. target: "0807W-F00-03-001" and "someVendorThingID5, thing type: "type1"
+		//      command a. task: existing in both tag "A" and "B", thing type: "type2"
+		//      command b. task: "0807W-F00-03-001" and "someVendorThingID5, thing type: "type1"
 		List<HashMap<String, Object>> requestList = new ArrayList<>();
 
 		HashMap<String, Object> commandA = new HashMap<>();
@@ -828,12 +828,12 @@ public class TestThingIFController extends WebTestTemplate {
 	}
 
 	/**
-	 * this test case is based on the target of test case "testSendCommandToThingListAndTagList",
+	 * this test case is based on the task of test case "testSendCommandToThingListAndTagList",
 	 * will query the command details sent from test case "testSendCommandToThingListAndTagList"
 	 *
 	 * 1. the number of command details is expected to be the same with the commands sent in test case
 	 * "testSendCommandToThingListAndTagList"
-	 * 2. actions and command target of each command are expected to be returned
+	 * 2. actions and command task of each command are expected to be returned
 	 *
 	 */
 	@Test
@@ -869,7 +869,7 @@ public class TestThingIFController extends WebTestTemplate {
 		// "testSendCommandToThingListAndTagList"
 		assertTrue(list.size() == request.size());
 
-		// 2. actions and command target of each command are expected to be returned
+		// 2. actions and command task of each command are expected to be returned
 		for(Map<String, Object> commandDetail : list) {
 
 			int globalThingID = (int)commandDetail.get("globalThingID");
@@ -1055,7 +1055,7 @@ public class TestThingIFController extends WebTestTemplate {
 	/**
 	 * below scenario will be tested:
 	 * <p>
-	 * 1. try to send one command to below things, and specify the target thing type "type1" in the command
+	 * 1. try to send one command to below things, and specify the task thing type "type1" in the command
 	 * - vendor thing id "0807W-F00-03-001", thing type "type1"
 	 * - vendor thing id "0807W-F00-03-002", thing type "type1"
 	 * - vendor thing id "0807W-F00-03-003", thing type "type2"
@@ -1069,7 +1069,7 @@ public class TestThingIFController extends WebTestTemplate {
 	@Test
 	public void testSendSingleCommandToThingList() throws Exception {
 
-		// 1. try to send one command to below things, and specify the target thing type "type1" in the command
+		// 1. try to send one command to below things, and specify the task thing type "type1" in the command
 		//  - vendor thing id "0807W-F00-03-001", thing type "type1"
 		//  - vendor thing id "0807W-F00-03-002", thing type "type1"
 		//  - vendor thing id "0807W-F00-03-003", thing type "type2"
@@ -1125,7 +1125,7 @@ public class TestThingIFController extends WebTestTemplate {
 	 * - vendor thing id "0807W-F00-03-005", thing type "type2"
 	 * <p>
 	 * 2. send below command:
-	 * - target: existing in both tag "A" and "B", thing type: "type2"
+	 * - task: existing in both tag "A" and "B", thing type: "type2"
 	 * <p>
 	 * 3. actually the commands will be send to below things:
 	 * - "0807W-F00-03-003"
@@ -1150,7 +1150,7 @@ public class TestThingIFController extends WebTestTemplate {
 		this.bindThingsToTag(globalThingIDListForTests.subList(2, 5), displayNames[1]);
 
 		// 2. send below command:
-		// - target: existing in both tag "A" and "B", thing type: "type2"
+		// - task: existing in both tag "A" and "B", thing type: "type2"
 		HashMap<String, Object> command = new HashMap<>();
 
 		command.put("tagList", new String[]{TagType.Custom + "-" + displayNames[0], TagType.Custom + "-" + displayNames[1]});

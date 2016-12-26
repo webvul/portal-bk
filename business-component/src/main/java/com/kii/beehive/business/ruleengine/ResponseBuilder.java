@@ -4,17 +4,28 @@ package com.kii.beehive.business.ruleengine;
 import org.springframework.stereotype.Component;
 
 import com.kii.extension.ruleengine.ExecuteParam;
-import com.kii.extension.ruleengine.store.trigger.target.BusinessFunResponse;
-import com.kii.extension.ruleengine.store.trigger.target.CommandResponse;
-import com.kii.extension.ruleengine.store.trigger.target.HttpCallResponse;
-import com.kii.extension.ruleengine.store.trigger.target.TriggerResult;
+import com.kii.extension.ruleengine.store.trigger.task.BusinessFunResponse;
+import com.kii.extension.ruleengine.store.trigger.task.CommandResponse;
+import com.kii.extension.ruleengine.store.trigger.task.HttpCallResponse;
+import com.kii.extension.ruleengine.store.trigger.task.SettingParameterResponse;
+import com.kii.extension.ruleengine.store.trigger.task.TriggerResult;
 
 @Component
 public class ResponseBuilder {
+	
+	
+	public SettingParameterResponse getSettingParamResponse(ExecuteParam param){
+		
+		SettingParameterResponse resp=new SettingParameterResponse();
+		fillResult(resp,param);
+		resp.setInputParam(param.getBusinessParams());
+		
+		return resp;
+		
+	}
+	
 
-
-
-	public BusinessFunResponse getBusinessFunResponse(String triggerID, ExecuteParam param){
+	public BusinessFunResponse getBusinessFunResponse(ExecuteParam param){
 		
 		BusinessFunResponse resp=new BusinessFunResponse();
 		fillResult(resp,param);
@@ -23,7 +34,7 @@ public class ResponseBuilder {
 		
 	}
 	
-	public CommandResponse getCmdResponse(String triggerID,ExecuteParam param){
+	public CommandResponse getCmdResponse(ExecuteParam param){
 
 		CommandResponse resp = new CommandResponse();
 

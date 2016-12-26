@@ -74,7 +74,7 @@ public class CrossTriggerController {
 	@RequestMapping(path = "/{triggerID}", method = {RequestMethod.PUT},consumes={MediaType.ALL_VALUE})
 	public Map<String, Object> updateTrigger(@PathVariable("triggerID") String triggerID, @RequestBody TriggerRecord record) {
 		Map<String, Object> result = new HashMap<>();
-		result.put("target", "success");
+		result.put("task", "success");
 
 		record.setId(triggerID);
 
@@ -90,7 +90,7 @@ public class CrossTriggerController {
 	@RequestMapping(path = "/{triggerID}", method = {RequestMethod.DELETE}, consumes = {"*"})
 	public Map<String, Object> deleteTrigger(@PathVariable("triggerID") String triggerID) {
 		Map<String, Object> result = new HashMap<>();
-		result.put("target", "success");
+		result.put("task", "success");
 
 		mang.deleteTrigger(triggerID);
 
@@ -101,7 +101,7 @@ public class CrossTriggerController {
 	@RequestMapping(path = "/{triggerID}/enable", method = {RequestMethod.PUT},consumes={MediaType.ALL_VALUE})
 	public Map<String, Object> enableTrigger(@PathVariable("triggerID") String triggerID) {
 		Map<String, Object> result = new HashMap<>();
-		result.put("target", "success");
+		result.put("task", "success");
 		TriggerRecord record = mang.getTriggerByID(triggerID);
 		if (!TriggerRecord.StatusType.disable.equals(record.getRecordStatus())) {
 			throw new PortalException(ErrorCode.INVALID_INPUT,"field","enable","data","true");
@@ -117,7 +117,7 @@ public class CrossTriggerController {
 	@RequestMapping(path = "/{triggerID}/disable", method = {RequestMethod.PUT},consumes={MediaType.ALL_VALUE})
 	public Map<String, Object> disableTrigger(@PathVariable("triggerID") String triggerID) {
 		Map<String, Object> result = new HashMap<>();
-		result.put("target", "success");
+		result.put("task", "success");
 		TriggerRecord record = mang.getTriggerByID(triggerID);
 		if (!TriggerRecord.StatusType.enable.equals(record.getRecordStatus())) {
 			throw new PortalException(ErrorCode.INVALID_INPUT,"field","enable","data","false");

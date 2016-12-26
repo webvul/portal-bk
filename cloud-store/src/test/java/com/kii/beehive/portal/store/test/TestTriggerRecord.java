@@ -11,8 +11,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.extension.ruleengine.store.trigger.ThingCollectSource;
 import com.kii.extension.ruleengine.store.trigger.ThingSource;
-import com.kii.extension.ruleengine.store.trigger.target.CallHttpApi;
-import com.kii.extension.ruleengine.store.trigger.target.CommandToThing;
+import com.kii.extension.ruleengine.store.trigger.task.CallHttpApi;
+import com.kii.extension.ruleengine.store.trigger.task.CommandToThing;
 import com.kii.extension.ruleengine.store.trigger.Condition;
 import com.kii.extension.ruleengine.store.trigger.schedule.CronPrefix;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;

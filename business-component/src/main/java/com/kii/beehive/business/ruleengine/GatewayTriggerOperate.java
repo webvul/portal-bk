@@ -30,8 +30,8 @@ import com.kii.extension.ruleengine.store.trigger.condition.AndLogic;
 import com.kii.extension.ruleengine.store.trigger.condition.OrLogic;
 import com.kii.extension.ruleengine.store.trigger.groups.SummarySource;
 import com.kii.extension.ruleengine.store.trigger.groups.SummaryTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.target.CommandToThing;
-import com.kii.extension.ruleengine.store.trigger.target.CommandToThingInGW;
+import com.kii.extension.ruleengine.store.trigger.task.CommandToThing;
+import com.kii.extension.ruleengine.store.trigger.task.CommandToThingInGW;
 import com.kii.extension.sdk.entity.thingif.Action;
 import com.kii.extension.sdk.entity.thingif.EndNodeOfGateway;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
@@ -230,7 +230,7 @@ public class GatewayTriggerOperate {
 			gatewayTriggerRecord.getSummarySource().put(key, gatewaySummarySource);
 		});
 		
-		//command target
+		//command task
 		List<ExecuteTarget> targets = summaryRecord.getTargets();
 		for(ExecuteTarget target:targets)
 			switch (target.getType()) {

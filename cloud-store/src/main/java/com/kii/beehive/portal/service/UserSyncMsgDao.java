@@ -34,7 +34,7 @@ public class UserSyncMsgDao extends AbstractDataAccess<SupplierPushMsgTask>{
 	public List<SupplierPushMsgTask> getUnfinishMsgList(){
 
 		QueryParam query= ConditionBuilder.newCondition()
-				.equal("target", ExecuteResult.Working)
+				.equal("task", ExecuteResult.Working)
 				.getFinalCondition()
 				.orderBy("_created")
 				.build();
@@ -106,15 +106,15 @@ public class UserSyncMsgDao extends AbstractDataAccess<SupplierPushMsgTask>{
 
 
 		if(successNum==retryRecord.size()){
-			map.put("target",ExecuteResult.Success);
+			map.put("task",ExecuteResult.Success);
 			map.put("finishTime",new Date());
 
 		}else if(failNum+successNum==retryRecord.size()){
-			map.put("target",ExecuteResult.Finish);
+			map.put("task",ExecuteResult.Finish);
 			map.put("finishTime",new Date());
 
 		}else{
-			map.put("target",ExecuteResult.Working);
+			map.put("task",ExecuteResult.Working);
 		}
 
 

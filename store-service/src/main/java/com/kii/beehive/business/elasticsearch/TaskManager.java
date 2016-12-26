@@ -38,7 +38,7 @@ public class TaskManager {
 	private ObjectMapper mapper;
 
 	//private final String DATE_FIELD = "state.taiwanNo1";
-	private final String TERM_FIELD = "target";
+	private final String TERM_FIELD = "task";
 
 	@Autowired
 	public TaskManager(@Value("${elasticsearch.indexTask.corePoolSize:2}") int indexTaskPoolSize,
