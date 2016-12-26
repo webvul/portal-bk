@@ -5,13 +5,13 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import com.kii.extension.ruleengine.store.trigger.TagSelector;
+import com.kii.extension.ruleengine.store.trigger.ThingCollectSource;
 
 public class SummarySource  {
 
 	private List<SummaryExpress> expressList=new ArrayList<>();
 
-	private TagSelector source;
+	private ThingCollectSource source;
 
 	public List<SummaryExpress> getExpressList() {
 		return expressList;
@@ -26,13 +26,13 @@ public class SummarySource  {
 		this.expressList = expressList;
 	}
 
-	public TagSelector getSource() {
+	public ThingCollectSource getSource() {
 		return source;
 	}
 
 
 
-	public void setSource(TagSelector source) {
+	public void setSource(ThingCollectSource source) {
 		this.source = source;
 	}
 

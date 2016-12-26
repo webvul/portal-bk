@@ -9,27 +9,34 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.business.event.BusinessEventListenerService;
 import com.kii.beehive.business.manager.ThingTagManager;
 import com.kii.beehive.portal.event.EventListener;
-import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.beehive.portal.exception.InvalidTriggerFormatException;
-import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.service.EventListenerDao;
 import com.kii.extension.ruleengine.BeehiveTriggerService;
+import com.kii.extension.ruleengine.TriggerConditionBuilder;
 import com.kii.extension.ruleengine.TriggerCreateException;
 import com.kii.extension.ruleengine.drools.entity.BusinessObjInRule;
 import com.kii.extension.ruleengine.store.trigger.BusinessDataObject;
-import com.kii.extension.ruleengine.store.trigger.groups.GroupTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.groups.SummaryTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.BusinessObjType;
+import com.kii.extension.ruleengine.store.trigger.Condition;
+import com.kii.extension.ruleengine.store.trigger.Express;
 import com.kii.extension.ruleengine.store.trigger.GroupSummarySource;
 import com.kii.extension.ruleengine.store.trigger.MultipleSrcTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
+import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.ThingCollectSource;
 import com.kii.extension.ruleengine.store.trigger.ThingSource;
+import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.condition.All;
+import com.kii.extension.ruleengine.store.trigger.groups.GroupTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.groups.SummaryFunctionType;
+import com.kii.extension.ruleengine.store.trigger.groups.SummaryTriggerRecord;
 
 @Component
 public class TriggerOperate {
@@ -73,9 +80,8 @@ public class TriggerOperate {
 		for(TriggerRecord  trigger:list){
 
 			try {
-				Map<String,Set<String>>   map=getTriggerDataMap(trigger);
-				general.addTriggerToEngine(trigger,map,false);
-
+				createTrigger(trigger);
+				
 			}catch(TriggerCreateException ex){
 				errList.add(trigger.getTriggerID());
 			}
@@ -93,7 +99,7 @@ public class TriggerOperate {
 			info.setValues(s.getStatus());
 			
 			BusinessDataObject obj=new BusinessDataObject();
-			obj.setBusinessType(BusinessDataObject.BusinessObjType.Thing);
+			obj.setBusinessType(BusinessObjType.Thing);
 			obj.setBusinessObjID(s.getFullKiiThingID());
 			obj.setData(s.getStatus());
 			obj.setModified(s.getModifyDate());
@@ -119,7 +125,8 @@ public class TriggerOperate {
 
 
 		Map<String,Set<String>>   map=getTriggerDataMap(record);
-
+		
+	
 		general.addTriggerToEngine(record,map,true);
 
 
@@ -132,45 +139,38 @@ public class TriggerOperate {
 	public Map<String,Set<String>> getTriggerDataMap(TriggerRecord record) throws TriggerCreateException {
 
 		String triggerID=record.getId();
-
+		
+		if (record instanceof GroupTriggerRecord) {
+			GroupTriggerRecord groupRecord = ((GroupTriggerRecord) record);
+			
+			record=convertGroup(groupRecord);
+			
+		} else if (record instanceof SummaryTriggerRecord) {
+			SummaryTriggerRecord summaryRecord = (SummaryTriggerRecord) record;
+			
+			record=convertSummary(summaryRecord);
+		}
+		
 		try {
-
+	
 			Map<String,Set<String>> map=new HashMap<>();
 
 
 			if (record instanceof SimpleTriggerRecord) {
-
-				String thingID=addSimpleToEngine((SimpleTriggerRecord) record);
-
-				map.put("comm",Collections.singleton(thingID));
-
-
-			} else if (record instanceof GroupTriggerRecord) {
-				GroupTriggerRecord groupRecord = ((GroupTriggerRecord) record);
-				Set<String> thingIDs=addGroupToEngine(groupRecord);
-
-				map.put("comm",thingIDs);
-
-				if (!groupRecord.getSource().getTagList().isEmpty()) {
-					eventService.addGroupTagChangeListener(groupRecord.getSource().getTagList(), triggerID);
-				}
-
-			} else if (record instanceof SummaryTriggerRecord) {
-				SummaryTriggerRecord summaryRecord = (SummaryTriggerRecord) record;
-
-				map=addSummaryToEngine(summaryRecord);
-				summaryRecord.getSummarySource().forEach((k, v) -> {
-					eventService.addSummaryTagChangeListener(v.getSource().getTagList(), triggerID, k);
-				});
+				
+				map.put("comm",Collections.singleton(((SimpleTriggerRecord) record).getSource().getBusinessObj().getFullObjID()));
 
 			} else if (record instanceof MultipleSrcTriggerRecord){
 				MultipleSrcTriggerRecord multipleRecord=(MultipleSrcTriggerRecord)record;
-
+				
 				map=addMulToEngine(multipleRecord);
-
+				
 				multipleRecord.getSummarySource().forEach((k, v) -> {
 					if(v instanceof GroupSummarySource) {
-						eventService.addSummaryTagChangeListener(((GroupSummarySource)v).getSource().getTagList(), triggerID, k);
+						ThingCollectSource collect=((GroupSummarySource)v).getSource();
+						if(collect.getSelector()!=null&&!collect.getSelector().getTagList().isEmpty()) {
+							eventService.addSummaryTagChangeListener(collect.getSelector().getTagList(), triggerID, k);
+						}
 					}
 				});
 
@@ -182,7 +182,6 @@ public class TriggerOperate {
 			return map;
 
 		} catch (TriggerCreateException e) {
-//			triggerDao.deleteTriggerRecord(triggerID,e.getReason());
 			throw e;
 		}catch(RuntimeException ex){
 			throw new TriggerCreateException("unknown exception",ex);
@@ -198,8 +197,6 @@ public class TriggerOperate {
 
 
 		if(record.getRecordStatus()== TriggerRecord.StatusType.enable) {
-
-
 
 			general.removeTrigger(record.getTriggerID());
 
@@ -231,57 +228,6 @@ public class TriggerOperate {
 		return general.getRuleEngingDump(triggerID);
 	}
 
-	private String  addSimpleToEngine(SimpleTriggerRecord record) {
-		String thingID = null;
-//		if (record.getSource().getThingID() != null) {
-		if(record.getSource().getBusinessType().equals(BusinessDataObject.BusinessObjType.Thing.name())){
-			
-			GlobalThingInfo thingInfo = thingTagService.getThingByID(record.getSource().getThingID());
-			if (thingInfo != null) {
-				thingID = thingInfo.getFullKiiThingID();
-			}else{
-
-				throw EntryNotFoundException.thingNotFound(record.getSource().getThingID());
-			}
-		}else{
-			
-			
-			
-		}
-
-		return thingID;
-
-	}
-
-	private Map<String, Set<String>>  addSummaryToEngine(SummaryTriggerRecord record ){
-
-
-		Map<String, Set<String>> summaryMap = new HashMap<>();
-
-		final AtomicBoolean isStream = new AtomicBoolean(false);
-
-		record.getSummarySource().forEach((k, v) -> {
-
-			if (v.getExpressList().stream().filter((exp) -> exp.getSlideFuntion() != null).findAny().isPresent() && !isStream.get()) {
-				isStream.set(true);
-			}
-			;
-
-			summaryMap.put(k, thingTagService.getKiiThingIDs(v.getSource()));
-		});
-
-		return summaryMap;
-
-	}
-
-	private  Set<String> addGroupToEngine(GroupTriggerRecord record){
-
-		Set<String> thingIDs = thingTagService.getKiiThingIDs(record.getSource());
-
-		return thingIDs;
-	}
-
-
 
 
 	private Map<String, Set<String>> addMulToEngine(MultipleSrcTriggerRecord record) {
@@ -294,10 +240,12 @@ public class TriggerOperate {
 			switch(v.getType()){
 				case thing:
 					ThingSource thing=(ThingSource)v;
-					thingMap.put(k, Collections.singleton(thingTagService.getThingByID(Integer.parseInt(thing.getThingID())).getFullKiiThingID()));
+					thingMap.put(k, Collections.singleton(thing.getBusinessObj().getFullObjID()));
+					break;
 				case summary:
 					GroupSummarySource summary=(GroupSummarySource)v;
-					thingMap.put(k, thingTagService.getKiiThingIDs(summary.getSource()));
+					
+					thingMap.put(k,getBusinessObjSet(summary.getSource()));
 					break;
 			}
 		});
@@ -306,7 +254,99 @@ public class TriggerOperate {
 
 
 	}
-
 	
-
+	private Set<String>  getBusinessObjSet(ThingCollectSource source){
+		
+		if(source.getSelector()!=null){
+			
+			return thingTagService.getBusinessObjs(source.getSelector());
+			
+		}else {
+			
+			return source.getFullBusinessObjIDs();
+		}
+	}
+	
+	
+	private MultipleSrcTriggerRecord convertSummary(SummaryTriggerRecord record){
+		
+		
+		MultipleSrcTriggerRecord convertRecord=new MultipleSrcTriggerRecord();
+		
+		BeanUtils.copyProperties(record,convertRecord);
+		
+		record.getSummarySource().forEach((k,v)->{
+			
+			ThingCollectSource source=v.getSource();
+			
+			v.getExpressList().forEach((exp)->{
+				
+				GroupSummarySource  elem=new GroupSummarySource();
+				
+				elem.setFunction(exp.getFunction());
+				elem.setStateName(exp.getStateName());
+				elem.setSource(source);
+				
+				String index=k+"."+exp.getSummaryAlias();
+				convertRecord.addSource(index,elem);
+				
+			});
+		});
+		
+		return convertRecord;
+	}
+	
+	private MultipleSrcTriggerRecord  convertGroup(GroupTriggerRecord record){
+		
+		
+		MultipleSrcTriggerRecord convertRecord=new MultipleSrcTriggerRecord();
+		BeanUtils.copyProperties(record,convertRecord);
+		
+		int thingNum=getBusinessObjSet(record.getSource()).size();
+		
+		
+		Condition cond=new All();
+		switch(record.getPolicy().getGroupPolicy()){
+			//	Any,All,Some,Percent,None;
+			
+			case All:
+				cond= TriggerConditionBuilder.newCondition().equal("comm",thingNum).getConditionInstance();
+				break;
+			case Any:
+				cond=TriggerConditionBuilder.newCondition().greatAndEq("comm",1).getConditionInstance();
+				break;
+			case Some:
+				cond=TriggerConditionBuilder.newCondition().greatAndEq("comm",record.getPolicy().getCriticalNumber()).getConditionInstance();
+				break;
+			case Percent:
+				int percent=(record.getPolicy().getCriticalNumber()*thingNum)/100;
+				cond=TriggerConditionBuilder.newCondition().equal("comm",percent).getConditionInstance();
+				break;
+			case None:
+				cond=TriggerConditionBuilder.newCondition().equal("comm",0).getConditionInstance();
+		}
+		RuleEnginePredicate predicate=new RuleEnginePredicate();
+		
+		predicate.setCondition(cond);
+		predicate.setTriggersWhen(record.getPredicate().getTriggersWhen());
+		predicate.setSchedule(record.getPredicate().getSchedule());
+		
+		convertRecord.setPredicate(predicate);
+		
+		GroupSummarySource  elem=new GroupSummarySource();
+		
+		elem.setFunction(SummaryFunctionType.count);
+		Express exp=new Express();
+		exp.setCondition(record.getPredicate().getCondition());
+		elem.setExpress(exp);
+		
+		elem.setSource(record.getSource());
+		
+		convertRecord.addSource("comm",elem);
+		
+		return convertRecord;
+	}
+	
+	
+	
 }

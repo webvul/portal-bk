@@ -9,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.kii.extension.ruleengine.store.trigger.ThingCollectSource;
+import com.kii.extension.ruleengine.store.trigger.ThingSource;
 import com.kii.extension.ruleengine.store.trigger.target.CallHttpApi;
 import com.kii.extension.ruleengine.store.trigger.target.CommandToThing;
 import com.kii.extension.ruleengine.store.trigger.Condition;
@@ -68,8 +70,10 @@ public class TestTriggerRecord {
 		api.setMethod(CallHttpApi.HttpMethod.POST);
 
 		record.addTarget(api);
-
-		record.setThingID(123l);
+		
+		ThingSource id=new ThingSource();
+		id.setThingID(123l);
+		record.setSource(id);
 		
 		RuleEnginePredicate predicate=new RuleEnginePredicate();
 
@@ -130,7 +134,9 @@ public class TestTriggerRecord {
 		record.addTarget(api);
 		
 		GroupSummarySource summary1=new GroupSummarySource();
-		summary1.setSource(selector);
+		ThingCollectSource src=new ThingCollectSource();
+		src.setSelector(selector);
+		summary1.setSource(src);
 		summary1.setStateName("foo");
 		summary1.setFunction(SummaryFunctionType.count);
 		Condition cond=  new Equal("foo","bar");
@@ -138,7 +144,10 @@ public class TestTriggerRecord {
 
 
 		GroupSummarySource summary2=new GroupSummarySource();
-		summary2.setSource(selector);
+		
+		ThingCollectSource src2=new ThingCollectSource();
+		src2.setSelector(selector);
+		summary2.setSource(src2);
 		summary2.setStateName("foo");
 		summary2.setFunction(SummaryFunctionType.count);
 		summary1.setTheCondition(cond);

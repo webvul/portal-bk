@@ -48,7 +48,7 @@ public class GroupTriggerProcess implements TagChangeProcess {
 
 		if(trigger.getRecordStatus()== TriggerRecord.StatusType.enable) {
 
-			Set<String> thingIDList = thingTagService.getKiiThingIDs(trigger.getSource());
+			Set<String> thingIDList = thingTagService.getBusinessObjs(trigger.getSource().getSelector());
 			engine.changeThingsInTrigger(trigger.getId(), thingIDList);
 		}
 	}

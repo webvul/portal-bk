@@ -2,7 +2,7 @@ package com.kii.beehive.portal.web.controller;
 
 import javax.annotation.PostConstruct;
 
-import java.util.Map;
+import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,8 +21,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kii.beehive.business.event.BusinessEventBus;
 import com.kii.beehive.business.manager.ThingTagManager;
 import com.kii.beehive.business.ruleengine.ThingCommandForTriggerService;
-import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.helper.ThingStatusChangeCallback;
+import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.web.constant.CallbackNames;
 import com.kii.beehive.portal.web.entity.CreatedThing;
 import com.kii.beehive.portal.web.entity.StateUpload;
@@ -53,6 +53,7 @@ public class ExtensionCallbackController {
 	private ThingCommandForTriggerService  commandService;
 
 	private ObjectMapper objectMapper;
+	
 	@Value("${thing.state.queue:thing_state_queue}")
 	private String thingStateQueue;
 
@@ -73,18 +74,26 @@ public class ExtensionCallbackController {
 	@RequestMapping(value = "/" + CallbackNames.STATE_CHANGED, method = {RequestMethod.POST})
 	public void onStateChangeFire(@RequestHeader("x-kii-appid") String appID,
 								  @RequestHeader("Authorization") String token,
-								  @RequestBody StateUpload status) {
+								  @RequestBody String body) {
+		
+		StateUpload  status= null;
+		try {
+			status = objectMapper.readValue(body,StateUpload.class);
+		} catch (IOException e) {
+			
+			log.error(e.getMessage());
+			return;
+		}
+		
+		tagManager.updateState(status.getState(), status.getThingID(), appID);
+		
+		GlobalThingInfo globalThingInfo = tagManager.getThingByFullKiiThingID(appID,status.getThingID());
+		
+		pushCallback.onEventFire(globalThingInfo,status.getState(),status.getTimestamp());
 
-		Map<String,Object> values=tagManager.updateState(status.getState(), status.getThingID(), appID);
+		eventBus.onStatusUploadFire(String.valueOf(globalThingInfo.getId()), status.getState(), status.getTimestamp());
 
-		String fullThingID = ThingIDTools.joinFullKiiThingID(appID, status.getThingID());
-
-		pushCallback.onEventFire(appID,status.getState(),fullThingID,status.getTimestamp());
-
-		eventBus.onStatusUploadFire(fullThingID, status.getState(), status.getTimestamp());
-
-		status.getState().setFields(values);
-
+		
 		internalEventListenerRegistry.onStateChange(appID, status);
 	}
 
@@ -92,7 +101,16 @@ public class ExtensionCallbackController {
 	@RequestMapping(value = "/" + CallbackNames.THING_CREATED, method = {RequestMethod.POST})
 	public void onThingCreatedFire(@RequestHeader("x-kii-appid") String appID,
 								   @RequestHeader("Authorization") String token,
-								   @RequestBody CreatedThing thing) {
+								   @RequestBody String body) {
+		CreatedThing  thing= null;
+		try {
+			thing = objectMapper.readValue(body,CreatedThing.class);
+		} catch (IOException e) {
+			
+			log.error(e.getMessage());
+			return;
+		}
+		
 		log.info("onBoarding = " + thing.getVendorThingID());
 		tagManager.updateKiicloudRelation(thing.getVendorThingID(), appID + "-" + thing.getThingID());
 	}
@@ -101,8 +119,16 @@ public class ExtensionCallbackController {
 	@RequestMapping(value = "/" + CallbackNames.THING_CMD_RESPONSE, method = {RequestMethod.POST})
 	public void onThingCmdResponse(@RequestHeader("x-kii-appid") String appID,
 								   @RequestHeader("Authorization") String token,
-								   @RequestBody ThingCommand cmd) {
-
+								   @RequestBody String body) {
+		ThingCommand  cmd= null;
+		try {
+			cmd = objectMapper.readValue(body,ThingCommand.class);
+		} catch (IOException e) {
+			
+			log.error(e.getMessage());
+			return;
+		}
+		
 
 		log.info("cmdResponse  " + cmd.getTarget());
 

@@ -45,8 +45,6 @@
 
     <!-- aop -->
 
-    <bean class="com.kii.beehive.portal.aop.ContextAspect"/>
-
     <bean id="appLogAspect" class="com.kii.beehive.portal.aop.LogAspect"/>
 
     <bean id="controllerLogAspect" class="com.kii.beehive.portal.web.aop.ControllerLogAspect"/>

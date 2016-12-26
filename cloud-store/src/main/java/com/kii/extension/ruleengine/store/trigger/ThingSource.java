@@ -1,35 +1,42 @@
 package com.kii.extension.ruleengine.store.trigger;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 public class ThingSource implements SourceElement {
-
-	private Long thingID;
 	
-	private String userID;
-	
-	private String triggerID;
+	private String businessName;
 	
 	private String businessID;
 	
-	private String businessType=BusinessDataObject.BusinessObjType.Thing.name();
+	private BusinessObjType businessType= BusinessObjType.Thing;
 	
-	public String getUserID() {
-		return userID;
+	public String getBusinessName() {
+		return businessName;
+	}
+	
+	public void setBusinessName(String businessName) {
+		this.businessName = businessName;
+	}
+	
+	
+	public String getUserID(){
+		return businessID;
 	}
 	
 	public void setUserID(String userID) {
-		this.userID = userID;
-		businessType=BusinessDataObject.BusinessObjType.User.name();
+		this.businessID = userID;
+		businessType= BusinessObjType.User;
 	}
 	
-	public String getTriggerID() {
-		return triggerID;
+	
+	public String getTriggerGroupName(){
+		return businessID;
 	}
 	
-	public void setTriggerID(String triggerID) {
-		this.triggerID = triggerID;
-		businessType=BusinessDataObject.BusinessObjType.Trigger.name();
+	public void setTriggerGroupName(String triggerGroupName) {
+		this.businessID = triggerGroupName;
+		businessType= BusinessObjType.TriggerGroup;
 		
 	}
 	
@@ -41,11 +48,11 @@ public class ThingSource implements SourceElement {
 		this.businessID = businessID;
 	}
 	
-	public String getBusinessType() {
+	public BusinessObjType getBusinessType() {
 		return businessType;
 	}
 	
-	public void setBusinessType(String businessType) {
+	public void setBusinessType(BusinessObjType businessType) {
 		this.businessType = businessType;
 	}
 	
@@ -61,16 +68,24 @@ public class ThingSource implements SourceElement {
 		this.express = express;
 	}
 
-	public Long getThingID() {
-		return thingID;
+	public String getThingID(){
+		return this.businessID;
 	}
 
 	public void setThingID(Long thingID) {
-		this.thingID = thingID;
+		this.businessID = String.valueOf(thingID);
+		businessType= BusinessObjType.Thing;
 	}
 
 	@Override
 	public SourceElementType getType() {
 		return SourceElementType.thing;
+	}
+	
+	
+	@JsonIgnore
+	public BusinessDataObject getBusinessObj(){
+		
+		return new BusinessDataObject(businessID,businessName,businessType);
 	}
 }

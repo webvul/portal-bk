@@ -1,5 +1,7 @@
 package com.kii.extension.ruleengine.store.trigger.target;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
@@ -11,9 +13,20 @@ public class CommandToThing extends ExecuteTarget {
 	private TagSelector selector;
 
 
+	private List<String> thingList;
+	
+	
 	private ThingCommand command;
-
-
+	
+	
+	public List<String> getThingList() {
+		return thingList;
+	}
+	
+	public void setThingList(List<String> thingList) {
+		this.thingList = thingList;
+	}
+	
 	public ThingCommand getCommand() {
 		return command;
 	}

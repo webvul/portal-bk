@@ -7,50 +7,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class TagSelector {
 
-	private List<Long> thingList=new ArrayList<>();
-	
-	private List<String> userList=new ArrayList<>();
-	
-	private List<String> triggerList=new ArrayList<>();
-	
-	private List<String> businessIDList=new ArrayList<>();
-	
-	private String businessType= BusinessDataObject.BusinessObjType.Thing.name();
-	
-	public List<String> getUserList() {
-		return userList;
-	}
-	
-	public void setUserList(List<String> userList) {
-		this.userList = userList;
-		businessType= BusinessDataObject.BusinessObjType.User.name();
-	}
-	
-	public List<String> getTriggerList() {
-		return triggerList;
-	}
-	
-	public void setTriggerList(List<String> triggerList) {
-		this.triggerList = triggerList;
-		businessType= BusinessDataObject.BusinessObjType.Trigger.name();
-		
-	}
-	
-	public List<String> getBusinessIDList() {
-		return businessIDList;
-	}
-	
-	public void setBusinessIDList(List<String> businessIDList) {
-		this.businessIDList = businessIDList;
-	}
-	
-	public String getBusinessType() {
-		return businessType;
-	}
-	
-	public void setBusinessType(String businessType) {
-		this.businessType = businessType;
-	}
 	
 	public void setTagList(List<String> tagList) {
 		this.tagList = tagList;
@@ -75,9 +31,6 @@ public class TagSelector {
 		return tagList;
 	}
 
-	public void setTagCollect(List<String> tagCollect) {
-		this.tagList = tagCollect;
-	}
 
 	public boolean isAndExpress() {
 		return isAndExpress;
@@ -88,16 +41,11 @@ public class TagSelector {
 	}
 
 
-	public List<Long> getThingList() {
-		return thingList;
-	}
-
-	public void setThingList(List<Long> thingList) {
-		this.thingList = thingList;
-	}
 
 	@JsonIgnore
 	public void addTag(String tagName) {
 		this.tagList.add(tagName);
 	}
+	
+
 }

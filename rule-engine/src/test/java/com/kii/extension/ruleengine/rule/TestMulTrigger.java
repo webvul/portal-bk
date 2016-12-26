@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.kii.extension.ruleengine.BeehiveTriggerService;
 import com.kii.extension.ruleengine.TriggerConditionBuilder;
+import com.kii.extension.ruleengine.store.trigger.BusinessDataObject;
+import com.kii.extension.ruleengine.store.trigger.BusinessObjType;
 import com.kii.extension.ruleengine.store.trigger.Condition;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.groups.SummaryFunctionType;
@@ -102,8 +104,12 @@ public class TestMulTrigger extends TestInit {
 		ThingStatus status=new ThingStatus();
 		status.setField("foo",val);
 		status.setField("bar",val2);
+		
+		BusinessDataObject obj=new BusinessDataObject(thingID,null, BusinessObjType.Thing);
+		obj.setData(status.getFields());
+		obj.setCreated(new Date());
 
-		engine.updateThingStatus(thingID,status.getFields(),new Date());
+		engine.updateThingStatus(obj);
 
 	}
 

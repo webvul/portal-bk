@@ -14,6 +14,7 @@ import com.kii.extension.ruleengine.TriggerConditionBuilder;
 import com.kii.extension.ruleengine.store.trigger.Condition;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.ThingSource;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.WhenType;
 
@@ -30,9 +31,9 @@ public class TestSimpleTrigger extends TestInit{
 
 		SimpleTriggerRecord record=new SimpleTriggerRecord();
 
-		SimpleTriggerRecord.ThingID thingID=new SimpleTriggerRecord.ThingID();
-		thingID.setThingID(1049);
-
+		ThingSource thingID=new ThingSource();
+		thingID.setThingID(1049l);
+		
 		record.setSource(thingID);
 
 		record.addTarget(getTarget() );
@@ -83,9 +84,9 @@ public class TestSimpleTrigger extends TestInit{
 		String kiiThingID="0af7a7e7-th.f83120e36100-a269-5e11-e5bb-0bc2e136";
 
 		SimpleTriggerRecord record=new SimpleTriggerRecord();
-
-		SimpleTriggerRecord.ThingID thingID=new SimpleTriggerRecord.ThingID();
-		thingID.setThingID(1049);
+		
+		ThingSource thingID=new ThingSource();
+		thingID.setThingID(1049l);
 
 		record.setSource(thingID);
 

@@ -39,7 +39,7 @@ import com.kii.extension.ruleengine.store.trigger.Express;
 import com.kii.extension.ruleengine.store.trigger.GroupSummarySource;
 import com.kii.extension.ruleengine.store.trigger.MultipleSrcTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
-import com.kii.extension.ruleengine.store.trigger.TagSelector;
+import com.kii.extension.ruleengine.store.trigger.ThingCollectSource;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.WhenType;
 import com.kii.extension.ruleengine.store.trigger.groups.SummaryFunctionType;
@@ -276,8 +276,8 @@ public class ThingMonitorService {
 		record.setName("mon"+monitor.getId());
 		GroupSummarySource source=new GroupSummarySource();
 		source.setFunction(SummaryFunctionType.objCol);
-		TagSelector src=new TagSelector();
 		
+		ThingCollectSource src=new ThingCollectSource();
 		src.setThingList(ids);
 		source.setSource(src);
 		

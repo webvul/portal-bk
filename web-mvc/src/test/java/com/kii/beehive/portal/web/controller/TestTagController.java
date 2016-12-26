@@ -37,7 +37,6 @@ import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.kii.beehive.business.manager.PortalSyncUserManager;
 import com.kii.beehive.business.manager.TagThingManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
@@ -99,9 +98,9 @@ public class TestTagController extends WebTestTemplate {
 	@Autowired
 	private TeamTagRelationDao teamTagRelationDao;
 
-	@Spy
-	@Autowired
-	private PortalSyncUserManager userManager;
+//	@Spy
+//	@Autowired
+//	private PortalSyncUserManager userManager;
 
 	private String displayName = "someDisplayName";
 

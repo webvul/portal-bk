@@ -26,6 +26,8 @@ import com.kii.beehive.portal.jdbc.dao.PagerTag;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.dao.ThingLocationRelDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
+import com.kii.extension.ruleengine.store.trigger.BusinessDataObject;
+import com.kii.extension.ruleengine.store.trigger.BusinessObjType;
 import com.kii.extension.ruleengine.store.trigger.TagSelector;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
@@ -125,10 +127,10 @@ public class ThingTagManager {
 	public Set<GlobalThingInfo> getThingInfos(TagSelector source) {
 		Set<GlobalThingInfo> things = new HashSet<>();
 
-		if (!source.getThingList().isEmpty()) {
-			things.addAll(globalThingDao.findByIDs(source.getThingList()));
-			return things;
-		}
+//		if (!source.getThingList().isEmpty()) {
+//			things.addAll(globalThingDao.findByIDs(source.getThingList()));
+//			return things;
+//		}
 
 		if (!source.getTagList().isEmpty()) {
 			if (StringUtils.isEmpty(source.getType())) {
@@ -156,12 +158,18 @@ public class ThingTagManager {
 	}
 
 
-	public Set<String> getKiiThingIDs(TagSelector source) {
+	public Set<String> getBusinessObjs(TagSelector source) {
 
 		Set<GlobalThingInfo> thingList = getThingInfos(source);
 
-		return thingList.stream().map(thing -> thing.getFullKiiThingID()).collect(Collectors.toSet());
+		return thingList.stream().map(this::getInstance)
+				.collect(Collectors.toSet());
+	}
 
+	
+	private String getInstance(GlobalThingInfo thing){
+		return new BusinessDataObject(String.valueOf(thing.getId()),
+				null, BusinessObjType.Thing).getFullObjID();
 	}
 
 	public void iteratorAllThingsStatus(Consumer<GlobalThingInfo> consumer) {

@@ -3,6 +3,8 @@ package com.kii.extension.ruleengine.store.trigger;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.kii.extension.sdk.entity.KiiEntity;
@@ -11,13 +13,40 @@ public class BusinessDataObject extends KiiEntity {
 
 	private   String  businessObjID;
 	
-	private BusinessObjType businessType=BusinessObjType.Trigger;
+	private String businessName;
+	
+	private BusinessObjType businessType=BusinessObjType.TriggerGroup;
 
 	private   Map<String,Object> data=new HashMap<>();
 	
+	
+	public BusinessDataObject(){
+		
+	}
+	
+	public BusinessDataObject(String businessObjID,String businessName,BusinessObjType businessType){
+		
+		setBusinessName(businessName);
+		setBusinessObjID(businessObjID);
+		setBusinessType(businessType);
+		
+	}
+	
+	public String getBusinessName() {
+		return businessName;
+	}
+	
+	public void setBusinessName(String businessName) {
+		this.businessName = businessName;
+	}
+	
 	@JsonIgnore
 	public String getFullObjID(){
-		return businessType.name()+":"+businessObjID;
+		String name=businessName;
+		if(StringUtils.isBlank(name)){
+			name="comm";
+		}
+		return businessType.name()+""+name+"-"+businessObjID;
 	}
 	
 	public BusinessObjType getBusinessType() {
@@ -44,7 +73,4 @@ public class BusinessDataObject extends KiiEntity {
 		this.data = data;
 	}
 	
-	public enum BusinessObjType{
-		User,Trigger,Thing;
-	}
 }

@@ -24,6 +24,8 @@ import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
 import com.kii.extension.ruleengine.BeehiveTriggerService;
 import com.kii.extension.ruleengine.store.trigger.BeehiveTriggerType;
+import com.kii.extension.ruleengine.store.trigger.BusinessDataObject;
+import com.kii.extension.ruleengine.store.trigger.BusinessObjType;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
@@ -200,14 +202,13 @@ public class CrossTriggerController {
 		
 		GlobalThingInfo info=manager.getThingsByIds(Collections.singletonList(thingID)).get(0);
 		
+		BusinessDataObject obj=new BusinessDataObject(String.valueOf(info.getId()),null, BusinessObjType.Thing);
+		obj.setData(status.getFields());
+		obj.setCreated(new Date());
 		
-		engine.updateThingStatus(info.getFullKiiThingID(),status.getFields(),new Date());
+		engine.updateThingStatus(obj);
 		
 	}
 
-//	@RequestMapping(path = "/debug/reinit", method = {RequestMethod.POST}, consumes = {MediaType.ALL_VALUE})
-//	public void reInit() {
-//
-//		mang.reinit();
-//	}
+
 }

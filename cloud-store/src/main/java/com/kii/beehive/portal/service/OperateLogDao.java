@@ -10,7 +10,7 @@ import com.kii.extension.sdk.service.AbstractDataAccess;
 
 @BindAppByName(appName="portal",appBindSource="propAppBindTool")
 @Component
-public class OperateLogDao extends AbstractDataAccess{
+public class OperateLogDao extends AbstractDataAccess<OperateLog>{
 
 
 	@Override

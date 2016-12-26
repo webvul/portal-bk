@@ -167,9 +167,9 @@ public class GatewayTriggerOperate {
 			Iterator<SummarySource> sourceIterator = sourceCollection.iterator();
 			while (sourceIterator.hasNext()) { //每个SummarySource只有 单个 thing
 				SummarySource summarySource = sourceIterator.next();
-				TagSelector selector = summarySource.getSource();
+				TagSelector selector = summarySource.getSource().getSelector();
 				if ((selector.getTagList() != null && selector.getTagList().size() > 0)
-						|| (selector.getThingList() != null && selector.getThingList().size() != 1)) {
+						|| (summarySource.getSource().getThingList() != null && summarySource.getSource().getThingList().size() != 1)) {
 					return false;
 				}
 			}
@@ -181,9 +181,9 @@ public class GatewayTriggerOperate {
 			Iterator<GatewaySummarySource> sourceIterator = sourceCollection.iterator();
 			while (sourceIterator.hasNext()) { //每个SummarySource只有 单个 thing
 				SummarySource summarySource = sourceIterator.next();
-				TagSelector selector = summarySource.getSource();
+				TagSelector selector = summarySource.getSource().getSelector();
 				if ((selector.getTagList() != null && selector.getTagList().size() > 0)
-						|| (selector.getThingList() != null && selector.getThingList().size() != 1)) {
+						|| (summarySource.getSource().getThingList() != null && summarySource.getSource().getThingList().size() != 1)) {
 					return false;
 				}
 			}
@@ -199,8 +199,9 @@ public class GatewayTriggerOperate {
 		
 		Collection<SummarySource> sourceCollection = summaryRecord.getSummarySource().values();
 		Iterator<SummarySource> sourceIterator = sourceCollection.iterator();
-		TagSelector sourceSelector = sourceIterator.next().getSource();
-		GlobalThingInfo sourceThing = thingTagService.findByID(sourceSelector.getThingList().get(0));
+		
+		
+		GlobalThingInfo sourceThing = thingTagService.findByID(sourceIterator.next().getSource().getThingList().get(0));
 		//
 		ThingOfKiiCloud gatewayOfKiiCloud = null;
 		try {
@@ -218,8 +219,7 @@ public class GatewayTriggerOperate {
 		//source in same gateway
 		summaryRecord.getSummarySource().forEach( (key , summarySource )-> {
 			//每个SummarySource只有 单个 thing
-			TagSelector selector = summarySource.getSource();
-			GlobalThingInfo sourceThingTemp = thingTagService.findByID(selector.getThingList().get(0));
+			GlobalThingInfo sourceThingTemp = thingTagService.findByID(summarySource.getSource().getThingList().get(0));
 			if (allEndNodesOfGatewayMap.get(sourceThingTemp.getVendorThingID()) == null) {
 				throw new IllegalStateException();
 			}

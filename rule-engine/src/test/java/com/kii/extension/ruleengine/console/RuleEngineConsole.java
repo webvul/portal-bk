@@ -28,10 +28,12 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 import com.kii.extension.ruleengine.BeehiveTriggerService;
 import com.kii.extension.ruleengine.drools.entity.BusinessObjInRule;
+import com.kii.extension.ruleengine.store.trigger.BusinessDataObject;
+import com.kii.extension.ruleengine.store.trigger.BusinessObjType;
 import com.kii.extension.ruleengine.store.trigger.GroupSummarySource;
 import com.kii.extension.ruleengine.store.trigger.MultipleSrcTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.TagSelector;
+import com.kii.extension.ruleengine.store.trigger.ThingCollectSource;
 import com.kii.extension.ruleengine.store.trigger.ThingSource;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.groups.GroupTriggerRecord;
@@ -70,21 +72,21 @@ public class RuleEngineConsole {
 
 
 		Set<String> ths=new HashSet<>();
-		ths.add("a");
-		ths.add("b");
-		ths.add("c");
-		ths.add("d");
+		ths.add("0");
+		ths.add("1");
+		ths.add("2");
+		ths.add("3");
 
 
 		tagMap.put("comm",ths);
 		tagMap.put("one",ths);
 		tagMap.put("two",ths);
-		tagMap.put("three", Collections.singleton("c"));
-		tagMap.put("four", Collections.singleton("d"));
+		tagMap.put("three", Collections.singleton("2"));
+		tagMap.put("four", Collections.singleton("3"));
 		tagMap.put("five",ths);
 		tagMap.put("six",ths);
-		tagMap.put("seven", Collections.singleton("b"));
-		tagMap.put("eight", Collections.singleton("a"));
+		tagMap.put("seven", Collections.singleton("1"));
+		tagMap.put("eight", Collections.singleton("0"));
 
 
 	}
@@ -141,11 +143,18 @@ public class RuleEngineConsole {
 
 
 		List<BusinessObjInRule> statusList=new ArrayList<>();
-		statusList.add(getStatusInRule("a","foo=230,bar=150"));
-		statusList.add(getStatusInRule("b","foo=230,bar=50"));
-		statusList.add(getStatusInRule("c","foo=-10,bar=10"));
-		statusList.add(getStatusInRule("d","foo=-100,bar=100"));
-		statusList.forEach(s->service.updateThingStatus(s.getThingID(),s.getValues()));
+		statusList.add(getStatusInRule("0","foo=230,bar=150"));
+		statusList.add(getStatusInRule("1","foo=230,bar=50"));
+		statusList.add(getStatusInRule("2","foo=-10,bar=10"));
+		statusList.add(getStatusInRule("3","foo=-100,bar=100"));
+		
+		
+		statusList.forEach(s->{
+			BusinessDataObject obj=new BusinessDataObject(s.getThingID(),null, BusinessObjType.Thing);
+			obj.setData(s.getValues());
+			
+			service.updateThingStatus(obj);
+		});
 
 		service.leaveInit();
 
@@ -154,7 +163,10 @@ public class RuleEngineConsole {
 			if(taskSign.get()) {
 				Map<String, Object> map = new HashMap<>();
 				map.put("time", System.currentTimeMillis() % 100);
-				service.updateThingStatus("e", map);
+				
+				BusinessDataObject obj=new BusinessDataObject("4",null, BusinessObjType.Thing);
+				obj.setData(map);
+				service.updateThingStatus(obj);
 			}
 
 		},3, 30,TimeUnit.SECONDS);
@@ -234,7 +246,9 @@ public class RuleEngineConsole {
 				ThingStatus status = getStatus(params);
 
 				for(int i=0;i<num;i++) {
-					service.updateThingStatus(arrays[1], status.getFields());
+					BusinessDataObject obj=new BusinessDataObject(arrays[1],null, BusinessObjType.Thing);
+					obj.setData(status.getFields());
+					service.updateThingStatus(obj);
 				}
 				break;
 			case "remove":
@@ -366,11 +380,8 @@ public class RuleEngineConsole {
 		switch(record.getType()) {
 			case Simple:
 				SimpleTriggerRecord rec=(SimpleTriggerRecord)record;
-				char thID= (char) ( (int)rec.getSource().getThingID()-1+'a');
 
-				String thingID=String.valueOf(thID);
-
-				thingMap.put("comm",Collections.singleton(thingID));
+				thingMap.put("comm",Collections.singleton(rec.getSource().getThingID()));
 
 				break;
 			case Multiple:
@@ -409,7 +420,7 @@ public class RuleEngineConsole {
 
 			Set<String> thSet=new HashSet<>();
 			if(v.getSource().getThingList().isEmpty()){
-				v.getSource().getTagList().forEach(tag->{
+				v.getSource().getSelector().getTagList().forEach(tag->{
 					thSet.addAll(tagMap.get(tag));
 				});
 			}else{
@@ -429,11 +440,11 @@ public class RuleEngineConsole {
 
 	private Map<String,Set<String>> getThingMap(GroupTriggerRecord  record ){
 
-		TagSelector sele=record.getSource();
+		ThingCollectSource sele=record.getSource();
 
 		Set<String> thSet=new HashSet<>();
 			if(sele.getThingList().isEmpty()){
-				sele.getTagList().forEach(tag->{
+				sele.getSelector().getTagList().forEach(tag->{
 					thSet.addAll(tagMap.get(tag));
 				});
 			}else{
@@ -457,10 +468,10 @@ public class RuleEngineConsole {
 			Set<String> thSet=new HashSet<>();
 
 			if( v instanceof GroupSummarySource){
-				TagSelector  g=((GroupSummarySource)v).getSource();
+				ThingCollectSource g=((GroupSummarySource)v).getSource();
 
 				if(g.getThingList().isEmpty()){
-					g.getTagList().forEach(tag->{
+					g.getSelector().getTagList().forEach(tag->{
 						thSet.addAll(tagMap.get(tag));
 					});
 				}else{
@@ -473,7 +484,7 @@ public class RuleEngineConsole {
 				}
 			}else{
 
-				String th=((ThingSource)v).getThingID();
+				String th=((ThingSource)v).getBusinessID();
 				thSet.add(th);
 
 			}

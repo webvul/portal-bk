@@ -1,7 +1,6 @@
 package com.kii.extension.ruleengine;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -9,7 +8,6 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.SchedulerException;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,28 +15,20 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.extension.ruleengine.drools.DroolsTriggerService;
 import com.kii.extension.ruleengine.drools.RuleGeneral;
+import com.kii.extension.ruleengine.drools.entity.BusinessObjInRule;
 import com.kii.extension.ruleengine.drools.entity.ExternalValues;
 import com.kii.extension.ruleengine.drools.entity.SingleThing;
 import com.kii.extension.ruleengine.drools.entity.Summary;
-import com.kii.extension.ruleengine.drools.entity.BusinessObjInRule;
 import com.kii.extension.ruleengine.drools.entity.Trigger;
 import com.kii.extension.ruleengine.drools.entity.TriggerType;
 import com.kii.extension.ruleengine.schedule.ScheduleService;
 import com.kii.extension.ruleengine.store.trigger.BusinessDataObject;
 import com.kii.extension.ruleengine.store.trigger.CommandParam;
-import com.kii.extension.ruleengine.store.trigger.Condition;
 import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
-import com.kii.extension.ruleengine.store.trigger.Express;
 import com.kii.extension.ruleengine.store.trigger.GroupSummarySource;
 import com.kii.extension.ruleengine.store.trigger.MultipleSrcTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.TagSelector;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.condition.All;
-import com.kii.extension.ruleengine.store.trigger.groups.GroupTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.groups.SummaryFunctionType;
-import com.kii.extension.ruleengine.store.trigger.groups.SummaryTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.schedule.SimplePeriod;
 import com.kii.extension.ruleengine.store.trigger.schedule.TriggerValidPeriod;
 
@@ -138,17 +128,7 @@ public class BeehiveTriggerService {
 
 			if (record instanceof SimpleTriggerRecord) {
 				addSimpleToEngine((SimpleTriggerRecord) record,thingIDsMap);
-			} else if (record instanceof GroupTriggerRecord) {
-				GroupTriggerRecord groupRecord = ((GroupTriggerRecord) record);
-				addGroupToEngine(groupRecord,thingIDsMap);
-
-			} else if (record instanceof SummaryTriggerRecord) {
-				SummaryTriggerRecord summaryRecord = (SummaryTriggerRecord) record;
-
-				addSummaryToEngine(summaryRecord,thingIDsMap);
-
-
-			} else if (record instanceof MultipleSrcTriggerRecord){
+			}  else if (record instanceof MultipleSrcTriggerRecord){
 				MultipleSrcTriggerRecord multipleRecord=(MultipleSrcTriggerRecord)record;
 
 				addMulToEngine(multipleRecord,thingIDsMap);
@@ -218,91 +198,6 @@ public class BeehiveTriggerService {
 
 	}
 
-	private void addSummaryToEngine(SummaryTriggerRecord record,Map<String,Set<String>>  summaryMap){
-
-
-		MultipleSrcTriggerRecord convertRecord=new MultipleSrcTriggerRecord();
-
-		BeanUtils.copyProperties(record,convertRecord);
-
-
-		Map<String,Set<String>> thingMap=new HashMap<>();
-
-		record.getSummarySource().forEach((k,v)->{
-
-			TagSelector source=v.getSource();
-
-			v.getExpressList().forEach((exp)->{
-
-				GroupSummarySource  elem=new GroupSummarySource();
-
-				elem.setFunction(exp.getFunction());
-				elem.setStateName(exp.getStateName());
-				elem.setSource(source);
-
-				String index=k+"."+exp.getSummaryAlias();
-				convertRecord.addSource(index,elem);
-				thingMap.put(index,summaryMap.get(k));
-
-			});
-		});
-
-		addMulToEngine(convertRecord,thingMap);
-	}
-
-	private  void addGroupToEngine(GroupTriggerRecord record,Map<String,Set<String>>  thingIDsMap){
-
-
-		Set<String>  thingIDs=thingIDsMap.get("comm");
-
-		MultipleSrcTriggerRecord convertRecord=new MultipleSrcTriggerRecord();
-		BeanUtils.copyProperties(record,convertRecord);
-
-
-		Condition cond=new All();
-		switch(record.getPolicy().getGroupPolicy()){
-			//	Any,All,Some,Percent,None;
-
-			case All:
-				cond= TriggerConditionBuilder.newCondition().equal("comm",thingIDs.size()).getConditionInstance();
-				break;
-			case Any:
-				cond=TriggerConditionBuilder.newCondition().greatAndEq("comm",1).getConditionInstance();
-				break;
-			case Some:
-				cond=TriggerConditionBuilder.newCondition().greatAndEq("comm",record.getPolicy().getCriticalNumber()).getConditionInstance();
-				break;
-			case Percent:
-				int percent=(record.getPolicy().getCriticalNumber()*thingIDs.size())/100;
-				cond=TriggerConditionBuilder.newCondition().equal("comm",percent).getConditionInstance();
-				break;
-			case None:
-				cond=TriggerConditionBuilder.newCondition().equal("comm",0).getConditionInstance();
-		}
-		RuleEnginePredicate predicate=new RuleEnginePredicate();
-
-		predicate.setCondition(cond);
-		predicate.setTriggersWhen(record.getPredicate().getTriggersWhen());
-		predicate.setSchedule(record.getPredicate().getSchedule());
-
-		convertRecord.setPredicate(predicate);
-
-		Map<String,Set<String>> thingMap=new HashMap<>();
-		thingMap.put("comm",new HashSet<>(thingIDs));
-
-		GroupSummarySource  elem=new GroupSummarySource();
-
-		elem.setFunction(SummaryFunctionType.count);
-		Express exp=new Express();
-		exp.setCondition(record.getPredicate().getCondition());
-		elem.setExpress(exp);
-
-		elem.setSource(record.getSource());
-
-		convertRecord.addSource("comm",elem);
-
-		addMulToEngine(convertRecord,thingMap);
-	}
 
 
 
