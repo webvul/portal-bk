@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,9 +63,9 @@ public class TriggerOperate {
 
 	public Set<String> getTriggerListByThingID(long thingID){
 	
-		String fullKiiThingID=thingTagService.getThingByID(thingID).getFullKiiThingID();
+//		String fullKiiThingID=thingTagService.getThingByID(thingID).getFullKiiThingID();
 		
-		return general.getTriggerIDByThingID(fullKiiThingID);
+		return general.getTriggerIDByObjID(BusinessObjType.Thing.getFullID(String.valueOf(thingID),null));
 		
 		
 	}
@@ -100,17 +101,17 @@ public class TriggerOperate {
 			
 			BusinessDataObject obj=new BusinessDataObject();
 			obj.setBusinessType(BusinessObjType.Thing);
-			obj.setBusinessObjID(s.getFullKiiThingID());
+			obj.setBusinessObjID(String.valueOf(s.getId()));
 			obj.setData(s.getStatus());
 			obj.setModified(s.getModifyDate());
 
-			general.updateThingStatus(obj);
+			general.updateBusinessData(obj);
 		});
 
 		objList.forEach((obj)->{
 			
 			
-			general.updateThingStatus(obj);
+			general.updateBusinessData(obj);
 
 		});
 
@@ -158,7 +159,7 @@ public class TriggerOperate {
 
 			if (record instanceof SimpleTriggerRecord) {
 				
-				map.put("comm",Collections.singleton(((SimpleTriggerRecord) record).getSource().getBusinessObj().getFullObjID()));
+				map.put("comm",Collections.singleton(((SimpleTriggerRecord) record).getSource().getBusinessObj().getFullID()));
 
 			} else if (record instanceof MultipleSrcTriggerRecord){
 				MultipleSrcTriggerRecord multipleRecord=(MultipleSrcTriggerRecord)record;
@@ -240,7 +241,7 @@ public class TriggerOperate {
 			switch(v.getType()){
 				case thing:
 					ThingSource thing=(ThingSource)v;
-					thingMap.put(k, Collections.singleton(thing.getBusinessObj().getFullObjID()));
+					thingMap.put(k, Collections.singleton(thing.getBusinessObj().getFullID()));
 					break;
 				case summary:
 					GroupSummarySource summary=(GroupSummarySource)v;
@@ -263,7 +264,7 @@ public class TriggerOperate {
 			
 		}else {
 			
-			return source.getFullBusinessObjIDs();
+			return source.getFullBusinessObjs().stream().map(BusinessDataObject::getFullID).collect(Collectors.toSet());
 		}
 	}
 	

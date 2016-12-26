@@ -153,7 +153,7 @@ public class RuleEngineConsole {
 			BusinessDataObject obj=new BusinessDataObject(s.getThingID(),null, BusinessObjType.Thing);
 			obj.setData(s.getValues());
 			
-			service.updateThingStatus(obj);
+			service.updateBusinessData(obj);
 		});
 
 		service.leaveInit();
@@ -166,7 +166,7 @@ public class RuleEngineConsole {
 				
 				BusinessDataObject obj=new BusinessDataObject("4",null, BusinessObjType.Thing);
 				obj.setData(map);
-				service.updateThingStatus(obj);
+				service.updateBusinessData(obj);
 			}
 
 		},3, 30,TimeUnit.SECONDS);
@@ -248,7 +248,7 @@ public class RuleEngineConsole {
 				for(int i=0;i<num;i++) {
 					BusinessDataObject obj=new BusinessDataObject(arrays[1],null, BusinessObjType.Thing);
 					obj.setData(status.getFields());
-					service.updateThingStatus(obj);
+					service.updateBusinessData(obj);
 				}
 				break;
 			case "remove":

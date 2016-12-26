@@ -16,7 +16,7 @@ when
     SingleThing($thingID:thingID,$triggerID==$triggerID)
     $inst:TriggerValues(triggerID==$triggerID)
     $curr:CurrThing(init == false)
-    $status:ThingStatusInRule(thingID == $thingID,${express}  )
+    $status:BusinessObjInRule(thingID == $thingID,${express}  )
 then
 
 	MatchResult result=new MatchResult($triggerID);

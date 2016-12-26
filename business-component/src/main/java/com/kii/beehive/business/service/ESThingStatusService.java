@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 
 import com.kii.beehive.business.elasticsearch.BulkOperate;
 import com.kii.beehive.business.elasticsearch.ESIndex;
@@ -14,7 +13,7 @@ import com.kii.beehive.business.entity.ESThingStatus;
 import com.kii.beehive.business.manager.ThingTagManager;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
-@Component
+//@Component
 public class ESThingStatusService {
 	
 	private Logger log= LoggerFactory.getLogger(ESThingStatusService.class);

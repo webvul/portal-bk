@@ -1,6 +1,7 @@
 package com.kii.extension.ruleengine;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -87,14 +88,11 @@ public class BeehiveTriggerService {
 		droolsTriggerService.leaveInit();
 	}
 
-//	public void updateThingStatus(BusinessDataObject data){
-//		updateThingStatus(thingID,status,new Date());
-//
-//	}
 
-	public void updateThingStatus(BusinessDataObject data){
 
-		BusinessObjInRule newStatus=new BusinessObjInRule(data.getFullObjID());
+	public void updateBusinessData(BusinessDataObject data){
+
+		BusinessObjInRule newStatus=new BusinessObjInRule(data.getFullID());
 		newStatus.setValues(data.getData());
 		newStatus.setCreateAt(data.getModified());
 
@@ -309,8 +307,14 @@ public class BeehiveTriggerService {
 
 	}
 	
-	public Set<String>  getTriggerIDByThingID(String thingID){
-		return relationStore.getTriggerSetByThingID(thingID);
+	public Set<String>  getTriggerIDByObjID(String thingID){
+		Set<String>  set=relationStore.getTriggerSetByThingID(thingID);
+		
+		if(set==null){
+			return Collections.emptySet();
+		}
+		
+		return set;
 	}
 
 

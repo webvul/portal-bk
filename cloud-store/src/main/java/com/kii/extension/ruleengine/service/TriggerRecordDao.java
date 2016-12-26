@@ -192,6 +192,8 @@ public class TriggerRecordDao extends AbstractDataAccess<TriggerRecord> {
 	
 	public List<TriggerRecord> queryByIDSetForUser(Set<String> triggerSet, Long userID) {
 		
+		
+		
 		QueryParam query= ConditionBuilder.andCondition()
 				.equal("userID",userID)
 				.In("_id",triggerSet)

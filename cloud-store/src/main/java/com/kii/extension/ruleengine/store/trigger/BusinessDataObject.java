@@ -2,8 +2,8 @@ package com.kii.extension.ruleengine.store.trigger;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -25,11 +25,38 @@ public class BusinessDataObject extends KiiEntity {
 	}
 	
 	public BusinessDataObject(String businessObjID,String businessName,BusinessObjType businessType){
-		
+
 		setBusinessName(businessName);
 		setBusinessObjID(businessObjID);
 		setBusinessType(businessType);
+
+	}
+	private static final Pattern pattern=Pattern.compile("(([^\\:\\-]+)(\\-([^:]+))?)\\:([\\S]+)");
+	
+	public static BusinessDataObject getInstance(String fullBuinessID){
 		
+		Matcher match=pattern.matcher(fullBuinessID);
+		
+		if(match.find()){
+			BusinessDataObject obj=new BusinessDataObject();
+			obj.businessType=BusinessObjType.valueOf(match.group(2));
+			obj.businessName=match.group(4);
+			obj.businessObjID=match.group(5);
+			
+			return obj;
+			
+		}else{
+			return null;
+		}
+	}
+	
+	@JsonIgnore
+	public String getFullID(){
+//		String name=;
+//		if(StringUtils.isBlank(name)){
+//			name="comm";
+//		}
+		return businessType.getFullID(businessObjID,businessName);
 	}
 	
 	public String getBusinessName() {
@@ -40,14 +67,7 @@ public class BusinessDataObject extends KiiEntity {
 		this.businessName = businessName;
 	}
 	
-	@JsonIgnore
-	public String getFullObjID(){
-		String name=businessName;
-		if(StringUtils.isBlank(name)){
-			name="comm";
-		}
-		return businessType.name()+""+name+"-"+businessObjID;
-	}
+
 	
 	public BusinessObjType getBusinessType() {
 		return businessType;

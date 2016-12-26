@@ -10,83 +10,59 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 public class ThingCollectSource {
 	
-	private List<Long> thingList=new ArrayList<>();
+	private List<String> idList=new ArrayList<>();
 	
 	private TagSelector selector=new TagSelector();
 	
-	private List<String> userList=new ArrayList<>();
+	private BusinessObjType businessType;
 	
-	private List<String> triggerGroupList=new ArrayList<>();
+//	private String businessName;
 	
 	private List<String> businessIDList=new ArrayList<>();
 	
-	private BusinessObjType businessType= BusinessObjType.Thing;
 	
-	private String businessName;
-	
-	
-	
-	public String getBusinessName() {
-		return businessName;
-	}
-	
-	public void setBusinessName(String businessName) {
-		this.businessName = businessName;
-	}
-	
-	public List<String> getUserList() {
-		return userList;
+	public List<Long> getThingList(){
+		return thingList;
 	}
 	
 	public void setUserList(List<String> userList) {
-		this.userList = userList;
+		this.idList = userList;
 		businessType= BusinessObjType.User;
 	}
 	
-	public List<String> getTriggerGroupList() {
-		return triggerGroupList;
-	}
-	
 	public void setTriggerGroupList(List<String> triggerList) {
-		this.triggerGroupList = triggerList;
+		this.idList = triggerList;
 		businessType= BusinessObjType.TriggerGroup;
 		
-	}
-	
-	public List<String> getBusinessIDList() {
-		return businessIDList;
 	}
 	
 	public void setBusinessIDList(List<String> businessIDList) {
 		this.businessIDList = businessIDList;
 	}
 	
-	public BusinessObjType getBusinessType() {
-		return businessType;
-	}
-	
-	public void setBusinessType(BusinessObjType businessType) {
-		this.businessType = businessType;
-	}
-	
-	public List<Long> getThingList() {
-		return thingList;
-	}
+	private List<Long> thingList;
 	
 	public void setThingList(List<Long> thingList) {
 		businessType= BusinessObjType.Thing;
-		this.thingList = thingList;
+		this.idList = thingList.stream().map(String::valueOf).collect(Collectors.toList());
+		this.thingList=thingList;
 	}
 	
 	@JsonIgnore
-	public Set<String> getFullBusinessObjIDs() {
+	public Set<BusinessDataObject> getFullBusinessObjs() {
 		
-		return businessIDList.stream().map((k) -> {
+		if(!businessIDList.isEmpty()){
+			
+			return businessIDList.stream().map(BusinessDataObject::getInstance).collect(Collectors.toSet());
+		}else {
+			
+			return idList.stream().map((k) -> {
 				
-				BusinessDataObject obj=new BusinessDataObject(k,businessName,businessType);
+				BusinessDataObject obj = new BusinessDataObject(k, null, businessType);
 				
-				return obj.getFullObjID();
-		}).collect(Collectors.toSet());
+				return obj;
+			}).collect(Collectors.toSet());
+		}
 	}
 	
 	@JsonUnwrapped

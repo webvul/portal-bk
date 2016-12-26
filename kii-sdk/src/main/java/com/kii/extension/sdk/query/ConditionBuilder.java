@@ -2,6 +2,7 @@ package com.kii.extension.sdk.query;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 import com.kii.extension.sdk.query.condition.All;
 import com.kii.extension.sdk.query.condition.AndLogic;
@@ -55,6 +56,10 @@ public class ConditionBuilder {
 	public ConditionBuilder In(String field, Collection<?> objList) {
 		InCollect q = new InCollect();
 		q.setField(field);
+		if(objList.isEmpty()){
+			
+			objList= Collections.singletonList("NULL_OBJ");
+		}
 		q.setValues(objList);
 
 		fill(q);

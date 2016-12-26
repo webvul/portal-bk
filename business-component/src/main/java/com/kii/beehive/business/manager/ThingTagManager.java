@@ -26,7 +26,6 @@ import com.kii.beehive.portal.jdbc.dao.PagerTag;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.dao.ThingLocationRelDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
-import com.kii.extension.ruleengine.store.trigger.BusinessDataObject;
 import com.kii.extension.ruleengine.store.trigger.BusinessObjType;
 import com.kii.extension.ruleengine.store.trigger.TagSelector;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
@@ -168,8 +167,7 @@ public class ThingTagManager {
 
 	
 	private String getInstance(GlobalThingInfo thing){
-		return new BusinessDataObject(String.valueOf(thing.getId()),
-				null, BusinessObjType.Thing).getFullObjID();
+		return BusinessObjType.Thing.getFullID(String.valueOf(thing.getId()),null);
 	}
 
 	public void iteratorAllThingsStatus(Consumer<GlobalThingInfo> consumer) {

@@ -7,7 +7,7 @@ when
 	Trigger($triggerID:triggerID=="${triggerID}" , enable == true)
 	$inst:TriggerValues(triggerID==$triggerID)
     $summary:Summary( triggerID==$triggerID , $thingIDs:thingIDs ,name=="${name}" )
-    $status:ThingStatusInRule( $thingID:thingID memberOf $thingIDs,${express}  )
+    $status:BusinessObjInRule( $thingID:thingID memberOf $thingIDs,${express}  )
 then
 	insertLogical(new MemberMatchResult($summary,$status));
 end

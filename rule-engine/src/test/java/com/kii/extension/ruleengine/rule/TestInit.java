@@ -69,7 +69,7 @@ public class TestInit {
 		obj.setData(status.getFields());
 		obj.setCreated(new Date());
 		
-		engine.updateThingStatus(obj);
+		engine.updateBusinessData(obj);
 
 	}
 

@@ -54,7 +54,7 @@ public class ThingStatusChangeCallback {
 		data.setData(status.getFields());
 		data.setCreated(timestamp);
 		
-		engine.updateThingStatus(data);
+		engine.updateBusinessData(data);
 		
 		
 		pushStatusUpload(thing,status,timestamp);
