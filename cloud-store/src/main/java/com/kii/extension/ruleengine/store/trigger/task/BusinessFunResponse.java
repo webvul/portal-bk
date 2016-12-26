@@ -18,7 +18,15 @@ public class BusinessFunResponse extends  TriggerResult {
 	private String methodName;
 
 	private List<Object> paramList=new ArrayList<>();
-
+	
+	public String getMethodName() {
+		return methodName;
+	}
+	
+	public void setMethodName(String beanName) {
+		this.methodName = beanName;
+	}
+	
 	public List<Object> getParamList() {
 		return paramList;
 	}
@@ -41,15 +49,6 @@ public class BusinessFunResponse extends  TriggerResult {
 
 	public void setReturnValue(Object returnValue) {
 		this.returnValue = returnValue;
-	}
-	
-	
-	public String getMethodName() {
-		return methodName;
-	}
-	
-	public void setMethodName(String methodName) {
-		this.methodName = methodName;
 	}
 	
 	public String getBusinessBeanName() {

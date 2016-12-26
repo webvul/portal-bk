@@ -54,7 +54,9 @@ public class BusinessFunctionCallService {
 			result.setMethodName(function.getFunctionName());
 			
 			Method method= MethodTools.getMethodByName(bean.getClass(),function.getFunctionName(),paramArray.length);
-		
+			
+			result.setMethodName(method.getName());
+			
 			Object returnResult=method.invoke(bean,paramArray);
 			
 			result.setReturnValue(returnResult);
