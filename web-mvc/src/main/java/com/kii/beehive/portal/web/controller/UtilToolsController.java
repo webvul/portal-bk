@@ -203,6 +203,7 @@ public class UtilToolsController {
 
 		map.put("ownerID", result.getUserID());
 		map.put("ownerToken", result.getAppAuthToken());
+		map.put("globalThingID", globalThingInfo.getId());
 
 		ModelAndView model = new ModelAndView();
 		model.addAllObjects(map);

@@ -4,6 +4,7 @@ import static com.kii.beehive.portal.jdbc.entity.GlobalThingInfo.locationPattern
 import static com.kii.beehive.portal.jdbc.entity.GlobalThingInfo.validVendorThingIDPattern;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 
@@ -35,6 +36,8 @@ public class ThingRestBean  {
 	private Set<String> tagNames = new HashSet<>();
 
 	private GlobalThingInfo  thingInfo= new GlobalThingInfo();
+
+	private List<String> locations;
 
 	public ThingRestBean(){
 
@@ -87,6 +90,14 @@ public class ThingRestBean  {
 
 	public void setInputTags(Set<String> tags) {
 		this.tagNames = tags;
+	}
+
+	public List<String> getLocations() {
+		return locations;
+	}
+
+	public void setLocations(List<String> locations) {
+		this.locations = locations;
 	}
 
 	@JsonIgnore

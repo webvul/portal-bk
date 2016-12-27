@@ -668,6 +668,18 @@ public class TagThingManager {
 
 	}
 
+	public GlobalThingInfo getAccessibleThingByVendorThingId(Long userId, String vendorThingID) throws
+			ObjectNotFoundException {
+		GlobalThingInfo thingInfo = this.getThingsByVendorThingId(vendorThingID);
+		if (thingInfo == null) {
+			throw EntryNotFoundException.thingNotFound(vendorThingID);
+		}
+		if (!isThingOwner(thingInfo, userId)) {
+			throw new UnauthorizedException(UnauthorizedException.NOT_THING_CREATOR_OR_OWNER);
+		}
+		return thingInfo;
+	}
+
 	public GlobalThingInfo getAccessibleThingById(Long userId, Long thingId) throws ObjectNotFoundException {
 		GlobalThingInfo thingInfo = globalThingDao.findByID(thingId);
 		if (thingInfo == null) {

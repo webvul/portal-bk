@@ -1,27 +1,45 @@
 package com.kii.beehive.portal.web.controller;
 
-import com.kii.beehive.business.manager.TagThingManager;
-import com.kii.beehive.business.service.ThingIFInAppService;
-import com.kii.beehive.portal.auth.AuthInfoStore;
-import com.kii.beehive.portal.jdbc.entity.*;
-import com.kii.beehive.portal.manager.ThingManager;
-import com.kii.beehive.portal.service.AppInfoDao;
-import com.kii.beehive.portal.store.entity.KiiAppInfo;
-import com.kii.beehive.portal.web.entity.ThingDetail;
-import com.kii.beehive.portal.web.entity.ThingRestBean;
-import com.kii.beehive.portal.web.exception.ErrorCode;
-import com.kii.beehive.portal.web.exception.PortalException;
-import com.kii.extension.sdk.entity.thingif.*;
+import static java.util.Arrays.asList;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static java.util.Arrays.asList;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import com.kii.beehive.business.manager.TagThingManager;
+import com.kii.beehive.business.service.ThingIFInAppService;
+import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
+import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
+import com.kii.beehive.portal.jdbc.entity.TagIndex;
+import com.kii.beehive.portal.jdbc.entity.TagType;
+import com.kii.beehive.portal.jdbc.entity.UserGroup;
+import com.kii.beehive.portal.manager.LocationManager;
+import com.kii.beehive.portal.manager.ThingManager;
+import com.kii.beehive.portal.service.AppInfoDao;
+import com.kii.beehive.portal.store.entity.KiiAppInfo;
+import com.kii.beehive.portal.store.entity.LocationInfo;
+import com.kii.beehive.portal.web.entity.ThingDetail;
+import com.kii.beehive.portal.web.entity.ThingRestBean;
+import com.kii.beehive.portal.web.exception.ErrorCode;
+import com.kii.beehive.portal.web.exception.PortalException;
+import com.kii.extension.sdk.entity.thingif.EndNodeOfGateway;
+import com.kii.extension.sdk.entity.thingif.GatewayOfKiiCloud;
+import com.kii.extension.sdk.entity.thingif.OnBoardingParam;
+import com.kii.extension.sdk.entity.thingif.OnBoardingResult;
+import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
 /**
  * Beehive API - Thing API
@@ -38,6 +56,9 @@ public class ThingController extends AbstractThingTagController {
 
 	@Autowired
 	private ThingManager simpleThingManager;
+
+	@Autowired
+	private LocationManager locationManager;
 
 	@Autowired
 	private AppInfoDao appInfoDao;
@@ -193,6 +214,52 @@ public class ThingController extends AbstractThingTagController {
 		}
 		thingRestBean.setLocation(location);
 		thingRestBean.setInputTags(customDisplayNameList);
+
+		return thingRestBean;
+	}
+
+	/**
+	 * 查询设备（vendorThingID）
+	 * GET /things/vendorThingID/{vendorThingID}
+	 * <p>
+	 * refer to doc "Beehive API - Thing API" for request/response details
+	 *
+	 * @param vendorThingID
+	 * @return
+	 */
+	@RequestMapping(value = "/vendorThingID/{vendorThingID}", method = {RequestMethod.GET}, consumes = {"*"})
+	public ThingRestBean getThingByVendorThingID(@PathVariable("vendorThingID") String vendorThingID) {
+		GlobalThingInfo thingInfo;
+		thingInfo = thingTagManager.getAccessibleThingByVendorThingId(AuthInfoStore.getUserID(), vendorThingID);
+
+		if (thingInfo == null) {
+			throw new PortalException(ErrorCode.NOT_FOUND, "type", "vendor thing", "objectID", vendorThingID);
+		}
+
+		// set thing into output
+		ThingRestBean thingRestBean = new ThingRestBean(thingInfo);
+
+		long globalThingID = thingInfo.getId();
+
+		// set custom tags into output
+		Set<String> customDisplayNameList = new HashSet<>();
+		// get tag
+		List<TagIndex> tagIndexList = thingTagManager.findTagIndexByGlobalThingID(globalThingID);
+		for (TagIndex tag : tagIndexList) {
+			TagType tagType = tag.getTagType();
+			if (tagType == TagType.Custom) {
+				customDisplayNameList.add(tag.getDisplayName());
+			}
+		}
+		thingRestBean.setInputTags(customDisplayNameList);
+
+		// set location into output
+		List<String> locations = new ArrayList<>();
+		List<LocationInfo> locationInfoList = locationManager.getThingRelLocations(globalThingID);
+		if(locationInfoList != null) {
+			locationInfoList.forEach(e -> locations.add(e.getLocation()));
+		}
+		thingRestBean.setLocations(locations);
 
 		return thingRestBean;
 	}
