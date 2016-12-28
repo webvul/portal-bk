@@ -1,13 +1,16 @@
 package com.kii.beehive.portal.face;
 
 import javax.annotation.PostConstruct;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,6 +74,14 @@ public class BeehiveFaceService implements ApplicationContextAware{
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
 		faceServiceMap = applicationContext.getBeansOfType(FaceServiceInf.class);
+	}
+
+	public File createUserFaceTempFile(String userId, byte[] photo) throws IOException {
+		File photoFile = File.createTempFile(userId + "-" + UUID.randomUUID() + "-", ".jpg", this.getPhotoTempDir());
+		BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(photoFile));
+		stream.write(photo);
+		stream.close();
+		return photoFile;
 	}
 
 	public BeehiveJdbcUser updateUserWithFace(String userId, File photoFile) {

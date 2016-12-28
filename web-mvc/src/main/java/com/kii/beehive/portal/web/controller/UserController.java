@@ -1,14 +1,11 @@
 package com.kii.beehive.portal.web.controller;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.logging.log4j.util.Strings;
@@ -55,7 +52,7 @@ public class UserController {
 	private AuthManager authManager;
 
 	@Autowired
-	private BeehiveFaceService service;
+	private BeehiveFaceService beehiveFaceService;
 
 	@Autowired
 	private SmsSendService smsService;
@@ -350,16 +347,14 @@ public class UserController {
 			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "field", "photo");
 		}
 
-		File photoFile = File.createTempFile(userId + "-" + UUID.randomUUID() + "-", photo.getOriginalFilename(), service.getPhotoTempDir());
-		byte[] bytes = photo.getBytes();
-		BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(photoFile));
-		stream.write(bytes);
-		stream.close();
+		File photoFile = beehiveFaceService.createUserFaceTempFile(userId, photo.getBytes());
 
-		BeehiveJdbcUser user = service.updateUserWithFace(userId, photoFile);
+		BeehiveJdbcUser user = beehiveFaceService.updateUserWithFace(userId, photoFile);
 		UserRestBean bean = new UserRestBean(user);
 		return bean;
 	}
+
+
 
 
 	@RequestMapping(value = "/user/photo", method = RequestMethod.POST)
@@ -374,13 +369,10 @@ public class UserController {
 			throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "field", "pictureImageContentBase64");
 		}
 
-		File photoFile = File.createTempFile(faceImage.getUserId() + "-" + UUID.randomUUID() + "-", ".jpg", service.getPhotoTempDir());
 		byte[] bytes = Base64.decodeBase64(faceImage.getPictureImageContentBase64());
-		BufferedOutputStream stream = new BufferedOutputStream(new FileOutputStream(photoFile));
-		stream.write(bytes);
-		stream.close();
+		File photoFile = beehiveFaceService.createUserFaceTempFile(faceImage.getUserId(), bytes);
 
-		BeehiveJdbcUser user = service.updateUserWithFace(faceImage.getUserId(), photoFile);
+		BeehiveJdbcUser user = beehiveFaceService.updateUserWithFace(faceImage.getUserId(), photoFile);
 		UserRestBean bean = new UserRestBean(user);
 		return bean;
 	}
