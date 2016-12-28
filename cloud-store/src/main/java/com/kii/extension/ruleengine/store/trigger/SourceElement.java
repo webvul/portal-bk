@@ -6,7 +6,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME,
 		include = JsonTypeInfo.As.EXISTING_PROPERTY,
-		property = "type")
+		property = "type",
+		defaultImpl=ThingSource.class)
 @JsonSubTypes({
 		@JsonSubTypes.Type(value = GroupSummarySource.class,name="summary"),
 		@JsonSubTypes.Type(value = ThingSource.class,name="thing"),
