@@ -144,7 +144,7 @@ public class BindClsRowMapper<T> implements RowMapper<T> {
 	
 	public static class Pager{
 		
-		private static Pattern pagerPat=Pattern.compile("^((\\d+)\\/)?(\\d+)$");
+		private static Pattern pagerPat=Pattern.compile("^((\\d+)[\\/\\:])?(\\d+)$");
 		
 		
 		private int start=0;
