@@ -61,7 +61,9 @@ when
     not ( TriggerResult(triggerID==$triggerID) )
 then
 	insert(new TriggerResult($result));
+
 	CommandExec exec=(CommandExec)kcontext.getKieRuntime().getEnvironment().get("exec");
+    $result.setResult(true);
     exec.doExecute($triggerID,$result);
 end
 
@@ -73,7 +75,9 @@ when
     $result:TriggerResult(triggerID==$triggerID)
 then
 	CommandExec exec=(CommandExec)kcontext.getKieRuntime().getEnvironment().get("exec");
-    exec.doExecute($triggerID,$result.getMatchResult());
+	$match=$result.getMatchResult();
+	$match.setResult(false);
+    exec.doExecute($triggerID,$match);
     delete($result);
 
 end

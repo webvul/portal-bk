@@ -1,7 +1,5 @@
 package com.kii.extension.ruleengine.drools.entity;
 
-import java.util.Objects;
-
 public class MatchResult extends CommResult{
 
 
@@ -12,6 +10,11 @@ public class MatchResult extends CommResult{
 	public MatchResult(ResultParam param){
 
 		param.fill(this);
+	}
+	
+	
+	public void setResult(boolean result) {
+		super.getParams().put("result",result);
 	}
 	
 	

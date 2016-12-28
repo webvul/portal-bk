@@ -24,7 +24,16 @@ public class SettingTriggerGroupParameter extends ExecuteTarget {
 	private BusinessDataObject businessObj=new BusinessDataObject();
 	
 	private Map<String,String> paramMap=new HashMap<>();
-
+	
+	private Map<String,Object> valueMap=new HashMap<>();
+	
+	public Map<String, Object> getValueMap() {
+		return valueMap;
+	}
+	
+	public void setValueMap(Map<String, Object> valueMap) {
+		this.valueMap = valueMap;
+	}
 	
 	public String getGroupName() {
 		return businessObj.getBusinessObjID();
@@ -62,26 +71,5 @@ public class SettingTriggerGroupParameter extends ExecuteTarget {
 		this.businessObj = businessObj;
 	}
 	
-//	public static class Param {
-//
-//		private String name;
-//
-//		private String valueExpress;
-//
-//		public String getName() {
-//			return name;
-//		}
-//
-//		public void setName(String name) {
-//			this.name = name;
-//		}
-//
-//		public String getValueExpress() {
-//			return valueExpress;
-//		}
-//
-//		public void setValueExpress(String valueExpress) {
-//			this.valueExpress = valueExpress;
-//		}
-//	}
+
 }
