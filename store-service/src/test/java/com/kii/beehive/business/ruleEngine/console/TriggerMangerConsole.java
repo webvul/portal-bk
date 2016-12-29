@@ -32,7 +32,7 @@ public class TriggerMangerConsole {
 
 	public static void main(String[] argc){
 
-		ClassPathXmlApplicationContext  context=new ClassPathXmlApplicationContext("classpath:com/kii/beehive/portal/store/testStoreContext.xml");
+		ClassPathXmlApplicationContext  context=new ClassPathXmlApplicationContext("classpath:com/kii/beehive/portal/store/testStoreServiceContext.xml");
 
 		TriggerManager engine=context.getBean(TriggerManager.class);
 

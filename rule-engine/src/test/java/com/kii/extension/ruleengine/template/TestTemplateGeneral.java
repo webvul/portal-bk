@@ -43,16 +43,7 @@ public class TestTemplateGeneral {
 	@Autowired
 	private ExpressConvert convert;
 	
-	@Test
-	public void testFillExpress(){
-		
-		String input="ml.score('one',$p{1},$p{2})>$e{demo.map[c].num} ";
-		
-		String result=convert.addParamPrefix(input,"comm");
-		
-		assertEquals("ml.score('one',$p{comm.1},$p{comm.2})>$e{demo.map[c].num} ",result);
-	}
-	
+
 	@Test
 	public void testConditionConvert(){
 		

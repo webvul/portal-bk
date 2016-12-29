@@ -94,30 +94,7 @@ public class ExpressConvert {
 	}
 	
 	
-	public  String addParamPrefix(String express,String prefix){
-		StringBuffer sb=new StringBuffer();
-		
-		Pattern pattern= Pattern.compile("\\$[ph](\\:[iscm])?\\{([^\\}]+)\\}");
-		
-		Matcher matcher=pattern.matcher(express);
-		
-		while(matcher.find()) {
-			
-			int start=matcher.start(2);
-			
-			int base=matcher.start();
-			
-			String str=matcher.group();
-			
-			StringBuffer buf=new StringBuffer(str);
-			buf.insert(start-base,prefix+".");
-			
-			matcher.appendReplacement(sb,Matcher.quoteReplacement(buf.toString()));
-		}
-		matcher.appendTail(sb);
-		
-		return sb.toString();
-	}
+
 	
 
 	private static class Param{

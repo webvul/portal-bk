@@ -13,32 +13,10 @@
     <bean:annotation-config />
 
     <bean   class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="locations" value="classpath:com/kii/beehive/portal/store/config.test.properties"/>
 
-        <property name="properties">
-            <value>
-                beehive.portal.oplog.file=./foo.log
-                com.kii.beehive.portal.permission.config.file=BeehivePermissionList
-                beehive.sms.account.name=kiisms2
-                beehive.sms.account.password=sZd_B_wp
-                beehive.sms.gateway.address=221.179.180.158:9007
-                face.web_socket.uri=https://v2.koalacam.net
-                face.web_socket.username=mczhou82@hotmail.com
-                face.web_socket.password=123456
-                face.photo.dir=${user.home}/data/beehive/face/photo/
+        <property name="locations" value="classpath:com/kii/beehive/portal/store/testStoreService.properties"/>
 
-                elasticsearch.business.common.field.timestamp=timestamp
-                elasticsearch.business.common.field.carId=source
-                elasticsearch.business.parkingspace.index=74e58d2e-cb1f-4ada-b15e-49aea780f664
-                elasticsearch.business.parkingspace.indexType.leave=离开
-                elasticsearch.business.gateway.index=4e47ffb1-0be8-4792-91f2-673be1626b57
-                elasticsearch.business.gateway.indexType.leave=CarOut
-
-            </value>
-        </property>
     </bean>
-
-    <bean id="contextAspect" class="com.kii.beehive.portal.aop.ContextAspect" />
 
 
     <context:component-scan base-package="com.kii.beehive" >
@@ -52,9 +30,11 @@
     </context:component-scan>
 
 
-    <import resource="classpath:com/kii/beehive/business/testComponentContext.xml" />
 
-    <import resource="classpath:com/kii/beehive/portal/jdbc/portaljdbcContext.xml" />
+    <import resource="classpath:com/kii/beehive/cloudstore/config/cloudStoreContext.xml" />
+
+
+    <import resource="classpath:com/kii/beehive/portal/jdbcstore/config/jdbcStoreContext.xml" />
 
     <bean class="com.kii.extension.ruleengine.RuleEngineConfig" />
 

@@ -59,7 +59,7 @@ public class FacePlusPlusService {
 
     @Value("${face.web_socket.uri}")
     private String faceWebSocketUri;
-    @Value("${face.web_socket.queue}")
+    @Value("${face.web_socket.queue:faceplusplus}")
     private String faceQueue;
 
     private Logger log = LoggerFactory.getLogger(FacePlusPlusService.class);

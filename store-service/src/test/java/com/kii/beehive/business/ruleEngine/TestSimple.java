@@ -29,7 +29,7 @@ import com.kii.extension.sdk.entity.thingif.ThingCommand;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:com/kii/beehive/portal/store/testStoreContext.xml" })
+@ContextConfiguration(locations = { "classpath:com/kii/beehive/portal/store/testStoreServiceContext.xml" })
 public class TestSimple {
 
 	@Autowired
