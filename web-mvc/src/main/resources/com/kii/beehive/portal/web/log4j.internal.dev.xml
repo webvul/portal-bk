@@ -16,7 +16,18 @@
 		</layout>
 	</appender>
 
+	<appender name="faceplusplus" class="org.apache.log4j.DailyRollingFileAppender" >
+		<param name="file" value="/data/log/beehive/faceplusplus.log" />
+		<param name="DatePattern" value="'.'yyyy-MM-dd" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%m%n" />
+		</layout>
+	</appender>
 
+	<logger name="faceplusplus">
+		<level value="info" />
+		<appender-ref ref="faceplusplus" />
+	</logger>
 
 	<logger name="com.fasterxml.jackson">
 		<level value="info" />

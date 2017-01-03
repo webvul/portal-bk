@@ -64,6 +64,8 @@ public class FacePlusPlusService {
 
     private Logger log = LoggerFactory.getLogger(FacePlusPlusService.class);
 
+    private Logger faceLog = LoggerFactory.getLogger("faceplusplus");
+
     private Socket socket = null;
 
     private List<String> cookieList = new ArrayList<>();
@@ -268,20 +270,19 @@ public class FacePlusPlusService {
                     Map<String, Object> eventResult = null;
                     try {
                         eventResult = objectMapper.readValue(eventJsonStr, new TypeReference<HashMap>() {});
-                    } catch (IOException e) {
-                        log.error(e.getMessage(),e);
-                    }
-                    String faceUserID = eventResult.get("subject_id") == null ? "" : String.valueOf(eventResult.get("subject_id"));
-                    if( ! StringUtils.isEmpty(faceUserID) ){
-                        BeehiveJdbcUser user = beehiveUserJdbcDao.getUserByFaceUserID(faceUserID);
-                        if(user != null) {
-                            eventResult.put("beehive_user_id", user.getUserID());
-                            try {
-                                postEventJsonStr = objectMapper.writeValueAsString(eventResult);
-                            } catch (JsonProcessingException e) {
-								log.error(e.getMessage(),e);
+
+                        String faceUserID = eventResult.get("subject_id") == null ? "" : String.valueOf(eventResult.get("subject_id"));
+                        if( ! StringUtils.isEmpty(faceUserID) ){
+                            BeehiveJdbcUser user = beehiveUserJdbcDao.getUserByFaceUserID(faceUserID);
+                            if(user != null) {
+                                eventResult.put("beehive_user_id", user.getUserID());
                             }
                         }
+
+                        postEventJsonStr = objectMapper.writeValueAsString(eventResult);
+                        faceLog.info(postEventJsonStr);
+                    } catch (IOException e) {
+                        log.error(e.getMessage(),e);
                     }
 
                     //push redis
