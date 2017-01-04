@@ -18,7 +18,7 @@ import com.kii.extension.ruleengine.store.trigger.Condition;
 import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.ThingSource;
+import com.kii.extension.ruleengine.store.trigger.SingleThing;
 import com.kii.extension.ruleengine.store.trigger.WhenType;
 import com.kii.extension.ruleengine.store.trigger.groups.GroupTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.schedule.IntervalPrefix;
@@ -105,7 +105,7 @@ public class TestSimple {
 
 		SimpleTriggerRecord record=new SimpleTriggerRecord();
 		
-		ThingSource thingID=new ThingSource();
+		SingleThing thingID=new SingleThing();
 		thingID.setThingID(1052l);
 
 		record.setSource(thingID);
@@ -172,7 +172,7 @@ public class TestSimple {
 
 		SimpleTriggerRecord record=new SimpleTriggerRecord();
 		
-		ThingSource thingID=new ThingSource();
+		SingleThing thingID=new SingleThing();
 		thingID.setThingID(1052l);
 
 		record.setSource(thingID);

@@ -17,7 +17,7 @@ import com.kii.beehive.business.ruleengine.TriggerManager;
 import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.ThingSource;
+import com.kii.extension.ruleengine.store.trigger.SingleThing;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.groups.GroupTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.groups.TriggerGroupPolicy;
@@ -113,7 +113,7 @@ public class TriggerMangerConsole {
 					SimpleTriggerRecord record=new SimpleTriggerRecord();
 					record.setPredicate(predicate);
 					record.setRecordStatus(TriggerRecord.StatusType.disable);
-					record.setSource(new ThingSource());
+					record.setSource(new SingleThing());
 					record.getSource().setThingID(Long.parseLong(thingID));
 					List<ExecuteTarget> targets = getTargets();
 					record.setTargets(targets);

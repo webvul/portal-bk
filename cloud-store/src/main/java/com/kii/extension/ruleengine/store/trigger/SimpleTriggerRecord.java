@@ -6,15 +6,15 @@ public class SimpleTriggerRecord extends TriggerRecord{
 
 	}
 
-	private ThingSource source;
+	private SingleThing source;
 
 
 
-	public ThingSource getSource() {
+	public SingleThing getSource() {
 		return source;
 	}
 
-	public void setSource(ThingSource source) {
+	public void setSource(SingleThing source) {
 		this.source = source;
 	}
 

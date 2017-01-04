@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.quartz.SchedulerException;
+import org.springframework.beans.BeanUtils;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
@@ -27,16 +28,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 import com.kii.extension.ruleengine.BeehiveTriggerService;
+import com.kii.extension.ruleengine.TriggerConditionBuilder;
 import com.kii.extension.ruleengine.drools.entity.BusinessObjInRule;
 import com.kii.extension.ruleengine.store.trigger.BusinessDataObject;
 import com.kii.extension.ruleengine.store.trigger.BusinessObjType;
+import com.kii.extension.ruleengine.store.trigger.Condition;
+import com.kii.extension.ruleengine.store.trigger.Express;
 import com.kii.extension.ruleengine.store.trigger.GroupSummarySource;
 import com.kii.extension.ruleengine.store.trigger.MultipleSrcTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.ThingCollectSource;
 import com.kii.extension.ruleengine.store.trigger.ThingSource;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.condition.All;
 import com.kii.extension.ruleengine.store.trigger.groups.GroupTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.groups.SummaryFunctionType;
 import com.kii.extension.ruleengine.store.trigger.groups.SummaryTriggerRecord;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
@@ -376,30 +383,35 @@ public class RuleEngineConsole {
 		record.setRecordStatus(TriggerRecord.StatusType.enable);
 
 		Map<String,Set<String>>  thingMap=new HashMap<>();
+		switch(record.getType()) {
+
+			case Group:
+				GroupTriggerRecord recGroup=(GroupTriggerRecord)record;
+				
+				record=convertGroup(recGroup);
+				
+				break;
+			case Summary:
+				
+				SummaryTriggerRecord recSummary=(SummaryTriggerRecord)record;
+				
+				record=convertSummary(recSummary);
+				
+				break;
+		}
+		
+		
 
 		switch(record.getType()) {
 			case Simple:
 				SimpleTriggerRecord rec=(SimpleTriggerRecord)record;
 
-				thingMap.put("comm",Collections.singleton(rec.getSource().getThingID()));
+				thingMap.put("comm",Collections.singleton(String.valueOf(rec.getSource().getThingID())));
 
 				break;
 			case Multiple:
 
 				thingMap= getThingMap((MultipleSrcTriggerRecord)record);
-				break;
-			case Group:
-				GroupTriggerRecord recGroup=(GroupTriggerRecord)record;
-
-				thingMap=getThingMap(recGroup );
-
-				break;
-			case Summary:
-
-				SummaryTriggerRecord recSummary=(SummaryTriggerRecord)record;
-
-				thingMap=getThingMap(recSummary);
-
 				break;
 		}
 
@@ -484,7 +496,7 @@ public class RuleEngineConsole {
 				}
 			}else{
 
-				String th=((ThingSource)v).getBusinessID();
+				String th=((ThingSource)v).getThing().getBusinessID();
 				thSet.add(th);
 
 			}
@@ -550,6 +562,101 @@ public class RuleEngineConsole {
 			status.setField(key, value);
 		}
 	}
-
-
+	
+	
+	
+	private MultipleSrcTriggerRecord convertSummary(SummaryTriggerRecord record){
+		
+		
+		MultipleSrcTriggerRecord convertRecord=new MultipleSrcTriggerRecord();
+		
+		BeanUtils.copyProperties(record,convertRecord,"type");
+		
+		record.getSummarySource().forEach((k,v)->{
+			
+			ThingCollectSource source=v.getSource();
+			
+			v.getExpressList().forEach((exp)->{
+				
+				GroupSummarySource  elem=new GroupSummarySource();
+				
+				elem.setFunction(exp.getFunction());
+				elem.setStateName(exp.getStateName());
+				elem.setSource(source);
+				
+				String index=k+"."+exp.getSummaryAlias();
+				convertRecord.addSource(index,elem);
+				
+			});
+		});
+		
+		return convertRecord;
+	}
+	
+	private MultipleSrcTriggerRecord  convertGroup(GroupTriggerRecord record){
+		
+		
+		MultipleSrcTriggerRecord convertRecord=new MultipleSrcTriggerRecord();
+		BeanUtils.copyProperties(record,convertRecord,"type");
+		
+		int thingNum=getBusinessObjSet(record.getSource()).size();
+		
+		
+		Condition cond=new All();
+		switch(record.getPolicy().getGroupPolicy()){
+			//	Any,All,Some,Percent,None;
+			
+			case All:
+				cond= TriggerConditionBuilder.newCondition().equal("comm",thingNum).getConditionInstance();
+				break;
+			case Any:
+				cond=TriggerConditionBuilder.newCondition().greatAndEq("comm",1).getConditionInstance();
+				break;
+			case Some:
+				cond=TriggerConditionBuilder.newCondition().greatAndEq("comm",record.getPolicy().getCriticalNumber()).getConditionInstance();
+				break;
+			case Percent:
+				int percent=(record.getPolicy().getCriticalNumber()*thingNum)/100;
+				cond=TriggerConditionBuilder.newCondition().equal("comm",percent).getConditionInstance();
+				break;
+			case None:
+				cond=TriggerConditionBuilder.newCondition().equal("comm",0).getConditionInstance();
+		}
+		RuleEnginePredicate predicate=new RuleEnginePredicate();
+		
+		predicate.setCondition(cond);
+		predicate.setTriggersWhen(record.getPredicate().getTriggersWhen());
+		predicate.setSchedule(record.getPredicate().getSchedule());
+		
+		convertRecord.setPredicate(predicate);
+		
+		GroupSummarySource  elem=new GroupSummarySource();
+		
+		elem.setFunction(SummaryFunctionType.count);
+		Express exp=new Express();
+		exp.setCondition(record.getPredicate().getCondition());
+		elem.setExpress(exp);
+		
+		elem.setSource(record.getSource());
+		
+		convertRecord.addSource("comm",elem);
+		
+		return convertRecord;
+	}
+	
+	private List<String> getBusinessObjSet(ThingCollectSource source) {
+		
+		
+		if(source.getSelector().notEmpty()){
+			List<String> list=new ArrayList<>();
+			
+			source.getSelector().getTagList().forEach(t->{
+				list.addAll(tagMap.get(t));
+			});
+			return list;
+		}else{
+			return source.getBusinessIDList();
+		}
+	}
+	
 }

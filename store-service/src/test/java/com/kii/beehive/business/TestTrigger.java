@@ -17,7 +17,7 @@ import com.kii.extension.ruleengine.store.trigger.Condition;
 import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.ThingSource;
+import com.kii.extension.ruleengine.store.trigger.SingleThing;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.WhenType;
 import com.kii.extension.ruleengine.store.trigger.task.CommandToThing;
@@ -113,7 +113,7 @@ public class TestTrigger extends StoreServiceTestInit {
 
 		SimpleTriggerRecord record=new SimpleTriggerRecord();
 		
-		ThingSource  id=new ThingSource();
+		SingleThing id=new SingleThing();
 		id.setThingID(thingID);
 
 		record.setSource(id);
@@ -138,7 +138,7 @@ public class TestTrigger extends StoreServiceTestInit {
 
 		SimpleTriggerRecord record=new SimpleTriggerRecord();
 		
-		ThingSource id=new ThingSource();
+		SingleThing id=new SingleThing();
 		id.setThingID(thingID);
 
 		record.setSource(id);
