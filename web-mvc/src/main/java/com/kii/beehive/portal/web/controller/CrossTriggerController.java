@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.business.manager.TagThingManager;
 import com.kii.beehive.business.ruleengine.TriggerManager;
-import com.kii.beehive.business.ruleengine.TriggerValidate;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.web.exception.ErrorCode;
@@ -37,8 +36,8 @@ public class CrossTriggerController {
 	@Autowired
 	private TriggerManager mang;
 
-	@Autowired
-	private TriggerValidate triggerValidate;
+//	@Autowired
+//	private TriggerValidate triggerValidate;
 	
 	@Autowired
 	private TagThingManager  manager;
@@ -54,7 +53,7 @@ public class CrossTriggerController {
 
 		record.setUserID(AuthInfoStore.getUserID());
 
-		triggerValidate.validateTrigger(record);
+//		triggerValidate.validateTrigger(record);
 
 
 		record.setRecordStatus(TriggerRecord.StatusType.enable);
@@ -80,7 +79,7 @@ public class CrossTriggerController {
 
 		record.setUserID(AuthInfoStore.getUserID());
 
-		triggerValidate.validateTrigger(record);
+//		triggerValidate.validateTrigger(record);
 
 		mang.updateTrigger(record);
 

@@ -9,21 +9,21 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.kii.extension.ruleengine.store.trigger.ThingCollectSource;
-import com.kii.extension.ruleengine.store.trigger.ThingSource;
-import com.kii.extension.ruleengine.store.trigger.task.CallHttpApi;
-import com.kii.extension.ruleengine.store.trigger.task.CommandToThing;
 import com.kii.extension.ruleengine.store.trigger.Condition;
-import com.kii.extension.ruleengine.store.trigger.schedule.CronPrefix;
-import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
-import com.kii.extension.ruleengine.store.trigger.schedule.SimplePeriod;
-import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.groups.SummaryFunctionType;
-import com.kii.extension.ruleengine.store.trigger.TagSelector;
-import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.condition.Equal;
 import com.kii.extension.ruleengine.store.trigger.GroupSummarySource;
 import com.kii.extension.ruleengine.store.trigger.MultipleSrcTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
+import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.SingleThing;
+import com.kii.extension.ruleengine.store.trigger.TagSelector;
+import com.kii.extension.ruleengine.store.trigger.ThingCollectSource;
+import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.condition.Equal;
+import com.kii.extension.ruleengine.store.trigger.groups.SummaryFunctionType;
+import com.kii.extension.ruleengine.store.trigger.schedule.CronPrefix;
+import com.kii.extension.ruleengine.store.trigger.schedule.SimplePeriod;
+import com.kii.extension.ruleengine.store.trigger.task.CallHttpApi;
+import com.kii.extension.ruleengine.store.trigger.task.CommandToThing;
 import com.kii.extension.sdk.entity.thingif.Action;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
 
@@ -71,7 +71,7 @@ public class TestTriggerRecord {
 
 		record.addTarget(api);
 		
-		ThingSource id=new ThingSource();
+		SingleThing id=new SingleThing();
 		id.setThingID(123l);
 		record.setSource(id);
 		

@@ -140,7 +140,6 @@ public class TriggerOperate {
 	}
 
 	public void addExtensionValue(String name,Map<String,Object> data){
-//		BusinessDataObject obj=new BusinessDataObject(name,BusinessObjType.Global);
 		
 		businessObjDao.saveExtensionValue(name,data);
 		
@@ -149,29 +148,16 @@ public class TriggerOperate {
 	
 	
 	public void updateExtensionValue(String name,String key,Object data){
-//		BusinessDataObject obj=new BusinessDataObject(name,BusinessObjType.Global);
 		
 		businessObjDao.updateExtensionValue(name,key,data);
 		
 		general.updateExternalValue(name,key,data);
 	}
 
-	public void createTrigger(TriggerRecord record) throws TriggerCreateException {
 
-
-		Map<String,Set<String>>   map=getTriggerDataMap(record);
-		
 	
-		general.addTriggerToEngine(record,map,true);
-
-
-		return;
-
-	}
-
-
-
-	public Map<String,Set<String>> getTriggerDataMap(TriggerRecord record) throws TriggerCreateException {
+	
+	public void createTrigger(TriggerRecord record) throws TriggerCreateException {
 
 		String triggerID=record.getId();
 		
@@ -213,8 +199,9 @@ public class TriggerOperate {
 				throw new InvalidTriggerFormatException("unsupport trigger type");
 
 			}
-
-			return map;
+			
+			general.addTriggerToEngine(record,map,true);
+			
 
 		} catch (TriggerCreateException e) {
 			throw e;

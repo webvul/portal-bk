@@ -340,18 +340,16 @@ public class DroolsService {
 		KieBuilder kb=ks.newKieBuilder(kfs);
 
 		kb.buildAll();
-
-		kieContainer.updateToVersion(kb.getKieModule().getReleaseId());
-
-//		handleMap.clear();
-//		kieSession.getFactHandles().forEach((handle)->{
-//
-//			Object obj=kieSession.getObject(handle);
-//
-//			handleMap.put(getEntityKey(obj),handle);
-//
-//		});
-
+		
+		try {
+			
+			kieContainer.updateToVersion(kb.getKieModule().getReleaseId());
+		}catch(Exception e){
+			log.error(e.getMessage());
+			kfs.delete(drlName);
+			pathSet.remove(drlName);
+			throw e;
+		};
 
 		toIdle();
 

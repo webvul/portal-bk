@@ -89,7 +89,7 @@ public class TriggerValidate {
 
     private void validateSimpleTrigger(SimpleTriggerRecord simpleTriggerRecord){
         RuleEnginePredicate predicate = simpleTriggerRecord.getPredicate();
-        String  thingID = simpleTriggerRecord.getSource().getThingID();
+        Long  thingID = simpleTriggerRecord.getSource().getThingID();
 
         //when condition exist , thingID is not null. And at the same time schedule express can not be null;
         if(thingID == null && predicate.getCondition()!=null){
