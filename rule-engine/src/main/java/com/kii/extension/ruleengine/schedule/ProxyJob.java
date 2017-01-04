@@ -13,8 +13,13 @@ public class ProxyJob implements Job {
 	public static final String JOB_CONTEXT = "Job_Context";
 	public static final String TRIGGER_ID = "triggerID";
 	public static final String WITH_TIMER="Is_Timer";
-
-
+	
+	
+	
+	public static final String APPLICATION_CTX = "applicationCtx";
+	public static final String BEAN_CLASS = "beanClass";
+	
+	
 	private Class<? extends JobInSpring> beanClass;
 
 	private ApplicationContext applicationCtx;

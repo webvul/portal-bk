@@ -1,5 +1,8 @@
 package com.kii.extension.ruleengine.schedule;
 
+import static com.kii.extension.ruleengine.schedule.ProxyJob.APPLICATION_CTX;
+import static com.kii.extension.ruleengine.schedule.ProxyJob.BEAN_CLASS;
+
 import org.quartz.JobBuilder;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -24,9 +27,9 @@ public class RuleEngScheduleFactory {
 	public static final JobKey START_JOB= JobKey.jobKey(START,EXECUTE_JOB);
 	public static final JobKey STOP_JOB= JobKey.jobKey(STOP,EXECUTE_JOB);
 	public static final JobKey EXEC_JOB= JobKey.jobKey(EXEC,EXECUTE_JOB);
-
-	public static final String APPLICATION_CTX = "applicationCtx";
-	public static final String BEAN_CLASS = "beanClass";
+//
+//	public static final String APPLICATION_CTX = "applicationCtx";
+//	public static final String BEAN_CLASS = "beanClass";
 
 
 	@Autowired

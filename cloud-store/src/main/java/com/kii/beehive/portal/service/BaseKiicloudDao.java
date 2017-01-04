@@ -25,12 +25,23 @@ public abstract  class  BaseKiicloudDao<T extends PortalEntity> extends Abstract
 		
 	}
 	
-	public List<T>  getAllEntity(){
+	
+	public List<T>  getAllEnableEntity(){
 		
 		QueryParam query=ConditionBuilder.newCondition().equal("status", PortalEntity.EntityStatus.enable.name()).getFinalQueryParam();
 		return super.fullQuery(query);
 	}
 	
+	
+	
+	public List<T> getAllExistsEntity() {
+		
+		QueryParam query=ConditionBuilder.newCondition()
+				.In("status", new Object[]{PortalEntity.EntityStatus.enable.name(),PortalEntity.EntityStatus.disable.name()})
+				.getFinalQueryParam();
+		
+		return super.fullQuery(query);
+	}
 	
 	public T disableEntity(String id){
 		

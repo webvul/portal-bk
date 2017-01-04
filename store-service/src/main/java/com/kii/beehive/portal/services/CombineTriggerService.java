@@ -79,7 +79,7 @@ public class CombineTriggerService {
 	}
 	
 	public List<MLTriggerCombine> getAll(){
-		return triggerDao.getAllEntity();
+		return triggerDao.getAllEnableEntity();
 	}
 	
 	public void updateMLTrigger(MLTriggerCombine combine){
@@ -135,6 +135,7 @@ public class CombineTriggerService {
 		String exp2=convertTool.getExpress(additionCond);
 		String newExp2=convertTool.addParamPrefix(exp2,"ml");
 		
+		newExp2+=" ||  $p{ml._enable} == false  ";
 		String fullExp=exp1+" && ( "+newExp2+" ) ";
 		
 		RuleEnginePredicate predicate=new RuleEnginePredicate();
