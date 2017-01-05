@@ -1,5 +1,6 @@
 package com.kii.beehive.portal.web.entity;
 
+import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
@@ -14,11 +15,18 @@ public class ThingCommandDetailRestBean  {
 
 	private ThingCommand  command;
 
+	private Date createdAt;
+
+	private Date modifiedAt;
+
 	public ThingCommandDetailRestBean(GlobalThingInfo thing, ThingCommand commandDetail) {
 
 		this.globalThingID = thing.getId();
 
 		this.command=commandDetail;
+
+		this.createdAt = commandDetail.getCreated();
+		this.modifiedAt = commandDetail.getModified();
 	}
 
 	@JsonUnwrapped
@@ -32,6 +40,14 @@ public class ThingCommandDetailRestBean  {
 
 	public long getGlobalThingID() {
 		return globalThingID;
+	}
+
+	public Date getCreatedAt() {
+		return createdAt;
+	}
+
+	public Date getModifiedAt() {
+		return modifiedAt;
 	}
 
 }
