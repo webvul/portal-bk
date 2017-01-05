@@ -2,7 +2,6 @@ package com.kii.extension.ruleengine;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -18,10 +17,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kii.extension.ruleengine.drools.DroolsTriggerService;
 import com.kii.extension.ruleengine.drools.RuleGeneral;
 import com.kii.extension.ruleengine.drools.entity.BusinessObjInRule;
+import com.kii.extension.ruleengine.drools.entity.ExternalValues;
 import com.kii.extension.ruleengine.drools.entity.SingleThing;
 import com.kii.extension.ruleengine.drools.entity.Summary;
 import com.kii.extension.ruleengine.drools.entity.Trigger;
 import com.kii.extension.ruleengine.drools.entity.TriggerType;
+import com.kii.extension.ruleengine.drools.entity.TriggerValues;
 import com.kii.extension.ruleengine.schedule.ScheduleService;
 import com.kii.extension.ruleengine.store.trigger.BusinessDataObject;
 import com.kii.extension.ruleengine.store.trigger.CommandParam;
@@ -54,9 +55,8 @@ public class BeehiveTriggerService {
 
 	@Autowired
 	private RelationStore  relationStore;
-	
-	
-	
+
+
 	public void removeTrigger(String triggerID){
 
 		droolsTriggerService.removeTrigger(triggerID);
@@ -75,6 +75,25 @@ public class BeehiveTriggerService {
 
 
 
+	public void updateExternalValue(String name,String key,Object value){
+		ExternalValues val=new ExternalValues(name);
+		val.addValue(key,value);
+		droolsTriggerService.addExternalValue(val);
+	}
+	
+	public void updateTriggerInstValue(String triggerID,String key,Object value){
+		
+		
+		droolsTriggerService.updateTriggerInstData(triggerID,key,value);
+	}
+	
+	
+	public void initExternalValues(String name,Map<String,Object> values){
+		ExternalValues val=new ExternalValues(name);
+		val.setValues(values);
+		droolsTriggerService.addExternalValue(val);
+	}
+
 	public void enterInit(){
 		droolsTriggerService.enterInit();
 	}
@@ -83,21 +102,21 @@ public class BeehiveTriggerService {
 		droolsTriggerService.leaveInit();
 	}
 
-	
 
 
+	public void updateBusinessData(BusinessDataObject data){
 
-	public void updateBusinessData(BusinessDataObject data) {
-		
-		BusinessObjInRule newStatus = new BusinessObjInRule(new String(data.getFullID()));
-		newStatus.setValues(new HashMap<>(data.getData()));
-		
-		droolsTriggerService.addBusinessObj(newStatus);
+		BusinessObjInRule newStatus=new BusinessObjInRule(data.getFullID());
+		newStatus.setValues(data.getData());
+		newStatus.setCreateAt(data.getModified());
+
+		droolsTriggerService.addThingStatus(newStatus);
 	}
-
 	
 	public void addTriggerToEngine(TriggerRecord record,Map<String,Set<String>>  thingIDsMap,boolean fireNow) throws TriggerCreateException{
 
+		
+		
 		String triggerID=record.getId();
 
 		TriggerValidPeriod period=record.getPreparedCondition();
@@ -116,16 +135,20 @@ public class BeehiveTriggerService {
 			}
 
 		}
-
+		
+		TriggerValues instData=new TriggerValues(triggerID);
+		instData.setValues(record.getInstData().getValues());
 
 		try {
 
 			if (record instanceof SimpleTriggerRecord) {
-				addSimpleToEngine((SimpleTriggerRecord) record,thingIDsMap);
+				Set<String>  thingIDs=thingIDsMap.get("comm");
+				String thingID=thingIDs.iterator().next();
+				addSimpleToEngine((SimpleTriggerRecord) record,thingID,instData);
 			}  else if (record instanceof MultipleSrcTriggerRecord){
 				MultipleSrcTriggerRecord multipleRecord=(MultipleSrcTriggerRecord)record;
 
-				addMulToEngine(multipleRecord,thingIDsMap);
+				addMulToEngine(multipleRecord,thingIDsMap,instData);
 
 			}else{
 				record.setRecordStatus(TriggerRecord.StatusType.deleted);
@@ -154,10 +177,10 @@ public class BeehiveTriggerService {
 	}
 
 
-	private void addSimpleToEngine(SimpleTriggerRecord record,Map<String,Set<String>>  thingIDsMap) {
+	private void addSimpleToEngine(SimpleTriggerRecord record,String thingID,TriggerValues instData) {
 
-		Set<String>  thingIDs=thingIDsMap.get("comm");
-		String thingID=thingIDs.iterator().next();
+//		Set<String>  thingIDs=thingIDsMap.get("comm");
+//		String thingID=thingIDs.iterator().next();
 
 		fillDelayParam(record);
 
@@ -169,7 +192,9 @@ public class BeehiveTriggerService {
 
 		Trigger trigger=new Trigger(triggerID);
 
-		trigger.setThingSet(thingIDs);
+		if(StringUtils.isNotBlank(thingID)) {
+			trigger.setThingSet(Collections.singleton(thingID));
+		}
 		trigger.setType(TriggerType.simple);
 		trigger.setStream(false);
 		trigger.setWhen(record.getPredicate().getTriggersWhen());
@@ -177,11 +202,10 @@ public class BeehiveTriggerService {
 		trigger.setEnable(TriggerRecord.StatusType.enable == record.getRecordStatus());
 
 		String rule=ruleGeneral.getSimpleTriggerDrl(triggerID,record.getPredicate(),record.getTargetParamList());
+		
+		droolsTriggerService.addTrigger(trigger,instData,rule);
 
-
-		droolsTriggerService.addTrigger(trigger,rule);
-
-		if(!StringUtils.isEmpty(thingID)) {
+		if(StringUtils.isNotBlank(thingID)) {
 			SingleThing thing=new SingleThing();
 			thing.setThingID(thingID);
 			thing.setTriggerID(triggerID);
@@ -196,7 +220,7 @@ public class BeehiveTriggerService {
 
 
 
-	private void addMulToEngine(MultipleSrcTriggerRecord record,Map<String, Set<String>> thingMap) {
+	private void addMulToEngine(MultipleSrcTriggerRecord record,Map<String, Set<String>> thingMap,TriggerValues  instData) {
 
 
 		fillDelayParam(record);
@@ -216,8 +240,8 @@ public class BeehiveTriggerService {
 		Set<String> thingSet=new HashSet<>();
 		thingMap.values().forEach( v->thingSet.addAll(v));
 		trigger.setThingSet(thingSet);
-
-		droolsTriggerService.addMultipleTrigger(trigger,drl);
+		
+		droolsTriggerService.addMultipleTrigger(trigger,instData,drl);
 
 		record.getSummarySource().forEach((name,src)->{
 

@@ -71,9 +71,11 @@ public class TestTriggerRecord {
 
 		record.addTarget(api);
 		
-		SingleThing id=new SingleThing();
-		id.setThingID(123l);
-		record.setSource(id);
+		
+		SingleThing th=new SingleThing();
+		th.setThingID(123l);
+		
+		record.setSource(th);
 		
 		RuleEnginePredicate predicate=new RuleEnginePredicate();
 

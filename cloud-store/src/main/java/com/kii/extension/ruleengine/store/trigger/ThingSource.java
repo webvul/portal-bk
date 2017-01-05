@@ -4,8 +4,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 public class ThingSource implements SourceElement {
+
 	
-	private SingleThing thing;
+	@JsonUnwrapped
+	private Express express=new Express();
+	
+	private SingleThing  thing;
 	
 	@JsonUnwrapped
 	public SingleThing getThing() {
@@ -16,10 +20,6 @@ public class ThingSource implements SourceElement {
 		this.thing = thing;
 	}
 	
-	@JsonUnwrapped
-	private Express express=new Express();
-
-
 	public Express getExpress() {
 		return express;
 	}
@@ -33,7 +33,6 @@ public class ThingSource implements SourceElement {
 	public SourceElementType getType() {
 		return SourceElementType.thing;
 	}
-	
 	
 	@JsonIgnore
 	public BusinessDataObject getBusinessObj(){

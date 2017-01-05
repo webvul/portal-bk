@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.service.PortalTokenBindTool;
 import com.kii.extension.ruleengine.store.trigger.BeehiveTriggerType;
+import com.kii.extension.ruleengine.store.trigger.ExternalEntry;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.context.TokenBindTool;
@@ -202,5 +203,12 @@ public class TriggerRecordDao extends AbstractDataAccess<TriggerRecord> {
 				.getFinalQueryParam();
 		
 		return super.query(query);
+	}
+	
+	public void updateTriggerInstData(String triggerID, ExternalEntry entry) {
+		
+		
+		super.updateEntity(Collections.singletonMap("instData",entry),triggerID);
+		
 	}
 }

@@ -1,5 +1,7 @@
 package com.kii.extension.ruleengine.template;
 
+import static junit.framework.TestCase.assertEquals;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,13 +17,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.extension.ruleengine.TriggerConditionBuilder;
+import com.kii.extension.ruleengine.drools.ExpressConvert;
 import com.kii.extension.ruleengine.drools.RuleGeneral;
 import com.kii.extension.ruleengine.drools.entity.ExternalValues;
 import com.kii.extension.ruleengine.store.trigger.CommandParam;
 import com.kii.extension.ruleengine.store.trigger.Condition;
-import com.kii.extension.ruleengine.store.trigger.schedule.CronPrefix;
+import com.kii.extension.ruleengine.store.trigger.Express;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.WhenType;
+import com.kii.extension.ruleengine.store.trigger.schedule.CronPrefix;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -35,6 +39,38 @@ public class TestTemplateGeneral {
 	private RuleGeneral  general;
 
 	private ObjectMapper mapper=new ObjectMapper();
+	
+	@Autowired
+	private ExpressConvert convert;
+	
+	@Test
+	public void testFillExpress(){
+		
+		String input="ml.score('one',$p{1},$p{2})>$e{demo.map[c].num} ";
+		
+		String result=convert.addParamPrefix(input,"comm");
+		
+		assertEquals("ml.score('one',$p{comm.1},$p{comm.2})>$e{demo.map[c].num} ",result);
+	}
+	
+	@Test
+	public void testConditionConvert(){
+		
+		
+		Condition cond=TriggerConditionBuilder.andCondition().equal("foo",123).equal("bar",321).getConditionInstance();
+		
+		Condition cond2=TriggerConditionBuilder.orCondition().great("abc",123).less("xyz",321).getConditionInstance();
+		
+		Condition fullCond= TriggerConditionBuilder.andCondition().addSubClause(cond,cond2).getConditionInstance();
+		
+		Express exp=new Express();
+		exp.setCondition(fullCond);
+		
+		String fullExpress=general.generExpress(exp);
+		
+		log.info(fullExpress);
+		
+	}
 
 	@Test
 	public void testSimple() throws JsonProcessingException {
@@ -45,7 +81,10 @@ public class TestTemplateGeneral {
 		log.info(mapper.writeValueAsString(condition));
 
 
-		String express=general.generExpress(condition);
+		Express exp=new Express();
+		exp.setCondition(condition);
+		
+		String express=general.generExpress(exp);
 
 		log.info(express);
 

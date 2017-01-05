@@ -75,9 +75,9 @@ when
     $result:TriggerResult(triggerID==$triggerID)
 then
 	CommandExec exec=(CommandExec)kcontext.getKieRuntime().getEnvironment().get("exec");
-	$match=$result.getMatchResult();
-	$match.setResult(false);
-    exec.doExecute($triggerID,$match);
+	MatchResult match=$result.getMatchResult();
+	match.setResult(false);
+    exec.doExecute($triggerID,match);
     delete($result);
 
 end

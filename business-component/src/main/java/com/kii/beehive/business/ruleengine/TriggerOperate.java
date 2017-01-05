@@ -69,6 +69,7 @@ public class TriggerOperate {
 
 	public Set<String> getTriggerListByThingID(long thingID){
 	
+//		String fullKiiThingID=thingTagService.getThingByID(thingID).getFullKiiThingID();
 		
 		return general.getTriggerIDByObjID(BusinessObjType.Thing.getFullID(String.valueOf(thingID),null));
 		
@@ -132,6 +133,15 @@ public class TriggerOperate {
 		
 		general.updateBusinessData(data);
 	}
+	
+	
+	public void updateTriggerInstaData(String triggerID,String key,Object value){
+		
+		
+		
+		general.updateTriggerInstValue(triggerID,key,value);
+	}
+	
 
 	
 	

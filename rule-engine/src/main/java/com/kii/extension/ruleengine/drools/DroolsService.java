@@ -388,7 +388,7 @@ public class DroolsService {
 			kfs.delete(drlName);
 			pathSet.remove(drlName);
 			throw e;
-		};
+		}
 
 		toIdle();
 

@@ -1,89 +1,54 @@
 package com.kii.extension.ruleengine.drools.entity;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
-public class TriggerValues implements  RuntimeEntry,WithTrigger {
+import com.kii.extension.ruleengine.ExpressTool;
+
+public class TriggerValues implements  RuntimeEntry,WithTrigger,CanUpdate<TriggerValues> {
 
 
 
-	private String triggerID;
+	private final String triggerID;
+	
+	
+	private Map<String,Object> values=new HashMap<>();
+	
 
 	public TriggerValues(String triggerID){
 		this.triggerID=triggerID;
 	}
-
-	private Map<String,ExternalValues> externalValuesMap=new ConcurrentHashMap<>();
-
-
-	public Map<String, ExternalValues> getExternalValuesMap() {
-		return externalValuesMap;
+	
+	
+	public Map<String, Object> getValues() {
+		return values;
+	}
+	
+	public void setValues(Map<String, Object> values) {
+		this.values = values;
+	}
+	
+	public Object getValue(String field){
+		
+		Object value= ExpressTool.getObjValue(this,field);
+		
+		return value;
 	}
 
-	public void setExternalValuesMap(Map<String, ExternalValues> externalValuesMap) {
-		this.externalValuesMap = externalValuesMap;
-	}
-
-	public ExternalValues getEntity(String name){
-		return externalValuesMap.getOrDefault(name,new ExternalValues(name));
-	}
-
-
-	public void updateEntity(ExternalValues values){
-		putEntity(values.getName(),values);
-	}
-
-	private void putEntity(String name,ExternalValues  values){
-
-		externalValuesMap.merge(name,values,(oldV,newV)-> {
-			oldV.merge(newV);
-			return oldV;
-		});
+	public Object getNumValue(String field){
+		
+		return  ExpressTool.getNumValue(this,field);
 
 	}
-
-	public Object getValue(String fullPath){
-
-		int idx=fullPath.indexOf(".");
-
-		if(idx==-1){
-			return null;
-		}
-
-		String key= fullPath.substring(0,idx);
-		String name=fullPath.substring(idx+1);
-
-		return getEntity(key).getValue(name);
-	}
-
-	public Object getNumValue(String fullPath){
-
-		int idx=fullPath.indexOf(".");
-
-		if(idx==-1){
-			return null;
-		}
-
-		String key= fullPath.substring(0,idx);
-		String name=fullPath.substring(idx+1);
-
-		Object val= getEntity(key).getValue(name);
-		if(val==null){
-			return 0;
-		}
-		return val;
-
-	}
-
-
+	
 	@Override
 	public String toString() {
-		return "ExternalCollect{" +
-				"externalValuesMap=" + externalValuesMap +
+		return "TriggerValues{" +
+				"triggerID='" + triggerID + '\'' +
+				", values=" + values +
 				'}';
 	}
-
-
+	
 	@Override
 	public String getID() {
 		return triggerID;
@@ -94,7 +59,15 @@ public class TriggerValues implements  RuntimeEntry,WithTrigger {
 		return triggerID;
 	}
 
-	public void setTriggerID(String triggerID){
-		this.triggerID=triggerID;
+	
+	@Override
+	public void update(TriggerValues update) {
+		
+		this.values.putAll(update.values);
+	}
+	
+	
+	public void updateValue(String key,Object value){
+		this.values.put(key,value);
 	}
 }

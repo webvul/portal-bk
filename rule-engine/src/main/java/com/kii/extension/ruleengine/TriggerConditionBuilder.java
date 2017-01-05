@@ -148,6 +148,13 @@ public class TriggerConditionBuilder {
 		}
 		return this;
 	}
+	
+	public TriggerConditionBuilder addSubClause(Condition...  logic) {
+		for(Condition b:logic){
+			fill(b);
+		}
+		return this;
+	}
 
 	public <T> TriggerConditionBuilder less(String field, T value) {
 		return range(field, null, false, value, false);

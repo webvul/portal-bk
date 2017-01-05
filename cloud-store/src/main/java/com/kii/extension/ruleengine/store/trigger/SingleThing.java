@@ -38,6 +38,7 @@ public class SingleThing {
 	public String getUserID(){
 		return userID;
 	}
+
 	
 	public void setUserID(String userID) {
 		this.userID = userID;
@@ -48,6 +49,7 @@ public class SingleThing {
 	public String getTriggerGroupName(){
 		return triggerGroupName;
 	}
+
 	
 	public void setTriggerGroupName(String triggerGroupName) {
 		this.triggerGroupName = triggerGroupName;
@@ -61,8 +63,6 @@ public class SingleThing {
 	
 	public void setBusinessID(String businessID) {
 		this.businessID = businessID;
-		businessType= BusinessObjType.Business;
-		
 	}
 	
 	@JsonIgnore
@@ -86,7 +86,7 @@ public class SingleThing {
 	}
 	
 	public void setThingID(Long thingID) {
-		this.thingID = thingID;
+		this.thingID =thingID;
 		businessType= BusinessObjType.Thing;
 	}
 	

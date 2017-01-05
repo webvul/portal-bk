@@ -64,18 +64,7 @@ public class BusinessObjInRule implements RuntimeEntry,CanUpdate<BusinessObjInRu
 
 		return value;
 	}
-	
-//	public Object getPreviousNumValue(String field){
-//
-//		return  ExpressTool.getNumValue(this,field);
-//	}
-//
-//	public String getPreviousValue(String field){
-//
-//		String value= ExpressTool.getValue(this,field,String.class);
-//
-//		return value;
-//	}
+
 
 	public String getThingID() {
 		return thingID;

@@ -30,7 +30,6 @@ public class TestSimpleTrigger extends TestInit{
 		String kiiThingID="0af7a7e7-th.f83120e36100-a269-5e11-e5bb-0bc2e136";
 
 		SimpleTriggerRecord record=new SimpleTriggerRecord();
-
 		SingleThing thingID=new SingleThing();
 		
 		thingID.setThingID(1049l);

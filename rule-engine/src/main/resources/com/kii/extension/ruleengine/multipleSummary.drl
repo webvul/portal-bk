@@ -67,9 +67,7 @@ when
 then
 	insertLogical(new SummaryResult($summary,$val));
 
-	ExternalValues entity=new ExternalValues($name);
-    entity.addValue("choiceTh",$choiceTh);
-    $inst.updateEntity(entity);
+    $inst.updateValue("_choiceTh",$choiceTh);
 end
 
 
@@ -87,9 +85,7 @@ when
 then
 	insertLogical(new SummaryResult($summary,$val));
 
-	ExternalValues entity=new ExternalValues($name);
-    entity.addValue("choiceTh",$choiceTh);
-    $inst.updateEntity(entity);
+    $inst.updateValue("_choiceTh",$choiceTh);
 end
 
 

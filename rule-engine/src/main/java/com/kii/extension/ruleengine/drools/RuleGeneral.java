@@ -276,14 +276,16 @@ end
 		}
 
 		Condition condition = predicate.getCondition();
-		return generExpress(condition);
+		String convertExpress= convertCondition(condition);
+		
+		return convert.convertExpress(convertExpress);
 	}
 
 
 	public String generExpress(Express express){
 
 			if(express.getCondition()!=null){
-				return generExpress(express.getCondition());
+				return convert.convertExpress(convertCondition(express.getCondition()));
 			}else if(express.getExpress()!=null){
 				return convert.convertExpress(express.getExpress());
 			}else{
@@ -291,8 +293,9 @@ end
 			}
 
 	}
+	
 
-	public String generExpress(Condition condition){
+	public  String convertCondition(Condition condition){
 
 		StringBuilder  sb=new StringBuilder();
 
@@ -323,7 +326,7 @@ end
 				AndLogic andLogic=(AndLogic)condition;
 				for(Condition cond:andLogic.getClauses()){
 
-					String express=generExpress(cond);
+					String express= convertCondition(cond);
 					sb.append(express);
 					sb.append(" && ");
 				}
@@ -334,7 +337,7 @@ end
 				OrLogic orLogic=(OrLogic)condition;
 				for(Condition cond:orLogic.getClauses()){
 
-					String express=generExpress(cond);
+					String express= convertCondition(cond);
 					sb.append(express);
 					sb.append(" || ");
 				}
@@ -362,7 +365,7 @@ end
 		return getSimpleExpress(condition,false);
 	}
 
-	private static final String FIELD=" values[\"${0}\"] ";
+	private static final String FIELD=" $p{${0}} ";
 
 	private String getFieldStr(SimpleCondition cond){
 
