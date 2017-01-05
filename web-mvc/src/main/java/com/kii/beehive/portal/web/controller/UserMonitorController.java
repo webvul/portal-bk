@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.business.service.ThingMonitorService;
 import com.kii.beehive.business.entity.MonitorQuery;
+import com.kii.beehive.portal.store.entity.PortalEntity;
 import com.kii.beehive.portal.store.entity.ThingStatusMonitor;
 import com.kii.beehive.portal.web.entity.ThingMonitorInput;
 import com.kii.extension.sdk.service.AbstractDataAccess;
@@ -108,7 +109,7 @@ public class UserMonitorController {
 		
 		view.setThings(new HashSet<>(monitor.getVendorThingIDList()));
 		view.setMonitorID(monitor.getId());
-		view.setEnable(monitor.getStatus()== ThingStatusMonitor.MonitorStatus.enable);
+		view.setEnable(monitor.getStatus()== PortalEntity.EntityStatus.enable);
 		
 		return view;
 	}

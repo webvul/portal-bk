@@ -10,7 +10,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,24 +19,18 @@ import com.kii.beehive.portal.event.EventListener;
 import com.kii.beehive.portal.exception.InvalidTriggerFormatException;
 import com.kii.beehive.portal.service.EventListenerDao;
 import com.kii.extension.ruleengine.BeehiveTriggerService;
-import com.kii.extension.ruleengine.TriggerConditionBuilder;
 import com.kii.extension.ruleengine.TriggerCreateException;
 import com.kii.extension.ruleengine.drools.entity.BusinessObjInRule;
 import com.kii.extension.ruleengine.service.BusinessObjDao;
 import com.kii.extension.ruleengine.store.trigger.BusinessDataObject;
 import com.kii.extension.ruleengine.store.trigger.BusinessObjType;
-import com.kii.extension.ruleengine.store.trigger.Condition;
-import com.kii.extension.ruleengine.store.trigger.Express;
 import com.kii.extension.ruleengine.store.trigger.GroupSummarySource;
 import com.kii.extension.ruleengine.store.trigger.MultipleSrcTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.ThingCollectSource;
 import com.kii.extension.ruleengine.store.trigger.ThingSource;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.condition.All;
 import com.kii.extension.ruleengine.store.trigger.groups.GroupTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.groups.SummaryFunctionType;
 import com.kii.extension.ruleengine.store.trigger.groups.SummaryTriggerRecord;
 
 @Component
@@ -63,8 +56,8 @@ public class TriggerOperate {
 	@Autowired
 	private BusinessObjDao businessObjDao;
 	
-	
-	
+	@Autowired
+	private TriggerConvertTool convertTool;
 
 
 	public Set<String> getTriggerListByThingID(long thingID){
@@ -152,12 +145,12 @@ public class TriggerOperate {
 		if (record instanceof GroupTriggerRecord) {
 			GroupTriggerRecord groupRecord = ((GroupTriggerRecord) record);
 			
-			record=convertGroup(groupRecord);
+			record=convertTool.convertGroup(groupRecord);
 			
 		} else if (record instanceof SummaryTriggerRecord) {
 			SummaryTriggerRecord summaryRecord = (SummaryTriggerRecord) record;
 			
-			record=convertSummary(summaryRecord);
+			record=convertTool.convertSummary(summaryRecord);
 		}
 		
 		try {
@@ -276,87 +269,6 @@ public class TriggerOperate {
 			return source.getFullBusinessObjs().stream().map(BusinessDataObject::getFullID).collect(Collectors.toSet());
 		}
 	}
-	
-	
-	private MultipleSrcTriggerRecord convertSummary(SummaryTriggerRecord record){
-		
-		
-		MultipleSrcTriggerRecord convertRecord=new MultipleSrcTriggerRecord();
-		
-		BeanUtils.copyProperties(record,convertRecord,"type");
-		
-		record.getSummarySource().forEach((k,v)->{
-			
-			ThingCollectSource source=v.getSource();
-			
-			v.getExpressList().forEach((exp)->{
-				
-				GroupSummarySource  elem=new GroupSummarySource();
-				
-				elem.setFunction(exp.getFunction());
-				elem.setStateName(exp.getStateName());
-				elem.setSource(source);
-				
-				String index=k+"."+exp.getSummaryAlias();
-				convertRecord.addSource(index,elem);
-				
-			});
-		});
-		
-		return convertRecord;
-	}
-	
-	private MultipleSrcTriggerRecord  convertGroup(GroupTriggerRecord record){
-		
-		
-		MultipleSrcTriggerRecord convertRecord=new MultipleSrcTriggerRecord();
-		BeanUtils.copyProperties(record,convertRecord,"type");
-		
-		int thingNum=getBusinessObjSet(record.getSource()).size();
-		
-		
-		Condition cond=new All();
-		switch(record.getPolicy().getGroupPolicy()){
-			//	Any,All,Some,Percent,None;
-			
-			case All:
-				cond= TriggerConditionBuilder.newCondition().equal("comm",thingNum).getConditionInstance();
-				break;
-			case Any:
-				cond=TriggerConditionBuilder.newCondition().greatAndEq("comm",1).getConditionInstance();
-				break;
-			case Some:
-				cond=TriggerConditionBuilder.newCondition().greatAndEq("comm",record.getPolicy().getCriticalNumber()).getConditionInstance();
-				break;
-			case Percent:
-				int percent=(record.getPolicy().getCriticalNumber()*thingNum)/100;
-				cond=TriggerConditionBuilder.newCondition().equal("comm",percent).getConditionInstance();
-				break;
-			case None:
-				cond=TriggerConditionBuilder.newCondition().equal("comm",0).getConditionInstance();
-		}
-		RuleEnginePredicate predicate=new RuleEnginePredicate();
-		
-		predicate.setCondition(cond);
-		predicate.setTriggersWhen(record.getPredicate().getTriggersWhen());
-		predicate.setSchedule(record.getPredicate().getSchedule());
-		
-		convertRecord.setPredicate(predicate);
-		
-		GroupSummarySource  elem=new GroupSummarySource();
-		
-		elem.setFunction(SummaryFunctionType.count);
-		Express exp=new Express();
-		exp.setCondition(record.getPredicate().getCondition());
-		elem.setExpress(exp);
-		
-		elem.setSource(record.getSource());
-		
-		convertRecord.addSource("comm",elem);
-		
-		return convertRecord;
-	}
-	
 	
 	
 }

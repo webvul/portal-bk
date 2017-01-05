@@ -34,6 +34,7 @@ import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.beehive.portal.jdbc.entity.NoticeActionType;
 import com.kii.beehive.portal.jdbc.entity.UserNotice;
 import com.kii.beehive.portal.service.ThingStatusMonitorDao;
+import com.kii.beehive.portal.store.entity.PortalEntity;
 import com.kii.beehive.portal.store.entity.ThingStatusMonitor;
 import com.kii.extension.ruleengine.TriggerCreateException;
 import com.kii.extension.ruleengine.store.trigger.BusinessDataObject;
@@ -77,7 +78,7 @@ public class ThingMonitorService {
 		ThingStatusMonitor monitor=monitorDao.getObjectByID(monitorID);
 
 
-		if(monitor.getStatus()!= ThingStatusMonitor.MonitorStatus.enable){
+		if(monitor.getStatus()!= PortalEntity.EntityStatus.enable){
 			return;
 		}
 		
@@ -182,7 +183,7 @@ public class ThingMonitorService {
 		
 		monitor.getNoticeList().add(AuthInfoStore.getUserID());
 		
-		monitor.setStatus(ThingStatusMonitor.MonitorStatus.enable);
+		monitor.setStatus(PortalEntity.EntityStatus.enable);
 		
 		String monitorID=monitorDao.addEntity(monitor).getObjectID();
 		
@@ -213,44 +214,62 @@ public class ThingMonitorService {
 	
 	public void removeMonitor(String id){
 		
-		ThingStatusMonitor monitor=monitorDao.getObjectByID(id);
 		
-		if(monitor.getStatus()!= ThingStatusMonitor.MonitorStatus.deleted) {
-			
+		ThingStatusMonitor monitor=monitorDao.deleteEntity(id);
+		
+		if(StringUtils.isNotBlank(monitor.getRelationTriggerID())) {
 			creator.deleteTrigger(monitor.getRelationTriggerID());
-			
-			monitorDao.updateEntity(Collections.singletonMap("status", ThingStatusMonitor.MonitorStatus.deleted), id);
-		}else{
-			throw new InvalidEntryStatusException("ThingStatusMonitor","status",monitor.getStatus().name());
-			
 		}
+		
+//		ThingStatusMonitor monitor=monitorDao.getObjectByID(id);
+//
+//		if(monitor.getStatus()!= ThingStatusMonitor.MonitorStatus.deleted) {
+//
+//			creator.deleteTrigger(monitor.getRelationTriggerID());
+//
+//			monitorDao.updateEntity(Collections.singletonMap("status", ThingStatusMonitor.MonitorStatus.deleted), id);
+//		}else{
+//			throw new InvalidEntryStatusException("ThingStatusMonitor","status",monitor.getStatus().name());
+//
+//		}
 	}
 	
 	public void enableMonitor(String id){
 		
-		ThingStatusMonitor monitor=monitorDao.getObjectByID(id);
-		if(monitor.getStatus()== ThingStatusMonitor.MonitorStatus.disable) {
-			if(StringUtils.isNotBlank(monitor.getRelationTriggerID())) {
-				creator.enableTrigger(monitor.getRelationTriggerID());
-			}
-			monitorDao.updateEntity(Collections.singletonMap("status", ThingStatusMonitor.MonitorStatus.enable), id);
-		}else{
-			throw new InvalidEntryStatusException("ThingStatusMonitor","status",monitor.getStatus().name());
+		
+		ThingStatusMonitor monitor=monitorDao.enableEntity(id);
+		
+		if(StringUtils.isNotBlank(monitor.getRelationTriggerID())) {
+			creator.enableTrigger(monitor.getRelationTriggerID());
 		}
+		
+//		ThingStatusMonitor monitor=monitorDao.getObjectByID(id);
+//		if(monitor.getStatus()== ThingStatusMonitor.MonitorStatus.disable) {
+//			if(StringUtils.isNotBlank(monitor.getRelationTriggerID())) {
+//				creator.enableTrigger(monitor.getRelationTriggerID());
+//			}
+//			monitorDao.updateEntity(Collections.singletonMap("status", ThingStatusMonitor.MonitorStatus.enable), id);
+//		}else{
+//			throw new InvalidEntryStatusException("ThingStatusMonitor","status",monitor.getStatus().name());
+//		}
 	}
 	
 	public void disableMonitor(String id){
-		ThingStatusMonitor monitor=monitorDao.getObjectByID(id);
 		
-		if(monitor.getStatus()== ThingStatusMonitor.MonitorStatus.enable) {
-			
-			if(StringUtils.isNotBlank(monitor.getRelationTriggerID())) {
-				creator.disableTrigger(monitor.getRelationTriggerID());
-			}
-			monitorDao.updateEntity(Collections.singletonMap("status", ThingStatusMonitor.MonitorStatus.disable), id);
-		}else{
-			throw new InvalidEntryStatusException("ThingStatusMonitor","status",monitor.getStatus().name());
+		ThingStatusMonitor monitor=monitorDao.disableEntity(id);
+		
+		if(StringUtils.isNotBlank(monitor.getRelationTriggerID())) {
+			creator.disableTrigger(monitor.getRelationTriggerID());
 		}
+		
+//
+//		if(monitor.getStatus()== ThingStatusMonitor.MonitorStatus.enable) {
+//
+//
+//			monitorDao.updateEntity(Collections.singletonMap("status", ThingStatusMonitor.MonitorStatus.disable), id);
+//		}else{
+//			throw new InvalidEntryStatusException("ThingStatusMonitor","status",monitor.getStatus().name());
+//		}
 	}
 	
 	
@@ -260,8 +279,8 @@ public class ThingMonitorService {
 		
 		
 		ThingStatusMonitor oldMonitor=monitorDao.getObjectByID(monitor.getId());
-		if(oldMonitor.getStatus()== ThingStatusMonitor.MonitorStatus.deleted){
-			throw new InvalidEntryStatusException("ThingStatusMonitor","status",ThingStatusMonitor.MonitorStatus.deleted.name());
+		if(oldMonitor.getStatus()== PortalEntity.EntityStatus.deleted){
+			throw new InvalidEntryStatusException("ThingStatusMonitor","status",PortalEntity.EntityStatus.deleted.name());
 		}
 		if((!monitor.getVendorThingIDList().isEmpty()&&!oldMonitor.getVendorThingIDList().equals(monitor.getVendorThingIDList()))||
 				(monitor.getExpress()!=null &&!CommLangsUtils.safeEquals(oldMonitor.getExpress(),monitor.getExpress()) )||

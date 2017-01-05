@@ -16,5 +16,12 @@ public enum BusinessObjType {
 		
 		return sb.toString();
 	}
+	
+	public static  BusinessObjType getType(String fullID){
+		int idx1=fullID.indexOf(".");
+		int idx2=fullID.indexOf("-");
+		
+		return BusinessObjType.valueOf(StringUtils.substring(fullID,Math.min(idx1,idx2)));
+	}
 
 }

@@ -1,9 +1,9 @@
-package com.kii.beehive.portal.entitys;
+package com.kii.beehive.portal.store.entity;
 
 import com.kii.extension.ruleengine.store.trigger.Condition;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 
-public class MLTriggerCombine {
+public class MLTriggerCombine extends PortalEntity {
 	
 	
 	private Condition  mlCondition;
@@ -13,6 +13,18 @@ public class MLTriggerCombine {
 	private TriggerRecord businessTrigger;
 	
 	private boolean joinWithAND=true;
+	
+	private String relationTriggerID;
+	
+	public String getRelationTriggerID() {
+		return relationTriggerID;
+	}
+	
+	public void setRelationTriggerID(String relationTriggerID) {
+		this.relationTriggerID = relationTriggerID;
+	}
+	
+
 	
 	public Condition getMlCondition() {
 		return mlCondition;

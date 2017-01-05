@@ -10,7 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 
-import com.kii.beehive.portal.store.entity.ThingStatusMonitor;
+import com.kii.beehive.portal.store.entity.PortalEntity;
 import com.kii.extension.sdk.query.ConditionBuilder;
 import com.kii.extension.sdk.query.QueryParam;
 import com.kii.extension.tools.AdditionFieldType;
@@ -106,9 +106,9 @@ public class MonitorQuery {
 		}
 		
 		if(enable!=null){
-			builder.equal("status", enable? ThingStatusMonitor.MonitorStatus.enable: ThingStatusMonitor.MonitorStatus.disable);
+			builder.equal("status", PortalEntity.EntityStatus.getInst(enable));
 		}else{
-			builder.In("status",new Object[]{ThingStatusMonitor.MonitorStatus.enable, ThingStatusMonitor.MonitorStatus.disable});
+			builder.In("status",new Object[]{PortalEntity.EntityStatus.enable, PortalEntity.EntityStatus.disable});
 		}
 		
 		if(!things.isEmpty()){

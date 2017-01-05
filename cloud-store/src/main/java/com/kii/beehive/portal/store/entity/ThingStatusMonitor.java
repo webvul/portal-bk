@@ -31,9 +31,7 @@ public class ThingStatusMonitor extends PortalEntity {
 	private Long creator;
 	
 	private List<Long> noticeList=new ArrayList<>();
-	
-	private MonitorStatus status;
-	
+
 	private Map<String,Object> additions=new HashMap<>();
 	
 	public Map<String, Object> getAdditions() {
@@ -54,10 +52,7 @@ public class ThingStatusMonitor extends PortalEntity {
 		}
 	}
 	
-	
-	public enum MonitorStatus{
-		enable,disable,deleted;
-	}
+
 	
 	public String getDescription() {
 		return description;
@@ -133,13 +128,6 @@ public class ThingStatusMonitor extends PortalEntity {
 		return vendorThingIDs.entrySet().stream().filter(entry->entry.getValue().booleanValue()).map(entry->entry.getKey()).collect(Collectors.toSet());
 	}
 	
-	public MonitorStatus getStatus() {
-		return status;
-	}
-	
-	public void setStatus(MonitorStatus status) {
-		this.status = status;
-	}
 	
 	public List<Long> getNoticeList() {
 		return noticeList;

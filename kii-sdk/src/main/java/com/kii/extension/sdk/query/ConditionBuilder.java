@@ -122,8 +122,21 @@ public class ConditionBuilder {
 		return this;
 	}
 	
-
-
+	
+	public ConditionBuilder addSubClause(Condition...  logic) {
+		
+		if(clauses==null){
+			throw new IllegalArgumentException();
+		}
+		
+		for(Condition b:logic){
+			clauses.addClause(b);
+		}
+		return this;
+	}
+	
+	
+	
 	public <T> ConditionBuilder less(String field, T value) {
 		return range(field, null, false, value, false);
 

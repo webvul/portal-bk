@@ -2,7 +2,9 @@ package com.kii.beehive.portal.exception;
 
 import org.apache.http.HttpStatus;
 
-public class InvalidEntryStatusException extends BusinessException {
+public class InvalidEntryStatusException extends BusinessException{
+
+	
 	
 	public InvalidEntryStatusException(String beanName,String fieldName,String status){
 		
