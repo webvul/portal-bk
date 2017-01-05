@@ -1,4 +1,4 @@
-package com.kii.beehive.portal.store;
+package com.kii.beehive;
 
 
 import org.junit.Before;

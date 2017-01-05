@@ -44,7 +44,7 @@ public abstract class TriggerRecord extends KiiEntity {
 
 	private List<CommandParam> targetParamList = new ArrayList<>();
 
-	private StatusType recordStatus;
+	private StatusType recordStatus=StatusType.enable;
 
 	private String deletedReason;
 

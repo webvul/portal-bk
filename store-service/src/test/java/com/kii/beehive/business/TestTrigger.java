@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.kii.beehive.business.ruleengine.TriggerManager;
 import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.exception.EntryNotFoundException;
-import com.kii.beehive.portal.store.StoreServiceTestInit;
+import com.kii.beehive.StoreServiceTestInit;
 import com.kii.extension.ruleengine.TriggerConditionBuilder;
 import com.kii.extension.ruleengine.store.trigger.Condition;
 import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;

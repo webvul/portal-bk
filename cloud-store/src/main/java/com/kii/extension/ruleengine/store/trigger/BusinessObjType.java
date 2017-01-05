@@ -3,7 +3,7 @@ package com.kii.extension.ruleengine.store.trigger;
 import org.apache.commons.lang3.StringUtils;
 
 public enum BusinessObjType {
-	User, TriggerGroup,Thing,Business,Global;
+	User, TriggerGroup,Thing,Business,Global,Context;
 	
 	public String getFullID(String id,String name){
 		StringBuilder sb=new StringBuilder(this.name());

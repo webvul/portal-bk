@@ -3,6 +3,7 @@ package com.kii.beehive.portal.store;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.kii.beehive.StoreServiceTestInit;
 import com.kii.beehive.portal.service.DeviceSupplierDao;
 import com.kii.beehive.portal.store.entity.DeviceSupplier;
 

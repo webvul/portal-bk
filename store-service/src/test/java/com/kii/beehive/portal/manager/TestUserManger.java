@@ -12,7 +12,7 @@ import com.kii.beehive.business.service.KiiUserService;
 import com.kii.beehive.portal.entitys.AuthUser;
 import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 import com.kii.beehive.portal.service.UserRuleDao;
-import com.kii.beehive.portal.store.StoreServiceTestInit;
+import com.kii.beehive.StoreServiceTestInit;
 import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.service.UserService;
 

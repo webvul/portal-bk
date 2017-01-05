@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.kii.beehive.portal.services.MLTriggerService;
-import com.kii.beehive.portal.store.StoreServiceTestInit;
+import com.kii.beehive.StoreServiceTestInit;
 
 public class TestMlExpConvert extends StoreServiceTestInit {
 	

@@ -4,8 +4,8 @@ package com.kii.beehive.business;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.kii.beehive.StoreServiceTestInit;
 import com.kii.beehive.business.helper.OpLogTools;
-import com.kii.beehive.portal.store.*;
 
 public class TestOpLog extends StoreServiceTestInit {
 

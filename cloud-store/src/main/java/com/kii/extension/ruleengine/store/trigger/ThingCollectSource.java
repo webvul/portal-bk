@@ -25,6 +25,15 @@ public class ThingCollectSource {
 	
 	private String businessName;
 	
+	private BusinessObjType type;
+	
+	public BusinessObjType getBusinessType() {
+		return type;
+	}
+	
+	public void setBusinessType(BusinessObjType type) {
+		this.type = type;
+	}
 	
 	public String getBusinessName() {
 		return businessName;
@@ -59,12 +68,11 @@ public class ThingCollectSource {
 	public List<String> getTriggerList() {
 		return triggerList;
 	}
-	
+
 	
 	public List<String> getBusinessIDList() {
 		return businessIDList;
 	}
-	
 	
 	public void setBusinessIDList(List<String> businessIDList) {
 		
@@ -88,21 +96,27 @@ public class ThingCollectSource {
 		
 		List<String>  idList=new ArrayList<>();
 		
+		BusinessObjType tmpType=businessType;
+		
 		switch (businessType){
 			case Thing:idList=thingList.stream().map(String::valueOf).collect(Collectors.toList());
-				break;
+						break;
 			case User:idList=userList;break;
 			case TriggerGroup:idList=triggerList;break;
-			case Business:idList=businessIDList;break;
-			
+			case Business:
+				idList=businessIDList;
+				tmpType=type;
+				break;
 		}
 		
+		BusinessObjType finalType=tmpType;
+		
 		return idList.stream().map((k) -> {
-			
-			BusinessDataObject obj = new BusinessDataObject(k, businessName, businessType);
-			
-			return obj;
-		}).collect(Collectors.toSet());
+				
+				BusinessDataObject obj = new BusinessDataObject(k, businessName, finalType);
+				
+				return obj;
+			}).collect(Collectors.toSet());
 		
 	}
 	

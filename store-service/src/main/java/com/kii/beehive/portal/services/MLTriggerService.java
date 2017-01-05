@@ -1,6 +1,7 @@
 package com.kii.beehive.portal.services;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -8,8 +9,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpUriRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +40,9 @@ public class MLTriggerService {
 	private ObjectMapper mapper;
 	
 	
+	
+	private String mlServiceUrl;
+	
 	private  static final String PARAM_NAME="ml_output";
 	
 	
@@ -54,11 +56,18 @@ public class MLTriggerService {
 
 		schedule.scheduleAtFixedRate(() -> {
 
-			HttpUriRequest request=new HttpGet(""+mlTaskID);
+//			HttpUriRequest request=new HttpGet(""+mlTaskID);
+//
+//			String response=http.executeRequest(request);
 
-			String response=http.executeRequest(request);
-
+			Map<String,Object> demo=new HashMap<>();
+			demo.put("foo",12);
+			demo.put("bar",30);
+			
 			try {
+				
+				String response=mapper.writeValueAsString(demo);
+				
 				Map<String,Object> map=mapper.readValue(response, Map.class);
 				
 				triggerOper.updateTriggerInstData(triggerID,PARAM_NAME,map);
@@ -98,6 +107,7 @@ public class MLTriggerService {
 
 		addBusinessParamPull(combine.getMlTaskID(),10,triggerID);
 
+		
 	}
 	
 	public  String addParamPrefix(String express){

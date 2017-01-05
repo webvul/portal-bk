@@ -69,6 +69,7 @@ public class SingleThing {
 	public BusinessDataObject getBusinessObj(){
 		
 		String id=null;
+		
 		switch(businessType){
 			
 			case Thing:id=String.valueOf(thingID);break;

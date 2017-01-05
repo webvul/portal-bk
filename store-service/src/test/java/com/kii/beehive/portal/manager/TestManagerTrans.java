@@ -7,7 +7,7 @@ import org.springframework.test.annotation.Rollback;
 import com.kii.beehive.business.manager.UserGroupManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.jdbc.entity.UserGroup;
-import com.kii.beehive.portal.store.StoreServiceTestInit;
+import com.kii.beehive.StoreServiceTestInit;
 
 public class TestManagerTrans extends StoreServiceTestInit {
 
