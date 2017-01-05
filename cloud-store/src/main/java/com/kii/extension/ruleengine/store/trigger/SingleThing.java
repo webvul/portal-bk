@@ -18,11 +18,11 @@ public class SingleThing {
 	
 	private BusinessObjType type;
 	
-	public BusinessObjType getType() {
+	public BusinessObjType getBusinessType() {
 		return type;
 	}
 	
-	public void setType(BusinessObjType type) {
+	public void setBusinessType(BusinessObjType type) {
 		this.type = type;
 	}
 	
