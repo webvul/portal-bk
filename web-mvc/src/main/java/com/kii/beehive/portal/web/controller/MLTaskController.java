@@ -53,7 +53,7 @@ public class MLTaskController {
 	@RequestMapping(value = "/{taskID}/disable",method  = {RequestMethod.PUT})
 	public void disableMLTask(@PathVariable("taskID") String taskID){
 		
-		service.setdisable(taskID);
+		service.setDisable(taskID);
 	}
 	
 	@RequestMapping(value = "/query/all",method  = {RequestMethod.GET})

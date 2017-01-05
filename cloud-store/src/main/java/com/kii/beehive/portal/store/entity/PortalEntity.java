@@ -15,7 +15,6 @@ public class PortalEntity extends KiiEntity {
 	}
 	
 	
-	
 	private EntityStatus status=EntityStatus.enable;
 	
 	public EntityStatus getStatus() {

@@ -85,8 +85,11 @@ public class MLTaskService {
 		allTask.forEach((detail)->{
 			
 			Map<String,Object> currVal=detail.getMlOutput();
-			currVal.put("_enable",detail.getStatus()== PortalEntity.EntityStatus.enable);
-			
+			if(currVal.isEmpty()){
+				currVal.put("_enable",false);
+			}else {
+				currVal.put("_enable", detail.getStatus() == PortalEntity.EntityStatus.enable);
+			}
 			BusinessDataObject obj=new BusinessDataObject(detail.getMlTaskID(),"mlOutput", BusinessObjType.Context);
 			obj.setData(currVal);
 			
@@ -101,6 +104,7 @@ public class MLTaskService {
 			try {
 				scheduler.scheduleJob(interval);
 			} catch (SchedulerException e) {
+				log.debug("add schedule",e);
 				log.error(e.getMessage());
 			}
 			
@@ -128,6 +132,7 @@ public class MLTaskService {
 		try {
 			scheduler.resumeTrigger(getTriggerKey(taskID));
 		} catch (SchedulerException e) {
+			log.debug("enable schedule",e);
 			log.error(e.getMessage());
 		}
 		
@@ -135,13 +140,14 @@ public class MLTaskService {
 	}
 	
 	
-	public void setdisable(String taskID){
+	public void setDisable(String taskID){
 	
 		mlTaskDao.disableEntity(taskID);
 		
 		try {
 			scheduler.pauseTrigger(getTriggerKey(taskID));
 		} catch (SchedulerException e) {
+			log.debug("disable schedule",e);
 			log.error(e.getMessage());
 		}
 	}
@@ -156,6 +162,7 @@ public class MLTaskService {
 		try {
 			scheduler.rescheduleJob(getTriggerKey(taskID),interval);
 		} catch (SchedulerException e) {
+			log.debug("update schedule",e);
 			log.error(e.getMessage());
 		}
 	}
@@ -167,6 +174,7 @@ public class MLTaskService {
 		try {
 			scheduler.unscheduleJob(getTriggerKey(taskID));
 		} catch (SchedulerException e) {
+			log.debug("remove schedule",e);
 			log.error(e.getMessage());
 		}
 		

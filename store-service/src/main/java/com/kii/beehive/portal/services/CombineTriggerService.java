@@ -103,6 +103,7 @@ public class CombineTriggerService {
 		String id=triggerDao.addEntity(combine).getObjectID();
 		
 		MultipleSrcTriggerRecord newTrigger = getTriggerRecord(combine);
+		newTrigger.setCreator(id);
 		
 		String triggerID=triggerOper.createTrigger(newTrigger).getTriggerID();
 		
@@ -163,7 +164,7 @@ public class CombineTriggerService {
 		SingleThing param=new SingleThing();
 		param.setBusinessID(taskID);
 		param.setBusinessName("mlOutput");
-		param.setType(BusinessObjType.Context);
+		param.setBusinessType(BusinessObjType.Context);
 		
 		ThingSource source=new ThingSource();
 		source.setThing(param);

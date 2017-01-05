@@ -1,7 +1,9 @@
 package com.kii.beehive.portal.web.controller;
 
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -23,10 +25,11 @@ public class CombinTriggerController {
 	
 	
 	@RequestMapping(value = "/addTrigger",method  = {RequestMethod.POST},consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE})
-	public String addTrigger(@RequestBody MLTriggerCombine trigger){
+	public Map<String,Object> addTrigger(@RequestBody MLTriggerCombine trigger){
 	
-		return service.createTriggerWithML(trigger);
+		String id= service.createTriggerWithML(trigger);
 		
+		return Collections.singletonMap("triggerID",id);
 		
 	}
 	

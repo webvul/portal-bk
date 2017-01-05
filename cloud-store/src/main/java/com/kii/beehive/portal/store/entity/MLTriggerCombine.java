@@ -15,6 +15,8 @@ public class MLTriggerCombine extends PortalEntity {
 	private boolean joinWithAND=true;
 	
 	private String relationTriggerID;
+
+	
 	
 	public String getRelationTriggerID() {
 		return relationTriggerID;
@@ -25,6 +27,11 @@ public class MLTriggerCombine extends PortalEntity {
 	}
 	
 
+	
+	public String getCombineTriggerID(){
+		return super.getId();
+	}
+	
 	
 	public Condition getMlCondition() {
 		return mlCondition;

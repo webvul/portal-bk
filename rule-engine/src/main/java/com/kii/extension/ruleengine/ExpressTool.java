@@ -53,15 +53,19 @@ public class ExpressTool {
 	public static Object getObjValue(Object store,String field){
 		
 		String express=getFullFieldPath(field);
-		
+
 		StandardEvaluationContext context = new StandardEvaluationContext(store);
 		
-		Object value=   parser.parseExpression(express).getValue(
-				context, Object.class);
-		if(value==null){
+		try{
+			Object value=   parser.parseExpression(express).getValue(
+					context, Object.class);
+			if(value==null){
+				return 0.0f;
+			}else{
+				return value;
+			}
+		}catch(SpelEvaluationException e){
 			return 0.0f;
-		}else{
-			return value;
 		}
 	}
 
