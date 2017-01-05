@@ -20,8 +20,11 @@ public enum BusinessObjType {
 	public static  BusinessObjType getType(String fullID){
 		int idx1=fullID.indexOf(".");
 		int idx2=fullID.indexOf("-");
-		
-		return BusinessObjType.valueOf(StringUtils.substring(fullID,Math.min(idx1,idx2)));
+		int idx=idx1;
+		if(idx2!=-1){
+			idx=idx2;
+		}
+		return BusinessObjType.valueOf(StringUtils.substring(fullID,0,idx));
 	}
 
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,8 +23,9 @@ public class MLTaskController {
 	private MLTaskService  service;
 	
 	@RequestMapping(value = "/{taskID}",method  = {RequestMethod.PUT},consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE})
-	public void addMLTask(@PathVariable("taskID") String taskID, MLTaskDetail  detail){
+	public void addMLTask(@PathVariable("taskID") String taskID, @RequestBody  MLTaskDetail  detail){
 		
+		detail.setMlTaskID(taskID);
 		service.updateTask(taskID,detail);
 		
 	}
@@ -55,7 +57,7 @@ public class MLTaskController {
 	}
 	
 	@RequestMapping(value = "/query/all",method  = {RequestMethod.GET})
-	public List<MLTaskDetail> getAll(@PathVariable("taskID") String taskID){
+	public List<MLTaskDetail> getAll(){
 		
 		return  service.getAll();
 	}

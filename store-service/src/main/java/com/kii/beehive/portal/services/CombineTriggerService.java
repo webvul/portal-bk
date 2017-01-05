@@ -115,13 +115,13 @@ public class CombineTriggerService {
 		MultipleSrcTriggerRecord newTrigger=convertTool.convertTrigger(combine.getBusinessTrigger());
 		newTrigger.setUsedByWho(TriggerRecord.UsedByType.Combine_trigger);
 		
-		return addMlCondition(newTrigger,combine.getMlTaskID(),combine.getMlCondition());
+		return addMlCondition(newTrigger,combine.getMlTaskID(),combine.getMlCondition(),combine.isJoinWithAND());
 		
 		
 	}
 	
 	
-	private MultipleSrcTriggerRecord addMlCondition(MultipleSrcTriggerRecord trigger,String taskID,Condition additionCond){
+	private MultipleSrcTriggerRecord addMlCondition(MultipleSrcTriggerRecord trigger,String taskID,Condition additionCond,boolean isAnd){
 		
 		
 		String exp1=trigger.getPredicate().getExpress();
@@ -136,7 +136,10 @@ public class CombineTriggerService {
 		String newExp2=convertTool.addParamPrefix(exp2,"ml");
 		
 		newExp2+=" ||  $p{ml._enable} == false  ";
-		String fullExp=exp1+" && ( "+newExp2+" ) ";
+		
+		String oper=isAnd?" && ":" || ";
+		
+		String fullExp=exp1+oper+" ( "+newExp2+" ) ";
 		
 		RuleEnginePredicate predicate=new RuleEnginePredicate();
 		BeanUtils.copyProperties(trigger.getPredicate(),predicate);

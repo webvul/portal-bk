@@ -1,16 +1,17 @@
 package com.kii.beehive.portal.store.entity;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class MLTaskDetail extends PortalEntity {
 	
 	private String mlTaskID;
 	
-	private Map<String,Object> mlOutput;
+	private Map<String,Object> mlOutput=new HashMap<>();
 	
 	private int interval;
 
-	private  Map<String,Object>  schema;
+	private  Map<String,Object>  schema=new HashMap<>();
 	
 	public Map<String, Object> getSchema() {
 		return schema;

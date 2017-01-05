@@ -1,6 +1,7 @@
 package com.kii.beehive.portal.service;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -96,8 +97,11 @@ public abstract  class  BaseKiicloudDao<T extends PortalEntity> extends Abstract
 	}
 	
 	protected Map<String,Object> fillUpdateMap(Map<String,Object> map){
-		map.put("modifyBy", AuthInfoStore.getUserID());
 		
-		return map;
+		Map<String,Object> newMap=new HashMap<>(map);
+		
+		newMap.put("modifyBy", AuthInfoStore.getUserID());
+		
+		return newMap;
 	}
 }

@@ -383,10 +383,10 @@ public class DroolsService {
 		try {
 			
 			kieContainer.updateToVersion(kb.getKieModule().getReleaseId());
-		}catch(Exception e){
-			log.error(e.getMessage());
+		}catch(RuntimeException e){
 			kfs.delete(drlName);
 			pathSet.remove(drlName);
+			log.error(e.getMessage());
 			throw e;
 		}
 
