@@ -116,7 +116,7 @@ public class MLTaskService {
 		return TriggerBuilder.newTrigger()
 						.withIdentity(getTriggerKey(detail.getMlTaskID()))
 						.forJob(jobKey)
-						.usingJobData("mlTaskID",detail.getMlTaskID())
+						.usingJobData(MLDataPullJob.ML_TASK_ID,detail.getMlTaskID())
 						.withSchedule(SimpleScheduleBuilder.repeatMinutelyForever(detail.getInterval()))
 						.build();
 	}

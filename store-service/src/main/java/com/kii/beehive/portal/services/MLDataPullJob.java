@@ -24,6 +24,7 @@ import com.kii.extension.ruleengine.store.trigger.BusinessObjType;
 public class MLDataPullJob implements JobInSpring {
 	
 	
+	public  static final String ML_TASK_ID = "mlTaskID";
 	private Logger log= LoggerFactory.getLogger(MLDataPullJob.class);
 	
 	
@@ -50,7 +51,7 @@ public class MLDataPullJob implements JobInSpring {
 	@Override
 	public void execute(JobDataMap paramMap) {
 		
-		String taskID=paramMap.getString("mlTaskID");
+		String taskID=paramMap.getString(ML_TASK_ID);
 		
 		doTask(taskID);
 		
