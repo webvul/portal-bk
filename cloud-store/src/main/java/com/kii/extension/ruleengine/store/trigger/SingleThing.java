@@ -74,7 +74,7 @@ public class SingleThing {
 			case Thing:id=String.valueOf(thingID);break;
 			case User:id=userID;break;
 			case TriggerGroup:id=triggerGroupName;break;
-			default:return new BusinessDataObject(id,businessName,type);
+			default:return new BusinessDataObject(businessID,businessName,type);
 			
 		}
 		return new BusinessDataObject(id,businessName,businessType);

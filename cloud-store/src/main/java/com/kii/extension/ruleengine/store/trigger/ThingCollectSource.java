@@ -39,15 +39,17 @@ public class ThingCollectSource {
 	}
 	
 	public void setUserList(List<String> userList) {
-		this.userList = userList;
-		this.businessType=BusinessObjType.User;
-		
+		if(!userList.isEmpty()) {
+			this.userList = userList;
+			this.businessType = BusinessObjType.User;
+		}
 	}
 	
 	public void setTriggerList(List<String> triggerList) {
-		this.triggerList = triggerList;
-		this.businessType=BusinessObjType.TriggerGroup;
-		
+		if(!triggerList.isEmpty()) {
+			this.triggerList = triggerList;
+			this.businessType = BusinessObjType.TriggerGroup;
+		}
 	}
 	
 	public List<String> getUserList() {
@@ -66,15 +68,17 @@ public class ThingCollectSource {
 	
 	public void setBusinessIDList(List<String> businessIDList) {
 		
-		this.businessIDList = businessIDList;
-		this.businessType=BusinessObjType.Business;
-		
+		if(!businessIDList.isEmpty()) {
+			this.businessIDList = businessIDList;
+			this.businessType = BusinessObjType.Business;
+		}
 	}
 	
 	public void setThingList(List<Long> thingList) {
-		this.thingList=thingList;
-		this.businessType=BusinessObjType.Thing;
-
+		if(!thingList.isEmpty()) {
+			this.thingList = thingList;
+			this.businessType = BusinessObjType.Thing;
+		}
 //		this.thingList  = thingList.stream().map(String::valueOf).collect(Collectors.toList());
 	}
 	

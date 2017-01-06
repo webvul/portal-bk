@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 public enum LocationType {
 
 	building("^(\\[0-9,A-Z]{2})"),
-	floor("^(\\[0-9,A-Z]{2}\\[A-Z]{2})"),
+	floor("^(\\[0-9,A-Z]{2}\\[0-9,A-Z]{2})"),
 	partition("^(\\[0-9,A-Z]{4}\\w)"),
 	area("^(\\[0-9,A-Z]{4}\\w-[A-Z])"),
 	site("^(\\[0-9,A-Z]{4}\\w-[A-Z][\\d]{2})$");
