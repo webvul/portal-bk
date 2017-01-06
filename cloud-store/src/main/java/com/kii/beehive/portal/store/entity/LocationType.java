@@ -7,11 +7,11 @@ import java.util.regex.Pattern;
 
 public enum LocationType {
 
-	building("^(\\d{2})"),
-	floor("^(\\d{2}\\d{2})"),
-	partition("^(\\d{4}\\w)"),
-	area("^(\\d{4}\\w-[A-Z])"),
-	site("^(\\d{4}\\w-[A-Z][\\d]{2})$");
+	building("^(\\w{2})"),
+	floor("^(\\w{2}\\w{2})"),
+	partition("^(\\w{4}\\w)"),
+	area("^(\\w{4}\\w-[A-Z])"),
+	site("^(\\w{4}\\w-[A-Z][\\w]{2})$");
 
 
 	private Pattern pattern;
