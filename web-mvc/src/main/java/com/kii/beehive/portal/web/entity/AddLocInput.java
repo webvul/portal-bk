@@ -16,9 +16,9 @@ import com.kii.beehive.portal.web.exception.PortalException;
 public class AddLocInput {
 
 
-	private final static Pattern validVendorThingIDPattern = Pattern.compile("^\\[A-Z,0-9]{4}\\w-[A-Z][\\d]{2}-\\w{1}-\\d{3}$");
+	private final static Pattern validVendorThingIDPattern = Pattern.compile("^[A-Z,0-9]{4}\\w-[A-Z][\\d]{2}-\\w{1}-\\d{3}$");
 
-	private final static Pattern locationPattern = Pattern.compile("^\\[A-Z,0-9]{4}\\w-[A-Z][\\d]{2}$");
+	private final static Pattern locationPattern = Pattern.compile("^[A-Z,0-9]{4}\\w-[A-Z][\\d]{2}$");
 
 
 	private String gatewayVendorThingID;
