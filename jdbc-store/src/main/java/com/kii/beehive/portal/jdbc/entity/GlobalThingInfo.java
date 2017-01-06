@@ -9,10 +9,10 @@ import com.kii.beehive.portal.jdbc.annotation.JdbcFieldType;
 
 public class GlobalThingInfo extends BusinessEntity {
 	
-	public  final static Pattern validVendorThingIDPattern = Pattern.compile("^\\[0-9,A-Z]{4}\\w-[A-Z][\\d]{2}-\\w{1}-\\d{3}$");
+	public  final static Pattern validVendorThingIDPattern = Pattern.compile("^[0-9,A-Z]{4}\\w-[A-Z][\\d]{2}-\\w{1}-\\d{3}$");
 	
 	
-	public  final static Pattern locationPattern = Pattern.compile("^\\[0-9,A-Z]{4}\\w-[A-Z][\\d]{2}$");
+	public  final static Pattern locationPattern = Pattern.compile("^[0-9,A-Z]{4}\\w-[A-Z][\\d]{2}$");
 	
 	
 	private String vendorThingID;
