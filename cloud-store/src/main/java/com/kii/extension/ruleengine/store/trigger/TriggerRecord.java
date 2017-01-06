@@ -56,7 +56,7 @@ public abstract class TriggerRecord extends KiiEntity {
 	
 	public enum UsedByType{
 		
-		User,Sys_monitor,User_monitor;
+		User,Sys_monitor,User_monitor,Combine_trigger;
 	}
 	
 	public String getCreator() {

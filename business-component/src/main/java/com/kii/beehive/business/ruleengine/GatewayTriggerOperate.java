@@ -146,6 +146,11 @@ public class GatewayTriggerOperate {
 	
 	public  boolean checkLocalRule(TriggerRecord record) {
 		
+		
+		if(record.getTargets().stream().anyMatch(t-> !(t.getType().equals("CommandToThing") || t.getType().equals("ThingCommandInGW")))){
+			return false;
+		}
+		
 		if( ! (  ( ( record instanceof SummaryTriggerRecord)||(record instanceof GatewayTriggerRecord) )
 				&& record.getPredicate().getTriggersWhen().equals(WhenType.CONDITION_TRUE)
 				&& record.getPredicate().getSchedule() == null
@@ -168,8 +173,8 @@ public class GatewayTriggerOperate {
 			while (sourceIterator.hasNext()) { //每个SummarySource只有 单个 thing
 				SummarySource summarySource = sourceIterator.next();
 				TagSelector selector = summarySource.getSource().getSelector();
-				if ((selector.getTagList() != null && selector.getTagList().size() > 0)
-						|| (summarySource.getSource().getThingList() != null && summarySource.getSource().getThingList().size() != 1)) {
+				if ((!selector.notEmpty())
+						|| summarySource.getSource().getThingList().size() != 1) {
 					return false;
 				}
 			}
