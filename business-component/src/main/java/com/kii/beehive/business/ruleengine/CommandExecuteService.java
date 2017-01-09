@@ -183,7 +183,7 @@ public class CommandExecuteService implements EventCallback {
 			newRec.setTargets(Collections.singletonList(target));
 
 			triggerDao.addEntity(newRec);
-			creator.createTrigger(newRec);
+			creator.createTrigger(newRec,false);
 		}
 	}
 
