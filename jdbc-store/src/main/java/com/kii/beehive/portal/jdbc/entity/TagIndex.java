@@ -16,7 +16,6 @@ public class TagIndex extends BusinessEntity {
 	private String description;
 	private String fullTagName;
 
-	private Long count;
 	private List<Long> things;
 
 	public final static String TAG_ID = "tag_id";
@@ -24,7 +23,6 @@ public class TagIndex extends BusinessEntity {
 	public final static String FULL_TAG_NAME="full_tag_name";
 	public final static String DISPLAY_NAME = "display_name";
 	public final static String DESCRIPTION = "description";
-	public final static String THING_COUNT = "count";
 	public final static String THINGS = "things";
 
 
@@ -103,15 +101,6 @@ public class TagIndex extends BusinessEntity {
 		this.description = description;
 	}
 	
-	@DisplayField(column=THING_COUNT)
-	public Long getCount() {
-		return count;
-	}
-
-	public void setCount(Long count) {
-		this.count = count;
-	}
-	
 	@DisplayField(column=THINGS)
 	public List<Long> getThings() {
 		return things;
@@ -139,8 +128,6 @@ public class TagIndex extends BusinessEntity {
 		builder.append(description);
 		builder.append(", fullTagName=");
 		builder.append(fullTagName);
-		builder.append(", count=");
-		builder.append(count);
 		builder.append(", things=");
 		builder.append(things);
 		builder.append("]");
