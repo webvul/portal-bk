@@ -90,7 +90,7 @@ public class TriggerManager {
 				
 				logTool.triggerLog(record, OperateLog.ActionType.enable);
 				
-				creator.createTrigger(record);
+				creator.createTrigger(record,true);
 			}
 		}catch(TriggerCreateException ex){
 			logTool.triggerLog(record, OperateLog.ActionType.delete);
@@ -121,7 +121,7 @@ public class TriggerManager {
 			creator.removeTrigger(record);
 			
 			record.fillCreator(record.getUserID());
-			creator.createTrigger(record);
+			creator.createTrigger(record,true);
 			
 			triggerDao.updateEntity(record, record.getId());
 		}
@@ -175,7 +175,7 @@ public class TriggerManager {
 
 		}else {
 
-			creator.createTrigger(record);
+			creator.createTrigger(record,true);
 
 		}
 	}

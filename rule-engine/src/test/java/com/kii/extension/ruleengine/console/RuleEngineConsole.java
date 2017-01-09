@@ -406,7 +406,7 @@ public class RuleEngineConsole {
 			case Simple:
 				SimpleTriggerRecord rec=(SimpleTriggerRecord)record;
 
-				thingMap.put("comm",Collections.singleton(String.valueOf(rec.getSource().getThingID())));
+				thingMap.put("comm",Collections.singleton(String.valueOf(rec.getSource().getBusinessObj().getFullID())));
 
 				break;
 			case Multiple:
@@ -450,27 +450,6 @@ public class RuleEngineConsole {
 	}
 
 
-	private Map<String,Set<String>> getThingMap(GroupTriggerRecord  record ){
-
-		ThingCollectSource sele=record.getSource();
-
-		Set<String> thSet=new HashSet<>();
-			if(sele.getThingList().isEmpty()){
-				sele.getSelector().getTagList().forEach(tag->{
-					thSet.addAll(tagMap.get(tag));
-				});
-			}else{
-
-				sele.getThingList().forEach((l)->{
-							String th= String.copyValueOf(new char[]{(char) ('a'+l)});
-							thSet.add(th);
-						}
-				);
-			}
-
-		return Collections.singletonMap("comm",thSet);
-	}
-
 	private Map<String,Set<String>> getThingMap(MultipleSrcTriggerRecord  record ){
 
 
@@ -496,7 +475,7 @@ public class RuleEngineConsole {
 				}
 			}else{
 
-				String th=((ThingSource)v).getThing().getBusinessID();
+				String th=((ThingSource)v).getThing().getBusinessObj().getFullID();
 				thSet.add(th);
 
 			}

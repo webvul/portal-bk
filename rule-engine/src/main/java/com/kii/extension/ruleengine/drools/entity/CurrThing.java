@@ -62,7 +62,9 @@ public class CurrThing {
 	public void setCurrThing(String curr){
 
 		this.currThing=curr;
-		this.status=Status.inThing;
+		if(!NONE.equals(curr)) {
+			this.status = Status.inThing;
+		}
 		this.currExt=NONE;
 	}
 

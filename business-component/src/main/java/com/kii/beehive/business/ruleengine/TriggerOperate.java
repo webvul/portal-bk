@@ -87,7 +87,7 @@ public class TriggerOperate {
 		for(TriggerRecord  trigger:list){
 
 			try {
-				createTrigger(trigger);
+				createTrigger(trigger,false);
 				
 			}catch(TriggerCreateException ex){
 				errList.add(trigger.getTriggerID());
@@ -157,7 +157,7 @@ public class TriggerOperate {
 
 	
 	
-	public void createTrigger(TriggerRecord record) throws TriggerCreateException {
+	public void createTrigger(TriggerRecord record,boolean fireNow) throws TriggerCreateException {
 
 		String triggerID=record.getId();
 		
@@ -200,7 +200,7 @@ public class TriggerOperate {
 
 			}
 			
-			general.addTriggerToEngine(record,map,true);
+			general.addTriggerToEngine(record,map,fireNow);
 			
 
 		} catch (TriggerCreateException e) {

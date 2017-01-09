@@ -219,11 +219,19 @@ public class FacePlusPlusService {
         }
     }
 
+    @Value("${spring.profile}")
+    private String  profile;
 
     protected void startConnection() throws URISyntaxException {
         IO.Options options = new IO.Options();
+        
+        options.reconnectionDelay=1000l;
+        if("local".equals(profile)){
+        	options.reconnection=false;
+		}
         options.transports = new String[]{"websocket"};
         socket = IO.socket(faceWebSocketUri + "/event/", options);
+        
 
         socket.io().on(Manager.EVENT_TRANSPORT, new Emitter.Listener() {
             @Override

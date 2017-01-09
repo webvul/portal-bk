@@ -104,7 +104,14 @@ public class DroolsService {
 	}
 
 	public void toIdle(){
-		settingCurrThing(CurrThing.NONE, CurrThing.Status.inIdle);
+		
+		if(currThing.getStatus()== CurrThing.Status.inInit){
+			return;
+		}
+		currThing.setCurrThing(CurrThing.NONE);
+		currThing.setStatus(CurrThing.Status.inIdle);
+		
+//		settingCurrThing(CurrThing.NONE, CurrThing.Status.inIdle);
 	}
 	
 	public void inFireTrigger(String triggerID) {
@@ -113,7 +120,7 @@ public class DroolsService {
 			
 			CurrThing.Status oldStatus = currThing.getStatus();
 			if(oldStatus==CurrThing.Status.inInit){
-				kieSession.fireAllRules();
+//				kieSession.fireAllRules();
 				return;
 			}
 			
@@ -126,7 +133,7 @@ public class DroolsService {
 			
 			this.currThing.setStatus(CurrThing.Status.inIdle);
 			kieSession.update(currThingHandler, currThing);
-			kieSession.fireAllRules();
+//			kieSession.fireAllRules();
 		}
 	}
 
@@ -147,6 +154,10 @@ public class DroolsService {
 		synchronized (currThing) {
 
 			CurrThing.Status  oldStatus=currThing.getStatus();
+			
+			if(oldStatus==CurrThing.Status.inInit){
+				return;
+			}
 			if(oldStatus==CurrThing.Status.inThing) {
 
 				this.currThing.setStatus(CurrThing.Status.inIdle);
@@ -158,7 +169,7 @@ public class DroolsService {
 			FactHandle  handler=kieSession.insert(fire);
 			kieSession.fireAllRules();
 			kieSession.delete(handler);
-			kieSession.fireAllRules();
+//			kieSession.fireAllRules();
 		}
 	}
 
@@ -169,8 +180,6 @@ public class DroolsService {
 			CurrThing.Status  oldStatus=currThing.getStatus();
 
 			if(oldStatus==CurrThing.Status.inInit){
-				kieSession.fireAllRules();
-
 				return;
 			}
 	

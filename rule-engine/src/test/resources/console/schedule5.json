@@ -1,0 +1,44 @@
+{
+  "usedByWho": "User",
+  "description": "time new",
+  "type": "Summary",
+  "summarySource": {},
+  "userID": 640,
+  "targets": [
+    {
+      "tagList": [],
+      "thingList": [
+        "7109"
+      ],
+      "doubleCheck": false,
+      "type": "ThingCommand",
+      "andExpress": false,
+      "command": {
+        "metadata": {
+          "type": "Lighting"
+        },
+        "schemaVersion": 0,
+        "actionResults": [],
+        "actions": [
+          {
+            "turnPower": {
+              "Power": 1
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "predicate": {
+    "schedule": {
+      "interval": 1,
+      "type": "Interval",
+      "timeUnit": "Minute"
+    },
+    "triggersWhen": "CONDITION_TRUE"
+  },
+  "recordStatus": "enable",
+  "targetParamList": [],
+  "name": "time new",
+  "customProperty": {}
+}
