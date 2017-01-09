@@ -16,14 +16,11 @@ public class TagIndex extends BusinessEntity {
 	private String description;
 	private String fullTagName;
 
-	private List<Long> things;
-
 	public final static String TAG_ID = "tag_id";
 	public final static String TAG_TYPE = "tag_type";
 	public final static String FULL_TAG_NAME="full_tag_name";
 	public final static String DISPLAY_NAME = "display_name";
 	public final static String DESCRIPTION = "description";
-	public final static String THINGS = "things";
 
 
 	public TagIndex(){
@@ -100,15 +97,6 @@ public class TagIndex extends BusinessEntity {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	
-	@DisplayField(column=THINGS)
-	public List<Long> getThings() {
-		return things;
-	}
-
-	public void setThings(List<Long> things) {
-		this.things = things;
-	}
 
 	public static TagIndex generCustomTagIndex(String name){
 		TagIndex tag=new TagIndex();
@@ -128,8 +116,6 @@ public class TagIndex extends BusinessEntity {
 		builder.append(description);
 		builder.append(", fullTagName=");
 		builder.append(fullTagName);
-		builder.append(", things=");
-		builder.append(things);
 		builder.append("]");
 		return builder.toString();
 	}
