@@ -1,0 +1,71 @@
+{
+  "name": "open door",
+  "description": "",
+  "type": "Summary",
+  "summarySource": {
+    "face_thing": {
+      "expressList": [
+        {
+          "stateName": "beehive_user_id",
+          "function": "max",
+          "summaryAlias": "beehive_user_id"
+        }
+      ],
+      "source": {
+        "tagList": [],
+        "thingList": [
+        ],
+        "andExpress": false
+      }
+    }
+  },
+
+  "predicate": {
+    "condition": {
+      "clauses": [
+        {
+          "field": "face_thing.beehive_user_id",
+          "type": "eq",
+          "value": "xxx"
+        }
+
+
+
+      ],
+      "type": "and"
+    },
+    "triggersWhen": "CONDITION_TRUE"
+  },
+
+
+  "targets": [
+    {
+      "thingList": [
+
+      ],
+      "doubleCheck": false,
+
+      "type": "ThingCommand",
+      "command": {
+        "metadata": {
+          "type": "Multigate"
+        },
+        "schemaVersion": 0,
+        "actionResults": [],
+        "actions": [
+          {
+            "setPower": {
+              "Power": 1
+            }
+          }
+        ]
+      }
+    }
+  ],
+
+
+
+  "recordStatus": "enable",
+  "usedByWho": "Sys_monitor",
+  "targetParamList": []
+}

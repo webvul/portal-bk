@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -15,15 +16,21 @@ import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Files;
 import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.beehive.portal.face.entitys.FaceImage;
 import com.kii.beehive.portal.face.faceplusplus.FacePlusPlusService;
 import com.kii.beehive.portal.face.faceplusplus.entitys.FacePlusPlusUser;
+import com.kii.beehive.portal.face.faceyitu.YituFaceApiAccessBuilder;
 import com.kii.beehive.portal.face.faceyitu.YituFaceService;
 import com.kii.beehive.portal.face.faceyitu.entitys.YituFaceImage;
 import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
@@ -33,12 +40,21 @@ import com.kii.beehive.portal.manager.BeehiveUserManager;
 public class BeehiveFaceService implements ApplicationContextAware{
 
 	@Autowired
+	private ObjectMapper objectMapper;
+	@Autowired
 	private BeehiveUserManager userManager;
 
-	@Autowired
-	private YituFaceService yituFaceService;
+//	@Autowired
+//	private YituFaceService yituFaceService;
 	@Autowired
 	private FacePlusPlusService facePlusPlusService;
+
+	@Value("${yitu.url}")
+	private String yituBaseUrl;
+	@Value("${yitu.username}")
+	private String yituFaceUsername;
+	@Value("${yitu.password}")
+	private String yituFacePassword;
 
 	@Value("${face.photo.dir:${user.home}/data/beehive/face/photo/}")
 	private String facePhotoDir;
@@ -63,17 +79,44 @@ public class BeehiveFaceService implements ApplicationContextAware{
 	}
 
 	private static ApplicationContext applicationContext;
+	private static DefaultListableBeanFactory defaultListableBeanFactory;
 
 	public File getPhotoTempDir() {
 		return photoTempDir;
 	}
 
+//	private Map<String, FaceServiceInf> faceServiceMap;
+	private Map<String, YituFaceService> yituFaceServiceMap = new HashMap<>();
 
-	private Map<String, FaceServiceInf> faceServiceMap;
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
-		faceServiceMap = applicationContext.getBeansOfType(FaceServiceInf.class);
+//		yituFaceServiceMap = applicationContext.getBeansOfType(YituFaceService.class);
+		ConfigurableApplicationContext configurableApplicationContext = (ConfigurableApplicationContext) applicationContext;
+		defaultListableBeanFactory = (DefaultListableBeanFactory) configurableApplicationContext.getBeanFactory();
+		buildYituService();
+
+	}
+
+	private void buildYituService() {
+
+		String[] yituBaseUrls = yituBaseUrl.split(",");
+		String[] yituFaceUsernames = yituFaceUsername.split(",");
+		String[] yituFacePasswords = yituFacePassword.split(",");
+		for (int i = 0 ; i < yituBaseUrls.length ; i++){
+			String yituBeanName = "yituFaceService" + i;
+			buildYituService(yituBaseUrls[i], yituFaceUsernames[i], yituFacePasswords[i], yituBeanName);
+		}
+	}
+
+	public void buildYituService(String yituBaseUrl, String yituFaceUsername, String yituFacePassword, String yituBeanName) {
+		YituFaceApiAccessBuilder yituFaceApiAccessBuilder = new YituFaceApiAccessBuilder(objectMapper
+				, yituBaseUrl, yituFaceUsername, yituFacePassword);
+		BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder.genericBeanDefinition(YituFaceService.class);
+		beanDefinitionBuilder.setAutowireMode(AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE);
+		beanDefinitionBuilder.addPropertyValue("yituFaceApiAccessBuilder", yituFaceApiAccessBuilder);
+		defaultListableBeanFactory.registerBeanDefinition(yituBeanName,beanDefinitionBuilder.getRawBeanDefinition());
+		yituFaceServiceMap.put(yituBeanName, (YituFaceService)applicationContext.getBean(yituBeanName));
 	}
 
 	public File createUserFaceTempFile(String userId, byte[] photo) throws IOException {
@@ -115,10 +158,14 @@ public class BeehiveFaceService implements ApplicationContextAware{
 			e.printStackTrace();
 		}
 		yituFaceImage.setPicture_image_content_base64(Base64.encodeBase64String(data));
-		FaceImage faceImage = yituFaceService.doUploadImage(yituFaceImage);
-		if(faceImage == null) {
-			throw new RuntimeException("upload yitu photo error ! ");
-		}
+
+		yituFaceServiceMap.values().forEach(yituFaceService -> {
+			FaceImage faceImage = yituFaceService.doUploadImage(yituFaceImage);
+			if(faceImage == null) {
+				throw new RuntimeException("upload yitu photo error ! ");
+			}
+		});
+
 		//store image
 		try {
 			Files.copy(photoFile, new File(facePhotoDir + user.getUserID() + ".jpg"));
@@ -126,11 +173,12 @@ public class BeehiveFaceService implements ApplicationContextAware{
 			e.printStackTrace();
 			throw new RuntimeException("store photo error ! ");
 		}
-		//yitu
-		if (! StringUtils.isEmpty(user.getYituFaceImageId())) {
-			yituFaceService.doDeleteImage(user.getYituFaceImageId());
-		}
-		user.setYituFaceImageId(String.valueOf(faceImage.getFace_image_id()));
+		//yitu // TODO: 17/1/5 为记录 每个依图server对应的 ID ,没法删除
+//		if (! StringUtils.isEmpty(user.getYituFaceImageId())) {
+//			yituFaceService.doDeleteImage(user.getYituFaceImageId());
+//		}
+//		user.setYituFaceImageId(String.valueOf(faceImage.getFace_image_id()));
+
 		//face++
 		if (StringUtils.isEmpty(user.getFaceSubjectId())) {
 			//register

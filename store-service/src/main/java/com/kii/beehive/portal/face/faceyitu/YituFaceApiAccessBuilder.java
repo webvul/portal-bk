@@ -2,17 +2,14 @@ package com.kii.beehive.portal.face.faceyitu;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import org.apache.http.client.methods.HttpUriRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.kii.beehive.portal.face.entitys.FaceImage;
 import com.kii.beehive.portal.face.faceyitu.entitys.YituFaceImage;
 import com.kii.beehive.portal.helper.HttpInvokeBuilder;
@@ -35,7 +32,13 @@ public class YituFaceApiAccessBuilder {
 	private Logger log= LoggerFactory.getLogger(YituFaceApiAccessBuilder.class);
 	
 	public YituFaceApiAccessBuilder() {
+	}
 
+	public YituFaceApiAccessBuilder(ObjectMapper objectMapper, String baseUrl, String faceUsername, String facePassword) {
+		this.objectMapper = objectMapper;
+		this.baseUrl = baseUrl;
+		this.faceUsername = faceUsername;
+		this.facePassword = facePassword;
 	}
 
 	public HttpUriRequest buildLogin() {

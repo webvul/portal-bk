@@ -1,0 +1,62 @@
+{
+  "name": "unlock",
+  "description": "",
+  "type": "Summary",
+  "summarySource": {
+    "lock_global_thing": {
+      "expressList": [
+        {
+          "stateName": "password",
+          "function": "max",
+          "summaryAlias": "password"
+        }
+      ],
+      "source": {
+        "tagList": [],
+        "thingList": [
+        ],
+        "andExpress": false
+      }
+    }
+  },
+
+  "predicate": {
+    "condition": {
+      "field": "lock_global_thing.password",
+      "type": "eq",
+      "value": "xxx"
+    },
+    "triggersWhen": "CONDITION_TRUE"
+  },
+
+
+  "targets": [
+    {
+      "thingList": [
+
+      ],
+      "doubleCheck": false,
+
+      "type": "ThingCommand",
+      "command": {
+        "metadata": {
+          "type": "PasswordLock"
+        },
+        "schemaVersion": 0,
+        "actionResults": [],
+        "actions": [
+          {
+            "setPower": {
+              "Power": 1
+            }
+          }
+        ]
+      }
+    }
+  ],
+
+
+  "recordStatus": "enable",
+  "usedByWho": "Sys_monitor",
+  "targetParamList": []
+}
