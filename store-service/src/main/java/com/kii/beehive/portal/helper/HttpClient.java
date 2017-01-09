@@ -4,6 +4,8 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -36,7 +38,10 @@ public class HttpClient implements Closeable {
 	@PostConstruct
 	public void init() throws IOReactorException {
 
-		httpClient = HttpClients.createDefault();
+		httpClient = HttpClients.custom()
+				.setConnectionTimeToLive(10, TimeUnit.SECONDS)
+				.build();
+		
 
 	}
 
