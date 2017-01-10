@@ -1,5 +1,6 @@
 package com.kii.beehive.business.manager;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -117,6 +118,11 @@ public class ThingTagManager {
 	public GlobalThingInfo getThingByID(long globalThingID) {
 
 		return globalThingDao.findByID(globalThingID);
+	}
+	
+	public Set<GlobalThingInfo> getThingInfosByIDs(Collection<Long> things) {
+		
+		return new HashSet<>(globalThingDao.findByIDs(things));
 	}
 
 	public Set<GlobalThingInfo> getThingInfos(TagSelector source) {
