@@ -357,8 +357,12 @@ public class ExSpaceBookService {
 
 		itemList.forEach( item -> {
 			if(item.getAddedTrigger() && ! item.getDeletedTrigger()) {
-				triggerManager.deleteTrigger(item.getTriggerId());
-				itemDao.updateFieldByID("deletedTrigger", true, item.getId());
+				try {
+					triggerManager.deleteTrigger(item.getTriggerId());
+					itemDao.updateFieldByID("deletedTrigger", true, item.getId());
+				} catch (Exception e) {
+					log.error("sit booking deleteTrigger error !!!" , e);
+				}
 			}
 		});
 
