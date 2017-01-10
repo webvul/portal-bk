@@ -126,6 +126,7 @@ public class ExSpaceBookRestBean {
 		this.token = token;
 	}
 
+
 	@JsonIgnore
 	public List<ExSpaceBook> convert2ExSpaceBook() {
 		List<ExSpaceBook> result = new ArrayList<>();
@@ -140,12 +141,12 @@ public class ExSpaceBookRestBean {
 			spaceBook.setPassword(bean.password);
 			spaceBook.setSpaceCode(bean.space_code);
 			try {
-				if(bean.begin_date != null) spaceBook.setBeginDate(DateUtils.parseDate(bean.begin_date,"yyyy-MM-dd HH:mm:ss"));
+				if(StringUtils.isNoneBlank(bean.begin_date)) spaceBook.setBeginDate(DateUtils.parseDate(bean.begin_date,"yyyy-MM-dd HH:mm:ss"));
 			} catch (ParseException e) {
 				throw new IllegalArgumentException("begin_date valid input");
 			}
 			try {
-				if(bean.end_date != null) spaceBook.setEndDate(DateUtils.parseDate(bean.end_date,"yyyy-MM-dd HH:mm:ss"));
+				if(StringUtils.isNoneBlank(bean.end_date)) spaceBook.setEndDate(DateUtils.parseDate(bean.end_date,"yyyy-MM-dd HH:mm:ss"));
 			} catch (ParseException e) {
 				throw new IllegalArgumentException("end_date valid input");
 			}
@@ -185,10 +186,10 @@ public class ExSpaceBookRestBean {
 			if (StringUtils.isBlank(bean.space_code)) {
 				throw new IllegalArgumentException("space_code can not null");
 			}
-			if (bean.begin_date == null) {
+			if (StringUtils.isBlank(bean.begin_date)) {
 				throw new IllegalArgumentException("begin_date can not null");
 			}
-			if (bean.end_date == null) {
+			if (StringUtils.isBlank(bean.end_date)) {
 				throw new IllegalArgumentException("end_date can not null");
 			}
 
