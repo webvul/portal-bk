@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.kii.beehive.business.service.ExSpaceBookService;
 import com.kii.beehive.portal.jdbc.entity.ExSpaceBook;
 
 public class ExSpaceBookRestBean {
@@ -159,6 +160,12 @@ public class ExSpaceBookRestBean {
 		if (StringUtils.isBlank(app_code)) {
 			throw new IllegalArgumentException("app_code can not null");
 		}
+		if ( ! ExSpaceBookService.SIT_BOOKING_APP_CODE.equals(app_code)) {
+			throw new IllegalArgumentException("app_code valid!");
+		}
+		if ( ! ExSpaceBookService.SIT_BOOKING_APP_CODE.equals(app_code)) {
+			throw new IllegalArgumentException("app_code valid!");
+		}
 		if (StringUtils.isBlank(campus_code)) {
 			throw new IllegalArgumentException("campus_code can not null");
 		}
@@ -239,6 +246,9 @@ public class ExSpaceBookRestBean {
 	public void verifyUpdatePwdInput() {
 		if (StringUtils.isBlank(app_code)) {
 			throw new IllegalArgumentException("app_code can not null");
+		}
+		if ( ! ExSpaceBookService.SIT_BOOKING_APP_CODE.equals(app_code)) {
+			throw new IllegalArgumentException("app_code valid!");
 		}
 		if (StringUtils.isBlank(campus_code)) {
 			throw new IllegalArgumentException("campus_code can not null");

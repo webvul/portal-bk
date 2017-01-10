@@ -25,6 +25,7 @@ import com.kii.beehive.portal.common.utils.StrTemplate;
 import com.kii.beehive.portal.exception.BusinessException;
 import com.kii.beehive.portal.face.BeehiveFaceService;
 import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
+import com.kii.beehive.portal.manager.BeehiveUserManager;
 import com.kii.beehive.portal.web.entity.ExSpaceBookRestBean;
 import com.kii.beehive.portal.web.entity.UserRestBean;
 import com.kii.beehive.portal.web.exception.ErrorCode;
@@ -46,8 +47,13 @@ public class ExSpaceBookController {
 
     @Autowired
     private BeehiveFaceService beehiveFaceService;
+
+    @Autowired
+    private BeehiveUserManager userManager;
+
     @Autowired
     private I18nPropertyTools tool;
+
     private Locale locale=Locale.ENGLISH;
 
 	private Logger log= LoggerFactory.getLogger(ExSpaceBookController.class);
@@ -67,8 +73,21 @@ public class ExSpaceBookController {
 
         try {
             BeehiveJdbcUser user = null;
+            String app_code = userPicture.get("app_code");
+            String campus_code = userPicture.get("campus_code");
             String user_id = userPicture.get("user_id");
             String picture_content_base64 = userPicture.get("picture_content_base64");
+
+            if (StringUtils.isBlank(app_code)) {
+                throw new IllegalArgumentException("app_code can not null");
+            }
+            if ( ! ExSpaceBookService.SIT_BOOKING_APP_CODE.equals(app_code)) {
+                throw new IllegalArgumentException("app_code valid!");
+            }
+            if (StringUtils.isBlank(campus_code)) {
+                throw new IllegalArgumentException("campus_code can not null");
+            }
+
             if (StringUtils.isBlank(user_id)) {
 				throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "field", "user_id");
 			}
@@ -101,6 +120,10 @@ public class ExSpaceBookController {
 			}
             user = beehiveFaceService.updateUserWithFace(user_id, photoFile);
             UserRestBean bean = new UserRestBean(user);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            result.put("errorcode", 1);
+            result.put("errormsg", e.getMessage());
         } catch (PortalException e) {
             e.printStackTrace();
             result.put("errorcode", 1);
@@ -224,6 +247,64 @@ public class ExSpaceBookController {
     }
 
 
+    @RequestMapping(path = "/getUserIdList", method = {RequestMethod.POST})
+    public Map<String, Object> getUserIdList(@RequestBody ExSpaceBookRestBean spaceBookRestBean) {
+        Map<String, Object> result = new HashMap<>();
+        result.put("errorcode", 0);
+        try {
+
+            spaceBookRestBean.verifyDelInput();
+
+            //check sign
+            Map<String, String> signMap = new HashMap<>();
+            signMap.put("app_code", spaceBookRestBean.getApp_code());
+            signMap.put("campus_code", spaceBookRestBean.getCampus_code() );
+            signMap.put("biz_id", spaceBookRestBean.getBiz_id() );
+            signMap.put("biz_type", spaceBookRestBean.getBiz_type() );
+            Collections.sort(spaceBookRestBean.getUserList(), new Comparator<ExSpaceBookRestBean>() {
+                @Override
+                public int compare(ExSpaceBookRestBean o1, ExSpaceBookRestBean o2) {
+                    return (o1.getUser_id()).compareTo(o2.getUser_id());
+                }
+            });
+            signMap.put("userList", IBCommonUtil.writeValueAsString(spaceBookRestBean.getUserList()) );
+            if( !debugFlag && ! IBCommonUtil.signMapKey(signMap).equals(spaceBookRestBean.getSign())){
+                result.put("errorcode", 1);
+                result.put("errormsg", "sign valid!");
+                return result;
+            }
+            //
+            spaceBookRestBean.getUserList().forEach(o->{
+                String beehiveUserId = spaceBookService.getUserIdList(o.getUser_id());
+                if(StringUtils.isNoneBlank(beehiveUserId)){
+
+                }else {
+
+//            BeehiveJdbcUser beehiveUser = user.getBeehiveUser();
+//
+//            veifyPwd(user.getPassword());
+//
+//            beehiveUser.setRoleName("commUser");
+//
+//            return authManager.createUserDirectly(beehiveUser, user.getPassword());
+
+
+//            spaceBookService.deleteSpaceBook(spaceBookRestBean.convert2ExSpaceBook());
+
+                }
+            });
+
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            result.put("errorcode", 1);
+            result.put("errormsg", e.getMessage());
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            result.put("errorcode", 1);
+            result.put("errormsg", "input valid!");
+        }
+        return result;
+    }
 
     private String getErrorInfoInJson(BusinessException ex) {
 

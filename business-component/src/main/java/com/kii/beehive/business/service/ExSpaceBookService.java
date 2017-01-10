@@ -23,10 +23,12 @@ import com.kii.beehive.business.ruleengine.TriggerManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.jdbc.dao.ExCameraDoorDao;
 import com.kii.beehive.portal.jdbc.dao.ExSitLockDao;
+import com.kii.beehive.portal.jdbc.dao.ExSitSysBeehiveUserRelDao;
 import com.kii.beehive.portal.jdbc.dao.ExSpaceBookDao;
 import com.kii.beehive.portal.jdbc.dao.ExSpaceBookTriggerItemDao;
 import com.kii.beehive.portal.jdbc.entity.ExCameraDoor;
 import com.kii.beehive.portal.jdbc.entity.ExSitLock;
+import com.kii.beehive.portal.jdbc.entity.ExSitSysBeehiveUserRel;
 import com.kii.beehive.portal.jdbc.entity.ExSpaceBook;
 import com.kii.beehive.portal.jdbc.entity.ExSpaceBookTriggerItem;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
@@ -42,13 +44,16 @@ public class ExSpaceBookService {
 
 	private static final Logger log = LoggerFactory.getLogger(ExSpaceBookService.class);
 
-	static String SIT_BOOKING_APP_CODE = "youjing";
+	public static String SIT_BOOKING_APP_CODE = "youjing";
 
 	@Autowired
 	private ExSpaceBookDao dao;
 
 	@Autowired
 	private ExSpaceBookTriggerItemDao itemDao;
+
+	@Autowired
+	private ExSitSysBeehiveUserRelDao beehiveUserRelDao;
 
 	@Autowired
 	private ExCameraDoorDao cameraDoorDao;
@@ -63,6 +68,7 @@ public class ExSpaceBookService {
 	@Autowired
 	private ResourceLoader loader;
 
+	private Map<String, String> sitBeehiveUserIdMap = new HashMap<>();
 	private Map<String, List<ExCameraDoor>> cameraDoorMap = new HashMap<>();
 	private Map<String, ExSitLock> spaceCodeSitLockMap = new HashMap<>();//key: spaceCode
 	static String OPEN_DOOR_TRIGGER = null;
@@ -72,6 +78,7 @@ public class ExSpaceBookService {
 		log.info("init ExSpaceBookService...");
 		cameraDoorMap.clear();
 		spaceCodeSitLockMap.clear();
+		sitBeehiveUserIdMap.clear();
 		//
 		List<ExCameraDoor> cameraDoorDaoAll = cameraDoorDao.findAll();
 		cameraDoorDaoAll.forEach(door -> {
@@ -91,31 +98,53 @@ public class ExSpaceBookService {
 		//load trigger template json
 		OPEN_DOOR_TRIGGER = StreamUtils.copyToString(loader.getResource("classpath:com/kii/beehive/portal/ex/template/open_door_trigger.json").getInputStream(), Charsets.UTF_8);
 		UNLOCK_TRIGGER = StreamUtils.copyToString(loader.getResource("classpath:com/kii/beehive/portal/ex/template/unlock_trigger.json").getInputStream(), Charsets.UTF_8);
-
+		//
+		List<ExSitSysBeehiveUserRel> exSitSysBeehiveUserRels = beehiveUserRelDao.findAll();
+		exSitSysBeehiveUserRels.forEach(rel -> {
+			sitBeehiveUserIdMap.put(rel.getSit_sys_user_id(), rel.getBeehive_user_id());
+		});
 
 		log.info("cameraDoorMap : " + cameraDoorMap);
 		log.info("spaceCodeSitLockMap : " + spaceCodeSitLockMap);
+		log.info("sitBeehiveUserIdMap : " + sitBeehiveUserIdMap);
 	}
 
 	@Scheduled(cron = "0/5 * * * * ?")
 	@Transactional(propagation = Propagation.NEVER)
 	public void doCreateTrigger()  {
-		List<ExSpaceBook> spaceBookList = dao.getNeedCreateRule();
-		log.info("getNeedCreateRule : " + spaceBookList.size());
-		doCreateTrigger(spaceBookList);
+		try {
+			List<ExSpaceBook> spaceBookList = dao.getNeedCreateRule();
+			log.info("Scheduled getNeedCreateRule : " + spaceBookList.size());
+			doCreateTrigger(spaceBookList);
+		} catch (Exception e) {
+			log.error("Scheduled doCreateTrigger error", e);
+		}
 	}
 
 	@Scheduled(cron = "0/5 * * * * ?")
 	@Transactional(propagation = Propagation.NEVER)
 	public void doDeleteTrigger(){
-		List<ExSpaceBook> spaceBookList = dao.getNeedDeleteRule();
-		log.info("getNeedDeleteRule : " + spaceBookList.size());
-		doDeleteTrigger(spaceBookList);
+		try {
+			List<ExSpaceBook> spaceBookList = dao.getNeedDeleteRule();
+			log.info("Scheduled getNeedDeleteRule : " + spaceBookList.size());
+			doDeleteTrigger(spaceBookList);
+		} catch (Exception e) {
+			log.error("Scheduled doDeleteTrigger error", e);
+		}
 
 
 	}
 
+	public void getUserIdList(List<String> userIds){
 
+	}
+
+	public String getUserIdList(String sitUserId){
+		return sitBeehiveUserIdMap.get(sitUserId);
+	}
+	public void insertBeehiveUserRel(ExSitSysBeehiveUserRel exSitSysBeehiveUserRel){
+		beehiveUserRelDao.insert(exSitSysBeehiveUserRel);
+	}
 
 	public void insertSpaceBook(List<ExSpaceBook> spaceBooks){
 		for (int i = 0; i < spaceBooks.size(); i++) {
