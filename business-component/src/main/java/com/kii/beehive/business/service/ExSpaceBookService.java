@@ -42,6 +42,7 @@ public class ExSpaceBookService {
 
 	private static final Logger log = LoggerFactory.getLogger(ExSpaceBookService.class);
 
+	static String SIT_BOOKING_APP_CODE = "youjing";
 
 	@Autowired
 	private ExSpaceBookDao dao;
@@ -68,7 +69,7 @@ public class ExSpaceBookService {
 	static String UNLOCK_TRIGGER = null;
 	@PostConstruct
 	public void init() throws IOException {
-
+		log.info("init ExSpaceBookService...");
 		cameraDoorMap.clear();
 		spaceCodeSitLockMap.clear();
 		//
@@ -92,13 +93,15 @@ public class ExSpaceBookService {
 		UNLOCK_TRIGGER = StreamUtils.copyToString(loader.getResource("classpath:com/kii/beehive/portal/ex/template/unlock_trigger.json").getInputStream(), Charsets.UTF_8);
 
 
-
+		log.info("cameraDoorMap : " + cameraDoorMap);
+		log.info("spaceCodeSitLockMap : " + spaceCodeSitLockMap);
 	}
 
 	@Scheduled(cron = "0/5 * * * * ?")
 	@Transactional(propagation = Propagation.NEVER)
 	public void doCreateTrigger()  {
 		List<ExSpaceBook> spaceBookList = dao.getNeedCreateRule();
+		log.info("getNeedCreateRule : " + spaceBookList.size());
 		doCreateTrigger(spaceBookList);
 	}
 
@@ -106,6 +109,7 @@ public class ExSpaceBookService {
 	@Transactional(propagation = Propagation.NEVER)
 	public void doDeleteTrigger(){
 		List<ExSpaceBook> spaceBookList = dao.getNeedDeleteRule();
+		log.info("getNeedDeleteRule : " + spaceBookList.size());
 		doDeleteTrigger(spaceBookList);
 
 
