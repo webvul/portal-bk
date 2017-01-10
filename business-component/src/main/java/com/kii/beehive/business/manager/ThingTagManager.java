@@ -7,20 +7,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.kii.beehive.business.entity.ESThingInfo;
 import com.kii.beehive.business.service.IndustryTemplateService;
 import com.kii.beehive.industrytemplate.PointDetail;
 import com.kii.beehive.industrytemplate.ThingSchema;
 import com.kii.beehive.portal.common.utils.ThingIDTools;
-import com.kii.beehive.portal.exception.InvalidTriggerFormatException;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.PagerTag;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
@@ -149,7 +145,7 @@ public class ThingTagManager {
 			}
 		} else {
 
-			throw new InvalidTriggerFormatException(" tag or thing List is null ");
+//			throw new InvalidTriggerFormatException(" tag or thing List is null ");
 
 		}
 
