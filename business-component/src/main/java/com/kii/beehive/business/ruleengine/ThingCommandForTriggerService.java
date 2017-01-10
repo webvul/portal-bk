@@ -1,7 +1,9 @@
 package com.kii.beehive.business.ruleengine;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -73,8 +75,17 @@ public class ThingCommandForTriggerService {
 				});
 			});
 		}
-
-		Set<GlobalThingInfo> thingList = thingTagService.getThingInfos(command.getSelector());
+		
+		Set<GlobalThingInfo> thingList=new HashSet<>();
+		
+		if(command.getSelector().notEmpty()){
+			thingList.addAll(thingTagService.getThingInfos(command.getSelector()));
+		}
+		
+		if(command.getThingList()!=null){
+			thingList.addAll(thingTagService.getThingInfosByIDs(command.getThingList().stream().mapToLong(Long::parseLong).boxed().collect(Collectors.toSet())));
+		}
+		
 
 		thingList.stream().filter((th) -> !StringUtils.isEmpty(th.getFullKiiThingID())).forEach(thing -> {
 

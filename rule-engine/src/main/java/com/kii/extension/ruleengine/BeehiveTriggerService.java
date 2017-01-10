@@ -153,11 +153,11 @@ public class BeehiveTriggerService {
 
 		} catch (RuntimeException e) {
 
-			e.printStackTrace();
+//			e.printStackTrace();
 			throw new TriggerCreateException("create trigger instance fail:exception "+e.getClass().getName()+" msg:"+e.getMessage(),e);
 
 		} catch (SchedulerException|IOException e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 			throw new TriggerCreateException("global schedule init fail",e);
 		}
 
