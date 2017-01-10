@@ -172,9 +172,9 @@ public class ExSpaceBookRestBean {
 			if (StringUtils.isBlank(bean.password)) {
 				throw new IllegalArgumentException("password can not null");
 			}
-			if (bean.password.length() != 6) {
-				throw new IllegalArgumentException("password valid input");
-			}
+//			if (bean.password.length() != 6) {
+//				throw new IllegalArgumentException("password valid input");
+//			}
 			if (StringUtils.isBlank(bean.space_code)) {
 				throw new IllegalArgumentException("space_code can not null");
 			}
