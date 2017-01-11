@@ -6,9 +6,9 @@
     "face_thing": {
       "expressList": [
         {
-          "stateName": "beehive_user_id",
+          "stateName": "UserID",
           "function": "max",
-          "summaryAlias": "beehive_user_id"
+          "summaryAlias": "UserID"
         }
       ],
       "source": {
@@ -24,7 +24,7 @@
     "condition": {
       "clauses": [
         {
-          "field": "face_thing.beehive_user_id",
+          "field": "face_thing.UserID",
           "type": "eq",
           "value": "xxx"
         }

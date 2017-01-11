@@ -186,9 +186,9 @@ public class ExSpaceBookService {
 			if(book.getBeginDate() != null) queryParam.put("beginDate", book.getBeginDate());
 			if(book.getEndDate() != null) queryParam.put("endDate", book.getEndDate());
 			List<ExSpaceBook> spaceBookTemp = dao.findByFields(queryParam);
-			if(spaceBookTemp.size() == 0) {
-				throw new IllegalArgumentException("not find records index :" + (i+1) );
-			}
+//			if(spaceBookTemp.size() == 0) {
+//				throw new IllegalArgumentException("not find records index :" + (i+1) );
+//			}
 			spaceBookTemp.forEach(bookDel -> {
 				dao.deleteByID(bookDel.getId());
 			});
