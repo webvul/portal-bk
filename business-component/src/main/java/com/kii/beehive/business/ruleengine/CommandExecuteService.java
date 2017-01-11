@@ -64,9 +64,9 @@ public class CommandExecuteService implements EventCallback {
 
 
 	private ScheduledExecutorService executeService=new ScheduledThreadPoolExecutor(10);
-
-
-
+	
+	
+	
 	@Async
 	@Override
 	public void onTriggerFire(String triggerID,ExecuteParam params) {
@@ -95,12 +95,12 @@ public class CommandExecuteService implements EventCallback {
 
 				switch (target.getType()) {
 
-					case "ThingCommand":
+					case ThingCommand:
 						CommandToThing command=(CommandToThing)target;
 
-						commandService.executeCommand(triggerID,command,params);
+						commandService.executeCommand(command,params);
 						break;
-					case "HttpApiCall":
+					case HttpApiCall:
 						CallHttpApi call=(CallHttpApi)target;
 
 					
@@ -109,14 +109,14 @@ public class CommandExecuteService implements EventCallback {
 						httpCallService.doHttpApiCall(call,record.getTriggerID(),params);
 
 						break;
-					case "CallBusinessFunction":
+					case CallBusinessFunction:
 						
 						CallBusinessFunction fun=(CallBusinessFunction)target;
 						
 						funService.doBusinessFunCall(fun,record.getTriggerID(),params);
 						break;
 						
-					case "SettingParameter":
+					case SettingParameter:
 						SettingTriggerGroupParameter settingParam=(SettingTriggerGroupParameter)target;
 						
 						settingParamService.settingParam(settingParam,params);

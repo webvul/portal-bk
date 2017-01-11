@@ -2,11 +2,13 @@ package com.kii.extension.ruleengine;
 
 import javax.annotation.PostConstruct;
 
-import java.util.List;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.function.Consumer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,6 +24,8 @@ public class RuleEngineFactory {
 
 
 
+	private Logger log= LoggerFactory.getLogger(RuleEngineFactory.class);
+	
 //
 	@Autowired
 	private CommandExec exec;
@@ -39,7 +43,11 @@ public class RuleEngineFactory {
 	@PostConstruct
 	public void init(){
 
-		consumer= (List<MatchResult> list)-> list.forEach(r->exec.doExecute(r.getTriggerID(),r));
+		consumer= (List<MatchResult> list)-> {
+			
+			list.parallelStream().forEach(r-> exec.doExecute(r.getTriggerID(), r)
+			);
+		};
 
 	}
 

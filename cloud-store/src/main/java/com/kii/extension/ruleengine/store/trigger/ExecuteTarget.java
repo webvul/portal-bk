@@ -23,8 +23,14 @@ import com.kii.extension.ruleengine.store.trigger.task.SettingTriggerGroupParame
 })
 public abstract class ExecuteTarget {
 
+	
+	public  enum TargetType{
+		
+		ThingCommand,HttpApiCall,ThingCommandInGW,SettingParameter,CallBusinessFunction;
+		
+	}
 
-	public abstract String  getType();
+	public abstract TargetType  getType();
 
 
 	private String delay;

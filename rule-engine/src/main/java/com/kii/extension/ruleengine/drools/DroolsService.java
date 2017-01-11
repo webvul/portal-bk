@@ -133,7 +133,6 @@ public class DroolsService {
 			
 			this.currThing.setStatus(CurrThing.Status.inIdle);
 			kieSession.update(currThingHandler, currThing);
-//			kieSession.fireAllRules();
 		}
 	}
 
@@ -141,11 +140,6 @@ public class DroolsService {
 	public void inThing(String thingID){
 
 		settingCurrThing(thingID, CurrThing.Status.inThing);
-	}
-
-	public void inExt(String extName){
-
-		settingCurrThing(CurrThing.NONE, CurrThing.Status.inExt);
 	}
 
 
@@ -169,7 +163,6 @@ public class DroolsService {
 			FactHandle  handler=kieSession.insert(fire);
 			kieSession.fireAllRules();
 			kieSession.delete(handler);
-//			kieSession.fireAllRules();
 		}
 	}
 
@@ -191,7 +184,7 @@ public class DroolsService {
 			
 
 			kieSession.fireAllRules();
-			if(status== CurrThing.Status.inThing||status== CurrThing.Status.inExt) {
+			if(status== CurrThing.Status.inThing) {
 				List<MatchResult> lists = doQuery("get Match Result by TriggerID");
 				consumer.accept(lists);
 			}
@@ -402,7 +395,7 @@ public class DroolsService {
 
 		kieSession.update(externalHandler,external);
 
-		inExt(entity.getName());
+//		inExt(entity.getName());
 
 	}
 

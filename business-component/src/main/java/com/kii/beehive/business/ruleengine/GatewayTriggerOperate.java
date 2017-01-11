@@ -245,7 +245,7 @@ public class GatewayTriggerOperate {
 		for(ExecuteTarget target:targets)
 			switch (target.getType()) {
 				
-				case "ThingCommand":
+				case ThingCommand:
 					CommandToThing command = (CommandToThing) target;
 					CommandToThingInGW cmdInGW = new CommandToThingInGW();
 					cmdInGW.setCommand(command.getCommand());
@@ -262,7 +262,7 @@ public class GatewayTriggerOperate {
 					}
 					gatewayTriggerRecord.addTarget(cmdInGW);
 					break;
-				case "HttpApiCall":
+				case HttpApiCall:
 					throw new IllegalStateException();
 				
 			}

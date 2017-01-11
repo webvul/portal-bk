@@ -20,6 +20,7 @@ import com.kii.extension.ruleengine.ExecuteParam;
 import com.kii.extension.ruleengine.service.ExecuteResultDao;
 import com.kii.extension.ruleengine.store.trigger.task.CommandResponse;
 import com.kii.extension.ruleengine.store.trigger.task.CommandToThing;
+import com.kii.extension.ruleengine.store.trigger.task.ExceptionInfo;
 import com.kii.extension.sdk.entity.thingif.Action;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
 
@@ -61,7 +62,7 @@ public class ThingCommandForTriggerService {
 	}
 
 
-	public void executeCommand(String triggerID, CommandToThing command, ExecuteParam params){
+	public void executeCommand( CommandToThing command, ExecuteParam params){
 
 		for (Map<String, Action> actionMap : command.getCommand().getActions()) {
 
@@ -86,9 +87,22 @@ public class ThingCommandForTriggerService {
 			thingList.addAll(thingTagService.getThingInfosByIDs(command.getThingList().stream().mapToLong(Long::parseLong).boxed().collect(Collectors.toSet())));
 		}
 		
+		
+		Set<GlobalThingInfo> errThingIDs=thingList.stream().filter((th) -> StringUtils.isEmpty(th.getFullKiiThingID())).collect(Collectors.toSet());
 
+		errThingIDs.parallelStream().forEach(th->{
+			CommandResponse resp =  builder.getCmdResponse(params);
+			resp.setThingID(th.getId());
+			
+			ExceptionInfo info=new ExceptionInfo();
+			info.setMessage("KiiCloud thing id not exist");
+			resp.setExceptionInfo(info);
+			
+			resultDao.addTaskResult(resp);
+		});
+		
 		thingList.stream().filter((th) -> !StringUtils.isEmpty(th.getFullKiiThingID())).forEach(thing -> {
-
+			
 			ThingCommand  cmd=command.getCommand();
 			String version=thing.getSchemaVersion();
 			int ver=1;
@@ -126,7 +140,9 @@ public class ThingCommandForTriggerService {
 
 		});
 
-
+		
+		
+		return;
 	}
 
 
