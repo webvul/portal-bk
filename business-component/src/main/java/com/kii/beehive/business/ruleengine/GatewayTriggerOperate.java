@@ -157,6 +157,7 @@ public class GatewayTriggerOperate {
 		
 		if( ! (  ( ( record instanceof SummaryTriggerRecord)||(record instanceof GatewayTriggerRecord) )
 				&& record.getPredicate().getTriggersWhen().equals(WhenType.CONDITION_TRUE)
+				&& record.getPreparedCondition() == null
 				&& record.getPredicate().getSchedule() == null
 				&& ( record.getPredicate().getCondition()  instanceof Equal || record.getPredicate().getCondition()  instanceof AndLogic || record.getPredicate().getCondition() instanceof OrLogic)
 //				&& ( (AndLogic) record.getPredicate().getCondition() ).getClauses().size() <= 2
