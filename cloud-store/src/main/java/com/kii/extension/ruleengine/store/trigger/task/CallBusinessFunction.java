@@ -10,8 +10,8 @@ import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
 
 public class CallBusinessFunction extends ExecuteTarget {
 	@Override
-	public String getType() {
-		return "CallBusinessFunction";
+	public TargetType getType() {
+		return TargetType.CallBusinessFunction;
 	}
 
 	private String beanName;

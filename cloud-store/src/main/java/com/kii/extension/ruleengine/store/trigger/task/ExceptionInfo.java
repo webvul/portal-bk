@@ -12,6 +12,10 @@ public class ExceptionInfo {
 
 	private List<String> stackTrace=new ArrayList<>();
 
+	
+	public ExceptionInfo(){
+		
+	}
 
 
 	public ExceptionInfo(Throwable excep){

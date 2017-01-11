@@ -9,8 +9,8 @@ import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
 public class CallHttpApi extends ExecuteTarget {
 
 	@Override
-	public String getType() {
-		return "HttpApiCall";
+	public TargetType getType() {
+		return TargetType.HttpApiCall;
 	}
 
 

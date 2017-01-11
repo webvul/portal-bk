@@ -15,8 +15,8 @@ public class SettingTriggerGroupParameter extends ExecuteTarget {
 
 
 	@Override
-	public String getType() {
-		return "SettingParameter";
+	public TargetType getType() {
+		return TargetType.SettingParameter;
 	}
 
 

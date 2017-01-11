@@ -32,7 +32,7 @@ public class CommandToThingInGW extends ExecuteTarget {
 	}
 
 	@Override
-	public String getType() {
-		return "ThingCommandInGW";
+	public TargetType getType() {
+		return TargetType.ThingCommandInGW;
 	}
 }

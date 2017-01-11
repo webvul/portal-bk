@@ -25,7 +25,8 @@ public class CommandExec {
 
 
 	private Map<String,AtomicInteger> map=new HashMap<>();
-
+	
+	
 
 	public void doExecute(String triggerID,CommResult result){
 
@@ -46,9 +47,13 @@ public class CommandExec {
 		}
 
 		ExecuteParam  execParam=new ExecuteParam(result);
-
-		callback.onTriggerFire(triggerID,execParam);
-
+		
+		try {
+			
+			callback.onTriggerFire(triggerID, execParam);
+		}catch(Exception e){
+			log.error("execute exec fail");
+		}
 	}
 
 

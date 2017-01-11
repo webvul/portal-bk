@@ -45,7 +45,7 @@ public class CommandToThing extends ExecuteTarget {
 	}
 
 	@Override
-	public String getType() {
-		return "ThingCommand";
+	public TargetType getType() {
+		return TargetType.ThingCommand;
 	}
 }
