@@ -213,6 +213,23 @@ public class ExSpaceBookRestBean {
 			}
 		});
 	}
+	@JsonIgnore
+	public void verifyGetUserIdInput() {
+		if (StringUtils.isBlank(app_code)) {
+			throw new IllegalArgumentException("app_code can not null");
+		}
+		if ( ! ExSpaceBookService.SIT_BOOKING_APP_CODE.equals(app_code)) {
+			throw new IllegalArgumentException("app_code valid!");
+		}
+		if (userList == null || userList.size() == 0) {
+			throw new IllegalArgumentException("userList can not null");
+		}
+		userList.forEach( bean -> {
+			if (StringUtils.isBlank(bean.user_id)) {
+				throw new IllegalArgumentException("user_id can not null");
+			}
+		});
+	}
 
 	private String old_password;
 	private String new_password;

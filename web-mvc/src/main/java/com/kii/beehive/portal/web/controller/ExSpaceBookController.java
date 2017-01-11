@@ -261,14 +261,11 @@ public class ExSpaceBookController {
         result.put("errorcode", 0);
         try {
 
-            spaceBookRestBean.verifyDelInput();
+            spaceBookRestBean.verifyGetUserIdInput();
 
             //check sign
             Map<String, String> signMap = new HashMap<>();
             signMap.put("app_code", spaceBookRestBean.getApp_code());
-            signMap.put("campus_code", spaceBookRestBean.getCampus_code() );
-            signMap.put("biz_id", spaceBookRestBean.getBiz_id() );
-            signMap.put("biz_type", spaceBookRestBean.getBiz_type() );
             Collections.sort(spaceBookRestBean.getUserList(), new Comparator<ExSpaceBookRestBean>() {
                 @Override
                 public int compare(ExSpaceBookRestBean o1, ExSpaceBookRestBean o2) {
