@@ -2,9 +2,11 @@ package com.kii.beehive.portal.web.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import org.apache.commons.codec.binary.Base64;
@@ -25,7 +27,8 @@ import com.kii.beehive.portal.common.utils.StrTemplate;
 import com.kii.beehive.portal.exception.BusinessException;
 import com.kii.beehive.portal.face.BeehiveFaceService;
 import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
-import com.kii.beehive.portal.manager.BeehiveUserManager;
+import com.kii.beehive.portal.jdbc.entity.ExSitSysBeehiveUserRel;
+import com.kii.beehive.portal.manager.AuthManager;
 import com.kii.beehive.portal.web.entity.ExSpaceBookRestBean;
 import com.kii.beehive.portal.web.entity.UserRestBean;
 import com.kii.beehive.portal.web.exception.ErrorCode;
@@ -49,7 +52,7 @@ public class ExSpaceBookController {
     private BeehiveFaceService beehiveFaceService;
 
     @Autowired
-    private BeehiveUserManager userManager;
+    private AuthManager authManager;
 
     @Autowired
     private I18nPropertyTools tool;
@@ -64,6 +67,11 @@ public class ExSpaceBookController {
     public Object debugFlag(){
         debugFlag = !debugFlag;
         return debugFlag;
+    }
+    @RequestMapping(path = "/init", method = {RequestMethod.GET}, consumes = { "*" })
+    public Object reInit() throws IOException {
+        spaceBookService.init();
+        return true;
     }
 
     @RequestMapping(path = "/addUserPicture", method = {RequestMethod.POST})
@@ -274,24 +282,25 @@ public class ExSpaceBookController {
                 return result;
             }
             //
+            List<Map<String, String>> userList = new ArrayList<>();
             spaceBookRestBean.getUserList().forEach(o->{
+                Map<String, String> user = new HashMap<>();
+                userList.add(user);
+                user.put("user_id", o.getUser_id());
                 String beehiveUserId = spaceBookService.getUserIdList(o.getUser_id());
-                if(StringUtils.isNoneBlank(beehiveUserId)){
-
-                }else {
-
-//            BeehiveJdbcUser beehiveUser = user.getBeehiveUser();
-//
-//            veifyPwd(user.getPassword());
-//
-//            beehiveUser.setRoleName("commUser");
-//
-//            return authManager.createUserDirectly(beehiveUser, user.getPassword());
-
-
-//            spaceBookService.deleteSpaceBook(spaceBookRestBean.convert2ExSpaceBook());
-
+                if(StringUtils.isBlank(beehiveUserId)) {
+                    BeehiveJdbcUser beehiveUser = new BeehiveJdbcUser();
+                    beehiveUser.setUserName(o.getUser_id());
+                    beehiveUser.setUserPassword(ExSpaceBookService.SIT_BOOKING_USER_DEFAULT_PWD);
+                    beehiveUser.setRoleName("commUser");
+                    Map<String, String> beehiveUserMap = authManager.createUserDirectly(beehiveUser, ExSpaceBookService.SIT_BOOKING_USER_DEFAULT_PWD);
+                    beehiveUserId = beehiveUserMap.get("userID");
+                    ExSitSysBeehiveUserRel exSitSysBeehiveUserRel = new ExSitSysBeehiveUserRel();
+                    exSitSysBeehiveUserRel.setSit_sys_user_id(o.getUser_id());
+                    exSitSysBeehiveUserRel.setBeehive_user_id(beehiveUserId);
+                    spaceBookService.insertBeehiveUserRel(exSitSysBeehiveUserRel);
                 }
+                user.put("beehive_user_id", beehiveUserId);
             });
 
         } catch (IllegalArgumentException e) {

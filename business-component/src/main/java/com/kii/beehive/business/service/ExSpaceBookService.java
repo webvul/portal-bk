@@ -45,6 +45,7 @@ public class ExSpaceBookService {
 	private static final Logger log = LoggerFactory.getLogger(ExSpaceBookService.class);
 
 	public static String SIT_BOOKING_APP_CODE = "youjing";
+	public static String SIT_BOOKING_USER_DEFAULT_PWD = "119!!)youjing!!)110";
 
 	@Autowired
 	private ExSpaceBookDao dao;
@@ -142,8 +143,10 @@ public class ExSpaceBookService {
 	public String getUserIdList(String sitUserId){
 		return sitBeehiveUserIdMap.get(sitUserId);
 	}
+
 	public void insertBeehiveUserRel(ExSitSysBeehiveUserRel exSitSysBeehiveUserRel){
 		beehiveUserRelDao.insert(exSitSysBeehiveUserRel);
+		sitBeehiveUserIdMap.put(exSitSysBeehiveUserRel.getSit_sys_user_id(), exSitSysBeehiveUserRel.getBeehive_user_id());
 	}
 
 	public void insertSpaceBook(List<ExSpaceBook> spaceBooks){
