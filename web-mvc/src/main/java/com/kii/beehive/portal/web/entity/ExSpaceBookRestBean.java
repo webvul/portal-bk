@@ -164,9 +164,7 @@ public class ExSpaceBookRestBean {
 		if ( ! ExSpaceBookService.SIT_BOOKING_APP_CODE.equals(app_code)) {
 			throw new IllegalArgumentException("app_code valid!");
 		}
-		if ( ! ExSpaceBookService.SIT_BOOKING_APP_CODE.equals(app_code)) {
-			throw new IllegalArgumentException("app_code valid!");
-		}
+
 		if (StringUtils.isBlank(campus_code)) {
 			throw new IllegalArgumentException("campus_code can not null");
 		}
@@ -199,6 +197,9 @@ public class ExSpaceBookRestBean {
 	public void verifyDelInput() {
 		if (StringUtils.isBlank(app_code)) {
 			throw new IllegalArgumentException("app_code can not null");
+		}
+		if ( ! ExSpaceBookService.SIT_BOOKING_APP_CODE.equals(app_code)) {
+			throw new IllegalArgumentException("app_code valid!");
 		}
 		if (StringUtils.isBlank(campus_code)) {
 			throw new IllegalArgumentException("campus_code can not null");
