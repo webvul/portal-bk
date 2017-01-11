@@ -249,7 +249,7 @@ public class ExSpaceBookService {
 
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	private void doCreateTrigger(ExSpaceBook book)  {
-		log.info("doDeleteTrigger ExSpaceBook id:" + book.getId());
+		log.info("doCreateTrigger ExSpaceBook id:" + book.getId());
 		//多个门 trigger
 		cameraDoorMap.forEach( (key, doorList) -> {
 			ExCameraDoor door = doorList.get(0);
@@ -277,7 +277,7 @@ public class ExSpaceBookService {
 			try {
 				openDoorTrigger = triggerManager.createTrigger(openDoorTriggerTpl);
 			} catch (Exception e) {
-				log.error("doDeleteTrigger open door error " + book.getId(), e);
+				log.error("sit booking doCreateTrigger open door error " + book.getId(), e);
 				dao.updateFieldByID("createTriggerError", true, book.getId());
 				return;
 			}
@@ -309,7 +309,7 @@ public class ExSpaceBookService {
 			try {
 				unlockTrigger = triggerManager.createTrigger(unlockTriggerTpl);
 			} catch (Exception e) {
-				log.error("doDeleteTrigger unlockTrigger error " + book.getId(), e);
+				log.error("sit booking doCreateTrigger unlockTrigger error " + book.getId(), e);
 				dao.updateFieldByID("createTriggerError", true, book.getId());
 				return;
 			}
