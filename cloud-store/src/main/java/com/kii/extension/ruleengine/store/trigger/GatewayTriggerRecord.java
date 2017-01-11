@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.beans.BeanUtils;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kii.extension.ruleengine.store.trigger.groups.SummarySource;
 import com.kii.extension.ruleengine.store.trigger.groups.SummaryTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.task.CommandToThing;
@@ -49,7 +50,7 @@ public class GatewayTriggerRecord extends TriggerRecord {
 		return BeehiveTriggerType.Gateway;
 	}
 	
-	
+	@JsonIgnore
 	public SummaryTriggerRecord  getSummaryTriggerInstance(){
 		SummaryTriggerRecord inSummaryTriggerRecord = new SummaryTriggerRecord();
 		//convert gate trigger to summary

@@ -78,8 +78,14 @@ public class GatewayTriggerOperate {
 	public TriggerRecord addGatewayTrigger(TriggerRecord record){
 		
 		if(checkLocalRule(record)){
-			return createGatewayRecord((SummaryTriggerRecord) record);
-	
+
+			try {
+				return createGatewayRecord((SummaryTriggerRecord) record);
+			} catch (Exception e) {
+				log.error("createGatewayRecord error" , e);
+				return record;
+			}
+
 		}else{
 			return record;
 		}
