@@ -170,7 +170,7 @@ public class ExSpaceBookRestBean {
 		if (StringUtils.isBlank(campus_code)) {
 			throw new IllegalArgumentException("campus_code can not null");
 		}
-		if (userList == null) {
+		if (userList == null || userList.size() == 0) {
 			throw new IllegalArgumentException("userList can not null");
 		}
 		userList.forEach( bean -> {
@@ -203,7 +203,7 @@ public class ExSpaceBookRestBean {
 		if (StringUtils.isBlank(campus_code)) {
 			throw new IllegalArgumentException("campus_code can not null");
 		}
-		if (userList == null) {
+		if (userList == null || userList.size() == 0) {
 			throw new IllegalArgumentException("userList can not null");
 		}
 		userList.forEach( bean -> {

@@ -301,8 +301,9 @@ public class ExSpaceBookController {
                     spaceBookService.insertBeehiveUserRel(exSitSysBeehiveUserRel);
                 }
                 user.put("beehive_user_id", beehiveUserId);
-            });
 
+            });
+            result.put("userList", userList);
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
             result.put("errorcode", 1);
