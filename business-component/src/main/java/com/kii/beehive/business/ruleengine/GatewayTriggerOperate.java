@@ -149,9 +149,9 @@ public class GatewayTriggerOperate {
 	
 	
 	public  boolean checkLocalRule(TriggerRecord record) {
+
 		
-		
-		if(record.getTargets().stream().anyMatch( t-> !( t.getType().equals("ThingCommand") || t.getType().equals("ThingCommandInGW") ) )){
+		if(record.getTargets().stream().anyMatch( t-> !( t.getType().equals(ExecuteTarget.TargetType.ThingCommand) || t.getType().equals(ExecuteTarget.TargetType.ThingCommandInGW) ) )){
 			return false;
 		}
 		
