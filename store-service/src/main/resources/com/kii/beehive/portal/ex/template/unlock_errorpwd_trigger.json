@@ -21,14 +21,30 @@
   },
 
   "predicate": {
+
     "condition": {
-      "clause": {
-          "field": "lock_global_thing.password",
-          "type": "eq",
-          "value": "xxx"
-      },
-      "type": "not"
+      "clauses": [
+        {
+          "clause": {
+            "field": "lock_global_thing.password",
+            "type": "eq",
+            "value": "xxx"
+          },
+          "type": "not"
+        },
+        {
+          "clause": {
+            "field": "lock_global_thing.password",
+            "type": "eq",
+            "value": "000000"
+          },
+          "type": "not"
+        }
+
+      ],
+      "type": "and"
     },
+
     "triggersWhen": "CONDITION_TRUE"
   },
 

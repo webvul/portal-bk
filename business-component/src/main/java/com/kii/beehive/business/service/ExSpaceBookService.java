@@ -269,9 +269,10 @@ public class ExSpaceBookService {
 			((SummarySource)unlockErrorPwdTriggerTpl.getSummarySource().values().iterator().next()).getSource()
 					.setThingList(Arrays.asList(sitLock.getLock_global_thing_id()));
 			//condition
-			NotLogic notLogic = (NotLogic)unlockErrorPwdTriggerTpl.getPredicate().getCondition();
+			AndLogic andLogic = (AndLogic)unlockErrorPwdTriggerTpl.getPredicate().getCondition();
+			NotLogic notLogic = (NotLogic)andLogic.getClauses().get(0);
 			Equal pwdEqForErrorPwd = (Equal)notLogic.getClause();
-			pwdEqForErrorPwd.setValue(book.getUserId());
+			pwdEqForErrorPwd.setValue(book.getPassword());
 
 			//target
 			CommandToThing command = (CommandToThing) unlockErrorPwdTriggerTpl.getTargets().get(0);
