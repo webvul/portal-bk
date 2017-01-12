@@ -3,8 +3,8 @@ package com.kii.extension.ruleengine;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.expression.ExpressionException;
 import org.springframework.expression.ExpressionParser;
-import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 
@@ -30,7 +30,7 @@ public class ExpressTool {
 				return 0.0f;
 			}
 			return val;
-		}catch(SpelEvaluationException e){
+		}catch(ExpressionException e){
 			return 0.0f;
 		}
 			
@@ -45,7 +45,7 @@ public class ExpressTool {
 		try {
 		return   parser.parseExpression(express).getValue(
 				context, cls);
-		}catch(SpelEvaluationException e){
+		}catch(ExpressionException e){
 			return null;
 		}
 	}
@@ -64,7 +64,7 @@ public class ExpressTool {
 			}else{
 				return value;
 			}
-		}catch(SpelEvaluationException e){
+		}catch(ExpressionException e){
 			return 0.0f;
 		}
 	}
