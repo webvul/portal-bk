@@ -108,7 +108,7 @@ public class ExpressConvert {
 			this.isSimpleExp=isSimpleExp;
 		}
 		
-		private static final String S_FIELD="get${1}(\"${0}\")";
+		private static final String S_FIELD="${1}[\"${0}\"]";
 		private static final String P_FIELD=S_FIELD;
 		private static final String E_FIELD="$ext.get${1}(\"${0}\")";
 		private static final String T_FIELD="$inst.get${1}(\"${0}\")";
@@ -160,14 +160,16 @@ public class ExpressConvert {
 					valueName= "mapValue";
 					break;
 				default:
-					valueName="value";
+					valueName=isCondition?"values":"value";
 			}
 			
 			if(sign.equals("h")){
 				field="previous."+field;
 			}
 			
-			valueName=StringUtils.capitalize(valueName);
+			if(!("values".equals(valueName)&&idx==0)) {
+				valueName = StringUtils.capitalize(valueName);
+			}
 			
 			return  StrTemplate.gener(template,field,valueName);
 			

@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,19 +47,34 @@ public class BusinessObjInRule implements RuntimeEntry,CanUpdate<BusinessObjInRu
 		previousValues=new HashMap<>(this.values);
 		this.values = new HashMap<>(values);
 	}
-
-//	public void addValue(String field,Object value){
-//		this.values.put(field,value);
-//	}
-
-
-
+	
+	
+	private Object getValueByKey(String key){
+		
+		if(key.startsWith("previous")){
+			String testKey= StringUtils.substring(key,9);
+			return previousValues.get(testKey);
+		}else{
+			return values.get(key);
+		}
+	}
+	
+	
 	public Object getNumValue(String field){
 
+		Object obj=getValueByKey(field);
+		if(obj!=null){
+			return obj;
+		}
 		return  ExpressTool.getNumValue(this,field);
 	}
 
 	public Object getValue(String field){
+		
+		Object obj=getValueByKey(field);
+		if(obj!=null){
+			return obj;
+		}
 
 		Object value= ExpressTool.getObjValue(this,field);
 

@@ -11,18 +11,9 @@ public class SummaryResult implements  WithTrigger {
 
 	private final Object value;
 
-//	private final String relID;
 
 	private final String funName;
 
-
-
-//	public SummaryResult(String triggerID,String summaryField,Number value){
-//		this.triggerID=triggerID;
-//		this.name=summaryField;
-//		this.value=value;
-//		this.relID=null;
-//	}
 
 	public SummaryResult(Summary summary,Number value){
 		this.funName=summary.getFunName();

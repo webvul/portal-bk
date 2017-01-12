@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.kii.extension.ruleengine.ExpressTool;
 
 public class MultiplesValueMap implements RuntimeEntry,WithTrigger,WithHistory{
@@ -19,9 +21,7 @@ public class MultiplesValueMap implements RuntimeEntry,WithTrigger,WithHistory{
 	private AtomicBoolean sign=new AtomicBoolean(false);
 	
 	public boolean copyToHistory(){
-//		if(sign.get()){
-//			return true;
-//		}
+
 		
 		previousMap.clear();
 		
@@ -37,10 +37,7 @@ public class MultiplesValueMap implements RuntimeEntry,WithTrigger,WithHistory{
 			}
 			
 		});
-//		previousMap.putAll(valueMap);
-		
-//		sign.set(true);
-//		return sign.get();
+
 		return true;
 	}
 	
@@ -52,7 +49,6 @@ public class MultiplesValueMap implements RuntimeEntry,WithTrigger,WithHistory{
 			value=((Number)value).doubleValue();
 		}
 		valueMap.put(name,value);
-//		sign.set(false);
 	}
 
 	public void setThingValue(ThingResult result){
@@ -66,10 +62,7 @@ public class MultiplesValueMap implements RuntimeEntry,WithTrigger,WithHistory{
 		Map<String,Object> map=result.getValue();
 		
 		valueMap.put(name,map);
-//		sign.set(false);
-//		map.forEach((k,v)->{
-//			valueMap.put(name+"."+k,v);
-//		});
+
 	}
 
 	public Map<String,Object> getValues(){
@@ -83,13 +76,33 @@ public class MultiplesValueMap implements RuntimeEntry,WithTrigger,WithHistory{
 	
 	public Object getValue(String key){
 		
+		Object obj=getValueByKey(key);
+		if(obj!=null){
+			return obj;
+		}
+	
 		Object value= ExpressTool.getObjValue(this,key);
 
 		return value;
 	}
 	
 	
+	private Object getValueByKey(String key){
+		
+		if(key.startsWith("previous")){
+			String testKey= StringUtils.substring(key,9);
+			return previousMap.get(testKey);
+		}else{
+			return valueMap.get(key);
+		}
+	}
+	
 	public Set<?> getSetValue(String key){
+		
+		Object obj=getValueByKey(key);
+		if(obj!=null){
+			return (Set<?>) obj;
+		}
 		
 		Set<?> value= ExpressTool.getValue(this,key,Set.class);
 		
@@ -98,6 +111,11 @@ public class MultiplesValueMap implements RuntimeEntry,WithTrigger,WithHistory{
 	
 	public Map<String,?> getMapValue(String key){
 		
+		Object obj=getValueByKey(key);
+		if(obj!=null){
+			return (Map<String, ?>) obj;
+		}
+		
 		Map<String,?> value= ExpressTool.getValue(this,key,Map.class);
 		
 		return value==null?new HashMap<>():(HashMap)value;
@@ -105,6 +123,11 @@ public class MultiplesValueMap implements RuntimeEntry,WithTrigger,WithHistory{
 	
 	
 	public Number getNumValue(String key){
+		
+		Object obj=getValueByKey(key);
+		if(obj!=null){
+			return (Number) obj;
+		}
 		
 		Number value= ExpressTool.getNumValue(this,key);
 		return value;

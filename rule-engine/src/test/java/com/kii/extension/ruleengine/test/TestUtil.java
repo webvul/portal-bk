@@ -7,6 +7,9 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.expression.spel.support.StandardEvaluationContext;
 
 import com.kii.extension.ruleengine.drools.ExpressConvert;
 import com.kii.extension.ruleengine.drools.entity.BusinessObjInRule;
@@ -81,6 +84,25 @@ public class TestUtil {
 	}
 
 
+	
+	@Test
+	public void testExp() {
+		map.put("val", "newVal");
+		
+		Map subMap = new HashMap<>();
+		subMap.put("0", "abc");
+		map.put("0", subMap);
+		
+		status.setValues(map);
+		
+		
+		StandardEvaluationContext context = new StandardEvaluationContext(status);
+		ExpressionParser parser = new SpelExpressionParser();
+		
+		String val = parser.parseExpression("values['0'].'0'").getValue(
+					context, String.class);
+		assertEquals(val,"abc");
+	}
 
 	@Test
 	public void testExpress(){
@@ -97,12 +119,17 @@ public class TestUtil {
 		
 		map.put("val","newVal");
 		
+		Map subMap=new HashMap<>();
+		subMap.put("0","abc");
+		map.put("0",subMap);
+		
 		status.setValues(map);
 		
 		assertEquals("val",status.getValue("previous.val"));
 		assertEquals("newVal",status.getValue("val"));
 		
 		
+		assertEquals("abc",status.getValue("0.0"));
 		
 		
 		

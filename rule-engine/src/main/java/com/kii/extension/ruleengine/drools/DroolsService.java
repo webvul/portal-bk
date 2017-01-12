@@ -386,8 +386,8 @@ public class DroolsService {
 		}catch(RuntimeException e){
 			kfs.delete(drlName);
 			pathSet.remove(drlName);
-			kb=ks.newKieBuilder(kfs);
-			kb.buildAll();
+//			kb=ks.newKieBuilder(kfs);
+//			kb.buildAll();
 			log.error(e.getMessage());
 			
 			throw e;
