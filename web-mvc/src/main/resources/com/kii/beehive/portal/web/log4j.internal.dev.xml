@@ -31,7 +31,7 @@
     <Logger name="org.springframework.cache" level="info" />
 
 	
-    <Logger name="com.kii"  level="info" />
+    <Logger name="com.kii"  level="info" includeLocation="false"/>
 
 	<Root level="info">
         <appender-ref ref="file" />

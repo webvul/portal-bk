@@ -33,7 +33,7 @@
 
         <Logger name="com.kii"  level="info" />
 
-        <Root level="info">
+        <Root level="info" includeLocation="false">
             <appender-ref ref="file" />
         </Root>
     </Loggers>

@@ -28,7 +28,7 @@
 
         <Logger name="com.kii"  level="debug" />
 
-        <Root level="info">
+        <Root level="info"  >
             <appender-ref ref="file" />
             <appender-ref ref="console" />
         </Root>
