@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
@@ -20,6 +21,7 @@ import com.kii.beehive.portal.web.stomp.MessageManager;
  * Created by hdchen on 6/27/16.
  */
 @Configuration
+@EnableAsync
 @EnableWebMvc
 @EnableWebSocket
 @EnableWebSocketMessageBroker

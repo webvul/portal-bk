@@ -2,8 +2,11 @@ package com.kii.beehive.portal.web.help;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kii.beehive.portal.web.entity.StateUpload;
 
 /**
@@ -11,6 +14,10 @@ import com.kii.beehive.portal.web.entity.StateUpload;
  */
 @Component
 public class InternalEventListenerRegistry {
+	private static Logger LOG = LoggerFactory.getLogger(InternalEventListenerRegistry.class);
+
+	private static ObjectMapper mapper = new ObjectMapper();
+
 	public interface ExtensionCallbackEventListener {
 		void onStateChange(String appId, StateUpload state);
 	}
@@ -31,6 +38,8 @@ public class InternalEventListenerRegistry {
 
 	@Async
 	public void onStateChange(String appId, StateUpload state) {
+		LOG.info(new StringBuilder("AppId: ").append(appId).append(", status: ")
+				.append(state.toString()).toString());
 		synchronized (listeners) {
 			for (ExtensionCallbackEventListener listener : listeners) {
 				listener.onStateChange(appId, state);
