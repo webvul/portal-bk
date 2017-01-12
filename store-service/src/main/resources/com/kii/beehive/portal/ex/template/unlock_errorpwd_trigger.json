@@ -1,14 +1,14 @@
 {
-  "name": "open door",
+  "name": "unlock-error-pwd",
   "description": "",
   "type": "Summary",
   "summarySource": {
-    "face_thing": {
+    "lock_global_thing": {
       "expressList": [
         {
-          "stateName": "UserID",
+          "stateName": "password",
           "function": "max",
-          "summaryAlias": "UserID"
+          "summaryAlias": "password"
         }
       ],
       "source": {
@@ -22,19 +22,15 @@
 
   "predicate": {
     "condition": {
-      "clauses": [
-        {
-          "field": "face_thing.UserID",
+      "clause": {
+          "field": "lock_global_thing.password",
           "type": "eq",
           "value": "xxx"
-        }
-
-      ],
-      "type": "and"
+      },
+      "type": "not"
     },
     "triggersWhen": "CONDITION_TRUE"
   },
-
 
   "targets": [
     {
@@ -53,7 +49,7 @@
         "actions": [
           {
             "setPower": {
-              "Power": 1
+              "Power": 0
             }
           }
         ]

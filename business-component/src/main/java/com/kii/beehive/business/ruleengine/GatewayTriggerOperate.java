@@ -25,6 +25,7 @@ import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.WhenType;
 import com.kii.extension.ruleengine.store.trigger.condition.AndLogic;
 import com.kii.extension.ruleengine.store.trigger.condition.Equal;
+import com.kii.extension.ruleengine.store.trigger.condition.NotLogic;
 import com.kii.extension.ruleengine.store.trigger.condition.OrLogic;
 import com.kii.extension.ruleengine.store.trigger.groups.SummarySource;
 import com.kii.extension.ruleengine.store.trigger.groups.SummaryTriggerRecord;
@@ -159,7 +160,11 @@ public class GatewayTriggerOperate {
 				&& record.getPredicate().getTriggersWhen().equals(WhenType.CONDITION_TRUE)
 				&& record.getPreparedCondition() == null
 				&& record.getPredicate().getSchedule() == null
-				&& ( record.getPredicate().getCondition()  instanceof Equal || record.getPredicate().getCondition()  instanceof AndLogic || record.getPredicate().getCondition() instanceof OrLogic)
+				&& ( record.getPredicate().getCondition()  instanceof NotLogic
+				|| record.getPredicate().getCondition()  instanceof Equal
+				|| record.getPredicate().getCondition()  instanceof AndLogic
+				|| record.getPredicate().getCondition() instanceof OrLogic )
+
 //				&& ( (AndLogic) record.getPredicate().getCondition() ).getClauses().size() <= 2
 //				&& ( (AndLogic) record.getPredicate().getCondition() ).getClauses().get(0) instanceof AndLogic
 //				&& ( (AndLogic) ( ( (AndLogic) record.getPredicate().getCondition() ).getClauses().get(0) ) ).getClauses().size() == 2

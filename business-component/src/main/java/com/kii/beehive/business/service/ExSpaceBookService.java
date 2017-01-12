@@ -34,6 +34,7 @@ import com.kii.beehive.portal.jdbc.entity.ExSpaceBookTriggerItem;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.condition.AndLogic;
 import com.kii.extension.ruleengine.store.trigger.condition.Equal;
+import com.kii.extension.ruleengine.store.trigger.condition.NotLogic;
 import com.kii.extension.ruleengine.store.trigger.groups.SummarySource;
 import com.kii.extension.ruleengine.store.trigger.groups.SummaryTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.task.CommandToThing;
@@ -74,6 +75,7 @@ public class ExSpaceBookService {
 	private Map<String, ExSitLock> spaceCodeSitLockMap = new HashMap<>();//key: spaceCode
 	static String OPEN_DOOR_TRIGGER = null;
 	static String UNLOCK_TRIGGER = null;
+	static String UNLOCK_ERRORPWD_TRIGGER = null;
 	@PostConstruct
 	public void init() throws IOException {
 		log.info("init ExSpaceBookService...");
@@ -99,6 +101,7 @@ public class ExSpaceBookService {
 		//load trigger template json
 		OPEN_DOOR_TRIGGER = StreamUtils.copyToString(loader.getResource("classpath:com/kii/beehive/portal/ex/template/open_door_trigger.json").getInputStream(), Charsets.UTF_8);
 		UNLOCK_TRIGGER = StreamUtils.copyToString(loader.getResource("classpath:com/kii/beehive/portal/ex/template/unlock_trigger.json").getInputStream(), Charsets.UTF_8);
+		UNLOCK_ERRORPWD_TRIGGER = StreamUtils.copyToString(loader.getResource("classpath:com/kii/beehive/portal/ex/template/unlock_errorpwd_trigger.json").getInputStream(), Charsets.UTF_8);
 		//
 		List<ExSitSysBeehiveUserRel> exSitSysBeehiveUserRels = beehiveUserRelDao.findAll();
 		exSitSysBeehiveUserRels.forEach(rel -> {
@@ -250,6 +253,78 @@ public class ExSpaceBookService {
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	private void doCreateTrigger(ExSpaceBook book)  {
 		log.info("doCreateTrigger ExSpaceBook id:" + book.getId());
+
+
+		//unlock trigger
+		ExSitLock sitLock = spaceCodeSitLockMap.get(book.getSpaceCode());
+		if(sitLock == null ) {
+			log.error("sit booking can not find lock by spacecode error " + book.getId());
+			dao.deleteByID(book.getId());
+			return;
+		}else {
+
+			//unlock for error pwd
+			SummaryTriggerRecord unlockErrorPwdTriggerTpl = getUnlockErrorPwdTriggerRecordTpl();
+			//source
+			((SummarySource)unlockErrorPwdTriggerTpl.getSummarySource().values().iterator().next()).getSource()
+					.setThingList(Arrays.asList(sitLock.getLock_global_thing_id()));
+			//condition
+			NotLogic notLogic = (NotLogic)unlockErrorPwdTriggerTpl.getPredicate().getCondition();
+			Equal pwdEqForErrorPwd = (Equal)notLogic.getClause();
+			pwdEqForErrorPwd.setValue(book.getUserId());
+
+			//target
+			CommandToThing command = (CommandToThing) unlockErrorPwdTriggerTpl.getTargets().get(0);
+			command.setThingList(Arrays.asList(sitLock.getLock_global_thing_id().toString()));
+
+			TriggerRecord unlockErrorPwdTrigger = null;
+			try {
+				unlockErrorPwdTrigger = triggerManager.createTrigger(unlockErrorPwdTriggerTpl);
+			} catch (Exception e) {
+				log.error("sit booking doCreateTrigger unlockTrigger error " + book.getId(), e);
+				dao.updateFieldByID("createTriggerError", true, book.getId());
+				return;
+			}
+			ExSpaceBookTriggerItem esbi = new ExSpaceBookTriggerItem();
+			esbi.setExSpaceBookId(book.getId());
+			esbi.setTriggerId(unlockErrorPwdTrigger.getTriggerID());
+			esbi.setAddedTrigger(true);
+			esbi.setDeletedTrigger(false);
+			esbi.setType(ExSpaceBookTriggerItem.ExSpaceBookTriggerItemType.unlock);
+			itemDao.insert(esbi);
+
+			//unlock
+			SummaryTriggerRecord unlockTriggerTpl = getUnlockTriggerRecordTpl();
+			//source
+			((SummarySource)unlockTriggerTpl.getSummarySource().values().iterator().next()).getSource()
+					.setThingList(Arrays.asList(sitLock.getLock_global_thing_id()));
+			//condition
+			Equal pwdEq = (Equal)unlockTriggerTpl.getPredicate().getCondition();
+			pwdEq.setValue(book.getPassword());
+			//target
+			CommandToThing commandUnlock = (CommandToThing) unlockTriggerTpl.getTargets().get(0);
+			commandUnlock.setThingList(Arrays.asList(sitLock.getLock_global_thing_id().toString()));
+
+			TriggerRecord unlockTrigger = null;
+			try {
+				unlockTrigger = triggerManager.createTrigger(unlockTriggerTpl);
+			} catch (Exception e) {
+				log.error("sit booking doCreateTrigger unlockTrigger error " + book.getId(), e);
+				dao.updateFieldByID("createTriggerError", true, book.getId());
+				return;
+			}
+
+			ExSpaceBookTriggerItem esbiErrorPwd = new ExSpaceBookTriggerItem();
+			esbiErrorPwd.setExSpaceBookId(book.getId());
+			esbiErrorPwd.setTriggerId(unlockTrigger.getTriggerID());
+			esbiErrorPwd.setAddedTrigger(true);
+			esbiErrorPwd.setDeletedTrigger(false);
+			esbiErrorPwd.setType(ExSpaceBookTriggerItem.ExSpaceBookTriggerItemType.unlock);
+			itemDao.insert(esbiErrorPwd);
+
+		}
+
+
 		//多个门 trigger
 		cameraDoorMap.forEach( (key, doorList) -> {
 			ExCameraDoor door = doorList.get(0);
@@ -291,39 +366,6 @@ public class ExSpaceBookService {
 
 		});
 
-		//unlock trigger
-		ExSitLock sitLock = spaceCodeSitLockMap.get(book.getSpaceCode());
-		if(sitLock != null ) {
-			SummaryTriggerRecord unlockTriggerTpl = getUnlockTriggerRecordTpl();
-			//source
-			((SummarySource)unlockTriggerTpl.getSummarySource().values().iterator().next()).getSource()
-					.setThingList(Arrays.asList(sitLock.getLock_global_thing_id()));
-			//condition
-			Equal pwdEq = (Equal)unlockTriggerTpl.getPredicate().getCondition();
-			pwdEq.setValue(book.getPassword());
-			//target
-			CommandToThing command = (CommandToThing) unlockTriggerTpl.getTargets().get(0);
-			command.setThingList(Arrays.asList(sitLock.getLock_global_thing_id().toString()));
-
-			TriggerRecord unlockTrigger = null;
-			try {
-				unlockTrigger = triggerManager.createTrigger(unlockTriggerTpl);
-			} catch (Exception e) {
-				log.error("sit booking doCreateTrigger unlockTrigger error " + book.getId(), e);
-				dao.updateFieldByID("createTriggerError", true, book.getId());
-				return;
-			}
-
-			ExSpaceBookTriggerItem esbi = new ExSpaceBookTriggerItem();
-			esbi.setExSpaceBookId(book.getId());
-			esbi.setTriggerId(unlockTrigger.getTriggerID());
-			esbi.setAddedTrigger(true);
-			esbi.setDeletedTrigger(false);
-			esbi.setType(ExSpaceBookTriggerItem.ExSpaceBookTriggerItemType.unlock);
-			itemDao.insert(esbi);
-			
-		}
-
 		dao.updateFieldByID("addedTrigger", true, book.getId());
 
 	}
@@ -339,6 +381,14 @@ public class ExSpaceBookService {
 	private SummaryTriggerRecord getUnlockTriggerRecordTpl() {
 		try {
 			return mapper.readValue(UNLOCK_TRIGGER, SummaryTriggerRecord.class);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	private SummaryTriggerRecord getUnlockErrorPwdTriggerRecordTpl() {
+		try {
+			return mapper.readValue(UNLOCK_ERRORPWD_TRIGGER, SummaryTriggerRecord.class);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
