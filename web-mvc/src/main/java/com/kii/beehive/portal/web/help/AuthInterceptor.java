@@ -67,7 +67,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
-		logRequest(request);
+//		logRequest(request);
 
 		// bypass the method OPTIONS
 		if (Constants.HTTP_METHOD_OPTIONS.equalsIgnoreCase(request.getMethod())) {
