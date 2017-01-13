@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.config.CacheConfig;
@@ -114,7 +113,7 @@ public class LocationDao extends AbstractDataAccess<LocationInfo> {
 
 	}
 	
-	@CacheEvict(cacheNames= CacheConfig.PERSISTENCE_CACHE,key="'location_tree'")
+//	@CacheEvict(cacheNames= CacheConfig.PERSISTENCE_CACHE,key="'location_tree'")
 	public void generSubLevelInUpper(String upper,SubLocInfo  subLoc){
 
 		deleteByUpperLevel(upper);
@@ -180,7 +179,7 @@ public class LocationDao extends AbstractDataAccess<LocationInfo> {
 		});
 	}
 
-	@Cacheable(cacheNames= CacheConfig.PERSISTENCE_CACHE,key="location_tree")
+//	@Cacheable(cacheNames= CacheConfig.PERSISTENCE_CACHE,key="location_tree")
 	public LocationTree getFullLocationTree(){
 
 		QueryParam query=ConditionBuilder.getAll().getFinalCondition().orderBy("location").build();

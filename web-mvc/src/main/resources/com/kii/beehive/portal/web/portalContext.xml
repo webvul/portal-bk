@@ -25,11 +25,20 @@
         - log4j.xxx.xml
     -->
 
+
+
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="locations" value="classpath:com/kii/beehive/portal/web/config.${spring.profile}.properties"/>
         <property name="fileEncoding" value="UTF8"/>
         <property name="ignoreUnresolvablePlaceholders" value="true"/>
     </bean>
+
+    <!-- jdbc store -->
+    <import resource="classpath:com/kii/beehive/portal/jdbcstore/config/jdbcStoreContext.xml" />
+
+    <!-- cloud store -->
+    <import resource="classpath:com/kii/beehive/cloudstore/config/cloudStoreContext.xml" />
+
 
     <context:component-scan base-package="com.kii.beehive">
         <context:include-filter type="annotation" expression="org.springframework.stereotype.Repository"/>
@@ -53,11 +62,6 @@
     <!-- ruleEngine -->
     <bean class="com.kii.extension.ruleengine.RuleEngineConfig"/>
 
-    <!-- jdbc store -->
-    <import resource="classpath:com/kii/beehive/portal/jdbcstore/config/jdbcStoreContext.xml" />
-
-    <!-- cloud store -->
-    <import resource="classpath:com/kii/beehive/cloudstore/config/cloudStoreContext.xml" />
 
     <!-- log4j    -->
 

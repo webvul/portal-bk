@@ -58,9 +58,9 @@ public class TriggerManager {
 	@PostConstruct
 	public void init() {
 
-//		if( "local".equals(profile) ) {
-//			return ;
-//		}
+		if( "local".equals(profile) ) {
+			return ;
+		}
 
 		List<TriggerRecord> recordList = triggerDao.getAllEnableTrigger();
 

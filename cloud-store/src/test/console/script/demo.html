@@ -1,0 +1,33 @@
+<html>
+<head>
+    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.8.1.js"></script>
+    <script src="KiiSDK.js"  ></script>
+    <script src="thing.js" ></script>
+    <script src="Mock.js" ></script>
+</head>
+
+
+<script>
+var clientID="b5041d3b0e45a1f472ddb53abe7dce44";
+var appID="ec08d20c";
+var appKey="d7a54e9831696f35c260ee581531c30d";
+var secret="4b688cabe5a0c522a410fdda3f7f2e0868e34265730b67735dc9c4aa45544cd8";
+var siteUrl="https://api-development-beehivecn3.internal.kii.com/api";
+
+var context=new Context(appID,appKey,siteUrl,clientID,secret, function(){});
+
+function bindThing(){
+
+
+
+context.fireFun("global_onThingStateChange",,function(){});
+
+}
+
+</script>
+
+<input type="button" value="bindThing" onclick="bindThing()" />
+
+
+
+</html>

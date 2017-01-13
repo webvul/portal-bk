@@ -13,7 +13,7 @@ public class TomcatEnvLoader {
 
 		System.setProperty("spring.profile","local");
 
-		System.setProperty("log4j.configurationFile","log4j2.xml");
+//		System.setProperty("log4j.configurationFile","log4j2.xml");
 		String webappDirLocation = "./web-mvc/src/main/webapp/";
 		Tomcat tomcat = new Tomcat();
 

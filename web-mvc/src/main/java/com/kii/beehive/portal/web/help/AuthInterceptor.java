@@ -81,14 +81,11 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
 		String url = request.getRequestURI();
 
-//		if(url.contains("/obix/")){
-//			return super.preHandle(request, response, handler);
-//		}
-
-
 		int idx = url.indexOf(Constants.URL_PREFIX);
-		String subUrl = url.substring(idx + 4).trim();
-
+		String subUrl=url;
+		if(idx!=-1) {
+			subUrl = url.substring(idx + 4).trim();
+		}
 		List<String> list = new LinkedList<>();
 
 		list.add(subUrl);
