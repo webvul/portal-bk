@@ -27,7 +27,7 @@ public class IndustryTemplateService {
 	private ObjectMapper mapper;
 
 
-	@CacheEvict(cacheNames = CacheConfig.INDUSTRY_TEMPLATE)
+	@CacheEvict(cacheNames = CacheConfig.LONGLIVE_CACHE)
 	@CachePut(cacheNames = CacheConfig.LONGLIVE_CACHE,key="'industryTemplate-'+#template.name")
 	public void insert(IndustryTemplate template){
 
@@ -35,7 +35,7 @@ public class IndustryTemplateService {
 
 	}
 
-	@CacheEvict(cacheNames = CacheConfig.INDUSTRY_TEMPLATE)
+	@CacheEvict(cacheNames = CacheConfig.LONGLIVE_CACHE)
 	@CachePut(cacheNames = CacheConfig.LONGLIVE_CACHE,key="'industryTemplate-'+#template.name")
 	public void updateEntityAllByID(IndustryTemplate template){
 
@@ -44,7 +44,7 @@ public class IndustryTemplateService {
 	}
 
 
-	@Cacheable(cacheNames = CacheConfig.INDUSTRY_TEMPLATE )
+	@Cacheable(cacheNames = CacheConfig.LONGLIVE_CACHE )
 	public ThingSchema getTemplateByThingID(long thingID){
 
 
@@ -63,7 +63,7 @@ public class IndustryTemplateService {
 	}
 
 
-	@Cacheable(cacheNames = CacheConfig.INDUSTRY_TEMPLATE )
+	@Cacheable(cacheNames = CacheConfig.LONGLIVE_CACHE )
 	public ThingSchema getTemplateByKiiThingID(String kiiThingID){
 
 
@@ -85,7 +85,7 @@ public class IndustryTemplateService {
 	}
 
 
-	@Cacheable(cacheNames = CacheConfig.INDUSTRY_TEMPLATE )
+	@Cacheable(cacheNames = CacheConfig.LONGLIVE_CACHE )
 	public ThingSchema getTemplateByVendorThingID(String vendorThingID){
 
 

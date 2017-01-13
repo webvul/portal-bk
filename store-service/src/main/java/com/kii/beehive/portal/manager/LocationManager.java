@@ -134,6 +134,7 @@ public class LocationManager {
 		}
 	}
 
+	
 	public LocationTree getFullTree(){
 		return  locDao.getFullLocationTree();
 	}

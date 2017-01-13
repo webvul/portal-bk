@@ -13,21 +13,13 @@
            maxEntriesLocalHeap="10000"
            maxEntriesLocalDisk="10000000"
            timeToIdleSeconds="60"
-           timeToLiveSeconds="600">
-    </cache>
-
-    <!--for auth info-->
-    <cache name="industry_template_cache"
-           maxEntriesLocalHeap="10000"
-           maxEntriesLocalDisk="10000000"
            timeToLiveSeconds="3600">
     </cache>
 
-    <!--for permanent token-->
-    <cache name="permanent_token_cache"
+    <cache name="persistence_cache"
            maxEntriesLocalHeap="10000"
            maxEntriesLocalDisk="10000000"
-           timeToLiveSeconds="3600">
+           timeToLiveSeconds="36000">
     </cache>
 
     <!--for testing only-->

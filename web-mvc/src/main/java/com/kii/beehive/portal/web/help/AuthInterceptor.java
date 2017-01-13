@@ -130,17 +130,17 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
 		try {
 			// TODO this checking is for testing only, must remove after testing complete
-			if (Constants.SUPER_TOKEN.equals(token) && (!"production".equals(env))) {
-
-//				authManager.saveToken(USER_ID, token);
-
-				AuthInfoStore.setAuthInfo(Constants.ADMIN_ID);
-				AuthInfoStore.setTeamID(null);
-				list.set(1, String.valueOf(Constants.ADMIN_ID));
-//				logTool.write(list);
-
-				return super.preHandle(request, response, handler);
-			}
+//			if (Constants.SUPER_TOKEN.equals(token) && (!"production".equals(env))) {
+//
+////				authManager.saveToken(USER_ID, token);
+//
+//				AuthInfoStore.setAuthInfo(Constants.ADMIN_ID);
+//				AuthInfoStore.setTeamID(null);
+//				list.set(1, String.valueOf(Constants.ADMIN_ID));
+////				logTool.write(list);
+//
+//				return super.preHandle(request, response, handler);
+//			}
 
 			if (subUrl.startsWith(Constants.URL_USER_SYNC)) {
 				//usersynccallback
