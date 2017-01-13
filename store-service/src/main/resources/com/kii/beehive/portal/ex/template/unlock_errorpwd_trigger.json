@@ -36,7 +36,7 @@
           "clause": {
             "field": "lock_global_thing.password",
             "type": "eq",
-            "value": "000000"
+            "value": "30303030303030303030303030303030"
           },
           "type": "not"
         }
