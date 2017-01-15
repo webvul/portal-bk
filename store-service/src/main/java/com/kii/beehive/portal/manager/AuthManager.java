@@ -1,6 +1,8 @@
 package com.kii.beehive.portal.manager;
 
 
+import javax.annotation.PostConstruct;
+
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -12,7 +14,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,10 +52,6 @@ public class AuthManager {
 
 	@Autowired
 	private AuthInfoService authService;
-//
-//	@Autowired
-//	private AppBindToolResolver resolver;
-
 
 	@Autowired
 	private KiiUserService userService;
@@ -64,7 +61,12 @@ public class AuthManager {
 
 	@Autowired
 	protected TeamUserRelationDao teamUserRelationDao;
-
+	
+	@PostConstruct
+	public void init(){
+		
+//		System.out.println("do anything");
+	}
 
 
 	private Map<String, String> oneTimeTokenMap = new ConcurrentHashMap<>();

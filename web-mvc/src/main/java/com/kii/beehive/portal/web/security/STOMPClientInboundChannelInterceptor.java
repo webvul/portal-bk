@@ -1,11 +1,14 @@
 package com.kii.beehive.portal.web.security;
 
 import javax.xml.bind.DatatypeConverter;
+
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpHeaders;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
@@ -18,6 +21,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.entitys.AuthUser;
 import com.kii.beehive.portal.manager.AuthManager;
@@ -29,6 +33,8 @@ import com.kii.beehive.portal.web.socket.ConcurrentWebSocketSessionHolder;
  */
 @Component
 public class STOMPClientInboundChannelInterceptor implements ChannelInterceptor {
+	
+	@Lazy
 	@Autowired
 	private AuthManager authManager;
 
@@ -38,6 +44,8 @@ public class STOMPClientInboundChannelInterceptor implements ChannelInterceptor 
 	public Message<?> preSend(Message<?> message, MessageChannel channel) {
 		StompHeaderAccessor headerAccessor =
 				MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+		
+		
 		if (StompCommand.CONNECT.equals(headerAccessor.getCommand())) {
 			List<String> headers = Optional.ofNullable(
 					headerAccessor.getNativeHeader(HttpHeaders.AUTHORIZATION)).orElse(Collections.emptyList());

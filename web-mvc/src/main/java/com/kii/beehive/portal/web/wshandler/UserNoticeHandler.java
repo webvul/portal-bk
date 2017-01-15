@@ -3,6 +3,7 @@ package com.kii.beehive.portal.web.wshandler;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -20,15 +21,16 @@ import com.kii.beehive.portal.manager.AuthManager;
 public class UserNoticeHandler extends TextWebSocketHandler {
 	
 	
-	
+	@Lazy
 	@Autowired
 	private ObjectMapper mapper;
 	
-	
+	@Lazy
 	@Autowired
 	private NoticeMsgQueue queue;
 	
 	
+	@Lazy
 	@Autowired
 	private AuthManager authManager;
 
