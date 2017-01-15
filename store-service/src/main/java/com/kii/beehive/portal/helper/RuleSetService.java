@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
@@ -16,6 +17,7 @@ import com.kii.beehive.portal.jdbc.dao.BeehiveUserJdbcDao;
 import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 import com.kii.beehive.portal.service.UserRuleDao;
 import com.kii.beehive.portal.store.entity.UserRuleSet;
+
 
 @Component
 public class RuleSetService {
@@ -65,7 +67,7 @@ public class RuleSetService {
 		}
 
 	}
-
+	@Cacheable(cacheNames="ttl_cache",key="'userRule'+#userID")
 	public PermissionTree getUserPermissionTree(Long userID) {
 
 		BeehiveJdbcUser user = userDao.getUserByID(userID);

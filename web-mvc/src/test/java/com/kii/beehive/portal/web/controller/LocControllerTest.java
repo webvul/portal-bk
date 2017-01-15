@@ -114,15 +114,4 @@ public class LocControllerTest  {
 		}
 	}
 	
-	
-	@Test
-	public void testPermissTree() throws Exception {
-		this.mockMvc.perform(
-				MockMvcRequestBuilders.post("/oauth2/validateLoginAccessToken")
-		).andExpect(status().isOk()).andReturn();
-	}
-	
-	
-	
-	
 }
