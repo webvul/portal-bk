@@ -148,14 +148,13 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 
 
 
-	public void updateState(Map<String,Object> state, String fullKiiThingID) {
+	public int updateState(Map<String,Object> state, String fullKiiThingID) {
 
 		GlobalThingInfo info=new GlobalThingInfo();
 		info.setStatus(state);
 		info.setFullKiiThingID(fullKiiThingID);
 
-		super.updateEntityByField(info,"fullKiiThingID");
-
+		return super.updateEntityByField(info,"fullKiiThingID");
 	}
 
 	public GlobalThingInfo getThingByVendorThingID(String vendorThingID) {

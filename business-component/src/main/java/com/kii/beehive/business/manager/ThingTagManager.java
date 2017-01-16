@@ -18,6 +18,7 @@ import com.kii.beehive.business.service.IndustryTemplateService;
 import com.kii.beehive.industrytemplate.PointDetail;
 import com.kii.beehive.industrytemplate.ThingSchema;
 import com.kii.beehive.portal.common.utils.ThingIDTools;
+import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.PagerTag;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
@@ -108,8 +109,11 @@ public class ThingTagManager {
 		
 		Map<String,Object> valuesWithSchema=bindTemplate(values,fullThingID);
 		
-		globalThingDao.updateState(values, fullThingID);
+		int i=globalThingDao.updateState(values, fullThingID);
 
+		if(i!=1){
+			throw new EntryNotFoundException(fullThingID,"globalThingID");
+		}
 		return values;
 
 	}
