@@ -1,0 +1,20 @@
+{
+  "kiicloud://things" : [ {
+    "what" : "EXECUTE_SERVER_CODE",
+    "when" : "THING_CREATED",
+    "endpoint" : "global_onThingOnBoard"
+  }, {
+    "what" : "EXECUTE_SERVER_CODE",
+    "when" : "THING_DELETED",
+    "endpoint" : "global_onThingRemoved"
+  } ],
+  "kiicloud://buckets/_states" : [ {
+    "what" : "EXECUTE_SERVER_CODE",
+    "when" : "DATA_OBJECT_UPDATED",
+    "endpoint" : "global_onThingStateChange"
+  }, {
+    "what" : "EXECUTE_SERVER_CODE",
+    "when" : "DATA_OBJECT_CREATED",
+    "endpoint" : "global_onThingStateChange"
+  } ]
+}

@@ -156,14 +156,14 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 //
 			if (subUrl.startsWith(CallbackNames.CALLBACK_URL)) {
 				
-				if(!"local".equals(env)) {
+//				if(!"local".equals(env)) {
 					String appID = request.getHeader(Constants.HEADER_KII);
 					
 					if (!appInfoManager.verifyAppToken(appID, token)) {
 						throw new PortalException(ErrorCode.INVALID_INPUT, "field", "appInfo", "data", appID);
 					}
 					AuthInfoStore.setAuthInfo(2L);
-				}
+//				}
 
 			} else if (subUrl.startsWith("/party3rd")) {
 

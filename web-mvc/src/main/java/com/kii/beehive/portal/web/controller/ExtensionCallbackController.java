@@ -88,11 +88,10 @@ public class ExtensionCallbackController {
 		tagManager.updateState(status.getState(), status.getThingID(), appID);
 		
 		GlobalThingInfo globalThingInfo = tagManager.getThingByFullKiiThingID(appID,status.getThingID());
-		
+	
 		pushCallback.onEventFire(globalThingInfo,status.getState(),status.getTimestamp());
 
 		eventBus.onStatusUploadFire(String.valueOf(globalThingInfo.getId()), status.getState(), status.getTimestamp());
-
 		
 		internalEventListenerRegistry.onStateChange(appID, status);
 	}
