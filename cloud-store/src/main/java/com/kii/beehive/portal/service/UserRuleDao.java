@@ -1,7 +1,5 @@
 package com.kii.beehive.portal.service;
 
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.store.entity.UserRuleSet;
@@ -15,7 +13,7 @@ public class UserRuleDao  extends AbstractDataAccess<UserRuleSet> {
 
 
 
-	@Cacheable(cacheNames="ttl_cache",key="'userRule'+#name")
+//	@Cacheable(cacheNames="ttl_cache",key="'userRule'+#name")
 	public UserRuleSet getRuleSetByName(String name){
 
 
@@ -23,7 +21,7 @@ public class UserRuleDao  extends AbstractDataAccess<UserRuleSet> {
 
 	}
 
-	@CacheEvict(cacheNames="ttl_cache",key="'userRule'+#ruleSet.ruleName")
+//	@CacheEvict(cacheNames="ttl_cache",key="'userRule'+#ruleSet.ruleName")
 	public void addUserRuleSet(UserRuleSet  ruleSet){
 
 		super.addEntity(ruleSet,ruleSet.getId());

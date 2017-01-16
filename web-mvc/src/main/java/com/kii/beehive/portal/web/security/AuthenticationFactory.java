@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.messaging.MessagingException;
@@ -36,6 +37,7 @@ public class AuthenticationFactory {
 //			throw new MessagingException("Can't authenticate the current user. Missing authorization header");
 //		}
 	
+	@Lazy
 	@Autowired
 	private AuthManager authManager;
 	

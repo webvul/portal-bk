@@ -1,6 +1,8 @@
 package com.kii.beehive.portal.manager;
 
 
+import javax.annotation.PostConstruct;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kii.beehive.portal.exception.EntryNotFoundException;
+import com.kii.beehive.portal.helper.LocationTreeService;
 import com.kii.beehive.portal.jdbc.dao.GlobalThingSpringDao;
 import com.kii.beehive.portal.jdbc.dao.ThingLocationDao;
 import com.kii.beehive.portal.jdbc.dao.ThingLocationRelDao;
@@ -38,17 +41,29 @@ public class LocationManager {
 
 	@Autowired
 	private GlobalThingSpringDao thingDao;
+	
+	@Autowired
+	private LocationTreeService  treeCache;
+	
+	
+	@PostConstruct
+	public void init(){
+		
+		treeCache.refreshTree();
+	}
 
 
 	public void generalRoot(SubLocInfo  locInfo){
 
 		locDao.generTopLocation(locInfo);
+		treeCache.refreshTree();
 
 	}
 
 	public void generalSubBranch(String upperLevel,SubLocInfo  locInfo){
 
 		locDao.generSubLevelInUpper(upperLevel,locInfo);
+		treeCache.refreshTree();
 
 	}
 
@@ -134,8 +149,9 @@ public class LocationManager {
 		}
 	}
 
+	
 	public LocationTree getFullTree(){
-		return  locDao.getFullLocationTree();
+		return  treeCache.getLocationTree();
 	}
 
 }

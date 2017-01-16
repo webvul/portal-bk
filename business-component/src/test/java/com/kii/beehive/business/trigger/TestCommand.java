@@ -29,7 +29,7 @@ public class TestCommand  extends BusinessTestTemplate {
 			CommandToThing cmd= mapper.readValue(json,CommandToThing.class);
 			
 			
-	 		commandService.executeCommand(null,cmd,new ExecuteParam());
+	 		commandService.executeCommand(cmd,new ExecuteParam());
 	 		
 	 		
 		}

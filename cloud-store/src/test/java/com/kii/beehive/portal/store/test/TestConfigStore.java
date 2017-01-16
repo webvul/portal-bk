@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.service.BeehiveConfigDao;
+import com.kii.beehive.portal.service.UserRuleDao;
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
 import com.kii.beehive.portal.store.entity.es.EsDataSourceCfgEntry;
 import com.kii.extension.sdk.entity.AppInfo;
@@ -19,6 +20,11 @@ public class TestConfigStore extends  TestTemplate {
 
 	@Autowired
 	private AppInfoDao storeDao;
+
+	@Autowired
+	private UserRuleDao ruleDao;
+	
+	
 
 
 	@Test
