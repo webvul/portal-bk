@@ -62,8 +62,7 @@ public class AppInfoManager {
 
 	private static String DEFAULT_PWD=DigestUtils.sha1Hex(DEFAULT_NAME+"_default_owner_beehive");
 
-	
-	@Cacheable(cacheNames = CacheConfig.TTL_CACHE,key="'app_token_'+#appID+#token")
+	@Cacheable(cacheNames = CacheConfig.TTL_CACHE,key = "'app_token_'+#appID+#token")
 	public boolean verifyAppToken(String appID,String token){
 
 		KiiAppInfo info=appDao.getAppInfoByID(appID);
@@ -77,7 +76,7 @@ public class AppInfoManager {
 
 	}
 
-	@Cacheable(cacheNames="ttl_cache")
+	@Cacheable(cacheNames=CacheConfig.TTL_CACHE)
 	public FederatedAuthResult getDefaultOwer(String appID){
 
 		KiiAppInfo info=appDao.getAppInfoByID(appID);
