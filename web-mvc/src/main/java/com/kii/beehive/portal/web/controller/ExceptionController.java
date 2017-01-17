@@ -154,7 +154,9 @@ public class ExceptionController {
 		error.put("from","KiiCloud");
 
 		HttpStatus status = HttpStatus.valueOf(ex.getStatusCode());
-
+		error.put("kiiAppStatus",status);
+		error.put("kiiAppRespBody",ex.getResponseBody());
+		
 		ResponseEntity<Object> resp = new ResponseEntity(error,headers, HttpStatus.INTERNAL_SERVER_ERROR);
 		return resp;
 	}

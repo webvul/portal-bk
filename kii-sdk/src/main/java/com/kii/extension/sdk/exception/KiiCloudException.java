@@ -6,6 +6,8 @@ import org.apache.http.HttpResponse;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import com.kii.extension.sdk.commons.HttpUtils;
+
 public class KiiCloudException extends RuntimeException {
 
 
@@ -26,18 +28,24 @@ public class KiiCloudException extends RuntimeException {
 
 		this.errorCode=null;
 
-
+		this.responseBody=HttpUtils.getResponseBody(response);
+		
 	}
 
 
+	private String responseBody;
 
 	private String errorCode;
 
 	private String message;
 
 	private int statusCode;
-
-
+	
+	
+	public String getResponseBody() {
+		return responseBody;
+	}
+	
 	@JsonIgnore
 	public int getStatusCode() {
 		return statusCode;
