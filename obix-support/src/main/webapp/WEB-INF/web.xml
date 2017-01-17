@@ -23,7 +23,7 @@
         </init-param>
         <init-param>
             <param-name>contextConfigLocation</param-name>
-            <param-value>com.kii.beehive.obix.web.config.WebMVCConfig</param-value>
+            <param-value>com.kii.beehive.obix.web.config.WebObixConfig</param-value>
         </init-param>
         <init-param>
             <param-name>dispatchOptionsRequest</param-name>

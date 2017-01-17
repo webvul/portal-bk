@@ -39,17 +39,17 @@ task buildPluginZip(type: Zip, dependsOn: [":plugin-sg:jar"]) {
     from parent.project(":jdbc-store").getBuildDir().absolutePath + '/libs'
 
     //from configurations.compile.collect { it }
-    from configurations.compile.find { it.name.startsWith("spring-beans") }
-    from configurations.compile.find { it.name.startsWith("spring-core") }
-    from configurations.compile.find { it.name.startsWith("jackson-databind") }
-    from configurations.compile.find { it.name.startsWith("jackson-annotations") }
-    from configurations.compile.find { it.name.startsWith("httpcore") }
-    from configurations.compile.find { it.name.startsWith("httpcore-nio") }
-    from configurations.compile.find { it.name.startsWith("httpclient") }
-    from configurations.compile.find { it.name.startsWith("httpasyncclient") }
-    from configurations.compile.find { it.name.startsWith("slf4j-api") }
-    from configurations.compile.find { it.name.startsWith("beehive-client") }
-    from configurations.compile.find { it.name.startsWith("commons-logging") }
+//    from configurations.compile.find { it.name.startsWith("spring-beans") }
+//    from configurations.compile.find { it.name.startsWith("spring-core") }
+//    from configurations.compile.find { it.name.startsWith("jackson-databind") }
+//    from configurations.compile.find { it.name.startsWith("jackson-annotations") }
+//    from configurations.compile.find { it.name.startsWith("httpcore") }
+//    from configurations.compile.find { it.name.startsWith("httpcore-nio") }
+//    from configurations.compile.find { it.name.startsWith("httpclient") }
+//    from configurations.compile.find { it.name.startsWith("httpasyncclient") }
+//    from configurations.compile.find { it.name.startsWith("slf4j-api") }
+//    from configurations.compile.find { it.name.startsWith("beehive-client") }
+//    from configurations.compile.find { it.name.startsWith("commons-logging") }
     from 'build/plugin-metadata'
 }
 

@@ -15,7 +15,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.kii.beehive.obix.service.ObixContainConvertService;
-import com.kii.beehive.obix.service.ThingService;
+import com.kii.beehive.obix.service.ObixThingService;
 import com.kii.beehive.obix.store.ObixPointDetail;
 import com.kii.beehive.obix.store.PointInfo;
 import com.kii.beehive.obix.store.ThingInfo;
@@ -28,7 +28,7 @@ public class DeviceController {
 
 
 	@Autowired
-	private ThingService  thingService;
+	private ObixThingService thingService;
 
 
 	@Autowired

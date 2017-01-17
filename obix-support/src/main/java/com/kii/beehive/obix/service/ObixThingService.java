@@ -15,7 +15,7 @@ import com.kii.beehive.obix.store.ThingInfo;
 
 @Component
 @Transactional
-public class ThingService {
+public class ObixThingService {
 
 
 	@Autowired
