@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,7 +71,7 @@ public class ExSpaceBookService {
 	@Autowired
 	private ResourceLoader loader;
 
-	private Map<String, String> sitBeehiveUserIdMap = new HashMap<>();
+	private Map<String, String> sitBeehiveUserIdMap = new ConcurrentHashMap<>();
 	private Map<String, List<ExCameraDoor>> cameraDoorMap = new HashMap<>();
 	private Map<String, ExSitLock> spaceCodeSitLockMap = new HashMap<>();//key: spaceCode
 	static String OPEN_DOOR_TRIGGER = null;
@@ -113,7 +114,7 @@ public class ExSpaceBookService {
 		log.info("sitBeehiveUserIdMap : " + sitBeehiveUserIdMap);
 	}
 
-	@Scheduled(cron = "0/5 * * * * ?")
+	@Scheduled(cron = "0 0/1 * * * ?")
 	@Transactional(propagation = Propagation.NEVER)
 	public void doCreateTrigger()  {
 		try {
@@ -125,7 +126,7 @@ public class ExSpaceBookService {
 		}
 	}
 
-	@Scheduled(cron = "0/5 * * * * ?")
+	@Scheduled(cron = "0 0/5 * * * ?")
 	@Transactional(propagation = Propagation.NEVER)
 	public void doDeleteTrigger(){
 		try {
