@@ -148,10 +148,11 @@ public class ExceptionFactory {
 
 			return;
 		}
+		
+		String body= HttpUtils.getResponseBody(response);
+		
+		if(status>=400&&status<500){
 
-		if(status>=400){
-
-			String body= HttpUtils.getResponseBody(response);
 			log.error("Http Code: " + status + ", Response Body: " + body);
 			Class<? extends KiiCloudException> cls= excepMap.get(status);
 
@@ -173,6 +174,10 @@ public class ExceptionFactory {
 			}else{
 				throw new IllegalArgumentException("error code:"+status);
 			}
+		}
+		
+		if(status>=500){
+			throw new SystemException(response);
 		}
 	}
 
