@@ -48,6 +48,8 @@ public class YituFaceService implements FaceServiceInf {
 	@Autowired
 	private YituFaceApiAccessBuilder yituFaceApiAccessBuilder;
 
+	private String repository_id;
+
 	private Logger log = LoggerFactory.getLogger(YituFaceService.class);
 
 	private List<String> cookieList = new ArrayList<>();
@@ -107,7 +109,7 @@ public class YituFaceService implements FaceServiceInf {
 	public FaceImage doUploadImage(YituFaceImage yituFaceImage) {
 
 		String responseBody = null;
-
+		yituFaceImage.setRepository_id(Integer.valueOf(this.repository_id));
 		HttpUriRequest faceRequest = yituFaceApiAccessBuilder.buildUploadImage(yituFaceImage);
 		faceRequest.setHeader("cookie", cookieList.get(0));
 		log.debug("upload photo :" + faceRequest.getURI());
@@ -174,5 +176,9 @@ public class YituFaceService implements FaceServiceInf {
 
 	public void setYituFaceApiAccessBuilder(YituFaceApiAccessBuilder yituFaceApiAccessBuilder) {
 		this.yituFaceApiAccessBuilder = yituFaceApiAccessBuilder;
+	}
+
+	public void setRepository_id(String repository_id) {
+		this.repository_id = repository_id;
 	}
 }

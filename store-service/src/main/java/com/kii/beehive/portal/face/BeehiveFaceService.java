@@ -55,6 +55,8 @@ public class BeehiveFaceService implements ApplicationContextAware{
 	private String yituFaceUsername;
 	@Value("${yitu.password}")
 	private String yituFacePassword;
+	@Value("${yitu.repository_id}")
+	private String yituFaceRepository_id;
 
 	@Value("${face.photo.dir:${user.home}/data/beehive/face/photo/}")
 	private String facePhotoDir;
@@ -103,18 +105,21 @@ public class BeehiveFaceService implements ApplicationContextAware{
 		String[] yituBaseUrls = yituBaseUrl.split(",");
 		String[] yituFaceUsernames = yituFaceUsername.split(",");
 		String[] yituFacePasswords = yituFacePassword.split(",");
+		String[] yituFaceRepository_ids = yituFaceRepository_id.split(",");
 		for (int i = 0 ; i < yituBaseUrls.length ; i++){
 			String yituBeanName = "yituFaceService" + i;
-			buildYituService(yituBaseUrls[i], yituFaceUsernames[i], yituFacePasswords[i], yituBeanName);
+			buildYituService(yituBaseUrls[i], yituFaceUsernames[i], yituFacePasswords[i], yituFaceRepository_ids[i], yituBeanName);
 		}
+
 	}
 
-	public void buildYituService(String yituBaseUrl, String yituFaceUsername, String yituFacePassword, String yituBeanName) {
+	public void buildYituService(String yituBaseUrl, String yituFaceUsername, String yituFacePassword,String repository_id, String yituBeanName) {
 		YituFaceApiAccessBuilder yituFaceApiAccessBuilder = new YituFaceApiAccessBuilder(objectMapper
 				, yituBaseUrl, yituFaceUsername, yituFacePassword);
 		BeanDefinitionBuilder beanDefinitionBuilder = BeanDefinitionBuilder.genericBeanDefinition(YituFaceService.class);
 		beanDefinitionBuilder.setAutowireMode(AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE);
 		beanDefinitionBuilder.addPropertyValue("yituFaceApiAccessBuilder", yituFaceApiAccessBuilder);
+		beanDefinitionBuilder.addPropertyValue("repository_id", repository_id);
 		defaultListableBeanFactory.registerBeanDefinition(yituBeanName,beanDefinitionBuilder.getRawBeanDefinition());
 		yituFaceServiceMap.put(yituBeanName, (YituFaceService)applicationContext.getBean(yituBeanName));
 	}
