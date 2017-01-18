@@ -78,10 +78,16 @@ public class HttpTool implements Closeable {
 				.setIoThreadCount(32)
 				.setSoKeepAlive(true)
 				.setConnectTimeout(30)
+				//.setTcpNoDelay(true)
 				.build());
 
 		final PoolingNHttpClientConnectionManager connManager = new PoolingNHttpClientConnectionManager(
 				ioReactor);
+		connManager.setDefaultMaxPerRoute(20);
+		connManager.setMaxTotal(1000);
+
+		log.info("connManager.getDefaultMaxPerRoute: " + connManager.getDefaultMaxPerRoute());
+		log.info("connManager.getMaxTotal: " + connManager.getMaxTotal());
 
 		executorService.scheduleAtFixedRate(() -> {
 			connManager.closeExpiredConnections();
