@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
@@ -39,9 +40,10 @@ import com.kii.extension.ruleengine.store.trigger.condition.NotLogic;
 import com.kii.extension.ruleengine.store.trigger.groups.SummarySource;
 import com.kii.extension.ruleengine.store.trigger.groups.SummaryTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.task.CommandToThing;
+import com.kii.extension.sdk.exception.ObjectNotFoundException;
 
 @Component
-@Transactional
+
 public class ExSpaceBookService {
 
 	private static final Logger log = LoggerFactory.getLogger(ExSpaceBookService.class);
@@ -148,11 +150,14 @@ public class ExSpaceBookService {
 		return sitBeehiveUserIdMap.get(sitUserId);
 	}
 
+	@Transactional
 	public void insertBeehiveUserRel(ExSitSysBeehiveUserRel exSitSysBeehiveUserRel){
 		beehiveUserRelDao.insert(exSitSysBeehiveUserRel);
 		sitBeehiveUserIdMap.put(exSitSysBeehiveUserRel.getSit_sys_user_id(), exSitSysBeehiveUserRel.getBeehive_user_id());
 	}
 
+
+	@Transactional
 	public void insertSpaceBook(List<ExSpaceBook> spaceBooks){
 		for (int i = 0; i < spaceBooks.size(); i++) {
 			ExSpaceBook book = spaceBooks.get(i);
@@ -181,7 +186,8 @@ public class ExSpaceBookService {
 
 	}
 
-	public void deleteSpaceBook(List<ExSpaceBook> spaceBooks){
+	@Transactional
+	public List<ExSpaceBook> deleteSpaceBook(List<ExSpaceBook> spaceBooks){
 		List<ExSpaceBook> spaceBookDeleted = new ArrayList<>();
 		for (int i = 0; i < spaceBooks.size(); i++) {
 			ExSpaceBook book = spaceBooks.get(i);
@@ -203,11 +209,16 @@ public class ExSpaceBookService {
 		}
 
 
+		return (spaceBookDeleted);
+	}
+
+	@Async
+	public void asyncDeleteTrigger(List<ExSpaceBook> spaceBookDeleted) {
 		doDeleteTrigger(spaceBookDeleted);
 	}
 
 
-
+//	@Transactional
 	public void updatePassword(ExSpaceBook book, String newPwd){
 
 		Map<String, Object> queryParam = new HashMap<>();
@@ -405,24 +416,37 @@ public class ExSpaceBookService {
 		});
 	}
 
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
+//	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	@Transactional(propagation = Propagation.NEVER)
 	private void doDeleteTrigger(ExSpaceBook book) {
 		log.info("doDeleteTrigger ExSpaceBook id:" + book.getId());
-		List<ExSpaceBookTriggerItem> itemList = itemDao.findBySingleField("ex_space_book_id", book.getId());
-
-		itemList.forEach( item -> {
+		Map<String, Object> queryParam = new HashMap<>();
+		queryParam.put("exSpaceBookId", book.getId());
+		queryParam.put("addedTrigger", true);
+		queryParam.put("deletedTrigger", false);
+		List<ExSpaceBookTriggerItem> itemList = itemDao.findByFields(queryParam);
+//		List<ExSpaceBookTriggerItem> itemList = itemDao.findBySingleField("ex_space_book_id", book.getId());
+		for(ExSpaceBookTriggerItem item : itemList) {
 			if(item.getAddedTrigger() && ! item.getDeletedTrigger()) {
 				try {
 					triggerManager.deleteTrigger(item.getTriggerId());
-					itemDao.updateFieldByID("deletedTrigger", true, item.getId());
+					noTransactionUpdateDeletedTriggerFlag(item);
+				} catch (ObjectNotFoundException e) {
+					log.error("sit booking deleteTrigger error, ObjectNotFoundException " , e);
 				} catch (Exception e) {
 					log.error("sit booking deleteTrigger error !!!" , e);
+					throw new RuntimeException("sit booking deleteTrigger error !");
 				}
 			}
-		});
+		}
 
 		dao.updateFieldByID("deletedTrigger", true, book.getId());
 
+	}
+	
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	private void noTransactionUpdateDeletedTriggerFlag(ExSpaceBookTriggerItem item) {
+		itemDao.updateFieldByID("deletedTrigger", true, item.getId());
 	}
 
 }

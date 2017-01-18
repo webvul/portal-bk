@@ -28,6 +28,7 @@ import com.kii.beehive.portal.exception.BusinessException;
 import com.kii.beehive.portal.face.BeehiveFaceService;
 import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 import com.kii.beehive.portal.jdbc.entity.ExSitSysBeehiveUserRel;
+import com.kii.beehive.portal.jdbc.entity.ExSpaceBook;
 import com.kii.beehive.portal.manager.AuthManager;
 import com.kii.beehive.portal.web.entity.ExSpaceBookRestBean;
 import com.kii.beehive.portal.web.entity.UserRestBean;
@@ -210,7 +211,8 @@ public class ExSpaceBookController {
                 return result;
             }
 
-            spaceBookService.deleteSpaceBook(spaceBookRestBean.convert2ExSpaceBook());
+            List<ExSpaceBook> spaceBookDeleted = spaceBookService.deleteSpaceBook(spaceBookRestBean.convert2ExSpaceBook());
+            spaceBookService.asyncDeleteTrigger(spaceBookDeleted);
 
         } catch (IllegalArgumentException e) {
             e.printStackTrace();

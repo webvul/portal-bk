@@ -12,11 +12,11 @@ public class ExSpaceBookDao extends SpringBaseDao<ExSpaceBook> {
 	
 	public static final String TABLE_NAME = "ex_space_book";
 	public static final String KEY = "id";
-	private static final String NEED_CREATE_SQL = "select * from  ex_space_book esb where esb.begin_date <= CURRENT_TIMESTAMP() " +
-			"and esb.is_deleted = FALSE and esb.is_added_trigger = FALSE and esb.create_trigger_error = FALSE ";
+	private static final String NEED_CREATE_SQL = "select * from  ex_space_book esb where esb.begin_date <= CURRENT_TIMESTAMP() and esb.end_date > CURRENT_TIMESTAMP() " +
+			" and esb.is_added_trigger = FALSE and esb.create_trigger_error = FALSE ";
 
 	private static final String NEED_DELETE_SQL = "select * from  ex_space_book esb where esb.end_date <= CURRENT_TIMESTAMP() " +
-			"and esb.is_deleted = FALSE and esb.is_added_trigger = TRUE and esb.is_deleted_trigger = FALSE and esb.create_trigger_error = FALSE ";
+			" and esb.is_added_trigger = TRUE and esb.is_deleted_trigger = FALSE and esb.create_trigger_error = FALSE ";
 
 
 	public List<ExSpaceBook> getNeedCreateRule() {
@@ -31,7 +31,7 @@ public class ExSpaceBookDao extends SpringBaseDao<ExSpaceBook> {
 
 		Map<String, Object> params = new HashMap<>();
 
-		return queryByNamedParam(NEED_DELETE_SQL, params);
+		return queryByNamedParamNotAddDelSignPrefix(NEED_DELETE_SQL, params);
 
 	}
 

@@ -137,6 +137,10 @@ public abstract class SpringBaseDao<T extends BusinessEntity> {
 	;
 
 
+	protected List<T> queryByNamedParamNotAddDelSignPrefix(String sql, Map<String, Object> queryParams) {
+		return namedJdbcTemplate.query(sql, queryParams, getRowMapper());
+	}
+
 	protected List<T> queryByNamedParam(String sql, Map<String, Object> queryParams) {
 		sql = addDelSignPrefix(sql);
 		return namedJdbcTemplate.query(sql, queryParams, getRowMapper());
