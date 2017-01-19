@@ -6,8 +6,8 @@ import java.lang.reflect.Method;
 
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.After;
-import org.aspectj.lang.annotation.AfterThrowing;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
@@ -23,6 +23,8 @@ import com.kii.extension.sdk.context.TokenBindTool;
 import com.kii.extension.sdk.entity.AppChoice;
 import com.kii.extension.sdk.entity.AppInfo;
 import com.kii.extension.sdk.exception.ForbiddenException;
+import com.kii.extension.sdk.exception.KiiCloudException;
+import com.kii.extension.sdk.exception.SystemException;
 import com.kii.extension.sdk.exception.UnauthorizedAccessException;
 
 
@@ -53,15 +55,24 @@ public class AppBindAspect {
 
 	}
 
-
-	@Before("commDataAccess()  ||  appBindWithAnnotation() ")
-	public void beforeCallDataAccess(JoinPoint joinPoint){
-
-		BindAppByName appByName=joinPoint.getTarget().getClass().getAnnotation(BindAppByName.class);
-
-		if(appByName==null){
-			return;
+	
+	@Around("commDataAccess()  ||  appBindWithAnnotation() ")
+	public Object aroundCallDataAccess(ProceedingJoinPoint pjp)throws Throwable{
+		
+		
+		BindAppByName appByName=pjp.getTarget().getClass().getAnnotation(BindAppByName.class);
+		
+		if(appByName==null) {
+			
+			try {
+				
+				return pjp.proceed();
+				
+			} catch (Throwable throwable) {
+				throw throwable;
+			}
 		}
+		
 		AppChoice choice=new AppChoice();
 		
 		if(!StringUtils.isEmpty(appByName.appBindSource())) {
@@ -83,35 +94,99 @@ public class AppBindAspect {
 		}
 		
 		bindTool.pushAppChoice(choice);
-
-	}
-
-
-	@After("commDataAccess() || appBindWithAnnotation() ")
-	public void afterCallDataAccess(JoinPoint joinPoint){
-
-		BindAppByName  appByName=joinPoint.getTarget().getClass().getAnnotation(BindAppByName.class);
-		if(appByName==null){
-			return;
+		
+		int retry=3;
+		
+		Object result=null;
+		KiiCloudException kiiCloudException=null;
+		while(retry>0){
+			
+			
+			try{
+				
+				result = pjp.proceed();
+				break;
+				
+			}catch(UnauthorizedAccessException|ForbiddenException ex){
+				
+				bindTool.refreshToken();
+				retry--;
+				kiiCloudException=ex;
+				
+			}catch(SystemException e){
+				//send kiicloud service alarm
+				throw e;
+			} catch (Throwable throwable) {
+				throw throwable;
+			}
+			
 		}
+		
 		bindTool.pop();
-
-	}
-
-	
-
-	@AfterThrowing(pointcut = "commDataAccess() || appBindWithAnnotation()",throwing="ex")
-	public void  afterCallBindParam(JoinPoint joinPoint,Exception  ex){
 		
-		
-		if(ex instanceof UnauthorizedAccessException||
-				ex instanceof ForbiddenException ){
-			
-			bindTool.refreshToken();
-			
+		if(retry==0&&kiiCloudException!=null){
+			throw kiiCloudException;
 		}
-
+		return result;
 	}
+
+//	@Before("commDataAccess()  ||  appBindWithAnnotation() ")
+//	public void beforeCallDataAccess(JoinPoint joinPoint){
+//
+//		BindAppByName appByName=joinPoint.getTarget().getClass().getAnnotation(BindAppByName.class);
+//
+//		if(appByName==null){
+//			return;
+//		}
+//		AppChoice choice=new AppChoice();
+//
+//		if(!StringUtils.isEmpty(appByName.appBindSource())) {
+//			choice.setBindName(appByName.appBindSource());
+//		}
+//		choice.setAppName(appByName.appName());
+//
+//
+//		if(StringUtils.isNotBlank(appByName.tokenBind())){
+//			choice.setTokenBindName(appByName.tokenBind());
+//		}else {
+//			if (appByName.bindAdmin()) {
+//				choice.setTokenBindName(TokenBindTool.BindType.admin.name());
+//			} else if (appByName.bindUser()) {
+//				choice.setTokenBindName(TokenBindTool.BindType.user.name());
+//			} else if (appByName.bindThing()) {
+//				choice.setTokenBindName(TokenBindTool.BindType.thing.name());
+//			}
+//		}
+//
+//		bindTool.pushAppChoice(choice);
+//	}
+//
+//
+//	@After("commDataAccess() || appBindWithAnnotation() ")
+//	public void afterCallDataAccess(JoinPoint joinPoint){
+//
+//		BindAppByName  appByName=joinPoint.getTarget().getClass().getAnnotation(BindAppByName.class);
+//		if(appByName==null){
+//			return;
+//		}
+//		bindTool.pop();
+//
+//	}
+//
+//
+//
+//	@AfterThrowing(pointcut = "commDataAccess() || appBindWithAnnotation()",throwing="ex")
+//	public void  afterCallBindParam(JoinPoint joinPoint,Exception  ex){
+//
+//
+//		if(ex instanceof UnauthorizedAccessException||
+//				ex instanceof ForbiddenException ){
+//
+//			bindTool.refreshToken();
+//
+//		}
+//
+//	}
 
 
 	@Before("bindWithParam()")
@@ -149,17 +224,6 @@ public class AppBindAspect {
 
 		}
 
-
-//		if(param==null){
-//			return;
-//		}
-//
-//		AppChoice choice=new AppChoice();
-//		choice.setAppName(param);
-//		if(!StringUtils.isEmpty(annotation.appBindSource())){
-//			choice.setBindName(annotation.appBindSource());
-//		}
-//		bindTool.setAppChoice(choice);
 
 	}
 

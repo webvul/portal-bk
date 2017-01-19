@@ -25,6 +25,7 @@ public class PortalOperateUserService {
 	private AppBindToolResolver bindToolResolver;
 	
 	
+	
 	@Value("${beehive.portal.store.defaultUser:operate_user}")
 	private String userName;
 	
@@ -36,7 +37,7 @@ public class PortalOperateUserService {
 	
 	
 	
-	private AtomicReference<String> token=new AtomicReference<>();
+	private AtomicReference<LoginInfo> token=new AtomicReference<>();
 	
 	
 	public void init(){
@@ -47,7 +48,7 @@ public class PortalOperateUserService {
 			
 			LoginInfo  login=userService.login(userName, getPassword(userName));
 			
-			token.set(login.getToken());
+			token.set(login);
 			
 		}catch(BadUserNameException ex){
 			KiiUser user=new KiiUser();
@@ -59,13 +60,17 @@ public class PortalOperateUserService {
 			
 			LoginInfo info=userService.login(userName,getPassword(userName));
 			
-			token.set(info.getToken());
+			token.set(info);
 		}
 	}
 	
 	public String getToken() {
 		
-		return token.get();
+//		return token.get().getToken();
+		
+		return "mock";
 	}
+	
+
 	
 }
