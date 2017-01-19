@@ -37,11 +37,10 @@ public class TestMqtt extends TestTemplate {
 
 		AppChoice choice=new AppChoice();
 		choice.setAppName("thingif");
-		choice.setBindAdmin(false);
+		choice.setTokenBindName("thing");
 
 		bindTool.pushAppChoice(choice);
 
-		tokenResolver.bindThing();
 
 	}
 

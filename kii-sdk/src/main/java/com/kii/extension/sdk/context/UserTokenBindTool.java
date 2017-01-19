@@ -70,14 +70,20 @@ public class UserTokenBindTool implements TokenBindTool {
 		return info.getToken();
 	}
 
-	/**
-	 * pop the values in userLocal
-	 */
-	public void clean() {
-		userLocal.remove();
 
+	
+	@Override
+	public String getBindName() {
+		return BindType.user.name();
 	}
-
+	
+	@Override
+	public void refreshToken() {
+		
+		getToken();
+				
+	}
+	
 	static class UserInfo {
 
 		private String userName;

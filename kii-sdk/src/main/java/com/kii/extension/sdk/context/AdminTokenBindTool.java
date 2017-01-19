@@ -52,4 +52,16 @@ public class AdminTokenBindTool implements TokenBindTool {
 
 		return token;
 	}
+	
+	@Override
+	public String getBindName() {
+		return BindType.admin.name();
+	}
+	
+	@Override
+	public void refreshToken() {
+		
+		getToken();
+		
+	}
 }

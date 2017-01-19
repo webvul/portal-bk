@@ -5,6 +5,7 @@ import static junit.framework.TestCase.assertEquals;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.kii.beehive.portal.service.BeehiveConfigDao;
 import com.kii.extension.ruleengine.service.BusinessObjDao;
 import com.kii.extension.ruleengine.store.trigger.BusinessDataObject;
 import com.kii.extension.ruleengine.store.trigger.BusinessObjType;
@@ -13,7 +14,16 @@ public class TestBusDataDao extends  TestTemplate{
 	
 	@Autowired
 	private BusinessObjDao dao;
+	
+	@Autowired
+	private BeehiveConfigDao configDao;
 
+	@Test
+	public void testConfig(){
+		
+		configDao.getAll();
+	}
+	
 	@Test
 	public void testBusinessObj(){
 		

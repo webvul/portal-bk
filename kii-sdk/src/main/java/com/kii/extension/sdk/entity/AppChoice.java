@@ -9,27 +9,29 @@ public class AppChoice implements Serializable{
 	private String bindName;
 
 	private String appName;
+	
+	private String tokenBindName;
 
-	private boolean bindAdmin=true;
+//	private boolean bindAdmin=true;
+//
+//	private boolean bindThing=false;
+//
 
-	private boolean bindThing=false;
-
-
-	public boolean isBindAdmin() {
-		return bindAdmin;
-	}
-
-	public void setBindAdmin(boolean bindAdmin) {
-		this.bindAdmin = bindAdmin;
-	}
-
-	public boolean isBindThing() {
-		return bindThing;
-	}
-
-	public void setBindThing(boolean bindThing) {
-		this.bindThing = bindThing;
-	}
+//	public boolean isBindAdmin() {
+//		return bindAdmin;
+//	}
+//
+//	public void setBindAdmin(boolean bindAdmin) {
+//		this.bindAdmin = bindAdmin;
+//	}
+//
+//	public boolean isBindThing() {
+//		return bindThing;
+//	}
+//
+//	public void setBindThing(boolean bindThing) {
+//		this.bindThing = bindThing;
+//	}
 
 	public String getBindName() {
 		return bindName;
@@ -39,7 +41,15 @@ public class AppChoice implements Serializable{
 		this.bindName = bindName;
 		return this;
 	}
-
+	
+	public String getTokenBindName() {
+		return tokenBindName;
+	}
+	
+	public void setTokenBindName(String tokenBindName) {
+		this.tokenBindName = tokenBindName;
+	}
+	
 	public String getAppName() {
 		return appName;
 	}

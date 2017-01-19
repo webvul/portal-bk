@@ -86,7 +86,19 @@ public class ThingTokenBindTool implements TokenBindTool{
 		}
 		return info.getToken();
 	}
-
+	
+	@Override
+	public String getBindName() {
+		return BindType.thing.name();
+	}
+	
+	@Override
+	public void refreshToken() {
+		
+		getToken();
+		
+	}
+	
 	private static class ThingInfo{
 
 		private String thingID;

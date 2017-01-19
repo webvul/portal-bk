@@ -67,7 +67,10 @@ public class AppBindToolResolver {
 		oldInfosThreadLocal.get().addFirst(infos);
 	}
 	
-
+	public void refreshToken() {
+		
+		tokenResolver.refreshToken();
+	}
 	
 	
 	private class OldInfos {
@@ -154,7 +157,7 @@ public class AppBindToolResolver {
 			return token;
 		}
 
-		bindTokenResolver();
+		bindTokenResolver(appChoiceLocal.get().getTokenBindName());
 
 		token = tokenResolver.getToken();
 
@@ -162,16 +165,18 @@ public class AppBindToolResolver {
 
 	}
 
-	private void bindTokenResolver(){
+	private void bindTokenResolver(String name){
 
-		if(appChoiceLocal.get().isBindAdmin()){
-
-			tokenResolver.bindAdmin();
-		}else if(appChoiceLocal.get().isBindThing()){
-			tokenResolver.bindThing();
-		}else{
-			tokenResolver.bindUser();
-		}
+//		if(appChoiceLocal.get().isBindAdmin()){
+//
+//			tokenResolver.bindAdmin();
+//		}else if(appChoiceLocal.get().isBindThing()){
+//			tokenResolver.bindThing();
+//		}else{
+//			tokenResolver.bindUser();
+//		}
+		
+		tokenResolver.bindByType(name);
 
 	}
 	public AppInfo getAppInfo(){

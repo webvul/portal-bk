@@ -1,6 +1,8 @@
 package com.kii.extension.sdk.context;
 
 
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,59 +21,66 @@ public class TokenBindToolResolver {
 	@Autowired
 	private ApplicationContext context;
 
-	private SafeThreadLocal<Integer> appChoiceLocal= SafeThreadLocal.withInitial(()->0);
-
-	public void bindAdmin(){
-
-		appChoiceLocal.set(0);
+	private SafeThreadLocal<String> appChoiceLocal= SafeThreadLocal.withInitial(()->"admin");
+	
+	
+//	private Map<String,TokenBindTool>  clsMap=new HashMap<>();
+	
+	
+//	@PostConstruct
+//	public void initClsMap(){
+//
+//		Map<String,TokenBindTool>  instMap=context.getBeansOfType(TokenBindTool.class);
+//
+//		instMap.forEach((k,v)->{
+//			clsMap.put(v.getBindName(),v);
+//		});
+//	}
+	
+	public void bindByType(String name) {
+		appChoiceLocal.set(name);
+		
 	}
-
-	public void bindUser(){
-
-		appChoiceLocal.set(1);
-	}
-
-	public void bindThing(){
-
-		appChoiceLocal.set(2);
-
-	}
-
 
 
 	public void bindUser(String token){
 
-		appChoiceLocal.set(1);
+		appChoiceLocal.set(TokenBindTool.BindType.user.name());
 		context.getBean(UserTokenBindTool.class).bindToken(token);
 	}
 
 	public void bindThing(String token){
 
-		appChoiceLocal.set(2);
+		appChoiceLocal.set(TokenBindTool.BindType.thing.name());
 		context.getBean(ThingTokenBindTool.class).bindToken(token);
 
 	}
 
 	String getToken(){
-
-
-		switch(appChoiceLocal.get()){
-
-			case 1:return context.getBean(UserTokenBindTool.class).getToken();
-			case 2:return context.getBean(ThingTokenBindTool.class).getToken();
-			default:return context.getBean(AdminTokenBindTool.class).getToken();
-
-		}
+		
+		TokenBindTool tool = getTokenBindTool();
+		
+		return tool.getToken();
 
 	}
-
-
-
+	
+	private TokenBindTool getTokenBindTool() {
+		Map<String,TokenBindTool> tools=context.getBeansOfType(TokenBindTool.class);
+		
+		return tools.values().stream().filter((t)->t.getBindName().equals(appChoiceLocal.get())).findFirst().get();
+	}
+	
+	
 	public void clean(){
 
 		appChoiceLocal.remove();
 	}
 	
 	
-
+	public void refreshToken() {
+		TokenBindTool tool = getTokenBindTool();
+		
+		tool.refreshToken();
+		
+	}
 }

@@ -13,6 +13,11 @@
 
     <bean:annotation-config />
 
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="fileEncoding" value="UTF8"/>
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
+    </bean>
+
     <context:component-scan base-package="com.kii" >
             <context:include-filter type="aspectj" expression="com.kii.portal.config.*" />
             <context:include-filter type="aspectj" expression="com.kii.portal.service.*" />

@@ -166,7 +166,7 @@ public class ListenerEnvInitService {
 			// use admin token inside the loop
 			// otherwise, the operation in each slave app may be impacted by the user token set in above this.initExtensionCodeScript();
 			appBindToolResolver.clearAll();
-			tokenBindToolResolver.bindAdmin();
+			tokenBindToolResolver.bindByType("admin");
 
 			extensionService.deployScriptToApp(appInfo.getAppID());
 

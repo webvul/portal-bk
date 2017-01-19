@@ -4,8 +4,10 @@ package com.kii.extension.sdk.aop;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
+import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.After;
+import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
@@ -13,13 +15,15 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
 
+import com.kii.extension.sdk.annotation.AppBindParam;
 import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.context.AppBindToolResolver;
+import com.kii.extension.sdk.context.TokenBindTool;
 import com.kii.extension.sdk.entity.AppChoice;
 import com.kii.extension.sdk.entity.AppInfo;
-import com.kii.extension.sdk.annotation.AppBindParam;
+import com.kii.extension.sdk.exception.ForbiddenException;
+import com.kii.extension.sdk.exception.UnauthorizedAccessException;
 
 
 @Aspect
@@ -59,13 +63,25 @@ public class AppBindAspect {
 			return;
 		}
 		AppChoice choice=new AppChoice();
+		
 		if(!StringUtils.isEmpty(appByName.appBindSource())) {
 			choice.setBindName(appByName.appBindSource());
 		}
 		choice.setAppName(appByName.appName());
-
-		choice.setBindAdmin(appByName.bindAdmin());
-
+		
+		
+		if(StringUtils.isNotBlank(appByName.tokenBind())){
+			choice.setTokenBindName(appByName.tokenBind());
+		}else {
+			if (appByName.bindAdmin()) {
+				choice.setTokenBindName(TokenBindTool.BindType.admin.name());
+			} else if (appByName.bindUser()) {
+				choice.setTokenBindName(TokenBindTool.BindType.user.name());
+			} else if (appByName.bindThing()) {
+				choice.setTokenBindName(TokenBindTool.BindType.thing.name());
+			}
+		}
+		
 		bindTool.pushAppChoice(choice);
 
 	}
@@ -82,10 +98,18 @@ public class AppBindAspect {
 
 	}
 
+	
 
-	@After("bindWithParam()")
-	public void  afterCallBindParam(JoinPoint joinPoint ){
-		bindTool.pop();
+	@AfterThrowing(pointcut = "commDataAccess() || appBindWithAnnotation()",throwing="ex")
+	public void  afterCallBindParam(JoinPoint joinPoint,Exception  ex){
+		
+		
+		if(ex instanceof UnauthorizedAccessException||
+				ex instanceof ForbiddenException ){
+			
+			bindTool.refreshToken();
+			
+		}
 
 	}
 

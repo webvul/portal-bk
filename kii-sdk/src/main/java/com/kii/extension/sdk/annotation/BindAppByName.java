@@ -15,7 +15,7 @@ public @interface BindAppByName {
 
 	public String  appBindSource() default "";
 
-	public boolean usingDefault() default true;
+	public String tokenBind() default "";
 
 	public boolean bindAdmin()  default true;
 
