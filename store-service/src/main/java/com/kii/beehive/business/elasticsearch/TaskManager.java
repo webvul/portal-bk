@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.ThreadPoolExecutor;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -54,6 +55,10 @@ public class TaskManager {
 		indexThreadPoolTaskExecutor.setWaitForTasksToCompleteOnShutdown(waitForTasksToCompleteOnShutdown);
 		indexThreadPoolTaskExecutor.setThreadGroupName("ES-IndexOp");
 		indexThreadPoolTaskExecutor.setThreadNamePrefix("ES-IndexOp-");
+		indexThreadPoolTaskExecutor.setQueueCapacity(10000);
+		indexThreadPoolTaskExecutor.setKeepAliveSeconds(600);
+		indexThreadPoolTaskExecutor.setDaemon(true);
+		indexThreadPoolTaskExecutor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
 		indexThreadPoolTaskExecutor.initialize();
 		searchThreadPoolTaskExecutor = new ThreadPoolTaskExecutor();
 		searchThreadPoolTaskExecutor.setCorePoolSize(searchTaskPoolSize);
@@ -61,6 +66,10 @@ public class TaskManager {
 		searchThreadPoolTaskExecutor.setWaitForTasksToCompleteOnShutdown(waitForTasksToCompleteOnShutdown);
 		searchThreadPoolTaskExecutor.setThreadGroupName("ES-SearchOp");
 		searchThreadPoolTaskExecutor.setThreadNamePrefix("ES-SearchOp-");
+		searchThreadPoolTaskExecutor.setQueueCapacity(10000);
+		searchThreadPoolTaskExecutor.setKeepAliveSeconds(600);
+		searchThreadPoolTaskExecutor.setDaemon(true);
+		searchThreadPoolTaskExecutor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
 		searchThreadPoolTaskExecutor.initialize();
 	}
 
