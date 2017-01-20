@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.kii.extension.sdk.annotation.BindAppByName;
+import com.kii.extension.sdk.context.TokenBindTool;
 import com.kii.extension.sdk.context.TokenBindToolResolver;
 import com.kii.extension.sdk.entity.KiiUser;
 import com.kii.extension.sdk.service.UserService;
@@ -31,7 +32,7 @@ public class UserServiceForTest {
     }
 
     public void removeUser(String userID) {
-        tokenBindToolResolver.bindAdmin();
+        tokenBindToolResolver.bindByType(TokenBindTool.BindType.admin.name());
         userService.removeUserByLoginName(userID);
         tokenBindToolResolver.clean();
     }

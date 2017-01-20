@@ -81,16 +81,10 @@ public class AppBindAspect {
 		choice.setAppName(appByName.appName());
 		
 		
-		if(StringUtils.isNotBlank(appByName.tokenBind())){
-			choice.setTokenBindName(appByName.tokenBind());
+		if(appByName.tokenBind()== TokenBindTool.BindType.Custom){
+			choice.setTokenBindName(appByName.customBindName());
 		}else {
-			if (appByName.bindAdmin()) {
-				choice.setTokenBindName(TokenBindTool.BindType.admin.name());
-			} else if (appByName.bindUser()) {
-				choice.setTokenBindName(TokenBindTool.BindType.user.name());
-			} else if (appByName.bindThing()) {
-				choice.setTokenBindName(TokenBindTool.BindType.thing.name());
-			}
+			choice.setTokenBindName(appByName.tokenBind().name());
 		}
 		
 		bindTool.pushAppChoice(choice);

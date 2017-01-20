@@ -8,10 +8,11 @@ import org.springframework.stereotype.Component;
 import com.kii.beehive.portal.store.entity.CustomData;
 import com.kii.beehive.portal.store.entity.UserCustomData;
 import com.kii.extension.sdk.annotation.BindAppByName;
+import com.kii.extension.sdk.context.TokenBindTool;
 import com.kii.extension.sdk.entity.BucketInfo;
 import com.kii.extension.sdk.exception.ObjectNotFoundException;
 
-@BindAppByName(appName = "portal", appBindSource = "propAppBindTool")
+@BindAppByName(appName="portal",appBindSource="propAppBindTool",tokenBind= TokenBindTool.BindType.Custom,customBindName = PortalTokenBindTool.PORTAL_OPER )
 @Component
 public class UserCustomDataDao extends BaseKiicloudDao<UserCustomData> {
 

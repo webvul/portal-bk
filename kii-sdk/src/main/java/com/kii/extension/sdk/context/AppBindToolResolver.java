@@ -27,9 +27,7 @@ public class AppBindToolResolver {
 	private SafeThreadLocal<AppChoice> appChoiceLocal=SafeThreadLocal.getInstance();
 
 	private SafeThreadLocal<String> tokenDirectLocal = SafeThreadLocal.getInstance();
-
-
-
+	
 	private SafeThreadLocal<AppInfo> appInfoDirectly = SafeThreadLocal.getInstance();
 
 	private SafeThreadLocal<LinkedList<OldInfos>>  oldInfosThreadLocal=SafeThreadLocal.getInstance();

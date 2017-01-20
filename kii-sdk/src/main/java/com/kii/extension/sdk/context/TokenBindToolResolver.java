@@ -21,21 +21,7 @@ public class TokenBindToolResolver {
 	@Autowired
 	private ApplicationContext context;
 
-	private SafeThreadLocal<String> appChoiceLocal= SafeThreadLocal.withInitial(()->"admin");
-	
-	
-//	private Map<String,TokenBindTool>  clsMap=new HashMap<>();
-	
-	
-//	@PostConstruct
-//	public void initClsMap(){
-//
-//		Map<String,TokenBindTool>  instMap=context.getBeansOfType(TokenBindTool.class);
-//
-//		instMap.forEach((k,v)->{
-//			clsMap.put(v.getBindName(),v);
-//		});
-//	}
+	private SafeThreadLocal<String> appChoiceLocal= SafeThreadLocal.withInitial(()-> TokenBindTool.BindType.None.name());
 	
 	public void bindByType(String name) {
 		appChoiceLocal.set(name);

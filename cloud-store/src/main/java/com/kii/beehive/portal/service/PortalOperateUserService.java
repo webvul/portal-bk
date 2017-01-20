@@ -9,13 +9,14 @@ import org.springframework.stereotype.Component;
 
 import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.context.AppBindToolResolver;
+import com.kii.extension.sdk.context.TokenBindTool;
 import com.kii.extension.sdk.entity.KiiUser;
 import com.kii.extension.sdk.entity.LoginInfo;
 import com.kii.extension.sdk.exception.BadUserNameException;
 import com.kii.extension.sdk.service.UserService;
 
 @Component
-@BindAppByName(appName = "portal", appBindSource = "propAppBindTool",tokenBind = "admin")
+@BindAppByName(appName = "portal", appBindSource = "propAppBindTool",tokenBind = TokenBindTool.BindType.None)
 public class PortalOperateUserService {
 	
 	@Autowired
@@ -66,9 +67,8 @@ public class PortalOperateUserService {
 	
 	public String getToken() {
 		
-//		return token.get().getToken();
+		return token.get().getToken();
 		
-		return "mock";
 	}
 	
 

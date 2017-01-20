@@ -9,7 +9,7 @@ public interface TokenBindTool {
 	void refreshToken();
 	
 	enum BindType{
-		admin,user,thing;
+		admin,user,thing,None,Custom;
 	}
 
 }

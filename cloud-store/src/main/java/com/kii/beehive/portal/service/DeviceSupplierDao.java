@@ -11,9 +11,10 @@ import org.springframework.stereotype.Component;
 import com.kii.beehive.portal.config.CacheConfig;
 import com.kii.beehive.portal.store.entity.DeviceSupplier;
 import com.kii.extension.sdk.annotation.BindAppByName;
+import com.kii.extension.sdk.context.TokenBindTool;
 import com.kii.extension.sdk.entity.BucketInfo;
 
-@BindAppByName(appName="portal",appBindSource="propAppBindTool")
+@BindAppByName(appName="portal",appBindSource="propAppBindTool",tokenBind= TokenBindTool.BindType.Custom,customBindName = PortalTokenBindTool.PORTAL_OPER )
 @Component
 public class DeviceSupplierDao extends BaseKiicloudDao<DeviceSupplier>{
 

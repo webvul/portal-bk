@@ -7,11 +7,12 @@ import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 import com.kii.extension.sdk.annotation.BindAppByName;
+import com.kii.extension.sdk.context.TokenBindTool;
 import com.kii.extension.sdk.entity.KiiUser;
 import com.kii.extension.sdk.service.UserService;
 
 @Component
-@BindAppByName(appName="master",bindAdmin=true)
+@BindAppByName(appName="master",tokenBind= TokenBindTool.BindType.admin)
 public class KiiUserAdminService {
 
 

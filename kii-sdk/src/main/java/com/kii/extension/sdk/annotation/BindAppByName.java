@@ -6,6 +6,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import com.kii.extension.sdk.context.TokenBindTool;
+
 @Target({ElementType.TYPE,ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
@@ -15,12 +17,9 @@ public @interface BindAppByName {
 
 	public String  appBindSource() default "";
 
-	public String tokenBind() default "";
+	public TokenBindTool.BindType tokenBind() default TokenBindTool.BindType.admin;
+	
+	public String customBindName() default "";
 
-	public boolean bindAdmin()  default true;
-
-	public boolean bindThing()  default false;
-
-	public boolean bindUser() default  false;
 
 }
