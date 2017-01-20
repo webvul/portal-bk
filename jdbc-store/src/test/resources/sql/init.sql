@@ -271,3 +271,85 @@ from global_thing th
     `addition_intprop` varchar(256) DEFAULT NULL
     PRIMARY KEY (`user_notice_id`)
   ) ENGINE=InnoDB AUTO_INCREMENT=1072 DEFAULT CHARSET=utf8;
+
+
+  CREATE TABLE `ex_camera_door` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `door_thing_id` int(11) NOT NULL,
+    `face_thing_id` int(11) NOT NULL,
+    `camera_id` varchar(100) NOT NULL,
+    `create_time` datetime DEFAULT NULL,
+    `is_deleted` bit(1) DEFAULT NULL COMMENT '删除状态',
+    `create_by` varchar(50) DEFAULT NULL,
+    `create_date` datetime DEFAULT NULL,
+    `modify_by` varchar(50) DEFAULT NULL,
+    `modify_date` datetime DEFAULT NULL,
+    PRIMARY KEY (`id`)
+  ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+
+
+CREATE TABLE `ex_sit_lock` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `space_code` varchar(100) NOT NULL,
+  `lock_global_thing_id` int(11) NOT NULL,
+  `create_time` datetime DEFAULT NULL,
+  `is_deleted` bit(1) DEFAULT NULL COMMENT '删除状态',
+  `create_by` varchar(50) DEFAULT NULL,
+  `create_date` datetime DEFAULT NULL,
+  `modify_by` varchar(50) DEFAULT NULL,
+  `modify_date` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+
+
+CREATE TABLE `ex_sitsys_beehive_user_rel` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `sit_sys_user_id` varchar(128) NOT NULL,
+  `beehive_user_id` varchar(128) NOT NULL,
+  `is_deleted` bit(1) DEFAULT NULL COMMENT '删除状态',
+  `create_by` varchar(50) DEFAULT NULL,
+  `create_date` datetime DEFAULT NULL,
+  `modify_by` varchar(50) DEFAULT NULL,
+  `modify_date` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+
+
+CREATE TABLE `ex_space_book` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `app_code` varchar(100) NOT NULL COMMENT '业务系统app_code',
+  `campus_code` varchar(100) NOT NULL COMMENT '园区code',
+  `biz_id` varchar(100) DEFAULT NULL COMMENT '业务系统业务类型',
+  `biz_type` varchar(100) DEFAULT NULL COMMENT '业务系统业务类型',
+  `user_id` varchar(100) NOT NULL COMMENT '业务系统user_id',
+  `password` varchar(11) NOT NULL COMMENT 'xxxx',
+  `space_code` varchar(100) NOT NULL COMMENT '空间code',
+  `begin_date` datetime NOT NULL COMMENT '开始日期(2016-12-12 13:00:00)',
+  `end_date` datetime NOT NULL COMMENT '结束日期(2016-12-12 14:00:00)',
+  `is_added_trigger` bit(1) DEFAULT NULL COMMENT '是否创建rule',
+  `is_deleted_trigger` bit(1) DEFAULT NULL COMMENT '是否删除rule',
+  `create_trigger_error` bit(1) DEFAULT NULL COMMENT '是否删除rule',
+  `is_deleted` bit(1) DEFAULT NULL COMMENT '删除状态',
+  `create_by` varchar(50) DEFAULT NULL,
+  `create_date` datetime DEFAULT NULL,
+  `modify_by` varchar(50) DEFAULT NULL,
+  `modify_date` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1634 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=COMPACT;
+
+
+CREATE TABLE `ex_space_book_trigger_item` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `ex_space_book_id` int(11) NOT NULL COMMENT '预订表ID',
+  `trigger_id` varchar(100) NOT NULL COMMENT '空间code',
+  `is_added_trigger` bit(1) DEFAULT NULL COMMENT '是否创建rule',
+  `is_deleted_trigger` bit(1) DEFAULT NULL COMMENT '是否删除rule',
+  `type` varchar(20) DEFAULT NULL COMMENT 'unlock,open_door',
+  `is_deleted` bit(1) DEFAULT NULL COMMENT '删除状态',
+  `create_by` varchar(50) DEFAULT NULL,
+  `create_date` datetime DEFAULT NULL,
+  `modify_by` varchar(50) DEFAULT NULL,
+  `modify_date` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3951 DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
+
