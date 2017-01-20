@@ -50,50 +50,49 @@ public class ExtensionCallbackController {
 	private InternalEventListenerRegistry internalEventListenerRegistry;
 
 	@Autowired
-	private ThingCommandForTriggerService  commandService;
+	private ThingCommandForTriggerService commandService;
 
 	private ObjectMapper objectMapper;
-	
+
 	@Value("${thing.state.queue:thing_state_queue}")
 	private String thingStateQueue;
 
 
-	
 	@PostConstruct
-	public void init(){
-		
-		objectMapper=new ObjectMapper();
-		
-		objectMapper.configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES,false);
-		objectMapper.configure(DeserializationFeature.FAIL_ON_READING_DUP_TREE_KEY,true);
-		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
-		
-		
+	public void init() {
+
+		objectMapper = new ObjectMapper();
+
+		objectMapper.configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
+		objectMapper.configure(DeserializationFeature.FAIL_ON_READING_DUP_TREE_KEY, true);
+		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+
 	}
 
 	@RequestMapping(value = "/" + CallbackNames.STATE_CHANGED, method = {RequestMethod.POST})
 	public void onStateChangeFire(@RequestHeader("x-kii-appid") String appID,
 								  @RequestHeader("Authorization") String token,
 								  @RequestBody String body) {
-		
-		StateUpload  status= null;
+
+		StateUpload status = null;
 		try {
-			status = objectMapper.readValue(body,StateUpload.class);
+			status = objectMapper.readValue(body, StateUpload.class);
 		} catch (IOException e) {
-			
+
 			log.error(e.getMessage());
 			return;
 		}
-		
+
 		tagManager.updateState(status.getState(), status.getThingID(), appID);
-		
-		GlobalThingInfo globalThingInfo = tagManager.getThingByFullKiiThingID(appID,status.getThingID());
-	
-		pushCallback.onEventFire(globalThingInfo,status.getState(),status.getTimestamp());
+
+		GlobalThingInfo globalThingInfo = tagManager.getThingByFullKiiThingID(appID, status.getThingID());
+
+		pushCallback.onEventFire(globalThingInfo, status.getState(), status.getTimestamp());
 
 		eventBus.onStatusUploadFire(String.valueOf(globalThingInfo.getId()), status.getState(), status.getTimestamp());
-		
-		internalEventListenerRegistry.onStateChange(appID, status);
+
+		//internalEventListenerRegistry.onStateChange(appID, status);
 	}
 
 
@@ -101,15 +100,15 @@ public class ExtensionCallbackController {
 	public void onThingCreatedFire(@RequestHeader("x-kii-appid") String appID,
 								   @RequestHeader("Authorization") String token,
 								   @RequestBody String body) {
-		CreatedThing  thing= null;
+		CreatedThing thing = null;
 		try {
-			thing = objectMapper.readValue(body,CreatedThing.class);
+			thing = objectMapper.readValue(body, CreatedThing.class);
 		} catch (IOException e) {
-			
+
 			log.error(e.getMessage());
 			return;
 		}
-		
+
 		log.info("onBoarding = " + thing.getVendorThingID());
 		tagManager.updateKiicloudRelation(thing.getVendorThingID(), appID + "-" + thing.getThingID());
 	}
@@ -119,15 +118,15 @@ public class ExtensionCallbackController {
 	public void onThingCmdResponse(@RequestHeader("x-kii-appid") String appID,
 								   @RequestHeader("Authorization") String token,
 								   @RequestBody String body) {
-		ThingCommand  cmd= null;
+		ThingCommand cmd = null;
 		try {
-			cmd = objectMapper.readValue(body,ThingCommand.class);
+			cmd = objectMapper.readValue(body, ThingCommand.class);
 		} catch (IOException e) {
-			
+
 			log.error(e.getMessage());
 			return;
 		}
-		
+
 
 		log.info("cmdResponse  " + cmd.getTarget());
 
