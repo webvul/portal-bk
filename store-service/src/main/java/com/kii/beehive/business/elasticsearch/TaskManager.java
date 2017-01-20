@@ -1,9 +1,9 @@
 package com.kii.beehive.business.elasticsearch;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kii.beehive.business.elasticsearch.factory.ESTaskFactory;
-import com.kii.beehive.business.elasticsearch.task.AvgTimeParkingSpaceToGatewayTask;
+import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -16,11 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kii.beehive.business.elasticsearch.factory.ESTaskFactory;
+import com.kii.beehive.business.elasticsearch.task.AvgTimeParkingSpaceToGatewayTask;
 
 /**
  * Created by hdchen on 6/30/16.
@@ -53,11 +52,15 @@ public class TaskManager {
 		indexThreadPoolTaskExecutor.setCorePoolSize(indexTaskPoolSize);
 		indexThreadPoolTaskExecutor.setMaxPoolSize(indexTaskMaxSize);
 		indexThreadPoolTaskExecutor.setWaitForTasksToCompleteOnShutdown(waitForTasksToCompleteOnShutdown);
+		indexThreadPoolTaskExecutor.setThreadGroupName("ES-IndexOp");
+		indexThreadPoolTaskExecutor.setThreadNamePrefix("ES-IndexOp-");
 		indexThreadPoolTaskExecutor.initialize();
 		searchThreadPoolTaskExecutor = new ThreadPoolTaskExecutor();
 		searchThreadPoolTaskExecutor.setCorePoolSize(searchTaskPoolSize);
 		searchThreadPoolTaskExecutor.setMaxPoolSize(searchTaskMaxSize);
 		searchThreadPoolTaskExecutor.setWaitForTasksToCompleteOnShutdown(waitForTasksToCompleteOnShutdown);
+		searchThreadPoolTaskExecutor.setThreadGroupName("ES-SearchOp");
+		searchThreadPoolTaskExecutor.setThreadNamePrefix("ES-SearchOp-");
 		searchThreadPoolTaskExecutor.initialize();
 	}
 
