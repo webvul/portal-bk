@@ -3,7 +3,6 @@ package com.kii.beehive.portal.helper;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.service.LocationDao;
@@ -19,7 +18,6 @@ public class LocationTreeService {
 	
 	private AtomicReference<LocationTree> treeCache=new AtomicReference<>();
 	
-	@Async
 	public void refreshTree(){
 		
 		treeCache.set(locDao.getFullLocationTree());
@@ -27,13 +25,7 @@ public class LocationTreeService {
 	}
 	
 	public LocationTree getLocationTree(){
-		LocationTree tree= treeCache.get();
 		
-		if(tree==null){
-			return treeCache.getAndSet(locDao.getFullLocationTree());
-		}else{
-			return tree;
-		}
-		
+		return treeCache.get();
 	}
 }
