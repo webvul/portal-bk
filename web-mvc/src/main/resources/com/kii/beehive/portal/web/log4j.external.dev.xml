@@ -1,60 +1,40 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<configuration name="beehive" status="info">
+    <Appenders>
 
-<!-- to be updated to external dev config -->
+        <RollingFile name="file" immediateFlush="false" fileName="/data/log/beehive/beehive.log"  filePattern="/data/log/beehive/beehive-%d{MM-dd-yyyy}.log">
+            <PatternLayout  pattern="%d [%t] %-5p %m - %C{3}.%M(%L)%n" />
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+            </Policies>
+        </RollingFile>
 
-<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
-	<appender name="console" class="org.apache.log4j.ConsoleAppender">
-		<param name="Target" value="System.out" />
-		<layout class="org.apache.log4j.PatternLayout">
-			<param name="ConversionPattern" value="%d [%t] %-5p %m - %C{3}.%M(%L)%n" />
-		</layout>
-	</appender>
+        <RollingFile name="faceplusplus" immediateFlush="false" fileName="/data/log/beehive/faceplusplus.log"  filePattern="/data/log/beehive/beehive.log.%d{MM-dd-yyyy}">
+            <PatternLayout  pattern="%m%n" />
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+            </Policies>
+        </RollingFile>
+    </Appenders>
 
-	<appender name="file" class="org.apache.log4j.DailyRollingFileAppender" >
-		<param name="file" value="/data/log/beehive/beehive.log" />
-		<param name="DatePattern" value="'.'yyyy-MM-dd" />
-		<layout class="org.apache.log4j.PatternLayout">
-			<param name="ConversionPattern" value="%d [%t] %-5p %m - %C{3}.%M(%L)%n" />
-		</layout>
-	</appender>
+    <Loggers>
+        <Logger name="faceplusplus" level="info" >
+            <appender-ref ref="faceplusplus" />
+        </Logger>
 
-	<appender name="faceplusplus" class="org.apache.log4j.DailyRollingFileAppender" >
-		<param name="file" value="/data/log/beehive/faceplusplus.log" />
-		<param name="DatePattern" value="'.'yyyy-MM-dd" />
-		<layout class="org.apache.log4j.PatternLayout">
-			<param name="ConversionPattern" value="%m%n" />
-		</layout>
-	</appender>
+        <Logger name="com.fasterxml.jackson" level="info" />
 
-	<logger name="faceplusplus">
-		<level value="info" />
-		<appender-ref ref="faceplusplus" />
-	</logger>
+        <Logger name="org.apache.http.wire" level="info" />
 
-	<logger name="com.fasterxml.jackson">
-		<level value="info" />
-	</logger>
+        <Logger name="org.springframework.web" level="info" />
 
-	<logger name="org.apache.http.wire">
-		<level value="info" />
-	</logger>
+        <Logger name="org.springframework.cache" level="info" />
 
-	<logger name="org.springframework.web">
-		<level value="info" />
-	</logger>
 
-    <logger name="org.springframework.cache" >
-        <level value="info" />
-    </logger>
+        <Logger name="com.kii"  level="info" />
 
-	
-    <logger name="com.kii" >
-        <level value="info" />
-    </logger>
-
-	<root>
-		<priority value="info" />
-        <appender-ref ref="file" />
-	</root>
-</log4j:configuration>
+        <Root level="info" includeLocation="false">
+            <appender-ref ref="file" />
+        </Root>
+    </Loggers>
+</configuration>

@@ -2,28 +2,15 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:cache="http://www.springframework.org/schema/cache"
-       xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:task="http://www.springframework.org/schema/task"
-       xmlns:mvc="http://www.springframework.org/schema/mvc"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
          http://www.springframework.org/schema/beans/spring-beans.xsd
-         http://www.springframework.org/schema/cache
-         http://www.springframework.org/schema/cache/spring-cache.xsd
-         http://www.springframework.org/schema/tx
-         http://www.springframework.org/schema/tx/spring-tx.xsd
          http://www.springframework.org/schema/task
          http://www.springframework.org/schema/task/spring-task.xsd
          http://www.springframework.org/schema/context
          http://www.springframework.org/schema/context/spring-context.xsd
-         http://www.springframework.org/schema/mvc
-         http://www.springframework.org/schema/mvc/spring-mvc.xsd">
-    <!--
-    below config files for different env are specified in this config file, by reading the jvm para "spring.profile"
-        - beehive.portal.store.xxx.properties
-        - config.xxx.properties
-        - log4j.xxx.xml
-    -->
+">
+
 
 
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
@@ -62,18 +49,6 @@
     <!-- ruleEngine -->
     <bean class="com.kii.extension.ruleengine.RuleEngineConfig"/>
 
-
-    <!-- log4j    -->
-
-    <bean id="log4jInitializer" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="targetClass" value="org.springframework.util.Log4jConfigurer"/>
-        <property name="targetMethod" value="initLogging"/>
-        <property name="arguments">
-            <list>
-                <value>classpath:com/kii/beehive/portal/web/log4j.${spring.profile}.xml</value>
-            </list>
-        </property>
-    </bean>
 
     <!-- task  -->
 
