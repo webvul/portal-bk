@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -72,7 +73,7 @@ public class DroolsService {
 	private final FactHandle  externalHandler;
 
 
-	private final CurrThing currThing=new CurrThing();
+	private final AtomicReference<CurrThing> currThing=new AtomicReference<>(new CurrThing());
 
 	private final ExternalCollect  external=new ExternalCollect();
 
@@ -81,23 +82,29 @@ public class DroolsService {
 
 
 
-	public synchronized void enterInit(){
+	public void enterInit(){
 
-		this.currThing.setStatus(CurrThing.Status.inInit);
-		this.currThing.setCurrThing(CurrThing.NONE);
+		currThing.updateAndGet((th)->{
+			th.setStatus(CurrThing.Status.inInit);
+			th.setCurrThing(CurrThing.NONE);
+			return th;
+		});
 
-		kieSession.update(currThingHandler, currThing);
+//		kieSession.update(currThingHandler, thing);
 
 		kieSession.fireAllRules();
 	}
 
-	public synchronized void leaveInit(){
+	public void leaveInit(){
 
+		
+		currThing.updateAndGet((th)->{
+			th.setStatus(CurrThing.Status.inIdle);
+			th.setCurrThing(CurrThing.NONE);
+			return th;
+		});
 
-		this.currThing.setStatus(CurrThing.Status.inIdle);
-		this.currThing.setCurrThing(CurrThing.NONE);
-
-		kieSession.update(currThingHandler, currThing);
+//		kieSession.update(currThingHandler, thing);
 
 		kieSession.fireAllRules();
 
@@ -105,35 +112,40 @@ public class DroolsService {
 
 	public void toIdle(){
 		
-		if(currThing.getStatus()== CurrThing.Status.inInit){
-			return;
-		}
-		currThing.setCurrThing(CurrThing.NONE);
-		currThing.setStatus(CurrThing.Status.inIdle);
 		
-//		settingCurrThing(CurrThing.NONE, CurrThing.Status.inIdle);
+		currThing.updateAndGet((th)->{
+			if(th.getStatus()== CurrThing.Status.inInit){
+				return th;
+			}
+			th.setCurrThing(CurrThing.NONE);
+			th.setStatus(CurrThing.Status.inIdle);
+			return th;
+		});
+		
 	}
 	
-	public synchronized void inFireTrigger(String triggerID) {
+	public void inFireTrigger(String triggerID) {
 		
-//		synchronized (currThing) {
+		
+		CurrThing thing=currThing.updateAndGet((th)->{
 			
-			CurrThing.Status oldStatus = currThing.getStatus();
+			
+			CurrThing.Status oldStatus = th.getStatus();
 			if(oldStatus==CurrThing.Status.inInit){
-//				kieSession.fireAllRules();
-				return;
+				return th;
 			}
 			
-			this.currThing.setStatus(CurrThing.Status.singleTrigger);
-			this.currThing.setTriggerID(triggerID);
-			
-			kieSession.update(currThingHandler, currThing);
-			
-			kieSession.fireAllRules();
-			
-			this.currThing.setStatus(CurrThing.Status.inIdle);
-			kieSession.update(currThingHandler, currThing);
-//		}
+			th.setStatus(CurrThing.Status.singleTrigger);
+			th.setTriggerID(triggerID);
+			return th;
+		});
+		
+		if(thing.getStatus()== CurrThing.Status.inInit){
+			return;
+		}
+		kieSession.fireAllRules();
+		
+		currThing.compareAndSet(thing,thing);
 	}
 
 
@@ -143,59 +155,117 @@ public class DroolsService {
 	}
 
 
-	public synchronized  void updateScheduleData(ScheduleFire fire){
-
-//		synchronized (currThing) {
-
-			CurrThing.Status  oldStatus=currThing.getStatus();
+	public  void updateScheduleData(ScheduleFire fire){
+		
+		CurrThing thing=currThing.updateAndGet((th)->{
 			
+			
+			CurrThing.Status oldStatus = th.getStatus();
 			if(oldStatus==CurrThing.Status.inInit){
-				return;
+				return th;
 			}
+			
 			if(oldStatus==CurrThing.Status.inThing) {
 
-				this.currThing.setStatus(CurrThing.Status.inIdle);
-				this.currThing.setCurrThing(CurrThing.NONE);
-				kieSession.update(currThingHandler, currThing);
-
+				th.setStatus(CurrThing.Status.inIdle);
+				th.setCurrThing(CurrThing.NONE);
+//				kieSession.update(currThingHandler, currThing);
 			}
+			return th;
+		});
+		
+		if(thing.getStatus()==CurrThing.Status.inInit){
+			return;
+		}
+		
+		FactHandle  handler=kieSession.insert(fire);
+		kieSession.fireAllRules();
+		kieSession.delete(handler);
 
-			FactHandle  handler=kieSession.insert(fire);
-			kieSession.fireAllRules();
-			kieSession.delete(handler);
+//		synchronized (currThing) {
+//
+//			CurrThing.Status  oldStatus=currThing.getStatus();
+//
+//			if(oldStatus==CurrThing.Status.inInit){
+//				return;
+//			}
+//			if(oldStatus==CurrThing.Status.inThing) {
+//
+//				this.currThing.setStatus(CurrThing.Status.inIdle);
+//				this.currThing.setCurrThing(CurrThing.NONE);
+//				kieSession.update(currThingHandler, currThing);
+//
+//			}
+//
+//			FactHandle  handler=kieSession.insert(fire);
+//			kieSession.fireAllRules();
+//			kieSession.delete(handler);
 //		}
 	}
 
-	private synchronized void settingCurrThing(String thingID,CurrThing.Status  status){
+	private void settingCurrThing(String thingID,CurrThing.Status  status){
+		
+		
+		CurrThing thing=currThing.updateAndGet((th)->{
+			
+			
+			CurrThing.Status oldStatus = th.getStatus();
+			if(oldStatus==CurrThing.Status.inInit){
+				return th;
+			}
+
+			th.setStatus(status);
+			th.setCurrThing(thingID);
+			return th;
+		});
+		
+		if(thing.getStatus()==CurrThing.Status.inInit){
+			return;
+		}
+		
+		kieSession.fireAllRules();
+		
+//		if(status== CurrThing.Status.inThing) {
+//			List<MatchResult> lists = doQuery("get Match Result by TriggerID");
+//			consumer.accept(lists);
+//		}
+
+
+		ExternalValues entity=new ExternalValues("sys");
+		entity.addValue("curr",thing);
+		external.updateEntity(entity);
+
+//		kieSession.update(externalHandler,external);
+//		kieSession.fireAllRules();
 
 //		synchronized (currThing) {
-
-			CurrThing.Status  oldStatus=currThing.getStatus();
-
-			if(oldStatus==CurrThing.Status.inInit){
-				return;
-			}
-	
-			
-			this.currThing.setStatus(status);
-			this.currThing.setCurrThing(thingID);
-			
-			kieSession.update(currThingHandler, currThing);
-			
-
-			kieSession.fireAllRules();
-			if(status== CurrThing.Status.inThing) {
-				List<MatchResult> lists = doQuery("get Match Result by TriggerID");
-				consumer.accept(lists);
-			}
-
-
-			ExternalValues entity=new ExternalValues("sys");
-			entity.addValue("curr",currThing);
-			external.updateEntity(entity);
-
-			kieSession.update(externalHandler,external);
-			kieSession.fireAllRules();
+//
+//			CurrThing.Status  oldStatus=currThing.getStatus();
+//
+//			if(oldStatus==CurrThing.Status.inInit){
+//				return;
+//			}
+//
+//
+//			this.currThing.setStatus(status);
+//			this.currThing.setCurrThing(thingID);
+//
+//			kieSession.update(currThingHandler, currThing);
+//
+//
+//			kieSession.fireAllRules();
+//			if(status== CurrThing.Status.inThing) {
+//				List<MatchResult> lists = doQuery("get Match Result by TriggerID");
+//				consumer.accept(lists);
+//			}
+//
+//
+//			ExternalValues entity=new ExternalValues("sys");
+//			entity.addValue("curr",currThing);
+//			external.updateEntity(entity);
+//
+//			kieSession.update(externalHandler,external);
+//			kieSession.fireAllRules();
 //		}
 	}
 
@@ -207,7 +277,7 @@ public class DroolsService {
 		});
 	}
 
-	public synchronized Map<String,Object>  getEngineEntitys(String triggerID){
+	public Map<String,Object>  getEngineEntitys(String triggerID){
 
 
 		Map<String,Object>  map=new HashMap<>();
@@ -308,7 +378,7 @@ public class DroolsService {
 			kieSession.addEventListener(new DebugAgendaEventListener());
 			kieSession.addEventListener(new DebugRuleRuntimeEventListener());
 		}
-		currThingHandler=kieSession.insert(currThing);
+		currThingHandler=kieSession.insert(currThing.get());
 
 		externalHandler=kieSession.insert(external);
 
@@ -316,18 +386,18 @@ public class DroolsService {
 	}
 
 
-	public synchronized void bindWithGlobal(String name,Object instance){
+	public void bindWithGlobal(String name,Object instance){
 		kieSession.setGlobal(name,instance);
 	}
 
-	public synchronized void bindWithInstance(String name,Object instance){
+	public void bindWithInstance(String name,Object instance){
 
 		kieSession.getEnvironment().set(name,instance);
 	}
 
 
 
-	public synchronized  void addCondition(String name,String rule){
+	public  void addCondition(String name,String rule){
 
 
 		log.debug("add rule:"+rule);
@@ -358,7 +428,7 @@ public class DroolsService {
 	}
 
 
-	public synchronized void removeCondition(String name){
+	public void removeCondition(String name){
 		String path="src/main/resources/user_"+name+".drl";
 
 
@@ -388,7 +458,7 @@ public class DroolsService {
 
 
 
-	public synchronized void addOrUpdateExternal(ExternalValues entity){
+	public void addOrUpdateExternal(ExternalValues entity){
 
 
 		external.updateEntity(entity);
@@ -400,7 +470,7 @@ public class DroolsService {
 	}
 
 
-	public synchronized void addOrUpdateData(Object entity,boolean replace){
+	public void addOrUpdateData(Object entity,boolean replace){
 
 
 		handleMap.compute(getEntityKey(entity),(k,v)->{
@@ -444,7 +514,7 @@ public class DroolsService {
 		}
 	}
 
-	private synchronized <T> List<T> doQuery(String queryName,Object... params){
+	private <T> List<T> doQuery(String queryName,Object... params){
 
 
 
@@ -462,7 +532,7 @@ public class DroolsService {
 
 
 	
-	public synchronized void removeData(Object obj) {
+	public void removeData(Object obj) {
 		String entityKey = getEntityKey(obj);
 		
 		FactHandle handler=getHandle(entityKey);
@@ -474,7 +544,7 @@ public class DroolsService {
 	}
 
 
-	public synchronized void removeFact(Function<Object,Boolean> function) {
+	public void removeFact(Function<Object,Boolean> function) {
 
 		Collection<FactHandle>  handles=kieSession.getFactHandles(function::apply);
 

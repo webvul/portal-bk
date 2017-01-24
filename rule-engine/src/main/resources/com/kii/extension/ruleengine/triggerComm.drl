@@ -9,10 +9,22 @@ import com.kii.extension.ruleengine.ExtendFunAdapter;
 global com.kii.extension.ruleengine.ExtendFunAdapter ExtFun;
 
 
-query "get Match Result by TriggerID" ()
+//query "get Match Result by TriggerID" ()
+//	Trigger($triggerID:triggerID,$thingSet:thingSet,when==WhenType.CONDITION_TRUE,enable==true)
+//	CurrThing( valid ($thingSet,$triggerID) )
+//    results : MatchResult( triggerID == $triggerID )
+//end
+
+
+rule "fire multiples Result by TriggerID"
+  no-loop true
+when
 	Trigger($triggerID:triggerID,$thingSet:thingSet,when==WhenType.CONDITION_TRUE,enable==true)
-	CurrThing( valid ($thingSet,$triggerID) )
-    results : MatchResult( triggerID == $triggerID )
+	$curr:CurrThing( valid($thingSet,$triggerID) )
+	$results : MatchResult( triggerID == $triggerID )
+then
+	CommandExec exec=(CommandExec)kcontext.getKieRuntime().getEnvironment().get("exec");
+    exec.doExecute($triggerID,$result);
 end
 
 rule "fire f2t trigger:when false->true,trigger  fire"

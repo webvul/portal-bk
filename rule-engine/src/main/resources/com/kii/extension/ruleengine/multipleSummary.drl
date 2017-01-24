@@ -7,9 +7,10 @@ global com.kii.extension.ruleengine.ExtendFunAdapter ExtFun;
 
 
 query "get multiples Result by TriggerID" (String thingID)
-	Trigger($triggerID:triggerID,thingSet.contains(thingID),enable==true)
     results : MultiplesValueMap( triggerID == $triggerID )
 end
+
+
 
 rule "copy  all multiples's unit summary value to multipleMap"
   no-loop true
