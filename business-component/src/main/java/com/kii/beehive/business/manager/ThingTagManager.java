@@ -107,7 +107,7 @@ public class ThingTagManager {
 
 		Map<String,Object>  values=status.getFields();
 		
-		Map<String,Object> valuesWithSchema=bindTemplate(values,fullThingID);
+//		Map<String,Object> valuesWithSchema=bindTemplate(values,fullThingID);
 		
 		int i=globalThingDao.updateState(values, fullThingID);
 
