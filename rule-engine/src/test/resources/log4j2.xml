@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration name="beehive" status="debug">
+    <Appenders>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout  pattern="%d [%t] %-5p %m - %C{3}.%M(%L)%n" />
+        </Console>
+    </Appenders>
+
+
+    <Loggers>
+        <Logger name="com.fasterxml.jackson" level="debug" />
+
+        <Logger name="org.apache.http.wire" level="debug" />
+
+
+        <Logger name="org.springframework.web" level="debug" />
+
+        <Logger name="org.springframework.cache" level="debug" />
+
+        <Logger name="com.kii" level="debug" />
+
+        <Root level="info" >
+            <appender-ref ref="console" />
+        </Root>
+
+    </Loggers>
+</configuration>
