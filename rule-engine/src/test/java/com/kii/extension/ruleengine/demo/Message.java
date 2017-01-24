@@ -9,11 +9,11 @@ public class Message {
 
 	private int status;
 
-	public String getMessage() {
+	public String getMsg() {
 		return this.message;
 	}
 
-	public void setMessage(String message) {
+	public void setMsg(String message) {
 		this.message = message;
 	}
 

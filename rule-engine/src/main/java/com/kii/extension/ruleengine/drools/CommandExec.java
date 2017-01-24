@@ -1,5 +1,6 @@
 package com.kii.extension.ruleengine.drools;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
 import com.kii.extension.ruleengine.EventCallback;
 import com.kii.extension.ruleengine.ExecuteParam;
 import com.kii.extension.ruleengine.drools.entity.CommResult;
+import com.kii.extension.ruleengine.drools.entity.MatchResult;
 
 @Component
 public class CommandExec {
@@ -26,8 +28,20 @@ public class CommandExec {
 
 	private Map<String,AtomicInteger> map=new HashMap<>();
 	
+	public void doExecuteSet(Collection<MatchResult> resultSet){
+		
+		resultSet.parallelStream().forEach(r->{
+			doExecute(r.getTriggerID(),r);
+		});
+		
+	}
 	
-
+	public void doExecuteMatch(MatchResult result) {
+	
+		doExecute(result.getTriggerID(),result);
+	}
+		
+		
 	public void doExecute(String triggerID,CommResult result){
 
 		int oldValue=map.computeIfAbsent(triggerID,(id)->new AtomicInteger(0)).incrementAndGet();

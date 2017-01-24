@@ -15,23 +15,25 @@ global com.kii.extension.ruleengine.ExtendFunAdapter ExtFun;
 //    results : MatchResult( triggerID == $triggerID )
 //end
 
-
-rule "fire multiples Result by TriggerID"
+rule "compute the  collect of  matchResult"
   no-loop true
 when
 	Trigger($triggerID:triggerID,$thingSet:thingSet,when==WhenType.CONDITION_TRUE,enable==true)
-	$curr:CurrThing( valid($thingSet,$triggerID) )
-	$results : MatchResult( triggerID == $triggerID )
+	AtomicCurrThing( valid($thingSet,$triggerID) )
+	accumulate( $result : MatchResult( triggerID == $triggerID );
+                    $val : collectSet($result)
+                  )
 then
 	CommandExec exec=(CommandExec)kcontext.getKieRuntime().getEnvironment().get("exec");
-    exec.doExecute($triggerID,$result);
+    exec.doExecuteSet($val);
 end
+
 
 rule "fire f2t trigger:when false->true,trigger  fire"
 when
 	$trigger:Trigger($triggerID:triggerID,$thingSet:thingSet,when == WhenType.CONDITION_FALSE_TO_TRUE)
     $result:MatchResult(triggerID==$triggerID)
-    $curr:CurrThing( valid($thingSet,$triggerID) )
+    $curr:AtomicCurrThing( valid($thingSet,$triggerID) )
 
     not ( TriggerResult(triggerID==$triggerID) )
 then
@@ -45,7 +47,7 @@ rule "fire f2t trigger:when false->true,trigger not fire"
 when
 	$trigger:Trigger($triggerID:triggerID,$thingSet:thingSet,when == WhenType.CONDITION_FALSE_TO_TRUE )
     not ( exists MatchResult(triggerID==$triggerID) )
-    $curr:CurrThing( valid($thingSet,$triggerID) )
+    $curr:AtomicCurrThing( valid($thingSet,$triggerID) )
     $result:TriggerResult(triggerID==$triggerID)
 then
 	delete($result);
@@ -54,7 +56,7 @@ end
 rule "fire change trigger:when false->true change,trigger  fire"
 when
 	$trigger:Trigger($triggerID:triggerID,$thingSet:thingSet, when == WhenType.CONDITION_CHANGED)
-	$curr:CurrThing( valid($thingSet,$triggerID) )
+	$curr:AtomicCurrThing( valid($thingSet,$triggerID) )
     $result:MatchResult(triggerID==$triggerID)
     not ( TriggerResult(triggerID==$triggerID) )
 then
@@ -66,7 +68,7 @@ end
 rule "fire change trigger:when true->false change,trigger  fire"
 when
 	$trigger:Trigger($triggerID:triggerID,$thingSet:thingSet, when == WhenType.CONDITION_CHANGED)
-	$curr:CurrThing( valid($thingSet,$triggerID) )
+	$curr:AtomicCurrThing( valid($thingSet,$triggerID) )
     not (MatchResult(triggerID==$triggerID))
     $result:TriggerResult(triggerID==$triggerID)
 then
@@ -80,7 +82,7 @@ end
 rule "fire t2f trigger:when true->false,trigger fire "
 when
 	$trigger:Trigger($triggerID:triggerID ,$thingSet:thingSet,when == WhenType.CONDITION_TRUE_TO_FALSE  )
-	$curr:CurrThing(valid($thingSet,$triggerID))
+	$curr:AtomicCurrThing(valid($thingSet,$triggerID))
     not (MatchResult(triggerID==$triggerID))
     $result:TriggerResult(triggerID==$triggerID)
 then
@@ -94,7 +96,7 @@ end
 rule "fire t2f trigger:when true->false,trigger not fire "
 when
 	$trigger:Trigger($triggerID:triggerID,$thingSet:thingSet,when == WhenType.CONDITION_TRUE_TO_FALSE )
-	$curr:CurrThing( valid($thingSet,$triggerID) )
+	$curr:AtomicCurrThing( valid($thingSet,$triggerID) )
     $result:MatchResult(triggerID==$triggerID)
     not ( TriggerResult(triggerID==$triggerID) )
 then

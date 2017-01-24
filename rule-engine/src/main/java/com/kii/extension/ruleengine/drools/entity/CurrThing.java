@@ -16,6 +16,17 @@ public class CurrThing {
 		inInit,inThing,inIdle,singleTrigger;
 
 	}
+	
+	public CurrThing(){
+		
+	}
+	
+	public CurrThing(CurrThing th){
+		this.triggerID=th.triggerID;
+		this.status=th.status;
+		this.currThing=th.currThing;
+		
+	}
 
 	public boolean isInit() {
 		return status==Status.inInit;

@@ -1,20 +1,41 @@
 package com.kii.extension.ruleengine.demo
 
-import Message;
+import com.kii.extension.ruleengine.demo.*;
 
 rule "Hello World"
     when
-        m : Message( status == Message.HELLO, myMessage : msgInText )
+        m : Message( status == Message.HELLO, $myMessage : msg )
     then
-        System.out.println( myMessage );
-        m.setMessage( "Goodbye cruel world" );
-        m.setStatus( Message.GOODBYE );
-        update( m );
+        System.out.println( "Hello:"+$myMessage );
+   //     m.setMessage( "Goodbye cruel world" );
+   //     m.setStatus( Message.GOODBYE );
+   //     update( m );
 end
 
 rule "GoodBye"
     when
-        Message( status == Message.GOODBYE, myMessage : msgInText )
+        Message( status == Message.GOODBYE, $myMessage : msg )
     then
-        System.out.println( myMessage );
+        System.out.println( "Good bye:"+$myMessage );
+end
+
+rule "Room A"
+    when
+        Room( name == "a" )
+    then
+        System.out.println( "this is room A" );
+end
+
+rule "Room B"
+    when
+        Room( name == "b" )
+    then
+        System.out.println( "this is room B" );
+end
+
+rule "Room C"
+    when
+        Room( name == "c" )
+    then
+        System.out.println( "this is room C" );
 end

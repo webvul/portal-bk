@@ -2,6 +2,7 @@ package com.kii.extension.ruleengine.drools.entity;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public abstract  class CommResult implements WithTrigger{
 
@@ -23,16 +24,16 @@ public abstract  class CommResult implements WithTrigger{
 	public void  fill(CommResult target){
 
 		target.setEnable(enable);
-		target.setFireSource(currThing);
+		target.currThing=currThing;
 		target.setDelay(delay);
 		target.setParams(new HashMap<>(params));
 		target.triggerID=this.triggerID;
 
 	}
 
-	public void setFireSource(CurrThing curr){
+	public void setFireSource(AtomicCurrThing curr){
 
-		this.currThing=curr;
+		this.currThing=curr.getThing();
 	}
 
 	public void setSchedule(){
@@ -88,4 +89,6 @@ public abstract  class CommResult implements WithTrigger{
 	public void setParams(Map<String, Object> params) {
 		this.params = params;
 	}
+	
+
 }

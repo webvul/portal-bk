@@ -1,7 +1,7 @@
 {
   "predicate" : {
-    "express" :"$p{power}!=0",
-    "triggersWhen":"CONDITION_TRUE_TO_FALSE"
+    "express" :"$p{power}==0",
+    "triggersWhen":"CONDITION_CHANGED"
   },
   "targets" : [ {
     "delay":"$p{delay}",

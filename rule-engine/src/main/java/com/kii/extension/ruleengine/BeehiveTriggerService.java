@@ -2,6 +2,7 @@ package com.kii.extension.ruleengine;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -99,10 +100,9 @@ public class BeehiveTriggerService {
 
 	public void updateBusinessData(BusinessDataObject data){
 
-		BusinessObjInRule newStatus=new BusinessObjInRule(data.getFullID());
-		newStatus.setValues(data.getData());
-		newStatus.setCreateAt(data.getModified());
-
+		BusinessObjInRule newStatus=new BusinessObjInRule(new String(data.getFullID()));
+		newStatus.setValues(new HashMap<>(data.getData()));
+		
 		droolsTriggerService.addThingStatus(newStatus);
 	}
 

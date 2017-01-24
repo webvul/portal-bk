@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -36,6 +35,8 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.kii.extension.ruleengine.drools.entity.AtomicCurrThing;
+import com.kii.extension.ruleengine.drools.entity.BusinessObjInRule;
 import com.kii.extension.ruleengine.drools.entity.CanUpdate;
 import com.kii.extension.ruleengine.drools.entity.CurrThing;
 import com.kii.extension.ruleengine.drools.entity.ExternalCollect;
@@ -44,7 +45,6 @@ import com.kii.extension.ruleengine.drools.entity.MatchResult;
 import com.kii.extension.ruleengine.drools.entity.MultiplesValueMap;
 import com.kii.extension.ruleengine.drools.entity.RuntimeEntry;
 import com.kii.extension.ruleengine.drools.entity.ScheduleFire;
-import com.kii.extension.ruleengine.drools.entity.BusinessObjInRule;
 import com.kii.extension.ruleengine.drools.entity.WithTrigger;
 
 @Component
@@ -73,7 +73,7 @@ public class DroolsService {
 	private final FactHandle  externalHandler;
 
 
-	private final AtomicReference<CurrThing> currThing=new AtomicReference<>(new CurrThing());
+	private final AtomicCurrThing currThing=new AtomicCurrThing();
 
 	private final ExternalCollect  external=new ExternalCollect();
 
@@ -90,8 +90,7 @@ public class DroolsService {
 			return th;
 		});
 
-//		kieSession.update(currThingHandler, thing);
-
+		kieSession.update(currThingHandler,currThing);
 		kieSession.fireAllRules();
 	}
 
@@ -103,9 +102,7 @@ public class DroolsService {
 			th.setCurrThing(CurrThing.NONE);
 			return th;
 		});
-
-//		kieSession.update(currThingHandler, thing);
-
+		kieSession.update(currThingHandler,currThing);
 		kieSession.fireAllRules();
 
 	}
@@ -121,6 +118,7 @@ public class DroolsService {
 			th.setStatus(CurrThing.Status.inIdle);
 			return th;
 		});
+		kieSession.update(currThingHandler,currThing);
 		
 	}
 	
@@ -143,9 +141,13 @@ public class DroolsService {
 		if(thing.getStatus()== CurrThing.Status.inInit){
 			return;
 		}
-		kieSession.fireAllRules();
 		
-		currThing.compareAndSet(thing,thing);
+		synchronized (kieSession) {
+			kieSession.update(currThingHandler, currThing);
+			kieSession.fireAllRules();
+			currThing.compareAndSet(thing, CurrThing.Status.inIdle);
+			kieSession.update(currThingHandler, currThing);
+		}
 	}
 
 
@@ -169,7 +171,6 @@ public class DroolsService {
 
 				th.setStatus(CurrThing.Status.inIdle);
 				th.setCurrThing(CurrThing.NONE);
-//				kieSession.update(currThingHandler, currThing);
 			}
 			return th;
 		});
@@ -178,9 +179,11 @@ public class DroolsService {
 			return;
 		}
 		
-		FactHandle  handler=kieSession.insert(fire);
-		kieSession.fireAllRules();
-		kieSession.delete(handler);
+		synchronized (kieSession) {
+			FactHandle handler = kieSession.insert(fire);
+			kieSession.fireAllRules();
+			kieSession.delete(handler);
+		}
 
 //		synchronized (currThing) {
 //
@@ -223,14 +226,10 @@ public class DroolsService {
 			return;
 		}
 		
-		kieSession.fireAllRules();
-		
-//		if(status== CurrThing.Status.inThing) {
-//			List<MatchResult> lists = doQuery("get Match Result by TriggerID");
-//			consumer.accept(lists);
-//		}
-
-
+		synchronized (kieSession) {
+			kieSession.update(currThingHandler, currThing);
+			kieSession.fireAllRules();
+		}
 		ExternalValues entity=new ExternalValues("sys");
 		entity.addValue("curr",thing);
 		external.updateEntity(entity);
@@ -378,7 +377,7 @@ public class DroolsService {
 			kieSession.addEventListener(new DebugAgendaEventListener());
 			kieSession.addEventListener(new DebugRuleRuntimeEventListener());
 		}
-		currThingHandler=kieSession.insert(currThing.get());
+		currThingHandler=kieSession.insert(currThing);
 
 		externalHandler=kieSession.insert(external);
 
