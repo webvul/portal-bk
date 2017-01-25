@@ -385,7 +385,7 @@ public class GatewayTriggerOperate {
 		
 		ThingIDTools.ThingIDCombine combine = ThingIDTools.splitFullKiiThingID(fullThingID);
 		
-		command.setUserID(appInfoManager.getDefaultOwer(combine.kiiAppID).getUserID());
+		command.setUserID(appInfoManager.getDefaultOwer(combine.kiiAppID));
 		thingIFService.sendCommand(command, fullThingID);
 		
 	}

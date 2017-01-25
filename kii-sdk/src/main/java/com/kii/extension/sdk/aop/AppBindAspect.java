@@ -5,11 +5,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 import org.apache.commons.lang3.StringUtils;
-import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
@@ -89,6 +87,10 @@ public class AppBindAspect {
 		
 		bindTool.pushAppChoice(choice);
 		
+		return retryFunction(pjp);
+	}
+	
+	private Object retryFunction(ProceedingJoinPoint pjp) throws Throwable {
 		int retry=3;
 		
 		Object result=null;
@@ -101,7 +103,7 @@ public class AppBindAspect {
 				result = pjp.proceed();
 				break;
 				
-			}catch(UnauthorizedAccessException|ForbiddenException ex){
+			}catch(UnauthorizedAccessException |ForbiddenException ex){
 				
 				bindTool.refreshToken();
 				retry--;
@@ -110,7 +112,13 @@ public class AppBindAspect {
 			}catch(SystemException e){
 				//send kiicloud service alarm
 				throw e;
-			} catch (Throwable throwable) {
+			} catch(KiiCloudException kiie){
+				if(kiie.getStatusCode()== 401 ){
+					bindTool.refreshToken();
+					retry--;
+					kiiCloudException=kiie;
+				}
+			}catch (Throwable throwable) {
 				throw throwable;
 			}
 			
@@ -181,44 +189,60 @@ public class AppBindAspect {
 //		}
 //
 //	}
-
-
-	@Before("bindWithParam()")
-	public void  beforeCallBindParam(JoinPoint joinPoint ){
+	
+	
+	@Around("bindWithParam()")
+	public Object  aroundCallBindParam(ProceedingJoinPoint joinPoint )throws Throwable{
+		
 		MethodSignature signature = (MethodSignature) joinPoint.getSignature();
 		Method method = signature.getMethod();
 		Annotation[][] methodAnnotations = method.getParameterAnnotations();
 
 		Object[] args=joinPoint.getArgs();
 
-		String param=null;
+		boolean sign=false;
 		for(int i=0;i<methodAnnotations.length;i++){
 
 			for(Annotation anno:methodAnnotations[i]){
 				if(anno instanceof AppBindParam){
 
+					AppBindParam bind=(AppBindParam)anno;
+					
 					Object arg=args[i];
-					if(arg instanceof AppInfo){
-						bindTool.pushAppInfoDirectly((AppInfo)arg);
-
-						break;
-					}else if(arg instanceof  String) {
-						param = String.valueOf(args[i]);
-						bindTool.pushAppNameDirectly(param);
-
-						break;
+					AppChoice choice=new AppChoice();
+					
+					if(!StringUtils.isEmpty(bind.appBindSource())) {
+						choice.setBindName(bind.appBindSource());
 					}
+					
+					if(arg instanceof  AppInfo) {
+						choice.setAppName( ((AppInfo)arg).getAppID() );
+					}else if(arg instanceof  String){
+						choice.setAppName((String)arg);
+					}
+					
+					
+					if(bind.tokenBind()== TokenBindTool.BindType.Custom){
+						choice.setTokenBindName(bind.customBindName());
+					}else {
+						choice.setTokenBindName(bind.tokenBind().name());
+					}
+					
+					bindTool.pushAppChoice(choice);
+					sign=true;
 					break;
 				}
 			}
 
-			if(param!=null){
+			if(sign){
 				break;
 			}
 
 		}
-
-
+		
+		return retryFunction(joinPoint);
+		
+		
 	}
 
 

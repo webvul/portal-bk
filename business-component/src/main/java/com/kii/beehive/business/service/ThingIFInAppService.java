@@ -4,19 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.business.event.BusinessEventBus;
+import com.kii.beehive.business.helper.FederatedAuthTokenBindTool;
 import com.kii.beehive.business.manager.ThingTagManager;
 import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
 import com.kii.extension.sdk.annotation.AppBindParam;
-import com.kii.extension.sdk.context.AppBindToolResolver;
+import com.kii.extension.sdk.context.TokenBindTool;
 import com.kii.extension.sdk.entity.thingif.EndNodeOfGateway;
 import com.kii.extension.sdk.entity.thingif.GatewayOfKiiCloud;
 import com.kii.extension.sdk.entity.thingif.OnBoardingParam;
@@ -42,18 +42,18 @@ public class ThingIFInAppService {
 
 	@Autowired
 	private TriggerService triggerService;
-
+	
 	@Autowired
-	private AppBindToolResolver resolver;
-
-	@Autowired
-	private AppInfoDao  appInfoDao;
+	private ThingIFAPIProxy  proxy;
 
 	@Autowired
 	private BusinessEventBus eventBus;
 
 	@Autowired
 	private ThingTagManager thingTagManager;
+	
+	@Autowired
+	private AppInfoDao appInfoDao;
 
 	@Async
 	public void onTagIDsChangeFire(List<Long> tagIDList, boolean b) {
@@ -74,25 +74,11 @@ public class ThingIFInAppService {
 	private <T>  T doExecWithRealThingID(String fullThingID,Function<String,T> function){
 		ThingIDTools.ThingIDCombine combine = ThingIDTools.splitFullKiiThingID(fullThingID);
 
-		resolver.pushAppNameDirectly(combine.kiiAppID);
-
-		T result=function.apply(combine.kiiThingID);
-
-		resolver.pop();
-
-		return result;
+		return proxy.doExecWithRealThingID(combine.kiiAppID,combine.kiiThingID,function);
 	}
-
-	private <T>  T doExecWithRealThingID(String kiiAppID, Supplier<T> function){
-
-		resolver.pushAppNameDirectly(kiiAppID);
-
-		T result=function.get();
-
-		resolver.pop();
-
-		return result;
-	}
+	
+	
+	
 	public void putStatus(String fullThingID,ThingStatus status){
 
 
@@ -128,7 +114,7 @@ public class ThingIFInAppService {
 
 	}
 
-	public OnBoardingResult onBoarding(OnBoardingParam param,@AppBindParam  String appID){
+	public OnBoardingResult onBoarding(OnBoardingParam param,@AppBindParam(tokenBind = TokenBindTool.BindType.Custom,customBindName= FederatedAuthTokenBindTool.FEDERATED)   String appID){
 
 		KiiAppInfo info=appInfoDao.getAppInfoByID(appID);
 		param.setUserID(info.getFederatedAuthResult().getUserID());
@@ -193,7 +179,7 @@ public class ThingIFInAppService {
 	public List<GatewayOfKiiCloud> getAllEGateway() {
 		List<GatewayOfKiiCloud> result = new ArrayList<>();
 		appInfoDao.getSlaveAppList().forEach(appInfo->{
-			List<GatewayOfKiiCloud> list = doExecWithRealThingID(appInfo.getAppID(),()-> gwService.getAllGateway());
+			List<GatewayOfKiiCloud> list = proxy.doExec(appInfo.getAppID(),()-> gwService.getAllGateway());
 			list.forEach(gatewayOfKiiCloud -> {
 				gatewayOfKiiCloud.setKiiAppID(appInfo.getAppID());
 				gatewayOfKiiCloud.setFullKiiThingID(ThingIDTools.joinFullKiiThingID(appInfo.getAppID(), gatewayOfKiiCloud.getThingID()));

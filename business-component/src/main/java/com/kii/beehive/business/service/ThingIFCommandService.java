@@ -112,7 +112,7 @@ public class ThingIFCommandService {
     private String sendCmd(ThingCommand command, GlobalThingInfo thingInfo, String userID) {
 
         String appID=thingInfo.getKiiAppID();
-        command.setUserID(appInfoManager.getDefaultOwer(appID).getUserID());
+        command.setUserID(appInfoManager.getDefaultOwer(appID));
 
         return thingIFService.sendCommand(command,thingInfo.getFullKiiThingID());
     }

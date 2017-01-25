@@ -130,7 +130,7 @@ public class ThingStatusService {
 		cmd.setSchema(schema.getName());
 		cmd.setSchemaVersion(schema.getVersion());
 		cmd.setTitle(schema.getActions().get(actionDef).getIn().getTitle());
-		cmd.setUserID(appInfoManager.getDefaultOwer(thing.getKiiAppID()).getUserID());
+		cmd.setUserID(appInfoManager.getDefaultOwer(thing.getKiiAppID()));
 
 		thingIFService.sendCommand(cmd,thing.getFullKiiThingID());
 

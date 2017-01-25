@@ -18,7 +18,7 @@ import com.kii.extension.sdk.query.QueryParam;
 import com.kii.extension.sdk.service.AbstractDataAccess;
 
 @Component
-@BindAppByName(appName="portal",appBindSource="propAppBindTool",tokenBind = TokenBindTool.BindType.None,customBindName = PortalTokenBindTool.PORTAL_OPER )
+@BindAppByName(appName="portal",appBindSource="propAppBindTool",tokenBind = TokenBindTool.BindType.Custom,customBindName = PortalTokenBindTool.PORTAL_OPER )
 public class BusinessObjDao extends AbstractDataAccess<BusinessDataObject> {
 
 

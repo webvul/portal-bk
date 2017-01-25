@@ -13,7 +13,7 @@ public class ObixEnvLoader {
 
 		System.setProperty("spring.profile","local");
 
-		System.setProperty("log4j.configurationFile","log4j.local.xml");
+		System.setProperty("log4j.configurationFile", "log4j.local.xml");
 		String webappDirLocation = "./obix-support/src/main/webapp/";
 		Tomcat tomcat = new Tomcat();
 

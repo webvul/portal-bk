@@ -125,7 +125,7 @@ public class ThingCommandForTriggerService {
 				String appID = thing.getKiiAppID();
 
 
-				cmd.setUserID(appInfoManager.getDefaultOwer(appID).getUserID());
+				cmd.setUserID(appInfoManager.getDefaultOwer(appID));
 
 
 				String cmdResult = thingIFService.sendCommand(cmd, thing.getFullKiiThingID());

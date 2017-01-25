@@ -199,7 +199,7 @@ public class UtilToolsController {
 		map.put("kiiAppKey", appInfo.getAppInfo().getAppKey());
 		map.put("kiiSiteUrl", appInfo.getAppInfo().getSiteUrl());
 
-		FederatedAuthResult result = appManager.getDefaultOwer(appInfo.getAppInfo().getAppID());
+		FederatedAuthResult result = appManager.getFederatedInfo(appInfo.getAppInfo().getAppID());
 
 		map.put("ownerID", result.getUserID());
 		map.put("ownerToken", result.getAppAuthToken());

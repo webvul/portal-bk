@@ -1,12 +1,9 @@
 package com.kii.beehive.portal.helper;
 
-import java.util.Date;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -14,7 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.beehive.business.manager.ThingTagManager;
 import com.kii.beehive.portal.entitys.ThingStateUpload;
-import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
+import com.kii.beehive.portal.entitys.ThingStatusMsg;
 import com.kii.beehive.portal.jedis.dao.MessageQueueDao;
 import com.kii.extension.ruleengine.BeehiveTriggerService;
 import com.kii.extension.ruleengine.store.trigger.BusinessDataObject;
@@ -42,32 +39,34 @@ public class ThingStatusChangeCallback {
 	
 	
 
-	@Async
-	public void onEventFire(GlobalThingInfo thing, ThingStatus status,Date timestamp) {
+	
+	public void onEventFire(ThingStatusMsg msg) {
 		
 //		thingManager.getThingByFull
 		
 		
 		BusinessDataObject data=new BusinessDataObject();
 		data.setBusinessType(BusinessObjType.Thing);
-		data.setBusinessObjID(String.valueOf(thing.getId()));
-		data.setData(status.getFields());
-		data.setCreated(timestamp);
+		data.setBusinessObjID(String.valueOf(msg.getThingID()));
+		data.setData(msg.getStatus());
+		data.setCreated(msg.getTimestamp());
 		
 		engine.updateBusinessData(data);
 		
 		
-		pushStatusUpload(thing,status,timestamp);
+		pushStatusUpload(msg);
 	}
 
-	private  void pushStatusUpload(GlobalThingInfo globalThingInfo, ThingStatus status, Date timestamp){
+	private  void pushStatusUpload(ThingStatusMsg msg){
 		
 		ThingStateUpload thingStateUpload = new ThingStateUpload();
-		thingStateUpload.setGlobalThingID(globalThingInfo.getId());
-		thingStateUpload.setAppID(globalThingInfo.getKiiAppID());
-		thingStateUpload.setThingID(globalThingInfo.getKiiThingID());
+		thingStateUpload.setGlobalThingID(msg.getThingID());
+		thingStateUpload.setAppID(msg.getAppID());
+		thingStateUpload.setThingID(msg.getKiiThingID());
+		ThingStatus status=new ThingStatus();
+		status.setFields(msg.getStatus());
 		thingStateUpload.setState(status);
-		thingStateUpload.setTimestamp(timestamp);
+		thingStateUpload.setTimestamp(msg.getTimestamp());
 		String postEventJsonStr = "";
 		try {
 			postEventJsonStr = objectMapper.writeValueAsString(thingStateUpload);
@@ -76,6 +75,7 @@ public class ThingStatusChangeCallback {
 		}
 		//push redis
 		messageQueueDao.lpush(thingStateQueue, postEventJsonStr);
+		
 	}
 
 }

@@ -915,8 +915,8 @@ public class TestThingIFController extends WebTestTemplate {
 		long globalThingID2 = thing2.getId();
 		String fullKiiThingID1 = thing1.getFullKiiThingID();
 		String fullKiiThingID2 = thing2.getFullKiiThingID();
-		String userID1 = appInfoManager.getDefaultOwer(thing1.getKiiAppID()).getUserID();
-		String userID2 = appInfoManager.getDefaultOwer(thing2.getKiiAppID()).getUserID();
+		String userID1 = appInfoManager.getDefaultOwer(thing1.getKiiAppID());
+		String userID2 = appInfoManager.getDefaultOwer(thing2.getKiiAppID());
 
 		// 1. send command1 to vendor thing id "0807W-F00-03-001";
 		thingCommand.setUserID(userID1);

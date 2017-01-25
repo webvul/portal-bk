@@ -46,6 +46,10 @@ public class KiiCloudException extends RuntimeException {
 		return responseBody;
 	}
 	
+	public void setStatusCode(int code){
+		this.statusCode=code;
+	}
+	
 	@JsonIgnore
 	public int getStatusCode() {
 		return statusCode;

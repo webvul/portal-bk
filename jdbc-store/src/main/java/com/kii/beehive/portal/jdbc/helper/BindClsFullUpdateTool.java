@@ -196,7 +196,7 @@ public class BindClsFullUpdateTool extends SqlUpdate {
 			fields.append(fieldDesc.column()).append(" =  ").append(":").append(descriptor.getName()).append(" ,");
 
 
-			log.debug(" fill update param " + fieldDesc.column() + " with " + val);
+//			log.debug(" fill update param " + fieldDesc.column() + " with " + val);
 		}
 
 		if (conditionField == null) {
@@ -252,7 +252,7 @@ public class BindClsFullUpdateTool extends SqlUpdate {
 			paramList.add(param);
 			fields.append(fieldDesc.column()).append(" =  ").append(":").append(descriptor.getName()).append(" ,");
 
-			log.debug(" fill update param " + fieldDesc.column());
+//			log.debug(" fill update param " + fieldDesc.column());
 		});
 
 		PropertyDescriptor pkDesc = wrapper.getPropertyDescriptor(key);
@@ -334,7 +334,7 @@ public class BindClsFullUpdateTool extends SqlUpdate {
 //			}
 			paramMap.put(descriptor.getName(), JdbcConvertTool.getSqlValue(val,fieldDesc.type()));
 
-			log.debug(" fill update param " + fieldDesc.column() + " with " + val);
+//			log.debug(" fill update param " + fieldDesc.column() + " with " + val);
 		}
 
 		fillParamMap(paramMap);
@@ -362,7 +362,7 @@ public class BindClsFullUpdateTool extends SqlUpdate {
 
 			paramMap.put(descriptor.getName(), val);
 
-			log.debug(" fill update param " + fieldDesc.column() + " with " + val);
+//			log.debug(" fill update param " + fieldDesc.column() + " with " + val);
 		}
 
 		return updateByNamedParam(paramMap);

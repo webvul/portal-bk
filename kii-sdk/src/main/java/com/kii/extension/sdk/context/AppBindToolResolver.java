@@ -28,7 +28,7 @@ public class AppBindToolResolver {
 
 	private SafeThreadLocal<String> tokenDirectLocal = SafeThreadLocal.getInstance();
 	
-	private SafeThreadLocal<AppInfo> appInfoDirectly = SafeThreadLocal.getInstance();
+//	private SafeThreadLocal<AppInfo> appInfoDirectly = SafeThreadLocal.getInstance();
 
 	private SafeThreadLocal<LinkedList<OldInfos>>  oldInfosThreadLocal=SafeThreadLocal.getInstance();
 
@@ -57,8 +57,7 @@ public class AppBindToolResolver {
 
 	private void offerInfo(OldInfos infos){
 
-		if( (infos.oldAppInfo==null||infos.oldAppInfo.getAppID()==null)&&
-				(infos.oldAppChoice==null||infos.oldAppChoice.getAppName()==null) ){
+		if( (infos.oldAppChoice==null||infos.oldAppChoice.getAppName()==null) ){
 			return;
 		}
 
@@ -73,54 +72,67 @@ public class AppBindToolResolver {
 	
 	private class OldInfos {
 
-		 AppInfo oldAppInfo=null;
+//		 AppInfo oldAppInfo=null;
 
 		 AppChoice oldAppChoice =new AppChoice();
 
 		 String token;
 
 	}
-
+//
 	public void pushAppNameDirectly(String appName,String token) {
 
+		AppChoice choice=new AppChoice();
+		choice.setAppName(appName);
 
-		pushAppNameDirectly(appName);
+		pushAppChoice(choice);
+		
 		tokenDirectLocal.set(token);
 	}
-
+	
 	public void pushAppNameDirectly(String appName) {
-
-
-		AppInfo appInfo=queryAppInfoByName(appName,null);
-
-		pushAppInfoDirectly(appInfo);
+		
+		AppChoice choice=new AppChoice();
+		choice.setAppName(appName);
+		choice.setTokenBindName(TokenBindTool.BindType.admin.name());
+		
+		pushAppChoice(choice);
+		
 	}
+//
+//	public void pushAppNameDirectly(String appName) {
+//
+//
+//		AppInfo appInfo=queryAppInfoByName(appName,null);
+//
+//		pushAppInfoDirectly(appInfo);
+//	}
 
-	public void pushAppInfoDirectly(AppInfo appInfo){
-
-
-		OldInfos oldInfos=new OldInfos();
-
-		oldInfos.oldAppInfo=appInfoDirectly.get();
-		oldInfos.token=tokenDirectLocal.get();
-
-		offerInfo(oldInfos);
-
-		appInfoDirectly.set(appInfo);
-		tokenDirectLocal.remove();
-	}
+//	public void pushAppInfoDirectly(AppInfo appInfo){
+//
+//
+//		OldInfos oldInfos=new OldInfos();
+//
+////		oldInfos.oldAppInfo=appInfoDirectly.get();
+//		oldInfos.token=tokenDirectLocal.get();
+//
+//		offerInfo(oldInfos);
+//
+////		appInfoDirectly.set(appInfo);
+//		tokenDirectLocal.remove();
+//	}
 
 	public void pushAppChoice(AppChoice choice){
 
 		OldInfos oldInfos=new OldInfos();
 
 		oldInfos.oldAppChoice =appChoiceLocal.get();
-		oldInfos.oldAppInfo=appInfoDirectly.get();
+//		oldInfos.oldAppInfo=appInfoDirectly.get();
 		oldInfos.token=tokenDirectLocal.get();
 
 		offerInfo(oldInfos);
 
-		this.appInfoDirectly.remove();
+//		this.appInfoDirectly.remove();
 
 		this.tokenDirectLocal.remove();
 
@@ -154,42 +166,33 @@ public class AppBindToolResolver {
 
 			return token;
 		}
-
-		bindTokenResolver(appChoiceLocal.get().getTokenBindName());
-
+//		if(appInfoDirectly.get()!=null){
+//			tokenResolver.bindByType(TokenBindTool.BindType.admin.name());
+//
+//		}else {
+		tokenResolver.bindByType(appChoiceLocal.get().getTokenBindName());
+		
+//		}
 		token = tokenResolver.getToken();
 
 		return token;
 
 	}
 
-	private void bindTokenResolver(String name){
 
-//		if(appChoiceLocal.get().isBindAdmin()){
-//
-//			tokenResolver.bindAdmin();
-//		}else if(appChoiceLocal.get().isBindThing()){
-//			tokenResolver.bindThing();
-//		}else{
-//			tokenResolver.bindUser();
-//		}
-		
-		tokenResolver.bindByType(name);
-
-	}
 	public AppInfo getAppInfo(){
 
-		AppInfo appInfo=appInfoDirectly.get();
-		if(appInfo!=null){
-
-		  	return appInfo;
-		}
+//		AppInfo appInfo=appInfoDirectly.get();
+//		if(appInfo!=null){
+//
+//		  	return appInfo;
+//		}
 
 		AppChoice choice=appChoiceLocal.get();
 
 		AppInfo newAppInfo= queryAppInfoByName(choice.getAppName(),choice.getBindName());
 
-		appInfoDirectly.set(newAppInfo);
+//		appInfoDirectly.set(newAppInfo);
 
 		return newAppInfo;
 	}
@@ -207,7 +210,7 @@ public class AppBindToolResolver {
 			oldInfosThreadLocal.remove();
 		}
 
-		appInfoDirectly.set(infos.oldAppInfo);
+//		appInfoDirectly.set(infos.oldAppInfo);
 		appChoiceLocal.set(infos.oldAppChoice);
 		tokenDirectLocal.set(infos.token);
 

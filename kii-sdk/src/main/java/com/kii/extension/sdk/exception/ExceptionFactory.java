@@ -57,7 +57,7 @@ public class ExceptionFactory {
 	};
 
 	Class[] thingIFArray={
-
+			UnauthorizedAccessException.class
 
 	};
 
@@ -169,10 +169,11 @@ public class ExceptionFactory {
 						throw e;
 					}
 				}catch(IOException ex){
-					throw new IllegalArgumentException(ex);
+					throw new KiiCloudUnknownException(response);
+					
 				}
 			}else{
-				throw new IllegalArgumentException("error code:"+status);
+				throw new KiiCloudUnknownException(response);
 			}
 		}
 		

@@ -6,7 +6,9 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.kii.beehive.business.helper.FederatedAuthTokenBindTool;
 import com.kii.extension.sdk.annotation.AppBindParam;
+import com.kii.extension.sdk.context.TokenBindTool;
 import com.kii.extension.sdk.context.TokenBindToolResolver;
 import com.kii.extension.sdk.entity.thingif.ActionResult;
 import com.kii.extension.sdk.entity.thingif.MqttEndPoint;
@@ -54,13 +56,13 @@ public class ThingService {
 		return result.getMqttEndpoint();
 	}
 
-	public void sendCommandResponse(@AppBindParam String appID,String thingID, String commandID,List<Map<String,ActionResult>> results){
+	public void sendCommandResponse(@AppBindParam(tokenBind = TokenBindTool.BindType.Custom,customBindName= FederatedAuthTokenBindTool.FEDERATED)  String appID, String thingID, String commandID, List<Map<String,ActionResult>> results){
 
 
 		thingService.submitActionResult(thingID,commandID,results);
 	}
 
-	public void setStatus( @AppBindParam String appID,String thingID, ThingStatus status){
+	public void setStatus( @AppBindParam(tokenBind = TokenBindTool.BindType.Custom,customBindName= FederatedAuthTokenBindTool.FEDERATED)  String appID,String thingID, ThingStatus status){
 
 		thingService.putStatus(thingID,status);
 	}

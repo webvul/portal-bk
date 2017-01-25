@@ -24,7 +24,7 @@ public class BusinessTestTokenVerify extends BusinessTestTemplate {
 
 		String  appID="0af7a7e7";
 
-		String token=manager.getDefaultOwer(appID).getAppAuthToken();
+		String token=manager.getFederatedInfo(appID).getAppAuthToken();
 
 		assertTrue(manager.verifyAppToken(appID,token));
 

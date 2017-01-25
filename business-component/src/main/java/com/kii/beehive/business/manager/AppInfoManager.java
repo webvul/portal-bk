@@ -3,7 +3,6 @@ package com.kii.beehive.business.manager;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +10,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
+import com.kii.beehive.business.helper.SlaveAppDefaultTokenBind;
 import com.kii.beehive.business.service.KiiUserService;
 import com.kii.beehive.portal.config.CacheConfig;
 import com.kii.beehive.portal.service.AppInfoDao;
@@ -58,9 +58,9 @@ public class AppInfoManager {
 	private BeehiveParameterDao paramDao;
 
 
-	private static  String DEFAULT_NAME="default_owner_id";
-
-	private static String DEFAULT_PWD=DigestUtils.sha1Hex(DEFAULT_NAME+"_default_owner_beehive");
+//	private static  String DEFAULT_NAME="default_owner_id";
+//
+//	private static String DEFAULT_PWD=DigestUtils.sha1Hex(DEFAULT_NAME+"_default_owner_beehive");
 
 	@Cacheable(cacheNames = CacheConfig.TTL_CACHE,key = "'app_token_'+#appID+#token")
 	public boolean verifyAppToken(String appID,String token){
@@ -76,32 +76,26 @@ public class AppInfoManager {
 
 	}
 
-	@Cacheable(cacheNames=CacheConfig.TTL_CACHE)
-	public FederatedAuthResult getDefaultOwer(String appID){
+	@Cacheable(cacheNames=CacheConfig.TTL_CACHE,key="'slave_app_user_info_'+#appID")
+	public String getDefaultOwer(String appID){
 
 		KiiAppInfo info=appDao.getAppInfoByID(appID);
 
 		FederatedAuthResult  result=info.getFederatedAuthResult();
 
-		if(result==null) {
 
-			result=federatedAuthService.loginSalveApp(info.getAppInfo(), DEFAULT_NAME, DEFAULT_PWD);
-
-			Map<String, Object> param = new HashMap<>();
-			param.put("federatedAuthResult", result);
-
-			appDao.updateEntity(param, appID);
-
-		}
-
-		return result;
+		return result.getUserID();
 	}
-
-
-	private String getDefaultUserPwd(){
-
-		return  DigestUtils.sha1Hex(DEFAULT_NAME+"_default_owner_beehive");
-
+	
+	@Cacheable(cacheNames=CacheConfig.TTL_CACHE,key="'slave_app_info_'+#appID")
+	public FederatedAuthResult getFederatedInfo(String appID){
+		
+		KiiAppInfo info=appDao.getAppInfoByID(appID);
+		
+		FederatedAuthResult  result=info.getFederatedAuthResult();
+		
+		
+		return result;
 	}
 
 
@@ -152,7 +146,7 @@ public class AppInfoManager {
 
 		appDao.setMasterAppInfo(masterAppInfo);
 
-		userDao.addDefaultOwner(DEFAULT_NAME,DEFAULT_PWD);
+		userDao.addDefaultOwner(SlaveAppDefaultTokenBind.DEFAULT_NAME,SlaveAppDefaultTokenBind.DEFAULT_PWD);
 
 		appInfoMap.values().forEach((app)->{
 
@@ -190,7 +184,7 @@ public class AppInfoManager {
 		for (int i = 0; i < retryCount; i++) {
 
 			try {
-				result=federatedAuthService.loginSalveApp(app,DEFAULT_NAME,DEFAULT_PWD);
+				result=federatedAuthService.loginSalveApp(app,SlaveAppDefaultTokenBind.DEFAULT_NAME,SlaveAppDefaultTokenBind.DEFAULT_PWD);
 				break;
 			} catch (IllegalArgumentException e) {
 				log.warn(e.getMessage(), e);
