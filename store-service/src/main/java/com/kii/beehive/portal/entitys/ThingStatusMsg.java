@@ -29,6 +29,17 @@ public class ThingStatusMsg {
 		this.appID=globalThingInfo.getKiiAppID();
 	}
 	
+	public ThingStatusMsg(ThingStatusMsg msg){
+		this.statusBody=msg.statusBody;
+		this.timestamp=msg.timestamp;
+		this.status=msg.status;
+		this.thingID=msg.thingID;
+		this.kiiThingID=msg.kiiThingID;
+		this.appID=msg.appID;;
+	}
+	
+	
+	
 	public String getAppID() {
 		return appID;
 	}

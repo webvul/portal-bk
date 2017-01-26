@@ -54,10 +54,9 @@ public class ThingStatusChangeCallback {
 		engine.updateBusinessData(data);
 		
 		
-		pushStatusUpload(msg);
 	}
 
-	private  void pushStatusUpload(ThingStatusMsg msg){
+	public   void pushStatusUpload(ThingStatusMsg msg){
 		
 		ThingStateUpload thingStateUpload = new ThingStateUpload();
 		thingStateUpload.setGlobalThingID(msg.getThingID());
