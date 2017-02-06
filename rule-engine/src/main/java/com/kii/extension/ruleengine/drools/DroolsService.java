@@ -84,12 +84,11 @@ public class DroolsService {
 
 	public void enterInit(){
 
-		currThing.updateAndGet((th)->{
-			th.setStatus(CurrThing.Status.inInit);
-			th.setCurrThing(CurrThing.NONE);
-			return th;
-		});
-
+		currThing.updateAndGet((th)-> {
+					th.setStatus(CurrThing.Status.inInit);
+					th.cleanThings();
+					return th;
+				});
 		kieSession.update(currThingHandler,currThing);
 		kieSession.fireAllRules();
 	}
@@ -99,7 +98,7 @@ public class DroolsService {
 		
 		currThing.updateAndGet((th)->{
 			th.setStatus(CurrThing.Status.inIdle);
-			th.setCurrThing(CurrThing.NONE);
+			th.cleanThings();
 			return th;
 		});
 		kieSession.update(currThingHandler,currThing);
@@ -114,7 +113,7 @@ public class DroolsService {
 			if(th.getStatus()== CurrThing.Status.inInit){
 				return th;
 			}
-			th.setCurrThing(CurrThing.NONE);
+			th.cleanThings();
 			th.setStatus(CurrThing.Status.inIdle);
 			return th;
 		});
@@ -151,9 +150,9 @@ public class DroolsService {
 	}
 
 
-	public void inThing(String thingID){
+	public void inThing(Collection<String> thingIDs){
 
-		settingCurrThing(thingID, CurrThing.Status.inThing);
+		settingCurrThing(thingIDs, CurrThing.Status.inThing);
 	}
 
 
@@ -170,7 +169,7 @@ public class DroolsService {
 			if(oldStatus==CurrThing.Status.inThing) {
 
 				th.setStatus(CurrThing.Status.inIdle);
-				th.setCurrThing(CurrThing.NONE);
+				th.cleanThings();
 			}
 			return th;
 		});
@@ -181,7 +180,7 @@ public class DroolsService {
 		
 		synchronized (kieSession) {
 			FactHandle handler = kieSession.insert(fire);
-			kieSession.fireAllRules();
+			fireDrools();
 			kieSession.delete(handler);
 		}
 
@@ -205,8 +204,20 @@ public class DroolsService {
 //			kieSession.delete(handler);
 //		}
 	}
+	
+	//TODO:add monitor
+	private void fireDrools(){
+		try{
+			
+			kieSession.fireAllRules();
+			
+			
+		}catch(Exception e){
+			log.error(e.getMessage());
+		}
+	}
 
-	private void settingCurrThing(String thingID,CurrThing.Status  status){
+	private void settingCurrThing(Collection<String> thingIDs,CurrThing.Status  status){
 		
 		
 		CurrThing thing=currThing.updateAndGet((th)->{
@@ -218,7 +229,6 @@ public class DroolsService {
 			}
 
 			th.setStatus(status);
-			th.setCurrThing(thingID);
 			return th;
 		});
 		
@@ -228,7 +238,7 @@ public class DroolsService {
 		
 		synchronized (kieSession) {
 			kieSession.update(currThingHandler, currThing);
-			kieSession.fireAllRules();
+			fireDrools();
 		}
 		ExternalValues entity=new ExternalValues("sys");
 		entity.addValue("curr",thing);

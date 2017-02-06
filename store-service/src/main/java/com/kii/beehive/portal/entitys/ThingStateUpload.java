@@ -10,7 +10,6 @@ public class ThingStateUpload {
 	private String thingID;;
 	private ThingStatus state;
 
-	//TODO:fill this field in kiicloud's thing status change trigger
 	private Date timestamp=new Date();
 
 	public Date getTimestamp() {

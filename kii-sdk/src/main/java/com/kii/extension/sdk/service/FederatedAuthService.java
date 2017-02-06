@@ -44,16 +44,22 @@ public class FederatedAuthService {
 
 	private String authInitUrl="http://$(0).$(1).kiiapps.com/api/apps/$(0)/integration/webauth/connect?id=kii";
 
+	private String callUrl="http://$(0).$(1).kiiapps.com/api/apps/$(0)/integration/webauth/callback";
 
-	/**
-	 * important:
-	 * this method will update the token in ThreadLocal of current thread if login success
-	 * please take care of the other handling related to Kii Cloud access (such as query bucket in Kii Portal App)
-	 *
-	 * @param userName
-	 * @param pwd
-     * @return
-     */
+	private String authMasterUrl="http://$(0).$(1).kiiapps.com/api/apps/$(0)/oauth/login?username=${2}&password=${3}&client_id=${4}&redirect_url=${5}";
+	
+	//TODO:need been finish.
+	public void loginToSalveApp(@AppBindParam AppInfo appInfo,AppInfo masterApp,String userName,String pwd){
+		
+		String callbackUrl=StrTemplate.generUrl(callUrl,appInfo.getAppID(),appInfo.getSiteType().getSite());
+		
+		String fullUrl= StrTemplate.generUrl(authMasterUrl, masterApp.getAppID(), masterApp.getSiteType().getSite(),userName,pwd,appInfo.getClientID(),callbackUrl);
+		
+		HttpUriRequest request=new HttpPost(fullUrl);
+		request.setHeader("Con","");
+		
+	}
+
 	public FederatedAuthResult loginSalveApp(@AppBindParam  AppInfo appInfo, String userName, String pwd){
 
 		String url=getAuthUrl(appInfo);
@@ -111,6 +117,8 @@ GET https://<slaveAppId>.<kiiapps-domain>/api/apps/<slaveAppId>/integration/weba
 
 		String fullMasterAuthUrl=StrTemplate.generUrl(authUrl, appID, site.getSite());
 
+		log.debug("master auth url:"+fullMasterAuthUrl);
+		
 		HttpPost post=new HttpPost(fullMasterAuthUrl);
 
 		List<NameValuePair> postParameters=new ArrayList<>();

@@ -33,8 +33,8 @@ public class FederatedAuthTokenBindTool implements TokenBindTool {
 
 	@Override
 	public void refreshToken() {
-
-		slaveTokenBind.refreshSlaveToken(resolver.getAppInfo().getAppID());
+		//TODO:add slave token get logic
+//		slaveTokenBind.refreshSlaveToken(resolver.getAppInfo().getAppID());
 		
 	}
 

@@ -20,10 +20,8 @@ import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.context.TokenBindTool;
 import com.kii.extension.sdk.entity.AppChoice;
 import com.kii.extension.sdk.entity.AppInfo;
-import com.kii.extension.sdk.exception.ForbiddenException;
 import com.kii.extension.sdk.exception.KiiCloudException;
 import com.kii.extension.sdk.exception.SystemException;
-import com.kii.extension.sdk.exception.UnauthorizedAccessException;
 
 
 @Aspect
@@ -103,17 +101,12 @@ public class AppBindAspect {
 				result = pjp.proceed();
 				break;
 				
-			}catch(UnauthorizedAccessException |ForbiddenException ex){
-				
-				bindTool.refreshToken();
-				retry--;
-				kiiCloudException=ex;
-				
 			}catch(SystemException e){
+				//TODO:add alarm here
 				//send kiicloud service alarm
 				throw e;
 			} catch(KiiCloudException kiie){
-				if(kiie.getStatusCode()== 401 ){
+				if(kiie.getStatusCode()== 401 ||kiie.getStatusCode()==403){
 					bindTool.refreshToken();
 					retry--;
 					kiiCloudException=kiie;

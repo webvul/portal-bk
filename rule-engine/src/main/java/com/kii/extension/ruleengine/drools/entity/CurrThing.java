@@ -1,15 +1,18 @@
 package com.kii.extension.ruleengine.drools.entity;
 
+import java.util.HashSet;
 import java.util.Set;
+
+import org.springframework.util.CollectionUtils;
 
 public class CurrThing {
 
-	public  static final String NONE = "NONE";
 
 	private Status status=Status.inInit;
-
-
+	
 	private String triggerID;
+	
+	private Set<String> currThings = new HashSet<>();
 	
 	public  enum Status{
 
@@ -22,10 +25,10 @@ public class CurrThing {
 	}
 	
 	public CurrThing(CurrThing th){
-		this.triggerID=th.triggerID;
-		this.status=th.status;
-		this.currThing=th.currThing;
 		
+		this.status=th.status;
+		this.triggerID=th.triggerID;
+		this.currThings=new HashSet<>(th.currThings);
 	}
 
 	public boolean isInit() {
@@ -35,40 +38,31 @@ public class CurrThing {
 	public void  setStatus(CurrThing.Status  status) {
 
 		this.status=status;
-
-		this.currThing=NONE;
 	}
 
+	public void cleanThings(){
+		this.currThings.clear();
+	}
 
 
 	public CurrThing.Status getStatus(){
 		return status;
 	}
 
-	public String getCurrThing(){
-		return currThing;
+	public Set<String> getCurrThings(){
+		return currThings;
 	}
 
 
-	private String currThing= NONE;
 	
 	public void setTriggerID(String triggerID){
 		this.triggerID=triggerID;
 		status=Status.singleTrigger;
 	}
 
-	public void setCurrThing(String curr){
-
-		this.currThing=curr;
-		if(!NONE.equals(curr)) {
-			this.status = Status.inThing;
-		}
-	}
-
 	public boolean valid(Set<String> th,String triggerID){
-
-
-		return  (status==Status.inThing&&(th.contains(currThing)))
+		
+		return  (status==Status.inThing&&(CollectionUtils.containsAny(th,currThings)))
 				|| (status==Status.singleTrigger  &&  this.triggerID.equals(triggerID));
 
 	}
@@ -76,7 +70,7 @@ public class CurrThing {
 	public boolean valid(String th,String triggerID){
 
 		return
-				(status==Status.inThing&&(th.equals(currThing)))
+				(status==Status.inThing&&(currThings.contains(th)))
 				|| (status==Status.singleTrigger && this.triggerID.equals(triggerID));
 	}
 
@@ -84,7 +78,7 @@ public class CurrThing {
 	public String toString() {
 		return "CurrThing{" +
 				" status =" + status.name() +
-				", currThing='" + currThing + '\'' +
+				", currThings='" + currThings + '\'' +
 				", triggerID='"+triggerID+"\'"+
 				'}';
 	}

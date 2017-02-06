@@ -184,24 +184,6 @@ Authorization: Bearer xxxyyyzzz (app-admin / sys-admin)
 
 	}
 
-//	public void login(String salveApp,String userName){
-//
-//		/*
-//		DELETE /apps/<masterAppID>/oauth2/clients/<clientID>
-//content-type: application/vnd.kii.Oauth2ClientCreationRequest+json
-//Authorization: Bearer xxxyyyzzz (app-admin / sys-admin)
-//		 */
-//
-//		bindToolResolver.setAppName(masterApp);
-//		AppInfo info= bindToolResolver.getAppInfo();
-//
-//		ApiAccessBuilder builder= new ApiAccessBuilder(info).bindToken(tool.getToken());
-//
-//		HttpUriRequest request=builder.addSubUrl("/oauth2/clients/" + clientInfo.getClientID()).setContentType("application/vnd.kii.Oauth2ClientCreationRequest+json").buildCustomCall("DELETE","").generRequest(mapper);
-//
-//		client.doRequest(request);
-//
-//	}
 
 	public static class ClientInfo{
 

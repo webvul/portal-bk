@@ -1,6 +1,8 @@
 package com.kii.extension.ruleengine.drools;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -9,12 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import com.kii.extension.ruleengine.drools.entity.BusinessObjInRule;
 import com.kii.extension.ruleengine.drools.entity.ExternalValues;
 import com.kii.extension.ruleengine.drools.entity.MultiplesValueMap;
 import com.kii.extension.ruleengine.drools.entity.ScheduleFire;
 import com.kii.extension.ruleengine.drools.entity.Summary;
 import com.kii.extension.ruleengine.drools.entity.ThingResult;
-import com.kii.extension.ruleengine.drools.entity.BusinessObjInRule;
 import com.kii.extension.ruleengine.drools.entity.Trigger;
 import com.kii.extension.ruleengine.drools.entity.TriggerData;
 import com.kii.extension.ruleengine.drools.entity.TriggerValues;
@@ -180,19 +182,22 @@ public class DroolsTriggerService {
 
 	}
 
-
-	public void addThingStatus(BusinessObjInRule newStatus){
+	
+	public void  addThingStatus(Collection<BusinessObjInRule> newStatusSet){
 		
-		cloudService.moveHistory(newStatus.getThingID());
+		Set<String> thIDs=new HashSet<>();
+		newStatusSet.forEach(s->{
+			cloudService.moveHistory(s.getThingID());
+			cloudService.addOrUpdateData(s,false);
+			thIDs.add(s.getThingID());
+		});
 		
-		cloudService.addOrUpdateData(newStatus,false);
 		
 		ExternalValues newValues=new ExternalValues("runtime");
-		newValues.addValue("currStatus",newStatus.getValues());
-		
+//		newValues.addValue("currStatus",newStatus.getValues());
 		cloudService.addOrUpdateExternal(newValues);
 		
-		cloudService.inThing(newStatus.getThingID());
+		cloudService.inThing(thIDs);
 
 	}
 

@@ -1,16 +1,20 @@
 package com.kii.extension.ruleengine;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -55,8 +59,13 @@ public class BeehiveTriggerService {
 
 	@Autowired
 	private RelationStore  relationStore;
-
-
+	
+	private Map<Integer,List<BusinessObjInRule>>  dataMap=new ConcurrentHashMap<>();
+	
+	private AtomicInteger index=new AtomicInteger(0);
+	
+	
+	
 	public void removeTrigger(String triggerID){
 
 		droolsTriggerService.removeTrigger(triggerID);
@@ -96,14 +105,29 @@ public class BeehiveTriggerService {
 		droolsTriggerService.leaveInit();
 	}
 
+	
+	
+	@Scheduled(fixedRate=1000,initialDelay=10000)
+	public void commitBusinessObjChange(){
+		
+		int oldIndex=index.getAndIncrement();
+		
+		List<BusinessObjInRule> dataList=dataMap.remove(oldIndex);
+		
+		droolsTriggerService.addThingStatus(dataList);
+		
+	}
 
 
-	public void updateBusinessData(BusinessDataObject data){
-
-		BusinessObjInRule newStatus=new BusinessObjInRule(new String(data.getFullID()));
+	public void updateBusinessData(BusinessDataObject data) {
+		
+		BusinessObjInRule newStatus = new BusinessObjInRule(new String(data.getFullID()));
 		newStatus.setValues(new HashMap<>(data.getData()));
 		
-		droolsTriggerService.addThingStatus(newStatus);
+		List<BusinessObjInRule> list = dataMap.computeIfAbsent(index.get(), (k) -> {
+			return new ArrayList<>();
+		});
+		list.add(newStatus);
 	}
 
 	

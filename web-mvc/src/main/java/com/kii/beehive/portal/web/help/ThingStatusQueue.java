@@ -19,65 +19,64 @@ import com.kii.beehive.portal.entitys.ThingStatusMsg;
 
 @Component
 public class ThingStatusQueue {
-	
+
 	private Logger log= LoggerFactory.getLogger(ThingStatusQueue.class);
-	
-	
-	private ExecutorService executorService= Executors.newFixedThreadPool(10);
-	
-	
+
+
+	private ExecutorService executorService= Executors.newCachedThreadPool();
+
+
 	private BlockingQueue<ThingStatusMsg> msgQueue=new LinkedBlockingQueue<>(32687);
-	
+
 	private final Set<Task> taskSet=new HashSet<>();
-	
-	
+
+
 	//TODO:add monitor
 	public boolean pushInfo(ThingStatusMsg info){
-		
+
 		try {
 			return msgQueue.offer(new ThingStatusMsg(info),1, TimeUnit.SECONDS);
 		} catch (InterruptedException e) {
 			log.error(e.getMessage());
 			return false;
 		}
-		
+
 	}
-	
+
 	private class Task implements  Runnable{
-		
-		
+
+
 		private final int threadNum;
-		
+
 		private final Consumer<ThingStatusMsg>  task;
-		
-		private  BlockingQueue<ThingStatusMsg> queue;
-		
+
+		private  final BlockingQueue<ThingStatusMsg> queue;
+
 		public Task(Consumer<ThingStatusMsg> task,int num){
 			this.task=task;
 			this.threadNum=num;
 			this.queue=new LinkedBlockingQueue<>(10000*num);
 		}
-		
+
 		@Override
 		public void run() {
-			
+
 			while(true){
-				
+
 				try {
 					ThingStatusMsg msg=queue.take();
-					
+
 					task.accept(msg);
-					
-					msg=null;
+
 				} catch (InterruptedException e) {
 					break;
 				} catch(Exception e){
 					log.error(e.getMessage());
 				}
 			}
-			
+
 		}
-		
+
 		//TODO:add monitor
 		public boolean addMsg(ThingStatusMsg msg)  {
 			try {
@@ -87,48 +86,43 @@ public class ThingStatusQueue {
 				return false;
 			}
 		}
-		
-	}
-	
-	public void registerConosumer(Consumer<ThingStatusMsg> thingFun,int num){
-		
-		taskSet.add(new Task(thingFun,num));
-		
-	}
-	
 
-	
+	}
+
+	public void registerConosumer(Consumer<ThingStatusMsg> thingFun,int num){
+
+		taskSet.add(new Task(thingFun,num));
+
+	}
+
+
+
 	public   void handlerThingMsg(){
-		
+
 		taskSet.forEach(t->{
 			for(int i=0;i<t.threadNum;i++) {
 				executorService.submit(t);
 			}
 		});
-		
-		executorService.submit(() -> {
-			
-			while(true) {
 
-				try {
+		executorService.submit(() -> {
 					
-					ThingStatusMsg th = msgQueue.take();
-					
-					for(Task t:taskSet){
-						t.addMsg(new ThingStatusMsg(th));
-					};
-					
-					th=null;
-					
-				} catch (InterruptedException e) {
-					break;
-				} catch(Exception e){
-					log.error(e.getMessage());
-					
-				}
-			}
-		});
-		
+					while (true) {
+						
+						try {
+							
+							ThingStatusMsg th = msgQueue.take();
+							
+							taskSet.forEach(t -> t.addMsg(th));
+							
+						} catch (InterruptedException e) {
+							break;
+						} catch (Exception e) {
+							log.error(e.getMessage());
+						}
+					}
+				});
+
 	}
 
 }

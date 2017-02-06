@@ -30,17 +30,17 @@ public class ExecuteParam {
 	public ExecuteParam(CommResult params){
 
 
-		String relThing=null;
+		String relThings=null;
 		String source=null;
 		if(params.getFireSource()!=null){
-			relThing=params.getFireSource().getCurrThing();
+			relThings=String.valueOf(params.getFireSource().getCurrThings());
 			source=params.getFireSource().getStatus().name();
 		}else{
-			relThing="Schedule";
+			relThings="Schedule";
 			source="NONE";
 		}
 
-		fireSource=relThing;
+		fireSource=relThings;
 		relationThing=source;
 
 		this.triggerID=params.getTriggerID();
