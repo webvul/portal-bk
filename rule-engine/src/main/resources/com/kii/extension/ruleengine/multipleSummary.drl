@@ -11,6 +11,24 @@ query "get multiples Result by TriggerID" (String thingID)
     results : MultiplesValueMap( triggerID == $triggerID )
 end
 
+
+
+rule "copy  all multiples's unit summary value to multipleMap"
+  no-loop true
+when
+	Trigger(type ==TriggerType.multiple , $triggerID:triggerID)
+	$summary:SummaryResult(triggerID==$triggerID)
+	$thing:ThingResult(triggerID==$triggerID)
+	$multiplesMap:MultiplesValueMap(triggerID==$triggerID)
+	$record:MemberMatchResult(triggerID==$triggerID)
+then
+
+	modify($multiplesMap){
+    	setSummaryValue($summary),
+    	setThingValue($thing)
+    };
+end
+
 rule "in unit,compute the  summary of  fieldName value: funName"
   no-loop true
 when

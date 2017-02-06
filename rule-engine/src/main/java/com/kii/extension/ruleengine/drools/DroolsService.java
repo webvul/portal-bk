@@ -150,9 +150,9 @@ public class DroolsService {
 	}
 
 
-	public void inThing(Collection<String> thingIDs){
+	public void inThing(Set<String> thingIDs,ExternalValues newValues){
 
-		settingCurrThing(thingIDs, CurrThing.Status.inThing);
+		settingCurrThing(thingIDs,newValues, CurrThing.Status.inThing);
 	}
 
 
@@ -169,7 +169,6 @@ public class DroolsService {
 			if(oldStatus==CurrThing.Status.inThing) {
 
 				th.setStatus(CurrThing.Status.inIdle);
-				th.cleanThings();
 			}
 			return th;
 		});
@@ -184,25 +183,6 @@ public class DroolsService {
 			kieSession.delete(handler);
 		}
 
-//		synchronized (currThing) {
-//
-//			CurrThing.Status  oldStatus=currThing.getStatus();
-//
-//			if(oldStatus==CurrThing.Status.inInit){
-//				return;
-//			}
-//			if(oldStatus==CurrThing.Status.inThing) {
-//
-//				this.currThing.setStatus(CurrThing.Status.inIdle);
-//				this.currThing.setCurrThing(CurrThing.NONE);
-//				kieSession.update(currThingHandler, currThing);
-//
-//			}
-//
-//			FactHandle  handler=kieSession.insert(fire);
-//			kieSession.fireAllRules();
-//			kieSession.delete(handler);
-//		}
 	}
 	
 	//TODO:add monitor
@@ -217,7 +197,7 @@ public class DroolsService {
 		}
 	}
 
-	private void settingCurrThing(Collection<String> thingIDs,CurrThing.Status  status){
+	private void settingCurrThing(Set<String> thingIDs,ExternalValues newValues,CurrThing.Status  status){
 		
 		
 		CurrThing thing=currThing.updateAndGet((th)->{
@@ -229,6 +209,8 @@ public class DroolsService {
 			}
 
 			th.setStatus(status);
+			th.setCurrThings(thingIDs);
+			
 			return th;
 		});
 		
@@ -237,6 +219,9 @@ public class DroolsService {
 		}
 		
 		synchronized (kieSession) {
+			external.updateEntity(newValues);
+			
+			kieSession.update(externalHandler,external);
 			kieSession.update(currThingHandler, currThing);
 			fireDrools();
 		}
@@ -244,38 +229,6 @@ public class DroolsService {
 		entity.addValue("curr",thing);
 		external.updateEntity(entity);
 
-//		kieSession.update(externalHandler,external);
-//		kieSession.fireAllRules();
-
-//		synchronized (currThing) {
-//
-//			CurrThing.Status  oldStatus=currThing.getStatus();
-//
-//			if(oldStatus==CurrThing.Status.inInit){
-//				return;
-//			}
-//
-//
-//			this.currThing.setStatus(status);
-//			this.currThing.setCurrThing(thingID);
-//
-//			kieSession.update(currThingHandler, currThing);
-//
-//
-//			kieSession.fireAllRules();
-//			if(status== CurrThing.Status.inThing) {
-//				List<MatchResult> lists = doQuery("get Match Result by TriggerID");
-//				consumer.accept(lists);
-//			}
-//
-//
-//			ExternalValues entity=new ExternalValues("sys");
-//			entity.addValue("curr",currThing);
-//			external.updateEntity(entity);
-//
-//			kieSession.update(externalHandler,external);
-//			kieSession.fireAllRules();
-//		}
 	}
 
 	
@@ -352,8 +305,6 @@ public class DroolsService {
 		for(String rule:rules) {
 
 			String drlName="src/main/resources/comm_"+i+".drl";
-
-//			byte[]  bytes=kfs.read(drlName);
 
 			kfs.write(drlName, rule);
 			pathSet.add(drlName);
@@ -451,30 +402,10 @@ public class DroolsService {
 
 		kieContainer.updateToVersion(kb.getKieModule().getReleaseId());
 		pathSet.remove(path);
-//		kieSession.getObjects().forEach((obj)->{
-//
-//			FactHandle handle=kieSession.getFactHandle(obj);
-//
-//			handleMap.put(getEntityKey(obj),handle);
-//
-//		});
+
 
 		toIdle();
 
-
-	}
-
-
-
-
-	public void addOrUpdateExternal(ExternalValues entity){
-
-
-		external.updateEntity(entity);
-
-		kieSession.update(externalHandler,external);
-
-//		inExt(entity.getName());
 
 	}
 

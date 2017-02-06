@@ -181,9 +181,9 @@ public class RuleEngineConsole {
 	}
 
 	public void initExternal() {
-		service.updateExternalValue("demo","one",111);
-
-		service.updateExternalValue("demo","two",222);
+//		service.updateExternalValue("demo","one",111);
+//
+//		service.updateExternalValue("demo","two",222);
 
 //       "express":"ml.score('one',$p{1},$p{2})>$e{demo.map[c].d} "
 
@@ -195,7 +195,7 @@ public class RuleEngineConsole {
 		Map<String,Object> map=new HashMap<>();
 		map.put("c",entry);
 
-		service.updateExternalValue("demo","map",map);
+//		service.updateExternalValue("demo","map",map);
 	}
 
 	public void loadAll(){
@@ -290,12 +290,12 @@ public class RuleEngineConsole {
 			case "listTrigger":
 				triggerMap.keySet().forEach((s) -> System.out.println(s));
 				break;
-			case "setExt":
-				String name = arrays[1];
-				String value = arrays[2];
-
-				service.updateExternalValue("demo", name, value);
-				break;
+//			case "setExt":
+//				String name = arrays[1];
+//				String value = arrays[2];
+//
+//				service.updateExternalValue("demo", name, value);
+//				break;
 
 			case "dump":
 
@@ -423,31 +423,31 @@ public class RuleEngineConsole {
 	}
 
 
-	private Map<String,Set<String>> getThingMap(SummaryTriggerRecord  record ){
-
-
-		Map<String,Set<String>>  thingMap=new HashMap<>();
-
-		record.getSummarySource().forEach( (k,v)->{
-
-			Set<String> thSet=new HashSet<>();
-			if(v.getSource().getThingList().isEmpty()){
-				v.getSource().getSelector().getTagList().forEach(tag->{
-					thSet.addAll(tagMap.get(tag));
-				});
-			}else{
-
-				v.getSource().getThingList().forEach((l)->{
-						String th= String.copyValueOf(new char[]{(char) ('a'+l)});
-						thSet.add(th);
-					}
-				);
-			}
-			thingMap.put(k,thSet);
-
-		});
-		return thingMap;
-	}
+//	private Map<String,Set<String>> getThingMap(SummaryTriggerRecord  record ){
+//
+//
+//		Map<String,Set<String>>  thingMap=new HashMap<>();
+//
+//		record.getSummarySource().forEach( (k,v)->{
+//
+//			Set<String> thSet=new HashSet<>();
+//			if(v.getSource().getThingList().isEmpty()){
+//				v.getSource().getSelector().getTagList().forEach(tag->{
+//					thSet.addAll(tagMap.get(tag));
+//				});
+//			}else{
+//
+//				v.getSource().getThingList().forEach((l)->{
+//						String th= String.copyValueOf(new char[]{(char) ('a'+l)});
+//						thSet.add(th);
+//					}
+//				);
+//			}
+//			thingMap.put(k,thSet);
+//
+//		});
+//		return thingMap;
+//	}
 
 
 	private Map<String,Set<String>> getThingMap(MultipleSrcTriggerRecord  record ){
@@ -468,8 +468,8 @@ public class RuleEngineConsole {
 				}else{
 
 					g.getThingList().forEach((l)->{
-								String th= String.copyValueOf(new char[]{(char) ('a'+l)});
-								thSet.add(th);
+//								String th= String.copyValueOf(new char[]{(char) ('a'+l)});
+								thSet.add("Thing."+String.valueOf(l));
 							}
 					);
 				}

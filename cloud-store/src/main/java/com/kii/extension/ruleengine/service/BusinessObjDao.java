@@ -1,9 +1,7 @@
 package com.kii.extension.ruleengine.service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
@@ -46,37 +44,4 @@ public class BusinessObjDao extends AbstractDataAccess<BusinessDataObject> {
 		return super.fullQuery(query);
 	}
 	
-	public void saveExtensionValue(String name, Map<String,Object> values){
-		
-		BusinessDataObject obj=new BusinessDataObject(name,"ext",BusinessObjType.Global);
-		
-		obj.setData(values);
-		
-		super.addEntity(obj,obj.getFullID());
-	}
-	
-	
-	public Map<String,Object> loadExtensionValue(String name){
-	
-		String fullID=BusinessObjType.Global.getFullID(name,"ext");
-		
-		return super.getObjectByID(fullID).getData();
-	}
-	
-	
-	public List<BusinessDataObject> loadAllExtension(){
-		
-		QueryParam query= ConditionBuilder.newCondition().equal("businessType",BusinessObjType.Global.name()).getFinalQueryParam();
-		
-		return super.fullQuery(query);
-	}
-	
-	public void updateExtensionValue(String name, String key, Object data) {
-		BusinessDataObject obj=new BusinessDataObject(name,"ext",BusinessObjType.Global);
-		
-		obj.setData(Collections.singletonMap(key,data));
-		
-		super.updateEntityAll(obj,obj.getFullID());
-		
-	}
 }

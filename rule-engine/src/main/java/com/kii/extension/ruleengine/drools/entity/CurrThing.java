@@ -3,8 +3,6 @@ package com.kii.extension.ruleengine.drools.entity;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.springframework.util.CollectionUtils;
-
 public class CurrThing {
 
 
@@ -53,16 +51,27 @@ public class CurrThing {
 		return currThings;
 	}
 
+	public void setCurrThings(Set<String> ids){
+		currThings=new HashSet<>(ids);
+	}
 
 	
 	public void setTriggerID(String triggerID){
 		this.triggerID=triggerID;
 		status=Status.singleTrigger;
 	}
+	
+	private boolean exists(Set<?> set2){
+
+		Set<?>  a=new HashSet<>(currThings);
+		Set<?>  b=new HashSet<>(set2);
+		
+		return a.removeAll(b);
+	}
 
 	public boolean valid(Set<String> th,String triggerID){
 		
-		return  (status==Status.inThing&&(CollectionUtils.containsAny(th,currThings)))
+		return  (status==Status.inThing&&(exists(th)))
 				|| (status==Status.singleTrigger  &&  this.triggerID.equals(triggerID));
 
 	}

@@ -22,7 +22,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kii.extension.ruleengine.drools.DroolsTriggerService;
 import com.kii.extension.ruleengine.drools.RuleGeneral;
 import com.kii.extension.ruleengine.drools.entity.BusinessObjInRule;
-import com.kii.extension.ruleengine.drools.entity.ExternalValues;
 import com.kii.extension.ruleengine.drools.entity.SingleThing;
 import com.kii.extension.ruleengine.drools.entity.Summary;
 import com.kii.extension.ruleengine.drools.entity.Trigger;
@@ -84,19 +83,6 @@ public class BeehiveTriggerService {
 
 
 
-	public void updateExternalValue(String name,String key,Object value){
-		ExternalValues val=new ExternalValues(name);
-		val.addValue(key,value);
-		droolsTriggerService.addExternalValue(val);
-	}
-	
-	
-	public void initExternalValues(String name,Map<String,Object> values){
-		ExternalValues val=new ExternalValues(name);
-		val.setValues(values);
-		droolsTriggerService.addExternalValue(val);
-	}
-
 	public void enterInit(){
 		droolsTriggerService.enterInit();
 	}
@@ -107,13 +93,16 @@ public class BeehiveTriggerService {
 
 	
 	
-	@Scheduled(fixedRate=1000,initialDelay=10000)
+	@Scheduled(fixedRate=10000,initialDelay=10000)
 	public void commitBusinessObjChange(){
 		
 		int oldIndex=index.getAndIncrement();
 		
 		List<BusinessObjInRule> dataList=dataMap.remove(oldIndex);
 		
+		if(dataList==null){
+			return;
+		}
 		droolsTriggerService.addThingStatus(dataList);
 		
 	}

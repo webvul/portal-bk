@@ -33,6 +33,44 @@ public class UtilTest {
 	private Pattern msgP=Pattern.compile("\\<msgid\\>([^<]+)",Pattern.MULTILINE);
 
 
+	
+	@Test
+	public void testRetain(){
+		
+		Set<String> set1=new HashSet<>();
+		set1.add("a");
+		set1.add("b");
+		set1.add("c");
+		
+		Set<String> set2=new HashSet<>();
+		
+		assertFalse(exists(set1,set2));
+		
+		set2.add("b");
+		
+		assertTrue(exists(set1,set2));
+		
+		
+		set2.add("d");
+		
+		assertTrue(exists(set1,set2));
+		
+		set1.remove("b");
+		
+		assertFalse(exists(set1,set2));
+		
+	}
+	
+	private boolean exists(Set<String>  set1,Set<String> set2){
+		Set<String>  a=new HashSet<>(set1);
+		
+		Set<String>  b=new HashSet<>(set2);
+		
+		if(set2.isEmpty()){
+			return false;
+		}
+		return a.removeAll(b);
+	}
 
 	@Test
 	public void testFormat(){

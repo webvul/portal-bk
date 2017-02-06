@@ -24,20 +24,20 @@
   "recordStatus": "enable",
   "targetParamList": [
     {
-      "name": "currThing",
-      "express": "$e{sys.curr.currThing}"
-    },
-    {
       "name": "monitorID",
       "express": "'aaaaaaaa'"
     },
     {
-      "name": "thingStatus",
-      "express": "$e{sys.curr.status}"
+      "name": "thingStatusCol",
+      "express": "$e{runtime.currStatusCol}"
     },
     {
-      "name":"sign",
-      "express":"$p:c{comm}.contains($e{sys.curr.currThing})"
+      "name":"matcher",
+      "express":"$p:c{one}"
+    },
+    {
+      "name":"history",
+      "express":"$h:c{one}"
     }
   ],
   "name": "test"

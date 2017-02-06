@@ -1,9 +1,11 @@
 package com.kii.beehive.business.service;
 
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -71,7 +73,7 @@ public class ThingMonitorService {
 	private Logger log= LoggerFactory.getLogger(ThingMonitorService.class);
 
 	@Transactional
-	public void addNotifiction(String monitorID, String businessID, Map<String,Object> status, Boolean sign,Set<String> currMatcherIDs){
+	public void addNotifiction(String monitorID,Map<String,Map<String,Object>> statusCols,Set<String> currMatcherIDs,Set<String> history){
 		ThingStatusMonitor monitor=monitorDao.getObjectByID(monitorID);
 
 
@@ -79,12 +81,52 @@ public class ThingMonitorService {
 			return;
 		}
 		
+//
+		List<UserNotice>  noticeList=new ArrayList<>();
+		
+		
+		Set<String> removed=new HashSet<>(history);
+		Set<String> added=new HashSet<>(currMatcherIDs);
+		
+		removed.removeAll(currMatcherIDs);
+		
+		added.removeAll(history);
+		
+		
+		removed.forEach(th->{
+			noticeList.add(getUserNotice(monitor,th, NoticeActionType.ThingMonitorType.true2false,statusCols.get(th),currMatcherIDs));
+		});
+		
+		
+		added.forEach(th->{
+			noticeList.add(getUserNotice(monitor,th, NoticeActionType.ThingMonitorType.false2true,statusCols.get(th),currMatcherIDs));
+		});
+		
+		
+		List<UserNotice> noticesPreUser=new ArrayList<>();
+		monitor.getNoticeList().forEach(id->{
+			
+			noticeList.forEach((n)->{
+				
+				n.setUserID(id);
+				noticesPreUser.add(n);
+				queue.addNotice(n);
+			});
+	
+		});
+		
+		noticificationDao.batchInsert(noticesPreUser);
+	}
+	
+	private UserNotice getUserNotice(ThingStatusMonitor monitor, String businessID, NoticeActionType.ThingMonitorType sign, Map<String,Object> status, Set<String> currMatcherIDs){
+		
 		UserNotice notice=new UserNotice();
 		
 		notice.setFrom(monitor.getName());
 		
-
-		notice.setActionType(sign?NoticeActionType.ThingMonitorType.false2true.name():NoticeActionType.ThingMonitorType.true2false.name());
+		
+		
+		notice.setActionType(sign.name());
 		notice.setReaded(false);
 		notice.setCreateTime(new Date());
 		notice.setType(UserNotice.MsgType.ThingStatus);
@@ -94,8 +136,6 @@ public class ThingMonitorService {
 		
 		GlobalThingInfo th=thingDao.findByID(thingID);
 		notice.setTitle(th.getVendorThingID());
-
-		
 		
 		monitor.getAdditions().forEach( (k,v)->{
 			int idx= AdditionFieldType.getIndex(k);
@@ -108,7 +148,7 @@ public class ThingMonitorService {
 			
 		});
 		ThingStatusNoticeEntry entry=new ThingStatusNoticeEntry();
-		entry.setActionType(sign?NoticeActionType.ThingMonitorType.false2true:NoticeActionType.ThingMonitorType.true2false);
+		entry.setActionType(sign);
 		entry.setCurrThing(th.getVendorThingID());
 		entry.setCurrThingInThID(th.getId());
 		entry.setCurrStatus(status);
@@ -132,13 +172,7 @@ public class ThingMonitorService {
 		
 		notice.setData(json);
 		
-		monitor.getNoticeList().forEach(id->{
-			notice.setUserID(id);
-			noticificationDao.insert(notice);
-			
-			queue.addNotice(notice);
-		});
-		
+		return notice;
 	}
 	
 	
@@ -304,16 +338,17 @@ public class ThingMonitorService {
 		CallBusinessFunction target  =new CallBusinessFunction();
 		target.setBeanName("thingMonitorService");
 		target.setFunctionName("addNotifiction");
-		target.setParamArrays("monitorID","currThing","thingStatus","sign","matcher");
+		target.setParamArrays("monitorID","thingStatusCol","matcher","history");
 		
 		
 		record.addTarget(target);
 		
-		record.addTargetParam("currThing","$e{sys.curr.currThing}");
+//		record.addTargetParam("currThings","$e{sys.curr.currThings}");
 		record.addTargetParam("monitorID","'"+monitor.getId()+"'");
-		record.addTargetParam("thingStatus","$e{runtime.currStatus}");
-		record.addTargetParam("sign","$p:c{one}.contains($e{sys.curr.currThing})");
+		record.addTargetParam("thingStatusCol","$e{runtime.currStatusCol}");
 		record.addTargetParam("matcher","$p:c{one}");
+		record.addTargetParam("history","$h:c{one}");
+		
 		
 		record.setRecordStatus(TriggerRecord.StatusType.enable);
 		

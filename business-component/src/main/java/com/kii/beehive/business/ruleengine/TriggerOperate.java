@@ -69,7 +69,6 @@ public class TriggerOperate {
 
 	public Set<String> getTriggerListByThingID(long thingID){
 	
-//		String fullKiiThingID=thingTagService.getThingByID(thingID).getFullKiiThingID();
 		
 		return general.getTriggerIDByObjID(BusinessObjType.Thing.getFullID(String.valueOf(thingID),null));
 		
@@ -116,15 +115,10 @@ public class TriggerOperate {
 
 		businessObjDao.getAllBusinessObjs().forEach((obj)->{
 			
-			
 			general.updateBusinessData(obj);
 
 		});
-		
-		businessObjDao.loadAllExtension().forEach((ext)->{
-			
-			general.initExternalValues(ext.getBusinessObjID(),ext.getData());
-		});
+
 
 		general.leaveInit();
 
@@ -138,22 +132,6 @@ public class TriggerOperate {
 		
 		general.updateBusinessData(data);
 	}
-
-	public void addExtensionValue(String name,Map<String,Object> data){
-		
-		businessObjDao.saveExtensionValue(name,data);
-		
-		general.initExternalValues(name,data);
-	}
-	
-	
-	public void updateExtensionValue(String name,String key,Object data){
-		
-		businessObjDao.updateExtensionValue(name,key,data);
-		
-		general.updateExternalValue(name,key,data);
-	}
-
 
 	
 	

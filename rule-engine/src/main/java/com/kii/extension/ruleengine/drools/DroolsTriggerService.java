@@ -186,26 +186,23 @@ public class DroolsTriggerService {
 	public void  addThingStatus(Collection<BusinessObjInRule> newStatusSet){
 		
 		Set<String> thIDs=new HashSet<>();
+		Map<String,Map<String,Object>>  statusSet=new HashMap<>();
+		
 		newStatusSet.forEach(s->{
 			cloudService.moveHistory(s.getThingID());
 			cloudService.addOrUpdateData(s,false);
 			thIDs.add(s.getThingID());
+			statusSet.put(s.getThingID(),s.getValues());
 		});
 		
 		
 		ExternalValues newValues=new ExternalValues("runtime");
-//		newValues.addValue("currStatus",newStatus.getValues());
-		cloudService.addOrUpdateExternal(newValues);
+		newValues.addValue("currStatusCol",statusSet);
 		
-		cloudService.inThing(thIDs);
+		cloudService.inThing(thIDs,newValues);
 
 	}
 
-	public void addExternalValue(ExternalValues newValues){
-
-
-		cloudService.addOrUpdateExternal(newValues);
-	}
 	
 	
 	public void fireCurrTrigger(String triggerID) {

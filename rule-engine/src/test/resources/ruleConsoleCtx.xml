@@ -14,6 +14,10 @@
     <bean:annotation-config />
 
 
+    <task:annotation-driven executor="myExecutor" scheduler="myScheduler"/>
+    <task:executor id="myExecutor" pool-size="5"/>
+    <task:scheduler id="myScheduler" pool-size="10"/>
+
 
     <bean class="com.kii.extension.ruleengine.console.MockEventCallback" />
 
