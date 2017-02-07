@@ -12,6 +12,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -632,8 +634,10 @@ public class TagThingManager {
 
 
 		for (GlobalThingInfo th : thingSet) {
-
-			typeMap.merge(th.getType(), 1, (k, oldV) -> oldV + 1);
+			if(StringUtils.isBlank(th.getType())){
+				continue;
+			}
+			typeMap.merge(th.getType(), 1, (oldV, v) -> oldV + 1);
 		}
 
 		List<ThingTypeWithCount> list = new ArrayList<>();
