@@ -18,7 +18,7 @@ when
     $ext:ExternalCollect()
     Trigger( $triggerID:triggerID, $enable:enable, ( triggerID=="${triggerID}" &&  enable == true && type ==TriggerType.multiple) )
     $muiMap:MultiplesValueMap( triggerID==$triggerID, ${express}  )
-    ScheduleFire(triggerID==$triggerID,enable==true)
+    $schedule:ScheduleFire(triggerID==$triggerID,enable==true)
 then
     ResultParam result=new ResultParam($triggerID);
 	result.setSchedule();
@@ -29,5 +29,6 @@ then
 
 	CommandExec exec=(CommandExec)kcontext.getKieRuntime().getEnvironment().get("exec");
     exec.doExecute($triggerID,result);
+    delete($schedule);
 end
 

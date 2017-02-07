@@ -18,15 +18,16 @@ when
     $inst:TriggerValues(triggerID==$triggerID)
     SingleThing($thingID:thingID,triggerID==$triggerID)
     $status:BusinessObjInRule( thingID == $thingID,${express}  )
-    ScheduleFire(triggerID==$triggerID,enable==true)
+    $schedule:ScheduleFire(triggerID==$triggerID,enable==true)
 
 then
     ResultParam result=new ResultParam($triggerID);
 	result.setSchedule();
 
-   result.setEnable($enable);
+   	result.setEnable($enable);
 	${fillParam}
 
 	CommandExec exec=(CommandExec)kcontext.getKieRuntime().getEnvironment().get("exec");
     exec.doExecute($triggerID,result);
+    delete($schedule);
 end

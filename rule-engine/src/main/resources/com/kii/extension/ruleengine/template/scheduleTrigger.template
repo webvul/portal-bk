@@ -25,5 +25,5 @@ then
 	CommandExec exec=(CommandExec)kcontext.getKieRuntime().getEnvironment().get("exec");
     exec.doExecute($triggerID,result);
 
-	$fire.reset();
+	delete($fire);
 end

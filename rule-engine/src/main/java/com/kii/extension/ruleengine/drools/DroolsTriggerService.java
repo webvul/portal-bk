@@ -1,14 +1,18 @@
 package com.kii.extension.ruleengine.drools;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.kii.extension.ruleengine.drools.entity.BusinessObjInRule;
@@ -31,7 +35,10 @@ public class DroolsTriggerService {
 
 
 	private final Map<String, Boolean> triggerMap=new ConcurrentHashMap<>();
-
+	
+	private Map<Integer,List<BusinessObjInRule>>  dataMap=new ConcurrentHashMap<>();
+	
+	private AtomicInteger index=new AtomicInteger(0);
 
 
 	public  Map<String,Object> getEngineRuntime(String triggerID){
@@ -176,14 +183,38 @@ public class DroolsTriggerService {
 		ScheduleFire fire=new ScheduleFire();
 		fire.setTriggerID(triggerID);
 		fire.setEnable(true);
+		
+		cloudService.addOrUpdateData(fire,false);
+//		addBusinessObj(fire);
 
-		cloudService.updateScheduleData(fire);
-
-
+	}
+	
+	
+	@Scheduled(fixedRate=900,initialDelay=10000)
+	public void commitBusinessObjChange(){
+		
+		int oldIndex=index.getAndIncrement();
+		
+		List<BusinessObjInRule> dataList=dataMap.remove(oldIndex);
+		
+		if(dataList==null){
+			return;
+		}
+		addThingStatus(dataList);
+		
+	}
+	
+	
+	public void addBusinessObj(BusinessObjInRule newStatus){
+		
+		List<BusinessObjInRule> list = dataMap.computeIfAbsent(index.get(), (k) -> {
+			return new ArrayList<>();
+		});
+		list.add(newStatus);
 	}
 
 	
-	public void  addThingStatus(Collection<BusinessObjInRule> newStatusSet){
+	private void  addThingStatus(Collection<BusinessObjInRule> newStatusSet){
 		
 		Set<String> thIDs=new HashSet<>();
 		Map<String,Map<String,Object>>  statusSet=new HashMap<>();

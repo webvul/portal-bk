@@ -44,7 +44,6 @@ import com.kii.extension.ruleengine.drools.entity.ExternalValues;
 import com.kii.extension.ruleengine.drools.entity.MatchResult;
 import com.kii.extension.ruleengine.drools.entity.MultiplesValueMap;
 import com.kii.extension.ruleengine.drools.entity.RuntimeEntry;
-import com.kii.extension.ruleengine.drools.entity.ScheduleFire;
 import com.kii.extension.ruleengine.drools.entity.WithTrigger;
 
 @Component
@@ -156,34 +155,34 @@ public class DroolsService {
 	}
 
 
-	public  void updateScheduleData(ScheduleFire fire){
-		
-		CurrThing thing=currThing.updateAndGet((th)->{
-			
-			
-			CurrThing.Status oldStatus = th.getStatus();
-			if(oldStatus==CurrThing.Status.inInit){
-				return th;
-			}
-			
-			if(oldStatus==CurrThing.Status.inThing) {
-
-				th.setStatus(CurrThing.Status.inIdle);
-			}
-			return th;
-		});
-		
-		if(thing.getStatus()==CurrThing.Status.inInit){
-			return;
-		}
-		
-		synchronized (kieSession) {
-			FactHandle handler = kieSession.insert(fire);
-			fireDrools();
-			kieSession.delete(handler);
-		}
-
-	}
+//	public  void updateScheduleData(ScheduleFire fire){
+//
+//		CurrThing thing=currThing.updateAndGet((th)->{
+//
+//
+//			CurrThing.Status oldStatus = th.getStatus();
+//			if(oldStatus==CurrThing.Status.inInit){
+//				return th;
+//			}
+//
+//			if(oldStatus==CurrThing.Status.inThing) {
+//
+//				th.setStatus(CurrThing.Status.inIdle);
+//			}
+//			return th;
+//		});
+//
+//		if(thing.getStatus()==CurrThing.Status.inInit){
+//			return;
+//		}
+//
+//		synchronized (kieSession) {
+//			FactHandle handler = kieSession.insert(fire);
+//			fireDrools();
+//			kieSession.delete(handler);
+//		}
+//
+//	}
 	
 	//TODO:add monitor
 	private void fireDrools(){
