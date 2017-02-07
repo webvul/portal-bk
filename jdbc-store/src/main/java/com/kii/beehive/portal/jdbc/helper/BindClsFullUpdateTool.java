@@ -67,7 +67,6 @@ public class BindClsFullUpdateTool extends SqlUpdate {
 		this.tableName = tableName;
 		this.wrapper = wrapper;
 		this.pkFieldName = pkName;
-//		this.objectMapper=objectMapper;
 
 	}
 
@@ -362,7 +361,6 @@ public class BindClsFullUpdateTool extends SqlUpdate {
 
 			paramMap.put(descriptor.getName(), val);
 
-//			log.debug(" fill update param " + fieldDesc.column() + " with " + val);
 		}
 
 		return updateByNamedParam(paramMap);

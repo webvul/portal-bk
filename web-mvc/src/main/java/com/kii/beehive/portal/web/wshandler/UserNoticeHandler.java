@@ -3,8 +3,7 @@ package com.kii.beehive.portal.web.wshandler;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
@@ -17,20 +16,17 @@ import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.entitys.AuthUser;
 import com.kii.beehive.portal.manager.AuthManager;
 
-@Component
+@Controller
 public class UserNoticeHandler extends TextWebSocketHandler {
 	
 	
-	@Lazy
 	@Autowired
 	private ObjectMapper mapper;
 	
-	@Lazy
 	@Autowired
 	private NoticeMsgQueue queue;
 	
 	
-	@Lazy
 	@Autowired
 	private AuthManager authManager;
 
@@ -38,8 +34,6 @@ public class UserNoticeHandler extends TextWebSocketHandler {
 	@Override
 	public void handleTextMessage(WebSocketSession session, TextMessage message) {
 		
-//		Long userID=599l;
-//		AuthUser user= (AuthUser) ((Authentication)session.getPrincipal()).getDetails();
 		
 		String token =message.getPayload();
 		

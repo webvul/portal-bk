@@ -37,19 +37,15 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 	@Value("${spring.profile}")
 	private String env;
 
-//	@Lazy
 	@Autowired
 	private AuthManager authManager;
 	
-//	@Lazy
 	@Autowired
 	private DeviceSupplierDao supplierDao;
 	
-//	@Lazy
 	@Autowired
 	private AppInfoManager appInfoManager;
 	
-//	@Lazy
 	@Autowired
 	private AppBindToolResolver appInfoResolver;
 

@@ -4,6 +4,9 @@ package com.kii.beehive.portal.web.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.FilterType;
+import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Service;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
@@ -14,7 +17,8 @@ import com.kii.beehive.portal.web.wshandler.UserNoticeHandler;
 
 @Configuration
 @EnableWebSocket
-@ComponentScan(basePackages = {"com.kii.beehive.portal.web.security","com.kii.beehive.portal.web.wshandler"})
+@ComponentScan(basePackages = {"com.kii.beehive.portal.web.wshandler"},
+		includeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION,classes = {Controller.class,Service.class})})
 public class WSPullConfig implements WebSocketConfigurer {
 	
 	

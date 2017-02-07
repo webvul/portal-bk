@@ -35,6 +35,8 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.kii.beehive.portal.sysmonitor.SysMonitorMsg;
+import com.kii.beehive.portal.sysmonitor.SysMonitorQueue;
 import com.kii.extension.ruleengine.drools.entity.AtomicCurrThing;
 import com.kii.extension.ruleengine.drools.entity.BusinessObjInRule;
 import com.kii.extension.ruleengine.drools.entity.CanUpdate;
@@ -55,6 +57,7 @@ public class DroolsService {
 
 	@Value("${spring.profile:test}")
 	private String profile;
+	
 	
 	private final KieSession kieSession;
 
@@ -142,7 +145,7 @@ public class DroolsService {
 		
 		synchronized (kieSession) {
 			kieSession.update(currThingHandler, currThing);
-			kieSession.fireAllRules();
+			fireDrools();
 			currThing.compareAndSet(thing, CurrThing.Status.inIdle);
 			kieSession.update(currThingHandler, currThing);
 		}
@@ -184,7 +187,7 @@ public class DroolsService {
 //
 //	}
 	
-	//TODO:add monitor
+	
 	private void fireDrools(){
 		try{
 			
@@ -193,6 +196,11 @@ public class DroolsService {
 			
 		}catch(Exception e){
 			log.error(e.getMessage());
+			SysMonitorMsg notice=new SysMonitorMsg();
+			notice.setFrom(SysMonitorMsg.FromType.RuleEngine);
+			notice.setErrMessage(e.getMessage());
+			notice.setErrorType("fireDrools");
+			SysMonitorQueue.getInstance().addNotice(notice);
 		}
 	}
 

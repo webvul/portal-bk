@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.messaging.MessagingException;
@@ -27,17 +26,7 @@ import com.kii.beehive.portal.web.constant.Constants;
 public class AuthenticationFactory {
 	
 	
-	//		StompHeaderAccessor headerAccessor =
-//				MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
-//		if (StompCommand.CONNECT.equals(headerAccessor.getCommand())) {
-//			return message;
-//		}
-//		List<String> headers = headerAccessor.getNativeHeader(HttpHeaders.AUTHORIZATION);
-//		if (headers == null) {
-//			throw new MessagingException("Can't authenticate the current user. Missing authorization header");
-//		}
-	
-	@Lazy
+
 	@Autowired
 	private AuthManager authManager;
 	

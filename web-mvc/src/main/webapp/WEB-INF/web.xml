@@ -37,6 +37,7 @@
             <param-name>dispatchOptionsRequest</param-name>
             <param-value>true</param-value>
         </init-param>
+        <async-supported>true</async-supported>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
@@ -93,8 +94,6 @@
     </servlet-mapping>
 
 
-
-
     <servlet>
         <servlet-name>PullWS</servlet-name>
         <servlet-class>
@@ -117,10 +116,10 @@
     </servlet-mapping>
 
 
-
     <filter>
         <filter-name>logFilter</filter-name>
         <filter-class>com.kii.beehive.portal.web.help.LogFilter</filter-class>
+        <async-supported>true</async-supported>
     </filter>
     <filter-mapping>
         <filter-name>logFilter</filter-name>
@@ -131,6 +130,7 @@
     <filter>
         <filter-name>charsetFilter</filter-name>
         <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+        <async-supported>true</async-supported>
         <init-param>
             <param-name>encoding</param-name>
             <param-value>UTF-8</param-value>

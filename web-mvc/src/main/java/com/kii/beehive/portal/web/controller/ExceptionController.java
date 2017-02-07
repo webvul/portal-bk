@@ -5,6 +5,7 @@ import javax.annotation.PostConstruct;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -15,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -29,6 +31,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.kii.beehive.portal.common.utils.CollectUtils;
 import com.kii.beehive.portal.common.utils.StrTemplate;
 import com.kii.beehive.portal.exception.BusinessException;
+import com.kii.beehive.portal.sysmonitor.SysMonitorMsg;
+import com.kii.beehive.portal.sysmonitor.SysMonitorQueue;
 import com.kii.beehive.portal.web.help.I18nPropertyTools;
 import com.kii.extension.sdk.exception.KiiCloudException;
 
@@ -56,6 +60,22 @@ public class ExceptionController {
 	public ResponseEntity<Object> handleGlobalException(Throwable ex) {
 
 		log.error("global exception ", ex);
+		
+		if(ex instanceof DataAccessException ||
+				(ex.getCause()!=null&& SQLException.class.isAssignableFrom(ex.getCause().getClass()) )){
+			
+			Exception excep=(Exception)ex;
+			if(! (ex instanceof  DataAccessException)) {
+				excep= (Exception) ex.getCause();
+			}
+			
+			SysMonitorMsg notice=new SysMonitorMsg();
+			notice.setFrom(SysMonitorMsg.FromType.DB);
+			notice.setErrMessage(excep.getMessage());
+			notice.setErrorType(excep.getClass().getName());
+			
+			SysMonitorQueue.getInstance().addNotice(notice);
+		}
 
 		Map<String, Object> errorMap = new HashMap<>();
 		errorMap.put("errorCode", ex.getClass().getSimpleName());
@@ -68,6 +88,9 @@ public class ExceptionController {
 		ResponseEntity<Object> resp = new ResponseEntity(errorMap, headers, HttpStatus.INTERNAL_SERVER_ERROR);
 		return resp;
 	}
+	
+	
+	
 
 	private List<String> filter = CollectUtils.createList("status", "suppressed", "stackTrace", "class", "localizedMessage");
 

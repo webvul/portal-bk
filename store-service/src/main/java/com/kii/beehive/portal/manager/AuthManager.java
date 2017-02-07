@@ -59,7 +59,7 @@ public class AuthManager {
 
 	@Autowired
 	protected TeamUserRelationDao teamUserRelationDao;
-	
+
 //	@PostConstruct
 //	public void init(){
 //

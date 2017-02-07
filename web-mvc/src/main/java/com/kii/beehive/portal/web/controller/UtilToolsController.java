@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
@@ -25,6 +26,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.beehive.business.manager.AppInfoManager;
 import com.kii.beehive.business.manager.TagThingManager;
+import com.kii.beehive.portal.sysmonitor.SysMonitorMsg;
+import com.kii.beehive.portal.sysmonitor.SysMonitorQueue;
 import com.kii.beehive.portal.entitys.PermissionTree;
 import com.kii.beehive.portal.helper.PermissionTreeService;
 import com.kii.beehive.portal.helper.RuleSetService;
@@ -222,9 +225,19 @@ public class UtilToolsController {
 	}
 	
 	
-//	public
+	@RequestMapping(value = "/sys/monitor", method = {RequestMethod.GET}, consumes = {"*"})
+	public Callable<SysMonitorMsg> getSysNoticeMsg() {
+		
+		return SysMonitorQueue.getInstance().getCallbackFun();
+	}
 	
-
+	@RequestMapping(value = "/sys/monitor/history", method = {RequestMethod.GET}, consumes = {"*"})
+	public List<SysMonitorMsg> getSysNoticeMsgHistory() {
+		
+		return SysMonitorQueue.getInstance().getMsgHistory();
+	}
+	
+	
 	@RequestMapping(value = "/info", method = {RequestMethod.GET}, consumes = {"*"})
 	public Map<String, String> info(HttpServletRequest httpRequest) {
 		Map<String, String> map = new HashMap<>();

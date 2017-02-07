@@ -26,6 +26,7 @@
     -->
 
 
+
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="locations" value="classpath:com/kii/beehive/portal/web/config.${spring.profile}.properties"/>
         <property name="fileEncoding" value="UTF8"/>
@@ -33,10 +34,10 @@
     </bean>
 
     <!-- jdbc store -->
-    <import resource="classpath:com/kii/beehive/portal/jdbcstore/config/jdbcStoreContext.xml"/>
+    <import resource="classpath:com/kii/beehive/portal/jdbcstore/config/jdbcStoreContext.xml" />
 
     <!-- cloud store -->
-    <import resource="classpath:com/kii/beehive/cloudstore/config/cloudStoreContext.xml"/>
+    <import resource="classpath:com/kii/beehive/cloudstore/config/cloudStoreContext.xml" />
 
 
     <context:component-scan base-package="com.kii.beehive">
@@ -50,6 +51,7 @@
         <context:exclude-filter type="regex"
                                 expression="com.kii.beehive.portal.web.stomp.MessageManager"></context:exclude-filter>
     </context:component-scan>
+
 
 
     <!-- aop -->
@@ -77,9 +79,9 @@
 
     <!-- task  -->
 
-    <task:annotation-driven scheduler="myScheduler"/>
-
-    <task:scheduler id="myScheduler" pool-size="10"/>
+    <task:annotation-driven executor="myExecutor" scheduler="myScheduler"/>
+    <task:executor id="myExecutor" pool-size="10"/>
+    <task:scheduler id="myScheduler" pool-size="5"/>
 
     <!-- bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
         <property name="maxUploadSize" value="3000000"/>

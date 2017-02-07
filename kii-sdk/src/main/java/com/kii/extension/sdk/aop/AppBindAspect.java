@@ -14,6 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.kii.beehive.portal.sysmonitor.SysMonitorMsg;
+import com.kii.beehive.portal.sysmonitor.SysMonitorQueue;
 import com.kii.extension.sdk.annotation.AppBindParam;
 import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.context.AppBindToolResolver;
@@ -104,6 +106,11 @@ public class AppBindAspect {
 			}catch(SystemException e){
 				//TODO:add alarm here
 				//send kiicloud service alarm
+				SysMonitorMsg notice=new SysMonitorMsg();
+				notice.setFrom(SysMonitorMsg.FromType.KiiApp);
+				notice.setErrMessage(e.getResponseBody());
+				notice.setErrorType(e.getErrorCode());
+				SysMonitorQueue.getInstance().addNotice(notice);
 				throw e;
 			} catch(KiiCloudException kiie){
 				if(kiie.getStatusCode()== 401 ||kiie.getStatusCode()==403){
