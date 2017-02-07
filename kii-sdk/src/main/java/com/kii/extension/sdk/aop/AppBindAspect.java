@@ -110,6 +110,8 @@ public class AppBindAspect {
 					bindTool.refreshToken();
 					retry--;
 					kiiCloudException=kiie;
+				}else{
+					throw kiie;
 				}
 			}catch (Throwable throwable) {
 				throw throwable;

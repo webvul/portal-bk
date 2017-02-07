@@ -221,6 +221,9 @@ public class UtilToolsController {
 		return permissionTreeService.getFullPermissionTree();
 	}
 	
+	
+//	public
+	
 
 	@RequestMapping(value = "/info", method = {RequestMethod.GET}, consumes = {"*"})
 	public Map<String, String> info(HttpServletRequest httpRequest) {

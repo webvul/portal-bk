@@ -1,8 +1,6 @@
 package com.kii.beehive.portal.manager;
 
 
-import javax.annotation.PostConstruct;
-
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -62,11 +60,11 @@ public class AuthManager {
 	@Autowired
 	protected TeamUserRelationDao teamUserRelationDao;
 	
-	@PostConstruct
-	public void init(){
-		
+//	@PostConstruct
+//	public void init(){
+//
 //		System.out.println("do anything");
-	}
+//	}
 
 
 	private Map<String, String> oneTimeTokenMap = new ConcurrentHashMap<>();

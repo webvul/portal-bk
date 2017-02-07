@@ -14,8 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.kii.beehive.business.manager.AppInfoManager;
@@ -30,7 +29,7 @@ import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
 import com.kii.extension.sdk.context.AppBindToolResolver;
 
-@Component
+@Service
 public class AuthInterceptor extends HandlerInterceptorAdapter {
 
 	private Logger log = LoggerFactory.getLogger(AuthInterceptor.class);
@@ -38,19 +37,19 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 	@Value("${spring.profile}")
 	private String env;
 
-	@Lazy
+//	@Lazy
 	@Autowired
 	private AuthManager authManager;
 	
-	@Lazy
+//	@Lazy
 	@Autowired
 	private DeviceSupplierDao supplierDao;
 	
-	@Lazy
+//	@Lazy
 	@Autowired
 	private AppInfoManager appInfoManager;
 	
-	@Lazy
+//	@Lazy
 	@Autowired
 	private AppBindToolResolver appInfoResolver;
 

@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpHeaders;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
@@ -34,7 +33,7 @@ import com.kii.beehive.portal.web.socket.ConcurrentWebSocketSessionHolder;
 @Component
 public class STOMPClientInboundChannelInterceptor implements ChannelInterceptor {
 	
-	@Lazy
+//	@Lazy
 	@Autowired
 	private AuthManager authManager;
 
