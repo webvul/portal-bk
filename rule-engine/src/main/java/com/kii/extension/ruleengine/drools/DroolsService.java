@@ -81,7 +81,7 @@ public class DroolsService {
 
 
 
-	public void enterInit(){
+	public synchronized void enterInit(){
 
 		this.currThing.setStatus(CurrThing.Status.inInit);
 		this.currThing.setCurrThing(CurrThing.NONE);
@@ -91,7 +91,7 @@ public class DroolsService {
 		kieSession.fireAllRules();
 	}
 
-	public void leaveInit(){
+	public synchronized void leaveInit(){
 
 
 		this.currThing.setStatus(CurrThing.Status.inIdle);
@@ -114,9 +114,9 @@ public class DroolsService {
 //		settingCurrThing(CurrThing.NONE, CurrThing.Status.inIdle);
 	}
 	
-	public void inFireTrigger(String triggerID) {
+	public synchronized void inFireTrigger(String triggerID) {
 		
-		synchronized (currThing) {
+//		synchronized (currThing) {
 			
 			CurrThing.Status oldStatus = currThing.getStatus();
 			if(oldStatus==CurrThing.Status.inInit){
@@ -133,7 +133,7 @@ public class DroolsService {
 			
 			this.currThing.setStatus(CurrThing.Status.inIdle);
 			kieSession.update(currThingHandler, currThing);
-		}
+//		}
 	}
 
 
@@ -143,9 +143,9 @@ public class DroolsService {
 	}
 
 
-	public  void updateScheduleData(ScheduleFire fire){
+	public synchronized  void updateScheduleData(ScheduleFire fire){
 
-		synchronized (currThing) {
+//		synchronized (currThing) {
 
 			CurrThing.Status  oldStatus=currThing.getStatus();
 			
@@ -163,12 +163,12 @@ public class DroolsService {
 			FactHandle  handler=kieSession.insert(fire);
 			kieSession.fireAllRules();
 			kieSession.delete(handler);
-		}
+//		}
 	}
 
-	private void settingCurrThing(String thingID,CurrThing.Status  status){
+	private synchronized void settingCurrThing(String thingID,CurrThing.Status  status){
 
-		synchronized (currThing) {
+//		synchronized (currThing) {
 
 			CurrThing.Status  oldStatus=currThing.getStatus();
 
@@ -196,7 +196,7 @@ public class DroolsService {
 
 			kieSession.update(externalHandler,external);
 			kieSession.fireAllRules();
-		}
+//		}
 	}
 
 	
@@ -207,7 +207,7 @@ public class DroolsService {
 		});
 	}
 
-	public Map<String,Object>  getEngineEntitys(String triggerID){
+	public synchronized Map<String,Object>  getEngineEntitys(String triggerID){
 
 
 		Map<String,Object>  map=new HashMap<>();
@@ -316,18 +316,18 @@ public class DroolsService {
 	}
 
 
-	public void bindWithGlobal(String name,Object instance){
+	public synchronized void bindWithGlobal(String name,Object instance){
 		kieSession.setGlobal(name,instance);
 	}
 
-	public void bindWithInstance(String name,Object instance){
+	public synchronized void bindWithInstance(String name,Object instance){
 
 		kieSession.getEnvironment().set(name,instance);
 	}
 
 
 
-	public  void addCondition(String name,String rule){
+	public synchronized  void addCondition(String name,String rule){
 
 
 		log.debug("add rule:"+rule);
@@ -358,7 +358,7 @@ public class DroolsService {
 	}
 
 
-	public void removeCondition(String name){
+	public synchronized void removeCondition(String name){
 		String path="src/main/resources/user_"+name+".drl";
 
 
@@ -388,7 +388,7 @@ public class DroolsService {
 
 
 
-	public void addOrUpdateExternal(ExternalValues entity){
+	public synchronized void addOrUpdateExternal(ExternalValues entity){
 
 
 		external.updateEntity(entity);
@@ -400,7 +400,7 @@ public class DroolsService {
 	}
 
 
-	public void addOrUpdateData(Object entity,boolean replace){
+	public synchronized void addOrUpdateData(Object entity,boolean replace){
 
 
 		handleMap.compute(getEntityKey(entity),(k,v)->{
@@ -444,7 +444,7 @@ public class DroolsService {
 		}
 	}
 
-	private <T> List<T> doQuery(String queryName,Object... params){
+	private synchronized <T> List<T> doQuery(String queryName,Object... params){
 
 
 
@@ -462,7 +462,7 @@ public class DroolsService {
 
 
 	
-	public void removeData(Object obj) {
+	public synchronized void removeData(Object obj) {
 		String entityKey = getEntityKey(obj);
 		
 		FactHandle handler=getHandle(entityKey);
@@ -474,7 +474,7 @@ public class DroolsService {
 	}
 
 
-	public void removeFact(Function<Object,Boolean> function) {
+	public synchronized void removeFact(Function<Object,Boolean> function) {
 
 		Collection<FactHandle>  handles=kieSession.getFactHandles(function::apply);
 
