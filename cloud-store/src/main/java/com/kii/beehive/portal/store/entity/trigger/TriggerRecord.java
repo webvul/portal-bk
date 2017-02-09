@@ -65,16 +65,16 @@ public abstract class TriggerRecord extends KiiEntity {
 		this.relationTriggerID = relationTriggerID;
 	}
 	
-	private ExternalEntry   instData=new ExternalEntry();
+//	private ExternalEntry   instData=new ExternalEntry();
 	
 	
-	public ExternalEntry getInstData() {
-		return instData;
-	}
-	
-	public void setInstData(ExternalEntry instDataMap) {
-		this.instData = instDataMap;
-	}
+//	public ExternalEntry getInstData() {
+//		return instData;
+//	}
+//
+//	public void setInstData(ExternalEntry instDataMap) {
+//		this.instData = instDataMap;
+//	}
 	
 	public enum UsedByType{
 		
