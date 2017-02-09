@@ -1,12 +1,11 @@
 package com.kii.extension.ruleengine.drools.entity;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import org.apache.commons.lang3.StringUtils;
 
 import com.kii.extension.ruleengine.ExpressTool;
 
@@ -76,58 +75,59 @@ public class MultiplesValueMap implements RuntimeEntry,WithTrigger,WithHistory{
 	
 	public Object getValue(String key){
 		
-		Object obj=getValueByKey(key);
-		if(obj!=null){
-			return obj;
-		}
-	
+//		boolean isPrevious=false;
+//		if(key.startsWith("previous")){
+//			key= StringUtils.substring(key,9);
+//			isPrevious=true;
+//		}
+		
 		Object value= ExpressTool.getObjValue(this,key);
 
 		return value;
 	}
 	
 	
-	private Object getValueByKey(String key){
-		
-		if(key.startsWith("previous")){
-			String testKey= StringUtils.substring(key,9);
-			return previousMap.get(testKey);
-		}else{
-			return valueMap.get(key);
-		}
-	}
+//	private Object getValueByKey(String key){
+//
+//		if(key.startsWith("previous")){
+//			String subKey= StringUtils.substring(key,9);
+//			return previousMap.get(subKey);
+//		}else{
+//			return valueMap.get(key);
+//		}
+//	}
 	
 	public Set<?> getSetValue(String key){
 		
-		Object obj=getValueByKey(key);
-		if(obj!=null){
-			return (Set<?>) obj;
-		}
+//		Object obj=getValueByKey(key);
+//		if(obj!=null){
+//			return (Set<?>) obj;
+//		}
 		
 		Set<?> value= ExpressTool.getValue(this,key,Set.class);
 		
-		return value==null?new HashSet<>():(Set)value;
+		return value==null? Collections.EMPTY_SET:(Set)value;
 	}
 	
 	public Map<String,?> getMapValue(String key){
 		
-		Object obj=getValueByKey(key);
-		if(obj!=null){
-			return (Map<String, ?>) obj;
-		}
-		
+//		Object obj=getValueByKey(key);
+//		if(obj!=null){
+//			return (Map<String, ?>) obj;
+//		}
+//
 		Map<String,?> value= ExpressTool.getValue(this,key,Map.class);
 		
-		return value==null?new HashMap<>():(HashMap)value;
+		return value==null?Collections.EMPTY_MAP:(HashMap)value;
 	}
 	
 	
 	public Number getNumValue(String key){
 		
-		Object obj=getValueByKey(key);
-		if(obj!=null){
-			return (Number) obj;
-		}
+//		Object obj=getValueByKey(key);
+//		if(obj!=null){
+//			return (Number) obj;
+//		}
 		
 		Number value= ExpressTool.getNumValue(this,key);
 		return value;

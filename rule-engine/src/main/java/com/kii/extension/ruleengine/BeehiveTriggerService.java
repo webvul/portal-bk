@@ -17,7 +17,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kii.extension.ruleengine.drools.DroolsTriggerService;
 import com.kii.extension.ruleengine.drools.RuleGeneral;
 import com.kii.extension.ruleengine.drools.entity.BusinessObjInRule;
-import com.kii.extension.ruleengine.drools.entity.ExternalValues;
 import com.kii.extension.ruleengine.drools.entity.SingleThing;
 import com.kii.extension.ruleengine.drools.entity.Summary;
 import com.kii.extension.ruleengine.drools.entity.Trigger;
@@ -25,11 +24,13 @@ import com.kii.extension.ruleengine.drools.entity.TriggerType;
 import com.kii.extension.ruleengine.drools.entity.TriggerValues;
 import com.kii.extension.ruleengine.schedule.ScheduleService;
 import com.kii.extension.ruleengine.store.trigger.BusinessDataObject;
+import com.kii.extension.ruleengine.store.trigger.BusinessObjType;
 import com.kii.extension.ruleengine.store.trigger.CommandParam;
 import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
 import com.kii.extension.ruleengine.store.trigger.GroupSummarySource;
 import com.kii.extension.ruleengine.store.trigger.MultipleSrcTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.SourceElement;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.schedule.SimplePeriod;
 import com.kii.extension.ruleengine.store.trigger.schedule.TriggerValidPeriod;
@@ -73,27 +74,6 @@ public class BeehiveTriggerService {
 		return map;
 	}
 
-
-
-	public void updateExternalValue(String name,String key,Object value){
-		ExternalValues val=new ExternalValues(name);
-		val.addValue(key,value);
-		droolsTriggerService.addExternalValue(val);
-	}
-	
-	public void updateTriggerInstValue(String triggerID,String key,Object value){
-		
-		
-		droolsTriggerService.updateTriggerInstData(triggerID,key,value);
-	}
-	
-	
-	public void initExternalValues(String name,Map<String,Object> values){
-		ExternalValues val=new ExternalValues(name);
-		val.setValues(values);
-		droolsTriggerService.addExternalValue(val);
-	}
-
 	public void enterInit(){
 		droolsTriggerService.enterInit();
 	}
@@ -110,7 +90,11 @@ public class BeehiveTriggerService {
 		newStatus.setValues(data.getData());
 		newStatus.setCreateAt(data.getModified());
 
-		droolsTriggerService.addThingStatus(newStatus);
+		if(data.getBusinessType()== BusinessObjType.Context) {
+			droolsTriggerService.addContextObj(newStatus);
+		}else{
+			droolsTriggerService.addBusinessObj(newStatus);
+		}
 	}
 	
 	public void addTriggerToEngine(TriggerRecord record,Map<String,Set<String>>  thingIDsMap,boolean fireNow) throws TriggerCreateException{
@@ -137,7 +121,6 @@ public class BeehiveTriggerService {
 		}
 		
 		TriggerValues instData=new TriggerValues(triggerID);
-		instData.setValues(record.getInstData().getValues());
 
 		try {
 
@@ -165,11 +148,9 @@ public class BeehiveTriggerService {
 
 		} catch (RuntimeException e) {
 
-//			e.printStackTrace();
 			throw new TriggerCreateException("create trigger instance fail:exception "+e.getClass().getName()+" msg:"+e.getMessage(),e);
 
 		} catch (SchedulerException|IOException e) {
-//			e.printStackTrace();
 			throw new TriggerCreateException("global schedule init fail",e);
 		}
 
@@ -178,9 +159,6 @@ public class BeehiveTriggerService {
 
 
 	private void addSimpleToEngine(SimpleTriggerRecord record,String thingID,TriggerValues instData) {
-
-//		Set<String>  thingIDs=thingIDsMap.get("comm");
-//		String thingID=thingIDs.iterator().next();
 
 		fillDelayParam(record);
 
@@ -242,6 +220,7 @@ public class BeehiveTriggerService {
 		trigger.setThingSet(thingSet);
 		
 		droolsTriggerService.addMultipleTrigger(trigger,instData,drl);
+		
 
 		record.getSummarySource().forEach((name,src)->{
 
@@ -257,7 +236,6 @@ public class BeehiveTriggerService {
 							summary.setName(name);
 
 							droolsTriggerService.addTriggerData(summary);
-
 							break;
 						case thing:
 
@@ -275,7 +253,15 @@ public class BeehiveTriggerService {
 
 				}
 		);
-
+		
+		if(!record.getSummarySource().values().stream().anyMatch( s->s.getType()== SourceElement.SourceElementType.summary)){
+			droolsTriggerService.addMockSummary(trigger.getTriggerID());
+		}
+		if(!record.getSummarySource().values().stream().anyMatch( s->s.getType()== SourceElement.SourceElementType.thing)){
+			droolsTriggerService.addMockThing(trigger.getTriggerID());
+		}
+		
+		
 	}
 
 
@@ -337,5 +323,9 @@ public class BeehiveTriggerService {
 		return set;
 	}
 
+	public void fireByHand(){
+		
+		droolsTriggerService.commitBusinessObjChange();
+	}
 
 }

@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.kii.beehive.StoreServiceTestInit;
+import com.kii.beehive.business.ruleengine.TriggerConvertTool;
 import com.kii.beehive.portal.store.entity.MLTriggerCombine;
 import com.kii.extension.ruleengine.TriggerConditionBuilder;
 import com.kii.extension.ruleengine.store.trigger.Condition;
@@ -18,6 +19,8 @@ public class TestMLTrigger extends StoreServiceTestInit{
 	@Autowired
 	private CombineTriggerService service;
 	
+	@Autowired
+	private TriggerConvertTool convertTool;
 	
 	@Test
 	public void addTrigger(){
@@ -33,20 +36,21 @@ public class TestMLTrigger extends StoreServiceTestInit{
 		
 		RuleEnginePredicate predicate=new RuleEnginePredicate();
 		predicate.setTriggersWhen(WhenType.CONDITION_CHANGED);
-		Condition condition= TriggerConditionBuilder.andCondition().equal("foo",1).equal("bar",2).getConditionInstance();
+		Condition condition= TriggerConditionBuilder.andCondition().equal("foo","$p{ml.foo}").equal("ml.bar",2).getConditionInstance();
 		predicate.setCondition(condition);
 		record.setPredicate(predicate);
 		
 		combine.setBusinessTrigger(record);
 		
 		combine.setMlTaskID("demo");
-		Condition mlCondition=TriggerConditionBuilder.orCondition().equal("value",2).great("abc",1).getConditionInstance();
-		combine.setMlCondition(mlCondition);
 		
-		combine.setJoinWithAND(true);
+//		MultipleSrcTriggerRecord newTrigger=convertTool.convertTrigger(combine.getBusinessTrigger());
+		
+//		System.out.println(newTrigger.getPredicate().getExpress());
+		
 		
 		service.createTriggerWithML(combine);
 		
-		
 	}
+	
 }

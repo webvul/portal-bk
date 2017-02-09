@@ -39,7 +39,7 @@ public class HttpClient implements Closeable {
 	public void init() throws IOReactorException {
 
 		httpClient = HttpClients.custom()
-				.setConnectionTimeToLive(10, TimeUnit.SECONDS)
+				.setConnectionTimeToLive(30, TimeUnit.SECONDS)
 				.build();
 		
 

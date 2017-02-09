@@ -9,11 +9,6 @@ import com.kii.extension.ruleengine.ExtendFunAdapter;
 global com.kii.extension.ruleengine.ExtendFunAdapter ExtFun;
 
 
-//query "get Match Result by TriggerID" ()
-//	Trigger($triggerID:triggerID,$thingSet:thingSet,when==WhenType.CONDITION_TRUE,enable==true)
-//	CurrThing( valid ($thingSet,$triggerID) )
-//    results : MatchResult( triggerID == $triggerID )
-//end
 
 rule "compute the  collect of  matchResult"
   no-loop true

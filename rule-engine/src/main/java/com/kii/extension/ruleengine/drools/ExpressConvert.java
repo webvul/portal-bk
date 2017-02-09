@@ -34,15 +34,15 @@ public class ExpressConvert {
 		return replaceParam(param, result);
 
 	}
-
+	
+	public static final Pattern funPattern=Pattern.compile("([\\+\\-\\*\\/\\ \\!\\|\\&]+|^)([\\w\\.]+)\\(([^(]*)\\)");
 
 	private String replaceFun(String input){
 
 		StringBuffer sb=new StringBuffer();
 
-		Pattern pattern=Pattern.compile("([\\+\\-\\*\\/\\ \\!\\|\\&]+|^)([\\w\\.]+)\\(([^(]*)\\)");
 
-		Matcher matcher=pattern.matcher(input);
+		Matcher matcher=funPattern.matcher(input);
 
 		while(matcher.find()) {
 			
@@ -71,13 +71,14 @@ public class ExpressConvert {
 
 	}
 	
+	public static final Pattern paramPattern= Pattern.compile("\\$([peth](\\:[iscm])?)\\{([^\\}]+)\\}");
+	
 	private String replaceParam(Param param, String result) {
 		
 		StringBuffer sb=new StringBuffer();
 		
-		Pattern pattern= Pattern.compile("\\$([peth](\\:[iscm])?)\\{([^\\}]+)\\}");
 		
-		Matcher matcher=pattern.matcher(result);
+		Matcher matcher=paramPattern.matcher(result);
 		
 		while(matcher.find()) {
 			
@@ -108,7 +109,7 @@ public class ExpressConvert {
 			this.isSimpleExp=isSimpleExp;
 		}
 		
-		private static final String S_FIELD="${1}[\"${0}\"]";
+		private static final String S_FIELD="get${1}(\"${0}\")";
 		private static final String P_FIELD=S_FIELD;
 		private static final String E_FIELD="$ext.get${1}(\"${0}\")";
 		private static final String T_FIELD="$inst.get${1}(\"${0}\")";
@@ -160,16 +161,16 @@ public class ExpressConvert {
 					valueName= "mapValue";
 					break;
 				default:
-					valueName=isCondition?"values":"value";
+					valueName=isCondition?"value":"value";
 			}
 			
 			if(sign.equals("h")){
 				field="previous."+field;
 			}
 			
-			if(!("values".equals(valueName)&&idx==0)) {
+//			if(idx<2||idx2==1) {
 				valueName = StringUtils.capitalize(valueName);
-			}
+//			}
 			
 			return  StrTemplate.gener(template,field,valueName);
 			

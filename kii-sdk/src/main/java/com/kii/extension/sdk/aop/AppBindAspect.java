@@ -60,6 +60,31 @@ public class AppBindAspect {
 		
 		BindAppByName appByName=pjp.getTarget().getClass().getAnnotation(BindAppByName.class);
 		
+		if(appByName==null){
+			
+			for(Annotation anno:pjp.getTarget().getClass().getAnnotations()){
+				
+				appByName=anno.annotationType().getAnnotation(BindAppByName.class);
+				if(appByName!=null){
+					break;
+				}
+			};
+		}
+		
+		
+		if(appByName==null){
+			
+			for(Annotation anno:pjp.getTarget().getClass().getSuperclass().getAnnotations()){
+				
+				appByName=anno.annotationType().getAnnotation(BindAppByName.class);
+				if(appByName!=null){
+					break;
+				}
+			};
+		}
+	
+
+		
 		if(appByName==null) {
 			
 			try {

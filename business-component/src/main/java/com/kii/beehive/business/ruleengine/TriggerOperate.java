@@ -126,15 +126,6 @@ public class TriggerOperate {
 		
 		general.updateBusinessData(data);
 	}
-	
-	
-	public void updateTriggerInstaData(String triggerID,String key,Object value){
-		
-		
-		
-		general.updateTriggerInstValue(triggerID,key,value);
-	}
-	
 
 	
 	

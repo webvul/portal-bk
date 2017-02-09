@@ -467,7 +467,13 @@ end
 
 		if(obj!=null) {
 			if (obj instanceof String) {
-				return "\"" + String.valueOf(obj) + "\"";
+			
+				String value=(String)obj;
+				if(ExpressConvert.paramPattern.matcher(value).find()){
+					return value;
+				}else {
+					return "\"" + String.valueOf(obj) + "\"";
+				}
 			} else {
 				return String.valueOf(obj);
 			}

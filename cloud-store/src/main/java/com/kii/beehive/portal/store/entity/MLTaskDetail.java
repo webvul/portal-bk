@@ -5,13 +5,33 @@ import java.util.Map;
 
 public class MLTaskDetail extends PortalEntity {
 	
-	private String mlTaskID;
 	
 	private Map<String,Object> mlOutput=new HashMap<>();
 	
 	private int interval;
 
 	private  Map<String,Object>  schema=new HashMap<>();
+	
+	private String accessUrl;
+	
+	private MLTaskErrorInfo lastError;
+
+	
+	public MLTaskErrorInfo getLastError() {
+		return lastError;
+	}
+	
+	public void setLastError(MLTaskErrorInfo lastError) {
+		this.lastError = lastError;
+	}
+	
+	public String getAccessUrl() {
+		return accessUrl;
+	}
+	
+	public void setAccessUrl(String accessUrl) {
+		this.accessUrl = accessUrl;
+	}
 	
 	public Map<String, Object> getSchema() {
 		return schema;
@@ -41,11 +61,11 @@ public class MLTaskDetail extends PortalEntity {
 	}
 	
 	public String getMlTaskID() {
-		return mlTaskID;
+		return super.getId();
 	}
 	
 	public void setMlTaskID(String mlTaskID) {
-		this.mlTaskID = mlTaskID;
+		super.setId(mlTaskID);
 	}
 	
 //	public enum Status{

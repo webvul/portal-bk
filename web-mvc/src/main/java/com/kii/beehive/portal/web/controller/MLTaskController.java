@@ -1,7 +1,9 @@
 package com.kii.beehive.portal.web.controller;
 
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -60,5 +62,18 @@ public class MLTaskController {
 	public List<MLTaskDetail> getAll(){
 		
 		return  service.getAll();
+	}
+	
+	@RequestMapping(value = "/task/demo/{taskID}",method  = {RequestMethod.GET})
+	public Map<String,Object> getDemoValue(@PathVariable("taskID") String taskID){
+		
+		
+		int seed= (int) (System.currentTimeMillis()%10  - 5);
+		Map<String,Object> demo=new HashMap<>();
+		
+		demo.put("foo",3*seed);
+		demo.put("bar",-7*seed);
+		demo.put("taskID",taskID);
+		return  demo;
 	}
 }

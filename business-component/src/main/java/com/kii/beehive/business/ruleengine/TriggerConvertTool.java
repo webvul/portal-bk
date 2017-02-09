@@ -120,8 +120,7 @@ public class TriggerConvertTool {
 			
 			StringBuffer buf=new StringBuffer(str);
 			buf.insert(start-base,prefix+".");
-			
-			buf.setCharAt(1,'t');
+
 			
 			matcher.appendReplacement(sb,Matcher.quoteReplacement(buf.toString()));
 		}

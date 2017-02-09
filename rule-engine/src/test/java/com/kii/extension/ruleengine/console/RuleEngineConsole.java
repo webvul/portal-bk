@@ -12,9 +12,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.quartz.SchedulerException;
@@ -64,7 +61,7 @@ public class RuleEngineConsole {
 	private Map<String,Set<String>> tagMap=new HashMap<>();
 
 
-	private ScheduledExecutorService executeService=new ScheduledThreadPoolExecutor(10);
+//	private ScheduledExecutorService executeService=new ScheduledThreadPoolExecutor(10);
 	
 	private AtomicBoolean  taskSign=new AtomicBoolean(false);
 
@@ -146,8 +143,6 @@ public class RuleEngineConsole {
 
 		service.enterInit();
 
-		initExternal();
-
 
 		List<BusinessObjInRule> statusList=new ArrayList<>();
 		statusList.add(getStatusInRule("0","foo=230,bar=150"));
@@ -165,38 +160,21 @@ public class RuleEngineConsole {
 
 		service.leaveInit();
 
-		executeService.scheduleAtFixedRate(()->{
-
-			if(taskSign.get()) {
-				Map<String, Object> map = new HashMap<>();
-				map.put("time", System.currentTimeMillis() % 100);
-				
-				BusinessDataObject obj=new BusinessDataObject("4",null, BusinessObjType.Thing);
-				obj.setData(map);
-				service.updateBusinessData(obj);
-			}
-
-		},3, 30,TimeUnit.SECONDS);
-
-	}
-
-	public void initExternal() {
-//		service.updateExternalValue("demo","one",111);
+//		executeService.scheduleAtFixedRate(()->{
 //
-//		service.updateExternalValue("demo","two",222);
+//			if(taskSign.get()) {
+//				Map<String, Object> map = new HashMap<>();
+//				map.put("time", System.currentTimeMillis() % 100);
+//
+//				BusinessDataObject obj=new BusinessDataObject("4",null, BusinessObjType.Thing);
+//				obj.setData(map);
+//				service.updateBusinessData(obj);
+//			}
+//
+//		},3, 30,TimeUnit.SECONDS);
 
-//       "express":"ml.score('one',$p{1},$p{2})>$e{demo.map[c].d} "
-
-		Entry entry=new Entry();
-		entry.setVal("value");
-		entry.setNum(-100);
-
-
-		Map<String,Object> map=new HashMap<>();
-		map.put("c",entry);
-
-//		service.updateExternalValue("demo","map",map);
 	}
+
 
 	public void loadAll(){
 
@@ -241,6 +219,11 @@ public class RuleEngineConsole {
 			case "restore":
 				taskSign.set(true);
 				break;
+				
+			case "fire":
+				
+				service.fireByHand();
+				break;
 			
 			case "setStatus":
 				String params = arrays[2];
@@ -257,6 +240,18 @@ public class RuleEngineConsole {
 					obj.setData(status.getFields());
 					service.updateBusinessData(obj);
 				}
+				break;
+			case "setObject":
+				String name = arrays[2];
+				String type=arrays[3];
+				String values=arrays[4];
+				
+				ThingStatus value = getStatus(values);
+				value.setField("_enable",true);
+				BusinessDataObject obj=new BusinessDataObject(arrays[1],name, BusinessObjType.valueOf(type));
+				obj.setData(value.getFields());
+				service.updateBusinessData(obj);
+				
 				break;
 			case "remove":
 				if(triggerMap.get(triggerID)) {
@@ -290,13 +285,6 @@ public class RuleEngineConsole {
 			case "listTrigger":
 				triggerMap.keySet().forEach((s) -> System.out.println(s));
 				break;
-//			case "setExt":
-//				String name = arrays[1];
-//				String value = arrays[2];
-//
-//				service.updateExternalValue("demo", name, value);
-//				break;
-
 			case "dump":
 
 				Map<String, Object> result = service.getRuleEngingDump(null);
@@ -320,7 +308,7 @@ public class RuleEngineConsole {
 	}
 
 	public static void main(String[] argc){
-
+		
 		ClassPathXmlApplicationContext  context=new ClassPathXmlApplicationContext("classpath:ruleConsoleCtx.xml");
 
 		RuleEngineConsole console=new RuleEngineConsole(context);

@@ -80,7 +80,13 @@
     <!-- task  -->
 
     <task:annotation-driven executor="myExecutor" scheduler="myScheduler"/>
-    <task:executor id="myExecutor" pool-size="10"/>
+
+    <bean id="myExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <property name="corePoolSize" value="10" />
+        <property name="maxPoolSize" value="20" />
+        <property name="queueCapacity" value="25" />
+    </bean>
+
     <task:scheduler id="myScheduler" pool-size="5"/>
 
     <!-- bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">

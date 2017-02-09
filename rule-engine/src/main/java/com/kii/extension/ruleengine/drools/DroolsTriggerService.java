@@ -2,6 +2,7 @@ package com.kii.extension.ruleengine.drools;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -19,8 +20,9 @@ import com.kii.extension.ruleengine.drools.entity.BusinessObjInRule;
 import com.kii.extension.ruleengine.drools.entity.ExternalValues;
 import com.kii.extension.ruleengine.drools.entity.MultiplesValueMap;
 import com.kii.extension.ruleengine.drools.entity.ScheduleFire;
+import com.kii.extension.ruleengine.drools.entity.SingleThing;
 import com.kii.extension.ruleengine.drools.entity.Summary;
-import com.kii.extension.ruleengine.drools.entity.ThingResult;
+import com.kii.extension.ruleengine.drools.entity.SummaryResult;
 import com.kii.extension.ruleengine.drools.entity.Trigger;
 import com.kii.extension.ruleengine.drools.entity.TriggerData;
 import com.kii.extension.ruleengine.drools.entity.TriggerValues;
@@ -60,8 +62,8 @@ public class DroolsTriggerService {
 		}
 
 	}
-
-	public void addTrigger(Trigger triggerInput,String ruleContent){
+	
+	public void addTrigger(Trigger triggerInput,TriggerValues   instData,String ruleContent){
 
 
 		Trigger trigger=new Trigger(triggerInput);
@@ -70,13 +72,12 @@ public class DroolsTriggerService {
 		getService(trigger.getTriggerID()).addCondition("rule"+trigger.getTriggerID(),ruleContent);
 
 		getService(trigger.getTriggerID()).addOrUpdateData(trigger,true);
-
-		TriggerValues  value=new TriggerValues(trigger.getTriggerID());
-		getService(trigger.getTriggerID()).addOrUpdateData(value,true);
+		
+		getService(trigger.getTriggerID()).addOrUpdateData(instData,true);
 
 	}
 
-	public void addMultipleTrigger(Trigger triggerInput,String ruleContent){
+	public void addMultipleTrigger(Trigger triggerInput,TriggerValues  instData,String ruleContent){
 		Trigger trigger=new Trigger(triggerInput);
 		triggerMap.put(trigger.getTriggerID(),trigger.isStream());
 
@@ -88,33 +89,41 @@ public class DroolsTriggerService {
 		map.setTriggerID(trigger.getTriggerID());
 		getService(trigger.getTriggerID()).addOrUpdateData(map,true);
 
-		ThingResult  result=new ThingResult(trigger.getTriggerID());
-		getService(trigger.getTriggerID()).addOrUpdateData(result,true);
-
-
-		TriggerValues  value=new TriggerValues(trigger.getTriggerID());
-		getService(trigger.getTriggerID()).addOrUpdateData(value,true);
+		getService(trigger.getTriggerID()).addOrUpdateData(instData,true);
+	}
+	
+	public void updateTriggerInstData(String triggerID, String key,Object value) {
+		
+		TriggerValues values=new TriggerValues(triggerID);
+		values.setValues(Collections.singletonMap(key,value));
+		
+		getService(triggerID).addOrUpdateData(values,false);
 	}
 
 	public void addTriggerData(TriggerData data) {
 
-
 		getService(data.getTriggerID()).addOrUpdateData(data,false);
 
 	}
+	
+	public void addMockThing(String triggerID){
+		
+		SingleThing thing=new SingleThing();
+		thing.setTriggerID(triggerID);
+		addTriggerData(thing);
+		
+	}
+	
+	public void addMockSummary(String triggerID){
+		
+		Summary summary=new Summary();
+		summary.setTriggerID(triggerID);
+		summary.setName("_MOCK");
+		
+		getService(triggerID).addOrUpdateData(new SummaryResult(summary,0),false);
+		
+	}
 
-
-//	public void addSlideSummary(Summary summary,String drl) {
-//
-////		Trigger trigger=triggerMap.get(summary.getTriggerID());
-//
-//
-//		getService(summary.getTriggerID()).addOrUpdateData(summary,true);
-//
-////		getService(summary.getTriggerID()).addCondition("slide-rule"+summary.getTriggerID()+summary.getName(),drl);
-//
-//
-//	}
 
 	public void updateThingsWithName(String triggerID,String name,Set<String> newThings){
 
@@ -185,7 +194,6 @@ public class DroolsTriggerService {
 		fire.setEnable(true);
 		
 		cloudService.addOrUpdateData(fire,false);
-//		addBusinessObj(fire);
 
 	}
 	
@@ -205,6 +213,8 @@ public class DroolsTriggerService {
 	}
 	
 	
+	
+	
 	public void addBusinessObj(BusinessObjInRule newStatus){
 		
 		List<BusinessObjInRule> list = dataMap.computeIfAbsent(index.get(), (k) -> {
@@ -212,7 +222,11 @@ public class DroolsTriggerService {
 		});
 		list.add(newStatus);
 	}
+	
+	public void addContextObj(BusinessObjInRule newStatus){
 
+		cloudService.addOrUpdateData(newStatus,true);
+	}
 	
 	private void  addThingStatus(Collection<BusinessObjInRule> newStatusSet){
 		
@@ -233,11 +247,11 @@ public class DroolsTriggerService {
 		cloudService.inThing(thIDs,newValues);
 
 	}
-
-	
 	
 	public void fireCurrTrigger(String triggerID) {
 		
 		cloudService.inFireTrigger(triggerID);
 	}
+	
+
 }

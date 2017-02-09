@@ -20,7 +20,6 @@ when
 	$summary:SummaryResult(triggerID==$triggerID)
 	$thing:ThingResult(triggerID==$triggerID)
 	$multiplesMap:MultiplesValueMap(triggerID==$triggerID)
-	$record:MemberMatchResult(triggerID==$triggerID)
 then
 
 	modify($multiplesMap){

@@ -15,7 +15,6 @@ import com.kii.beehive.business.ruleengine.TriggerManager;
 import com.kii.beehive.portal.service.CombineTriggerDao;
 import com.kii.beehive.portal.store.entity.MLTriggerCombine;
 import com.kii.extension.ruleengine.store.trigger.BusinessObjType;
-import com.kii.extension.ruleengine.store.trigger.Condition;
 import com.kii.extension.ruleengine.store.trigger.MultipleSrcTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.SingleThing;
@@ -116,31 +115,27 @@ public class CombineTriggerService {
 		MultipleSrcTriggerRecord newTrigger=convertTool.convertTrigger(combine.getBusinessTrigger());
 		newTrigger.setUsedByWho(TriggerRecord.UsedByType.Combine_trigger);
 		
-		return addMlCondition(newTrigger,combine.getMlTaskID(),combine.getMlCondition(),combine.isJoinWithAND());
-		
-		
+		return addMlCondition(newTrigger,combine.getMlTaskID());
 	}
 	
 	
-	private MultipleSrcTriggerRecord addMlCondition(MultipleSrcTriggerRecord trigger,String taskID,Condition additionCond,boolean isAnd){
+	private MultipleSrcTriggerRecord addMlCondition(MultipleSrcTriggerRecord trigger,String taskID){
 		
 		
 		String exp1=trigger.getPredicate().getExpress();
 		if(StringUtils.isBlank(exp1)){
 			exp1=convertTool.getExpress(trigger.getPredicate().getCondition());
 		}
+		
+		exp1=exp1.replaceAll("(comm.ml.)","ml.");
+		
 		if(StringUtils.isBlank(exp1)){
 			exp1=" eval(true) ";
 		}
 		
-		String exp2=convertTool.getExpress(additionCond);
-		String newExp2=convertTool.addParamPrefix(exp2,"ml");
+		String newExp2=" ||  $p{ml._enable} == false  ";
 		
-		newExp2+=" ||  $p{ml._enable} == false  ";
-		
-		String oper=isAnd?" && ":" || ";
-		
-		String fullExp=exp1+oper+" ( "+newExp2+" ) ";
+		String fullExp="("+exp1+")"+newExp2;
 		
 		RuleEnginePredicate predicate=new RuleEnginePredicate();
 		BeanUtils.copyProperties(trigger.getPredicate(),predicate);

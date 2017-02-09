@@ -40,6 +40,7 @@ public class RuleEngineFactory {
 
 	private Consumer<List<MatchResult>>  consumer;
 
+
 	@PostConstruct
 	public void init(){
 

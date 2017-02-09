@@ -34,8 +34,9 @@ public class CombinTriggerController {
 	}
 	
 	@RequestMapping(value = "/{triggerID}",method  = {RequestMethod.PUT},consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE})
-	public void updateTrigger(@RequestBody MLTriggerCombine trigger){
+	public void updateTrigger(@RequestBody MLTriggerCombine trigger,@PathVariable("triggerID") String triggerID){
 		
+		trigger.setId(triggerID);
 		service.updateMLTrigger(trigger);
 	}
 	

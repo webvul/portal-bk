@@ -61,12 +61,12 @@ public class ExpressTool {
 			Object value=   parser.parseExpression(express).getValue(
 					context, Object.class);
 			if(value==null){
-				return 0.0f;
+				return 0;
 			}else{
 				return value;
 			}
 		}catch(SpelEvaluationException e){
-			return 0.0f;
+			return 0;
 		}
 	}
 
@@ -79,17 +79,15 @@ public class ExpressTool {
 			field=StringUtils.substring(field,9);
 		}
 		
-		int idx=StringUtils.indexOfAny(field,".","[");
-		if(idx==-1){
-			idx=field.length();
-		}
-		String prefix= StringUtils.substring(field,0,idx);
-		String header=isHistory?"previous":"values";
+		StringBuilder header=new StringBuilder(isHistory?"previous":"values");
 		
-		String fullField=header+"['"+prefix+"']"+StringUtils.substring(field,idx);
-
-//		log.debug("fullField:"+fullField);
-		return fullField;
+		String[] array=StringUtils.split(field,".");
+		
+		for(String s:array){
+			header.append("['").append(s).append("']");
+		}
+		
+		return header.toString();
 	}
 
 }

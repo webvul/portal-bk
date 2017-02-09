@@ -12,7 +12,6 @@
 
         <Logger name="org.apache.http.wire" level="debug" />
 
-
         <Logger name="org.springframework.web" level="debug" />
 
         <Logger name="org.springframework.cache" level="debug" />

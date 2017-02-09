@@ -51,7 +51,7 @@ public class SettingTriggerGroupParameter extends ExecuteTarget {
 	
 	public void setExtensionName(String parameterName) {
 		this.businessObj.setBusinessObjID(parameterName);
-		this.businessObj.setBusinessType(BusinessObjType.Global);
+		this.businessObj.setBusinessType(BusinessObjType.Context);
 	}
 	
 	public Map<String, String> getParamMap() {

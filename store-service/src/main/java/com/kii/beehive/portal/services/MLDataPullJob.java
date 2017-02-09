@@ -1,6 +1,6 @@
 package com.kii.beehive.portal.services;
 
-import java.util.HashMap;
+import java.util.Date;
 import java.util.Map;
 
 import org.apache.http.client.methods.HttpGet;
@@ -14,8 +14,10 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.beehive.business.ruleengine.TriggerManager;
+import com.kii.beehive.portal.common.utils.StrTemplate;
 import com.kii.beehive.portal.helper.HttpClient;
 import com.kii.beehive.portal.service.MLTaskDetailDao;
+import com.kii.beehive.portal.store.entity.MLTaskErrorInfo;
 import com.kii.extension.ruleengine.schedule.JobInSpring;
 import com.kii.extension.ruleengine.store.trigger.BusinessDataObject;
 import com.kii.extension.ruleengine.store.trigger.BusinessObjType;
@@ -25,6 +27,8 @@ public class MLDataPullJob implements JobInSpring {
 	
 	
 	public  static final String ML_TASK_ID = "mlTaskID";
+	public  static final String ML_TASK_URL="mlTaskUrl";
+	
 	private Logger log= LoggerFactory.getLogger(MLDataPullJob.class);
 	
 	
@@ -43,38 +47,25 @@ public class MLDataPullJob implements JobInSpring {
 	private TriggerManager triggerOper;
 	
 	
-	
-	
-	private String mlServiceUrl;
-	
-	
 	@Override
 	public void execute(JobDataMap paramMap) {
 		
 		String taskID=paramMap.getString(ML_TASK_ID);
 		
-		doTask(taskID);
+		String url=paramMap.getString(ML_TASK_URL);
+		doTask(taskID,url);
 		
 	}
 	
 	
-	private  void  doTask(String taskID){
+	private  void  doTask(String taskID,String url){
 		
-		
-		HttpUriRequest request=new HttpGet("http://localhost:?taskID="+taskID);
-//
-//			String response=http.executeRequest(request);
-		
-		int seed= (int) (System.currentTimeMillis()%10  - 5);
-		Map<String,Object> demo=new HashMap<>();
-		
-		demo.put("foo",3*seed);
-		demo.put("bar",-7*seed);
-		
+		String fullUrl= StrTemplate.generUrl(url,taskID);
+		HttpUriRequest request=new HttpGet(fullUrl);
+
 		try {
 			
-			
-			String response=mapper.writeValueAsString(demo);
+			String response=http.executeRequest(request);
 			
 			Map<String,Object> map=mapper.readValue(response, Map.class);
 			
@@ -88,6 +79,17 @@ public class MLDataPullJob implements JobInSpring {
 			
 		} catch (Exception e) {
 			log.warn("get ML data fail:task id"+taskID,e.getMessage());
+			
+			Throwable exception=e.getCause();
+			if(exception==null){
+				exception=e;
+			}
+			MLTaskErrorInfo error=new MLTaskErrorInfo();
+			error.setTime(new Date());
+			error.setErrorMessage(exception.getMessage());
+			error.setErrorCode(exception.getClass().getName());
+			
+			mlTaskDao.updateErrorInfo(error,taskID);
 		}
 		
 	}

@@ -156,37 +156,6 @@ public class DroolsService {
 
 		settingCurrThing(thingIDs,newValues, CurrThing.Status.inThing);
 	}
-
-
-//	public  void updateScheduleData(ScheduleFire fire){
-//
-//		CurrThing thing=currThing.updateAndGet((th)->{
-//
-//
-//			CurrThing.Status oldStatus = th.getStatus();
-//			if(oldStatus==CurrThing.Status.inInit){
-//				return th;
-//			}
-//
-//			if(oldStatus==CurrThing.Status.inThing) {
-//
-//				th.setStatus(CurrThing.Status.inIdle);
-//			}
-//			return th;
-//		});
-//
-//		if(thing.getStatus()==CurrThing.Status.inInit){
-//			return;
-//		}
-//
-//		synchronized (kieSession) {
-//			FactHandle handler = kieSession.insert(fire);
-//			fireDrools();
-//			kieSession.delete(handler);
-//		}
-//
-//	}
-	
 	
 	private void fireDrools(){
 		try{
@@ -386,8 +355,6 @@ public class DroolsService {
 		}catch(RuntimeException e){
 			kfs.delete(drlName);
 			pathSet.remove(drlName);
-//			kb=ks.newKieBuilder(kfs);
-//			kb.buildAll();
 			log.error(e.getMessage());
 			
 			throw e;
@@ -403,7 +370,8 @@ public class DroolsService {
 
 
 		if(!pathSet.contains(path)) {
-			throw new IllegalArgumentException("the deleted drl not found");
+			log.error("the deleted drl not found");
+			return;
 		}
 
 		kfs.delete(path);

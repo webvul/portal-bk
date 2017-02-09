@@ -24,7 +24,6 @@ import com.kii.extension.ruleengine.TriggerCreateException;
 import com.kii.extension.ruleengine.service.TriggerRecordDao;
 import com.kii.extension.ruleengine.store.trigger.BeehiveTriggerType;
 import com.kii.extension.ruleengine.store.trigger.BusinessDataObject;
-import com.kii.extension.ruleengine.store.trigger.ExternalEntry;
 import com.kii.extension.ruleengine.store.trigger.GatewayTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 
@@ -248,15 +247,6 @@ public class TriggerManager {
 		
 		this.creator.addBusinessData(obj);
 	}
-	
-	public void updateTriggerInstData(String triggerID,String key,Object value) {
-		
-		this.creator.updateTriggerInstaData(triggerID,key,value);
-		
-		ExternalEntry entry=new ExternalEntry();
-		entry.getValues().put(key,value);
-		
-		triggerDao.updateTriggerInstData(triggerID,entry);
-	}
+
 	
 }

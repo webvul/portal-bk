@@ -7,10 +7,9 @@ import java.util.Map;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.store.entity.MLTaskDetail;
-import com.kii.extension.sdk.annotation.BindAppByName;
+import com.kii.beehive.portal.store.entity.MLTaskErrorInfo;
 import com.kii.extension.sdk.entity.BucketInfo;
 
-@BindAppByName(appName="portal",appBindSource="propAppBindTool")
 @Component
 public class MLTaskDetailDao extends BaseKiicloudDao<MLTaskDetail>{
 	
@@ -29,6 +28,10 @@ public class MLTaskDetailDao extends BaseKiicloudDao<MLTaskDetail>{
 	public void updateOutput(Map<String,Object> values,String mlTaskID){
 		
 		super.updateEntity(Collections.singletonMap("mlOutput",values),mlTaskID);
+	}
+	
+	public void updateErrorInfo(MLTaskErrorInfo  errorInfo,String mlTaskID){
+		super.updateEntity(Collections.singletonMap("lastError",errorInfo),mlTaskID);
 	}
 	
 }

@@ -1,5 +1,7 @@
 package com.kii.extension.ruleengine.drools.entity;
 
+import java.util.Objects;
+
 public class MatchResult extends CommResult{
 
 

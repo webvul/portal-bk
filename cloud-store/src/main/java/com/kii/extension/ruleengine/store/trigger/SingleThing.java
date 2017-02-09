@@ -14,7 +14,7 @@ public class SingleThing {
 	
 	private String businessID;
 	
-	private BusinessObjType businessType= BusinessObjType.Thing;
+	private BusinessObjType businessType;
 	
 	private BusinessObjType type;
 	
@@ -70,14 +70,17 @@ public class SingleThing {
 		
 		String id=null;
 		
+		if(businessType==null){
+			return new BusinessDataObject(businessID,businessName,type);
+		}
+		
 		switch(businessType){
 			
 			case Thing:id=String.valueOf(thingID);break;
 			case User:id=userID;break;
 			case TriggerGroup:id=triggerGroupName;break;
-			default:return new BusinessDataObject(businessID,businessName,type);
-			
 		}
+		
 		return new BusinessDataObject(id,businessName,businessType);
 	}
 	

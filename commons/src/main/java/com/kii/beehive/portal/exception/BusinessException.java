@@ -19,6 +19,13 @@ public class BusinessException extends RuntimeException {
 	public BusinessException(){
 
 	}
+	
+	
+	public BusinessException(Exception e){
+		super(e);
+		setErrorCode(e.getClass().getName());
+		setStatusCode(500);
+	}
 
 	protected BusinessException(String...  params){
 
