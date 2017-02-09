@@ -76,9 +76,6 @@ public class ThingStatusChangeCallback {
 		}
 		//push redis
 		messageQueueDao.lpush(thingStateQueue, postEventJsonStr);
-		
-		globalThingInfo=null;
-		status=null;
 	}
 
 }

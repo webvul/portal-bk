@@ -91,7 +91,7 @@ public class ExtensionCallbackController {
 		pushCallback.onEventFire(globalThingInfo, status.getState(), status.getTimestamp());
 
 
-//		eventBus.onStatusUploadFire(String.valueOf(globalThingInfo.getId()), status.getState(), status.getTimestamp());
+		eventBus.onStatusUploadFire(String.valueOf(globalThingInfo.getId()), status.getState(), status.getTimestamp());
 
 		internalEventListenerRegistry.onStateChange(appID, status);
 	}
