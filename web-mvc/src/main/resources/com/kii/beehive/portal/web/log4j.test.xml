@@ -7,51 +7,42 @@
 			<param name="ConversionPattern" value="%d [%t] %-5p %m - %C{3}.%M(%L)%n" />
 		</layout>
 	</appender>
-
+	
 	<appender name="file" class="org.apache.log4j.DailyRollingFileAppender" >
-		<param name="file" value="/data/log/beehive/beehive.log" />
-		<param name="DatePattern" value="'.'yyyy-MM-dd" />
-		<layout class="org.apache.log4j.PatternLayout">
+	   <param name="file" value="${user.home}/.beehive/log/beehive/beehive.log" />
+	   <param name="DatePattern" value="'.'yyyy-MM-dd" />
+	   <layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%d [%t] %-5p %m - %C{3}.%M(%L)%n" />
-		</layout>
+	   </layout>
 	</appender>
 
-	<appender name="faceplusplus" class="org.apache.log4j.DailyRollingFileAppender" >
-		<param name="file" value="/data/log/beehive/faceplusplus.log" />
-		<param name="DatePattern" value="'.'yyyy-MM-dd" />
-		<layout class="org.apache.log4j.PatternLayout">
-			<param name="ConversionPattern" value="%m%n" />
-		</layout>
-	</appender>
 
-	<logger name="faceplusplus">
-		<level value="info" />
-		<appender-ref ref="faceplusplus" />
-	</logger>
 
 	<logger name="com.fasterxml.jackson">
 		<level value="info" />
 	</logger>
 
 	<logger name="org.apache.http.wire">
-		<level value="info" />
+		<level value="debug" />
 	</logger>
 
+
+
 	<logger name="org.springframework.web">
-		<level value="info" />
+		<level value="debug" />
 	</logger>
 
     <logger name="org.springframework.cache" >
-        <level value="info" />
+        <level value="debug" />
     </logger>
 
-	
     <logger name="com.kii" >
-        <level value="info" />
+        <level value="debug" />
     </logger>
 
 	<root>
 		<priority value="info" />
+        <appender-ref ref="console" />
         <appender-ref ref="file" />
 	</root>
 </log4j:configuration>
