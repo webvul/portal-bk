@@ -59,17 +59,6 @@
     <bean class="com.kii.extension.ruleengine.RuleEngineConfig"/>
 
 
-    <!-- log4j    -->
-
-    <bean id="log4jInitializer" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="targetClass" value="org.springframework.util.Log4jConfigurer"/>
-        <property name="targetMethod" value="initLogging"/>
-        <property name="arguments">
-            <list>
-                <value>classpath:com/kii/beehive/portal/web/log4j.${spring.profile}.xml</value>
-            </list>
-        </property>
-    </bean>
 
     <!-- task  -->
 

@@ -37,10 +37,10 @@ public class AppBindAspect {
 
 
 
-//	@Pointcut("execution (* com.kii.extension.sdk.service.AbstractDataAccess+.*(..)  ) ")
-//	private void commDataAccess(){
-//
-//	}
+	@Pointcut("execution (* com.kii.extension.sdk.service.AbstractDataAccess+.*(..)  ) ")
+	private void commDataAccess(){
+
+	}
 
 	@Pointcut("within (@com.kii.extension.sdk.annotation.BindAppByName com.kii..* ) ")
 	private void appBindWithAnnotation(){
@@ -54,7 +54,7 @@ public class AppBindAspect {
 	}
 
 	
-	@Around("appBindWithAnnotation()")
+	@Around("appBindWithAnnotation()||commDataAccess()")
 	public Object aroundCallDataAccess(ProceedingJoinPoint pjp)throws Throwable{
 		
 		
