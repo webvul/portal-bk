@@ -3,11 +3,13 @@ package com.kii.beehive.portal.service;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.store.entity.UserRuleSet;
+import com.kii.extension.sdk.annotation.BindAppByName;
+import com.kii.extension.sdk.context.TokenBindTool;
 import com.kii.extension.sdk.entity.BucketInfo;
 import com.kii.extension.sdk.service.AbstractDataAccess;
 
-@PortalApp
 @Component
+@BindAppByName(appName="portal",appBindSource="propAppBindTool",tokenBind = TokenBindTool.BindType.Custom,customBindName = PortalTokenBindTool.PORTAL_OPER )
 public class UserRuleDao  extends AbstractDataAccess<UserRuleSet> {
 
 

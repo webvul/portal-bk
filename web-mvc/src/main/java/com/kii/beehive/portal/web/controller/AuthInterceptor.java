@@ -1,4 +1,4 @@
-package com.kii.beehive.portal.web.help;
+package com.kii.beehive.portal.web.controller;
 
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.kii.beehive.business.manager.AppInfoManager;
@@ -27,9 +27,10 @@ import com.kii.beehive.portal.web.constant.CallbackNames;
 import com.kii.beehive.portal.web.constant.Constants;
 import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
+import com.kii.beehive.portal.web.help.AuthUtils;
 import com.kii.extension.sdk.context.AppBindToolResolver;
 
-@Service
+@Controller
 public class AuthInterceptor extends HandlerInterceptorAdapter {
 
 	private Logger log = LoggerFactory.getLogger(AuthInterceptor.class);

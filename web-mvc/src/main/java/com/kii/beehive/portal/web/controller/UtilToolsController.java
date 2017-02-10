@@ -5,10 +5,10 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
@@ -21,13 +21,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyEmitter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.beehive.business.manager.AppInfoManager;
 import com.kii.beehive.business.manager.TagThingManager;
-import com.kii.beehive.portal.sysmonitor.SysMonitorMsg;
-import com.kii.beehive.portal.sysmonitor.SysMonitorQueue;
 import com.kii.beehive.portal.entitys.PermissionTree;
 import com.kii.beehive.portal.helper.PermissionTreeService;
 import com.kii.beehive.portal.helper.RuleSetService;
@@ -37,6 +36,8 @@ import com.kii.beehive.portal.service.BeehiveConfigDao;
 import com.kii.beehive.portal.store.entity.CallbackUrlParameter;
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
 import com.kii.beehive.portal.store.entity.es.EsDataSourceCfgEntry;
+import com.kii.beehive.portal.sysmonitor.SysMonitorMsg;
+import com.kii.beehive.portal.sysmonitor.SysMonitorQueue;
 import com.kii.beehive.portal.web.constant.CallbackNames;
 import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
@@ -224,17 +225,26 @@ public class UtilToolsController {
 		return permissionTreeService.getFullPermissionTree();
 	}
 	
-	
-	@RequestMapping(value = "/sys/monitor", method = {RequestMethod.GET}, consumes = {"*"})
-	public Callable<SysMonitorMsg> getSysNoticeMsg() {
-		
-		return SysMonitorQueue.getInstance().getCallbackFun();
-	}
+
 	
 	@RequestMapping(value = "/sys/monitor/history", method = {RequestMethod.GET}, consumes = {"*"})
-	public List<SysMonitorMsg> getSysNoticeMsgHistory() {
+	public ResponseBodyEmitter getSysNoticeMsgHistory() {
+		ResponseBodyEmitter emitter=new ResponseBodyEmitter();
 		
-		return SysMonitorQueue.getInstance().getMsgHistory();
+		
+		return emitter;
+	}
+	
+	@RequestMapping(value = "/sys/monitor/debug", method = {RequestMethod.PUT})
+	public void addMsg(@RequestBody Map<String,String> values) {
+		SysMonitorMsg msg=new SysMonitorMsg();
+		
+		msg.setFrom(SysMonitorMsg.FromType.DB);
+		msg.setFireDate(new Date());
+		msg.setErrorType("mock");
+		msg.setErrMessage(values.get("msg"));
+		
+		 SysMonitorQueue.getInstance().addNotice(msg);
 	}
 	
 	

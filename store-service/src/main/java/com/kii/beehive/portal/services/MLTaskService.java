@@ -7,6 +7,7 @@ import static com.kii.extension.ruleengine.schedule.ProxyJob.BEAN_CLASS;
 import javax.annotation.PostConstruct;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -84,6 +85,7 @@ public class MLTaskService {
 		
 		List<MLTaskDetail> allTask=mlTaskDao.getAllExistsEntity();
 		
+		final Date now=new Date(System.currentTimeMillis()+1000*60);
 		
 		allTask.forEach((detail)->{
 			
@@ -99,7 +101,7 @@ public class MLTaskService {
 			triggerOper.addBusinessData(obj);
 			
 			
-			SimpleTrigger interval = getSimpleTrigger(detail);
+			SimpleTrigger interval = getSimpleTrigger(detail,now);
 			
 			try {
 				scheduler.scheduleJob(interval);
@@ -116,14 +118,18 @@ public class MLTaskService {
 		
 	}
 	
-	private SimpleTrigger getSimpleTrigger(MLTaskDetail detail) {
-		return TriggerBuilder.newTrigger()
+	private SimpleTrigger getSimpleTrigger(MLTaskDetail detail,Date now) {
+		
+		TriggerBuilder<SimpleTrigger> builder= TriggerBuilder.newTrigger()
 						.withIdentity(getTriggerKey(detail.getMlTaskID()))
 						.forJob(jobKey)
 						.usingJobData(MLDataPullJob.ML_TASK_ID,detail.getMlTaskID())
 						.usingJobData(MLDataPullJob.ML_TASK_URL,detail.getAccessUrl())
-						.withSchedule(SimpleScheduleBuilder.repeatMinutelyForever(detail.getInterval()))
-						.build();
+						.withSchedule(SimpleScheduleBuilder.repeatMinutelyForever(detail.getInterval()));
+		if(now!=null){
+			builder.startAt(now);
+		}
+		return builder.build();
 	}
 	
 	public MLTaskDetail getTaskDetailByID(String taskID){
@@ -171,7 +177,7 @@ public class MLTaskService {
 		
 		mlTaskDao.updateEntityAll(detail,taskID);
 		
-		SimpleTrigger interval = getSimpleTrigger(detail);
+		SimpleTrigger interval = getSimpleTrigger(detail,null);
 		
 		try {
 			scheduler.rescheduleJob(getTriggerKey(taskID),interval);

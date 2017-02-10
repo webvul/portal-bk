@@ -6,7 +6,6 @@ import com.kii.beehive.portal.store.entity.MLTriggerCombine;
 import com.kii.extension.sdk.entity.BucketInfo;
 
 
-@PortalApp
 @Component
 public class CombineTriggerDao extends BaseKiicloudDao<MLTriggerCombine>{
 	

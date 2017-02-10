@@ -1,7 +1,6 @@
 package com.kii.beehive.portal.web.config;
 
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
@@ -11,6 +10,7 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurationSupport;
+
 import com.kii.beehive.portal.web.aop.WebSocketAspect;
 import com.kii.beehive.portal.web.controller.STOMPMessageController;
 import com.kii.beehive.portal.web.socket.EchoHandler;
@@ -19,7 +19,6 @@ import com.kii.beehive.portal.web.stomp.MessageManager;
 /**
  * Created by hdchen on 6/27/16.
  */
-@Configuration
 @EnableWebMvc
 @EnableWebSocket
 @EnableWebSocketMessageBroker

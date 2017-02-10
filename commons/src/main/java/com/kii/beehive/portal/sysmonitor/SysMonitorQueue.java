@@ -6,12 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedTransferQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TransferQueue;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +22,9 @@ public class SysMonitorQueue {
 	
 	private ScheduledExecutorService executorService= Executors.newScheduledThreadPool(1);
 	
-	private TransferQueue<SysMonitorMsg> queue=new LinkedTransferQueue<>();
+//	private ExecutorService threadPool=Executors.newCachedThreadPool();
+	
+	private AtomicReference<SysMonitorMsg> queue=new AtomicReference<SysMonitorMsg>();
  	
 	private Map<Integer,List<SysMonitorMsg>> historyCycleMap=new ConcurrentHashMap<>();
 
@@ -29,6 +32,11 @@ public class SysMonitorQueue {
 	
 	private Logger log= LoggerFactory.getLogger(SysMonitorQueue.class);
 	
+//	private CyclicBarrier barrier=new CyclicBarrier(1);
+//
+//	private AtomicInteger count=new AtomicInteger(0);
+	
+	private ExecutorService pool= Executors.newCachedThreadPool();
 	
 	private SysMonitorQueue(){
 		
@@ -54,15 +62,24 @@ public class SysMonitorQueue {
 		
 		historyCycleMap.computeIfAbsent(index.get(),(i)-> new ArrayList<>()).add(notice);
 		
-		if(queue.hasWaitingConsumer()){
-			queue.tryTransfer(notice);
+		queue.set(notice);
+		
+		try {
+			pool.invokeAll(taskMap.values());
+		} catch (InterruptedException e) {
+			return;
 		}
 		
 	}
 	
-	public Callable<SysMonitorMsg>  getCallbackFun(){
+	private Map<String,Callable<Boolean>> taskMap=new ConcurrentHashMap<>();
+	
+	public void registerFire(String id,Function<SysMonitorMsg,Boolean> callback){
 		
-		return () -> queue.take();
+		taskMap.put(id,() -> {
+			SysMonitorMsg msg =queue.get();
+			return callback.apply(msg);
+		});
 	}
 	
 	public List<SysMonitorMsg> getMsgHistory(){
@@ -74,4 +91,8 @@ public class SysMonitorQueue {
 		return msgList;
 	}
 	
+	public void unRegisterFire(String id) {
+		
+		taskMap.remove(id);
+	}
 }

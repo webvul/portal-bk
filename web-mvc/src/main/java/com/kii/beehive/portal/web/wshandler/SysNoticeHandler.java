@@ -1,10 +1,12 @@
 package com.kii.beehive.portal.web.wshandler;
 
+
 import java.io.IOException;
+import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
@@ -12,50 +14,36 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.kii.beehive.business.service.NoticeMsgQueue;
-import com.kii.beehive.portal.auth.AuthInfoStore;
-import com.kii.beehive.portal.entitys.AuthUser;
-import com.kii.beehive.portal.manager.AuthManager;
+import com.kii.beehive.portal.sysmonitor.SysMonitorMsg;
+import com.kii.beehive.portal.sysmonitor.SysMonitorQueue;
+
 
 @Controller
-public class UserNoticeHandler extends TextWebSocketHandler {
+public class SysNoticeHandler extends TextWebSocketHandler {
 	
 	
 	@Autowired
 	private ObjectMapper mapper;
 	
-	@Autowired
-	private NoticeMsgQueue queue;
-	
-	
-	@Lazy
-	@Autowired
-	private AuthManager authManager;
-
+	private Function<SysMonitorMsg,Boolean> callback;
 	
 	@Override
 	public void handleTextMessage(WebSocketSession session, TextMessage message) {
 		
 		
-		String token =message.getPayload();
-		
-		AuthUser authInfo = authManager.validateLoginAccessToken(token);
-		AuthInfoStore.setUserInfo(authInfo.getUser().getId());
-		
-		Long userID=authInfo.getUser().getId();
-		
-		queue.regist(userID, notice -> {
+		SysMonitorQueue.getInstance().registerFire(session.getId(),notice->{
 			
 			if(notice==null){
 				return true;
 			}
 			
 			if(!session.isOpen()){
+				
 				return false;
 			}
 			
+			
 			try {
-				notice.setReaded(null);
 				
 				TextMessage msg = new TextMessage(mapper.writeValueAsString(notice));
 				
@@ -63,13 +51,24 @@ public class UserNoticeHandler extends TextWebSocketHandler {
 				
 				return true;
 			}catch (JsonParseException e){
-					return true;
+				return true;
 			}catch(IOException ex){
 				return false;
 			}
+			
 		});
 		
-
 	}
 	
+	@Override
+	public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
+		SysMonitorQueue.getInstance().unRegisterFire(session.getId());
+	}
+	
+	@Override
+	public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+		SysMonitorQueue.getInstance().unRegisterFire(session.getId());
+		
+	}
+
 }

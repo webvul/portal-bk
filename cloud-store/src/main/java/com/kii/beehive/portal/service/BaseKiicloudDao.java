@@ -8,12 +8,14 @@ import java.util.Map;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.exception.InvalidEntryStatusException;
 import com.kii.beehive.portal.store.entity.PortalEntity;
+import com.kii.extension.sdk.annotation.BindAppByName;
+import com.kii.extension.sdk.context.TokenBindTool;
 import com.kii.extension.sdk.query.Condition;
 import com.kii.extension.sdk.query.ConditionBuilder;
 import com.kii.extension.sdk.query.QueryParam;
 import com.kii.extension.sdk.service.AbstractDataAccess;
 
-@PortalApp
+@BindAppByName(appName="portal",appBindSource="propAppBindTool",tokenBind = TokenBindTool.BindType.Custom,customBindName = PortalTokenBindTool.PORTAL_OPER )
 public abstract  class  BaseKiicloudDao<T extends PortalEntity> extends AbstractDataAccess<T>{
 	
 	

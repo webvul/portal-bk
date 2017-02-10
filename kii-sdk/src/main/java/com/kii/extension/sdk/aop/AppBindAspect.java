@@ -37,12 +37,12 @@ public class AppBindAspect {
 
 
 
-	@Pointcut("execution (* com.kii.extension.sdk.service.AbstractDataAccess+.*(..)  ) ")
-	private void commDataAccess(){
+//	@Pointcut("execution (* com.kii.extension.sdk.service.AbstractDataAccess+.*(..)  ) ")
+//	private void commDataAccess(){
+//
+//	}
 
-	}
-
-	@Pointcut("within (@com.kii.extension.sdk.annotation.BindAppByName  com.kii..* ) ")
+	@Pointcut("within (@com.kii.extension.sdk.annotation.BindAppByName com.kii..* ) ")
 	private void appBindWithAnnotation(){
 
 	}
@@ -54,35 +54,35 @@ public class AppBindAspect {
 	}
 
 	
-	@Around("commDataAccess()  ||  appBindWithAnnotation() ")
+	@Around("appBindWithAnnotation()")
 	public Object aroundCallDataAccess(ProceedingJoinPoint pjp)throws Throwable{
 		
 		
 		BindAppByName appByName=pjp.getTarget().getClass().getAnnotation(BindAppByName.class);
 		
-		if(appByName==null){
-			
-			for(Annotation anno:pjp.getTarget().getClass().getAnnotations()){
-				
-				appByName=anno.annotationType().getAnnotation(BindAppByName.class);
-				if(appByName!=null){
-					break;
-				}
-			};
-		}
-		
-		
-		if(appByName==null){
-			
-			for(Annotation anno:pjp.getTarget().getClass().getSuperclass().getAnnotations()){
-				
-				appByName=anno.annotationType().getAnnotation(BindAppByName.class);
-				if(appByName!=null){
-					break;
-				}
-			};
-		}
-	
+//		if(appByName==null){
+//
+//			for(Annotation anno:pjp.getTarget().getClass().getAnnotations()){
+//
+//				appByName=anno.annotationType().getAnnotation(BindAppByName.class);
+//				if(appByName!=null){
+//					break;
+//				}
+//			};
+//		}
+//
+//
+//		if(appByName==null){
+//
+//			for(Annotation anno:pjp.getTarget().getClass().getSuperclass().getAnnotations()){
+//
+//				appByName=anno.annotationType().getAnnotation(BindAppByName.class);
+//				if(appByName!=null){
+//					break;
+//				}
+//			};
+//		}
+//
 
 		
 		if(appByName==null) {

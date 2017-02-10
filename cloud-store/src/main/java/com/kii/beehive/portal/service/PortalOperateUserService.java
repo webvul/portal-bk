@@ -14,7 +14,6 @@ import com.kii.extension.sdk.exception.BadUserNameException;
 import com.kii.extension.sdk.service.UserService;
 
 @Component
-@PortalApp
 public class PortalOperateUserService {
 	
 	@Autowired
