@@ -161,6 +161,9 @@ public class ExSpaceBookService {
 	public void insertSpaceBook(List<ExSpaceBook> spaceBooks){
 		for (int i = 0; i < spaceBooks.size(); i++) {
 			ExSpaceBook book = spaceBooks.get(i);
+			if( spaceCodeSitLockMap.get(book.getSpaceCode()) == null ) {
+				throw new IllegalArgumentException("not valid space_code :" + (i+1) );
+			}
 			Map<String, Object> queryParam = new HashMap<>();
 			queryParam.put("appCode", book.getAppCode());
 			queryParam.put("campusCode", book.getCampusCode());
