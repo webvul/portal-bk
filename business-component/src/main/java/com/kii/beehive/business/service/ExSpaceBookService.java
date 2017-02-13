@@ -5,6 +5,7 @@ import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -162,8 +163,15 @@ public class ExSpaceBookService {
 		for (int i = 0; i < spaceBooks.size(); i++) {
 			ExSpaceBook book = spaceBooks.get(i);
 			if( spaceCodeSitLockMap.get(book.getSpaceCode()) == null ) {
-				throw new IllegalArgumentException("not valid space_code :" + (i+1) );
+				throw new IllegalArgumentException("工位号不正确 :" + (i+1) );
 			}
+			if( book.getEndDate().before(book.getBeginDate()) ) {
+				throw new IllegalArgumentException("结束日期小于开始日期 :" + (i+1) );
+			}
+			if( book.getEndDate().before(new Date()) ) {
+				throw new IllegalArgumentException("结束日期小于当前时间 :" + (i+1) );
+			}
+
 			Map<String, Object> queryParam = new HashMap<>();
 			queryParam.put("appCode", book.getAppCode());
 			queryParam.put("campusCode", book.getCampusCode());
