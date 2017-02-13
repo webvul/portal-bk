@@ -244,9 +244,16 @@ public class ExSpaceBookService {
 			spaceBookForUpdate.forEach( item -> {
 				TriggerRecord unlockTriggerRecord = triggerManager.getTriggerByID(item.getTriggerId());
 				//condition
-				Equal pwdEq = (Equal)unlockTriggerRecord.getPredicate().getCondition();
-				pwdEq.setValue(newPwd);
-				triggerManager.updateTrigger(unlockTriggerRecord);
+				if("unlock-error-pwd".equals(unlockTriggerRecord.getName())){
+					AndLogic pwdEqAndLogic = (AndLogic)unlockTriggerRecord.getPredicate().getCondition();
+					Equal pwdEq = (Equal) ( (NotLogic)pwdEqAndLogic.getClauses().get(0) ).getClause();
+					pwdEq.setValue(newPwd);
+					triggerManager.updateTrigger(unlockTriggerRecord);
+				} else if("unlock".equals(unlockTriggerRecord.getName())){
+					Equal pwdEq = (Equal)unlockTriggerRecord.getPredicate().getCondition();
+					pwdEq.setValue(newPwd);
+					triggerManager.updateTrigger(unlockTriggerRecord);
+				}
 
 			});
 
