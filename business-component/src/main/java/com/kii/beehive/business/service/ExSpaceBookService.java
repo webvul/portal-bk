@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StreamUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Charsets;
+import com.kii.beehive.business.manager.ThingTagManager;
 import com.kii.beehive.business.ruleengine.TriggerManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.jdbc.dao.ExCameraDoorDao;
@@ -34,6 +35,7 @@ import com.kii.beehive.portal.jdbc.entity.ExSitLock;
 import com.kii.beehive.portal.jdbc.entity.ExSitSysBeehiveUserRel;
 import com.kii.beehive.portal.jdbc.entity.ExSpaceBook;
 import com.kii.beehive.portal.jdbc.entity.ExSpaceBookTriggerItem;
+import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.condition.AndLogic;
 import com.kii.extension.ruleengine.store.trigger.condition.Equal;
@@ -74,6 +76,9 @@ public class ExSpaceBookService {
 	@Autowired
 	private ResourceLoader loader;
 
+	@Autowired
+	private ThingTagManager thingTagManager;
+
 	private Map<String, String> sitBeehiveUserIdMap = new ConcurrentHashMap<>();
 	private Map<String, List<ExCameraDoor>> cameraDoorMap = new HashMap<>();
 	private Map<String, ExSitLock> spaceCodeSitLockMap = new HashMap<>();//key: spaceCode
@@ -81,14 +86,29 @@ public class ExSpaceBookService {
 	static String UNLOCK_TRIGGER = null;
 	static String UNLOCK_ERRORPWD_TRIGGER = null;
 	@PostConstruct
-	public void init() throws IOException {
+	public Map<String, Object> init() throws IOException {
 		log.info("init ExSpaceBookService...");
 		cameraDoorMap.clear();
 		spaceCodeSitLockMap.clear();
 		sitBeehiveUserIdMap.clear();
 		//
+		Map<Long, Long> checkedThingIdMap = new HashMap<>();
+		Map<String, Object> checkResult = new HashMap<>();
+		Map<String, Object> checkThingResult = new HashMap<>();
+		checkResult.put("errorThing",checkThingResult);
+		List<Object> checkDoorThingList = new ArrayList<>();
+		List<Object> checkFaceThingList = new ArrayList<>();
+		List<Object> checkLockThingList = new ArrayList<>();
+		checkThingResult.put("door", checkDoorThingList);
+		checkThingResult.put("Face", checkFaceThingList);
+		checkThingResult.put("lock", checkLockThingList);
+//		Map<String, Object> checkDoorThing = new HashMap<>();
+//		Map<String, Object> checkLockThing = new HashMap<>();
+		//
 		List<ExCameraDoor> cameraDoorDaoAll = cameraDoorDao.findAll();
 		cameraDoorDaoAll.forEach(door -> {
+			//check thing id
+
 			String key = door.getFace_thing_id() + "`" + door.getDoor_thing_id();
 			List<ExCameraDoor> cameraDoorListByKey = cameraDoorMap.get(key);
 			if(cameraDoorListByKey == null) {
@@ -96,11 +116,60 @@ public class ExSpaceBookService {
 				cameraDoorMap.put(key, cameraDoorListByKey);
 			}
 			cameraDoorListByKey.add(door);
+			//check thing
+			GlobalThingInfo thingInfo = null;
+			if(checkedThingIdMap.get(door.getDoor_thing_id()) == null) {
+				checkedThingIdMap.put(door.getDoor_thing_id(),door.getDoor_thing_id());
+				thingInfo = thingTagManager.findByID(door.getDoor_thing_id());thingTagManager.findByID(door.getDoor_thing_id());
+				if(thingInfo == null){
+					Map<String, Object> checkDoorThing = new HashMap<>();
+					checkDoorThing.put(String.valueOf(door.getDoor_thing_id()), "not find thing!");
+					checkDoorThingList.add(checkDoorThing);
+				}else if( ! "Multigate".equals(thingInfo.getType())){
+					Map<String, Object> checkDoorThing = new HashMap<>();
+					checkDoorThing.put(String.valueOf(door.getDoor_thing_id())
+							, "thing type(Multigate),error:"+thingInfo.getType());
+					checkDoorThingList.add(checkDoorThing);
+				}
+			}
+
+			if(checkedThingIdMap.get(door.getFace_thing_id()) == null) {
+				checkedThingIdMap.put(door.getFace_thing_id(),door.getFace_thing_id());
+				thingInfo = thingTagManager.findByID(door.getFace_thing_id());
+				if(thingInfo == null){
+					Map<String, Object> checkFaceThing = new HashMap<>();
+					checkFaceThing.put(String.valueOf(door.getFace_thing_id()), "not find thing!");
+					checkFaceThingList.add(checkFaceThing);
+				}else if( ! "FaceRecognition".equals(thingInfo.getType())){
+					Map<String, Object> checkFaceThing = new HashMap<>();
+					checkFaceThing.put(String.valueOf(door.getFace_thing_id())
+							, "thing type(FaceRecognition),error:"+thingInfo.getType());
+					checkFaceThingList.add(checkFaceThing);
+				}
+			}
+
 		});
 		//
 		List<ExSitLock> sitLockListAll = sitLockDao.findAll();
 		sitLockListAll.forEach(lock -> {
 			spaceCodeSitLockMap.put(lock.getSpace_code(), lock);
+
+			GlobalThingInfo thingInfo = null;
+			if(checkedThingIdMap.get(lock.getLock_global_thing_id()) == null) {
+				checkedThingIdMap.put(lock.getLock_global_thing_id(),lock.getLock_global_thing_id());
+				thingInfo = thingTagManager.findByID(lock.getLock_global_thing_id());
+				if(thingInfo == null){
+					Map<String, Object> checkLockThing = new HashMap<>();
+					checkLockThing.put(String.valueOf(lock.getLock_global_thing_id()), "not find thing!");
+					checkLockThingList.add(checkLockThing);
+				}else if( ! "PasswordLock".equals(thingInfo.getType())){
+					Map<String, Object> checkLockThing = new HashMap<>();
+					checkLockThing.put(String.valueOf(lock.getLock_global_thing_id())
+							, "thing type(PasswordLock),error:"+thingInfo.getType());
+					checkLockThingList.add(checkLockThing);
+				}
+			}
+
 		});
 		//load trigger template json
 		OPEN_DOOR_TRIGGER = StreamUtils.copyToString(loader.getResource("classpath:com/kii/beehive/portal/ex/template/open_door_trigger.json").getInputStream(), Charsets.UTF_8);
@@ -115,6 +184,7 @@ public class ExSpaceBookService {
 		log.info("cameraDoorMap : " + cameraDoorMap);
 		log.info("spaceCodeSitLockMap : " + spaceCodeSitLockMap);
 		log.info("sitBeehiveUserIdMap : " + sitBeehiveUserIdMap);
+		return checkResult;
 	}
 
 	@Scheduled(cron = "0 0/1 * * * ?")

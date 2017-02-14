@@ -71,8 +71,7 @@ public class ExSpaceBookController {
     }
     @RequestMapping(path = "/init", method = {RequestMethod.GET}, consumes = { "*" })
     public Object reInit() throws IOException {
-        spaceBookService.init();
-        return true;
+        return spaceBookService.init();
     }
 
     @RequestMapping(path = "/addUserPicture", method = {RequestMethod.POST})
