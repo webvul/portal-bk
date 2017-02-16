@@ -179,7 +179,7 @@ public class ExSpaceBookController {
             result.put("errorcode", 1);
             result.put("errormsg", "input valid!");
         }
-        checkErrorLog(spaceBookRestBean, result);
+        checkErrorLog("addUserSpaceRule", spaceBookRestBean, result);
         return result;
     }
 
@@ -222,7 +222,7 @@ public class ExSpaceBookController {
             result.put("errorcode", 1);
             result.put("errormsg", "input valid!");
         }
-        checkErrorLog(spaceBookRestBean, result);
+        checkErrorLog("delUserSpaceRule", spaceBookRestBean, result);
         return result;
     }
     @RequestMapping(path = "/updateUserPassword", method = {RequestMethod.POST})
@@ -253,7 +253,7 @@ public class ExSpaceBookController {
             result.put("errorcode", 1);
             result.put("errormsg", e.getMessage());
         }
-        checkErrorLog(spaceBookRestBean, result);
+        checkErrorLog("updateUserPassword", spaceBookRestBean, result);
         return result;
     }
 
@@ -313,14 +313,14 @@ public class ExSpaceBookController {
             result.put("errorcode", 1);
             result.put("errormsg", "input valid!");
         }
-        checkErrorLog(spaceBookRestBean, result);
+        checkErrorLog("getUserIdList", spaceBookRestBean, result);
         return result;
     }
 
-    private void checkErrorLog(Object input, Map<String, Object> result) {
+    private void checkErrorLog(String action,Object input, Map<String, Object> result) {
         if( ! result.get("errorcode").toString().equals("0")) {
             try {
-                log.error("sit-booking-check-error:"+ result +" input:" + objectMapper.writeValueAsString(input));
+                log.error("sit-booking-check-error action:"+action+" > "+ result +" input:" + objectMapper.writeValueAsString(input));
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
             }
