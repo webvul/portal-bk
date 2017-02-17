@@ -200,7 +200,7 @@ public class ExSpaceBookService {
 		}
 	}
 
-	@Scheduled(cron = "0 0/5 * * * ?")
+	@Scheduled(cron = "31 0/1 * * * ?")
 	@Transactional(propagation = Propagation.NEVER)
 	public void doDeleteTrigger(){
 		try {
