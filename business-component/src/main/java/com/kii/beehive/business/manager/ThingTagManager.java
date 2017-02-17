@@ -128,14 +128,16 @@ public class ThingTagManager {
 		
 		return new HashSet<>(globalThingDao.findByIDs(things));
 	}
+	
+	public Set<GlobalThingInfo> getThingInfosByIDs(List<Long> thingList, long userID) {
+		
+		
+		return new HashSet<>(globalThingDao.getThingsByThingIDs(thingList,userID));
+	}
 
 	public Set<GlobalThingInfo> getThingInfos(TagSelector source) {
 		Set<GlobalThingInfo> things = new HashSet<>();
 
-//		if (!source.getThingList().isEmpty()) {
-//			things.addAll(globalThingDao.findByIDs(source.getThingList()));
-//			return things;
-//		}
 
 		if (!source.getTagList().isEmpty()) {
 			if (StringUtils.isEmpty(source.getType())) {
@@ -153,12 +155,7 @@ public class ThingTagManager {
 					things.addAll(globalThingDao.queryThingByUnionTags(source.getTagList(), source.getType()));
 				}
 			}
-		} else {
-
-//			throw new InvalidTriggerFormatException(" tag or thing List is null ");
-
 		}
-
 		return things;
 	}
 
@@ -200,4 +197,5 @@ public class ThingTagManager {
 		return globalThingDao.getAllThingAndRelationData().stream().map((m)-> new ESThingInfo(m.getThing(),m.getGeo(),m.getUserIDs(),m.getLocs())).collect(Collectors.toList());
 	}
 	
+
 }

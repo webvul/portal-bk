@@ -508,6 +508,22 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 		
 	}
 	
+	private static final String getThingsByIDSql=StrTemplate.gener(
+			"select distinct th.* from ${0} th inner join ${1} v on v.${2} = th.${3} where th.${4} in (:ids) and v.${5} = :userID ",
+			TABLE_NAME,GlobalThingInfo.VIEW_NAME,GlobalThingInfo.VIEW_THING_ID,GlobalThingInfo.ID_GLOBAL_THING,
+			GlobalThingInfo.ID_GLOBAL_THING,GlobalThingInfo.VIEW_USER_ID);
+	
+	public List<GlobalThingInfo> getThingsByThingIDs(Collection<Long> things,long userID){
+		
+		Map<String,Object> map=new HashMap<>();
+		map.put("userID",userID);
+		map.put("ids",things);
+		
+		return super.queryByNamedParam(getThingsByVendorSql,map);
+		
+		
+	}
+	
 	private static final String getThingsByKiiThingIDSql=StrTemplate.gener(
 			"select distinct th.* from ${0} th inner join ${1} v on v.${2} = th.${3} where th.${4} in (:kiiThingIDs) and v.${5} = :userID ",
 			TABLE_NAME,GlobalThingInfo.VIEW_NAME,GlobalThingInfo.VIEW_THING_ID,GlobalThingInfo.ID_GLOBAL_THING,

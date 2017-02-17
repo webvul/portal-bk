@@ -17,14 +17,14 @@ public class InCollect extends SimpleCondition {
 		
 	}
 
-	private List<?>  values=new ArrayList<Object>();
+	private List<Object>  values=new ArrayList<Object>();
 
 	
-	public List<?> getValues() {
+	public List<Object> getValues() {
 		return values;
 	}
 
-	public void setValues(List<?> values) {
+	public void setValues(List<Object> values) {
 		this.values = values;
 	}
 	

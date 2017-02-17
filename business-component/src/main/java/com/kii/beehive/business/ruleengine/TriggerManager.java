@@ -1,11 +1,7 @@
 package com.kii.beehive.business.ruleengine;
 
-import javax.annotation.PostConstruct;
-
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +16,6 @@ import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.beehive.portal.service.OperateLogDao;
 import com.kii.beehive.portal.store.entity.OperateLog;
-import com.kii.extension.ruleengine.TriggerCreateException;
 import com.kii.extension.ruleengine.service.TriggerRecordDao;
 import com.kii.extension.ruleengine.store.trigger.BeehiveTriggerType;
 import com.kii.extension.ruleengine.store.trigger.BusinessDataObject;
@@ -55,24 +50,7 @@ public class TriggerManager {
 
 	@Value("${spring.profile:test}")
 	private String profile;
-
-	@PostConstruct
-	public void init() {
-
-//		if( "local".equals(profile) ) {
-//			return ;
-//		}
-
-		List<TriggerRecord> recordList = triggerDao.getAllEnableTrigger();
-
-		List<TriggerRecord>  list=recordList.stream().filter((r)->r.getType()!= BeehiveTriggerType.Gateway).collect(Collectors.toList());
-		
-		List<String> errList=creator.init(list);
-
-		errList.forEach(err->triggerDao.deleteTriggerRecord(err,"create trigger fail in system init "));
-		
-	}
-
+	
 
 	public TriggerRecord createTrigger(TriggerRecord newTrigger) {
 		
@@ -91,7 +69,7 @@ public class TriggerManager {
 				
 				logTool.triggerLog(record, OperateLog.ActionType.enable);
 				
-				creator.createTrigger(record,true);
+				creator.createTrigger(record);
 			}
 		}catch(TriggerCreateException ex){
 			logTool.triggerLog(record, OperateLog.ActionType.delete);
@@ -122,7 +100,7 @@ public class TriggerManager {
 			creator.removeTrigger(record);
 			
 			record.fillCreator(record.getUserID());
-			creator.createTrigger(record,true);
+			creator.createTrigger(record);
 			
 			triggerDao.updateEntity(record, record.getId());
 		}
@@ -131,15 +109,6 @@ public class TriggerManager {
 	}
 
 
-	public Map<String, Object> getRuleEngingDump() {
-
-		return creator.getRuleEngingDump(null);
-	}
-
-	public Map<String, Object> getRuleEngingDump(String triggerID) {
-
-		return creator.getRuleEngingDump(triggerID);
-	}
 
 	public void disableTrigger(String triggerID) {
 		TriggerRecord  record= triggerDao.getTriggerRecord(triggerID);
@@ -176,7 +145,7 @@ public class TriggerManager {
 
 		}else {
 
-			creator.createTrigger(record,true);
+			creator.createTrigger(record);
 
 		}
 	}

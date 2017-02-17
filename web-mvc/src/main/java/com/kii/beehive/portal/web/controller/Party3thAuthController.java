@@ -1,5 +1,9 @@
 package com.kii.beehive.portal.web.controller;
 
+import static com.kii.beehive.business.ruleengine.ReomteUrlStore.FIRE_BUSINESS_FUN;
+import static com.kii.beehive.business.ruleengine.ReomteUrlStore.FIRE_THING_CMD;
+import static com.kii.beehive.business.ruleengine.ReomteUrlStore.THIRD_PARTY_URL;
+
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kii.beehive.business.ruleengine.ExecuteCommandManager;
+import com.kii.beehive.business.ruleengine.entitys.BusinessFunctionParam;
+import com.kii.beehive.business.ruleengine.entitys.ThingCommandExecuteParam;
 import com.kii.beehive.portal.common.utils.CollectUtils;
 import com.kii.beehive.portal.entitys.AuthUser;
 import com.kii.beehive.portal.manager.AuthManager;
@@ -17,7 +24,7 @@ import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
 
 @RestController
-@RequestMapping(value = "/party3rd", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {
+@RequestMapping(value = THIRD_PARTY_URL, consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {
 		MediaType.APPLICATION_JSON_UTF8_VALUE})
 public class Party3thAuthController {
 
@@ -39,5 +46,28 @@ public class Party3thAuthController {
 		AuthUser user= authManager.getTokenByID(userID);
 
 		return new AuthRestBean(user);
+	}
+	
+	
+	
+	@Autowired
+	private ExecuteCommandManager executeManager;
+	
+	
+	@RequestMapping(value = FIRE_THING_CMD, method = {RequestMethod.POST})
+	public Map<Long,String> executeCommand(@RequestBody ThingCommandExecuteParam param) {
+		
+
+		Map<Long,String> results=executeManager.executeCommand(param);
+		
+		
+		
+		return results;
+	}
+	
+	@RequestMapping(value = FIRE_BUSINESS_FUN, method = {RequestMethod.POST})
+	public Map<String,Object> executeBusinessFunction(@RequestBody BusinessFunctionParam param) {
+		
+		return executeManager.doBusinessFunCall(param);
 	}
 }

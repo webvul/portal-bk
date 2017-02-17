@@ -15,11 +15,14 @@ import com.kii.beehive.business.ruleengine.TriggerManager;
 import com.kii.beehive.portal.service.CombineTriggerDao;
 import com.kii.beehive.portal.store.entity.MLTriggerCombine;
 import com.kii.extension.ruleengine.store.trigger.BusinessObjType;
+import com.kii.extension.ruleengine.store.trigger.Condition;
 import com.kii.extension.ruleengine.store.trigger.MultipleSrcTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.SingleThing;
 import com.kii.extension.ruleengine.store.trigger.ThingSource;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
+import com.kii.extension.ruleengine.store.trigger.condition.Equal;
+import com.kii.extension.ruleengine.store.trigger.condition.OrLogic;
 
 @Component
 public class CombineTriggerService {
@@ -123,24 +126,36 @@ public class CombineTriggerService {
 		
 		
 		String exp1=trigger.getPredicate().getExpress();
-		if(StringUtils.isBlank(exp1)){
-			exp1=convertTool.getExpress(trigger.getPredicate().getCondition());
-		}
-		
-		exp1=exp1.replaceAll("(comm.ml.)","ml.");
-		
-		if(StringUtils.isBlank(exp1)){
-			exp1=" eval(true) ";
-		}
-		
-		String newExp2=" ||  $p{ml._enable} == false  ";
-		
-		String fullExp="("+exp1+")"+newExp2;
 		
 		RuleEnginePredicate predicate=new RuleEnginePredicate();
-		BeanUtils.copyProperties(trigger.getPredicate(),predicate);
-		predicate.setExpress(fullExp);
-		predicate.setCondition(null);
+		if(StringUtils.isBlank(exp1)){
+			Condition condition=trigger.getPredicate().getCondition();
+			
+			OrLogic or=new OrLogic();
+			or.getClauses().add(condition);
+			
+			Condition eq=new Equal("ml._enable",false);
+			or.getClauses().add(eq);
+			
+			predicate.setCondition(or);
+		}else{
+			
+			exp1=exp1.replaceAll("(comm.ml.)","ml.");
+			
+			if(StringUtils.isBlank(exp1)){
+				exp1=" eval(true) ";
+			}
+			
+			String newExp2=" ||  $p{ml._enable} == false  ";
+			
+			String fullExp="("+exp1+")"+newExp2;
+			
+			
+			BeanUtils.copyProperties(trigger.getPredicate(),predicate);
+			predicate.setExpress(fullExp);
+			predicate.setCondition(null);
+		}
+
 		
 		trigger.setPredicate(predicate);
 		

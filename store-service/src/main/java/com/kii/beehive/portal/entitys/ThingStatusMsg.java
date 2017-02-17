@@ -8,6 +8,8 @@ import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 public class ThingStatusMsg {
 	
 	
+	private final String  vendorThingID;
+	
 	private final String appID;
 	
 	private final String kiiThingID;
@@ -27,6 +29,7 @@ public class ThingStatusMsg {
 		this.thingID=globalThingInfo.getId();
 		this.kiiThingID=globalThingInfo.getKiiThingID();
 		this.appID=globalThingInfo.getKiiAppID();
+		this.vendorThingID=globalThingInfo.getVendorThingID();
 	}
 	
 	public ThingStatusMsg(ThingStatusMsg msg){
@@ -35,10 +38,13 @@ public class ThingStatusMsg {
 		this.status=msg.status;
 		this.thingID=msg.thingID;
 		this.kiiThingID=msg.kiiThingID;
-		this.appID=msg.appID;;
+		this.appID=msg.appID;
+		this.vendorThingID=msg.vendorThingID;
 	}
 	
-	
+	public String getVendorThingID() {
+		return vendorThingID;
+	}
 	
 	public String getAppID() {
 		return appID;

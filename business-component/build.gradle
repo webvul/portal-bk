@@ -5,7 +5,7 @@ dependencies {
 
 	compile project(":jdbc-store")
 	
-	compile project(":rule-engine")
+	compile "org.quartz-scheduler:quartz:2.2.2"
 	
 	compile "org.elasticsearch.client:rest:5.1.1"
 	

@@ -10,12 +10,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.beehive.business.manager.ThingTagManager;
+import com.kii.beehive.business.ruleengine.TriggerOperate;
 import com.kii.beehive.portal.entitys.ThingStateUpload;
 import com.kii.beehive.portal.entitys.ThingStatusMsg;
 import com.kii.beehive.portal.jedis.dao.MessageQueueDao;
-import com.kii.extension.ruleengine.BeehiveTriggerService;
 import com.kii.extension.ruleengine.store.trigger.BusinessDataObject;
-import com.kii.extension.ruleengine.store.trigger.BusinessObjType;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
 @Component
@@ -35,23 +34,21 @@ public class ThingStatusChangeCallback {
 	private Logger log= LoggerFactory.getLogger(ThingStatusChangeCallback.class);
 
 	@Autowired
-	private BeehiveTriggerService engine;
+	private TriggerOperate engine;
 	
 	
 
 	
 	public void onEventFire(ThingStatusMsg msg) {
 		
-//		thingManager.getThingByFull
-		
 		
 		BusinessDataObject data=new BusinessDataObject();
-		data.setBusinessType(BusinessObjType.Thing);
-		data.setBusinessObjID(String.valueOf(msg.getThingID()));
+		data.setBusinessObjID(msg.getVendorThingID());
+		data.setBusinessName("beehive");
 		data.setData(msg.getStatus());
 		data.setCreated(msg.getTimestamp());
 		
-		engine.updateBusinessData(data);
+		engine.addBusinessData(data);
 		
 		
 	}

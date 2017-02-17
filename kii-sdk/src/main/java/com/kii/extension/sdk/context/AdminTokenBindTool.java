@@ -4,7 +4,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.kii.extension.sdk.entity.AppInfo;
@@ -24,13 +23,6 @@ public class AdminTokenBindTool implements TokenBindTool {
 
 
 	private Map<String,LoginInfo> infoMap=new ConcurrentHashMap<>();
-
-
-	@Scheduled(fixedRate=1000*60*60)
-	public void clearCache(){
-
-		infoMap.clear();
-	}
 
 
 	@Override

@@ -14,8 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.business.manager.ThingTagManager;
-import com.kii.extension.ruleengine.TriggerConditionBuilder;
-import com.kii.extension.ruleengine.drools.RuleGeneral;
 import com.kii.extension.ruleengine.store.trigger.BusinessDataObject;
 import com.kii.extension.ruleengine.store.trigger.CommandParam;
 import com.kii.extension.ruleengine.store.trigger.Condition;
@@ -28,26 +26,28 @@ import com.kii.extension.ruleengine.store.trigger.ThingCollectSource;
 import com.kii.extension.ruleengine.store.trigger.ThingSource;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.condition.All;
+import com.kii.extension.ruleengine.store.trigger.condition.AndLogic;
+import com.kii.extension.ruleengine.store.trigger.condition.Equal;
+import com.kii.extension.ruleengine.store.trigger.condition.ExpressCondition;
+import com.kii.extension.ruleengine.store.trigger.condition.InCollect;
+import com.kii.extension.ruleengine.store.trigger.condition.Like;
+import com.kii.extension.ruleengine.store.trigger.condition.LogicCol;
+import com.kii.extension.ruleengine.store.trigger.condition.NotLogic;
+import com.kii.extension.ruleengine.store.trigger.condition.OrLogic;
+import com.kii.extension.ruleengine.store.trigger.condition.Range;
+import com.kii.extension.ruleengine.store.trigger.condition.SimpleCondition;
 import com.kii.extension.ruleengine.store.trigger.groups.GroupTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.groups.SummaryFunctionType;
 import com.kii.extension.ruleengine.store.trigger.groups.SummaryTriggerRecord;
 
 @Component
 public class TriggerConvertTool {
-	
-	
-	@Autowired
-	private RuleGeneral general;
+
 	
 	@Autowired
 	private ThingTagManager thingTagService;
 	
-	
-	public String getExpress(Condition condition){
-	
-		return general.convertCondition(condition);
-	}
-	
+
 	public MultipleSrcTriggerRecord convertTrigger(TriggerRecord record) {
 		
 		switch (record.getType()){
@@ -80,16 +80,16 @@ public class TriggerConvertTool {
 		
 		record.setTargetParamList(list);
 		
+		RuleEnginePredicate predicate=trigger.getPredicate();
+		
 		String exp1=trigger.getPredicate().getExpress();
 		if(StringUtils.isBlank(exp1)){
-			exp1=general.convertCondition(trigger.getPredicate().getCondition());
+			Condition newCondition=convertCondition(trigger.getPredicate().getCondition(),"comm");
+			predicate.setCondition(newCondition);
+		}else{
+			String newExp1=addParamPrefix(exp1,"comm");
+			predicate.setExpress(newExp1);
 		}
-		
-		String newExp1=addParamPrefix(exp1,"comm");
-		
-		RuleEnginePredicate predicate=trigger.getPredicate();
-		predicate.setExpress(newExp1);
-		predicate.setCondition(null);
 		
 		record.setPredicate(predicate);
 		
@@ -99,6 +99,97 @@ public class TriggerConvertTool {
 		
 		return record;
 		
+	}
+	
+	private Condition convertCondition(Condition condition,String prefix){
+	
+		if(condition instanceof LogicCol){
+			
+			switch (condition.getType()){
+				case and:
+					for(Condition cond:((AndLogic)condition).getClauses()){
+						convertCondition(cond,prefix);
+					}
+					break;
+				case or:
+					for(Condition cond:((OrLogic)condition).getClauses()){
+						convertCondition(cond,prefix);
+					}
+					break;
+				case not:
+					convertCondition( ((NotLogic)condition).getClause(),prefix);
+					break;
+			}
+		}
+		
+		if(condition instanceof SimpleCondition){
+			String field=((SimpleCondition) condition).getField();
+			field=prefix+"."+field;
+			((SimpleCondition)condition).setField(field);
+			
+			if(condition instanceof  ExpressCondition){
+				String express=((ExpressCondition)condition).getExpress();
+				if(StringUtils.isNotBlank(express)){
+					((ExpressCondition)condition).setExpress(addParamPrefix(express,prefix));
+				}
+			}
+			
+			if(condition instanceof  Range){
+				Range range=(Range)condition;
+				if(StringUtils.isNotBlank(range.getLowerExpress())){
+					range.setLowerExpress(addParamPrefix(range.getLowerExpress(),prefix));
+				}
+				if(StringUtils.isNotBlank(range.getUpperExpress())){
+					range.setLowerExpress(addParamPrefix(range.getUpperExpress(),prefix));
+				}
+			}
+			
+			switch(condition.getType()){
+				
+				case range:
+					Range range=(Range)condition;
+					range.setLowerLimit(convertValue(range.getLowerLimit(),prefix));
+					range.setUpperLimit(convertValue(range.getUpperLimit(),prefix));
+					break;
+				case in:
+					InCollect in=(InCollect)condition;
+					in.getValues().replaceAll((v)->convertValue(v,prefix));
+					break;
+				case eq:
+					Equal eq=(Equal)condition;
+					eq.setValue(convertValue(eq.getValue(),prefix));
+					break;
+				case like:
+					Like like=(Like)condition;
+					like.setValue(convertValue(like.getValue(),prefix));
+					break;
+			}
+			
+		}
+		
+		return condition;
+		
+	}
+	
+	private static final Pattern paramPattern= Pattern.compile("\\$([peth](\\:[iscm])?)\\{([^\\}]+)\\}");
+	
+	
+	private Object convertValue(Object obj,String prefix){
+		
+		
+		if(obj==null) {
+			return null;
+		}
+		if (obj instanceof String) {
+				
+				String value=(String)obj;
+				if(paramPattern.matcher(value).find()){
+					return addParamPrefix(value,prefix);
+				}else {
+					return "\"" + String.valueOf(obj) + "\"";
+				}
+		}
+		return obj;
 	}
 	
 	

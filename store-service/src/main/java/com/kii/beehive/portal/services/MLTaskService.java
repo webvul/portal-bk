@@ -1,8 +1,8 @@
 package com.kii.beehive.portal.services;
 
 
-import static com.kii.extension.ruleengine.schedule.ProxyJob.APPLICATION_CTX;
-import static com.kii.extension.ruleengine.schedule.ProxyJob.BEAN_CLASS;
+import static com.kii.beehive.business.schedule.ProxyJob.APPLICATION_CTX;
+import static com.kii.beehive.business.schedule.ProxyJob.BEAN_CLASS;
 
 import javax.annotation.PostConstruct;
 
@@ -28,11 +28,11 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.business.ruleengine.TriggerManager;
+import com.kii.beehive.business.schedule.ProxyJob;
 import com.kii.beehive.portal.exception.BusinessException;
 import com.kii.beehive.portal.service.MLTaskDetailDao;
 import com.kii.beehive.portal.store.entity.MLTaskDetail;
 import com.kii.beehive.portal.store.entity.PortalEntity;
-import com.kii.extension.ruleengine.schedule.ProxyJob;
 import com.kii.extension.ruleengine.store.trigger.BusinessDataObject;
 import com.kii.extension.ruleengine.store.trigger.BusinessObjType;
 

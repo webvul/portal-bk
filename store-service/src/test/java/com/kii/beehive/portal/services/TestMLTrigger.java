@@ -5,9 +5,9 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.kii.beehive.StoreServiceTestInit;
+import com.kii.beehive.business.ruleengine.TriggerConditionBuilder;
 import com.kii.beehive.business.ruleengine.TriggerConvertTool;
 import com.kii.beehive.portal.store.entity.MLTriggerCombine;
-import com.kii.extension.ruleengine.TriggerConditionBuilder;
 import com.kii.extension.ruleengine.store.trigger.Condition;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;

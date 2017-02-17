@@ -6,8 +6,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.util.Enumeration;
-import java.util.LinkedList;
-import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -62,11 +60,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
-//		logRequest(request);
-		
-//		AuthManager authManager=context.getBean(AuthManager.class);
 
-		// bypass the method OPTIONS
 		if (Constants.HTTP_METHOD_OPTIONS.equalsIgnoreCase(request.getMethod())) {
 			this.handleCORSMethodOptions(request, response, handler);
 			return false;
@@ -83,60 +77,36 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 		if(idx!=-1) {
 			subUrl = url.substring(idx + 4).trim();
 		}
-		List<String> list = new LinkedList<>();
-
-		list.add(subUrl);
-		list.add(request.getHeader(Constants.ACCESS_TOKEN));
-
-//		try {
-
-		// below APIs don't need to check token and permission
 
 		if (subUrl.startsWith(Constants.URL_OAUTH2)
 				|| subUrl.startsWith("/onboardinghelper")
-				|| subUrl.contains("/debug/")) {
+				|| subUrl.contains("/debug/")
+				|| subUrl.startsWith("/gatewayServer")) {
 
-			list.set(1, subUrl);
-//			logTool.write(list);
 
 			return super.preHandle(request, response, handler);
 
 		}
-
-
-		if(subUrl.startsWith("/gatewayServer")){
-			list.set(1, subUrl);
-//			logTool.write(list);
-
-			return super.preHandle(request, response, handler);
-
-		}
-
 
 		String token = AuthUtils.getTokenFromHeader(request);
 
 		if (StringUtils.isBlank(token)) {
 			throw new PortalException(ErrorCode.INVALID_TOKEN);
 		}
-		list.set(1, token);
-
-
 
 		try {
 
 			if (subUrl.startsWith(CallbackNames.CALLBACK_URL)) {
 				
-//				if(!"local".equals(env)) {
 					String appID = request.getHeader(Constants.HEADER_KII);
 					
 					if (!appInfoManager.verifyAppToken(appID, token)) {
 						throw new PortalException(ErrorCode.INVALID_INPUT, "field", "appInfo", "data", appID);
 					}
 					AuthInfoStore.setAuthInfo(2L);
-//				}
-
+					
 			} else if (subUrl.startsWith("/party3rd")) {
-
+				
 
 				//TODO:add verify to 3rdparty token.
 				AuthInfoStore.setAuthInfo(3L);
@@ -144,22 +114,15 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
 
 				AuthInfo authInfo = authManager.validateAndBindUserToken(token, request.getMethod(), subUrl);
-
-				list.set(1, String.valueOf(authInfo.getUserID()));
-
+				
 				AuthInfoStore.setUserInfo(authInfo.getUserID());
 				AuthInfoStore.setTeamID(authInfo.getTeamID());
 				request.setAttribute("userIDStr", authInfo.getUserIDStr());
 			}
 
-			list.add("authSuccess");
 		} catch (PortalException e) {
-			list.add("UnauthorizedAccess");
-//			logTool.write(list);
 			throw e;
 		}
-		list.set(1, AuthInfoStore.getUserIDStr());
-//		logTool.write(list);
 
 		return super.preHandle(request, response, handler);
 
@@ -167,7 +130,6 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
 	@Override
 	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
-//        authManager.unbindUserToken();
 
 		SafeThreadTool.removeLocalInfo();
 		super.afterCompletion(request, response, handler, ex);
