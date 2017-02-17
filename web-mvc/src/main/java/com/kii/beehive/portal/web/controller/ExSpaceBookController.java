@@ -42,7 +42,6 @@ import com.kii.beehive.portal.web.help.I18nPropertyTools;
 @RestController
 @RequestMapping(path = "/plugin/spaceBooking", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
 public class ExSpaceBookController {
-
     @Autowired
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -180,6 +179,7 @@ public class ExSpaceBookController {
             result.put("errorcode", 1);
             result.put("errormsg", "input valid!");
         }
+        checkErrorLog("addUserSpaceRule", spaceBookRestBean, result);
         return result;
     }
 
@@ -222,6 +222,7 @@ public class ExSpaceBookController {
             result.put("errorcode", 1);
             result.put("errormsg", "input valid!");
         }
+        checkErrorLog("delUserSpaceRule", spaceBookRestBean, result);
         return result;
     }
     @RequestMapping(path = "/updateUserPassword", method = {RequestMethod.POST})
@@ -252,6 +253,7 @@ public class ExSpaceBookController {
             result.put("errorcode", 1);
             result.put("errormsg", e.getMessage());
         }
+        checkErrorLog("updateUserPassword", spaceBookRestBean, result);
         return result;
     }
 
@@ -311,7 +313,18 @@ public class ExSpaceBookController {
             result.put("errorcode", 1);
             result.put("errormsg", "input valid!");
         }
+        checkErrorLog("getUserIdList", spaceBookRestBean, result);
         return result;
+    }
+
+    private void checkErrorLog(String action,Object input, Map<String, Object> result) {
+        if( ! result.get("errorcode").toString().equals("0")) {
+            try {
+                log.error("sit-booking-check-error action:"+action+" > "+ result +" input:" + objectMapper.writeValueAsString(input));
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private String getErrorInfoInJson(BusinessException ex) {

@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -311,13 +312,15 @@ public class ExSpaceBookService {
 		if(spaceBookTemp.size() == 0) {
 			throw new IllegalArgumentException("not find records " );
 		}
-		spaceBookTemp.forEach(bookDel -> {
-
-			dao.updateFieldByID("password", newPwd, bookDel.getId());
+		spaceBookTemp.forEach(bookTemp -> {
+			if(StringUtils.equals(newPwd, bookTemp.getPassword())){
+				return;
+			}
+			dao.updateFieldByID("password", newPwd, bookTemp.getId());
 
 			//update trigger
 			queryParam.clear();
-			queryParam.put("exSpaceBookId", bookDel.getId());
+			queryParam.put("exSpaceBookId", bookTemp.getId());
 			queryParam.put("addedTrigger", true);
 			queryParam.put("deletedTrigger", false);
 			queryParam.put("type", ExSpaceBookTriggerItem.ExSpaceBookTriggerItemType.unlock.name());
