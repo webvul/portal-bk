@@ -501,6 +501,27 @@ public class ApiAccessBuilder {
 		return this;
 	}
 
+	public ApiAccessBuilder queryCommands(String thingID, QueryParam query){
+//https://api-development-beehivecn3.internal.kii.com/api/apps/493e83c9/things/th.f83120e36100-09e9-6e11-8aee-0bc5a488/buckets/_commands/query
+		String subUrl=appInfo.getAppSubUrl()+"/things/"+thingID+"/buckets/_commands/query";
+
+		request=new HttpPost(subUrl);
+
+		this.setContentType("application/vnd.kii.QueryRequest+json");
+
+		ctxObj = query;
+
+		return this;
+	}
+	public ApiAccessBuilder deleteCommand(String thingID, String commandId){
+//apps/493e83c9/things/th.f83120e36100-09e9-6e11-8aee-0bc5a488/buckets/_commands/objects/4e793c60-f73e-11e6-9e90-00163e02138f"
+		String subUrl=appInfo.getAppSubUrl()+"/things/"+thingID+"/buckets/_commands/objects/"+commandId;
+
+		request=new HttpDelete(subUrl);
+
+		return this;
+	}
+
 	public ApiAccessBuilder submitCommand(String thingID,String commandID, List<Map<String,ActionResult>>  results){
 //		> GET targetID}/commands/{commandID}/action-results
 

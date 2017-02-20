@@ -25,6 +25,7 @@ import com.kii.extension.sdk.entity.thingif.ThingCommand;
 import com.kii.extension.sdk.entity.thingif.ThingOfKiiCloud;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 import com.kii.extension.sdk.entity.trigger.ThingTrigger;
+import com.kii.extension.sdk.query.QueryParam;
 import com.kii.extension.sdk.service.GatewayService;
 import com.kii.extension.sdk.service.ThingIFService;
 import com.kii.extension.sdk.service.TriggerService;
@@ -69,6 +70,7 @@ public class ThingIFInAppService {
 	}
 
 
+
 	private <T>  T doExecWithRealThingID(String fullThingID,Function<String,T> function){
 		ThingIDTools.ThingIDCombine combine = ThingIDTools.splitFullKiiThingID(fullThingID);
 
@@ -98,6 +100,18 @@ public class ThingIFInAppService {
 			 service.putStatus(th,status);
 			return 0;
 		});
+
+	}
+
+
+	public List<ThingCommand> queryCommandFull(String fullThingID, QueryParam query){
+
+		return doExecWithRealThingID(fullThingID,(th)-> service.queryCommandFull(th,query));
+
+	}
+	public void deleteCommand(String fullThingID, String commandId) {
+
+		doExecWithRealThingID(fullThingID,(th)-> { service.deleteCommand(th,commandId);return 0;});
 
 	}
 
