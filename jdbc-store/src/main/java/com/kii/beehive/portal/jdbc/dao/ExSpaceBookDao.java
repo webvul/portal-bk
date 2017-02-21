@@ -13,10 +13,12 @@ public class ExSpaceBookDao extends SpringBaseDao<ExSpaceBook> {
 	public static final String TABLE_NAME = "ex_space_book";
 	public static final String KEY = "id";
 	private static final String NEED_CREATE_SQL = "select * from  ex_space_book esb where esb.begin_date <= CURRENT_TIMESTAMP() and esb.end_date > CURRENT_TIMESTAMP() " +
-			" and esb.is_added_trigger = FALSE and esb.create_trigger_error = FALSE  order by esb.begin_date desc limit 0,1 ";
+			" and esb.is_added_trigger = FALSE and esb.create_trigger_error = FALSE  order by esb.begin_date desc ";
+//			" and esb.is_added_trigger = FALSE and esb.create_trigger_error = FALSE  order by esb.begin_date desc limit 0,1 ";
 
 	private static final String NEED_DELETE_SQL = "select * from  ex_space_book esb where esb.end_date <= CURRENT_TIMESTAMP() " +
-			" and esb.is_added_trigger = TRUE and esb.is_deleted_trigger = FALSE and esb.create_trigger_error = FALSE  order by esb.end_date asc limit 0,1 ";
+			" and esb.is_added_trigger = TRUE and esb.is_deleted_trigger = FALSE and esb.create_trigger_error = FALSE  order by esb.end_date asc ";
+//			" and esb.is_added_trigger = TRUE and esb.is_deleted_trigger = FALSE and esb.create_trigger_error = FALSE  order by esb.end_date asc limit 0,1 ";
 
 
 	public List<ExSpaceBook> getNeedCreateRule() {
