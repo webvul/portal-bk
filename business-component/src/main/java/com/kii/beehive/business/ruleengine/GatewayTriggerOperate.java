@@ -22,12 +22,14 @@ import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
 import com.kii.extension.ruleengine.service.TriggerRecordDao;
+import com.kii.extension.ruleengine.store.trigger.Condition;
 import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
 import com.kii.extension.ruleengine.store.trigger.GatewaySummarySource;
 import com.kii.extension.ruleengine.store.trigger.GatewayTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TagSelector;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.WhenType;
+import com.kii.extension.ruleengine.store.trigger.condition.AndLogic;
 import com.kii.extension.ruleengine.store.trigger.condition.Equal;
 import com.kii.extension.ruleengine.store.trigger.condition.NotLogic;
 import com.kii.extension.ruleengine.store.trigger.condition.OrLogic;
@@ -41,7 +43,6 @@ import com.kii.extension.sdk.entity.thingif.ThingCommand;
 import com.kii.extension.sdk.entity.thingif.ThingOfKiiCloud;
 import com.kii.extension.sdk.query.BucketClause;
 import com.kii.extension.sdk.query.QueryParam;
-import com.kii.extension.sdk.query.condition.AndLogic;
 
 
 @Component
@@ -68,7 +69,7 @@ public class GatewayTriggerOperate {
 
 	@PostConstruct
 	void init(){
-//		resendGatewayCommand();
+		resendGatewayCommand();
 	}
 
 	@Scheduled(cron = "20 0/2 * * * ?")
@@ -84,7 +85,7 @@ public class GatewayTriggerOperate {
 		//query command
 		QueryParam queryParam = new QueryParam();
 		BucketClause bucketClause = new BucketClause();
-		AndLogic andLogic = new AndLogic();
+		com.kii.extension.sdk.query.condition.AndLogic andLogic = new com.kii.extension.sdk.query.condition.AndLogic();
 		bucketClause.setClause(andLogic);
 		andLogic.addClause(new com.kii.extension.sdk.query.condition.Equal("title", "trigger"));
 		andLogic.addClause(new com.kii.extension.sdk.query.condition.Equal("commandState", "SENDING"));
@@ -203,9 +204,17 @@ public class GatewayTriggerOperate {
 		
 		deleteTrigger,disableTrigger,enableTrigger,createTrigger,updateTrigger;
 	}
-	
-	
-	
+
+
+	public  boolean checkLocalRuleCondition(Condition condition){
+		if( ! ( condition instanceof Equal
+				|| condition instanceof NotLogic
+				|| condition instanceof AndLogic
+				|| condition instanceof OrLogic) ){
+			return false;
+		}
+		return true;
+	}
 	public  boolean checkLocalRule(TriggerRecord record) {
 
 		
@@ -217,10 +226,6 @@ public class GatewayTriggerOperate {
 				&& record.getPredicate().getTriggersWhen().equals(WhenType.CONDITION_TRUE)
 				&& record.getPreparedCondition() == null
 				&& record.getPredicate().getSchedule() == null
-				&& ( record.getPredicate().getCondition()  instanceof NotLogic
-				|| record.getPredicate().getCondition()  instanceof Equal
-				|| record.getPredicate().getCondition()  instanceof AndLogic
-				|| record.getPredicate().getCondition() instanceof OrLogic )
 
 //				&& ( (AndLogic) record.getPredicate().getCondition() ).getClauses().size() <= 2
 //				&& ( (AndLogic) record.getPredicate().getCondition() ).getClauses().get(0) instanceof AndLogic
@@ -230,7 +235,10 @@ public class GatewayTriggerOperate {
 			
 			return false;
 		}
-		
+
+		if(checkLocalRuleCondition(record.getPredicate().getCondition()) == false) {
+			return false;
+		}
 		if(record instanceof  SummaryTriggerRecord) {
 			SummaryTriggerRecord summaryTriggerRecord = (SummaryTriggerRecord) record;
 			
@@ -278,6 +286,7 @@ public class GatewayTriggerOperate {
 		ThingOfKiiCloud gatewayOfKiiCloud = null;
 		try {
 			gatewayOfKiiCloud = thingIFService.getThingGateway(sourceThing.getFullKiiThingID());
+			log.info("gwtrigger thing of gateway:" + gatewayOfKiiCloud.getThingID());
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new IllegalStateException();
