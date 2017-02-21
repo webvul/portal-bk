@@ -73,6 +73,14 @@ public class GatewayTriggerOperate {
 
 	@Scheduled(cron = "20 0/2 * * * ?")
 	public void resendGatewayCommand(){
+		Calendar currentDateCalendar = Calendar.getInstance();
+//		currentDateCalendar.add(Calendar.HOUR_OF_DAY, -8);
+		currentDateCalendar.add(Calendar.SECOND, -gatewayBeforeSecond);
+		Date currentDate = currentDateCalendar.getTime();
+		Calendar lastDayDateCalendar = Calendar.getInstance();
+		lastDayDateCalendar.add(Calendar.DAY_OF_MONTH, 1);
+		Date lastDayDate = lastDayDateCalendar.getTime();
+
 		//query command
 		QueryParam queryParam = new QueryParam();
 		BucketClause bucketClause = new BucketClause();
@@ -80,21 +88,22 @@ public class GatewayTriggerOperate {
 		bucketClause.setClause(andLogic);
 		andLogic.addClause(new com.kii.extension.sdk.query.condition.Equal("title", "trigger"));
 		andLogic.addClause(new com.kii.extension.sdk.query.condition.Equal("commandState", "SENDING"));
+		andLogic.addClause(com.kii.extension.sdk.query.condition.Range.less("_modified", currentDate));
+//		andLogic.addClause(new com.kii.extension.sdk.query.condition.Range("_modified",lastDayDate,false,currentDate,false));
 		bucketClause.setOrderBy("_modified");
 		bucketClause.setDescending(true);
 		queryParam.setBucketQuery(bucketClause);
 
 		List<ThingCommand> gatewayCommands = thingIFService.queryCommandFull(gatewayFullThingID, queryParam);
-		Calendar currentDateCalendar = Calendar.getInstance();
-//		currentDateCalendar.add(Calendar.HOUR_OF_DAY, -8);
-		currentDateCalendar.add(Calendar.SECOND, -gatewayBeforeSecond);
-		final Date currentDate = currentDateCalendar.getTime();
+		log.info("resendGatewayCommand commands:" + gatewayCommands.size());
 		gatewayCommands.forEach( command -> {
-			if(command.getModified().before(currentDate)) {
-				log.info("resendGatewayCommand commandId: " + command.getId());
-				thingIFService.sendCommand(command, gatewayFullThingID);
-				thingIFService.deleteCommand(gatewayFullThingID, command.getId());
+			int resendCount = command.getMetadata().get("resendCount")==null ? 1 : Integer.valueOf(command.getMetadata().get("resendCount").toString());
+			if(resendCount > 3) {
+				log.error("resendGatewayCommand-error resend more than 3 still fail! resendCount: "+ resendCount + " commandId: " + command.getId());
 			}
+			command.getMetadata().put("resendCount", resendCount+1);
+			thingIFService.sendCommand(command, gatewayFullThingID);
+			thingIFService.deleteCommand(gatewayFullThingID, command.getId());
 		});
 	}
 
