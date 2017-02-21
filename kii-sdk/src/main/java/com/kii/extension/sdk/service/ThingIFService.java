@@ -1,17 +1,17 @@
 package com.kii.extension.sdk.service;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.http.client.methods.HttpUriRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.kii.extension.sdk.context.AdminTokenBindTool;
 import com.kii.extension.sdk.context.AppBindToolResolver;
 import com.kii.extension.sdk.entity.AppInfo;
@@ -27,6 +27,7 @@ import com.kii.extension.sdk.entity.thingif.ThingStatus;
 import com.kii.extension.sdk.exception.MQTTNotReadyException;
 import com.kii.extension.sdk.impl.ApiAccessBuilder;
 import com.kii.extension.sdk.impl.KiiCloudClient;
+import com.kii.extension.sdk.query.QueryParam;
 
 @Component
 public class ThingIFService {
@@ -100,6 +101,48 @@ public class ThingIFService {
 //		}
 //
 //	}
+
+	public List<ThingCommand> queryCommandFull(String thingID, QueryParam query){
+		List<ThingCommand>  result=new ArrayList<ThingCommand>();
+		do {
+			List<ThingCommand> list=queryCommand(thingID, query);
+			result.addAll(list);
+		}while(query.getPaginationKey()!=null);
+		return result;
+	}
+
+	public void deleteCommand(String thingID, String commandId) {
+
+		HttpUriRequest request = getBuilder().deleteCommand(thingID, commandId).generRequest(mapper);
+
+		String result = client.executeRequest(request);
+
+	}
+	public List<ThingCommand> queryCommand(String thingID, QueryParam query){
+
+		HttpUriRequest request=	getBuilder().queryCommands(thingID, query ).generRequest(mapper);
+
+		String result=client.executeRequest(request);
+
+		try{
+			JsonNode node=mapper.readValue(result,JsonNode.class);
+
+			JsonNode pageKey=node.get("nextPaginationKey");
+			if (pageKey != null) {
+				query.setPaginationKey(pageKey.asText());
+			}else{
+				query.setPaginationKey(null);
+			}
+
+			List<ThingCommand> list=mapper.readValue(node.get("results").traverse(),mapper.getTypeFactory().constructCollectionType(List.class, ThingCommand.class));
+
+			return list;
+
+		}catch(IOException e){
+			throw new IllegalArgumentException(e);
+		}
+
+	}
 
 	public ThingStatus getStatus(String thingID){
 

@@ -1,7 +1,10 @@
 package com.kii.beehive.business.ruleengine;
 
+import javax.annotation.PostConstruct;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -10,6 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import com.kii.beehive.business.manager.AppInfoManager;
 import com.kii.beehive.business.manager.ThingTagManager;
@@ -23,7 +28,6 @@ import com.kii.extension.ruleengine.store.trigger.GatewayTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.TagSelector;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.WhenType;
-import com.kii.extension.ruleengine.store.trigger.condition.AndLogic;
 import com.kii.extension.ruleengine.store.trigger.condition.Equal;
 import com.kii.extension.ruleengine.store.trigger.condition.NotLogic;
 import com.kii.extension.ruleengine.store.trigger.condition.OrLogic;
@@ -35,14 +39,21 @@ import com.kii.extension.sdk.entity.thingif.Action;
 import com.kii.extension.sdk.entity.thingif.EndNodeOfGateway;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
 import com.kii.extension.sdk.entity.thingif.ThingOfKiiCloud;
+import com.kii.extension.sdk.query.BucketClause;
+import com.kii.extension.sdk.query.QueryParam;
+import com.kii.extension.sdk.query.condition.AndLogic;
 
 
 @Component
 public class GatewayTriggerOperate {
 	
 	private static final Logger log = LoggerFactory.getLogger(GatewayTriggerOperate.class);
-	
-	
+
+	@Value("${gateway.resend.fullthingid}")
+	private String gatewayFullThingID;
+	@Value("${gateway.resend.before.second}")
+	private int gatewayBeforeSecond;
+
 	@Autowired
 	private AppInfoManager appInfoManager;
 	
@@ -54,8 +65,48 @@ public class GatewayTriggerOperate {
 	
 	@Autowired
 	private TriggerRecordDao triggerDao;
-	
-	
+
+	@PostConstruct
+	void init(){
+//		resendGatewayCommand();
+	}
+
+	@Scheduled(cron = "20 0/2 * * * ?")
+	public void resendGatewayCommand(){
+		Calendar currentDateCalendar = Calendar.getInstance();
+//		currentDateCalendar.add(Calendar.HOUR_OF_DAY, -8);
+		currentDateCalendar.add(Calendar.SECOND, -gatewayBeforeSecond);
+		Date currentDate = currentDateCalendar.getTime();
+		Calendar lastDayDateCalendar = Calendar.getInstance();
+		lastDayDateCalendar.add(Calendar.DAY_OF_MONTH, 1);
+		Date lastDayDate = lastDayDateCalendar.getTime();
+
+		//query command
+		QueryParam queryParam = new QueryParam();
+		BucketClause bucketClause = new BucketClause();
+		AndLogic andLogic = new AndLogic();
+		bucketClause.setClause(andLogic);
+		andLogic.addClause(new com.kii.extension.sdk.query.condition.Equal("title", "trigger"));
+		andLogic.addClause(new com.kii.extension.sdk.query.condition.Equal("commandState", "SENDING"));
+		andLogic.addClause(com.kii.extension.sdk.query.condition.Range.less("_modified", currentDate));
+//		andLogic.addClause(new com.kii.extension.sdk.query.condition.Range("_modified",lastDayDate,false,currentDate,false));
+		bucketClause.setOrderBy("_modified");
+		bucketClause.setDescending(true);
+		queryParam.setBucketQuery(bucketClause);
+
+		List<ThingCommand> gatewayCommands = thingIFService.queryCommandFull(gatewayFullThingID, queryParam);
+		log.info("resendGatewayCommand commands:" + gatewayCommands.size());
+		gatewayCommands.forEach( command -> {
+			int resendCount = command.getMetadata().get("resendCount")==null ? 1 : Integer.valueOf(command.getMetadata().get("resendCount").toString());
+			if(resendCount > 3) {
+				log.error("resendGatewayCommand-error resend more than 3 still fail! resendCount: "+ resendCount + " commandId: " + command.getId());
+			}
+			command.getMetadata().put("resendCount", resendCount+1);
+			thingIFService.sendCommand(command, gatewayFullThingID);
+			thingIFService.deleteCommand(gatewayFullThingID, command.getId());
+		});
+	}
+
 	
 	public void disableTrigger(GatewayTriggerRecord record){
 		
@@ -129,7 +180,13 @@ public class GatewayTriggerOperate {
 		}else {
 		
 			if(canGateway) {
-				GatewayTriggerRecord gatewayTriggerRecord = convertToGatewayTriggerRecord((SummaryTriggerRecord) newRecord);
+				GatewayTriggerRecord gatewayTriggerRecord = null;
+				try {
+					gatewayTriggerRecord = convertToGatewayTriggerRecord((SummaryTriggerRecord) newRecord);
+				} catch (Exception e) {
+					log.error("updateGatewayRecord error" , e);
+					return newRecord;
+				}
 				triggerDao.updateEntityAll(gatewayTriggerRecord, gatewayTriggerRecord.getId());
 				sendGatewayCommand(gatewayTriggerRecord, GatewayCommand.updateTrigger);
 				return gatewayTriggerRecord;
@@ -222,6 +279,7 @@ public class GatewayTriggerOperate {
 		try {
 			gatewayOfKiiCloud = thingIFService.getThingGateway(sourceThing.getFullKiiThingID());
 		} catch (Exception e) {
+			e.printStackTrace();
 			throw new IllegalStateException();
 		}
 		String thingID=gatewayOfKiiCloud.getThingID();
