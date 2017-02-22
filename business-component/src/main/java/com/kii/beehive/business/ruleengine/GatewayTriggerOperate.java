@@ -102,9 +102,9 @@ public class GatewayTriggerOperate {
 //			if(resendCount > 3) {
 //				log.error("resendGatewayCommand-error resend more than 3 still fail! resendCount: "+ resendCount + " commandId: " + command.getId());
 //			}
-			log.error("resendGatewayCommand resend command resendCount: "+ resendCount + " commandId: " + command.getId());
 			command.getMetadata().put("resendCount", resendCount+1);
-			thingIFService.sendCommand(command, gatewayFullThingID);
+			String newCommandId = thingIFService.sendCommand(command, gatewayFullThingID);
+			log.error("resendGatewayCommand resend command resendCount: "+ resendCount + " newCommandId: " + newCommandId );
 			thingIFService.deleteCommand(gatewayFullThingID, command.getId());
 		});
 	}
