@@ -10,11 +10,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
-import com.kii.extension.ruleengine.store.trigger.BeehiveTriggerType;
-import com.kii.extension.ruleengine.store.trigger.CommandParam;
-import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
-import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
-import com.kii.extension.ruleengine.store.trigger.schedule.TriggerValidPeriod;
+import com.kii.beehive.portal.store.entity.trigger.BeehiveTriggerType;
+import com.kii.beehive.portal.store.entity.trigger.CommandParam;
+import com.kii.beehive.portal.store.entity.trigger.RuleEnginePredicate;
+import com.kii.beehive.portal.store.entity.trigger.schedule.TriggerValidPeriod;
 
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME,
@@ -34,7 +33,7 @@ public abstract class EngineTrigger {
 
 	private RuleEnginePredicate predicate;
 
-	private List<ExecuteTarget> targets = new ArrayList<>();
+	private List<EngineExecuteTarget> targets = new ArrayList<>();
 
 	private List<CommandParam> targetParamList = new ArrayList<>();
 
@@ -105,16 +104,16 @@ public abstract class EngineTrigger {
 		this.predicate = predicate;
 	}
 
-	public List<ExecuteTarget> getTargets() {
+	public List<EngineExecuteTarget> getTargets() {
 		return targets;
 	}
 
-	public void setTargets(List<ExecuteTarget> target) {
+	public void setTargets(List<EngineExecuteTarget> target) {
 		this.targets = target;
 	}
 
 	@JsonIgnore
-	public void addTarget(ExecuteTarget target) {
+	public void addTarget(EngineExecuteTarget target) {
 		this.targets.add(target);
 	}
 

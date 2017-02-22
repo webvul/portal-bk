@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import com.kii.extension.ruleengine.store.trigger.Condition;
+import com.kii.beehive.portal.store.entity.trigger.Condition;
 
 
 public class ThingMonitorInput {

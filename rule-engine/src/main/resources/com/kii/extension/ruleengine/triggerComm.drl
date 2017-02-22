@@ -2,7 +2,7 @@ package com.kii.extension.ruleengine.drools.rule
 
 import com.kii.extension.ruleengine.drools.entity.*;
 import com.kii.extension.ruleengine.drools.CommandExec;
-import com.kii.extension.ruleengine.store.trigger.WhenType;
+import com.kii.beehive.portal.store.entity.trigger.WhenType;
 import com.kii.extension.ruleengine.ExtendFunAdapter;
 import com.kii.extension.ruleengine.ExtendFunAdapter;
 

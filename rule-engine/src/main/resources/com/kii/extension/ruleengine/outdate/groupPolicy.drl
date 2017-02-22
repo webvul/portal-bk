@@ -1,7 +1,7 @@
 package com.kii.extension.ruleengine.drools.rule
 
 import com.kii.extension.ruleengine.drools.entity.*;
-import com.kii.extension.ruleengine.store.trigger.groups.TriggerGroupPolicyType;
+import com.kii.beehive.portal.store.entity.trigger.groups.TriggerGroupPolicyType;
 
 
 

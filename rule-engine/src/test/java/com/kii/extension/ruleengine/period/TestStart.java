@@ -11,7 +11,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.kii.extension.ruleengine.schedule.ScheduleService;
-import com.kii.extension.ruleengine.store.trigger.schedule.SchedulePeriod;
+import com.kii.beehive.portal.store.entity.trigger.schedule.SchedulePeriod;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={

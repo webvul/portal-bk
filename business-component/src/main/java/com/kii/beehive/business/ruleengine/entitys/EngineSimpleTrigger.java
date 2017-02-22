@@ -1,6 +1,6 @@
 package com.kii.beehive.business.ruleengine.entitys;
 
-import com.kii.extension.ruleengine.store.trigger.BeehiveTriggerType;
+import com.kii.beehive.portal.store.entity.trigger.BeehiveTriggerType;
 
 public class EngineSimpleTrigger extends EngineTrigger {
 

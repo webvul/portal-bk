@@ -33,8 +33,8 @@ import com.kii.beehive.portal.exception.BusinessException;
 import com.kii.beehive.portal.service.MLTaskDetailDao;
 import com.kii.beehive.portal.store.entity.MLTaskDetail;
 import com.kii.beehive.portal.store.entity.PortalEntity;
-import com.kii.extension.ruleengine.store.trigger.BusinessDataObject;
-import com.kii.extension.ruleengine.store.trigger.BusinessObjType;
+import com.kii.beehive.portal.store.entity.trigger.BusinessDataObject;
+import com.kii.beehive.portal.store.entity.trigger.BusinessObjType;
 
 @Component
 public class MLTaskService {

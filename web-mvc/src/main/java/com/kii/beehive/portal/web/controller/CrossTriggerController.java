@@ -21,8 +21,8 @@ import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.web.constant.CallbackNames;
 import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
-import com.kii.extension.ruleengine.store.trigger.BeehiveTriggerType;
-import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
+import com.kii.beehive.portal.store.entity.trigger.BeehiveTriggerType;
+import com.kii.beehive.portal.store.entity.trigger.TriggerRecord;
 
 @RestController
 @RequestMapping(path = "/triggers", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {

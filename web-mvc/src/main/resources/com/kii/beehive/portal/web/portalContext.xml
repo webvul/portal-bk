@@ -55,11 +55,6 @@
     <bean id="controllerLogAspect" class="com.kii.beehive.portal.web.aop.ControllerLogAspect"/>
 
 
-    <!-- ruleEngine -->
-    <bean class="com.kii.extension.ruleengine.RuleEngineConfig"/>
-
-
-
     <!-- task  -->
 
     <task:annotation-driven executor="myExecutor" scheduler="myScheduler"/>

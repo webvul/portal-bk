@@ -6,7 +6,6 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,11 +15,11 @@ import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.beehive.portal.service.OperateLogDao;
 import com.kii.beehive.portal.store.entity.OperateLog;
-import com.kii.extension.ruleengine.service.TriggerRecordDao;
-import com.kii.extension.ruleengine.store.trigger.BeehiveTriggerType;
-import com.kii.extension.ruleengine.store.trigger.BusinessDataObject;
-import com.kii.extension.ruleengine.store.trigger.GatewayTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
+import com.kii.beehive.portal.service.TriggerRecordDao;
+import com.kii.beehive.portal.store.entity.trigger.BeehiveTriggerType;
+import com.kii.beehive.portal.store.entity.trigger.BusinessDataObject;
+import com.kii.beehive.portal.store.entity.trigger.GatewayTriggerRecord;
+import com.kii.beehive.portal.store.entity.trigger.TriggerRecord;
 
 @Component
 public class TriggerManager {
@@ -47,10 +46,6 @@ public class TriggerManager {
 
 	@Autowired
 	private OperateLogDao logTool;
-
-	@Value("${spring.profile:test}")
-	private String profile;
-	
 
 	public TriggerRecord createTrigger(TriggerRecord newTrigger) {
 		

@@ -1,6 +1,6 @@
 package com.kii.beehive.portal.store.entity;
 
-import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
+import com.kii.beehive.portal.store.entity.trigger.TriggerRecord;
 
 public class MLTriggerCombine extends PortalEntity {
 	

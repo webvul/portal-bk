@@ -3,16 +3,16 @@ package com.kii.extension.ruleengine;
 import java.util.Arrays;
 import java.util.List;
 
-import com.kii.extension.ruleengine.store.trigger.condition.InCollect;
-import com.kii.extension.ruleengine.store.trigger.condition.LogicCol;
-import com.kii.extension.ruleengine.store.trigger.condition.OrLogic;
 import com.kii.extension.ruleengine.store.trigger.Condition;
-import com.kii.extension.ruleengine.store.trigger.condition.All;
-import com.kii.extension.ruleengine.store.trigger.condition.AndLogic;
-import com.kii.extension.ruleengine.store.trigger.condition.Equal;
-import com.kii.extension.ruleengine.store.trigger.condition.Like;
-import com.kii.extension.ruleengine.store.trigger.condition.NotLogic;
-import com.kii.extension.ruleengine.store.trigger.condition.Range;
+import com.kii.beehive.portal.store.entity.trigger.condition.All;
+import com.kii.beehive.portal.store.entity.trigger.condition.AndLogic;
+import com.kii.beehive.portal.store.entity.trigger.condition.Equal;
+import com.kii.beehive.portal.store.entity.trigger.condition.InCollect;
+import com.kii.beehive.portal.store.entity.trigger.condition.Like;
+import com.kii.beehive.portal.store.entity.trigger.condition.LogicCol;
+import com.kii.beehive.portal.store.entity.trigger.condition.NotLogic;
+import com.kii.beehive.portal.store.entity.trigger.condition.OrLogic;
+import com.kii.beehive.portal.store.entity.trigger.condition.Range;
 
 
 public class TriggerConditionBuilder {

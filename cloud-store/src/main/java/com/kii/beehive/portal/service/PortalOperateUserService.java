@@ -7,13 +7,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.context.AppBindToolResolver;
+import com.kii.extension.sdk.context.TokenBindTool;
 import com.kii.extension.sdk.entity.KiiUser;
 import com.kii.extension.sdk.entity.LoginInfo;
 import com.kii.extension.sdk.exception.BadUserNameException;
 import com.kii.extension.sdk.service.UserService;
 
 @Component
+@BindAppByName(appName="portal",appBindSource="propAppBindTool",tokenBind = TokenBindTool.BindType.admin)
 public class PortalOperateUserService {
 	
 	@Autowired

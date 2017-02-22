@@ -2,8 +2,8 @@ package com.kii.beehive.business.ruleengine.entitys;
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
-import com.kii.extension.ruleengine.store.trigger.Condition;
-import com.kii.extension.ruleengine.store.trigger.Express;
+import com.kii.beehive.portal.store.entity.trigger.Condition;
+import com.kii.beehive.portal.store.entity.trigger.Express;
 
 public class GroupSummaryEngineSource implements EngineSourceElement {
 
@@ -56,7 +56,7 @@ public class GroupSummaryEngineSource implements EngineSourceElement {
 
 	@Override
 	public EngineSourceElement.SourceElementType getType() {
-		return EngineSourceElement.SourceElementType.summary;
+		return SourceElementType.collectObj;
 	}
 	
 	public enum SummaryFunctionType {

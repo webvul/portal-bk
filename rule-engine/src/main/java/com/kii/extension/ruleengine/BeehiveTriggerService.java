@@ -32,8 +32,8 @@ import com.kii.extension.ruleengine.store.trigger.MultipleSrcTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.SourceElement;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.schedule.SimplePeriod;
-import com.kii.extension.ruleengine.store.trigger.schedule.TriggerValidPeriod;
+import com.kii.beehive.portal.store.entity.trigger.schedule.SimplePeriod;
+import com.kii.beehive.portal.store.entity.trigger.schedule.TriggerValidPeriod;
 
 
 @Component

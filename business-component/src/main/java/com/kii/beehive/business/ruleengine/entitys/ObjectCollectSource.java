@@ -2,37 +2,31 @@ package com.kii.beehive.business.ruleengine.entitys;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import com.kii.extension.ruleengine.store.trigger.BusinessDataObject;
-import com.kii.extension.ruleengine.store.trigger.BusinessObjType;
 
 public class ObjectCollectSource {
 	
 	
 	private List<String> businessIDList=new ArrayList<>();
 	
-	private String businessName;
+	private String groupName;
 	
-	private BusinessObjType type=BusinessObjType.Business;
+	private EngineBusinessType objDataType=EngineBusinessType.Business;
 	
-	public BusinessObjType getBusinessType() {
-		return type;
+	
+	public EngineBusinessType getObjDataType() {
+		return objDataType;
 	}
 	
-	public void setBusinessType(BusinessObjType type) {
-		this.type = type;
+	public void setObjDataType(EngineBusinessType objDataType) {
+		this.objDataType = objDataType;
 	}
 	
-	public String getBusinessName() {
-		return businessName;
+	public String getGroupName() {
+		return groupName;
 	}
 	
-	public void setBusinessName(String businessName) {
-		this.businessName = businessName;
+	public void setGroupName(String groupName) {
+		this.groupName = groupName;
 	}
 
 	
@@ -47,27 +41,7 @@ public class ObjectCollectSource {
 		
 	}
 
+
 	
-	@JsonIgnore
-	public Set<BusinessDataObject> getFullBusinessObjs() {
-		
-		
-		List<String>  idList=new ArrayList<>();
-		
-		return idList.stream().map((k) -> {
-				
-				BusinessDataObject obj = new BusinessDataObject(k, businessName, type);
-				
-				return obj;
-			}).collect(Collectors.toSet());
-		
-	}
-	
-	@JsonIgnore
-	public Set<String> getFullBusinessObjIDs() {
-		
-		return getFullBusinessObjs().stream().map(BusinessDataObject::toString).collect(Collectors.toSet());
-		
-	}
 
 }

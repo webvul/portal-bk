@@ -14,15 +14,15 @@ import com.kii.beehive.business.ruleengine.TriggerConvertTool;
 import com.kii.beehive.business.ruleengine.TriggerManager;
 import com.kii.beehive.portal.service.CombineTriggerDao;
 import com.kii.beehive.portal.store.entity.MLTriggerCombine;
-import com.kii.extension.ruleengine.store.trigger.BusinessObjType;
-import com.kii.extension.ruleengine.store.trigger.Condition;
-import com.kii.extension.ruleengine.store.trigger.MultipleSrcTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
-import com.kii.extension.ruleengine.store.trigger.SingleThing;
-import com.kii.extension.ruleengine.store.trigger.ThingSource;
-import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.condition.Equal;
-import com.kii.extension.ruleengine.store.trigger.condition.OrLogic;
+import com.kii.beehive.portal.store.entity.trigger.BusinessObjType;
+import com.kii.beehive.portal.store.entity.trigger.Condition;
+import com.kii.beehive.portal.store.entity.trigger.MultipleSrcTriggerRecord;
+import com.kii.beehive.portal.store.entity.trigger.RuleEnginePredicate;
+import com.kii.beehive.portal.store.entity.trigger.SingleThing;
+import com.kii.beehive.portal.store.entity.trigger.ThingSource;
+import com.kii.beehive.portal.store.entity.trigger.TriggerRecord;
+import com.kii.beehive.portal.store.entity.trigger.condition.Equal;
+import com.kii.beehive.portal.store.entity.trigger.condition.OrLogic;
 
 @Component
 public class CombineTriggerService {

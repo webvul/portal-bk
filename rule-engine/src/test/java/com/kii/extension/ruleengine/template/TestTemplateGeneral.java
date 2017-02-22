@@ -25,7 +25,7 @@ import com.kii.extension.ruleengine.store.trigger.Condition;
 import com.kii.extension.ruleengine.store.trigger.Express;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
 import com.kii.extension.ruleengine.store.trigger.WhenType;
-import com.kii.extension.ruleengine.store.trigger.schedule.CronPrefix;
+import com.kii.beehive.portal.store.entity.trigger.schedule.CronPrefix;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={

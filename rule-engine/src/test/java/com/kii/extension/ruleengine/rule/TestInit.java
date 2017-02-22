@@ -11,7 +11,7 @@ import com.kii.extension.ruleengine.BeehiveTriggerService;
 import com.kii.extension.ruleengine.drools.CommandExec;
 import com.kii.extension.ruleengine.store.trigger.BusinessDataObject;
 import com.kii.extension.ruleengine.store.trigger.BusinessObjType;
-import com.kii.extension.ruleengine.store.trigger.task.CommandToThing;
+import com.kii.beehive.portal.store.entity.trigger.task.CommandToThing;
 import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
 import com.kii.extension.sdk.entity.thingif.Action;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;

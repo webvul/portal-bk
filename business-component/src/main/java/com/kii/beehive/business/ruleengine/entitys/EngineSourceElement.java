@@ -9,8 +9,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 		property = "type",
 		defaultImpl=SingleObjEngineSource.class)
 @JsonSubTypes({
-		@JsonSubTypes.Type(value = GroupSummaryEngineSource.class,name="summary"),
-		@JsonSubTypes.Type(value = SingleObjEngineSource.class,name="object"),
+		@JsonSubTypes.Type(value = GroupSummaryEngineSource.class,name="collectObj"),
+		@JsonSubTypes.Type(value = SingleObjEngineSource.class,name="singleObj"),
 })
 public interface EngineSourceElement {
 
@@ -19,7 +19,7 @@ public interface EngineSourceElement {
 
 
 	public static enum SourceElementType{
-		object,summary;
+		collectObj,singleObj;
 	}
 
 

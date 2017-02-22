@@ -5,8 +5,8 @@ import java.util.Map;
 
 import org.springframework.beans.BeanUtils;
 
-import com.kii.extension.ruleengine.store.trigger.BeehiveTriggerType;
-import com.kii.extension.ruleengine.store.trigger.MultipleSrcTriggerRecord;
+import com.kii.beehive.portal.store.entity.trigger.BeehiveTriggerType;
+import com.kii.beehive.portal.store.entity.trigger.MultipleSrcTriggerRecord;
 
 public class EngineMultipleSrcTrigger extends EngineTrigger {
 

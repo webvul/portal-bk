@@ -4,8 +4,8 @@ import java.util.Set;
 
 import org.springframework.stereotype.Component;
 
+import com.kii.beehive.business.ruleengine.entitys.EngineBusinessObj;
 import com.kii.beehive.business.ruleengine.entitys.EngineTrigger;
-import com.kii.extension.ruleengine.store.trigger.BusinessDataObject;
 
 @Component
 public class RuleEngineService {
@@ -32,10 +32,10 @@ public class RuleEngineService {
 		
 	}
 
-	public void addBusinessData(BusinessDataObject obj){
+	public void addBusinessData(EngineBusinessObj obj){
 		
 	}
 	
-	public void updateBusinessData(Set<BusinessDataObject> dataList) {
+	public void updateBusinessData(Set<EngineBusinessObj> dataList) {
 	}
 }

@@ -1,10 +1,8 @@
 package com.kii.beehive.business.ruleengine.entitys;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
-import com.kii.extension.ruleengine.store.trigger.BusinessDataObject;
-import com.kii.extension.ruleengine.store.trigger.Express;
+import com.kii.beehive.portal.store.entity.trigger.Express;
 
 public class SingleObjEngineSource implements EngineSourceElement {
 
@@ -31,15 +29,9 @@ public class SingleObjEngineSource implements EngineSourceElement {
 		this.express = express;
 	}
 
-
 	@Override
 	public SourceElementType getType() {
-		return SourceElementType.object;
+		return SourceElementType.singleObj;
 	}
-	
-	@JsonIgnore
-	public BusinessDataObject getObjInstance(){
-		
-		return businessObj.getBusinessObj();
-	}
+
 }

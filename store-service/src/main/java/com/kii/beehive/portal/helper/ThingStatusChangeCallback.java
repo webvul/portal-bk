@@ -14,7 +14,7 @@ import com.kii.beehive.business.ruleengine.TriggerOperate;
 import com.kii.beehive.portal.entitys.ThingStateUpload;
 import com.kii.beehive.portal.entitys.ThingStatusMsg;
 import com.kii.beehive.portal.jedis.dao.MessageQueueDao;
-import com.kii.extension.ruleengine.store.trigger.BusinessDataObject;
+import com.kii.beehive.portal.store.entity.trigger.BusinessDataObject;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
 @Component
@@ -44,7 +44,6 @@ public class ThingStatusChangeCallback {
 		
 		BusinessDataObject data=new BusinessDataObject();
 		data.setBusinessObjID(msg.getVendorThingID());
-		data.setBusinessName("beehive");
 		data.setData(msg.getStatus());
 		data.setCreated(msg.getTimestamp());
 		

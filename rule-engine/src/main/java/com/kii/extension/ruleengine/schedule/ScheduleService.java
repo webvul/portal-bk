@@ -21,8 +21,8 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.kii.extension.ruleengine.store.trigger.schedule.SchedulePrefix;
-import com.kii.extension.ruleengine.store.trigger.schedule.TriggerValidPeriod;
+import com.kii.beehive.portal.store.entity.trigger.schedule.SchedulePrefix;
+import com.kii.beehive.portal.store.entity.trigger.schedule.TriggerValidPeriod;
 
 @Component
 public class ScheduleService {

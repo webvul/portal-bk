@@ -24,8 +24,8 @@ import com.kii.beehive.portal.jdbc.dao.PagerTag;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
 import com.kii.beehive.portal.jdbc.dao.ThingLocationRelDao;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
-import com.kii.extension.ruleengine.store.trigger.BusinessObjType;
-import com.kii.extension.ruleengine.store.trigger.TagSelector;
+import com.kii.beehive.portal.store.entity.trigger.BusinessObjType;
+import com.kii.beehive.portal.store.entity.trigger.TagSelector;
 import com.kii.extension.sdk.entity.thingif.ThingStatus;
 
 @Component

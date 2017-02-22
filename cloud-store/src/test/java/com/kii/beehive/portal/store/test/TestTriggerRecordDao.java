@@ -1,15 +1,10 @@
 package com.kii.beehive.portal.store.test;
 
-import com.kii.beehive.portal.event.EventListener;
-import com.kii.beehive.portal.event.EventType;
-import com.kii.beehive.portal.service.EventListenerDao;
-import com.kii.extension.ruleengine.service.TriggerRecordDao;
-import com.kii.extension.ruleengine.store.trigger.SimpleTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
+import com.kii.beehive.portal.service.TriggerRecordDao;
+import com.kii.beehive.portal.store.entity.trigger.TriggerRecord;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Collection;
 import java.util.List;
 
 import static junit.framework.TestCase.assertEquals;

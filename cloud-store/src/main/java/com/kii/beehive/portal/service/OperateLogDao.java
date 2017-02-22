@@ -3,7 +3,7 @@ package com.kii.beehive.portal.service;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.portal.store.entity.OperateLog;
-import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
+import com.kii.beehive.portal.store.entity.trigger.TriggerRecord;
 import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.context.TokenBindTool;
 import com.kii.extension.sdk.entity.BucketInfo;

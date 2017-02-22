@@ -2,7 +2,7 @@ package com.kii.beehive.business.ruleengine.entitys;
 
 import java.util.List;
 
-import com.kii.extension.ruleengine.store.trigger.TagSelector;
+import com.kii.beehive.portal.store.entity.trigger.TagSelector;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
 
 public class ThingCommandExecuteParam {

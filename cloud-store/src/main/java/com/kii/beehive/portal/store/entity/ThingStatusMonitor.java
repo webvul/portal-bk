@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import com.kii.extension.ruleengine.store.trigger.Condition;
+import com.kii.beehive.portal.store.entity.trigger.Condition;
 
 
 public class ThingStatusMonitor extends PortalEntity {

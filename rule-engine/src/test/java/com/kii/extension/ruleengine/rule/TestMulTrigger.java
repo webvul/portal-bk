@@ -19,7 +19,7 @@ import com.kii.extension.ruleengine.store.trigger.BusinessDataObject;
 import com.kii.extension.ruleengine.store.trigger.BusinessObjType;
 import com.kii.extension.ruleengine.store.trigger.Condition;
 import com.kii.extension.ruleengine.store.trigger.RuleEnginePredicate;
-import com.kii.extension.ruleengine.store.trigger.groups.SummaryFunctionType;
+import com.kii.beehive.portal.store.entity.trigger.groups.SummaryFunctionType;
 import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
 import com.kii.extension.ruleengine.store.trigger.WhenType;
 import com.kii.extension.ruleengine.store.trigger.GroupSummarySource;
