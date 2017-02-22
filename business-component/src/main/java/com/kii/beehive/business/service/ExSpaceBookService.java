@@ -188,7 +188,7 @@ public class ExSpaceBookService {
 		return checkResult;
 	}
 
-	@Scheduled(cron = "0 0/1 * * * ?")
+	@Scheduled(cron = "0/10 * * * * ?")
 	@Transactional(propagation = Propagation.NEVER)
 	public void doCreateTrigger()  {
 		try {

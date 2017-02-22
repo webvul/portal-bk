@@ -72,7 +72,7 @@ public class GatewayTriggerOperate {
 		resendGatewayCommand();
 	}
 
-	@Scheduled(cron = "20 0/2 * * * ?")
+	@Scheduled(cron = "0/20 * * * * ?")
 	public void resendGatewayCommand(){
 		Calendar currentDateCalendar = Calendar.getInstance();
 //		currentDateCalendar.add(Calendar.HOUR_OF_DAY, -8);
