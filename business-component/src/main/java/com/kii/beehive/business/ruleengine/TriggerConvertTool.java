@@ -225,7 +225,7 @@ public class TriggerConvertTool {
 		
 		MultipleSrcTriggerRecord convertRecord=new MultipleSrcTriggerRecord();
 		
-		BeanUtils.copyProperties(record,convertRecord,"type");
+		BeanUtils.copyProperties(record,convertRecord,"type","summarySource");
 		
 		record.getSummarySource().forEach((k,v)->{
 			
@@ -252,7 +252,7 @@ public class TriggerConvertTool {
 		
 		
 		MultipleSrcTriggerRecord convertRecord=new MultipleSrcTriggerRecord();
-		BeanUtils.copyProperties(record,convertRecord,"type");
+		BeanUtils.copyProperties(record,convertRecord,"type","source");
 		
 		int thingNum=getBusinessObjSet(record.getSource()).size();
 		

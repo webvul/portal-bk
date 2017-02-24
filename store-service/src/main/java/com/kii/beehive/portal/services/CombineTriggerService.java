@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.business.ruleengine.TriggerConvertTool;
-import com.kii.beehive.business.ruleengine.TriggerManager;
+import com.kii.beehive.business.ruleengine.TriggerOperate;
 import com.kii.beehive.portal.service.CombineTriggerDao;
 import com.kii.beehive.portal.store.entity.MLTriggerCombine;
 import com.kii.beehive.portal.store.entity.trigger.BusinessObjType;
@@ -32,7 +32,7 @@ public class CombineTriggerService {
 	
 	
 	@Autowired
-	private TriggerManager triggerOper;
+	private TriggerOperate triggerOper;
 
 	
 	@Autowired
@@ -72,7 +72,7 @@ public class CombineTriggerService {
 		
 		MLTriggerCombine oldCombine=triggerDao.deleteEntity(triggerID);
 		
-		triggerOper.deleteTrigger(oldCombine.getRelationTriggerID());
+		triggerOper.removeTrigger(oldCombine.getRelationTriggerID());
 	}
 	
 	
@@ -107,7 +107,7 @@ public class CombineTriggerService {
 		MultipleSrcTriggerRecord newTrigger = getTriggerRecord(combine);
 		newTrigger.setCreator(id);
 		
-		String triggerID=triggerOper.createTrigger(newTrigger).getTriggerID();
+		String triggerID=triggerOper.createTrigger(newTrigger);
 		
 		triggerDao.updateEntity(Collections.singletonMap("relationTriggerID",triggerID),id);
 		

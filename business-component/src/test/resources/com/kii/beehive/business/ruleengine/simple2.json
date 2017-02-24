@@ -1,0 +1,31 @@
+{
+  "predicate" : {
+    "express" :"$p{power}==0",
+    "triggersWhen":"CONDITION_CHANGED"
+  },
+  "targets" : [ {
+    "thingList" : ["1007"],
+    "delay":"$p{delay}",
+    "command" : {
+      "actions" : [ {
+        "ON" : {
+          "power" : true
+        }
+      } ],
+      "schemaVersion" : 0,
+      "metadata" : { }
+    }
+  } ],
+  "targetParamList" : [ {
+    "name" : "foo_a",
+    "express" : "$p{foo}"
+  }, {
+    "name" : "ext_b",
+    "express" : "$e{demo.two}"
+  } ],
+  "type" : "Simple",
+  "source" : {
+    "thingID" : 1113
+  },
+  "triggerID" : "000"
+}

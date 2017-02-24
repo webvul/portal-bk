@@ -64,6 +64,12 @@ public class EngineTriggerBuilder {
 		groupName="beehive."+profile;
 	}
 	
+	
+	public String getGroupName(){
+		return groupName;
+	}
+			
+	
 	public EngineBusinessObj generBusinessData(BusinessDataObject obj){
 		EngineBusinessObj data=new EngineBusinessObj();
 		data.setState(obj.getData());
@@ -97,11 +103,11 @@ public class EngineTriggerBuilder {
 		if(record instanceof SimpleTriggerRecord){
 			EngineSimpleTrigger trigger=new EngineSimpleTrigger();
 			BeanUtils.copyProperties(record,trigger,"source","targets");
-			trigger.setSource(convertBusinessObj(((SimpleTriggerRecord) record).getSource()));
+			trigger.setSource(convertObj(((SimpleTriggerRecord) record).getSource()));
 			engineTrigger=trigger;
 		}else if(record instanceof MultipleSrcTriggerRecord){
 			EngineMultipleSrcTrigger trigger=new EngineMultipleSrcTrigger();
-			BeanUtils.copyProperties(record,trigger);
+			BeanUtils.copyProperties(record,trigger,"summarySource","targets");
 			((MultipleSrcTriggerRecord) record).getSummarySource().forEach((k,v)->{
 				
 				if(v instanceof  ThingSource){
@@ -174,7 +180,7 @@ public class EngineTriggerBuilder {
 	}
 	
 	
-	private  SingleObject convertBusinessObj(SingleThing thing){
+	private  SingleObject convertObj(SingleThing thing){
 		
 		SingleObject obj=new SingleObject();
 		if(thing.getBusinessType()==BusinessObjType.Context) {
@@ -185,6 +191,8 @@ public class EngineTriggerBuilder {
 		String id=null;
 		if(thing.getBusinessType()==BusinessObjType.Thing) {
 			id = thingTagService.getThingByID(thing.getThingID()).getVendorThingID();
+		}else{
+			id=thing.getBusinessID();
 		}
 		
 		if(StringUtils.isNotBlank(thing.getBusinessName())){
@@ -199,7 +207,7 @@ public class EngineTriggerBuilder {
 	
 	private SingleObjEngineSource convertBusinessObj(ThingSource source){
 		SingleObjEngineSource output=new SingleObjEngineSource();
-		output.setBusinessObj(convertBusinessObj(source.getThing()));
+		output.setBusinessObj(convertObj(source.getThing()));
 		output.setExpress(source.getExpress());
 		return output;
 	}

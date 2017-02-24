@@ -1,0 +1,44 @@
+{
+
+  "type": "Multiple",
+  "summarySource": {
+    "one": {
+      "stateName": "",
+      "function": "objCol",
+      "source": {
+        "thingList": [
+          1110,1112,1113
+        ]
+      },
+      "express":"$p{foo}>$p{bar}",
+      "type": "summary"
+    }
+  },
+  "userID": 0,
+  "targets": [],
+  "predicate": {
+
+    "triggersWhen": "CONDITION_TRUE",
+    "express": "  $p{one}!=$h{one} "
+  },
+  "recordStatus": "enable",
+  "targetParamList": [
+    {
+      "name": "monitorID",
+      "express": "'aaaaaaaa'"
+    },
+    {
+      "name": "thingStatusCol",
+      "express": "$e{runtime.currStatusCol}"
+    },
+    {
+      "name":"matcher",
+      "express":"$p:c{one}"
+    },
+    {
+      "name":"history",
+      "express":"$h:c{one}"
+    }
+  ],
+  "name": "test"
+}

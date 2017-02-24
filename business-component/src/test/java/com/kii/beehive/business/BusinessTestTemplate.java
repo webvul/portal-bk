@@ -1,7 +1,7 @@
 package com.kii.beehive.business;
 
 
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +29,11 @@ public class BusinessTestTemplate {
 //	@Autowired
 //	private ThingInfoRepository thingRep;
 
-
+	@BeforeClass
+	public static void init(){
+		
+		System.setProperty("spring.profile","local");
+	}
 
 	@Autowired
 	ListenerEnvInitService  envInitService;
@@ -40,12 +44,7 @@ public class BusinessTestTemplate {
 	@Autowired
 	private AppInfoDao  appDao;
 
-	@Before
-	public void init(){
-
-		System.setProperty("spring.profile","local");
-
-	}
+	
 
 
 	public static final String STATE_CHANGED = "stateChanged";

@@ -23,8 +23,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.beehive.business.entity.MonitorQuery;
 import com.kii.beehive.business.entity.ThingStatusNoticeEntry;
-import com.kii.beehive.business.ruleengine.TriggerCreateException;
-import com.kii.beehive.business.ruleengine.TriggerManager;
+import com.kii.beehive.business.ruleengine.TriggerException;
+import com.kii.beehive.business.ruleengine.TriggerOperate;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.common.utils.CommLangsUtils;
 import com.kii.beehive.portal.exception.InvalidEntryStatusException;
@@ -60,7 +60,7 @@ public class ThingMonitorService {
 	private UserNoticeDao noticificationDao;
 
 	@Autowired
-	private TriggerManager creator;
+	private TriggerOperate creator;
 	
 	@Autowired
 	private ThingStatusMonitorDao  monitorDao;
@@ -199,12 +199,12 @@ public class ThingMonitorService {
 			TriggerRecord trigger = getTrigger(monitor, ids);
 			
 			try {
-				String triggerID = creator.createTrigger(trigger).getTriggerID();
+				String triggerID = creator.createTrigger(trigger);
 				
 				monitor.setRelationTriggerID(triggerID);
 				
 				monitorDao.updateEntity(Collections.singletonMap("relationTriggerID", triggerID), monitorID);
-			} catch (TriggerCreateException ex) {
+			} catch (TriggerException ex) {
 				monitorDao.removeEntity(monitorID);
 				throw ex;
 			}
@@ -218,20 +218,10 @@ public class ThingMonitorService {
 		ThingStatusMonitor monitor=monitorDao.deleteEntity(id);
 		
 		if(StringUtils.isNotBlank(monitor.getRelationTriggerID())) {
-			creator.deleteTrigger(monitor.getRelationTriggerID());
+			creator.removeTrigger(monitor.getRelationTriggerID());
 		}
 		
-//		ThingStatusMonitor monitor=monitorDao.getObjectByID(id);
-//
-//		if(monitor.getStatus()!= ThingStatusMonitor.MonitorStatus.deleted) {
-//
-//			creator.deleteTrigger(monitor.getRelationTriggerID());
-//
-//			monitorDao.updateEntity(Collections.singletonMap("status", ThingStatusMonitor.MonitorStatus.deleted), id);
-//		}else{
-//			throw new InvalidEntryStatusException("ThingStatusMonitor","status",monitor.getStatus().name());
-//
-//		}
+
 	}
 	
 	public void enableMonitor(String id){
@@ -243,15 +233,7 @@ public class ThingMonitorService {
 			creator.enableTrigger(monitor.getRelationTriggerID());
 		}
 		
-//		ThingStatusMonitor monitor=monitorDao.getObjectByID(id);
-//		if(monitor.getStatus()== ThingStatusMonitor.MonitorStatus.disable) {
-//			if(StringUtils.isNotBlank(monitor.getRelationTriggerID())) {
-//				creator.enableTrigger(monitor.getRelationTriggerID());
-//			}
-//			monitorDao.updateEntity(Collections.singletonMap("status", ThingStatusMonitor.MonitorStatus.enable), id);
-//		}else{
-//			throw new InvalidEntryStatusException("ThingStatusMonitor","status",monitor.getStatus().name());
-//		}
+
 	}
 	
 	public void disableMonitor(String id){
@@ -262,14 +244,7 @@ public class ThingMonitorService {
 			creator.disableTrigger(monitor.getRelationTriggerID());
 		}
 		
-//
-//		if(monitor.getStatus()== ThingStatusMonitor.MonitorStatus.enable) {
-//
-//
-//			monitorDao.updateEntity(Collections.singletonMap("status", ThingStatusMonitor.MonitorStatus.disable), id);
-//		}else{
-//			throw new InvalidEntryStatusException("ThingStatusMonitor","status",monitor.getStatus().name());
-//		}
+
 	}
 	
 	
@@ -300,7 +275,7 @@ public class ThingMonitorService {
 			TriggerRecord newTrigger=getTrigger(monitor,ids);
 			if(StringUtils.isBlank(oldMonitor.getRelationTriggerID())){
 				
-				String relationTriggerID=creator.createTrigger(newTrigger).getTriggerID();
+				String relationTriggerID=creator.createTrigger(newTrigger);
 				monitor.setRelationTriggerID(relationTriggerID);
 				
 			}else {

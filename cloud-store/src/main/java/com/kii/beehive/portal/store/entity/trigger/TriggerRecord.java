@@ -53,17 +53,17 @@ public abstract class TriggerRecord extends KiiEntity {
 	private String description;
 	
 	private UsedByType usedByWho=UsedByType.User;
+
+	private String relationTriggerID;
 	
-//	private ExternalEntry   instData=new ExternalEntry();
 	
+	public String getRelationTriggerID() {
+		return relationTriggerID;
+	}
 	
-//	public ExternalEntry getInstData() {
-//		return instData;
-//	}
-//
-//	public void setInstData(ExternalEntry instDataMap) {
-//		this.instData = instDataMap;
-//	}
+	public void setRelationTriggerID(String relationTriggerID) {
+		this.relationTriggerID = relationTriggerID;
+	}
 	
 	public enum UsedByType{
 		

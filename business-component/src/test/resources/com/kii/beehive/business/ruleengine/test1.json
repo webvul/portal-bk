@@ -1,0 +1,45 @@
+{
+  "type" : "Simple",
+  "predicate" : {
+    "eventSource" : "states",
+    "triggersWhen" : "CONDITION_TRUE",
+    "condition" : {
+      "clauses" : [ {
+        "field" : "bar",
+        "upperLimit" : 100,
+        "upperIncluded" : false,
+        "lowerIncluded" : false,
+        "type" : "range"
+      }, {
+        "field" : "foo",
+        "upperIncluded" : false,
+        "lowerLimit" : 0,
+        "lowerIncluded" : false,
+        "type" : "range"
+      } ],
+      "type" : "and"
+    }
+  },
+  "targetParamList":[{
+    "name":"foo",
+    "express":"$p{foo}"
+  }],
+  "targets" : [ {
+    "thingList" : ["1007"],
+    "tagList" : [],
+    "andExpress" : false,
+    "command" : {
+      "description": "parma-joling",
+      "title": "Test-joling",
+      "actions":[{
+        "setPower": {
+          "power": "false"
+        }
+      }
+      ]
+    }
+  }],
+  "source" : {
+    "thingID" : 1110
+  }
+}

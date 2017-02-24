@@ -10,12 +10,15 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.concurrent.FutureCallback;
 import org.apache.http.impl.client.BasicCookieStore;
@@ -78,16 +81,12 @@ public class HttpTool implements Closeable {
 				.setIoThreadCount(32)
 				.setSoKeepAlive(true)
 				.setConnectTimeout(30)
-				//.setTcpNoDelay(true)
 				.build());
 
 		final PoolingNHttpClientConnectionManager connManager = new PoolingNHttpClientConnectionManager(
 				ioReactor);
-		connManager.setDefaultMaxPerRoute(20);
-		connManager.setMaxTotal(1000);
-
-		log.info("connManager.getDefaultMaxPerRoute: " + connManager.getDefaultMaxPerRoute());
-		log.info("connManager.getMaxTotal: " + connManager.getMaxTotal());
+		connManager.setDefaultMaxPerRoute(50);
+		connManager.setMaxTotal(500);
 
 		executorService.scheduleAtFixedRate(() -> {
 			connManager.closeExpiredConnections();
@@ -148,6 +147,12 @@ public class HttpTool implements Closeable {
 
 			return response;
 		}  catch (InterruptedException|ExecutionException e) {
+			if(e instanceof  ExecutionException) {
+				if (e.getCause().getCause() instanceof ClientProtocolException) {
+					throw new IllegalStateException(e.getCause().getCause());
+				}
+			}
+			
 			throw new IllegalStateException(e);
 		}
 	}
@@ -159,4 +164,61 @@ public class HttpTool implements Closeable {
 		return  httpClient.execute(request,callback);
 
 	}
+	
+	private static final int[] delayArray=new int[]{0,2,5,10,20,60};
+	
+	public HttpResponse doRequstWithRetry(RequestBuilder builder) throws Throwable {
+		
+		return doRequstWithRetry(builder,(b)->{
+			
+		});
+	}
+	
+	public HttpResponse doRequstWithRetry(RequestBuilder builder, Consumer<RequestBuilder> modify) throws Throwable {
+		
+		
+		int retryNum=-1;
+		
+		Throwable exception=null;
+		while(retryNum<5) {
+			
+			retryNum++;
+			
+			modify.accept(builder);
+			
+			try {
+				
+				Future<HttpResponse> future = executorService.schedule(() -> doRequest(builder.build()), delayArray[retryNum], TimeUnit.SECONDS);
+				
+				HttpResponse response = future.get();
+				
+				int code = response.getStatusLine().getStatusCode();
+				
+				if (code >= 500) {
+					continue;
+				}
+				return response;
+			} catch (InterruptedException e) {
+				exception=e;
+			}catch(ExecutionException ex ){
+				if(ex.getCause() instanceof ExecutionException) {
+					if (ex.getCause().getCause() instanceof ClientProtocolException) {
+						exception = ex.getCause().getCause();
+						continue;
+					}
+				}
+				exception=ex.getCause();
+				break;
+			}
+			
+		}
+		
+		if(exception!=null){
+			throw exception;
+		}else{
+			throw new IllegalArgumentException();
+		}
+		
+	}
+	
 }

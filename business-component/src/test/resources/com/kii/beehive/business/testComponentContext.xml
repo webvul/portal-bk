@@ -26,13 +26,6 @@
         <context:include-filter type="annotation" expression="org.springframework.stereotype.Component"/>
     </context:component-scan>
 
-    <!-- <task:annotation-driven executor="myExecutor" scheduler="myScheduler"/>
-    <task:executor id="myExecutor" pool-size="5"/>
-    <task:scheduler id="myScheduler" pool-size="10"/> -->
-
-
-    <!-- ruleEngine -->
-    <bean class="com.kii.extension.ruleengine.RuleEngineConfig"/>
 
     <!-- jdbc store -->
     <import resource="classpath:com/kii/beehive/portal/jdbcstore/config/jdbcStoreContext.xml" />

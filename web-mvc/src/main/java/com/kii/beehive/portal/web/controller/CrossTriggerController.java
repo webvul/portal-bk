@@ -18,11 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kii.beehive.business.manager.TagThingManager;
 import com.kii.beehive.business.ruleengine.TriggerManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
-import com.kii.beehive.portal.web.constant.CallbackNames;
-import com.kii.beehive.portal.web.exception.ErrorCode;
-import com.kii.beehive.portal.web.exception.PortalException;
 import com.kii.beehive.portal.store.entity.trigger.BeehiveTriggerType;
 import com.kii.beehive.portal.store.entity.trigger.TriggerRecord;
+import com.kii.beehive.portal.web.constant.CallbackNames;
 
 @RestController
 @RequestMapping(path = "/triggers", consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {
@@ -61,64 +59,48 @@ public class CrossTriggerController {
 		result.put("triggerID", trigger.getTriggerID());
 		result.put("triggerPosition", trigger.getType()== BeehiveTriggerType.Gateway?"local":"cloud");
 
-
 		return result;
 	}
 
-	@RequestMapping(path = "/{triggerID}", method = {RequestMethod.PUT},consumes={MediaType.ALL_VALUE})
-	public Map<String, Object> updateTrigger(@PathVariable("triggerID") String triggerID, @RequestBody TriggerRecord record) {
-		Map<String, Object> result = new HashMap<>();
-		result.put("task", "success");
-
+	@RequestMapping(path = "/{triggerID}", method = {RequestMethod.PUT})
+	public void  updateTrigger(@PathVariable("triggerID") String triggerID, @RequestBody TriggerRecord record) {
+		
 		record.setId(triggerID);
 
 		record.setUserID(AuthInfoStore.getUserID());
 		
 		mang.updateTrigger(record);
 
-		return result;
+		return;
 	}
 
-	@RequestMapping(path = "/{triggerID}", method = {RequestMethod.DELETE}, consumes = {"*"})
-	public Map<String, Object> deleteTrigger(@PathVariable("triggerID") String triggerID) {
-		Map<String, Object> result = new HashMap<>();
-		result.put("task", "success");
+	@RequestMapping(path = "/{triggerID}", method = {RequestMethod.DELETE}, consumes = {MediaType.ALL_VALUE})
+	public void deleteTrigger(@PathVariable("triggerID") String triggerID) {
 
 		mang.deleteTrigger(triggerID);
 
 
-		return result;
+		return ;
 	}
 
 	@RequestMapping(path = "/{triggerID}/enable", method = {RequestMethod.PUT},consumes={MediaType.ALL_VALUE})
-	public Map<String, Object> enableTrigger(@PathVariable("triggerID") String triggerID) {
-		Map<String, Object> result = new HashMap<>();
-		result.put("task", "success");
-		TriggerRecord record = mang.getTriggerByID(triggerID);
-		if (!TriggerRecord.StatusType.disable.equals(record.getRecordStatus())) {
-			throw new PortalException(ErrorCode.INVALID_INPUT,"field","enable","data","true");
-		}
+	public void enableTrigger(@PathVariable("triggerID") String triggerID) {
 
 		mang.enableTrigger(triggerID);
 
 
-		return result;
+		return ;
 	}
 
 
 	@RequestMapping(path = "/{triggerID}/disable", method = {RequestMethod.PUT},consumes={MediaType.ALL_VALUE})
-	public Map<String, Object> disableTrigger(@PathVariable("triggerID") String triggerID) {
-		Map<String, Object> result = new HashMap<>();
-		result.put("task", "success");
-		TriggerRecord record = mang.getTriggerByID(triggerID);
-		if (!TriggerRecord.StatusType.enable.equals(record.getRecordStatus())) {
-			throw new PortalException(ErrorCode.INVALID_INPUT,"field","enable","data","false");
-		}
+	public void disableTrigger(@PathVariable("triggerID") String triggerID) {
+	
 
 		mang.disableTrigger(triggerID);
 
 
-		return result;
+		return ;
 	}
 
 	@RequestMapping(path = "/{triggerID}", method = {RequestMethod.GET}, consumes = {MediaType.ALL_VALUE})

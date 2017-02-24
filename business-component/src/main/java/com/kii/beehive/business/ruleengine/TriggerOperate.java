@@ -59,7 +59,10 @@ public class TriggerOperate {
 		
 		service.updateBusinessData(list);
 		
-		dataMap.get(oldIndex).clear();
+		Set<EngineBusinessObj>  oldList=dataMap.get(oldIndex);
+		if(oldList!=null){
+			oldList.clear();
+		}
 		
 	}
 	
@@ -69,39 +72,44 @@ public class TriggerOperate {
 		
 	}
 
-	public void removeTrigger(TriggerRecord  record){
+	public void removeTrigger(String triggerID){
 
 
-		String triggerID=record.getTriggerID();
-
-
-		if(record.getRecordStatus()== TriggerRecord.StatusType.enable) {
-
-			service.removeTrigger(record.getTriggerID());
+			service.removeTrigger(triggerID);
 
 			List<EventListener> eventListenerList = eventListenerDao.getEventListenerByTargetKey(triggerID);
 			for (EventListener eventListener : eventListenerList) {
 					eventListenerDao.removeEntity(eventListener.getId());
 			}
-		}
+		
 
 	}
 
-	public void disableTrigger(TriggerRecord  record){
+	public void disableTrigger(String triggerID){
 
-		String triggerID=record.getTriggerID();
-
-		if(record.getRecordStatus()== TriggerRecord.StatusType.enable) {
-			service.removeTrigger(triggerID);
-		}
+		service.disableTrigger(triggerID);
 
 	}
 	
+	public void enableTrigger(String triggerID){
+		service.enableTrigger(triggerID);
+		
+	}
 	
-	public void createTrigger(TriggerRecord record) {
+	
+	public String  createTrigger(TriggerRecord record) {
 		
 		EngineTrigger trigger=triggerBuilder.generEngineTrigger(record);
 		
-		service.addTrigger(trigger);
+		String id=  service.addTrigger(trigger);
+		record.setRelationTriggerID(id);
+		
+		return id;
+	}
+	
+	public void updateTrigger(TriggerRecord record){
+		
+		EngineTrigger trigger=triggerBuilder.generEngineTrigger(record);
+		service.updateTrigger(trigger,record.getRelationTriggerID());
 	}
 }

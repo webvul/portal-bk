@@ -12,9 +12,11 @@ public class MultipleSrcTriggerRecord extends TriggerRecord {
 	public Map<String, SourceElement> getSummarySource() {
 		return summarySource;
 	}
-
-
-
+	
+	public void setSummarySource(Map<String, SourceElement> summarySource) {
+		this.summarySource = summarySource;
+	}
+	
 	@Override
 	public BeehiveTriggerType getType() {
 		return BeehiveTriggerType.Multiple;

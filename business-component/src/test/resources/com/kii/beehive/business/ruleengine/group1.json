@@ -1,0 +1,42 @@
+{
+  "predicate" : {
+    "condition" : {
+      "field" : "foo",
+      "upperIncluded" : false,
+      "lowerLimit" : 1,
+      "lowerIncluded" : true,
+      "type" : "range"
+    },
+    "triggersWhen":"CONDITION_TRUE_TO_FALSE"
+  },
+  "targets" : [ {
+    "thingList" : ["1007"],
+    "command" : {
+      "actions" : [ {
+        "ON" : {
+          "power" : true
+        }
+      } ],
+      "schemaVersion" : 0,
+      "metadata" : { }
+    }
+  } ],
+  "targetParamList" : [ {
+    "name" : "foo_a",
+    "express" : "$p{comm}"
+  }, {
+    "name" : "ext_b",
+    "express" : "$e{demo.two}"
+  } ],
+  "type" : "Group",
+  "policy" : {
+    "groupPolicy" : "Percent",
+    "criticalNumber" : 75
+
+  },
+  "source" : {
+    "thingList" : [1110,1112,1113],
+    "andExpress" : false
+  },
+  "triggerID" : "202"
+}

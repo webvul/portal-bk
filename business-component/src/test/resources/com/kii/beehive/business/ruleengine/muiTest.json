@@ -1,0 +1,70 @@
+{
+
+  "type": "Multiple",
+  "summarySource": {
+    "one": {
+      "stateName": "bar",
+      "function": "max",
+      "source": {
+        "tagList": [],
+        "thingList": [
+          1110,
+          1112
+        ],
+        "andExpress": false
+      },
+      "type": "summary"
+    },
+    "two": {
+      "stateName": "foo",
+      "function": "count",
+      "source": {
+        "tagList": [],
+        "thingList": [
+          1110,
+          1113
+        ],
+        "andExpress": false
+      },
+      "type": "summary"
+    }
+  },
+  "userID": 0,
+  "targets": [
+    {
+      "tagList": [],
+      "thingList": [
+        1110
+      ],
+      "doubleCheck": false,
+      "type": "ThingCommand",
+      "andExpress": false,
+      "command": {
+        "metadata": {},
+        "schemaVersion": 0,
+        "description": "multiple-joling",
+        "title": "Multiple-joling",
+        "actions": [
+          {
+            "setPowner": {
+              "power": "false"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "predicate": {
+
+    "triggersWhen": "CONDITION_TRUE",
+    "express": "$p{one}>$p{two}"
+  },
+  "recordStatus": "enable",
+  "targetParamList": [
+    {
+      "name": "foo",
+      "express": "$p{foo}"
+    }
+  ],
+  "name": "test"
+}

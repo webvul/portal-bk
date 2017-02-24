@@ -1,5 +1,6 @@
 package com.kii.beehive.business.ruleengine;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -64,9 +65,11 @@ public class TriggerManager {
 				
 				logTool.triggerLog(record, OperateLog.ActionType.enable);
 				
-				creator.createTrigger(record);
+				String id=creator.createTrigger(record);
+				
+				triggerDao.updateEntity(Collections.singletonMap("relationTriggerID",id),record.getTriggerID());
 			}
-		}catch(TriggerCreateException ex){
+		}catch(TriggerException ex){
 			logTool.triggerLog(record, OperateLog.ActionType.delete);
 			
 			triggerDao.removeEntity(record.getId());
@@ -92,10 +95,9 @@ public class TriggerManager {
 		if(record.getType()!=BeehiveTriggerType.Gateway) {
 			record.setRecordStatus(TriggerRecord.StatusType.enable);
 			
-			creator.removeTrigger(record);
 			
 			record.fillCreator(record.getUserID());
-			creator.createTrigger(record);
+			creator.updateTrigger(record);
 			
 			triggerDao.updateEntity(record, record.getId());
 		}
@@ -118,7 +120,7 @@ public class TriggerManager {
 			gwOperate.disableTrigger((GatewayTriggerRecord) record);
 		}else {
 
-			creator.disableTrigger(record);
+			creator.disableTrigger(record.getRelationTriggerID());
 
 		}
 	}
@@ -140,7 +142,7 @@ public class TriggerManager {
 
 		}else {
 
-			creator.createTrigger(record);
+			creator.enableTrigger(record.getRelationTriggerID());
 
 		}
 	}
@@ -188,7 +190,7 @@ public class TriggerManager {
 
 			gwOperate.deleteTrigger((GatewayTriggerRecord)record);
 		}else {
-			creator.removeTrigger(record);
+			creator.removeTrigger(record.getRelationTriggerID());
 		}
 
 
