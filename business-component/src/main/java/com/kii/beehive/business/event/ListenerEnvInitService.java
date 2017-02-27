@@ -174,6 +174,8 @@ public class ListenerEnvInitService {
 
 		});
 
+		log.info("deployTriggerToAll end");
+
 	}
 
 	public void deployTrigger(AppInfo appInfo,CallbackUrlParameter param){
