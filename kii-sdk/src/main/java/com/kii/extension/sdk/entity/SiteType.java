@@ -2,7 +2,7 @@ package com.kii.extension.sdk.entity;
 
 public enum SiteType {
 
-	US(""),SG("sg"),JP("jp"),CN3("cn3"),CN("cn2"),BH01A("development-beehivecn3.internal");
+	US(""),SG("sg"),JP("jp"),CN3("cn3"),CN("cn2"),bh02a("beehivecn4"),BH01A("development-beehivecn3.internal");
 
 	private String url;
 
