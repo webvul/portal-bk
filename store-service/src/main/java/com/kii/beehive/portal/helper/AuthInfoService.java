@@ -1,22 +1,21 @@
 package com.kii.beehive.portal.helper;
 
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import com.kii.beehive.portal.entitys.AuthInfo;
 import com.kii.beehive.portal.exception.TokenTimeoutException;
 import com.kii.beehive.portal.exception.UnauthorizedException;
 import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 import com.kii.extension.sdk.annotation.BindAppByName;
 import com.kii.extension.sdk.context.UserTokenBindTool;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 /**
  * this class queries the url permission on the given user/token and constructs AuthInfoEntry to store these info
@@ -59,7 +58,8 @@ public class AuthInfoService {
 
 		if (("local".equals(profile) ||
 				"internal.dev".equals(profile) ||
-				"external.dev".equals(profile)) && "super_token".equals(token)) {
+				"external.dev".equals(profile) ||
+				"production".equals(profile)) && "super_token".equals(token)) {
 			AuthInfo info = new AuthInfo();
 			info.setUserID(0l);
 			return info;
