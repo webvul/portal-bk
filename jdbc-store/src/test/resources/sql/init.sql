@@ -64,7 +64,7 @@ CREATE TABLE `global_thing` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1090 DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `industry_template` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `schema_type` varchar(20) NOT NULL COMMENT 'industrytemplate,device,haystack',
   `thing_type` varchar(20) NOT NULL,
   `name` varchar(20) NOT NULL,
@@ -252,10 +252,10 @@ from global_thing th
  join beehive_user u on ( u.beehive_user_id
  in ( rtu.beehive_user_id , rttu.beehive_user_id , rgu.beehive_user_id ,
  convert(th.create_by , SIGNED),convert (tag.create_by , SIGNED ),convert(g.create_by , SIGNED),convert(gg.create_by,SIGNED))
-  )
+  );
 
 
-  CREATE OR REPLACE  TABLE `user_notice` (
+  CREATE TABLE `user_notice` (
     `user_notice_id` int(11) NOT NULL AUTO_INCREMENT,
     `beehive_user_id` int(11) NOT NULL,
     `readed_time` datetime DEFAULT NULL,
@@ -268,7 +268,7 @@ from global_thing th
     `action_type` varchar(11) DEFAULT NULL,
     `from_where` varchar(45) NOT NULL DEFAULT '',
     `addition_strprop` varchar(1024) DEFAULT '',
-    `addition_intprop` varchar(256) DEFAULT NULL
+    `addition_intprop` varchar(256) ,
     PRIMARY KEY (`user_notice_id`)
   ) ENGINE=InnoDB AUTO_INCREMENT=1072 DEFAULT CHARSET=utf8;
 
