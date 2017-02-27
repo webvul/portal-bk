@@ -128,6 +128,7 @@ public class AppInfoManager {
 	 */
 	public void initAppInfos(String userName,String pwd,String masterID){
 
+		log.info("initAppInfos start");
 
 		Map<String,AppInfo> appInfoMap=new HashMap<>();
 
