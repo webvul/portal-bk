@@ -9,7 +9,7 @@ import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.service.BeehiveConfigDao;
 import com.kii.beehive.portal.service.UserRuleDao;
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
-import com.kii.beehive.portal.store.entity.es.EsDataSourceCfgEntry;
+import com.kii.beehive.portal.store.entity.configEntry.EsDataSourceCfgEntry;
 import com.kii.extension.sdk.entity.AppInfo;
 
 public class TestConfigStore extends  TestTemplate {

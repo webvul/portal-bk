@@ -1,8 +1,8 @@
 package com.kii.beehive.portal.web.controller;
 
-import static com.kii.beehive.business.ruleengine.ReomteUrlStore.FIRE_BUSINESS_FUN;
-import static com.kii.beehive.business.ruleengine.ReomteUrlStore.FIRE_THING_CMD;
-import static com.kii.beehive.business.ruleengine.ReomteUrlStore.THIRD_PARTY_URL;
+import static com.kii.beehive.business.ruleengine.RemoteUrlStore.FIRE_BUSINESS_FUN;
+import static com.kii.beehive.business.ruleengine.RemoteUrlStore.FIRE_THING_CMD;
+import static com.kii.beehive.business.ruleengine.RemoteUrlStore.THIRD_PARTY_URL;
 
 import java.util.Map;
 
@@ -31,8 +31,9 @@ public class Party3thAuthController {
 
 	@Autowired
 	private AuthManager authManager;
-
-
+	@Autowired
+	private ExecuteCommandManager executeManager;
+	
 	@RequestMapping(value = "/getTokenByID", method = {RequestMethod.POST})
 	public AuthRestBean getTokenByID(@RequestBody Map<String, Object> request) {
 
@@ -48,16 +49,10 @@ public class Party3thAuthController {
 		return new AuthRestBean(user);
 	}
 	
-	
-	
-	@Autowired
-	private ExecuteCommandManager executeManager;
-	
-	
 	@RequestMapping(value = FIRE_THING_CMD, method = {RequestMethod.POST})
 	public Map<Long,String> executeCommand(@RequestBody ThingCommandExecuteParam param) {
 		
-
+		
 		Map<Long,String> results=executeManager.executeCommand(param);
 		
 		

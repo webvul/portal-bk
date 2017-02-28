@@ -1,6 +1,9 @@
 package com.kii.beehive.portal.web.config;
 
 
+import static com.kii.beehive.business.ruleengine.RemoteUrlStore.RULEENG_CALLBACK_URL;
+import static com.kii.beehive.business.ruleengine.RemoteUrlStore.THIRD_PARTY_URL;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +27,9 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-import com.kii.beehive.portal.web.controller.STOMPMessageController;
 import com.kii.beehive.portal.web.controller.AuthInterceptor;
+import com.kii.beehive.portal.web.controller.STOMPMessageController;
+import com.kii.beehive.portal.web.controller.Security3PartyInterceptor;
 
 @EnableWebMvc
 @ComponentScan(basePackages = {"com.kii.beehive.portal.web.controller"},
@@ -36,6 +40,9 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
 	@Autowired
 	private AuthInterceptor authInterceptor;
+	
+	@Autowired
+	private Security3PartyInterceptor security3PartyInterceptor;
 
 	
 	private  ObjectMapper getMapperInstance(){
@@ -103,7 +110,9 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
 		
-		registry.addInterceptor(authInterceptor).addPathPatterns("/api/**");
+		registry.addInterceptor(authInterceptor).addPathPatterns("/**");
+		
+		registry.addInterceptor(security3PartyInterceptor).addPathPatterns(THIRD_PARTY_URL + RULEENG_CALLBACK_URL + "/**");
 	}
 
 }

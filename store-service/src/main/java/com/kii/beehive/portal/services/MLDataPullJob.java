@@ -24,6 +24,8 @@ import com.kii.beehive.portal.service.MLTaskDetailDao;
 import com.kii.beehive.portal.store.entity.MLTaskErrorInfo;
 import com.kii.beehive.portal.store.entity.trigger.BusinessDataObject;
 import com.kii.beehive.portal.store.entity.trigger.BusinessObjType;
+import com.kii.beehive.portal.sysmonitor.SysMonitorMsg;
+import com.kii.beehive.portal.sysmonitor.SysMonitorQueue;
 import com.kii.extension.sdk.commons.HttpTool;
 
 @Component
@@ -71,9 +73,10 @@ public class MLDataPullJob implements JobInSpring {
 			
 			HttpResponse response=http.doRequest(request);
 			
+			
 			String body= StreamUtils.copyToString(response.getEntity().getContent(), Charsets.UTF_8);
 			
-			if(StringUtils.isBlank(body)){
+			if (StringUtils.isBlank(body) || response.getStatusLine().getStatusCode() >= 300) {
 				MLTaskErrorInfo error=new MLTaskErrorInfo();
 				error.setTime(new Date());
 				error.setErrorMessage("get NULL data ");
@@ -92,7 +95,14 @@ public class MLDataPullJob implements JobInSpring {
 			
 			
 		} catch (Exception e) {
-			//TODO:add sys monitor
+			
+			SysMonitorMsg notice = new SysMonitorMsg();
+			notice.setErrMessage(e.getMessage());
+			notice.setErrorType("GetMLTaskDataFail");
+			notice.setFrom(SysMonitorMsg.FromType.MLTask);
+			
+			SysMonitorQueue.getInstance().addNotice(notice);
+			
 			log.warn("get ML data fail:task id"+taskID,e.getMessage());
 			
 			Throwable exception=e.getCause();

@@ -1,6 +1,7 @@
 package com.kii.beehive.portal.face.faceyitu;
 
 import javax.annotation.PostConstruct;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -10,21 +11,26 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.kii.beehive.portal.face.FaceServiceInf;
 import com.kii.beehive.portal.face.entitys.FaceImage;
 import com.kii.beehive.portal.face.faceyitu.entitys.YituFaceImage;
 import com.kii.beehive.portal.helper.HttpClient;
 import com.kii.beehive.portal.jdbc.dao.BeehiveUserJdbcDao;
 import com.kii.beehive.portal.jedis.dao.MessageQueueDao;
+import com.kii.beehive.portal.sysmonitor.SysMonitorMsg;
+import com.kii.beehive.portal.sysmonitor.SysMonitorQueue;
 
 
 /**
@@ -82,7 +88,12 @@ public class YituFaceService implements FaceServiceInf {
 			log.info("yitu face cookie :" + result.get("session_id"));
 
 		} catch (Exception e) {
-			log.error(e.getMessage(),e);
+			log.error(e.getMessage());
+			SysMonitorMsg notice = new SysMonitorMsg();
+			notice.setFrom(SysMonitorMsg.FromType.YiTu);
+			notice.setErrMessage(e.getMessage());
+			notice.setErrorType("LoginYiTuFail");
+			SysMonitorQueue.getInstance().addNotice(notice);
 		}
 
 	}

@@ -6,11 +6,21 @@ import java.util.List;
 public class BusinessFunctionParam {
 	
 	
+	private String triggerID;
+	
 	private String beanName;
 	
 	private String functionName;
 	
 	private List<String> paramList=new ArrayList<>();
+	
+	public String getTriggerID() {
+		return triggerID;
+	}
+	
+	public void setTriggerID(String triggerID) {
+		this.triggerID = triggerID;
+	}
 	
 	public String getBeanName() {
 		return beanName;

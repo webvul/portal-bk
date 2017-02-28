@@ -49,7 +49,8 @@ public class OperateLogDao extends AbstractDataAccess<OperateLog>{
 		return log;
 
 	}
-
+	
+	
 	public void triggerLog(TriggerRecord record,OperateLog.ActionType  type){
 
 		OperateLog  log=getLogInstance(record);

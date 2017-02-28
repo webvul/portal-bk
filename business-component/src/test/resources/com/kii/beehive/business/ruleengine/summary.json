@@ -1,0 +1,78 @@
+{
+  "predicate": {
+    "schedule": {
+      "cron": "1 1 1 * *",
+      "type": "Cron"
+    },
+    "express": "$p{one}>$p{two}"
+  },
+  "targets": [
+    {
+      "thingList": [
+        1004
+      ],
+      "tagList": [],
+      "andExpress": false,
+      "command": {
+        "actions": [
+          {
+            "foo": {
+              "power": "ON"
+            }
+          }
+        ],
+        "schemaVersion": 0,
+        "metadata": {}
+      },
+      "type": "thingCommand"
+    },
+    {
+      "url": "http://localhost",
+      "headers": {},
+      "content": "{\"foo\":\"bar\",\"name\":\"abc\",\"val\":123}",
+      "method": "POST",
+      "type": "HttpApiCall"
+    }
+  ],
+  "targetParamList": [
+    {
+      "name": "foo",
+      "express": "$p{foo}"
+    }
+  ],
+  "name": "test",
+  "type": "Multiple",
+  "summarySource": {
+    "two": {
+      "stateName": "foo",
+      "function": "count",
+      "source": {
+        "thingList": [
+          "1112",
+          "1110"
+        ],
+        "tagList": [],
+        "andExpress": false
+      },
+      "type": "summary"
+    },
+    "one": {
+      "stateName": "bar",
+      "function": "max",
+      "source": {
+        "thingList": [
+          "1113",
+          "1114"
+        ],
+        "tagList": [],
+        "andExpress": false
+      },
+      "type": "summary"
+    }
+  },
+  "prepareCondition": {
+    "type": "simple",
+    "startAt": 100,
+    "endAt": 101
+  }
+}

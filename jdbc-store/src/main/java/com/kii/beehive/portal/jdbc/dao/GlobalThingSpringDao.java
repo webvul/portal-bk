@@ -53,6 +53,52 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 			+ "INNER JOIN tag_index t ON t.tag_id=r.tag_id "
 			+ " WHERE t.full_tag_name in (:names) group by r.thing_id having  count(r.tag_id) = :count )" +
 			"  and  th.thing_type = :type ";
+	private static final String getAllThingInfo = StrTemplate.gener(
+			"select  (select group_concat(v.${0}) from  ${1} v where v.${2} = th.${3} group by v.${2}) as users," +
+					" geo.* ," +
+					"(select group_concat(l.${4})  from ${5} l where l.${6} = th.${7} group by l.${6} ) as locs ," +
+					" th.* " +
+					"from ${8} th " +
+					"left join ${9} geo on geo.${10} = th.${7} " +
+					" where th.${11} = 0",
+			GlobalThingInfo.VIEW_USER_ID, GlobalThingInfo.VIEW_NAME, GlobalThingInfo.VIEW_THING_ID, GlobalThingInfo.ID_GLOBAL_THING,
+			ThingLocationRelation.LOCATION, ThingLocationRelDao.TABLE_NAME, ThingLocationRelation.THING_ID, GlobalThingInfo.ID_GLOBAL_THING,
+			GlobalThingSpringDao.TABLE_NAME,
+			ThingGeoDao.TABLE_NAME, ThingGeo.GLOBAL_THING_ID,
+			GlobalThingInfo.IS_DELETED);
+	private static final String getThingsByVendorSql = StrTemplate.gener(
+			"select distinct th.* from ${0} th inner join ${1} v on v.${2} = th.${3} where th.${4} in (:vendors) and v.${5} = :userID ",
+			TABLE_NAME, GlobalThingInfo.VIEW_NAME, GlobalThingInfo.VIEW_THING_ID, GlobalThingInfo.ID_GLOBAL_THING,
+			GlobalThingInfo.VANDOR_THING_ID, GlobalThingInfo.VIEW_USER_ID);
+	private static final String getThingsByIDSql = StrTemplate.gener(
+			"select distinct th.* from ${0} th inner join ${1} v on v.${2} = th.${3} where th.${4} in (:ids) and v.${5} = :userID ",
+			TABLE_NAME, GlobalThingInfo.VIEW_NAME, GlobalThingInfo.VIEW_THING_ID, GlobalThingInfo.ID_GLOBAL_THING,
+			GlobalThingInfo.ID_GLOBAL_THING, GlobalThingInfo.VIEW_USER_ID);
+	private static final String getThingsByKiiThingIDSql = StrTemplate.gener(
+			"select distinct th.* from ${0} th inner join ${1} v on v.${2} = th.${3} where th.${4} in (:kiiThingIDs) and v.${5} = :userID ",
+			TABLE_NAME, GlobalThingInfo.VIEW_NAME, GlobalThingInfo.VIEW_THING_ID, GlobalThingInfo.ID_GLOBAL_THING,
+			GlobalThingInfo.FULL_KII_THING_ID, GlobalThingInfo.VIEW_USER_ID);
+	private static String getDetailByIDs =
+			"select th.* ," +
+					"  (select group_concat(loc.${0}) from ${1} loc where th.${2} = loc.${3} group by loc.${3} )  as loc " +
+					" from ${4} th where  ${2} in (:idList)  ";
+	private static String getDetailByIDsFullSql = StrTemplate.gener(getDetailByIDs,
+			ThingLocationRelation.LOCATION, ThingLocationRelDao.TABLE_NAME, GlobalThingInfo.ID_GLOBAL_THING,
+			ThingLocationRelation.THING_ID, GlobalThingSpringDao.TABLE_NAME);
+	String sqlTmpByUserID = "select th.* from  ${0} th  inner join  ${1} rel   on th.${2} = rel.${3}  where rel.${4}  = ? ";
+	String sqlTmpByUserTHing = "select th.* from  ${0} th  inner join  ${1} rel   on th.${2} = rel.${3}  where rel.${4}  = ? and rel.${5} = ? ";
+	String sqlTmpByRelUser = "select th.* from  ${0} th " +
+			" inner join  ${1} rel   on th.id_global_thing = rel.thing_id" +
+			" inner join  ${2} rel_user on rel_user.user_group_id = rel.user_group_id " +
+			" where rel_user.beehive_user_id   = ? and th.id_global_thing = ?  ";
+	String sqlTmpRelUserID = "select th.* from  ${0} th " +
+			" inner join  ${1} rel   on th.id_global_thing = rel.thing_id " +
+			" inner join  ${2} rel_user on rel_user.user_group_id  = rel.user_group_id " +
+			" where rel_user.beehive_user_id   = ? ";
+	String sqlTmpByTag = "select th.* from  ${0} th " +
+			" inner join  ${1} rel   on th.id_global_thing = rel.thing_id" +
+			" inner join  ${2} rel_user on rel_user.tag_id = rel.tag_id " +
+			" where rel_user.beehive_user_id   = ? ";
 
 	@Override
 	protected String getTableName() {
@@ -64,7 +110,6 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 		return KEY;
 	}
 
-	
 	public Optional<List<GlobalThingInfo>> getThingsByVendorIDArray(Collection<String> vendorIDs) {
 		if (null == vendorIDs || vendorIDs.isEmpty()) {
 			return Optional.ofNullable(null);
@@ -123,7 +168,7 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 		return new HashSet<>(namedJdbcTemplate.query(fullSql, params, getRowMapper()));
 
 	}
-
+	
 	public GlobalThingInfo getThingByFullKiiThingID(String kiiAppID, String kiiThingID) {
 
 		String sql = "SELECT g.* "
@@ -144,10 +189,7 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 		}
 
 	}
-
-
-
-
+	
 	public int updateState(Map<String,Object> state, String fullKiiThingID) {
 
 		GlobalThingInfo info=new GlobalThingInfo();
@@ -156,7 +198,7 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 
 		return super.updateEntityByField(info,"fullKiiThingID");
 	}
-
+	
 	public GlobalThingInfo getThingByVendorThingID(String vendorThingID) {
 		List<GlobalThingInfo> list = super.findBySingleField(GlobalThingInfo.VANDOR_THING_ID, vendorThingID);
 		if (list.size() > 0) {
@@ -165,6 +207,36 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 			return null;
 		}
 	}
+
+//
+//	public Optional<List<GlobalThingInfo>> findByIDsAndType(Set<Long> thingIds, String thingType) {
+//		if (null == thingIds || thingIds.isEmpty()) {
+//			return Optional.ofNullable(null);
+//		}
+//
+//		Map<String, Object> params = new HashMap();
+//		params.put("list", thingIds);
+//		StringBuilder sb = new StringBuilder(SQL_FIND_BY_IDS);
+//		if (null != thingType && !thingType.isEmpty()) {
+//			sb.append(" AND t.").append(GlobalThingInfo.THING_TYPE).append(" = :type");
+//			params.put("type", thingType);
+//		}
+//		return Optional.ofNullable(namedJdbcTemplate.query(sb.toString(), params, getRowMapper()));
+//	}
+
+//	public Optional<List<Map<String, Object>>> findThingTypesWithThingCount(Set<Long> thingIds) {
+//		if (null == thingIds || thingIds.isEmpty()) {
+//			return Optional.ofNullable(null);
+//		}
+//		StringBuilder sb = new StringBuilder("SELECT ");
+//		sb.append(GlobalThingInfo.THING_TYPE).append(" AS type, COUNT(*) AS count FROM ").append(this.getTableName()).
+//				append(" WHERE ").append(this.getKey()).append(" IN (:list) ").append(" GROUP BY ").
+//				append(GlobalThingInfo.THING_TYPE);
+//		Map<String, Object> params = new HashMap();
+//		params.put("list", thingIds);
+//		return Optional.ofNullable(namedJdbcTemplate.queryForList(sb.toString(), params));
+//	}
+
 //
 	public void updateKiiThingID(String vendorID, String fullKiiThingID) {
 
@@ -297,22 +369,7 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 		return list;
 
 	}
-	
-	private static final String getAllThingInfo=StrTemplate.gener(
-			"select  (select group_concat(v.${0}) from  ${1} v where v.${2} = th.${3} group by v.${2}) as users,"+
-					" geo.* ,"+
-	"(select group_concat(l.${4})  from ${5} l where l.${6} = th.${7} group by l.${6} ) as locs ,"+
-	" th.* "+
-	"from ${8} th "+
-	"left join ${9} geo on geo.${10} = th.${7} "+
-	" where th.${11} = 0",
-			GlobalThingInfo.VIEW_USER_ID,GlobalThingInfo.VIEW_NAME,GlobalThingInfo.VIEW_THING_ID,GlobalThingInfo.ID_GLOBAL_THING,
-			ThingLocationRelation.LOCATION,ThingLocationRelDao.TABLE_NAME,ThingLocationRelation.THING_ID,GlobalThingInfo.ID_GLOBAL_THING,
-			GlobalThingSpringDao.TABLE_NAME,
-			ThingGeoDao.TABLE_NAME,ThingGeo.GLOBAL_THING_ID,
-			GlobalThingInfo.IS_DELETED);
-	
-	
+
 	public List<FullThingInfo> getAllThingAndRelationData() {
 		
 		
@@ -339,62 +396,6 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 		return list;
 		
 	}
-	
-	public static class FullThingInfo{
-		
-		private GlobalThingInfo thing;
-		
-		private ThingGeo  geo;
-		
-		private String userIDs;
-		
-		private String locs;
-		
-		public GlobalThingInfo getThing() {
-			return thing;
-		}
-		
-		public ThingGeo getGeo() {
-			return geo;
-		}
-		
-		public String getUserIDs() {
-			return userIDs;
-		}
-		
-		public String getLocs() {
-			return locs;
-		}
-	}
-	
-//
-//	public Optional<List<GlobalThingInfo>> findByIDsAndType(Set<Long> thingIds, String thingType) {
-//		if (null == thingIds || thingIds.isEmpty()) {
-//			return Optional.ofNullable(null);
-//		}
-//
-//		Map<String, Object> params = new HashMap();
-//		params.put("list", thingIds);
-//		StringBuilder sb = new StringBuilder(SQL_FIND_BY_IDS);
-//		if (null != thingType && !thingType.isEmpty()) {
-//			sb.append(" AND t.").append(GlobalThingInfo.THING_TYPE).append(" = :type");
-//			params.put("type", thingType);
-//		}
-//		return Optional.ofNullable(namedJdbcTemplate.query(sb.toString(), params, getRowMapper()));
-//	}
-
-//	public Optional<List<Map<String, Object>>> findThingTypesWithThingCount(Set<Long> thingIds) {
-//		if (null == thingIds || thingIds.isEmpty()) {
-//			return Optional.ofNullable(null);
-//		}
-//		StringBuilder sb = new StringBuilder("SELECT ");
-//		sb.append(GlobalThingInfo.THING_TYPE).append(" AS type, COUNT(*) AS count FROM ").append(this.getTableName()).
-//				append(" WHERE ").append(this.getKey()).append(" IN (:list) ").append(" GROUP BY ").
-//				append(GlobalThingInfo.THING_TYPE);
-//		Map<String, Object> params = new HashMap();
-//		params.put("list", thingIds);
-//		return Optional.ofNullable(namedJdbcTemplate.queryForList(sb.toString(), params));
-//	}
 
 	public Optional<List<Long>> findThingIdsByCreator(Long userId, List<Long> thingIds) {
 		if (null == userId) {
@@ -417,8 +418,6 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 		return Optional.ofNullable(namedJdbcTemplate.queryForList(sb.toString(), params, Long.class));
 	}
 
-	String sqlTmpByUserID = "select th.* from  ${0} th  inner join  ${1} rel   on th.${2} = rel.${3}  where rel.${4}  = ? ";
-
 	public List<GlobalThingInfo> findThingByUserID(Long userId) {
 		String sql = StrTemplate.gener(sqlTmpByUserID, TABLE_NAME, ThingUserRelationDao.TABLE_NAME, GlobalThingInfo.ID_GLOBAL_THING, ThingUserRelation.THING_ID, ThingUserRelation.USER_ID);
 
@@ -427,9 +426,6 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 		List<GlobalThingInfo> rows = jdbcTemplate.query(sql, new Object[]{userId}, getRowMapper());
 		return rows;
 	}
-
-	String sqlTmpByUserTHing = "select th.* from  ${0} th  inner join  ${1} rel   on th.${2} = rel.${3}  where rel.${4}  = ? and rel.${5} = ? ";
-
 
 	public GlobalThingInfo findThingByUserIDThingID(Long userId, Long thingId) {
 		String sql = StrTemplate.gener(sqlTmpByUserTHing, TABLE_NAME, ThingUserRelationDao.TABLE_NAME, GlobalThingInfo.ID_GLOBAL_THING, ThingUserRelation.THING_ID, ThingUserRelation.USER_ID, ThingUserRelation.THING_ID);
@@ -442,12 +438,7 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 			return rows.get(0);
 		}
 	}
-
-	String sqlTmpByRelUser = "select th.* from  ${0} th " +
-			" inner join  ${1} rel   on th.id_global_thing = rel.thing_id" +
-			" inner join  ${2} rel_user on rel_user.user_group_id = rel.user_group_id " +
-			" where rel_user.beehive_user_id   = ? and th.id_global_thing = ?  ";
-
+	
 	public GlobalThingInfo findThingByGroupIDRelUserIDWithThingID(Long userId, Long thingID) {
 		String sql = StrTemplate.gener(sqlTmpByRelUser, TABLE_NAME, ThingUserGroupRelationDao.TABLE_NAME, GroupUserRelationDao.TABLE_NAME);
 		sql = super.addDelSignPrefix(sql);
@@ -459,12 +450,7 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 			return rows.get(0);
 		}
 	}
-
-	String sqlTmpRelUserID = "select th.* from  ${0} th " +
-			" inner join  ${1} rel   on th.id_global_thing = rel.thing_id " +
-			" inner join  ${2} rel_user on rel_user.user_group_id  = rel.user_group_id " +
-			" where rel_user.beehive_user_id   = ? ";
-
+	
 	public List<GlobalThingInfo> findThingByGroupIDRelUserID(Long userId) {
 		String sql = StrTemplate.gener(sqlTmpRelUserID, TABLE_NAME, ThingUserGroupRelationDao.TABLE_NAME, GroupUserRelationDao.TABLE_NAME);
 		sql = super.addDelSignPrefix(sql);
@@ -472,12 +458,7 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 		return jdbcTemplate.query(sql, new Object[]{userId}, getRowMapper());
 
 	}
-
-	String sqlTmpByTag = "select th.* from  ${0} th " +
-			" inner join  ${1} rel   on th.id_global_thing = rel.thing_id" +
-			" inner join  ${2} rel_user on rel_user.tag_id = rel.tag_id " +
-			" where rel_user.beehive_user_id   = ? ";
-
+	
 	public List<GlobalThingInfo> findThingByTagRelUserID(Long userId) {
 		String sql = StrTemplate.gener(sqlTmpByTag, TABLE_NAME, TagThingRelationDao.TABLE_NAME, TagUserRelationDao.TABLE_NAME);
 		sql = super.addDelSignPrefix(sql);
@@ -485,17 +466,10 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 		return jdbcTemplate.query(sql, new Object[]{userId}, getRowMapper());
 
 	}
-
-
+	
 	public List<GlobalThingInfo> findByKiiThingId(String kiiThingId) {
 		return super.findBySingleField(GlobalThingInfo.FULL_KII_THING_ID, kiiThingId);
 	}
-	
-	
-	private static final String getThingsByVendorSql=StrTemplate.gener(
-			"select distinct th.* from ${0} th inner join ${1} v on v.${2} = th.${3} where th.${4} in (:vendors) and v.${5} = :userID ",
-			TABLE_NAME,GlobalThingInfo.VIEW_NAME,GlobalThingInfo.VIEW_THING_ID,GlobalThingInfo.ID_GLOBAL_THING,
-			GlobalThingInfo.VANDOR_THING_ID,GlobalThingInfo.VIEW_USER_ID);
 	
 	public List<GlobalThingInfo> getThingsByVendorThings(Collection<String> vendorThings){
 		
@@ -507,27 +481,18 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 		
 		
 	}
-	
-	private static final String getThingsByIDSql=StrTemplate.gener(
-			"select distinct th.* from ${0} th inner join ${1} v on v.${2} = th.${3} where th.${4} in (:ids) and v.${5} = :userID ",
-			TABLE_NAME,GlobalThingInfo.VIEW_NAME,GlobalThingInfo.VIEW_THING_ID,GlobalThingInfo.ID_GLOBAL_THING,
-			GlobalThingInfo.ID_GLOBAL_THING,GlobalThingInfo.VIEW_USER_ID);
-	
+
 	public List<GlobalThingInfo> getThingsByThingIDs(Collection<Long> things,long userID){
 		
 		Map<String,Object> map=new HashMap<>();
 		map.put("userID",userID);
 		map.put("ids",things);
 		
-		return super.queryByNamedParam(getThingsByVendorSql,map);
+		return super.queryByNamedParam(getThingsByIDSql, map);
 		
 		
 	}
 	
-	private static final String getThingsByKiiThingIDSql=StrTemplate.gener(
-			"select distinct th.* from ${0} th inner join ${1} v on v.${2} = th.${3} where th.${4} in (:kiiThingIDs) and v.${5} = :userID ",
-			TABLE_NAME,GlobalThingInfo.VIEW_NAME,GlobalThingInfo.VIEW_THING_ID,GlobalThingInfo.ID_GLOBAL_THING,
-			GlobalThingInfo.FULL_KII_THING_ID,GlobalThingInfo.VIEW_USER_ID);
 	public List<GlobalThingInfo>  getThingListByFullKiiThingIDs(Collection<String> kiiThingIDs) {
 		
 		if(kiiThingIDs.isEmpty()){
@@ -541,16 +506,6 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 		return super.queryByNamedParam(getThingsByKiiThingIDSql,map);
 		
 	}
-
-
-	private static String  getDetailByIDs=
-			"select th.* ," +
-			"  (select group_concat(loc.${0}) from ${1} loc where th.${2} = loc.${3} group by loc.${3} )  as loc " +
-			" from ${4} th where  ${2} in (:idList)  ";
-	
-	private static String getDetailByIDsFullSql=StrTemplate.gener(getDetailByIDs,
-			ThingLocationRelation.LOCATION,ThingLocationRelDao.TABLE_NAME,GlobalThingInfo.ID_GLOBAL_THING,
-			ThingLocationRelation.THING_ID,GlobalThingSpringDao.TABLE_NAME);
 	
 	public List<Map<String, Object>> getFullThingDetailByThingIDs(List<Long>  thingIDs ){
 
@@ -573,6 +528,33 @@ public class GlobalThingSpringDao extends SpringBaseDao<GlobalThingInfo> {
 				return map;
 			}
 		});
+	}
+	
+	public static class FullThingInfo {
+		
+		private GlobalThingInfo thing;
+		
+		private ThingGeo geo;
+		
+		private String userIDs;
+		
+		private String locs;
+		
+		public GlobalThingInfo getThing() {
+			return thing;
+		}
+		
+		public ThingGeo getGeo() {
+			return geo;
+		}
+		
+		public String getUserIDs() {
+			return userIDs;
+		}
+		
+		public String getLocs() {
+			return locs;
+		}
 	}
 	
 

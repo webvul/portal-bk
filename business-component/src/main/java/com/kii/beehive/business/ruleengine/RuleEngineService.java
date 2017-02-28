@@ -1,5 +1,7 @@
 package com.kii.beehive.business.ruleengine;
 
+import javax.annotation.PostConstruct;
+
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -20,15 +22,18 @@ import org.springframework.util.StreamUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.base.Charsets;
 
 import com.kii.beehive.business.ruleengine.entitys.EngineBusinessObj;
 import com.kii.beehive.business.ruleengine.entitys.EngineTrigger;
+import com.kii.beehive.portal.service.BeehiveConfigDao;
 import com.kii.extension.sdk.commons.HttpTool;
 
 @Component
 public class RuleEngineService {
 	
+	private static final String AUTHORIZATION = "Authorization";
 	private Logger log= LoggerFactory.getLogger(RuleEngineService.class);
 	
 	@Autowired
@@ -40,12 +45,14 @@ public class RuleEngineService {
 	@Autowired
 	private EngineTriggerBuilder  engineBuilder;
 	
-	@Value("${ruleengine.service.url:http://localhost:7070/ruleengine/api}")
+	
+	@Autowired
+	private BeehiveConfigDao configDao;
+	
+	
+	@Value("${ruleengine.service.url}")
 	private String  serviceUrl;
-	
-	@Value("$ruleengine.service.authToken:974d1c86e68d2c364ba769b5623bbcedcb3b5beb}")
-	private String authToken;
-	
+	private ObjectMapper mapperForBatchUpload;
 	
 	private RequestBuilder   fillRequest(RequestBuilder builder ,String subUrl){
 		
@@ -119,6 +126,26 @@ public class RuleEngineService {
 		}
 	}
 	
+	public String refreshAuthToken(String sysToken) {
+		
+		RequestBuilder builder = fillRequest(RequestBuilder.put(), "/sys/registGroup/" + engineBuilder.getGroupName());
+		
+		builder.setHeader("Authorization", sysToken);
+		
+		Map<String, Object> map = getResult(doResponse(builder));
+		
+		return (String) map.get("authToken");
+	}
+	
+	public void setSecurityKey(String key, String sysToken) {
+		
+		RequestBuilder builder = fillRequest(RequestBuilder.put(), "/sys/registSecurityKey/" + engineBuilder.getGroupName());
+		
+		builder.setHeader(AUTHORIZATION, sysToken);
+		builder.setEntity(generEntity(Collections.singletonMap("securityKey", key)));
+		doResponse(builder);
+		
+	}
 	
 	public String  addTrigger(EngineTrigger trigger){
 		RequestBuilder builder=fillRequest(RequestBuilder.post(),"/triggers/createTrigger");
@@ -153,7 +180,7 @@ public class RuleEngineService {
 		
 		doResponse(builder);
 	}
-	
+
 	public void disableTrigger(String triggerID){
 		RequestBuilder builder=fillRequest(RequestBuilder.put(),"/triggers/"+triggerID+"/recordStatus");
 		
@@ -162,10 +189,19 @@ public class RuleEngineService {
 		
 		doResponse(builder);
 	}
-
 	
-	public void updateBusinessData(Set<EngineBusinessObj> dataList) {
+	@PostConstruct
+	public void init() {
 		
+		mapperForBatchUpload = new ObjectMapper();
+		mapperForBatchUpload.configure(SerializationFeature.INDENT_OUTPUT, false);
+	}
+	
+	public void updateBusinessData(Set<EngineBusinessObj> dataList, String authToken) {
+		
+		if (dataList == null || dataList.isEmpty()) {
+			return;
+		}
 		String url="/groups/"+engineBuilder.getGroupName()+"/data/batchUpload";
 		
 		RequestBuilder builder=fillRequest(RequestBuilder.post(),url);
@@ -173,7 +209,7 @@ public class RuleEngineService {
 		StringBuilder sb=new StringBuilder();
 		for(EngineBusinessObj obj:dataList){
 			try {
-				String json = mapper.writeValueAsString(obj);
+				String json = mapperForBatchUpload.writeValueAsString(obj);
 				sb.append(json).append("\n");
 			} catch (JsonProcessingException e) {
 				log.error(e.getMessage());
@@ -182,6 +218,8 @@ public class RuleEngineService {
 		}
 		
 		builder.setEntity(new StringEntity(sb.toString(),Charsets.UTF_8));
+		
+		builder.setHeader(AUTHORIZATION, authToken);
 		
 		String response=doResponse(builder);
 		

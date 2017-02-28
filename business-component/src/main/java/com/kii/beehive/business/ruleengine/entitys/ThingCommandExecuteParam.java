@@ -7,14 +7,23 @@ import com.kii.extension.sdk.entity.thingif.ThingCommand;
 
 public class ThingCommandExecuteParam {
 	
-	private long userID;
+	private String triggerID;
 	
+	private long userID;
 	
 	private TagSelector selector;
 	
 	private List<Long> thingList;
 	
 	private ThingCommand command;
+	
+	public String getTriggerID() {
+		return triggerID;
+	}
+	
+	public void setTriggerID(String triggerID) {
+		this.triggerID = triggerID;
+	}
 	
 	public TagSelector getSelector() {
 		return selector;

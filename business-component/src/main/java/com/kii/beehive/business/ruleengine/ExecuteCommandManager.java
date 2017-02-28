@@ -2,6 +2,7 @@ package com.kii.beehive.business.ruleengine;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -22,6 +23,10 @@ import com.kii.beehive.business.ruleengine.entitys.ThingCommandExecuteParam;
 import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.portal.common.utils.MethodTools;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
+import com.kii.beehive.portal.service.OperateLogDao;
+import com.kii.beehive.portal.service.TriggerRecordDao;
+import com.kii.beehive.portal.store.entity.OperateLog;
+import com.kii.beehive.portal.store.entity.trigger.TriggerRecord;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
 
 @Component
@@ -44,8 +49,30 @@ public class ExecuteCommandManager {
 	
 	@Autowired
 	private ApplicationContext context;
+	
+	
+	@Autowired
+	private TriggerRecordDao triggerDao;
+	
+	
+	@Autowired
+	private OperateLogDao logTool;
+	
+	
+	public void demo(String param) {
+		
+		System.out.println("the demo function been call:" + param);
+	}
 
 	public Map<Long,String> executeCommand(ThingCommandExecuteParam commandToThing){
+		
+		TriggerRecord record = triggerDao.getEnableTriggerRecord(commandToThing.getTriggerID());
+		
+		if (record == null) {
+			logTool.triggerLog(record, OperateLog.ActionType.invalieFire);
+			return Collections.EMPTY_MAP;
+		}
+		logTool.triggerLog(record, OperateLog.ActionType.fire);
 		
 		Map<Long,String>  resultMap=new HashMap<>();
 		
@@ -98,18 +125,24 @@ public class ExecuteCommandManager {
 	
 	public Map<String,Object> doBusinessFunCall(BusinessFunctionParam function) {
 		
+		TriggerRecord record = triggerDao.getEnableTriggerRecord(function.getTriggerID());
+		
+		if (record == null) {
+			logTool.triggerLog(record, OperateLog.ActionType.invalieFire);
+			return Collections.EMPTY_MAP;
+		}
+		logTool.triggerLog(record, OperateLog.ActionType.fire);
 		
 		Map<String,Object> result=new HashMap<>();
 		try {
 			Object bean = context.getBean(function.getBeanName());
 			
-			
-			
-			
 			Method method= MethodTools.getMethodByName(bean.getClass(),function.getFunctionName(),function.getParamList().size());
 			
-			Object returnResult=method.invoke(bean,function.getParamList());
-			
+			Object returnResult = method.invoke(bean, function.getParamList().toArray(new String[0]));
+			if (returnResult == null) {
+				returnResult = "NULL";
+			}
 			result.put("result",returnResult);
 			
 		} catch (IllegalAccessException|InvocationTargetException e) {

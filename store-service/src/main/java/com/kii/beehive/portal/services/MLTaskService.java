@@ -39,29 +39,23 @@ import com.kii.beehive.portal.store.entity.trigger.BusinessObjType;
 @Component
 public class MLTaskService {
 	
+	private static final JobKey jobKey = JobKey.jobKey("mlPullJob", "mlDataPull");
 	private Logger log= LoggerFactory.getLogger(MLTaskService.class);
-	
 	@Autowired
 	private MLDataPullJob job;
-	
 	@Autowired
 	private MLTaskDetailDao mlTaskDao;
-	
 	@Autowired
 	private TriggerManager triggerOper;
-	
 	@Autowired
 	private Scheduler scheduler;
-	
 	@Autowired
 	private ApplicationContext applicationContext;
-
+	
 	private TriggerKey  getTriggerKey(String mlTaskID){
 		
 		return TriggerKey.triggerKey(mlTaskID,"mlDataPull");
 	}
-	
-	private static final JobKey jobKey=JobKey.jobKey("mlPullJob","mlDataPull");
 	
 	@PostConstruct
 	public void initMLTaskUpdate(){
@@ -143,7 +137,6 @@ public class MLTaskService {
 		try {
 			scheduler.resumeTrigger(getTriggerKey(taskID));
 		} catch (SchedulerException e) {
-			//TODO:add sys monitor
 			throw new BusinessException(e);
 		}
 		

@@ -5,13 +5,14 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -21,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyEmitter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -35,9 +35,7 @@ import com.kii.beehive.portal.service.AppInfoDao;
 import com.kii.beehive.portal.service.BeehiveConfigDao;
 import com.kii.beehive.portal.store.entity.CallbackUrlParameter;
 import com.kii.beehive.portal.store.entity.KiiAppInfo;
-import com.kii.beehive.portal.store.entity.es.EsDataSourceCfgEntry;
-import com.kii.beehive.portal.sysmonitor.SysMonitorMsg;
-import com.kii.beehive.portal.sysmonitor.SysMonitorQueue;
+import com.kii.beehive.portal.store.entity.configEntry.EsDataSourceCfgEntry;
 import com.kii.beehive.portal.web.constant.CallbackNames;
 import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
@@ -51,9 +49,10 @@ import com.kii.extension.sdk.entity.FederatedAuthResult;
  */
 @RestController
 public class UtilToolsController {
-
+	
+	
 	private static final String SYS_APPINIT = "/sys/appinit";
-
+	private Logger log = LoggerFactory.getLogger(UtilToolsController.class);
 	@Autowired
 	private TagThingManager tagThingManager;
 
@@ -225,27 +224,7 @@ public class UtilToolsController {
 		return permissionTreeService.getFullPermissionTree();
 	}
 	
-
 	
-	@RequestMapping(value = "/sys/monitor/history", method = {RequestMethod.GET}, consumes = {"*"})
-	public ResponseBodyEmitter getSysNoticeMsgHistory() {
-		ResponseBodyEmitter emitter=new ResponseBodyEmitter();
-		
-		
-		return emitter;
-	}
-	
-	@RequestMapping(value = "/sys/monitor/debug", method = {RequestMethod.PUT})
-	public void addMsg(@RequestBody Map<String,String> values) {
-		SysMonitorMsg msg=new SysMonitorMsg();
-		
-		msg.setFrom(SysMonitorMsg.FromType.DB);
-		msg.setFireDate(new Date());
-		msg.setErrorType("mock");
-		msg.setErrMessage(values.get("msg"));
-		
-		 SysMonitorQueue.getInstance().addNotice(msg);
-	}
 	
 	
 	@RequestMapping(value = "/info", method = {RequestMethod.GET}, consumes = {"*"})
@@ -267,5 +246,6 @@ public class UtilToolsController {
 		}
 		return map;
 	}
-
+	
+	
 }

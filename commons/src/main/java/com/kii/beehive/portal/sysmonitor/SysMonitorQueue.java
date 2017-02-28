@@ -20,38 +20,31 @@ import org.slf4j.LoggerFactory;
 
 public class SysMonitorQueue {
 	
-	private ScheduledExecutorService executorService= Executors.newScheduledThreadPool(1);
-	
-//	private ExecutorService threadPool=Executors.newCachedThreadPool();
-	
-	private AtomicReference<SysMonitorMsg> queue=new AtomicReference<SysMonitorMsg>();
- 	
-	private Map<Integer,List<SysMonitorMsg>> historyCycleMap=new ConcurrentHashMap<>();
-
-	private AtomicInteger index=new AtomicInteger(0);
-	
-	private Logger log= LoggerFactory.getLogger(SysMonitorQueue.class);
-	
-//	private CyclicBarrier barrier=new CyclicBarrier(1);
-//
-//	private AtomicInteger count=new AtomicInteger(0);
-	
-	private ExecutorService pool= Executors.newCachedThreadPool();
+	private final static int NUM = 5;
+	private static final SysMonitorQueue instance = new SysMonitorQueue();
+	private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
+	private final AtomicReference<SysMonitorMsg> queue = new AtomicReference<SysMonitorMsg>();
+	private final Map<Integer, List<SysMonitorMsg>> historyCycleMap = new ConcurrentHashMap<>(NUM);
+	private final AtomicInteger index = new AtomicInteger(0);
+	private final Logger log = LoggerFactory.getLogger(SysMonitorQueue.class);
+	private final ExecutorService pool = Executors.newCachedThreadPool();
+	private final Map<String, Callable<Boolean>> taskMap = new ConcurrentHashMap<>();
 	
 	private SysMonitorQueue(){
 		
 		
-		executorService.scheduleAtFixedRate(new Runnable() {
-			@Override
-			public void run() {
-				int old=index.getAndIncrement();
-				
-				historyCycleMap.remove(old-2);
-			}
+		for (int i = 0; i < NUM; i++) {
+			historyCycleMap.put(i, new ArrayList<>());
+		}
+		
+		executorService.scheduleAtFixedRate(() -> {
+			int oldIdx = index.accumulateAndGet(1, (oldV, newV) -> (oldV + newV) % NUM);
+			List<SysMonitorMsg> list = historyCycleMap.get(oldIdx - 1);
+			
+			list.clear();
+			
 		},1,30, TimeUnit.MINUTES);
 	}
-	
-	private static final SysMonitorQueue instance=new SysMonitorQueue();
 	
 	public static SysMonitorQueue getInstance(){
 		return instance;
@@ -60,7 +53,7 @@ public class SysMonitorQueue {
 	public void addNotice(SysMonitorMsg notice){
 		
 		
-		historyCycleMap.computeIfAbsent(index.get(),(i)-> new ArrayList<>()).add(notice);
+		historyCycleMap.get(index.get()).add(notice);
 		
 		queue.set(notice);
 		
@@ -71,8 +64,6 @@ public class SysMonitorQueue {
 		}
 		
 	}
-	
-	private Map<String,Callable<Boolean>> taskMap=new ConcurrentHashMap<>();
 	
 	public void registerFire(String id,Function<SysMonitorMsg,Boolean> callback){
 		
@@ -85,9 +76,14 @@ public class SysMonitorQueue {
 	public List<SysMonitorMsg> getMsgHistory(){
 		List<SysMonitorMsg> msgList=new ArrayList<>();
 		
-		msgList.addAll(historyCycleMap.computeIfAbsent(index.get()-1,(i)-> new ArrayList<>()));
+		historyCycleMap.forEach((k, v) -> {
+			
+		});
+		int idx = index.get();
 		
-		msgList.addAll(historyCycleMap.computeIfAbsent(index.get(),(i)-> new ArrayList<>()));
+		for (int i = NUM; i > 0; i--) {
+			msgList.addAll(historyCycleMap.get((idx + i) % NUM));
+		}
 		return msgList;
 	}
 	

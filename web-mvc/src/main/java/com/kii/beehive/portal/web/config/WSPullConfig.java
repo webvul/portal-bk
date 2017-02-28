@@ -11,7 +11,6 @@ import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
 import com.kii.beehive.portal.web.socket.EchoHandler;
-import com.kii.beehive.portal.web.wshandler.SysNoticeHandler;
 import com.kii.beehive.portal.web.wshandler.UserNoticeHandler;
 
 @EnableWebMvc
@@ -24,10 +23,10 @@ public class WSPullConfig implements WebSocketConfigurer {
 
 	@Autowired
 	private  UserNoticeHandler handler;
-	
-	
-	@Autowired
-	private SysNoticeHandler sysNoticeHandler;
+
+
+//	@Autowired
+//	private SysNoticeHandler sysNoticeHandler;
 	
 	@Override
 	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
@@ -35,7 +34,7 @@ public class WSPullConfig implements WebSocketConfigurer {
 		registry.addHandler(new EchoHandler(), "/echo").setAllowedOrigins("*");
 		
 		registry.addHandler(handler, "/users/notices")
-				.addHandler(sysNoticeHandler,"/sys/monitor")
+//				.addHandler(sysNoticeHandler,"/sys/monitor")
 				.setAllowedOrigins("*");
 	}
 	

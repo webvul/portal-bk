@@ -35,7 +35,6 @@ import com.kii.beehive.portal.store.entity.trigger.GroupSummarySource;
 import com.kii.beehive.portal.store.entity.trigger.MultipleSrcTriggerRecord;
 import com.kii.beehive.portal.store.entity.trigger.SimpleTriggerRecord;
 import com.kii.beehive.portal.store.entity.trigger.SingleThing;
-import com.kii.beehive.portal.store.entity.trigger.ThingCollectSource;
 import com.kii.beehive.portal.store.entity.trigger.ThingSource;
 import com.kii.beehive.portal.store.entity.trigger.TriggerRecord;
 import com.kii.beehive.portal.store.entity.trigger.groups.GroupTriggerRecord;
@@ -61,7 +60,7 @@ public class EngineTriggerBuilder {
 	
 	@Value("${spring.profile}")
 	public void setProfile(String profile){
-		groupName="beehive."+profile;
+		groupName = "beehive_" + profile;
 	}
 	
 	
@@ -74,7 +73,7 @@ public class EngineTriggerBuilder {
 		EngineBusinessObj data=new EngineBusinessObj();
 		data.setState(obj.getData());
 		
-		String id=obj.getId();
+		String id = obj.getBusinessObjID();
 		if(StringUtils.isNotBlank(obj.getBusinessName())){
 				id+="_"+obj.getBusinessName();
 		}
@@ -112,7 +111,7 @@ public class EngineTriggerBuilder {
 				
 				if(v instanceof  ThingSource){
 					trigger.addSource(k,convertBusinessObj((ThingSource) v));
-				}else if(v instanceof ThingCollectSource){
+				} else if (v instanceof GroupSummarySource) {
 					trigger.addSource(k,convertBusinessObj((GroupSummarySource) v));
 				}
 				
@@ -130,12 +129,12 @@ public class EngineTriggerBuilder {
 					
 					CallBusinessFunction param = (CallBusinessFunction) exec;
 					BusinessFunctionParam command = new BusinessFunctionParam();
-					
+					command.setTriggerID(record.getTriggerID());
 					command.setBeanName(param.getBeanName());
 					command.setFunctionName(param.getFunctionName());
 					command.setParamList(param.getParamList());
 					
-					CallHttpApiWithSign call = getHttpApiCall(ReomteUrlStore.FIRE_BUSINESS_FUN,param);
+					CallHttpApiWithSign call = getHttpApiCall(RemoteUrlStore.FIRE_BUSINESS_FUN, param);
 					
 					newTargets.add(call);
 					break;
@@ -144,12 +143,13 @@ public class EngineTriggerBuilder {
 					
 					CommandToThing param = (CommandToThing) exec;
 					ThingCommandExecuteParam command = new ThingCommandExecuteParam();
+					command.setTriggerID(record.getTriggerID());
 					command.setThingList(param.getThingList().stream().mapToLong(Long::parseLong).boxed().collect(Collectors.toList()));
 					command.setSelector(param.getSelector());
 					command.setCommand(param.getCommand());
 					command.setUserID(record.getUserID());
 					
-					CallHttpApiWithSign call = getHttpApiCall(ReomteUrlStore.FIRE_THING_CMD, command);
+					CallHttpApiWithSign call = getHttpApiCall(RemoteUrlStore.FIRE_THING_CMD, command);
 					
 					newTargets.add(call);
 					break;

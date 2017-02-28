@@ -7,13 +7,18 @@ import com.kii.beehive.portal.common.utils.StrTemplate;
 
 
 public class CallHttpApiInEngine extends EngineExecuteTarget {
+	
+	private String url;
+	private Map<String, String> headers = new HashMap<>();
+	private String content = "{}";
+	private String authorization;
+	private String contentType;
+	private HttpMethod method = HttpMethod.POST;
 
 	@Override
 	public TargetType getType() {
 		return TargetType.HttpApiCall;
 	}
-
-
 
 	public void fillParam(Map<String, String> params) {
 
@@ -24,19 +29,6 @@ public class CallHttpApiInEngine extends EngineExecuteTarget {
 		contentType=StrTemplate.generByMap(contentType,params);
 	}
 
-	private String url;
-
-	private Map<String,String> headers=new HashMap<>();
-
-	private String content="{}";
-
-	private String authorization;
-
-	private String contentType;
-
-	private HttpMethod  method= HttpMethod.POST;
-
-	
 	public String getUrl() {
 		return url;
 	}
@@ -49,12 +41,12 @@ public class CallHttpApiInEngine extends EngineExecuteTarget {
 		return headers;
 	}
 
-	public void addHeader(String name,String value){
-		this.headers.put(name,value);
-	}
-	
 	public void setHeaders(Map<String, String> headers) {
 		this.headers = headers;
+	}
+	
+	public void addHeader(String name, String value) {
+		this.headers.put(name, value);
 	}
 
 	public String getContent() {

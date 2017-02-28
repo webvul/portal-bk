@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
@@ -37,7 +38,7 @@ public class I18nPropertyTools {
 			try {
 				return loadPropertyFile(name,locale);
 			} catch (IOException e) {
-				throw new IllegalArgumentException(e);
+				return new PropertyEntry();
 			}
 		});
 
@@ -78,10 +79,18 @@ public class I18nPropertyTools {
 				line=lineReader.readLine();
 			}
 		}
-
-		public String getPropertyValue(String propName){
-			return valueMap.get(propName);
+		
+		public PropertyEntry() {
+			
 		}
-
+		
+		public String getPropertyValue(String propName){
+			String value = valueMap.get(propName);
+			if (StringUtils.isBlank(value)) {
+				return propName;
+			} else {
+				return value;
+			}
+		}
 	}
 }

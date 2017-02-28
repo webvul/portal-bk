@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 import com.kii.beehive.portal.store.entity.trigger.Condition;
 import com.kii.beehive.portal.store.entity.trigger.Express;
+import com.kii.beehive.portal.store.entity.trigger.groups.SummaryFunctionType;
 
 public class GroupSummaryEngineSource implements EngineSourceElement {
 
@@ -59,11 +60,5 @@ public class GroupSummaryEngineSource implements EngineSourceElement {
 		return SourceElementType.collectObj;
 	}
 	
-	public enum SummaryFunctionType {
-		
-		sum,count,max,min,average,objCol;
-		
-		
-	}
-
+	
 }

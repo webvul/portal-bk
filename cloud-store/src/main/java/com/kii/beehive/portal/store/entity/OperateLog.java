@@ -79,7 +79,7 @@ public class   OperateLog extends KiiEntity{
 
 
 	public enum ActionType{
-		create,delete,enable,disable,fire,update;
+		create, delete, enable, disable, fire, update, invalieFire;
 	}
 
 

@@ -6,15 +6,8 @@ public class TriggerOperateException extends TriggerException {
 	
 	private String errorMessage;
 	
-	public String getErrorMessage() {
-		return errorMessage;
-	}
-	
-	public void setErrorMessage(String errorMessage) {
-		this.errorMessage = errorMessage;
-	}
-	
 	public TriggerOperateException(Map<String,Object> errInfo, int status){
+		
 		
 		super.setErrorCode((String) errInfo.get("errorCode"));
 		
@@ -22,5 +15,13 @@ public class TriggerOperateException extends TriggerException {
 		
 		super.setStatusCode(status);
 		
+	}
+	
+	public String getErrorMessage() {
+		return errorMessage;
+	}
+	
+	public void setErrorMessage(String errorMessage) {
+		this.errorMessage = errorMessage;
 	}
 }

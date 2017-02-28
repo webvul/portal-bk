@@ -4,17 +4,9 @@ import java.util.Date;
 
 public class SysMonitorMsg {
 	
-	public enum FromType{
-		RuleEngine,DB,KiiApp;
-	}
-	
-	
 	private Date fireDate=new Date();
-	
 	private FromType from;
-	
 	private String errMessage;
-	
 	private String errorType;
 	
 	public Date getFireDate() {
@@ -47,5 +39,9 @@ public class SysMonitorMsg {
 	
 	public void setErrorType(String errorType) {
 		this.errorType = errorType;
+	}
+	
+	public enum FromType {
+		RuleEngine, DB, KiiApp, MLTask, FacePlusPlus, YiTu;
 	}
 }

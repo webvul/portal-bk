@@ -129,8 +129,6 @@ public class AppBindAspect {
 				break;
 				
 			}catch(SystemException e){
-				//TODO:add alarm here
-				//send kiicloud service alarm
 				SysMonitorMsg notice=new SysMonitorMsg();
 				notice.setFrom(SysMonitorMsg.FromType.KiiApp);
 				notice.setErrMessage(e.getResponseBody());

@@ -80,8 +80,10 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 
 		if (subUrl.startsWith(Constants.URL_OAUTH2)
 				|| subUrl.startsWith("/onboardinghelper")
+				|| subUrl.contains("/demo/")
 				|| subUrl.contains("/debug/")
-				|| subUrl.startsWith("/gatewayServer")) {
+				|| subUrl.startsWith("/gatewayServer")
+				|| subUrl.startsWith("/party3rd")) {
 
 
 			return super.preHandle(request, response, handler);
@@ -107,8 +109,6 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 					
 			} else if (subUrl.startsWith("/party3rd")) {
 				
-
-				//TODO:add verify to 3rdparty token.
 				AuthInfoStore.setAuthInfo(3L);
 			} else {
 

@@ -8,6 +8,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -19,9 +21,13 @@ import com.kii.beehive.portal.event.EventListener;
 import com.kii.beehive.portal.service.EventListenerDao;
 import com.kii.beehive.portal.store.entity.trigger.BusinessDataObject;
 import com.kii.beehive.portal.store.entity.trigger.TriggerRecord;
+import com.kii.beehive.portal.sysmonitor.SysMonitorMsg;
+import com.kii.beehive.portal.sysmonitor.SysMonitorQueue;
 
 @Component
 public class TriggerOperate {
+	
+	private Logger log = LoggerFactory.getLogger(TriggerOperate.class);
 
 	@Autowired
 	private BusinessEventListenerService eventService;
@@ -37,18 +43,17 @@ public class TriggerOperate {
 	@Autowired
 	private EngineTriggerBuilder  triggerBuilder;
 	
-
+	@Autowired
+	private SecurityService security;
+	private Map<Integer, Set<EngineBusinessObj>> dataMap = new ConcurrentHashMap<>();
+	private AtomicInteger index = new AtomicInteger(0);
+	
 	public Set<String> getTriggerListByThingID(long thingID){
 		
 		//TODO:
 		return null;
 		
 	}
-
-	
-	private Map<Integer,Set<EngineBusinessObj>>  dataMap=new ConcurrentHashMap<>();
-	
-	private AtomicInteger  index=new AtomicInteger(0);
 	
 	@Scheduled(initialDelay = 1000*60,fixedRate = 1000)
 	public void submitData(){
@@ -57,11 +62,19 @@ public class TriggerOperate {
 		
 		Set<EngineBusinessObj> list=dataMap.get(oldIndex);
 		
-		service.updateBusinessData(list);
-		
-		Set<EngineBusinessObj>  oldList=dataMap.get(oldIndex);
-		if(oldList!=null){
-			oldList.clear();
+		try {
+			service.updateBusinessData(list, security.getRuleEngineToken());
+		} catch (TriggerServiceException e) {
+			log.error(e.getMessage());
+			SysMonitorMsg notice = new SysMonitorMsg();
+			notice.setErrorType("SubmitDataFail");
+			notice.setErrMessage(e.getMessage());
+			notice.setFrom(SysMonitorMsg.FromType.RuleEngine);
+			
+			SysMonitorQueue.getInstance().addNotice(notice);
+		}
+		if (list != null) {
+			list.clear();
 		}
 		
 	}

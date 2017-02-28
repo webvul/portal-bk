@@ -1,6 +1,7 @@
 package com.kii.beehive.portal.face.faceplusplus;
 
 import javax.annotation.PostConstruct;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -8,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.protocol.HttpClientContext;
@@ -21,14 +23,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.kii.beehive.portal.face.faceplusplus.entitys.FacePlusPlusUser;
 import com.kii.beehive.portal.helper.HttpClient;
 import com.kii.beehive.portal.jdbc.dao.BeehiveUserJdbcDao;
 import com.kii.beehive.portal.jdbc.entity.BeehiveJdbcUser;
 import com.kii.beehive.portal.jedis.dao.MessageQueueDao;
+import com.kii.beehive.portal.sysmonitor.SysMonitorMsg;
+import com.kii.beehive.portal.sysmonitor.SysMonitorQueue;
+
 import io.socket.client.IO;
 import io.socket.client.Manager;
 import io.socket.client.Socket;
@@ -69,6 +76,8 @@ public class FacePlusPlusService {
     private Socket socket = null;
 
     private List<String> cookieList = new ArrayList<>();
+	@Value("${spring.profile}")
+	private String profile;
 
     @PostConstruct
     public void init() throws JsonProcessingException, URISyntaxException {
@@ -120,7 +129,8 @@ public class FacePlusPlusService {
         }
         return result;
     }
-    //update
+	
+	//update
     public Map<String, Object> buildUpdateSubject(FacePlusPlusUser faceUser) {
 
         HttpUriRequest faceRequest = facePlusPlusApiAccessBuilder.buildUpdateSubject(faceUser);
@@ -159,7 +169,6 @@ public class FacePlusPlusService {
         return result;
     }
 
-
     @Deprecated
     public void buildGetSubjects() {
 
@@ -171,7 +180,6 @@ public class FacePlusPlusService {
         log.debug("buildGetSubjects: \n" + responseBody);
 
     }
-
 
     @Scheduled(cron = "0 0/5 * * * ?")
     protected void loginServer() {
@@ -205,8 +213,14 @@ public class FacePlusPlusService {
             log.info("face++ cookie :" + cookieList);
 
         } catch (Exception e) {
-            log.error(e.getMessage(),e);
-        }
+			log.error(e.getMessage());
+			log.error(e.getMessage());
+			SysMonitorMsg notice = new SysMonitorMsg();
+			notice.setFrom(SysMonitorMsg.FromType.FacePlusPlus);
+			notice.setErrMessage(e.getMessage());
+			notice.setErrorType("LoginFacePlusPlusFail");
+			SysMonitorQueue.getInstance().addNotice(notice);
+		}
 
 
     }
@@ -218,9 +232,6 @@ public class FacePlusPlusService {
             socket.connect();
         }
     }
-
-    @Value("${spring.profile}")
-    private String  profile;
 
     protected void startConnection() throws URISyntaxException {
         IO.Options options = new IO.Options();
