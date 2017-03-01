@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kii.beehive.business.manager.TagThingManager;
+import com.kii.beehive.business.ruleengine.RemoteUrlStore;
 import com.kii.beehive.business.ruleengine.TriggerManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.store.entity.trigger.BeehiveTriggerType;
@@ -45,8 +46,10 @@ public class CrossTriggerController {
 	}
 
 	@RequestMapping(path = "/createTrigger", method = {RequestMethod.POST})
-	public Map<String, Object> createTrigger(@RequestBody TriggerRecord record) {
-
+	public Map<String, Object> createTrigger(@RequestBody TriggerRecord record, HttpServletRequest request) {
+		
+		RemoteUrlStore.setRemoteUrl(getRemoteUrl(request));
+		
 		record.setUserID(AuthInfoStore.getUserID());
 		
 		record.setRecordStatus(TriggerRecord.StatusType.enable);
@@ -58,12 +61,14 @@ public class CrossTriggerController {
 		Map<String, Object> result = new HashMap<>();
 		result.put("triggerID", trigger.getTriggerID());
 		result.put("triggerPosition", trigger.getType()== BeehiveTriggerType.Gateway?"local":"cloud");
-
+		
 		return result;
 	}
 
 	@RequestMapping(path = "/{triggerID}", method = {RequestMethod.PUT})
-	public void  updateTrigger(@PathVariable("triggerID") String triggerID, @RequestBody TriggerRecord record) {
+	public void updateTrigger(@PathVariable("triggerID") String triggerID, @RequestBody TriggerRecord record, HttpServletRequest request) {
+		
+		RemoteUrlStore.setRemoteUrl(getRemoteUrl(request));
 		
 		record.setId(triggerID);
 

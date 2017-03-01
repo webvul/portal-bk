@@ -110,17 +110,21 @@ public class SecurityService {
 	}
 	
 	
-	public void fillRequest(RequestBuilder builder, String groupName) {
+	private String getSecurityKeyByGroupName(String groupName) {
+		return securityKey;
+	}
+	
+	public void fillRequest(RequestBuilder reqBuilder, String groupName) {
 		
 		
 		long timeStamp = sysTimeStamp.get();
 		
-		builder.setHeader("x-security-timestamp", String.valueOf(timeStamp));
+		reqBuilder.setHeader("x-security-timestamp", String.valueOf(timeStamp));
 		
 		
 		String body = null;
 		try {
-			body = StreamUtils.copyToString(builder.getEntity().getContent(), Charsets.UTF_8);
+			body = StreamUtils.copyToString(reqBuilder.getEntity().getContent(), Charsets.UTF_8);
 		} catch (IOException e) {
 			log.error(e.getMessage());
 			return;
@@ -128,26 +132,26 @@ public class SecurityService {
 		
 		StringBuilder sb = new StringBuilder(body);
 		
-		sb.append("groupName=").append(groupName).append("&");
-		sb.append("securityKey=").append(securityKey).append("&");
+		sb.append("siteName=").append(builder.getGroupName()).append("&");
+		sb.append("securityKey=").append(getSecurityKeyByGroupName(groupName)).append("&");
 		sb.append("timeStamp=").append(sysTimeStamp.get()).append("&");
-		sb.append("url=").append(builder.getUri().getPath());
+		sb.append("url=").append(reqBuilder.getUri().getPath());
 		
 		String sign = DigestUtils.sha1Hex(sb.toString());
 		
-		builder.setHeader("x-security-sign", sign);
+		reqBuilder.setHeader("x-security-sign", sign);
 		
 	}
 	
-	public boolean verifySign(String sign, String body, String party3rdName, long timeStamp, String path) {
+	public boolean verifySign(String sign, String body, String groupName, long timeStamp, String path) {
 		
 		if (Math.abs(timeStamp - sysTimeStamp.get()) > SECOND_IN_MIN) {
 			return false;
 		}
 		StringBuilder sb = new StringBuilder(body);
 		
-		sb.append("groupName=").append(builder.getGroupName()).append("&");
-		sb.append("securityKey=").append(securityKey).append("&");
+		sb.append("siteName=").append(builder.getGroupName()).append("&");
+		sb.append("securityKey=").append(getSecurityKeyByGroupName(groupName)).append("&");
 		sb.append("timeStamp=").append(timeStamp).append("&");
 		sb.append("url=").append(path);
 		

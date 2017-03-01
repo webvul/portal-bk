@@ -15,8 +15,8 @@ import com.kii.beehive.business.manager.ThingTagManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
 import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.beehive.portal.service.OperateLogDao;
-import com.kii.beehive.portal.store.entity.OperateLog;
 import com.kii.beehive.portal.service.TriggerRecordDao;
+import com.kii.beehive.portal.store.entity.OperateLog;
 import com.kii.beehive.portal.store.entity.trigger.BeehiveTriggerType;
 import com.kii.beehive.portal.store.entity.trigger.BusinessDataObject;
 import com.kii.beehive.portal.store.entity.trigger.GatewayTriggerRecord;
@@ -67,7 +67,7 @@ public class TriggerManager {
 				
 				String id=creator.createTrigger(record);
 				
-				triggerDao.updateEntity(Collections.singletonMap("relationTriggerID",id),record.getTriggerID());
+				triggerDao.updateEntity(Collections.singletonMap("relationTriggerID", id), record.getId());
 			}
 		}catch(TriggerException ex){
 			logTool.triggerLog(record, OperateLog.ActionType.delete);
@@ -97,6 +97,8 @@ public class TriggerManager {
 			
 			
 			record.fillCreator(record.getUserID());
+			record.setRelationTriggerID(oldRecord.getRelationTriggerID());
+			
 			creator.updateTrigger(record);
 			
 			triggerDao.updateEntity(record, record.getId());

@@ -134,7 +134,7 @@ public class EngineTriggerBuilder {
 					command.setFunctionName(param.getFunctionName());
 					command.setParamList(param.getParamList());
 					
-					CallHttpApiWithSign call = getHttpApiCall(RemoteUrlStore.FIRE_BUSINESS_FUN, param);
+					CallHttpApiWithSign call = getHttpApiCall(RemoteUrlStore.getFIreBusinessFunUrl(), param);
 					
 					newTargets.add(call);
 					break;
@@ -149,7 +149,7 @@ public class EngineTriggerBuilder {
 					command.setCommand(param.getCommand());
 					command.setUserID(record.getUserID());
 					
-					CallHttpApiWithSign call = getHttpApiCall(RemoteUrlStore.FIRE_THING_CMD, command);
+					CallHttpApiWithSign call = getHttpApiCall(RemoteUrlStore.getThingCmdRemoteUrl(), command);
 					
 					newTargets.add(call);
 					break;

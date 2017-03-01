@@ -18,17 +18,11 @@ import com.kii.beehive.portal.entitys.ThingStatusMsg;
 
 @Component
 public class ThingStatusQueue {
-
+	
+	private final Set<Task> taskSet = new HashSet<>();
 	private Logger log= LoggerFactory.getLogger(ThingStatusQueue.class);
-
-
 	private ExecutorService executorService= Executors.newCachedThreadPool();
-
-
 	private BlockingQueue<ThingStatusMsg> msgQueue=new LinkedBlockingQueue<>(32687);
-
-	private final Set<Task> taskSet=new HashSet<>();
-
 
 	//TODO:add monitor
 	public boolean pushInfo(ThingStatusMsg info){
@@ -40,6 +34,39 @@ public class ThingStatusQueue {
 			return false;
 		}
 
+	}
+	
+	public void registerConosumer(Consumer<ThingStatusMsg> thingFun, int num) {
+		
+		taskSet.add(new Task(thingFun, num));
+		
+	}
+	
+	public void handlerThingMsg() {
+		
+		taskSet.forEach(t -> {
+			for (int i = 0; i < t.threadNum; i++) {
+				executorService.submit(t);
+			}
+		});
+		
+		executorService.submit((Runnable) () -> {
+			while (true) {
+				
+				try {
+					
+					ThingStatusMsg th = msgQueue.take();
+					
+					taskSet.forEach(t -> t.addMsg(th));
+					
+				} catch (InterruptedException e) {
+					break;
+				} catch (Exception e) {
+					log.error(e.getMessage());
+				}
+			}
+		});
+		
 	}
 
 	private class Task implements  Runnable{
@@ -85,42 +112,6 @@ public class ThingStatusQueue {
 				return false;
 			}
 		}
-
-	}
-
-	public void registerConosumer(Consumer<ThingStatusMsg> thingFun,int num){
-
-		taskSet.add(new Task(thingFun,num));
-
-	}
-
-
-
-	public   void handlerThingMsg(){
-
-		taskSet.forEach(t->{
-			for(int i=0;i<t.threadNum;i++) {
-				executorService.submit(t);
-			}
-		});
-
-		executorService.submit(() -> {
-					
-					while (true) {
-						
-						try {
-							
-							ThingStatusMsg th = msgQueue.take();
-							
-							taskSet.forEach(t -> t.addMsg(th));
-							
-						} catch (InterruptedException e) {
-							break;
-						} catch (Exception e) {
-							log.error(e.getMessage());
-						}
-					}
-				});
 
 	}
 

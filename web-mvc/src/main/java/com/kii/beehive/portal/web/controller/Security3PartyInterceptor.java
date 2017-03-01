@@ -10,10 +10,13 @@ import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StreamUtils;
+import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Charsets;
 
+import com.kii.beehive.business.ruleengine.ExecuteCommandManager;
 import com.kii.beehive.business.ruleengine.SecurityService;
 
 @Controller
@@ -21,6 +24,15 @@ public class Security3PartyInterceptor extends HandlerInterceptorAdapter {
 	
 	@Autowired
 	private SecurityService tool;
+	
+	
+	@Autowired
+	private ObjectMapper mapper;
+	
+	@Autowired
+	private ExecuteCommandManager executeManager;
+	
+	
 	
 	
 	private Pattern pattern = Pattern.compile("\\/party3rd\\/callback\\/([^\\/]+)");
@@ -32,7 +44,6 @@ public class Security3PartyInterceptor extends HandlerInterceptorAdapter {
 		String sign = request.getHeader("x-security-sign");
 		
 		String timeStamp = request.getHeader("x-security-timestamp");
-		
 		
 		String context = StreamUtils.copyToString(request.getInputStream(), Charsets.UTF_8);
 		
@@ -51,9 +62,15 @@ public class Security3PartyInterceptor extends HandlerInterceptorAdapter {
 			return false;
 		}
 		
+		HandlerMethod handlerMethod = (HandlerMethod) handler;
 		
-		super.preHandle(request, response, handler);
-		return true;
+		Object obj = handlerMethod.getMethod().invoke(handlerMethod.getBean(), context);
+		
+		String resp = mapper.writeValueAsString(obj);
+		
+		StreamUtils.copy(resp, Charsets.UTF_8, response.getOutputStream());
+		
+		return false;
 		
 	}
 	

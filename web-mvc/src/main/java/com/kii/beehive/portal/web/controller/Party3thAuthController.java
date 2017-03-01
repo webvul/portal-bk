@@ -4,6 +4,7 @@ import static com.kii.beehive.business.ruleengine.RemoteUrlStore.FIRE_BUSINESS_F
 import static com.kii.beehive.business.ruleengine.RemoteUrlStore.FIRE_THING_CMD;
 import static com.kii.beehive.business.ruleengine.RemoteUrlStore.THIRD_PARTY_URL;
 
+import java.io.IOException;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.kii.beehive.business.ruleengine.ExecuteCommandManager;
 import com.kii.beehive.business.ruleengine.entitys.BusinessFunctionParam;
@@ -34,6 +37,9 @@ public class Party3thAuthController {
 	@Autowired
 	private ExecuteCommandManager executeManager;
 	
+	@Autowired
+	private ObjectMapper mapper;
+	
 	@RequestMapping(value = "/getTokenByID", method = {RequestMethod.POST})
 	public AuthRestBean getTokenByID(@RequestBody Map<String, Object> request) {
 
@@ -50,18 +56,19 @@ public class Party3thAuthController {
 	}
 	
 	@RequestMapping(value = FIRE_THING_CMD, method = {RequestMethod.POST})
-	public Map<Long,String> executeCommand(@RequestBody ThingCommandExecuteParam param) {
+	public Map<Long, String> executeCommand(@RequestBody String body) throws IOException {
 		
-		
+		ThingCommandExecuteParam param = mapper.readValue(body, ThingCommandExecuteParam.class);
+
 		Map<Long,String> results=executeManager.executeCommand(param);
-		
-		
 		
 		return results;
 	}
 	
 	@RequestMapping(value = FIRE_BUSINESS_FUN, method = {RequestMethod.POST})
-	public Map<String,Object> executeBusinessFunction(@RequestBody BusinessFunctionParam param) {
+	public Map<String, Object> executeBusinessFunction(@RequestBody String body) throws IOException {
+		
+		BusinessFunctionParam param = mapper.readValue(body, BusinessFunctionParam.class);
 		
 		return executeManager.doBusinessFunCall(param);
 	}
