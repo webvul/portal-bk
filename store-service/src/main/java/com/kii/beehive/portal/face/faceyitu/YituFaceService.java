@@ -128,6 +128,8 @@ public class YituFaceService implements FaceServiceInf {
 			faceImage = new FaceImage();
 			Long face_image_id =  Long.valueOf ( ( (List<Map<String, Object>>)result.get("results") ).get(0).get("face_image_id").toString() );
 			faceImage.setFace_image_id(face_image_id);
+		}else {
+			throw new IllegalArgumentException("upload yitu photo error ! yitu:" +  result );
 		}
 
 		return faceImage;
