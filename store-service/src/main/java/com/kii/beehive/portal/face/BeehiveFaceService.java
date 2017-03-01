@@ -144,7 +144,7 @@ public class BeehiveFaceService implements ApplicationContextAware{
 		List<Integer> photoIds = new ArrayList<>();
 		Integer photoId = (Integer) ((Map<String, Object>) photoMap.get("data")).get("id");
 		if (photoId == null) {
-			throw new RuntimeException("upload face++ photo error ! " + photoMap.get("desc"));
+			throw new IllegalArgumentException("upload face++ photo error ! face++:" + photoMap);
 		}
 		photoIds.add(photoId);
 		//yitu
@@ -167,7 +167,7 @@ public class BeehiveFaceService implements ApplicationContextAware{
 		yituFaceServiceMap.values().forEach(yituFaceService -> {
 			FaceImage faceImage = yituFaceService.doUploadImage(yituFaceImage);
 			if(faceImage == null) {
-				throw new RuntimeException("upload yitu photo error ! ");
+				throw new IllegalArgumentException("upload yitu photo error ! ");
 			}
 		});
 

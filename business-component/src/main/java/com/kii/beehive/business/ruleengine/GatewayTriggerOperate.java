@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import com.kii.beehive.business.manager.AppInfoManager;
 import com.kii.beehive.business.manager.ThingTagManager;
 import com.kii.beehive.business.service.ThingIFInAppService;
@@ -50,9 +51,9 @@ public class GatewayTriggerOperate {
 	
 	private static final Logger log = LoggerFactory.getLogger(GatewayTriggerOperate.class);
 
-	@Value("${gateway.resend.fullthingid}")
+	@Value("${gateway.resend.fullthingid:}")
 	private String gatewayFullThingID;
-	@Value("${gateway.resend.before.second}")
+	@Value("${gateway.resend.before.second:10}")
 	private int gatewayBeforeSecond;
 
 	@Autowired
@@ -74,39 +75,47 @@ public class GatewayTriggerOperate {
 
 	@Scheduled(cron = "0/20 * * * * ?")
 	public void resendGatewayCommand(){
-		Calendar currentDateCalendar = Calendar.getInstance();
+		if(StringUtils.isEmpty(gatewayFullThingID)){
+			log.error("resendGatewayCommand gateway.resend.fullthingid null!");
+			return;
+		}
+		try {
+			Calendar currentDateCalendar = Calendar.getInstance();
 //		currentDateCalendar.add(Calendar.HOUR_OF_DAY, -8);
-		currentDateCalendar.add(Calendar.SECOND, -gatewayBeforeSecond);
-		Date currentDate = currentDateCalendar.getTime();
-		Calendar lastDayDateCalendar = Calendar.getInstance();
-		lastDayDateCalendar.add(Calendar.DAY_OF_MONTH, 1);
-		Date lastDayDate = lastDayDateCalendar.getTime();
+			currentDateCalendar.add(Calendar.SECOND, -gatewayBeforeSecond);
+			Date currentDate = currentDateCalendar.getTime();
+			Calendar lastDayDateCalendar = Calendar.getInstance();
+			lastDayDateCalendar.add(Calendar.DAY_OF_MONTH, 1);
+			Date lastDayDate = lastDayDateCalendar.getTime();
 
-		//query command
-		QueryParam queryParam = new QueryParam();
-		BucketClause bucketClause = new BucketClause();
-		com.kii.extension.sdk.query.condition.AndLogic andLogic = new com.kii.extension.sdk.query.condition.AndLogic();
-		bucketClause.setClause(andLogic);
-		andLogic.addClause(new com.kii.extension.sdk.query.condition.Equal("title", "trigger"));
-		andLogic.addClause(new com.kii.extension.sdk.query.condition.Equal("commandState", "SENDING"));
-		andLogic.addClause(com.kii.extension.sdk.query.condition.Range.less("_modified", currentDate));
+			//query command
+			QueryParam queryParam = new QueryParam();
+			BucketClause bucketClause = new BucketClause();
+			com.kii.extension.sdk.query.condition.AndLogic andLogic = new com.kii.extension.sdk.query.condition.AndLogic();
+			bucketClause.setClause(andLogic);
+			andLogic.addClause(new com.kii.extension.sdk.query.condition.Equal("title", "trigger"));
+			andLogic.addClause(new com.kii.extension.sdk.query.condition.Equal("commandState", "SENDING"));
+			andLogic.addClause(com.kii.extension.sdk.query.condition.Range.less("_modified", currentDate));
 //		andLogic.addClause(new com.kii.extension.sdk.query.condition.Range("_modified",lastDayDate,false,currentDate,false));
-		bucketClause.setOrderBy("_modified");
-		bucketClause.setDescending(true);
-		queryParam.setBucketQuery(bucketClause);
+			bucketClause.setOrderBy("_modified");
+			bucketClause.setDescending(true);
+			queryParam.setBucketQuery(bucketClause);
 
-		List<ThingCommand> gatewayCommands = thingIFService.queryCommandFull(gatewayFullThingID, queryParam);
-		log.info("resendGatewayCommand commands:" + gatewayCommands.size());
-		gatewayCommands.forEach( command -> {
-			int resendCount = command.getMetadata().get("resendCount")==null ? 1 : Integer.valueOf(command.getMetadata().get("resendCount").toString());
-//			if(resendCount > 3) {
-//				log.error("resendGatewayCommand-error resend more than 3 still fail! resendCount: "+ resendCount + " commandId: " + command.getId());
-//			}
-			command.getMetadata().put("resendCount", resendCount+1);
-			String newCommandId = thingIFService.sendCommand(command, gatewayFullThingID);
-			log.error("resendGatewayCommand resend command resendCount: "+ resendCount + " newCommandId: " + newCommandId );
-			thingIFService.deleteCommand(gatewayFullThingID, command.getId());
-		});
+			List<ThingCommand> gatewayCommands = thingIFService.queryCommandFull(gatewayFullThingID, queryParam);
+			log.info("resendGatewayCommand commands:" + gatewayCommands.size());
+			gatewayCommands.forEach( command -> {
+				int resendCount = command.getMetadata().get("resendCount")==null ? 1 : Integer.valueOf(command.getMetadata().get("resendCount").toString());
+	//			if(resendCount > 3) {
+	//				log.error("resendGatewayCommand-error resend more than 3 still fail! resendCount: "+ resendCount + " commandId: " + command.getId());
+	//			}
+				command.getMetadata().put("resendCount", resendCount+1);
+				String newCommandId = thingIFService.sendCommand(command, gatewayFullThingID);
+				log.error("resendGatewayCommand resend command resendCount: "+ resendCount + " newCommandId: " + newCommandId );
+				thingIFService.deleteCommand(gatewayFullThingID, command.getId());
+			});
+		} catch (Exception e) {
+			log.error("resendGatewayCommand error!", e);
+		}
 	}
 
 	

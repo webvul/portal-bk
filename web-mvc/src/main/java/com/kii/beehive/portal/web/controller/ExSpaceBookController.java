@@ -136,7 +136,7 @@ public class ExSpaceBookController {
             result.put("errorcode", 1);
             result.put("errormsg", getErrorInfoInJson(e));
         }
-
+        checkErrorLog("addUserPicture", userPicture, result);
         return result;
     }
 

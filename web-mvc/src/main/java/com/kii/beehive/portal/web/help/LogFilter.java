@@ -17,6 +17,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.kii.beehive.business.helper.OpLogTools;
+import com.kii.beehive.portal.web.constant.CallbackNames;
 import com.kii.beehive.portal.web.constant.Constants;
 
 /**
@@ -47,6 +48,9 @@ public class LogFilter implements Filter {
 		String url = request.getRequestURI();
 		int idx = url.indexOf(Constants.URL_PREFIX);
 		String subUrl = url.substring(idx + 4).trim().replaceAll(",","`");
+		if(subUrl.startsWith(CallbackNames.CALLBACK_URL) && subUrl.contains(CallbackNames.STATE_CHANGED)){
+			return;
+		}
 		Object userIDStrObject = request.getAttribute("userIDStr");
 		String userIDStr = userIDStrObject == null ? "" : (String)userIDStrObject;
 		List<String> list = new LinkedList<>();
