@@ -194,7 +194,7 @@ public class BeehiveFaceService implements ApplicationContextAware{
 			Map<String, Object> userMap = facePlusPlusService.buildSubject(faceUser);
 			Integer faceSubjectId = (Integer) ((Map<String, Object>) userMap.get("data")).get("id");
 			if (faceSubjectId == null) {
-				throw new RuntimeException("register face++ user error ! ");
+				throw new IllegalArgumentException("register face++ user error ! face++:" + userMap);
 			}
 			//
 			user.setFaceSubjectId(faceSubjectId);
