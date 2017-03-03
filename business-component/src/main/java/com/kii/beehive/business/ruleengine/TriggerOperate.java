@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +17,9 @@ import org.springframework.stereotype.Component;
 
 import com.kii.beehive.business.event.BusinessEventListenerService;
 import com.kii.beehive.business.ruleengine.entitys.EngineBusinessObj;
+import com.kii.beehive.business.ruleengine.entitys.EngineBusinessType;
 import com.kii.beehive.business.ruleengine.entitys.EngineTrigger;
+import com.kii.beehive.business.ruleengine.entitys.EngineTriggerQuery;
 import com.kii.beehive.portal.event.EventListener;
 import com.kii.beehive.portal.service.EventListenerDao;
 import com.kii.beehive.portal.store.entity.trigger.BusinessDataObject;
@@ -45,13 +48,25 @@ public class TriggerOperate {
 	
 	@Autowired
 	private SecurityService security;
+	
+	
 	private Map<Integer, Set<EngineBusinessObj>> dataMap = new ConcurrentHashMap<>();
+	
 	private AtomicInteger index = new AtomicInteger(0);
 	
-	public Set<String> getTriggerListByThingID(long thingID){
+	public Set<String> getTriggerListByThingID(String thingID) {
 		
-		//TODO:
-		return null;
+		
+		EngineTriggerQuery query = new EngineTriggerQuery();
+		EngineBusinessObj obj = new EngineBusinessObj();
+		obj.setBusinessID(thingID);
+		obj.setGroupName(triggerBuilder.getGroupName());
+		obj.setType(EngineBusinessType.Business);
+		
+		query.setFullObjID(obj.generFullID());
+		
+		Set<EngineTrigger> set = service.queryTrigger(query);
+		return set.stream().map((t) -> t.getTriggerID()).collect(Collectors.toSet());
 		
 	}
 	

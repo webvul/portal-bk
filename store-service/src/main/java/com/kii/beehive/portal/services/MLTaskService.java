@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
+import com.kii.beehive.business.ruleengine.EngineTriggerBuilder;
 import com.kii.beehive.business.ruleengine.TriggerManager;
 import com.kii.beehive.business.schedule.ProxyJob;
 import com.kii.beehive.portal.exception.BusinessException;
@@ -39,7 +40,9 @@ import com.kii.beehive.portal.store.entity.trigger.BusinessObjType;
 @Component
 public class MLTaskService {
 	
+	
 	private static final JobKey jobKey = JobKey.jobKey("mlPullJob", "mlDataPull");
+	
 	private Logger log= LoggerFactory.getLogger(MLTaskService.class);
 	@Autowired
 	private MLDataPullJob job;
@@ -51,6 +54,9 @@ public class MLTaskService {
 	private Scheduler scheduler;
 	@Autowired
 	private ApplicationContext applicationContext;
+	
+	@Autowired
+	private EngineTriggerBuilder builder;
 	
 	private TriggerKey  getTriggerKey(String mlTaskID){
 		
@@ -89,7 +95,7 @@ public class MLTaskService {
 			}else {
 				currVal.put("_enable", detail.getStatus() == PortalEntity.EntityStatus.enable);
 			}
-			BusinessDataObject obj = new BusinessDataObject(detail.getMlTaskID(), "mlOutput", BusinessObjType.Context);
+			BusinessDataObject obj = new BusinessDataObject(detail.getMlTaskID(), builder.getMlTaskName(), BusinessObjType.Context);
 			obj.setData(currVal);
 			
 			triggerOper.addBusinessData(obj);
@@ -145,7 +151,7 @@ public class MLTaskService {
 	}
 	
 	private void updateTriggerData(String taskID,boolean sign) {
-		BusinessDataObject obj = new BusinessDataObject(taskID, "mlOutput", BusinessObjType.Context);
+		BusinessDataObject obj = new BusinessDataObject(taskID, builder.getMlTaskName(), BusinessObjType.Context);
 		obj.setData(Collections.singletonMap("_enable",sign));
 		
 		triggerOper.addBusinessData(obj);

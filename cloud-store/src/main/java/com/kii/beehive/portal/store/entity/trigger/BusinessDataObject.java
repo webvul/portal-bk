@@ -5,25 +5,19 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import com.kii.extension.sdk.entity.KiiEntity;
 
 public class BusinessDataObject extends KiiEntity {
-
+	
+	private static final Pattern pattern = Pattern.compile("(([^\\.\\-]+)(\\-([^.]+))?)\\.([\\S]+)");
 	private   String  businessObjID;
-	
 	private String businessName;
-	
 	private BusinessObjType businessType=BusinessObjType.TriggerGroup;
-
 	private   Map<String,Object> data=new HashMap<>();
-	
 	
 	public BusinessDataObject(){
 		
 	}
-	
 	public BusinessDataObject(String businessObjID,String businessName,BusinessObjType businessType){
 
 		setBusinessName(businessName);
@@ -31,7 +25,6 @@ public class BusinessDataObject extends KiiEntity {
 		setBusinessType(businessType);
 
 	}
-	private static final Pattern pattern=Pattern.compile("(([^\\.\\-]+)(\\-([^.]+))?)\\.([\\S]+)");
 	
 	public static BusinessDataObject getInstance(String fullBuinessID){
 		
@@ -48,15 +41,6 @@ public class BusinessDataObject extends KiiEntity {
 		}else{
 			return null;
 		}
-	}
-	
-	@JsonIgnore
-	public String getFullID(){
-//		String name=;
-//		if(StringUtils.isBlank(name)){
-//			name="comm";
-//		}
-		return businessType.getFullID(businessObjID,businessName);
 	}
 	
 	public String getBusinessName() {

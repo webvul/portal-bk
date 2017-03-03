@@ -16,6 +16,7 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.stereotype.Controller;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.View;
+import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
@@ -114,5 +115,12 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 		
 		registry.addInterceptor(security3PartyInterceptor).addPathPatterns(THIRD_PARTY_URL + RULEENG_CALLBACK_URL + "/**");
 	}
-
+	
+	
+	@Override
+	public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
+		
+		configurer.setDefaultTimeout(60 * 1000);
+	}
+	
 }

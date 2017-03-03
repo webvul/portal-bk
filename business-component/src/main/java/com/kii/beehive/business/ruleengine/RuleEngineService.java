@@ -21,12 +21,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.base.Charsets;
 
 import com.kii.beehive.business.ruleengine.entitys.EngineBusinessObj;
 import com.kii.beehive.business.ruleengine.entitys.EngineTrigger;
+import com.kii.beehive.business.ruleengine.entitys.EngineTriggerQuery;
 import com.kii.beehive.portal.service.BeehiveConfigDao;
 import com.kii.extension.sdk.commons.HttpTool;
 
@@ -126,9 +128,9 @@ public class RuleEngineService {
 		}
 	}
 	
-	public String refreshAuthToken(String sysToken) {
+	public String refreshAuthToken(String sysToken, String name) {
 		
-		RequestBuilder builder = fillRequest(RequestBuilder.put(), "/sys/registGroup/" + engineBuilder.getGroupName());
+		RequestBuilder builder = fillRequest(RequestBuilder.put(), "/sys/registGroup/" + name);
 		
 		builder.setHeader("Authorization", sysToken);
 		
@@ -180,6 +182,25 @@ public class RuleEngineService {
 		
 		doResponse(builder);
 	}
+	
+	
+	public Set<EngineTrigger> queryTrigger(EngineTriggerQuery query) {
+		RequestBuilder builder = fillRequest(RequestBuilder.post(), "/triggers//query");
+		
+		builder.setEntity(generEntity(query));
+		
+		String result = doResponse(builder);
+		
+		//			List<T> list=mapper.readValue(node.get("results").traverse(),mapper.getTypeFactory().constructCollectionType(List.class, cls));
+		try {
+			JsonNode list = mapper.readValue(result, JsonNode.class);
+			
+			return mapper.readValue(list.traverse(),
+					mapper.getTypeFactory().constructCollectionType(Set.class, EngineTrigger.class));
+		} catch (IOException e) {
+			throw new TriggerServiceException(e);
+		}
+	}
 
 	public void disableTrigger(String triggerID){
 		RequestBuilder builder=fillRequest(RequestBuilder.put(),"/triggers/"+triggerID+"/recordStatus");
@@ -197,12 +218,47 @@ public class RuleEngineService {
 		mapperForBatchUpload.configure(SerializationFeature.INDENT_OUTPUT, false);
 	}
 	
+	
+	public void updateSingleData(EngineBusinessObj data, String groupName, String authToken) {
+		
+		
+		String type = StringUtils.uncapitalize(data.getType().name());
+		
+		String url = "/groups/" + groupName + "/data/" + type + "/id/" + data.getBusinessID();
+		
+		RequestBuilder builder = fillRequest(RequestBuilder.put(), url);
+		
+		String json = "";
+		try {
+			json = mapperForBatchUpload.writeValueAsString(data);
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			return;
+		}
+		builder.setEntity(new StringEntity(json, Charsets.UTF_8));
+		
+		builder.setHeader(AUTHORIZATION, authToken);
+		
+		String response = doResponse(builder);
+		
+		try {
+			Set<String> result = mapper.readValue(response, Set.class);
+			
+			if (!result.isEmpty()) {
+				log.error("result:" + result);
+			}
+		} catch (IOException e) {
+			log.error(e.getMessage());
+		}
+		
+	}
+	
 	public void updateBusinessData(Set<EngineBusinessObj> dataList, String authToken) {
 		
 		if (dataList == null || dataList.isEmpty()) {
 			return;
 		}
-		String url="/groups/"+engineBuilder.getGroupName()+"/data/batchUpload";
+		String url = "/groups/" + engineBuilder.getGroupName() + "/data/business/batchUpload";
 		
 		RequestBuilder builder=fillRequest(RequestBuilder.post(),url);
 		

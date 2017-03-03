@@ -38,16 +38,22 @@ public class SysMonitorQueue {
 		}
 		
 		executorService.scheduleAtFixedRate(() -> {
-			int oldIdx = index.accumulateAndGet(1, (oldV, newV) -> (oldV + newV) % NUM);
+			int oldIdx = getOldIndex();
 			List<SysMonitorMsg> list = historyCycleMap.get(oldIdx - 1);
 			
 			list.clear();
 			
 		},1,30, TimeUnit.MINUTES);
+		
+		historyCycleMap.get(getOldIndex()).add(new SysMonitorMsg());
 	}
 	
 	public static SysMonitorQueue getInstance(){
 		return instance;
+	}
+	
+	private int getOldIndex() {
+		return index.accumulateAndGet(1, (oldV, newV) -> (oldV + newV) % NUM);
 	}
 	
 	public void addNotice(SysMonitorMsg notice){

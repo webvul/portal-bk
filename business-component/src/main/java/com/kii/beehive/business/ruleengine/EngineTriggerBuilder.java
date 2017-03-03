@@ -58,26 +58,33 @@ public class EngineTriggerBuilder {
 	
 	private String groupName;
 	
+	private String mlTaskName;
+	
 	@Value("${spring.profile}")
 	public void setProfile(String profile){
+		
 		groupName = "beehive_" + profile;
+		
+		mlTaskName = "mlTask_" + profile;
 	}
 	
 	
 	public String getGroupName(){
 		return groupName;
 	}
-			
+	
+	
+	public String getMlTaskName() {
+		return mlTaskName;
+	}
+	
+	
 	
 	public EngineBusinessObj generBusinessData(BusinessDataObject obj){
 		EngineBusinessObj data=new EngineBusinessObj();
 		data.setState(obj.getData());
 		
-		String id = obj.getBusinessObjID();
-		if(StringUtils.isNotBlank(obj.getBusinessName())){
-				id+="_"+obj.getBusinessName();
-		}
-		data.setBusinessID(id);
+		data.setBusinessID(obj.getBusinessObjID());
 		
 		return data;
 	}

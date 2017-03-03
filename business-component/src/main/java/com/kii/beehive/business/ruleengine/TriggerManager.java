@@ -163,8 +163,8 @@ public class TriggerManager {
 
 	public List<TriggerRecord> getTriggerListByUserIdAndThingId(Long thingId) {
 		
-		
-		Set<String> triggerSet=creator.getTriggerListByThingID(thingId);
+		String vendorThingID = thingTagService.getThingByID(thingId).getVendorThingID();
+		Set<String> triggerSet = creator.getTriggerListByThingID(vendorThingID);
 		
 		return triggerDao.queryByIDSetForUser(triggerSet, AuthInfoStore.getUserID());
 

@@ -3,11 +3,9 @@ package com.kii.beehive.business.ruleengine;
 import org.apache.http.HttpStatus;
 
 public class TriggerServiceException extends TriggerException {
-
-
 	
 	
-	public TriggerServiceException(IllegalStateException exception){
+	public TriggerServiceException(Exception exception) {
 
 		super.setErrorCode("TRIGGER_SERICE_INVALID");
 

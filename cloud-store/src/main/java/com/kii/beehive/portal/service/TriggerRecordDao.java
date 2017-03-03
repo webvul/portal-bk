@@ -198,7 +198,7 @@ public class TriggerRecordDao extends AbstractDataAccess<TriggerRecord> {
 		
 		QueryParam query= ConditionBuilder.andCondition()
 				.equal("userID",userID)
-				.In("_id",triggerSet)
+				.In("relationTriggerID", triggerSet)
 				.getFinalQueryParam();
 		
 		return super.query(query);

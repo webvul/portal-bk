@@ -3,10 +3,8 @@ package com.kii.beehive.business.ruleengine;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -14,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.kii.beehive.business.manager.ThingTagManager;
-import com.kii.beehive.portal.store.entity.trigger.BusinessDataObject;
 import com.kii.beehive.portal.store.entity.trigger.CommandParam;
 import com.kii.beehive.portal.store.entity.trigger.Condition;
 import com.kii.beehive.portal.store.entity.trigger.Express;
@@ -42,12 +39,12 @@ import com.kii.beehive.portal.store.entity.trigger.groups.SummaryTriggerRecord;
 
 @Component
 public class TriggerConvertTool {
-
 	
+	
+	private static final Pattern paramPattern = Pattern.compile("\\$([peth](\\:[iscm])?)\\{([^\\}]+)\\}");
 	@Autowired
 	private ThingTagManager thingTagService;
 	
-
 	public MultipleSrcTriggerRecord convertTrigger(TriggerRecord record) {
 		
 		switch (record.getType()){
@@ -62,7 +59,6 @@ public class TriggerConvertTool {
 				return (MultipleSrcTriggerRecord) record;
 		}
 	}
-	
 	
 	private MultipleSrcTriggerRecord  convertSimple(SimpleTriggerRecord trigger){
 		
@@ -171,9 +167,6 @@ public class TriggerConvertTool {
 		
 	}
 	
-	private static final Pattern paramPattern= Pattern.compile("\\$([peth](\\:[iscm])?)\\{([^\\}]+)\\}");
-	
-	
 	private Object convertValue(Object obj,String prefix){
 		
 		
@@ -254,7 +247,7 @@ public class TriggerConvertTool {
 		MultipleSrcTriggerRecord convertRecord=new MultipleSrcTriggerRecord();
 		BeanUtils.copyProperties(record,convertRecord,"type","source");
 		
-		int thingNum=getBusinessObjSet(record.getSource()).size();
+		int thingNum = getBusinessObjSet(record.getSource());
 		
 		
 		Condition cond=new All();
@@ -300,15 +293,15 @@ public class TriggerConvertTool {
 	}
 	
 	
-	private Set<String> getBusinessObjSet(ThingCollectSource source){
+	private int getBusinessObjSet(ThingCollectSource source) {
 		
 		if(source.getSelector().notEmpty()){
 			
-			return thingTagService.getBusinessObjs(source.getSelector());
+			return thingTagService.getBusinessObjs(source.getSelector()).size();
 			
 		}else {
 			
-			return source.getFullBusinessObjs().stream().map(BusinessDataObject::getFullID).collect(Collectors.toSet());
+			return source.getFullBusinessObjs().size();
 		}
 	}
 	

@@ -40,7 +40,7 @@ public class SecurityService {
 	private AtomicReference<String> sysToken = new AtomicReference<>();
 	private String securityKey;
 	
-	private AtomicReference<String> authToken = new AtomicReference<>();
+	private AtomicReference<RuleEngineToken> authToken = new AtomicReference<>();
 	private AtomicReference<Long> sysTimeStamp = new AtomicReference<>(System.currentTimeMillis());
 	
 	public String getSysToken() {
@@ -53,7 +53,12 @@ public class SecurityService {
 	}
 	
 	public String getRuleEngineToken() {
-		return authToken.get();
+		return authToken.get().getAuthToken();
+	}
+	
+	
+	public String getMlTaskAuth() {
+		return authToken.get().getMlAuthToken();
 	}
 	
 	@PostConstruct
@@ -85,11 +90,17 @@ public class SecurityService {
 		if (tokenEntry == null) {
 			tokenEntry = new RuleEngineToken();
 			try {
-				String token = service.refreshAuthToken(sysToken.get());
+				String token = service.refreshAuthToken(sysToken.get(), builder.getGroupName());
 				tokenEntry.setAuthToken(token);
-				authToken.set(token);
+				
+				String mlToken = service.refreshAuthToken(sysToken.get(), builder.getMlTaskName());
+				
+				tokenEntry.setMlAuthToken(mlToken);
 				
 				configDao.saveConfigEntry(tokenEntry);
+				
+				authToken.set(tokenEntry);
+				
 			} catch (Exception e) {
 				SysMonitorMsg notice = new SysMonitorMsg();
 				notice.setFrom(SysMonitorMsg.FromType.RuleEngine);
@@ -98,7 +109,7 @@ public class SecurityService {
 				SysMonitorQueue.getInstance().addNotice(notice);
 			}
 		} else {
-			authToken.set(tokenEntry.getAuthToken());
+			authToken.set(tokenEntry);
 		}
 		
 		
