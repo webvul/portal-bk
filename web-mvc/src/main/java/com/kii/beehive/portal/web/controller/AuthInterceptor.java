@@ -61,13 +61,13 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
 
-		if (Constants.HTTP_METHOD_OPTIONS.equalsIgnoreCase(request.getMethod())) {
-			this.handleCORSMethodOptions(request, response, handler);
-			return false;
-		}
-
-		// handle CORS request
-		this.handleCORSMethodOthers(request, response, handler);
+//		if (Constants.HTTP_METHOD_OPTIONS.equalsIgnoreCase(request.getMethod())) {
+//			this.handleCORSMethodOptions(request, response, handler);
+//			return false;
+//		}
+//
+//		// handle CORS request
+//		this.handleCORSMethodOthers(request, response, handler);
 
 
 		String url = request.getRequestURI();
@@ -106,7 +106,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 						throw new PortalException(ErrorCode.INVALID_INPUT, "field", "appInfo", "data", appID);
 					}
 					AuthInfoStore.setAuthInfo(2L);
-					
+				
 			} else if (subUrl.startsWith("/party3rd")) {
 				
 				AuthInfoStore.setAuthInfo(3L);
@@ -170,34 +170,34 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 	 * @return
 	 * @throws IOException
 	 */
-	private void handleCORSMethodOptions(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
-
-		// Add HTML5 CORS headers
-		response.addHeader("Access-Control-Allow-Origin", "*");
-		response.addHeader("Access-Control-Allow-Methods", "GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS");
-		response.addHeader("Access-Control-Allow-Headers", "origin, authorization, accept, content-type");
-		response.addHeader("Access-Control-Max-Age", "86400");
-
-//		response.setContentType("application/json");
-
-		response.setStatus(200);
-		response.getWriter().flush();
-
-	}
-
-	/**
-	 * handle CORS request other methods
-	 *
-	 * @param request
-	 * @param response
-	 * @param handler
-	 * @return
-	 * @throws IOException
-	 */
-	private void handleCORSMethodOthers(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
-
-		// Add HTML5 CORS headers
-		response.addHeader("Access-Control-Allow-Origin", "*");
-
-	}
+//	private void handleCORSMethodOptions(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
+//
+//		// Add HTML5 CORS headers
+//		response.addHeader("Access-Control-Allow-Origin", "*");
+//		response.addHeader("Access-Control-Allow-Methods", "GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS");
+//		response.addHeader("Access-Control-Allow-Headers", "origin, authorization, accept, content-type");
+//		response.addHeader("Access-Control-Max-Age", "86400");
+//
+////		response.setContentType("application/json");
+//
+//		response.setStatus(200);
+//		response.getWriter().flush();
+//
+//	}
+//
+//	/**
+//	 * handle CORS request other methods
+//	 *
+//	 * @param request
+//	 * @param response
+//	 * @param handler
+//	 * @return
+//	 * @throws IOException
+//	 */
+//	private void handleCORSMethodOthers(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
+//
+//		// Add HTML5 CORS headers
+//		response.addHeader("Access-Control-Allow-Origin", "*");
+//
+//	}
 }
