@@ -22,7 +22,7 @@ import com.kii.beehive.obix.store.ThingInfo;
 import com.kii.beehive.obix.web.entity.ObixContain;
 
 @RestController
-@RequestMapping(path="/things",consumes = {MediaType.ALL_VALUE},produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+@RequestMapping(path = "/devices", consumes = {MediaType.ALL_VALUE}, produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
 public class DeviceController {
 
 

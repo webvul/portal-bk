@@ -52,8 +52,8 @@ public class ObixContainConvertService {
 		ObixContain obixP=getEmbeddedObix(point,baseUrl);
 
 		obixP.setObixType(ObixType.OBJ);
-
-		obixP.setHref(baseUrl+"/things/"+point.getThingID()+"/"+point.getFieldName());
+		
+		obixP.setHref(baseUrl + "/devices/" + point.getThingID() + "/" + point.getFieldName());
 
 		obixP.setDisplay(point.getFieldName());
 		obixP.setName(point.getFieldName());
@@ -171,8 +171,8 @@ public class ObixContainConvertService {
 
 
 		ObixContain obix= convertThingSchema(thing.getSchema(),baseUrl);
-
-		obix.setHref(baseUrl+"/things/"+thing.getName());
+		
+		obix.setHref(baseUrl + "/devices/" + thing.getName());
 		obix.setDisplay(thing.getName());
 		obix.setName(thing.getName());
 

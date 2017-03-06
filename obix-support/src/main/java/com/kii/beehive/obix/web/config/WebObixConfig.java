@@ -92,10 +92,6 @@ public class WebObixConfig extends WebMvcConfigurerAdapter {
 	public CommonsMultipartResolver getResolver() {
 		return new CommonsMultipartResolver();
 	}
-
-//	@Bean
-//	public GlobalHrefAdvice getAdvice(){
-//		return new GlobalHrefAdvice();
-//	}
+	
 	
 }
