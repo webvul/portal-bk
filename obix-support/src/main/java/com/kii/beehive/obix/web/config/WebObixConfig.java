@@ -1,11 +1,8 @@
 package com.kii.beehive.obix.web.config;
 
 
-import javax.annotation.PostConstruct;
-
 import java.util.List;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -13,7 +10,6 @@ import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
@@ -32,13 +28,10 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 )
 public class WebObixConfig extends WebMvcConfigurerAdapter {
 	
-	private ObjectMapper mapper;
-	
-	@PostConstruct
-	public void init(){
+	public ObjectMapper getObjectmapper() {
 		
-		mapper=new ObjectMapper();
-		mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
 		mapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES,false);
 		mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
 		
@@ -48,7 +41,7 @@ public class WebObixConfig extends WebMvcConfigurerAdapter {
 		mapper.configure(DeserializationFeature.FAIL_ON_READING_DUP_TREE_KEY,true);
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,true);
 		
-		
+		return mapper;
 		
 	}
 	
@@ -68,7 +61,7 @@ public class WebObixConfig extends WebMvcConfigurerAdapter {
 	private HttpMessageConverter<Object> createJsonMessageConverter() {
 		
 		MappingJackson2HttpMessageConverter jsonMarshaller = new MappingJackson2HttpMessageConverter();
-		jsonMarshaller.setObjectMapper(mapper);
+		jsonMarshaller.setObjectMapper(getObjectmapper());
 		
 		return jsonMarshaller;
 	}
@@ -86,11 +79,6 @@ public class WebObixConfig extends WebMvcConfigurerAdapter {
 	@Override
 	public void configureViewResolvers(ViewResolverRegistry registry) {
 		registry.beanName();
-	}
-	
-	@Bean
-	public CommonsMultipartResolver getResolver() {
-		return new CommonsMultipartResolver();
 	}
 	
 	
