@@ -9,8 +9,6 @@ public class SearchRestBean {
 	private String intervalField;
 	private int unit;
 	private String operatorField;
-	private String order;
-	private String orderField;
 	private String[] fields;
 	private String indexType;
 	private String dateField;
@@ -111,21 +109,5 @@ public class SearchRestBean {
 
 	public void setDateField(String dateField) {
 		this.dateField = dateField;
-	}
-
-	public String getOrder() {
-		return order;
-	}
-
-	public void setOrder(String order) {
-		this.order = order;
-	}
-
-	public String getOrderField() {
-		return orderField;
-	}
-
-	public void setOrderField(String orderField) {
-		this.orderField = orderField;
 	}
 }

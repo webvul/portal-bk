@@ -1,7 +1,13 @@
 package com.kii.beehive.business.elasticsearch.factory;
 
-import javax.annotation.PreDestroy;
-import java.util.List;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.kii.beehive.business.elasticsearch.data.Action;
+import com.kii.beehive.business.elasticsearch.data.Field;
+import com.kii.beehive.business.elasticsearch.task.AvgTimeParkingSpaceToGatewayTask;
+import com.kii.beehive.business.elasticsearch.task.BulkUploadTask;
+import com.kii.beehive.business.elasticsearch.task.SearchTask;
+import com.kii.beehive.portal.service.BeehiveConfigDao;
+import com.kii.beehive.portal.store.entity.es.EsDataSourceCfgEntry;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -15,15 +21,9 @@ import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.kii.beehive.business.elasticsearch.data.Action;
-import com.kii.beehive.business.elasticsearch.data.Field;
-import com.kii.beehive.business.elasticsearch.task.AvgTimeParkingSpaceToGatewayTask;
-import com.kii.beehive.business.elasticsearch.task.BulkUploadTask;
-import com.kii.beehive.business.elasticsearch.task.SearchTask;
-import com.kii.beehive.portal.service.BeehiveConfigDao;
-import com.kii.beehive.portal.store.entity.es.EsDataSourceCfgEntry;
+
+import javax.annotation.PreDestroy;
+import java.util.List;
 
 /**
  * Created by hdchen on 7/1/16.
@@ -53,16 +53,16 @@ public class ESTaskFactory {
 	}
 
 	public SearchTask getSearchTask(String index, String type, SearchType searchType, QueryBuilder queryBuilder,
-									AggregationBuilder aggregationBuilder, int size, int from, String orderField, SortOrder order) {
+									AggregationBuilder aggregationBuilder, int size, int from) {
 		return getSearchTask(new String[]{index}, new String[]{type}, searchType, queryBuilder, null,
-				aggregationBuilder, size, from, orderField, order);
+				aggregationBuilder, size, from);
 	}
 
 	public SearchTask getSearchTask(String[] index, String[] type, SearchType searchType,
 									QueryBuilder queryBuilder,
 									QueryBuilder postFilter,
 									AggregationBuilder aggregationBuilder,
-									int size, int from, String orderField, SortOrder order) {
+									int size, int from) {
 		SearchTask task = new SearchTask();
 		task.setClient(indexOpClient);
 		task.setIndex_name(index);
@@ -73,10 +73,6 @@ public class ESTaskFactory {
 		task.setQueryBuilder(queryBuilder);
 		task.setPostFilter(postFilter);
 		task.setAggregationBuilder(aggregationBuilder);
-		if (!StringUtils.isEmpty(orderField)) {
-			task.setOrderField(orderField);
-			task.setOrder(order);
-		}
 		return task;
 	}
 
