@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class EngineBusinessObj {
 	
 	private static final Pattern pattern = Pattern.compile("(([^\\.\\-]+)(\\-([^.]+))?)\\.([\\S]+)");
-	private String businessID;
+	private String objID;
 	private Map<String,Object> state;
 	private EngineBusinessType type = EngineBusinessType.Business;
 	private String groupName;
@@ -22,7 +22,7 @@ public class EngineBusinessObj {
 			EngineBusinessObj obj = new EngineBusinessObj();
 			obj.type = EngineBusinessType.valueOf(match.group(2));
 			obj.groupName = match.group(4);
-			obj.businessID = match.group(5);
+			obj.objID = match.group(5);
 			
 			return obj;
 			
@@ -33,7 +33,7 @@ public class EngineBusinessObj {
 	
 	@JsonIgnore
 	public String generFullID() {
-		return type.getFullID(businessID, groupName);
+		return type.getFullID(objID, groupName);
 	}
 	
 	@JsonIgnore
@@ -54,12 +54,12 @@ public class EngineBusinessObj {
 		this.type = type;
 	}
 	
-	public String getBusinessID() {
-		return businessID;
+	public String getObjID() {
+		return objID;
 	}
 	
-	public void setBusinessID(String businessID) {
-		this.businessID = businessID;
+	public void setObjID(String businessID) {
+		this.objID = businessID;
 	}
 	
 	public Map<String, Object> getState() {

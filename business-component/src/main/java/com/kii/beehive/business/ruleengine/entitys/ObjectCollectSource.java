@@ -6,7 +6,7 @@ import java.util.List;
 public class ObjectCollectSource {
 	
 	
-	private List<String> businessIDList=new ArrayList<>();
+	private List<String> objIDList = new ArrayList<>();
 	
 	private String groupName;
 	
@@ -28,16 +28,16 @@ public class ObjectCollectSource {
 	public void setGroupName(String groupName) {
 		this.groupName = groupName;
 	}
-
 	
-	public List<String> getBusinessIDList() {
-		return businessIDList;
+	
+	public List<String> getobjIDList() {
+		return objIDList;
 	}
 	
-	public void setBusinessIDList(List<String> businessIDList) {
+	public void setobjIDList(List<String> businessIDList) {
 		
 		
-		this.businessIDList = businessIDList;
+		this.objIDList = businessIDList;
 		
 	}
 

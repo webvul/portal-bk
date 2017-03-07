@@ -5,7 +5,7 @@ public class SingleObject {
 	
 	private String groupName;
 	
-	private String businessID;
+	private String objID;
 	
 	private EngineBusinessType objDataType=EngineBusinessType.Business;
 	
@@ -26,12 +26,12 @@ public class SingleObject {
 		this.groupName = groupName;
 	}
 	
-	public String getBusinessID() {
-		return businessID;
+	public String getObjID() {
+		return objID;
 	}
 	
-	public void setBusinessID(String businessID) {
-		this.businessID = businessID;
+	public void setObjID(String objID) {
+		this.objID = objID;
 	}
 	
 }
