@@ -13,6 +13,7 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.histogram.DateHistogramInterval;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -138,7 +139,7 @@ public class TaskManager {
 
 		String result = null;
 		Future f = searchThreadPoolTaskExecutor.submit(taskFactory.getSearchTask(index, type, SearchType
-				.DFS_QUERY_THEN_FETCH, qb, ab, 0, 0));
+				.DFS_QUERY_THEN_FETCH, qb, ab, 0, 0, null, null));
 		try {
 			SearchResponse s = (SearchResponse) f.get();
 
@@ -153,14 +154,18 @@ public class TaskManager {
 	}
 
 	public String queryBuilderForHistorical(String index, String type, String kiiThingID, String dateField, long startDate, long
-			endDate, int size, int from) {
+			endDate, int size, int from, String orderField, String order) {
 
 		QueryBuilder qb = QueryBuilders.boolQuery()
 				.should(QueryBuilders.termQuery(TERM_FIELD, kiiThingID))
 				.filter(QueryBuilders.rangeQuery(dateField).from(startDate).to(endDate));
+		SortOrder so = SortOrder.ASC;
+		if ("desc".equals(order)) {
+			so = SortOrder.DESC;
+		}
 
 		Future f = searchThreadPoolTaskExecutor.submit(taskFactory.getSearchTask(index, type, SearchType
-				.DFS_QUERY_THEN_FETCH, qb, null, size, from));
+				.DFS_QUERY_THEN_FETCH, qb, null, size, from, orderField, so));
 
 		String result = null;
 		try {
