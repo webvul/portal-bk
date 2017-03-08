@@ -30,6 +30,8 @@ import com.kii.beehive.business.ruleengine.entitys.EngineBusinessObj;
 import com.kii.beehive.business.ruleengine.entitys.EngineTrigger;
 import com.kii.beehive.business.ruleengine.entitys.EngineTriggerQuery;
 import com.kii.beehive.portal.service.BeehiveConfigDao;
+import com.kii.beehive.portal.sysmonitor.SysMonitorMsg;
+import com.kii.beehive.portal.sysmonitor.SysMonitorQueue;
 import com.kii.extension.sdk.commons.HttpTool;
 
 @Component
@@ -107,6 +109,13 @@ public class RuleEngineService {
 				if(StringUtils.isNotBlank(body)) {
 					map.putAll(mapper.readValue(body, Map.class));
 				}
+				
+				SysMonitorMsg msg = new SysMonitorMsg();
+				msg.setErrMessage(body);
+				msg.setFrom(SysMonitorMsg.FromType.RuleEngine);
+				msg.setErrorType("STATUS_CODE_" + response.getStatusLine().getStatusCode());
+				
+				SysMonitorQueue.getInstance().addNotice(msg);
 				throw new TriggerOperateException(map,statusCode);
 				
 			}
@@ -119,11 +128,23 @@ public class RuleEngineService {
 			}
 			
 		}catch (IllegalStateException ex) {
+			SysMonitorMsg msg = new SysMonitorMsg();
+			msg.setErrMessage(ex.getMessage() + ":" + builder.getUri().toString() + " " + builder.getEntity().toString());
+			msg.setFrom(SysMonitorMsg.FromType.RuleEngine);
+			msg.setErrorType(ex.getClass().getName());
+			
+			SysMonitorQueue.getInstance().addNotice(msg);
 			
 			log.error(ex.getMessage());
 			throw new TriggerServiceException(ex);
 			
 		} catch (IOException e) {
+			SysMonitorMsg msg = new SysMonitorMsg();
+			msg.setErrMessage(e.getMessage() + ":" + builder.getUri().toString() + " " + builder.getEntity().toString());
+			msg.setFrom(SysMonitorMsg.FromType.RuleEngine);
+			msg.setErrorType(e.getClass().getName());
+			
+			SysMonitorQueue.getInstance().addNotice(msg);
 			throw new IllegalArgumentException(e);
 		}
 	}
@@ -191,7 +212,6 @@ public class RuleEngineService {
 		
 		String result = doResponse(builder);
 		
-		//			List<T> list=mapper.readValue(node.get("results").traverse(),mapper.getTypeFactory().constructCollectionType(List.class, cls));
 		try {
 			JsonNode list = mapper.readValue(result, JsonNode.class);
 			
@@ -224,7 +244,7 @@ public class RuleEngineService {
 		
 		String type = StringUtils.uncapitalize(data.getType().name());
 		
-		String url = "/groups/" + groupName + "/data/" + type + "/id/" + data.getBusinessID();
+		String url = "/groups/" + groupName + "/data/" + type + "/id/" + data.getObjID();
 		
 		RequestBuilder builder = fillRequest(RequestBuilder.put(), url);
 		
@@ -232,24 +252,15 @@ public class RuleEngineService {
 		try {
 			json = mapperForBatchUpload.writeValueAsString(data);
 		} catch (Exception e) {
-			log.error(e.getMessage());
+			log.error("convert object error:" + e.getMessage());
 			return;
 		}
 		builder.setEntity(new StringEntity(json, Charsets.UTF_8));
 		
 		builder.setHeader(AUTHORIZATION, authToken);
 		
-		String response = doResponse(builder);
+		doResponse(builder);
 		
-		try {
-			Set<String> result = mapper.readValue(response, Set.class);
-			
-			if (!result.isEmpty()) {
-				log.error("result:" + result);
-			}
-		} catch (IOException e) {
-			log.error(e.getMessage());
-		}
 		
 	}
 	
@@ -276,7 +287,6 @@ public class RuleEngineService {
 		builder.setEntity(new StringEntity(sb.toString(),Charsets.UTF_8));
 		
 		builder.setHeader(AUTHORIZATION, authToken);
-		
 		String response=doResponse(builder);
 		
 		try {

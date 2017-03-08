@@ -84,7 +84,7 @@ public class EngineTriggerBuilder {
 		EngineBusinessObj data=new EngineBusinessObj();
 		data.setState(obj.getData());
 		
-		data.setBusinessID(obj.getBusinessObjID());
+		data.setObjID(obj.getBusinessObjID());
 		
 		return data;
 	}
@@ -205,7 +205,7 @@ public class EngineTriggerBuilder {
 		if(StringUtils.isNotBlank(thing.getBusinessName())){
 			id+="_"+thing.getBusinessName();
 		}
-		obj.setBusinessID(id);
+		obj.setObjID(id);
 		obj.setGroupName(groupName);
 		
 		return obj;
@@ -225,7 +225,7 @@ public class EngineTriggerBuilder {
 		List<String> ids=thingTagService.getThingInfosByIDs(collect.getSource().getThingList()).stream().map(GlobalThingInfo::getVendorThingID).collect(Collectors.toList());
 		
 		ObjectCollectSource source=new ObjectCollectSource();
-		source.setBusinessIDList(ids);
+		source.setObjIDList(ids);
 		if(collect.getSource().getBusinessType()==BusinessObjType.Context) {
 			source.setObjDataType(EngineBusinessType.Context);
 		}else{

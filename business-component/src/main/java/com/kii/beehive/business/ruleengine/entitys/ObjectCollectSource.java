@@ -30,11 +30,11 @@ public class ObjectCollectSource {
 	}
 	
 	
-	public List<String> getobjIDList() {
+	public List<String> getObjIDList() {
 		return objIDList;
 	}
 	
-	public void setobjIDList(List<String> businessIDList) {
+	public void setObjIDList(List<String> businessIDList) {
 		
 		
 		this.objIDList = businessIDList;

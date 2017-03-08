@@ -59,7 +59,7 @@ public class TriggerOperate {
 		
 		EngineTriggerQuery query = new EngineTriggerQuery();
 		EngineBusinessObj obj = new EngineBusinessObj();
-		obj.setBusinessID(thingID);
+		obj.setObjID(thingID);
 		obj.setGroupName(triggerBuilder.getGroupName());
 		obj.setType(EngineBusinessType.Business);
 		

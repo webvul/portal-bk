@@ -115,8 +115,9 @@ public class MLDataPullJob implements JobInSpring {
 			
 			EngineBusinessObj obj = new EngineBusinessObj();
 			obj.setState(map);
-			obj.setBusinessID(taskID);
+			obj.setObjID(taskID);
 			obj.setType(EngineBusinessType.Context);
+			
 			
 			service.updateSingleData(obj, builder.getMlTaskName(), security.getMlTaskAuth());
 			
