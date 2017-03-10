@@ -233,7 +233,7 @@ public class ExSpaceBookService {
 	public void insertSpaceBook(List<ExSpaceBook> spaceBooks){
 		for (int i = 0; i < spaceBooks.size(); i++) {
 			ExSpaceBook book = spaceBooks.get(i);
-			if( spaceCodeSitLockMap.get(book.getSpaceCode()) == null ) {
+			if( StringUtils.isNoneBlank(book.getSpaceCode()) && spaceCodeSitLockMap.get(book.getSpaceCode()) == null ) {
 				throw new IllegalArgumentException("工位号不正确 :" + (i+1) );
 			}
 			if( book.getEndDate().before(book.getBeginDate()) ) {
@@ -247,7 +247,7 @@ public class ExSpaceBookService {
 			queryParam.put("appCode", book.getAppCode());
 			queryParam.put("campusCode", book.getCampusCode());
 			queryParam.put("userId", book.getUserId());
-			queryParam.put("spaceCode", book.getSpaceCode());
+//			queryParam.put("spaceCode", book.getSpaceCode());
 			queryParam.put("beginDate", book.getBeginDate());
 			queryParam.put("endDate", book.getEndDate());
 			List<ExSpaceBook> spaceBookTemp = dao.findByFields(queryParam);
@@ -360,11 +360,11 @@ public class ExSpaceBookService {
 
 		//unlock trigger
 		ExSitLock sitLock = spaceCodeSitLockMap.get(book.getSpaceCode());
-		if(sitLock == null ) {
+		if(sitLock == null && "1".equals(book.getAuthorType())) {
 			log.error("sit booking can not find lock by spacecode error " + book.getId());
 			dao.deleteByID(book.getId());
 			return;
-		}else {
+		}else if("1".equals(book.getAuthorType())){
 
 			//unlock for error pwd
 			SummaryTriggerRecord unlockErrorPwdTriggerTpl = getUnlockErrorPwdTriggerRecordTpl();

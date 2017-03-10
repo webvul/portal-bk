@@ -10,6 +10,7 @@ public class ExSpaceBook extends BusinessEntity {
 	private String bizId;
 	private String bizType;
 	private String userId;
+	private String authorType;//1,工位预订；2，内部员工（清洁阿姨，管理 员。。。）加入，只有人脸识别门禁的权限没有工位
 	private String password;
 	private String spaceCode;
 
@@ -26,6 +27,7 @@ public class ExSpaceBook extends BusinessEntity {
 	public static final String CAMPUS_CODE = "campus_code";
 	public static final String BIZ_ID = "biz_id";
 	public static final String BIZ_TYPE = "biz_type";
+	public static final String AUTHOR_TYPE = "author_type";
 	public static final String USER_ID = "user_id";
 	public static final String PASSWORD = "password";
 	public static final String SPACE_CODE = "space_code";
@@ -148,5 +150,13 @@ public class ExSpaceBook extends BusinessEntity {
 
 	public void setCreateTriggerError(Boolean createTriggerError) {
 		this.createTriggerError = createTriggerError;
+	}
+	@JdbcField(column = AUTHOR_TYPE)
+	public String getAuthorType() {
+		return authorType;
+	}
+
+	public void setAuthorType(String authorType) {
+		this.authorType = authorType;
 	}
 }
