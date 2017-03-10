@@ -65,8 +65,8 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 //			this.handleCORSMethodOptions(request, response, handler);
 //			return false;
 //		}
-//
-//		// handle CORS request
+
+		// handle CORS request
 //		this.handleCORSMethodOthers(request, response, handler);
 
 
@@ -106,7 +106,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 						throw new PortalException(ErrorCode.INVALID_INPUT, "field", "appInfo", "data", appID);
 					}
 					AuthInfoStore.setAuthInfo(2L);
-				
+					
 			} else if (subUrl.startsWith("/party3rd")) {
 				
 				AuthInfoStore.setAuthInfo(3L);
@@ -184,16 +184,16 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 //		response.getWriter().flush();
 //
 //	}
-//
-//	/**
-//	 * handle CORS request other methods
-//	 *
-//	 * @param request
-//	 * @param response
-//	 * @param handler
-//	 * @return
-//	 * @throws IOException
-//	 */
+
+	/**
+	 * handle CORS request other methods
+	 *
+	 * @param request
+	 * @param response
+	 * @param handler
+	 * @return
+	 * @throws IOException
+	 */
 //	private void handleCORSMethodOthers(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
 //
 //		// Add HTML5 CORS headers
