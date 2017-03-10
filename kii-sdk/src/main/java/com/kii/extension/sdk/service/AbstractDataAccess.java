@@ -23,24 +23,22 @@ import com.kii.extension.sdk.query.ConditionBuilder;
 import com.kii.extension.sdk.query.QueryParam;
 
 public abstract class AbstractDataAccess<T> {
-
-
-	protected  Class<T>  getTypeCls(){
+	
+	
+	private final BucketInfo bucketInfo = getBucketInfo();
+	;
+	private final Class<T> typeCls = getTypeCls();
+	@Autowired
+	private DataService service;
+	
+	protected Class<T> getTypeCls() {
 
 		ParameterizedType type = (ParameterizedType) getClass().getGenericSuperclass();
 		return  (Class<T>) type.getActualTypeArguments()[0];
-
-	};
+		
+	}
 
 	protected abstract BucketInfo getBucketInfo();
-
-	private final BucketInfo bucketInfo=getBucketInfo();
-
-	private final Class<T> typeCls=getTypeCls();
-
-
-	@Autowired
-	private DataService service;
 
 	protected BucketInfo getBucketInfoInstance() {
 		return bucketInfo;
@@ -277,7 +275,7 @@ public abstract class AbstractDataAccess<T> {
 	
 	public static class KiiBucketPager{
 		
-		private static Pattern pagerPat=Pattern.compile("^(\\d+\\/)?(\\d+)$");
+		private static Pattern pagerPat = Pattern.compile("^((\\d+)[\\/\\_]?)?(\\d+)$");
 		
 		
 		private int start=0;
@@ -296,8 +294,8 @@ public abstract class AbstractDataAccess<T> {
 			if(matcher.find()){
 				
 				KiiBucketPager pager=new KiiBucketPager();
-				String a=matcher.group(1);
-				String b=matcher.group(2);
+				String a = matcher.group(2);
+				String b = matcher.group(3);
 				
 				pager.size=Integer.parseInt(b);
 				
