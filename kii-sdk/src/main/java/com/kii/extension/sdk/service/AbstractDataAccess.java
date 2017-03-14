@@ -211,8 +211,12 @@ public abstract class AbstractDataAccess<T> {
 			
 		}while(queryParam.getPaginationKey()!=null&&result.size()<sum);
 		
-		return result.subList(pager.getStart(),sum);
-		
+		if (result.size() <= pager.getStart()) {
+			return new ArrayList<>();
+		} else {
+			int upper = Math.min(sum, result.size());
+			return result.subList(pager.getStart(), upper);
+		}
 	}
 
 	public List<T> getEntitys(String[] ids){
