@@ -38,8 +38,6 @@ public class InternalEventListenerRegistry {
 
 	@Async
 	public void onStateChange(String appId, StateUpload state) {
-		LOG.info(new StringBuilder("AppId: ").append(appId).append(", status: ")
-				.append(state.toString()).toString());
 		synchronized (listeners) {
 			for (ExtensionCallbackEventListener listener : listeners) {
 				listener.onStateChange(appId, state);

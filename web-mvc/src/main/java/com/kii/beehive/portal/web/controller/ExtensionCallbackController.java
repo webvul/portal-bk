@@ -1,9 +1,8 @@
 package com.kii.beehive.portal.web.controller;
 
 import javax.annotation.PostConstruct;
-
 import java.io.IOException;
-
+import java.time.Instant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +13,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.kii.beehive.business.event.BusinessEventBus;
 import com.kii.beehive.business.manager.ThingTagManager;
 import com.kii.beehive.business.ruleengine.ThingCommandForTriggerService;
@@ -74,7 +71,7 @@ public class ExtensionCallbackController {
 	public void onStateChangeFire(@RequestHeader("x-kii-appid") String appID,
 								  @RequestHeader("Authorization") String token,
 								  @RequestBody String body) {
-
+		long startTime = Instant.now().toEpochMilli();
 		StateUpload status = null;
 		try {
 			status = objectMapper.readValue(body, StateUpload.class);
@@ -87,13 +84,16 @@ public class ExtensionCallbackController {
 		tagManager.updateState(status.getState(), status.getThingID(), appID);
 
 		GlobalThingInfo globalThingInfo = tagManager.getThingByFullKiiThingID(appID, status.getThingID());
+		this.timeDiff(startTime, "updateState done", globalThingInfo.getVendorThingID());
 
 		pushCallback.onEventFire(globalThingInfo, status.getState(), status.getTimestamp());
-
+		this.timeDiff(startTime, "onEventFire done", globalThingInfo.getVendorThingID());
 
 		eventBus.onStatusUploadFire(String.valueOf(globalThingInfo.getId()), status.getState(), status.getTimestamp());
+		this.timeDiff(startTime, "onStatusUploadFire done", globalThingInfo.getVendorThingID());
 
 		internalEventListenerRegistry.onStateChange(appID, status);
+		this.timeDiff(startTime, "onStateChange done", globalThingInfo.getVendorThingID());
 	}
 
 
@@ -128,13 +128,14 @@ public class ExtensionCallbackController {
 			return;
 		}
 
-
 		log.info("cmdResponse  " + cmd.getTarget());
 
-
 		commandService.saveComandResponse(cmd);
-
-
 	}
 
+	private void timeDiff(long startTime, String name, String vendorThingID) {
+		if (vendorThingID.indexOf("0999") == 0) {
+			log.info(name + " = " + vendorThingID + " = " + (Instant.now().toEpochMilli() - startTime));
+		}
+	}
 }
