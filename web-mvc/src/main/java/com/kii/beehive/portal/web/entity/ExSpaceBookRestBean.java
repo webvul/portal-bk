@@ -17,6 +17,7 @@ public class ExSpaceBookRestBean {
 	private String campus_code;
 	private String biz_id;
 	private String biz_type;
+	private String author_type = "1";
 
 	private List<ExSpaceBookRestBean> userList;
 
@@ -126,6 +127,13 @@ public class ExSpaceBookRestBean {
 		this.token = token;
 	}
 
+	public String getAuthor_type() {
+		return author_type;
+	}
+
+	public void setAuthor_type(String author_type) {
+		this.author_type = author_type;
+	}
 
 	@JsonIgnore
 	public List<ExSpaceBook> convert2ExSpaceBook() {
@@ -137,6 +145,7 @@ public class ExSpaceBookRestBean {
 			spaceBook.setCampusCode(campus_code);
 			spaceBook.setBizId(biz_id);
 			spaceBook.setBizType(biz_type);
+			spaceBook.setAuthorType(author_type);
 			spaceBook.setUserId(bean.user_id);
 			spaceBook.setPassword(bean.password);
 			spaceBook.setSpaceCode(bean.space_code);
@@ -168,6 +177,12 @@ public class ExSpaceBookRestBean {
 		if (StringUtils.isBlank(campus_code)) {
 			throw new IllegalArgumentException("campus_code can not null");
 		}
+		if (StringUtils.isBlank(author_type)) {
+			throw new IllegalArgumentException("author_type can not null");
+		}
+		if ( !( "1".equals(author_type) || "2".equals(author_type) ) ) {
+			throw new IllegalArgumentException("author_type valid!");
+		}
 		if (userList == null || userList.size() == 0) {
 			throw new IllegalArgumentException("userList can not null");
 		}
@@ -181,7 +196,7 @@ public class ExSpaceBookRestBean {
 //			if (bean.password.length() != 6) {
 //				throw new IllegalArgumentException("password valid input");
 //			}
-			if (StringUtils.isBlank(bean.space_code)) {
+			if ( StringUtils.isBlank(bean.space_code) && author_type.equals("1")) {
 				throw new IllegalArgumentException("space_code can not null");
 			}
 			if (StringUtils.isBlank(bean.begin_date)) {

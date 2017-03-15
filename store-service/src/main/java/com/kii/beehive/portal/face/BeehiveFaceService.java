@@ -7,9 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.apache.commons.codec.binary.Base64;
@@ -23,13 +21,11 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Files;
 import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.beehive.portal.face.entitys.FaceImage;
 import com.kii.beehive.portal.face.faceplusplus.FacePlusPlusService;
-import com.kii.beehive.portal.face.faceplusplus.entitys.FacePlusPlusUser;
 import com.kii.beehive.portal.face.faceyitu.YituFaceApiAccessBuilder;
 import com.kii.beehive.portal.face.faceyitu.YituFaceService;
 import com.kii.beehive.portal.face.faceyitu.entitys.YituFaceImage;
@@ -140,6 +136,7 @@ public class BeehiveFaceService implements ApplicationContextAware{
 			throw EntryNotFoundException.userIDNotFound(userId);
 		}
 		//face++
+		/*
 		Map<String, Object> photoMap = facePlusPlusService.buildUploadPhoto(photoFile);
 		List<Integer> photoIds = new ArrayList<>();
 		Integer photoId = (Integer) ((Map<String, Object>) photoMap.get("data")).get("id");
@@ -147,6 +144,9 @@ public class BeehiveFaceService implements ApplicationContextAware{
 			throw new IllegalArgumentException("upload face++ photo error ! face++:" + photoMap);
 		}
 		photoIds.add(photoId);
+		*/
+
+
 		//yitu
 		YituFaceImage yituFaceImage = new YituFaceImage();
 		yituFaceImage.setBeehive_user_id(user.getUserID());
@@ -171,13 +171,16 @@ public class BeehiveFaceService implements ApplicationContextAware{
 			}
 		});
 
-		//store image
+
+		//KII store image
 		try {
 			Files.copy(photoFile, new File(facePhotoDir + user.getUserID() + ".jpg"));
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw new RuntimeException("store photo error ! ");
 		}
+
+
 		//yitu // TODO: 17/1/5 为记录 每个依图server对应的 ID ,没法删除
 //		if (! StringUtils.isEmpty(user.getYituFaceImageId())) {
 //			yituFaceService.doDeleteImage(user.getYituFaceImageId());
@@ -185,6 +188,7 @@ public class BeehiveFaceService implements ApplicationContextAware{
 //		user.setYituFaceImageId(String.valueOf(faceImage.getFace_image_id()));
 
 		//face++
+		/*
 		if (StringUtils.isEmpty(user.getFaceSubjectId())) {
 			//register
 			FacePlusPlusUser faceUser = new FacePlusPlusUser();
@@ -194,7 +198,7 @@ public class BeehiveFaceService implements ApplicationContextAware{
 			Map<String, Object> userMap = facePlusPlusService.buildSubject(faceUser);
 			Integer faceSubjectId = (Integer) ((Map<String, Object>) userMap.get("data")).get("id");
 			if (faceSubjectId == null) {
-				throw new RuntimeException("register face++ user error ! ");
+				throw new IllegalArgumentException("register face++ user error ! face++:" + userMap);
 			}
 			//
 			user.setFaceSubjectId(faceSubjectId);
@@ -218,6 +222,8 @@ public class BeehiveFaceService implements ApplicationContextAware{
 		}
 
 		userManager.updateUser(user, userId);
+		*/
+
 		return user;
 	}
 }
