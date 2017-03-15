@@ -40,8 +40,8 @@ public class ESServiceController {
 
 	@Autowired
 	protected TagThingManager thingTagManager;
-	
-	private Logger log= LoggerFactory.getLogger(ESServiceController.class);
+
+	private Logger log = LoggerFactory.getLogger(ESServiceController.class);
 
 	/**
 	 * POST /es/bulkUpload/{appId}/{vendorThingId}
@@ -153,7 +153,8 @@ public class ESServiceController {
 
 		String result = transportClientManager.queryBuilderForHistorical(thing.getKiiAppID(), kiiThingID, kiiThingID,
 				searchRestBean.getDateField(), searchRestBean.getStartDate(),
-				searchRestBean.getEndDate(), searchRestBean.getSize(), searchRestBean.getFrom());
+				searchRestBean.getEndDate(), searchRestBean.getSize(), searchRestBean.getFrom(), searchRestBean
+						.getOrderField(), searchRestBean.getOrder());
 		return result;
 	}
 }

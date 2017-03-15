@@ -6,6 +6,7 @@ import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
+import org.elasticsearch.search.sort.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +22,8 @@ public class SearchTask extends Task<SearchResponse> {
 	private AggregationBuilder[] aggregationBuilder;
 	private Integer size;
 	private Integer from;
-	private int to;
+	private SortOrder order;
+	private String orderField;
 	private QueryBuilder postFilter;
 
 	public void setIndex_name(String... index_name) {
@@ -76,6 +78,14 @@ public class SearchTask extends Task<SearchResponse> {
 		SearchResponse response = searchRequestBuilder.execute().actionGet();
 
 		return response;
+	}
+
+	public void setOrder(SortOrder order) {
+		this.order = order;
+	}
+
+	public void setOrderField(String orderField) {
+		this.orderField = orderField;
 	}
 
 	@Override
