@@ -62,11 +62,6 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
 		return mapper;
 	}
-	
-//	@Override
-//	public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
-////		configurer.setDefaultTimeout();
-//	}
 
 	@Override
 	public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
