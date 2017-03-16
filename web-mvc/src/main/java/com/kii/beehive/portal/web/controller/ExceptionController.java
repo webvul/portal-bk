@@ -43,12 +43,12 @@ public class ExceptionController {
 	@Autowired
 	private I18nPropertyTools tool;
 
-	private MultiValueMap<String, String> headers=new LinkedMultiValueMap<>();
+	private MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 
 	@PostConstruct
-	public void init(){
+	public void init() {
 
-		headers.add("Content-Type","application/json;charset=UTF-8");
+		headers.add("Content-Type", "application/json;charset=UTF-8");
 
 	}
 
@@ -61,17 +61,17 @@ public class ExceptionController {
 		errorMap.put("errorCode", ex.getClass().getSimpleName());
 		errorMap.put("errorMessage", ex.getMessage());
 
-		StackTraceElement[]  traceList=ex.getStackTrace();
+		StackTraceElement[] traceList = ex.getStackTrace();
 
-		errorMap.put("stackTrace",traceList);
+		errorMap.put("stackTrace", traceList);
 
-		ResponseEntity<Object> resp = new ResponseEntity(errorMap, headers,HttpStatus.INTERNAL_SERVER_ERROR);
+		ResponseEntity<Object> resp = new ResponseEntity(errorMap, headers, HttpStatus.INTERNAL_SERVER_ERROR);
 		return resp;
 	}
 
 	private List<String> filter = CollectUtils.createList("status", "suppressed", "stackTrace", "class", "localizedMessage");
 
-	private Map<String,Object> convertExeptionToJson(RuntimeException ex) {
+	private Map<String, Object> convertExeptionToJson(RuntimeException ex) {
 
 		Map<String, Object> error = new HashMap<>();
 
@@ -102,47 +102,46 @@ public class ExceptionController {
 	@ExceptionHandler(BusinessException.class)
 	public ResponseEntity<Object> handleStoreServiceException(BusinessException ex) {
 
-		log.error("store exception ", ex);
+		Map<String, Object> error = getErrorInfoInJson(ex);
 
-		Map<String,Object> error = getErrorInfoInJson(ex);
+		log.error("store exception ", ex + " - " + error.toString());
 
-		ResponseEntity<Object> resp = new ResponseEntity(error,headers, HttpStatus.valueOf(ex.getStatusCode()));
+		ResponseEntity<Object> resp = new ResponseEntity(error, headers, HttpStatus.valueOf(ex.getStatusCode()));
 
 
 		return resp;
 	}
 
 
-	private Locale  locale=Locale.ENGLISH;
+	private Locale locale = Locale.ENGLISH;
 
 	//TODO:just for test,in real env
 	//the locale should get from user's input
-	public void setLocale(Locale local){
-		this.locale=local;
+	public void setLocale(Locale local) {
+		this.locale = local;
 	}
 
-	private Map<String,Object> getErrorInfoInJson(BusinessException ex) {
+	private Map<String, Object> getErrorInfoInJson(BusinessException ex) {
 
 
 		Map<String, Object> error = new HashMap<>();
 
-		String code=ex.getErrorCode();
+		String code = ex.getErrorCode();
 
-		String fullCode=ex.getClass().getName()+"."+code;
+		String fullCode = ex.getClass().getName() + "." + code;
 
-		I18nPropertyTools.PropertyEntry  entry=tool.getPropertyEntry("error.errorMessage", locale);
+		I18nPropertyTools.PropertyEntry entry = tool.getPropertyEntry("error.errorMessage", locale);
 
-		String msgTemplate=entry.getPropertyValue(fullCode);
+		String msgTemplate = entry.getPropertyValue(fullCode);
 
-		String  msg= StrTemplate.generByMap(msgTemplate,ex.getParamMap());
+		String msg = StrTemplate.generByMap(msgTemplate, ex.getParamMap());
 
-		error.put("errorMessage",msg);
-		error.put("errorCode",code);
-		error.put("errorParam",ex.getParamMap());
+		error.put("errorMessage", msg);
+		error.put("errorCode", code);
+		error.put("errorParam", ex.getParamMap());
 
 		return error;
 	}
-
 
 
 	@ExceptionHandler(KiiCloudException.class)
@@ -150,34 +149,34 @@ public class ExceptionController {
 
 		log.error("kiicloud exception ", ex);
 
-		Map<String,Object> error = convertExeptionToJson(ex);
-		error.put("from","KiiCloud");
+		Map<String, Object> error = convertExeptionToJson(ex);
+		error.put("from", "KiiCloud");
 
 		HttpStatus status = HttpStatus.valueOf(ex.getStatusCode());
-		error.put("kiiAppStatus",status);
-		error.put("kiiAppRespBody",ex.getResponseBody());
-		
-		ResponseEntity<Object> resp = new ResponseEntity(error,headers, HttpStatus.INTERNAL_SERVER_ERROR);
+		error.put("kiiAppStatus", status);
+		error.put("kiiAppRespBody", ex.getResponseBody());
+
+		ResponseEntity<Object> resp = new ResponseEntity(error, headers, HttpStatus.INTERNAL_SERVER_ERROR);
 		return resp;
 	}
 
 
 	@ExceptionHandler(HttpMessageNotReadableException.class)
-	public ResponseEntity<Object>  HandleJsonFormatException(HttpMessageNotReadableException ex){
+	public ResponseEntity<Object> HandleJsonFormatException(HttpMessageNotReadableException ex) {
 
 		log.error("http message readable exception ", ex);
 
-		Throwable excep=ex.getCause();
+		Throwable excep = ex.getCause();
 
 		Map<String, Object> error = new HashMap<>();
-		if(excep instanceof JsonMappingException) {
+		if (excep instanceof JsonMappingException) {
 			error.put("errorCode", "INPUT_PARAM_JSON_FORMAT_ERROR");
-			error.put("errorMessage",((JsonMappingException) excep).getMessage());
-		}else{
+			error.put("errorMessage", ((JsonMappingException) excep).getMessage());
+		} else {
 			error.put("errorCode", "INPUT_REQUEST_ERROR");
 			error.put("errorMessage", ex.getMessage());
 		}
-		ResponseEntity<Object> resp = new ResponseEntity(error,headers, HttpStatus.BAD_REQUEST);
+		ResponseEntity<Object> resp = new ResponseEntity(error, headers, HttpStatus.BAD_REQUEST);
 		return resp;
 	}
 }
