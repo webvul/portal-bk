@@ -3,16 +3,19 @@ package com.kii.beehive.portal.web.stomp;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionSubscribeEvent;
 import org.springframework.web.socket.messaging.SessionUnsubscribeEvent;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import com.kii.beehive.portal.web.entity.StateUpload;
 import com.kii.beehive.portal.web.help.InternalEventListenerRegistry;
 
 /**
@@ -21,17 +24,14 @@ import com.kii.beehive.portal.web.help.InternalEventListenerRegistry;
 @Component
 public class MessageManager implements ApplicationListener,
 		InternalEventListenerRegistry.ExtensionCallbackEventListener {
-	
-	private Logger log= LoggerFactory.getLogger(MessageManager.class);
-	
 	@Autowired
 	private InternalEventListenerRegistry internalEventListenerRegistry;
 
 
 	@Autowired
 	private SimpMessagingTemplate simpMessagingTemplate;
-
-
+	
+	private ObjectMapper objectMapper = new ObjectMapper();
 
 	@PostConstruct
 	private void init() {
@@ -42,22 +42,26 @@ public class MessageManager implements ApplicationListener,
 	private void destroy() {
 		internalEventListenerRegistry.removeEventListener(this);
 	}
-
+	
+	@Async
 	@Override
-	public void onStateChange(String appId,long thingID, String info) {
+	public void onStateChange(String appId, StateUpload info) {
+		try {
 			simpMessagingTemplate.convertAndSend("/topic/" + appId
-					+ "/" + thingID, info);
-
+					+ "/" + info.getThingID(), objectMapper.writeValueAsString(info));
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
 		if (event instanceof SessionSubscribeEvent) {
 			SessionSubscribeEvent subscribeEvent = (SessionSubscribeEvent) event;
-			log.debug(subscribeEvent.toString());
+			System.out.println(subscribeEvent);
 		} else if (event instanceof SessionUnsubscribeEvent) {
 			SessionUnsubscribeEvent unsubscribeEvent = (SessionUnsubscribeEvent) event;
-			log.debug(unsubscribeEvent.toString());
+			System.out.println(unsubscribeEvent);
 		}
 	}
 }

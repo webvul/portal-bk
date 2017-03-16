@@ -1,11 +1,12 @@
 package com.kii.beehive.business.ruleengine;
 
 
+import javax.annotation.PostConstruct;
+
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -50,9 +51,17 @@ public class TriggerOperate {
 	private SecurityService security;
 	
 	
-	private Map<Integer, Set<EngineBusinessObj>> dataMap = new ConcurrentHashMap<>();
+	private List<Set<EngineBusinessObj>> dataList = new ArrayList<>(10);
 	
 	private AtomicInteger index = new AtomicInteger(0);
+	
+	@PostConstruct
+	public void init() {
+		
+		for (int i = 0; i < 10; i++) {
+			dataList.add(i, new HashSet<>());
+		}
+	}
 	
 	public Set<String> getTriggerListByThingID(String thingID) {
 		
@@ -75,7 +84,7 @@ public class TriggerOperate {
 		
 		int oldIndex=index.getAndAccumulate(1, (left, right) -> (left+right)%10);
 		
-		Set<EngineBusinessObj> list=dataMap.get(oldIndex);
+		Set<EngineBusinessObj> list = dataList.get(oldIndex);
 		
 		try {
 			service.updateBusinessData(list, security.getRuleEngineToken());
@@ -96,7 +105,7 @@ public class TriggerOperate {
 	
 	public void addBusinessData(BusinessDataObject data){
 		
-		dataMap.computeIfAbsent(index.get(),(k)-> new HashSet<>()).add(triggerBuilder.generBusinessData(data));
+		dataList.get(index.get()).add(triggerBuilder.generBusinessData(data));
 		
 	}
 

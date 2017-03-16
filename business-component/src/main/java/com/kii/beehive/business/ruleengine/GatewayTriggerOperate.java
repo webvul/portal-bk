@@ -1,6 +1,7 @@
 package com.kii.beehive.business.ruleengine;
 
 import javax.annotation.PostConstruct;
+
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
@@ -9,6 +10,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -17,27 +19,28 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+
 import com.kii.beehive.business.manager.AppInfoManager;
 import com.kii.beehive.business.manager.ThingTagManager;
 import com.kii.beehive.business.service.ThingIFInAppService;
 import com.kii.beehive.portal.common.utils.ThingIDTools;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
-import com.kii.extension.ruleengine.service.TriggerRecordDao;
-import com.kii.extension.ruleengine.store.trigger.Condition;
-import com.kii.extension.ruleengine.store.trigger.ExecuteTarget;
-import com.kii.extension.ruleengine.store.trigger.GatewaySummarySource;
-import com.kii.extension.ruleengine.store.trigger.GatewayTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.TagSelector;
-import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.WhenType;
-import com.kii.extension.ruleengine.store.trigger.condition.AndLogic;
-import com.kii.extension.ruleengine.store.trigger.condition.Equal;
-import com.kii.extension.ruleengine.store.trigger.condition.NotLogic;
-import com.kii.extension.ruleengine.store.trigger.condition.OrLogic;
-import com.kii.extension.ruleengine.store.trigger.groups.SummarySource;
-import com.kii.extension.ruleengine.store.trigger.groups.SummaryTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.task.CommandToThing;
-import com.kii.extension.ruleengine.store.trigger.task.CommandToThingInGW;
+import com.kii.beehive.portal.service.TriggerRecordDao;
+import com.kii.beehive.portal.store.entity.trigger.Condition;
+import com.kii.beehive.portal.store.entity.trigger.ExecuteTarget;
+import com.kii.beehive.portal.store.entity.trigger.GatewaySummarySource;
+import com.kii.beehive.portal.store.entity.trigger.GatewayTriggerRecord;
+import com.kii.beehive.portal.store.entity.trigger.TagSelector;
+import com.kii.beehive.portal.store.entity.trigger.TriggerRecord;
+import com.kii.beehive.portal.store.entity.trigger.WhenType;
+import com.kii.beehive.portal.store.entity.trigger.condition.AndLogic;
+import com.kii.beehive.portal.store.entity.trigger.condition.Equal;
+import com.kii.beehive.portal.store.entity.trigger.condition.NotLogic;
+import com.kii.beehive.portal.store.entity.trigger.condition.OrLogic;
+import com.kii.beehive.portal.store.entity.trigger.groups.SummarySource;
+import com.kii.beehive.portal.store.entity.trigger.groups.SummaryTriggerRecord;
+import com.kii.beehive.portal.store.entity.trigger.task.CommandToThing;
+import com.kii.beehive.portal.store.entity.trigger.task.CommandToThingInGW;
 import com.kii.extension.sdk.entity.thingif.Action;
 import com.kii.extension.sdk.entity.thingif.EndNodeOfGateway;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
@@ -214,14 +217,6 @@ public class GatewayTriggerOperate {
 		}
 	}
 
-
-	
-	private enum GatewayCommand{
-		
-		deleteTrigger,disableTrigger,enableTrigger,createTrigger,updateTrigger;
-	}
-
-
 	public  boolean checkLocalRuleCondition(Condition condition){
 		if( ! ( condition instanceof Equal
 				|| condition instanceof NotLogic
@@ -231,6 +226,7 @@ public class GatewayTriggerOperate {
 		}
 		return true;
 	}
+	
 	public  boolean checkLocalRule(TriggerRecord record) {
 
 		
@@ -358,8 +354,6 @@ public class GatewayTriggerOperate {
 		return gatewayTriggerRecord;
 	}
 	
-	
-	
 	private  void sendGatewayCommand(GatewayTriggerRecord record, GatewayCommand act ) {
 		
 		
@@ -388,6 +382,12 @@ public class GatewayTriggerOperate {
 		command.setUserID(appInfoManager.getDefaultOwer(combine.kiiAppID));
 		thingIFService.sendCommand(command, fullThingID);
 		
+	}
+	
+	
+	private enum GatewayCommand {
+		
+		deleteTrigger, disableTrigger, enableTrigger, createTrigger, updateTrigger;
 	}
 	
 }

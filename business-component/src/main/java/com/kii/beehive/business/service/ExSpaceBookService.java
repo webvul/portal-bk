@@ -2,6 +2,7 @@ package com.kii.beehive.business.service;
 
 
 import javax.annotation.PostConstruct;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,8 +23,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StreamUtils;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Charsets;
+
 import com.kii.beehive.business.manager.ThingTagManager;
 import com.kii.beehive.business.ruleengine.TriggerManager;
 import com.kii.beehive.portal.auth.AuthInfoStore;
@@ -37,13 +41,13 @@ import com.kii.beehive.portal.jdbc.entity.ExSitSysBeehiveUserRel;
 import com.kii.beehive.portal.jdbc.entity.ExSpaceBook;
 import com.kii.beehive.portal.jdbc.entity.ExSpaceBookTriggerItem;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
-import com.kii.extension.ruleengine.store.trigger.TriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.condition.AndLogic;
-import com.kii.extension.ruleengine.store.trigger.condition.Equal;
-import com.kii.extension.ruleengine.store.trigger.condition.NotLogic;
-import com.kii.extension.ruleengine.store.trigger.groups.SummarySource;
-import com.kii.extension.ruleengine.store.trigger.groups.SummaryTriggerRecord;
-import com.kii.extension.ruleengine.store.trigger.task.CommandToThing;
+import com.kii.beehive.portal.store.entity.trigger.TriggerRecord;
+import com.kii.beehive.portal.store.entity.trigger.condition.AndLogic;
+import com.kii.beehive.portal.store.entity.trigger.condition.Equal;
+import com.kii.beehive.portal.store.entity.trigger.condition.NotLogic;
+import com.kii.beehive.portal.store.entity.trigger.groups.SummarySource;
+import com.kii.beehive.portal.store.entity.trigger.groups.SummaryTriggerRecord;
+import com.kii.beehive.portal.store.entity.trigger.task.CommandToThing;
 import com.kii.extension.sdk.exception.ObjectNotFoundException;
 
 @Component
@@ -54,39 +58,32 @@ public class ExSpaceBookService {
 
 	public static String SIT_BOOKING_APP_CODE = "youjing";
 	public static String SIT_BOOKING_USER_DEFAULT_PWD = "119!!)youjing!!)110";
-
+	static String OPEN_DOOR_TRIGGER = null;
+	static String UNLOCK_TRIGGER = null;
+	static String UNLOCK_ERRORPWD_TRIGGER = null;
 	@Autowired
 	private ExSpaceBookDao dao;
-
 	@Autowired
 	private ExSpaceBookTriggerItemDao itemDao;
-
 	@Autowired
 	private ExSitSysBeehiveUserRelDao beehiveUserRelDao;
-
 	@Autowired
 	private ExCameraDoorDao cameraDoorDao;
 	@Autowired
 	private ExSitLockDao sitLockDao;
 	@Autowired
 	private TriggerManager triggerManager;
-
 	@Autowired
 	private ObjectMapper mapper;
-
 	@Autowired
 	private ResourceLoader loader;
-
 	@Autowired
 	private ThingTagManager thingTagManager;
-
 	private Map<String, String> sitBeehiveUserIdMap = new ConcurrentHashMap<>();
 	private Map<String, List<ExCameraDoor>> cameraDoorMap = new HashMap<>();
 	private Map<Long, String> cameraMap = new HashMap<>();//key:faceThingId,value:cameraId
 	private Map<String, ExSitLock> spaceCodeSitLockMap = new HashMap<>();//key: spaceCode
-	static String OPEN_DOOR_TRIGGER = null;
-	static String UNLOCK_TRIGGER = null;
-	static String UNLOCK_ERRORPWD_TRIGGER = null;
+	
 	@PostConstruct
 	public Map<String, Object> init() throws IOException {
 		log.info("init ExSpaceBookService...");
