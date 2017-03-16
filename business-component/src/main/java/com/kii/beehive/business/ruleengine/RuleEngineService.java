@@ -153,7 +153,7 @@ public class RuleEngineService {
 		
 		RequestBuilder builder = fillRequest(RequestBuilder.put(), "/sys/registGroup/" + name);
 		
-		builder.setHeader("Authorization", sysToken);
+		builder.setHeader("Authorization", "Bearer " + sysToken);
 		
 		Map<String, Object> map = getResult(doResponse(builder));
 		
@@ -164,7 +164,7 @@ public class RuleEngineService {
 		
 		RequestBuilder builder = fillRequest(RequestBuilder.put(), "/sys/registSecurityKey/" + engineBuilder.getGroupName());
 		
-		builder.setHeader(AUTHORIZATION, sysToken);
+		builder.setHeader(AUTHORIZATION, "Bearer " + sysToken);
 		builder.setEntity(generEntity(Collections.singletonMap("securityKey", key)));
 		doResponse(builder);
 		
@@ -286,7 +286,7 @@ public class RuleEngineService {
 		
 		builder.setEntity(new StringEntity(sb.toString(),Charsets.UTF_8));
 		
-		builder.setHeader(AUTHORIZATION, authToken);
+		builder.setHeader(AUTHORIZATION, "Bearer " + authToken);
 		String response=doResponse(builder);
 		
 		try {
