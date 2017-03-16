@@ -1,10 +1,7 @@
 package com.kii.beehive.portal.services;
 
-import javax.annotation.PostConstruct;
-
 import java.util.Date;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
@@ -27,10 +24,8 @@ import com.kii.beehive.business.ruleengine.entitys.EngineBusinessObj;
 import com.kii.beehive.business.ruleengine.entitys.EngineBusinessType;
 import com.kii.beehive.business.schedule.JobInSpring;
 import com.kii.beehive.portal.common.utils.StrTemplate;
-import com.kii.beehive.portal.service.BeehiveConfigDao;
 import com.kii.beehive.portal.service.MLTaskDetailDao;
 import com.kii.beehive.portal.store.entity.MLTaskErrorInfo;
-import com.kii.beehive.portal.store.entity.configEntry.RuleEngineToken;
 import com.kii.beehive.portal.sysmonitor.SysMonitorMsg;
 import com.kii.beehive.portal.sysmonitor.SysMonitorQueue;
 import com.kii.extension.sdk.commons.HttpTool;
@@ -64,22 +59,9 @@ public class MLDataPullJob implements JobInSpring {
 	@Autowired
 	private SecurityService security;
 	
-	@Autowired
-	private BeehiveConfigDao configDao;
-	
-	private AtomicReference<String> authTokenRef = new AtomicReference<>();
-	
-	@PostConstruct
-	public void init() {
-		
-		RuleEngineToken token = configDao.getRuleEngineToken();
-		
-		authTokenRef.set(token.getMlAuthToken());
-	}
-
-	
 	@Override
 	public void execute(JobDataMap paramMap) {
+		
 		
 		String taskID=paramMap.getString(ML_TASK_ID);
 		

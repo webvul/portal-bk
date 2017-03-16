@@ -69,11 +69,11 @@ public class SecurityService {
 			key = new SecurityKey3Party();
 			key.addKey(RULE_ENGINE, RandomStringUtils.randomAlphanumeric(32));
 			
-			configDao.saveConfigEntry(key);
-			securityKey = key.getSecurityKey(RULE_ENGINE);
-			
 			try {
 				service.setSecurityKey(securityKey, sysToken.get());
+				
+				configDao.saveConfigEntry(key);
+				securityKey = key.getSecurityKey(RULE_ENGINE);
 			} catch (Exception e) {
 				SysMonitorMsg notice = new SysMonitorMsg();
 				notice.setFrom(SysMonitorMsg.FromType.RuleEngine);
