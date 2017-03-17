@@ -128,6 +128,13 @@ public class BeehiveFaceService implements ApplicationContextAware{
 		return photoFile;
 	}
 
+
+
+	public void doGuestCheckin(Map<String, Object> postData) {
+		yituFaceServiceMap.values().forEach(yituFaceService -> {
+			yituFaceService.doGuestCheckin(postData);
+		});
+	}
 	public BeehiveJdbcUser updateUserWithFace(String userId, File photoFile) {
 
 

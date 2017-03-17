@@ -21,6 +21,17 @@ public class ExSpaceBookDao extends SpringBaseDao<ExSpaceBook> {
 //			" and esb.is_added_trigger = TRUE and esb.is_deleted_trigger = FALSE and esb.create_trigger_error = FALSE  order by esb.end_date asc limit 0,1 ";
 
 
+	private static final String BOOKED_SQL = "select * from  ex_space_book esb where esb.begin_date <= CURRENT_TIMESTAMP() and esb.end_date > CURRENT_TIMESTAMP() " +
+			" and esb.user_id = ? ";
+
+	public List<ExSpaceBook> getBookedRuleByUser(String userId) {
+
+		Map<String, Object> params = new HashMap<>();
+		params.put("userId", userId);
+
+		return queryByNamedParam(BOOKED_SQL, params);
+
+	}
 	public List<ExSpaceBook> getNeedCreateRule() {
 
 		Map<String, Object> params = new HashMap<>();

@@ -106,6 +106,15 @@ public class YituFaceService implements FaceServiceInf {
 		return doUploadImage(yituFaceImage);
 	}
 
+	public void doGuestCheckin(Map<String, Object> postData) {
+		String responseBody = null;
+		HttpUriRequest faceRequest = yituFaceApiAccessBuilder.buildGuestCheckin(postData);
+		faceRequest.setHeader("cookie", cookieList.get(0));
+		log.debug("call /guest/checkin :" + faceRequest.getURI());
+		responseBody = httpClient.executeRequest(faceRequest);
+		log.debug(responseBody);
+
+	}
 	public FaceImage doUploadImage(YituFaceImage yituFaceImage) {
 
 		String responseBody = null;

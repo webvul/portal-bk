@@ -98,6 +98,25 @@ public class YituFaceApiAccessBuilder {
 
 		return invoke;
 	}
+	/**
+	 * buildGuestCheckin
+	 * @return
+	 */
+	public HttpUriRequest buildGuestCheckin(Map<String, Object> postData) {
+
+		String fullUrl = baseUrl + ":58147/guest/checkin";
+
+		String body = null;
+		try {
+			body = objectMapper.writeValueAsString(postData);
+		} catch (JsonProcessingException e) {
+			log.error(e.getMessage());
+		}
+		HttpUriRequest invoke = new HttpInvokeBuilder().setUrl(fullUrl)
+				.buildCustomCall("post", body).generRequest(objectMapper);
+
+		return invoke;
+	}
 
 
 
