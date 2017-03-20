@@ -55,6 +55,9 @@ public class GatewayTriggerOperate {
 	private String gatewayFullThingID;
 	@Value("${gateway.resend.before.second:10}")
 	private int gatewayBeforeSecond;
+	@Value("${spring.profile}")
+	private String profile;
+
 
 	@Autowired
 	private AppInfoManager appInfoManager;
@@ -75,6 +78,9 @@ public class GatewayTriggerOperate {
 
 	@Scheduled(cron = "0/20 * * * * ?")
 	public void resendGatewayCommand(){
+		if( "local".equals(profile) || "internal.dev".equals(profile) ) {
+			return ;
+		}
 		if(StringUtils.isEmpty(gatewayFullThingID)){
 			log.error("resendGatewayCommand gateway.resend.fullthingid null!");
 			return;

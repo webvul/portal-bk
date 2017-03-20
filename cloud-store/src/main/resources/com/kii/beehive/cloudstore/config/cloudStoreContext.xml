@@ -16,7 +16,6 @@
         <context:include-filter type="aspectj" expression="com.kii.portal.config.*" />
         <context:include-filter type="aspectj" expression="com.kii.portal.service.*" />
         <context:include-filter type="aspectj" expression="com.kii.extension.ruleengine.service.*" />
-
     </context:component-scan>
 
     <bean id="appBindAspect" class="com.kii.extension.sdk.aop.AppBindAspect"/>

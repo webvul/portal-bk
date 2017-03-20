@@ -2,12 +2,12 @@ package com.kii.beehive.portal.web.config;
 
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -18,12 +18,10 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-
 import com.kii.beehive.portal.web.controller.STOMPMessageController;
 import com.kii.beehive.portal.web.help.AuthInterceptor;
 
@@ -31,6 +29,7 @@ import com.kii.beehive.portal.web.help.AuthInterceptor;
 @Configuration
 @ComponentScan(basePackages = {"com.kii.beehive.portal.web.controller"}, excludeFilters = {
 		@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = STOMPMessageController.class)})
+@Import({PropertySourcesPlaceholderConfig.class})
 public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
 	@Autowired

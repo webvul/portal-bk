@@ -82,6 +82,7 @@ public class ExSpaceBookService {
 
 	private Map<String, String> sitBeehiveUserIdMap = new ConcurrentHashMap<>();
 	private Map<String, List<ExCameraDoor>> cameraDoorMap = new HashMap<>();
+	private Map<Long, String> cameraMap = new HashMap<>();//key:faceThingId,value:cameraId
 	private Map<String, ExSitLock> spaceCodeSitLockMap = new HashMap<>();//key: spaceCode
 	static String OPEN_DOOR_TRIGGER = null;
 	static String UNLOCK_TRIGGER = null;
@@ -90,6 +91,7 @@ public class ExSpaceBookService {
 	public Map<String, Object> init() throws IOException {
 		log.info("init ExSpaceBookService...");
 		cameraDoorMap.clear();
+		cameraMap.clear();
 		spaceCodeSitLockMap.clear();
 		sitBeehiveUserIdMap.clear();
 		//
@@ -109,7 +111,6 @@ public class ExSpaceBookService {
 		List<ExCameraDoor> cameraDoorDaoAll = cameraDoorDao.findAll();
 		cameraDoorDaoAll.forEach(door -> {
 			//check thing id
-
 			String key = door.getFace_thing_id() + "`" + door.getDoor_thing_id();
 			List<ExCameraDoor> cameraDoorListByKey = cameraDoorMap.get(key);
 			if(cameraDoorListByKey == null) {
@@ -117,6 +118,8 @@ public class ExSpaceBookService {
 				cameraDoorMap.put(key, cameraDoorListByKey);
 			}
 			cameraDoorListByKey.add(door);
+			//
+			cameraMap.put(door.getFace_thing_id(), door.getCamera_id());
 			//check thing
 			GlobalThingInfo thingInfo = null;
 			if(checkedThingIdMap.get(door.getDoor_thing_id()) == null) {
@@ -188,6 +191,14 @@ public class ExSpaceBookService {
 		return checkResult;
 	}
 
+
+	public Map<Long, String> getCameraMap() {
+		return cameraMap;
+	}
+
+	public List<ExSpaceBook> getBookedRuleByUser(String userId) {
+		return dao.getBookedRuleByUser(userId);
+	}
 	@Scheduled(cron = "0/10 * * * * ?")
 	@Transactional(propagation = Propagation.NEVER)
 	public void doCreateTrigger()  {

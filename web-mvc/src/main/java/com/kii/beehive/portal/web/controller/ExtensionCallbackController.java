@@ -20,18 +20,19 @@ import com.kii.beehive.business.manager.ThingTagManager;
 import com.kii.beehive.business.ruleengine.ThingCommandForTriggerService;
 import com.kii.beehive.portal.helper.ThingStatusChangeCallback;
 import com.kii.beehive.portal.jdbc.entity.GlobalThingInfo;
+import com.kii.beehive.portal.manager.ExSpaceBookManager;
 import com.kii.beehive.portal.web.constant.CallbackNames;
 import com.kii.beehive.portal.web.entity.CreatedThing;
 import com.kii.beehive.portal.web.entity.StateUpload;
 import com.kii.beehive.portal.web.help.InternalEventListenerRegistry;
 import com.kii.extension.sdk.entity.thingif.ThingCommand;
-
 @RestController(value = "extensionCallbackController")
 @RequestMapping(value = CallbackNames.CALLBACK_URL, consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE}, produces = {
 		MediaType.APPLICATION_JSON_UTF8_VALUE})
 public class ExtensionCallbackController {
 
 	private static Logger log = LoggerFactory.getLogger(ExtensionCallbackController.class);
+
 
 	@Autowired
 	private ThingTagManager tagManager;
@@ -48,6 +49,9 @@ public class ExtensionCallbackController {
 
 	@Autowired
 	private ThingCommandForTriggerService commandService;
+
+	@Autowired
+	private ExSpaceBookManager spaceBookManager;
 
 	private ObjectMapper objectMapper;
 
@@ -94,6 +98,9 @@ public class ExtensionCallbackController {
 
 		internalEventListenerRegistry.onStateChange(appID, status);
 		this.timeDiff(startTime, "onStateChange done", globalThingInfo.getVendorThingID());
+
+		spaceBookManager.onFaceThingStateChange(globalThingInfo, status.getState(), status.getTimestamp());
+		this.timeDiff(startTime, "onFaceThingStateChange done", globalThingInfo.getVendorThingID());
 	}
 
 
