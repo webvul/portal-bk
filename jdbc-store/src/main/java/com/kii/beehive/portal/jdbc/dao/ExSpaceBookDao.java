@@ -22,7 +22,7 @@ public class ExSpaceBookDao extends SpringBaseDao<ExSpaceBook> {
 
 
 	private static final String BOOKED_SQL = "select * from  ex_space_book esb where esb.begin_date <= CURRENT_TIMESTAMP() and esb.end_date > CURRENT_TIMESTAMP() " +
-			" and esb.user_id = ? ";
+			" and esb.user_id = :userId ";
 
 	public List<ExSpaceBook> getBookedRuleByUser(String userId) {
 
