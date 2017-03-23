@@ -90,6 +90,9 @@ public class ExtensionCallbackController {
 		GlobalThingInfo globalThingInfo = tagManager.getThingByFullKiiThingID(appID, status.getThingID());
 		this.timeDiff(startTime, "updateState done", globalThingInfo.getVendorThingID());
 
+		spaceBookManager.onFaceThingStateChange(globalThingInfo, status.getState(), status.getTimestamp());
+		this.timeDiff(startTime, "onFaceThingStateChange done", globalThingInfo.getVendorThingID());
+
 		pushCallback.onEventFire(globalThingInfo, status.getState(), status.getTimestamp());
 		this.timeDiff(startTime, "onEventFire done", globalThingInfo.getVendorThingID());
 
@@ -99,8 +102,6 @@ public class ExtensionCallbackController {
 		internalEventListenerRegistry.onStateChange(appID, status);
 		this.timeDiff(startTime, "onStateChange done", globalThingInfo.getVendorThingID());
 
-		spaceBookManager.onFaceThingStateChange(globalThingInfo, status.getState(), status.getTimestamp());
-		this.timeDiff(startTime, "onFaceThingStateChange done", globalThingInfo.getVendorThingID());
 	}
 
 
