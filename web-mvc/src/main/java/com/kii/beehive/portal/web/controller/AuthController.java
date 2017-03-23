@@ -26,6 +26,7 @@ import com.kii.beehive.portal.web.entity.UserRestBean;
 import com.kii.beehive.portal.web.exception.ErrorCode;
 import com.kii.beehive.portal.web.exception.PortalException;
 import com.kii.beehive.portal.web.help.AuthUtils;
+import com.kii.extension.sdk.exception.KiiCloudException;
 
 
 /**
@@ -175,10 +176,18 @@ public class AuthController {
 				throw new PortalException(ErrorCode.REQUIRED_FIELDS_MISSING, "field", "password");
 			}
 		}
-
-		AuthUser user= authManager.login(userID, password);
-
-		return new AuthRestBean(user);
+		
+		try {
+			AuthUser user = authManager.login(userID, password);
+			return new AuthRestBean(user);
+		} catch (KiiCloudException e) {
+			if ("invalid_grant".equals(e.getErrorCode())) {
+				throw new PortalException(ErrorCode.INVALID_PASSWORD);
+			} else {
+				throw new PortalException(ErrorCode.INVALID_INPUT);
+			}
+		}
+	
 	}
 
 	@RequestMapping(value = "/validateLoginAccessToken", method = {RequestMethod.POST})
