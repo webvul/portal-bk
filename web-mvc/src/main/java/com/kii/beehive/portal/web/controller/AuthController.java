@@ -182,7 +182,7 @@ public class AuthController {
 			return new AuthRestBean(user);
 		} catch (KiiCloudException e) {
 			if ("invalid_grant".equals(e.getErrorCode())) {
-				throw new PortalException(ErrorCode.INVALID_PASSWORD);
+				throw new PortalException(ErrorCode.PASSWORD_ERROR);
 			} else {
 				throw new PortalException(ErrorCode.INVALID_INPUT);
 			}
