@@ -13,7 +13,8 @@ public class ErrorCode {
 	public static final ErrorCode THING_NO_PRIVATE=new ErrorCode("THING_NO_PRIVATE",HttpStatus.SC_FORBIDDEN);
 	public static final ErrorCode DUPLICATE_OBJECT=new ErrorCode("DUPLICATE_OBJECT",HttpStatus.SC_CONFLICT);
 	public static final ErrorCode INVALID_PASSWORD=new ErrorCode("INVALID_PASSWORD",HttpStatus.SC_BAD_REQUEST);
-
+	
+	public static final ErrorCode PASSWORD_ERROR = new ErrorCode("PASSWORD_ERROR", HttpStatus.SC_BAD_REQUEST);
 
 
 
