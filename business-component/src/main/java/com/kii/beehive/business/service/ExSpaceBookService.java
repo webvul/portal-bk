@@ -191,6 +191,9 @@ public class ExSpaceBookService {
 		return checkResult;
 	}
 
+	public Map<String, String> getSitBeehiveUserIdMap() {
+		return sitBeehiveUserIdMap;
+	}
 
 	public Map<Long, String> getCameraMap() {
 		return cameraMap;
