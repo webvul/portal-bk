@@ -65,7 +65,8 @@ public class YituFaceApiAccessBuilder {
 
 	public HttpUriRequest buildUploadImage(YituFaceImage faceImage) {
 
-		String fullUrl = baseUrl + ":9100/face/v1/framework/face_image/repository/picture/synchronized";
+//		String fullUrl = baseUrl + ":9100/face/v1/framework/face_image/repository/picture/synchronized";
+		String fullUrl = baseUrl + ":58147/face";
 
 		String body = null;
 		try {

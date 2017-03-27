@@ -3,6 +3,7 @@ package com.kii.beehive.portal.face.faceyitu.entitys;
 
 public class YituFaceImage {
 
+	private Integer clear_old_picture = 1;
 	private Integer repository_id = 1;
 	private String picture_image_content_base64;
 	private String beehive_user_id;
@@ -48,5 +49,13 @@ public class YituFaceImage {
 
 	public void setExternal_id(String external_id) {
 		this.external_id = external_id;
+	}
+
+	public Integer getClear_old_picture() {
+		return clear_old_picture;
+	}
+
+	public void setClear_old_picture(Integer clear_old_picture) {
+		this.clear_old_picture = clear_old_picture;
 	}
 }
