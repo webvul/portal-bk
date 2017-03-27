@@ -1,64 +1,62 @@
+function global_onThingStateChange(params, context, done) {
 
+    var bucket = context.getAppAdminContext().bucketWithName("_states");
 
-function global_onThingStateChange(params,context,done){
+    var obj = bucket.createObjectWithID(params.objectID);
 
-	var bucket=context.getAppAdminContext().bucketWithName("_states");
+    obj.refresh({
 
-	var obj=bucket.createObjectWithID(params.objectID);
+        success: function(theObject) {
 
-	obj.refresh({
+            doRemoteCall(context, "stateChange", theObject._customInfo, done);
 
-	      		success: function(theObject) {
+        },
 
-                	doRemoteCall(context,"stateChange",theObject._customInfo,done);
-
- 		         },
-
-          		failure: function(theObject, anErrorString) {
-            		 console.log("get state object fail:"+params.objectID);
-             		 done(anErrorString);
-         		 }
-	});
+        failure: function(theObject, anErrorString) {
+            console.log("get state object fail:" + params.objectID);
+            done(anErrorString);
+        }
+    });
 
 }
 
-function global_onThingOnBoard(params,context,done){
+function global_onThingOnBoard(params, context, done) {
 
-	doRemoteCall(context,"thingCreated",params,done);
-
-}
-
-function global_onThingRemoved(params,context,done){
-
-	doRemoteCall(context,"thingRemoved",params,done);
+    doRemoteCall(context, "thingCreated", params, done);
 
 }
 
+function global_onThingRemoved(params, context, done) {
 
-function global_onThingCmdResponse(params,context,done){
+    doRemoteCall(context, "thingRemoved", params, done);
 
-
-	var thingID=params.objectScope.thingID;
-
-	var bucket=context.getAppAdminContext().thingWithID(thingID).bucketWithName("_commands");
-
-	var obj=bucket.createObjectWithID(params.objectID);
+}
 
 
-	obj.refresh({
+function global_onThingCmdResponse(params, context, done) {
 
-	      		success: function(theObject) {
 
-					var val=theObject._customInfo;
-					val["commandID"]=theObject.getID();
-                	doRemoteCall(context,"commandResponse",val,done);
+    var thingID = params.objectScope.thingID;
 
- 		         },
+    var bucket = context.getAppAdminContext().thingWithID(thingID).bucketWithName("_commands");
 
-          		failure: function(theObject, anErrorString) {
-            		 console.log("get state object fail:"+params.objectID);
-             		 done(anErrorString);
-         		 }
-	});
+    var obj = bucket.createObjectWithID(params.objectID);
+
+
+    obj.refresh({
+
+        success: function(theObject) {
+
+            var val = theObject._customInfo;
+            val["commandID"] = theObject.getID();
+            doRemoteCall(context, "commandResponse", val, done);
+
+        },
+
+        failure: function(theObject, anErrorString) {
+            console.log("get state object fail:" + params.objectID);
+            done(anErrorString);
+        }
+    });
 
 }
