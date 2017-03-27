@@ -38,9 +38,9 @@ public class LocTagController {
 		if(!url.endsWith("/")){
 			url+="/";
 		}
-
-
-		String baseUrl=StringUtils.substringBefore(url,"/site/");
+		
+		
+		String baseUrl = StringUtils.substringBefore(url, "/site/") + "/site/";
 
 		String locStr=StringUtils.substringAfter(url,"/site/");
 

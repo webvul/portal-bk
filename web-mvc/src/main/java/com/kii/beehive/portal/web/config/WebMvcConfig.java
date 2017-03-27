@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -26,7 +25,6 @@ import com.kii.beehive.portal.web.controller.STOMPMessageController;
 import com.kii.beehive.portal.web.help.AuthInterceptor;
 
 @EnableWebMvc
-@Configuration
 @ComponentScan(basePackages = {"com.kii.beehive.portal.web.controller"}, excludeFilters = {
 		@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = STOMPMessageController.class)})
 @Import({PropertySourcesPlaceholderConfig.class})
