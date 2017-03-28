@@ -49,7 +49,7 @@ public class ObixPointDetail {
 		this.thingSchema=thingSchemaName;
 
 		setDescription(detail.getDisplayNameCN());
-		setType(PointDataType.getInstance(detail.getType()));
+		setType(PointDataType.getInstance(detail));
 
 
 		if(detail.getEnumMap()!=null) {
