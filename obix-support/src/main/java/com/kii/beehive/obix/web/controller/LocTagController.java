@@ -40,7 +40,7 @@ public class LocTagController {
 		}
 		
 		
-		String baseUrl = StringUtils.substringBefore(url, "/site/") + "/site/";
+		String baseUrl = StringUtils.substringBefore(url, "/site/") + "/site";
 
 		String locStr=StringUtils.substringAfter(url,"/site/");
 
