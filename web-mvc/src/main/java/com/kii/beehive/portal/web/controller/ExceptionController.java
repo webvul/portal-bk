@@ -104,7 +104,7 @@ public class ExceptionController {
 
 		Map<String, Object> error = getErrorInfoInJson(ex);
 
-		log.error("store exception ", ex + " - " + error.toString());
+		log.warn("store exception ", ex + " - " + error.toString());
 
 		ResponseEntity<Object> resp = new ResponseEntity(error, headers, HttpStatus.valueOf(ex.getStatusCode()));
 
