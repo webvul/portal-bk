@@ -151,7 +151,7 @@ public class GatewayTriggerOperate {
 			try {
 				return createGatewayRecord((SummaryTriggerRecord) record);
 			} catch (Exception e) {
-				log.error("createGatewayRecord error" , e);
+				log.warn("createGatewayRecord fail" , e.getMessage());
 				return record;
 			}
 
@@ -201,7 +201,7 @@ public class GatewayTriggerOperate {
 				try {
 					gatewayTriggerRecord = convertToGatewayTriggerRecord((SummaryTriggerRecord) newRecord);
 				} catch (Exception e) {
-					log.error("updateGatewayRecord error" , e);
+					log.warn("updateGatewayRecord fail " , e.getMessage());
 					return newRecord;
 				}
 				triggerDao.updateEntityAll(gatewayTriggerRecord, gatewayTriggerRecord.getId());
@@ -234,7 +234,9 @@ public class GatewayTriggerOperate {
 	public  boolean checkLocalRule(TriggerRecord record) {
 
 		
-		if(record.getTargets().stream().anyMatch( t-> !( t.getType().equals(ExecuteTarget.TargetType.ThingCommand) || t.getType().equals(ExecuteTarget.TargetType.ThingCommandInGW) ) )){
+		if(record.getTargets().stream().anyMatch( t->
+				!( t.getType().equals(ExecuteTarget.TargetType.ThingCommand)
+						|| t.getType().equals(ExecuteTarget.TargetType.ThingCommandInGW) ) )){
 			return false;
 		}
 		
@@ -243,10 +245,6 @@ public class GatewayTriggerOperate {
 				&& record.getPreparedCondition() == null
 				&& record.getPredicate().getSchedule() == null
 
-//				&& ( (AndLogic) record.getPredicate().getCondition() ).getClauses().size() <= 2
-//				&& ( (AndLogic) record.getPredicate().getCondition() ).getClauses().get(0) instanceof AndLogic
-//				&& ( (AndLogic) ( ( (AndLogic) record.getPredicate().getCondition() ).getClauses().get(0) ) ).getClauses().size() == 2
-//			    && ( (AndLogic) ( ( (AndLogic) record.getPredicate().getCondition() ).getClauses().get(0) ) ).getClauses().get(0) instanceof SimpleCondition
 		) ) {
 			
 			return false;
@@ -270,10 +268,10 @@ public class GatewayTriggerOperate {
 				}
 			}
 		}else{
-			GatewayTriggerRecord  summaryTriggerRecord = (GatewayTriggerRecord) record;
+			GatewayTriggerRecord  gatewayTriggerRecord = (GatewayTriggerRecord) record;
 			
 			//source only one thing
-			Collection<GatewaySummarySource> sourceCollection = summaryTriggerRecord.getSummarySource().values();
+			Collection<GatewaySummarySource> sourceCollection = gatewayTriggerRecord.getSummarySource().values();
 			Iterator<GatewaySummarySource> sourceIterator = sourceCollection.iterator();
 			while (sourceIterator.hasNext()) { //每个SummarySource只有 单个 thing
 				SummarySource summarySource = sourceIterator.next();
@@ -304,8 +302,7 @@ public class GatewayTriggerOperate {
 			gatewayOfKiiCloud = thingIFService.getThingGateway(sourceThing.getFullKiiThingID());
 			log.info("gwtrigger thing of gateway:" + gatewayOfKiiCloud.getThingID());
 		} catch (Exception e) {
-			e.printStackTrace();
-			throw new IllegalStateException();
+			throw new IllegalStateException(e);
 		}
 		String thingID=gatewayOfKiiCloud.getThingID();
 		String fullKiiThingID= ThingIDTools.joinFullKiiThingID(sourceThing.getKiiAppID(), thingID);
