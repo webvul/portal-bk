@@ -27,22 +27,27 @@ public class PointDetail {
 	private Number  maximum;
 
 	private Number minimum;
-
-	private String   type;
+	
+	private FieldType type;
 
 	private String unit;
 
 	private EnumType enumType;
-
-
-	public enum EnumType{
-		BOOLEAN,NUMBER;
+	
+	private int precise;
+	
+	public int getPrecise() {
+		return precise;
 	}
-
+	
+	public void setPrecise(int precise) {
+		this.precise = precise;
+	}
+	
 	public String getDisplayNameCN() {
 		return displayNameCN;
 	}
-
+	
 	public void setDisplayNameCN(String displayNameCN) {
 		this.displayNameCN = displayNameCN;
 	}
@@ -84,12 +89,12 @@ public class PointDetail {
 	public void setMinimum(Number minimum) {
 		this.minimum = minimum;
 	}
-
-	public String getType() {
+	
+	public FieldType getType() {
 		return type;
 	}
-
-	public void setType(String type) {
+	
+	public void setType(FieldType type) {
 		this.type = type;
 	}
 
@@ -107,5 +112,14 @@ public class PointDetail {
 
 	public void setEnumType(EnumType enumType) {
 		this.enumType = enumType;
+	}
+	
+	public enum EnumType {
+		BOOLEAN, NUMBER;
+	}
+	
+	public enum FieldType {
+		
+		NUMBER, BOOLEAN, STRING;
 	}
 }
