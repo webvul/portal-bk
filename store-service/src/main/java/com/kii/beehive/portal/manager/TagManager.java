@@ -5,12 +5,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.kii.beehive.portal.auth.AuthInfoStore;
+import com.kii.beehive.portal.exception.DuplicateException;
 import com.kii.beehive.portal.exception.EntryNotFoundException;
 import com.kii.beehive.portal.exception.UnauthorizedException;
 import com.kii.beehive.portal.jdbc.dao.TagIndexDao;
@@ -37,56 +36,55 @@ public class TagManager {
 	@Autowired
 	private TeamTagRelationDao teamTagRelationDao;
 
-	public Long  createCustomTag(TagIndex tag){
+	public Long createCustomTag(TagIndex tag) {
+		Long tagID = tag.getId();
 
-
-		if (null != tag.getId()) {
+		if (null != tag.getId()) {//update
 			TagIndex existedTag = getTagIndexes(Arrays.asList(tag.getId().toString())).get(0);
-			if (existedTag.getCreateBy().equals(AuthInfoStore.getUserIDStr())) {
+			if (!existedTag.getCreateBy().equals(AuthInfoStore.getUserIDStr())) {
 				throw new UnauthorizedException(UnauthorizedException.NOT_TAG_CREATER);
 			}
+			existedTag.setFullTagName(TagType.Custom.getTagName(tag.getDisplayName()));
+			existedTag.setDescription(tag.getDescription());
+			tagIndexDao.updateEntityByID(existedTag, existedTag.getId());
 
-		} else {
+			tag.setFullTagName(existedTag.getFullTagName());
+		} else {//create
 
-			boolean sign= tagIndexDao.findTagIdsByTeamAndTagTypeAndName(AuthInfoStore.getTeamID(),  TagType.Custom, tag.getDisplayName());
+			boolean sign = tagIndexDao.findTagIdsByTeamAndTagTypeAndName(AuthInfoStore.getTeamID(), TagType.Custom, tag.getDisplayName());
 
 			if (!sign) {
-				throw new UnauthorizedException(UnauthorizedException.NOT_TAG_CREATER);
+				throw new DuplicateException(tag.getDisplayName(), "display name");
 			}
+			tag.setTagType(TagType.Custom);
+			tag.setFullTagName(TagType.Custom.getTagName(tag.getDisplayName()));
+
+			tagID = tagIndexDao.insert(tag);
+
+			if (AuthInfoStore.getTeamID() != null) {
+				teamTagRelationDao.saveOrUpdate(new TeamTagRelation(AuthInfoStore.getTeamID(), tagID));
+			}
+
+			tagUserRelationDao.saveOrUpdate(new TagUserRelation(tagID, AuthInfoStore.getUserID()));
 		}
 
-
-		tag.setTagType(TagType.Custom);
-		tag.setFullTagName(TagType.Custom.getTagName(tag.getDisplayName()));
-
-
-		Long tagID = tagIndexDao.saveOrUpdate(tag);
-
-		if (AuthInfoStore.getTeamID() != null) {
-			teamTagRelationDao.saveOrUpdate(new TeamTagRelation(AuthInfoStore.getTeamID(), tagID));
-		}
-
-		tagUserRelationDao.saveOrUpdate(new TagUserRelation(tagID, AuthInfoStore.getUserID()));
 
 		return tagID;
 
 	}
 
 
-
-
-	private List<TagIndex> getTagIndexes(List<String> tagIDList)  {
+	private List<TagIndex> getTagIndexes(List<String> tagIDList) {
 		List<Long> tagIds = tagIDList.stream().filter(Pattern.compile("^[0-9]+$").asPredicate()).map(Long::valueOf)
 				.collect(Collectors.toList());
 		List<TagIndex> tagIndexes = tagIndexDao.findByIDs(tagIds);
-		if ( tagIndexes.isEmpty() || !tagIndexes.stream().map(TagIndex::getId).map(Object::toString).
+		if (tagIndexes.isEmpty() || !tagIndexes.stream().map(TagIndex::getId).map(Object::toString).
 				collect(Collectors.toSet()).containsAll(tagIDList)) {
 			tagIds.removeAll(tagIndexes.stream().map(TagIndex::getId).collect(Collectors.toList()));
 			throw EntryNotFoundException.existsNullTag(tagIds);
 		}
 		return tagIndexes;
 	}
-
 
 
 }
