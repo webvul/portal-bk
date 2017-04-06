@@ -1,9 +1,6 @@
 package com.kii.beehive.portal.web.config;
 
 
-import static com.kii.beehive.business.ruleengine.RemoteUrlStore.RULEENG_CALLBACK_URL;
-import static com.kii.beehive.business.ruleengine.RemoteUrlStore.THIRD_PARTY_URL;
-
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -107,16 +104,7 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
 		
-		registry.addInterceptor(authInterceptor).addPathPatterns("/**");
-		
-		registry.addInterceptor(security3PartyInterceptor).addPathPatterns(THIRD_PARTY_URL + RULEENG_CALLBACK_URL + "/**");
-	}
-	
-	
-	@Override
-	public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
-		
-		configurer.setDefaultTimeout(60 * 1000);
+		registry.addInterceptor(authInterceptor).addPathPatterns("/**").excludePathPatterns("/plugin/**");
 	}
 	
 	
@@ -125,4 +113,11 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 		registry.addMapping("/**").allowedOrigins("*").allowedMethods("GET", "PUT", "POST", "DELETE", "HEAD").allowCredentials(false);
 	}
 	
+	@Override
+	public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
+		
+		configurer.setDefaultTimeout(60 * 1000l);
+		
+		
+	}
 }

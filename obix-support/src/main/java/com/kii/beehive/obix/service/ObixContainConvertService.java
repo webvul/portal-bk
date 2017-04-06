@@ -37,8 +37,8 @@ public class ObixContainConvertService {
 			obix.addChild(obixP);
 
 		});
-
-		ObixContain  obixL=getEmbeddedObix(thing.getLocation(),baseUrl+"/site/");
+		
+		ObixContain obixL = getEmbeddedObix(thing.getLocation(), baseUrl + "/site");
 		obix.addChild(obixL);
 
 		return obix;
